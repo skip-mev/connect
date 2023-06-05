@@ -1,5 +1,10 @@
 package types
 
+import (
+	"fmt"
+	"strings"
+)
+
 // CurrencyPair defines a currency exchange pair consisting of a base and a quote.
 // We primarily utilize the base for broadcasting exchange rates and use the
 // pair for querying for the ticker prices.
@@ -8,10 +13,22 @@ type CurrencyPair struct {
 	Quote string
 }
 
+func NewCurrencyPair(ticker string) (CurrencyPair, error) {
+	tokens := strings.Split(ticker, "/")
+	if len(tokens) != 2 {
+		return CurrencyPair{}, fmt.Errorf("%s: %w", ticker, ErrInvalidTicker)
+	}
+
+	return CurrencyPair{
+		Base:  strings.ToUpper(tokens[0]),
+		Quote: strings.ToUpper(tokens[1]),
+	}, nil
+}
+
 // String implements the Stringer interface and defines a ticker symbol for
 // querying the exchange rate.
 func (cp CurrencyPair) String() string {
-	return cp.Base + cp.Quote
+	return cp.Base + "/" + cp.Quote
 }
 
 // MapPairsToSlice returns the map of currency pairs as slice.
