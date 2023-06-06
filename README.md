@@ -16,3 +16,28 @@ A general purpose price oracle leveraging ABCI++
 ```shell
 $ go install github.com/skip-mev/slinky
 ```
+
+## Status
+
+Current, slinkly contains the following structure:
+
+```text
+.
+├── config        <- Configuration that instructs the Oracle
+├── oracle        <- The oracle implementation along with providers and types
+│   ├── provider
+│   └── types
+└── pkg           <- Package types and utilities
+    └── sync
+```
+
+The following components have been implemented:
+
+* `oracle.go`: The main oracle implementation that is responsible for fetching prices
+  from providers given a set of assets and a set of providers.
+* `provider.go`: The provider interface that is used to fetch prices from a given
+  provider along with a mock implementation.
+
+The following components are still in progress or need to be implemented completely:
+
+* 
