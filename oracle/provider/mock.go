@@ -70,7 +70,7 @@ func (p MockProvider) GetTickerPrices(pairs ...types.CurrencyPair) (map[string]t
 	return tickerPrices, nil
 }
 
-func (p MockProvider) GetCandlePrices(pairs ...types.CurrencyPair) (map[string][]types.CandlePrice, error) {
+func (p MockProvider) GetCandlePrices(pairs ...types.CurrencyPair) (map[string][]types.Candle, error) {
 	prices, err := p.GetTickerPrices(pairs...)
 	if err != nil {
 		return nil, err
@@ -78,9 +78,9 @@ func (p MockProvider) GetCandlePrices(pairs ...types.CurrencyPair) (map[string][
 
 	ts := time.Now().Add(time.Minute * -1).Unix() // 1 minute ago
 
-	candles := make(map[string][]types.CandlePrice, len(prices))
+	candles := make(map[string][]types.Candle, len(prices))
 	for ticker, price := range prices {
-		candles[ticker] = []types.CandlePrice{
+		candles[ticker] = []types.Candle{
 			{
 				Price:     price.Price,
 				Volume:    price.Volume,
