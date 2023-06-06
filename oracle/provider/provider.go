@@ -14,19 +14,11 @@ type (
 		GetTickerPrices(...types.CurrencyPair) (map[string]types.TickerPrice, error)
 
 		// GetCandlePrices returns the candlePrices based on the provided pairs.
-		GetCandlePrices(...types.CurrencyPair) (map[string][]types.CandlePrice, error)
+		GetCandlePrices(...types.CurrencyPair) (map[string][]types.Candle, error)
 
 		// GetAvailablePairs return all available pairs symbol to subscribe.
 		GetAvailablePairs() (map[string]struct{}, error)
 	}
-
-	// AggregatedProviderPrices defines a type alias for a map
-	// of provider -> asset -> TickerPrice
-	AggregatedProviderPrices map[string]map[string]types.TickerPrice
-
-	// AggregatedProviderCandles defines a type alias for a map
-	// of provider -> asset -> []types.CandlePrice
-	AggregatedProviderCandles map[string]map[string][]types.CandlePrice
 
 	// Endpoint defines an override setting in our config for the
 	// hardcoded rest and websocket api endpoints.
