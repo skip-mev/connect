@@ -1,6 +1,10 @@
 package types
 
-import "sync"
+import (
+	"sync"
+
+	"golang.org/x/exp/maps"
+)
 
 type (
 	// AggregatedProviderPrices defines a type alias for a map
@@ -66,14 +70,22 @@ func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	// XXX: We should probably return a copy here.
-	return p.providerPrices
+	cpy := make(AggregatedProviderPrices)
+	for k, v := range p.providerPrices {
+		maps.Copy(cpy[k], v)
+	}
+
+	return cpy
 }
 
 func (p *PriceAggregator) GetProviderCandles() AggregatedProviderCandles {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	// XXX: We should probably return a copy here.
-	return p.providerCandles
+	cpy := make(AggregatedProviderCandles)
+	for k, v := range p.providerCandles {
+		maps.Copy(cpy[k], v)
+	}
+
+	return cpy
 }

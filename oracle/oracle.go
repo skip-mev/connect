@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/provider"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
+	"golang.org/x/exp/maps"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -185,9 +186,7 @@ func (o *Oracle) GetPrices() map[string]sdk.Dec {
 	defer o.mtx.RUnlock()
 
 	p := make(map[string]sdk.Dec, len(o.prices))
-	for k, v := range o.prices {
-		p[k] = v
-	}
+	maps.Copy(p, o.prices)
 
 	return p
 }
