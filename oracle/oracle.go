@@ -101,55 +101,59 @@ func (o *Oracle) tick(ctx context.Context) error {
 			return err
 		}
 
+		fetchPricesFn := func(pn string, cp []types.CurrencyPair) func() error {
+			return func() error {
+				doneCh := make(chan bool, 1)
+				errCh := make(chan error, 1)
+
+				var (
+					prices  map[string]types.TickerPrice
+					candles map[string][]types.Candle
+					err     error
+				)
+
+				go func() {
+					prices, err = priceProvider.GetTickerPrices(cp...)
+					if err != nil {
+						o.logger.Error("failed to fetch ticker prices from provider", "provider", pn, "err", err)
+						errCh <- err
+					}
+
+					candles, err = priceProvider.GetCandlePrices(cp...)
+					if err != nil {
+						o.logger.Error("failed to fetch candle prices from provider", "provider", pn, "err", err)
+						errCh <- err
+					}
+
+					doneCh <- true
+				}()
+
+				select {
+				case <-doneCh:
+					break
+
+				case err := <-errCh:
+					return err
+
+				case <-time.After(o.providerTimeout):
+					return fmt.Errorf("provider %s timed out", pn)
+				}
+
+				// aggregate and collect prices based on the base currency per provider
+				for _, pair := range cp {
+					success := priceAgg.SetTickerPricesAndCandles(pn, prices, candles, pair)
+					if !success {
+						return fmt.Errorf("failed to find any exchange rates in provider responses")
+					}
+				}
+
+				return nil
+			}
+		}
+
 		// Launch a goroutine to fetch ticker prices and candles from the provider
 		// for the given set of tickers.
-		g.Go(func() error {
-			doneCh := make(chan bool, 1)
-			errCh := make(chan error, 1)
-
-			var (
-				prices  map[string]types.TickerPrice
-				candles map[string][]types.Candle
-				err     error
-			)
-
-			go func() {
-				prices, err = priceProvider.GetTickerPrices(currencyPairs...)
-				if err != nil {
-					o.logger.Error("failed to fetch ticker prices from provider", "provider", providerName, "err", err)
-					errCh <- err
-				}
-
-				candles, err = priceProvider.GetCandlePrices(currencyPairs...)
-				if err != nil {
-					o.logger.Error("failed to fetch candle prices from provider", "provider", providerName, "err", err)
-					errCh <- err
-				}
-
-				doneCh <- true
-			}()
-
-			select {
-			case <-doneCh:
-				break
-
-			case err := <-errCh:
-				return err
-
-			case <-time.After(o.providerTimeout):
-				return fmt.Errorf("provider %s timed out", providerName)
-			}
-
-			// aggregate and collect prices based on the base currency per provider
-			for _, pair := range currencyPairs {
-				success := priceAgg.SetTickerPricesAndCandles(providerName, prices, candles, pair)
-				if !success {
-					return fmt.Errorf("failed to find any exchange rates in provider responses")
-				}
-			}
-
-			return nil
-		})
+		g.Go(fetchPricesFn(providerName, currencyPairs))
 	}
 
 	if err := g.Wait(); err != nil {
