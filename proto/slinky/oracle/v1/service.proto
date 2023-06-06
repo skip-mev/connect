@@ -1,0 +1,42 @@
+syntax = "proto3";
+package slinky.oracle.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/skip-mev/slinky/service";
+
+// Oracle defines the gRPC oracle service.
+service Oracle {
+  // Prices defines a method for fetching the latest prices.
+  rpc Prices(QueryPricesRequest) returns (QueryPricesResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/prices";
+  };
+}
+
+// QueryPricesRequest defines the request type for the the Prices method.
+message QueryPricesRequest {
+  // optional tickers to fetch.
+  repeated string tickers = 1;
+
+  // optional provider to query against.
+  string provider = 2;
+}
+
+// QueryPricesResponse defines the response type for the Prices method.
+message QueryPricesResponse {
+  // CurrencyPair defines a type containing a ticker and an aggregated price.
+  message CurrencyPair {
+    string ticker = 1;
+    string price  = 2 [
+      (cosmos_proto.scalar)  = "cosmos.Dec",
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+      (gogoproto.nullable)   = false
+    ];
+  }
+
+  // prices defines the list of prices.
+  repeated CurrencyPair prices = 1;
+}

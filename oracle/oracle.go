@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/cometbft/cometbft/libs/log"
@@ -27,6 +28,7 @@ type Oracle struct {
 	endpoints       map[string]provider.Endpoint
 	priceProviders  map[string]provider.Provider
 	requiredPairs   []types.CurrencyPair
+	status          atomic.Bool
 
 	mtx    sync.RWMutex
 	prices map[string]sdk.Dec
@@ -51,9 +53,16 @@ func New(
 	}
 }
 
+func (o *Oracle) IsRunning() bool {
+	return o.status.Load()
+}
+
 // Start starts the (blocking) oracle process. It will return when the context
 // is cancelled or the oracle is stopped.
 func (o *Oracle) Start(ctx context.Context) error {
+	o.status.Store(true)
+	defer o.status.Store(false)
+
 	ticker := time.NewTicker(o.oracleTicker)
 	defer ticker.Stop()
 
