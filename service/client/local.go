@@ -61,6 +61,20 @@ func (c *LocalClient) Prices(_ context.Context, req *service.QueryPricesRequest)
 
 	case len(req.Provider) != 0 && len(req.Tickers) != 0:
 		// filter based on both provider and tickers
+		prices = make(map[string]sdk.Dec, len(req.Tickers))
+		pPrices := c.oracle.GetProviderPrices()
+		v, ok := pPrices[strings.ToLower(req.Provider)]
+		if !ok {
+			return nil, fmt.Errorf("%s: %w", req.Provider, ErrorProviderNotFound)
+		}
+
+		for _, ticker := range req.Tickers {
+			for k, v := range v {
+				if strings.EqualFold(ticker, k) {
+					prices[k] = v
+				}
+			}
+		}
 	}
 
 	resp := &service.QueryPricesResponse{
