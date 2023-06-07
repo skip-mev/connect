@@ -56,7 +56,8 @@ func (c *LocalClient) Prices(_ context.Context, req *service.QueryPricesRequest)
 	}
 
 	resp := &service.QueryPricesResponse{
-		Prices: make(map[string]string, len(prices)),
+		Prices:    make(map[string]string, len(prices)),
+		Timestamp: c.oracle.GetLastSyncTime(),
 	}
 	for k, v := range prices {
 		resp.Prices[k] = v.String()
