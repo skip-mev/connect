@@ -19,6 +19,18 @@ var (
 	minimumCandleVolume = sdk.MustNewDecFromStr("0.0001")
 )
 
+// ComputeVWAPByProvider executes ComputeVWAP for each provider and returns the
+// result.
+func ComputeVWAPByProvider(prices types.AggregatedProviderPrices) map[string]map[string]sdk.Dec {
+	providerVWAP := make(map[string]map[string]sdk.Dec)
+
+	for pName, pPrices := range prices {
+		singleProviderCandles := types.AggregatedProviderPrices{"_": pPrices}
+		providerVWAP[pName] = ComputeVWAP(singleProviderCandles)
+	}
+	return providerVWAP
+}
+
 // ComputeVWAP computes the volume weighted average price for all price points
 // for each ticker/exchange pair. The provided prices argument reflects a mapping
 // of provider => {<base> => <TickerPrice>, ...}.
@@ -30,8 +42,8 @@ func ComputeVWAP(prices types.AggregatedProviderPrices) map[string]sdk.Dec {
 		volumeSum      = make(map[string]sdk.Dec)
 	)
 
-	for _, providerPrices := range prices {
-		for base, tp := range providerPrices {
+	for _, pPrices := range prices {
+		for base, tp := range pPrices {
 			if _, ok := weightedPrices[base]; !ok {
 				weightedPrices[base] = sdk.ZeroDec()
 			}
@@ -50,13 +62,32 @@ func ComputeVWAP(prices types.AggregatedProviderPrices) map[string]sdk.Dec {
 	return vwap(weightedPrices, volumeSum)
 }
 
-// ComputeCandleTVWAP computes the time-volume-weighted average price for all prices
+// ComputeTVWAPByProvider executes ComputeTVWAP for each provider and returns
+// the result.
+func ComputeTVWAPByProvider(providerCandles types.AggregatedProviderCandles) (map[string]map[string]sdk.Dec, error) {
+	var (
+		providerTVWAP = make(map[string]map[string]sdk.Dec)
+		err           error
+	)
+
+	for pName, pCandles := range providerCandles {
+		singleProviderCandles := types.AggregatedProviderCandles{"_": pCandles}
+		providerTVWAP[pName], err = ComputeTVWAP(singleProviderCandles)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return providerTVWAP, nil
+}
+
+// ComputeTVWAP computes the time-volume-weighted average price for all prices
 // for each exchange pair. Filters out any candles that did not occur within
 // tvwapCandlePeriod. The provided prices argument reflects a mapping of
 // provider => {<base> => []Candle}.
 //
 // Ref : https://en.wikipedia.org/wiki/Time-weighted_average_price
-func ComputeCandleTVWAP(providerCandles types.AggregatedProviderCandles) (map[string]sdk.Dec, error) {
+func ComputeTVWAP(providerCandles types.AggregatedProviderCandles) (map[string]sdk.Dec, error) {
 	var (
 		weightedPrices = make(map[string]sdk.Dec)
 		volumeSum      = make(map[string]sdk.Dec)

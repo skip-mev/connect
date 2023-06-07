@@ -27,16 +27,6 @@ message QueryPricesRequest {
 
 // QueryPricesResponse defines the response type for the Prices method.
 message QueryPricesResponse {
-  // CurrencyPair defines a type containing a ticker and an aggregated price.
-  message CurrencyPair {
-    string ticker = 1;
-    string price  = 2 [
-      (cosmos_proto.scalar)  = "cosmos.Dec",
-      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-      (gogoproto.nullable)   = false
-    ];
-  }
-
   // prices defines the list of prices.
-  repeated CurrencyPair prices = 1;
+  map<string, string> prices = 1 [(gogoproto.nullable) = false];
 }
