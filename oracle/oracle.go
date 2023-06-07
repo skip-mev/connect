@@ -30,8 +30,9 @@ type Oracle struct {
 	requiredPairs   []types.CurrencyPair
 	status          atomic.Bool
 
-	mtx    sync.RWMutex
-	prices map[string]sdk.Dec
+	mtx            sync.RWMutex
+	prices         map[string]sdk.Dec
+	providerPrices map[string]map[string]sdk.Dec
 }
 
 func New(
@@ -80,9 +81,9 @@ func (o *Oracle) Start(ctx context.Context) error {
 
 			if err := o.tick(ctx); err != nil {
 				o.logger.Error("oracle tick failed", "err", err)
+			} else {
+				o.SetLastSyncTime(time.Now().UTC())
 			}
-
-			o.lastPriceSync = time.Now().UTC()
 		}
 	}
 }
@@ -187,6 +188,20 @@ func (o *Oracle) tick(ctx context.Context) error {
 	return nil
 }
 
+func (o *Oracle) SetLastSyncTime(t time.Time) {
+	o.mtx.Lock()
+	defer o.mtx.Unlock()
+
+	o.lastPriceSync = t
+}
+
+func (o *Oracle) GetLastSyncTime() time.Time {
+	o.mtx.RLock()
+	defer o.mtx.RUnlock()
+
+	return o.lastPriceSync
+}
+
 func (o *Oracle) SetPrices(prices map[string]sdk.Dec) {
 	o.mtx.Lock()
 	defer o.mtx.Unlock()
@@ -204,21 +219,46 @@ func (o *Oracle) GetPrices() map[string]sdk.Dec {
 	return p
 }
 
+func (o *Oracle) SetProviderPrices(providerPrices map[string]map[string]sdk.Dec) {
+	o.mtx.Lock()
+	defer o.mtx.Unlock()
+
+	o.providerPrices = providerPrices
+}
+
+func (o *Oracle) GetProviderPrices() map[string]map[string]sdk.Dec {
+	o.mtx.RLock()
+	defer o.mtx.RUnlock()
+
+	v := make(map[string]map[string]sdk.Dec, len(o.providerPrices))
+	maps.Copy(v, o.providerPrices)
+
+	return v
+}
+
 // ComputeOraclePrices takes aggregated price points and candles from all
 // providers returns the aggregated price per ticker. TVWAP on candles is preferred.
 // If we cannot compute TVWAP, we fallback to VWAP on price points..
 func (o *Oracle) ComputeOraclePrices(providerAgg *types.PriceAggregator) (prices map[string]sdk.Dec, err error) {
 	// attempt to use candles for TVWAP calculations
-	tvwapPrices, err := ComputeCandleTVWAP(providerAgg.GetProviderCandles())
+	tvwapPrices, err := ComputeTVWAP(providerAgg.GetProviderCandles())
 	if err != nil {
 		return nil, err
 	}
-
 	if len(tvwapPrices) > 0 {
+		providerTVWAP, err := ComputeTVWAPByProvider(providerAgg.GetProviderCandles())
+		if err != nil {
+			return nil, err
+		}
+
+		o.SetProviderPrices(providerTVWAP)
+
 		return tvwapPrices, nil
 	}
 
+	// fallback to using ticker prices for VWAP calculations
 	vwapPrices := ComputeVWAP(providerAgg.GetProviderPrices())
+	o.SetProviderPrices(ComputeVWAPByProvider(providerAgg.GetProviderPrices()))
 
 	return vwapPrices, nil
 }

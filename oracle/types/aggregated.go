@@ -71,9 +71,7 @@ func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
 	defer p.mtx.RUnlock()
 
 	cpy := make(AggregatedProviderPrices)
-	for k, v := range p.providerPrices {
-		maps.Copy(cpy[k], v)
-	}
+	maps.Copy(cpy, p.providerPrices)
 
 	return cpy
 }
@@ -83,9 +81,7 @@ func (p *PriceAggregator) GetProviderCandles() AggregatedProviderCandles {
 	defer p.mtx.RUnlock()
 
 	cpy := make(AggregatedProviderCandles)
-	for k, v := range p.providerCandles {
-		maps.Copy(cpy[k], v)
-	}
+	maps.Copy(cpy, p.providerCandles)
 
 	return cpy
 }
