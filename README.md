@@ -37,6 +37,8 @@ The following components have been implemented:
   from providers given a set of assets and a set of providers.
 * `provider.go`: The provider interface that is used to fetch prices from a given
   provider along with a mock implementation.
+* `client/local.go`: A local client that is used to communicate with an ABCI++
+  application.
 
 The following components are still in progress or need to be implemented completely:
 
