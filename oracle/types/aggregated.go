@@ -1,6 +1,7 @@
 package types
 
 import (
+	"strings"
 	"sync"
 
 	"golang.org/x/exp/maps"
@@ -41,6 +42,8 @@ func (p *PriceAggregator) SetTickerPricesAndCandles(
 ) bool {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
+
+	providerName = strings.ToLower(providerName)
 
 	// set prices and candles for this provider if we haven't seen it before
 	if _, ok := p.providerPrices[providerName]; !ok {

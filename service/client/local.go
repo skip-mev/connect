@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,6 +51,13 @@ func (c *LocalClient) Prices(_ context.Context, req *service.QueryPricesRequest)
 
 	case len(req.Provider) != 0 && len(req.Tickers) == 0:
 		// filter based on provider only
+		pPrices := c.oracle.GetProviderPrices()
+		v, ok := pPrices[strings.ToLower(req.Provider)]
+		if !ok {
+			return nil, fmt.Errorf("%s: %w", req.Provider, ErrorProviderNotFound)
+		}
+
+		prices = v
 
 	case len(req.Provider) != 0 && len(req.Tickers) != 0:
 		// filter based on both provider and tickers
