@@ -5,6 +5,7 @@ import (
 	"sort"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/oracle/types"
 )
@@ -45,10 +46,10 @@ func ComputeVWAP(prices types.AggregatedProviderPrices) map[string]sdk.Dec {
 	for _, pPrices := range prices {
 		for base, tp := range pPrices {
 			if _, ok := weightedPrices[base]; !ok {
-				weightedPrices[base] = sdk.ZeroDec()
+				weightedPrices[base] = sdkmath.LegacyZeroDec()
 			}
 			if _, ok := volumeSum[base]; !ok {
-				volumeSum[base] = sdk.ZeroDec()
+				volumeSum[base] = sdkmath.LegacyZeroDec()
 			}
 
 			// weightedPrices[base] = Σ {P * V} for all TickerPrice
@@ -103,10 +104,10 @@ func ComputeTVWAP(providerCandles types.AggregatedProviderCandles) (map[string]s
 			}
 
 			if _, ok := weightedPrices[base]; !ok {
-				weightedPrices[base] = sdk.ZeroDec()
+				weightedPrices[base] = sdkmath.LegacyZeroDec()
 			}
 			if _, ok := volumeSum[base]; !ok {
-				volumeSum[base] = sdk.ZeroDec()
+				volumeSum[base] = sdkmath.LegacyZeroDec()
 			}
 
 			// sort by timestamp old -> new
@@ -114,23 +115,23 @@ func ComputeTVWAP(providerCandles types.AggregatedProviderCandles) (map[string]s
 				return candles[i].Timestamp < candles[j].Timestamp
 			})
 
-			period := sdk.NewDec(now - candles[0].Timestamp)
+			period := sdkmath.LegacyNewDec(now - candles[0].Timestamp)
 			if period.IsZero() {
 				return nil, fmt.Errorf("unable to divide by zero")
 			}
 
 			// weightUnit = (1 - minimumTimeWeight) / period
-			weightUnit := sdk.OneDec().Sub(minimumTimeWeight).Quo(period)
+			weightUnit := sdkmath.LegacyOneDec().Sub(minimumTimeWeight).Quo(period)
 
 			// get weighted prices, and sum of volumes
 			for _, candle := range candles {
 				// we only want candles within the last timePeriod
 				if timePeriod < candle.Timestamp && candle.Timestamp <= now {
 					// timeDiff = now - candle.TimeStamp
-					timeDiff := sdk.NewDec(now - candle.Timestamp)
+					timeDiff := sdkmath.LegacyNewDec(now - candle.Timestamp)
 
 					// set minimum candle volume for low-trading assets
-					if candle.Volume.Equal(sdk.ZeroDec()) {
+					if candle.Volume.Equal(sdkmath.LegacyZeroDec()) {
 						candle.Volume = minimumCandleVolume
 					}
 
@@ -155,9 +156,9 @@ func vwap(weightedPrices, volumeSum map[string]sdk.Dec) map[string]sdk.Dec {
 	vwap := make(map[string]sdk.Dec)
 
 	for base, p := range weightedPrices {
-		if !volumeSum[base].Equal(sdk.ZeroDec()) {
+		if !volumeSum[base].Equal(sdkmath.LegacyZeroDec()) {
 			if _, ok := vwap[base]; !ok {
-				vwap[base] = sdk.ZeroDec()
+				vwap[base] = sdkmath.LegacyZeroDec()
 			}
 
 			vwap[base] = p.Quo(volumeSum[base])
