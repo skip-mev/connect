@@ -98,7 +98,7 @@ func (c *LocalClient) Start(ctx context.Context) error {
 	return c.oracle.Start(ctx)
 }
 
-func (c *LocalClient) Stop(context.Context) error {
+func (c *LocalClient) Stop(_ context.Context) error {
 	c.oracle.Stop()
 	return nil
 }
