@@ -2,8 +2,11 @@ package client
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/skip-mev/slinky/service"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var _ service.OracleService = (*GRPCClient)(nil)
@@ -12,22 +15,37 @@ var _ service.OracleService = (*GRPCClient)(nil)
 // be used in ABCI++ calls where the application wants the oracle process to be
 // run out-of-process. The client must be started upon app construction and
 // stopped upon app shutdown/cleanup.
-type GRPCClient struct{}
-
-func NewGRPCClient() *GRPCClient {
-	return &GRPCClient{}
+type GRPCClient struct {
+	addr   string
+	client service.OracleClient
+	conn   *grpc.ClientConn
 }
 
-func (c *GRPCClient) Prices(_ context.Context, req *service.QueryPricesRequest) (*service.QueryPricesResponse, error) {
-	panic("not implemented")
+func NewGRPCClient(addr string) *GRPCClient {
+	return &GRPCClient{
+		addr: addr,
+	}
 }
 
-// Note: Start(ctx) is a blocking call, so the caller will need to run it in a
-// goroutine.
 func (c *GRPCClient) Start(ctx context.Context) error {
-	panic("not implemented")
+	conn, err := grpc.Dial(
+		c.addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to dial oracle gRPC server: %w", err)
+	}
+
+	c.client = service.NewOracleClient(conn)
+	c.conn = conn
+
+	return nil
 }
 
 func (c *GRPCClient) Stop(ctx context.Context) error {
-	panic("not implemented")
+	return c.conn.Close()
+}
+
+func (c *GRPCClient) Prices(ctx context.Context, req *service.QueryPricesRequest) (*service.QueryPricesResponse, error) {
+	return c.client.Prices(ctx, req, grpc.WaitForReady(true))
 }

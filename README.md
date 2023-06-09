@@ -42,7 +42,6 @@ The following components have been implemented:
 
 The following components are still in progress or need to be implemented completely:
 
-* gRPC client in `service/client/`
 * gRPC server & corresponding CLI command to launch it
 * x/oracle module
 * various providers in `oracle/provider/` such Kraken, Binance, etc...
