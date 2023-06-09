@@ -2,7 +2,6 @@ package abci
 
 import (
 	"fmt"
-	"time"
 
 	sdkmath "cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -13,17 +12,15 @@ import (
 )
 
 type VoteExtHandler struct {
-	logger          log.Logger
-	currentBlock    int64
-	staleSubmission time.Duration
-	oracle          service.OracleService
+	logger       log.Logger
+	currentBlock int64
+	oracle       service.OracleService
 }
 
-func NewVoteExtHandler(logger log.Logger, staleSubmission time.Duration, oracle service.OracleService) *VoteExtHandler {
+func NewVoteExtHandler(logger log.Logger, oracle service.OracleService) *VoteExtHandler {
 	return &VoteExtHandler{
-		logger:          logger.With("module", "VoteExtHandler"),
-		staleSubmission: staleSubmission,
-		oracle:          oracle,
+		logger: logger.With("module", "VoteExtHandler"),
+		oracle: oracle,
 	}
 }
 
@@ -64,9 +61,6 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 
 		if voteExt.Height != req.Height {
 			return nil, fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
-		}
-		if time.Since(voteExt.Timestamp) > h.staleSubmission {
-			return nil, fmt.Errorf("vote extension is stale; last sync time: %s", voteExt.Timestamp)
 		}
 
 		// verify tickers and prices are valid
