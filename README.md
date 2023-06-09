@@ -39,6 +39,9 @@ The following components have been implemented:
   provider along with a mock implementation.
 * `client/local.go`: A local client that is used to communicate with an ABCI++
   application.
+* `client/grpc.go`: A gRPC client that is used to communicate with an ABCI++
+  application.
+* `abci/vote_ext.go`: A vote extension handler implementation.
 
 The following components are still in progress or need to be implemented completely:
 
