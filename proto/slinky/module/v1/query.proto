@@ -1,0 +1,30 @@
+syntax = "proto3";
+package slinky.module.v1;
+
+import "google/api/annotations.proto";
+import "slinky/module/v1/genesis.proto";
+
+option go_package = "github.com/skip-mev/slinky/x/oracle/types";
+
+service Query {
+  rpc GetAllTickers(GetAllTickersRequest) returns (GetAllTickersResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/get_all_tickers";
+  };
+
+  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/get_price";
+  };
+}
+
+message GetAllTickersRequest {}
+
+message GetAllTickersResponse { repeated Ticker tickers = 1; }
+
+message GetPriceRequest {
+  oneof ticker_id {
+    Ticker ticker = 1;
+    string ticker_name = 2;
+  }
+}
+
+message GetPriceResponse { TickerPrice price = 1; }
