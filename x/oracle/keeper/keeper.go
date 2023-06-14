@@ -28,7 +28,7 @@ func (k Keeper) GetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) 
 	// get QuotePrice for CurrencyPair (if any is stored)
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(cp.GetStoreKeyForCurrencyPair())
-	
+
 	if len(bz) == 0 {
 		return types.QuotePrice{}, fmt.Errorf("no CurrencyPair price found for CurrencyPair")
 	}
@@ -57,7 +57,6 @@ func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, 
 	store.Set(cp.GetStoreKeyForCurrencyPair(), bz)
 	return nil
 }
-
 
 func (k Keeper) GetAllTickers(ctx sdk.Context) ([]types.CurrencyPair, error) {
 	// get store

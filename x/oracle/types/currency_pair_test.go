@@ -8,15 +8,15 @@ import (
 )
 
 func TestValidateBasic(t *testing.T) {
-	tcs := []struct{
-		name string
-		cp types.CurrencyPair
+	tcs := []struct {
+		name       string
+		cp         types.CurrencyPair
 		expectPass bool
 	}{
 		{
 			"if the Base is not upper-case - fail",
 			types.CurrencyPair{
-				Base: "aB",
+				Base:  "aB",
 				Quote: "BB",
 			},
 			false,
@@ -24,7 +24,7 @@ func TestValidateBasic(t *testing.T) {
 		{
 			"if the Quote is not upper-case - fail",
 			types.CurrencyPair{
-				Base: "BB",
+				Base:  "BB",
 				Quote: "aB",
 			},
 			false,
@@ -32,7 +32,7 @@ func TestValidateBasic(t *testing.T) {
 		{
 			"if the base string is empty - fail",
 			types.CurrencyPair{
-				Base: "",
+				Base:  "",
 				Quote: "BB",
 			},
 			false,
@@ -40,7 +40,7 @@ func TestValidateBasic(t *testing.T) {
 		{
 			"if the quote string is empty - fail",
 			types.CurrencyPair{
-				Base: "AA",
+				Base:  "AA",
 				Quote: "",
 			},
 			false,
@@ -48,7 +48,7 @@ func TestValidateBasic(t *testing.T) {
 		{
 			"if both Quote + Base are formatted correctly - pass",
 			types.CurrencyPair{
-				Base: "BB",
+				Base:  "BB",
 				Quote: "AA",
 			},
 			true,
@@ -70,11 +70,11 @@ func TestValidateBasic(t *testing.T) {
 }
 
 func TestToFromString(t *testing.T) {
-	tcs := []struct{
+	tcs := []struct {
 		name string
 		// string formatted CurrencyPair
 		cps string
-		cp types.CurrencyPair
+		cp  types.CurrencyPair
 	}{
 		{
 			"if string is incorrectly formatted, return an empty CurrencyPair",

@@ -17,8 +17,8 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	oracleKeeper keeper.Keeper
-	key storetypes.StoreKey
-	ctx sdk.Context
+	key          storetypes.StoreKey
+	ctx          sdk.Context
 }
 
 func (s *KeeperTestSuite) SetupTest() {
@@ -32,16 +32,16 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
-	tcs := []struct{
-		name string
-		cp types.CurrencyPair
-		price types.QuotePrice
+	tcs := []struct {
+		name       string
+		cp         types.CurrencyPair
+		price      types.QuotePrice
 		expectPass bool
 	}{
 		{
 			"if the currency pair is incorrectly formatted - fail",
 			types.CurrencyPair{
-				Base: "AA",
+				Base:  "AA",
 				Quote: "aB",
 			},
 			types.QuotePrice{},
@@ -50,13 +50,13 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 		{
 			"if the currency pair is correctly formatted - pass",
 			types.CurrencyPair{
-				Base: "AA",
+				Base:  "AA",
 				Quote: "BB",
 			},
 			types.QuotePrice{
 				BlockTimestamp: time.Now(),
-				BlockHeight: 100,
-				Price: sdk.NewInt(100),
+				BlockHeight:    100,
+				Price:          sdk.NewInt(100),
 			},
 			true,
 		},
@@ -65,7 +65,7 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	for _, tc := range tcs {
 		// set the price to state
 		err := s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, tc.cp, tc.price)
-		
+
 		switch tc.expectPass {
 		case true:
 			// expect the quote price to be written to state for the currency pair
@@ -91,14 +91,14 @@ func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 func (s *KeeperTestSuite) TestGetAllTickers() {
 	// insert multiple currency pairs
 	cp1 := types.CurrencyPair{
-		Base: "AA",
+		Base:  "AA",
 		Quote: "BB",
 	}
 	qp1 := types.QuotePrice{
 		Price: sdk.NewInt(100),
 	}
 	cp2 := types.CurrencyPair{
-		Base: "CC",
+		Base:  "CC",
 		Quote: "DD",
 	}
 	qp2 := types.QuotePrice{
@@ -108,12 +108,12 @@ func (s *KeeperTestSuite) TestGetAllTickers() {
 	// insert
 	assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
 	assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
-	
+
 	// get all tickers
-	expectedTickers := map[string]struct{}{"AA/BB":{}, "CC/DD":{}}
+	expectedTickers := map[string]struct{}{"AA/BB": {}, "CC/DD": {}}
 	tickers, err := s.oracleKeeper.GetAllTickers(s.ctx)
 	assert.Nil(s.T(), err)
-	
+
 	// check for inclusion
 	for _, ticker := range tickers {
 		ts := ticker.ToString()
