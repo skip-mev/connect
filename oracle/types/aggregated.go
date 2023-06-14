@@ -26,20 +26,41 @@ type (
 type PriceAggregator struct {
 	mtx sync.RWMutex
 
+	aggregateFn AggregateFn
+
+	// providerPrices is a map of provider -> asset -> TickerPrice
 	providerPrices AggregatedProviderPrices
-	aggregateFn    AggregateFn
+
+	// prices is the current set of prices aggregated across the providers.
+	prices map[CurrencyPair]sdk.Dec
 }
 
 func NewPriceAggregator(aggregateFn AggregateFn) *PriceAggregator {
+	if aggregateFn == nil {
+		panic("Aggregate function cannot be nil")
+	}
+
 	return &PriceAggregator{
 		providerPrices: make(AggregatedProviderPrices),
 		aggregateFn:    aggregateFn,
+		prices:         make(map[CurrencyPair]sdk.Dec),
 	}
+}
+
+// GetProviderPrices returns a copy of the aggregated provider prices.
+func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
+	p.mtx.RLock()
+	defer p.mtx.RUnlock()
+
+	cpy := make(AggregatedProviderPrices)
+	maps.Copy(cpy, p.providerPrices)
+
+	return cpy
 }
 
 // SetTickerPrices updates the price aggregator with the latest ticker prices
 // from the given provider.
-func (p *PriceAggregator) SetPrices(provider Provider, prices map[CurrencyPair]TickerPrice) {
+func (p *PriceAggregator) SetProviderPrices(provider Provider, prices map[CurrencyPair]TickerPrice) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
@@ -61,22 +82,31 @@ func (p *PriceAggregator) ResetProviderPrices() {
 	p.providerPrices = make(AggregatedProviderPrices)
 }
 
-// GetProviderPrices returns a copy of the aggregated provider prices.
-func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
-	p.mtx.RLock()
-	defer p.mtx.RUnlock()
+// UpdatePrices updates the current set of prices by using the aggregate function.
+func (p *PriceAggregator) UpdatePrices() {
+	providerPrices := p.GetProviderPrices()
 
-	cpy := make(AggregatedProviderPrices)
-	maps.Copy(cpy, p.providerPrices)
-
-	return cpy
+	prices := p.aggregateFn(providerPrices)
+	p.SetPrices(prices)
 }
 
 // GetPrices returns the aggregated prices based on the provided currency pairs.
 func (p *PriceAggregator) GetPrices() map[CurrencyPair]sdk.Dec {
-	providerPrices := p.GetProviderPrices()
+	p.mtx.RLock()
+	defer p.mtx.RUnlock()
 
-	return p.aggregateFn(providerPrices)
+	cpy := make(map[CurrencyPair]sdk.Dec)
+	maps.Copy(cpy, p.prices)
+
+	return cpy
+}
+
+// SetPrices sets the current set of prices.
+func (p *PriceAggregator) SetPrices(prices map[CurrencyPair]sdk.Dec) {
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
+
+	p.prices = prices
 }
 
 // ComputeMedian inputs the aggregated prices from all providers and computes
