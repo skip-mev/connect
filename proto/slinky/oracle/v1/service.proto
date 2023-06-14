@@ -28,16 +28,16 @@ message QueryPricesRequest {
 // QueryPricesResponse defines the response type for the Prices method.
 message QueryPricesResponse {
   // prices defines the list of prices.
-  map<string, string>       prices    = 1 [(gogoproto.nullable) = false];
+  map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
   google.protobuf.Timestamp timestamp = 2
-      [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }
 
 // OracleVoteExtension defines the vote extension structure for oracle prices.
 message OracleVoteExtension {
   // prices defines the list of prices.
-  map<string, string>       prices    = 1 [(gogoproto.nullable) = false];
+  map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
   google.protobuf.Timestamp timestamp = 2
-      [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
   int64 height = 3;
 }

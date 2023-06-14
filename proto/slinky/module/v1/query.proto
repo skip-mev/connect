@@ -1,0 +1,36 @@
+syntax = "proto3";
+package slinky.module.v1;
+
+import "google/api/annotations.proto";
+import "slinky/module/v1/genesis.proto";
+
+option go_package = "github.com/skip-mev/slinky/x/oracle/types";
+
+service Query {
+  // Get all the currency pairs the x/oracle module is tracking price-data for
+  rpc GetAllCurrencyPairs(GetAllCurrencyPairsRequest)
+      returns (GetAllCurrencyPairsResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/get_all_tickers";
+  };
+
+  // Given a CurrencyPair (or its identifier) return the latest QuotePrice for
+  // that CurrencyPair
+  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/get_price";
+  };
+}
+
+message GetAllCurrencyPairsRequest {}
+
+message GetAllCurrencyPairsResponse { repeated CurrencyPair currency_pair = 1; }
+
+// GetPriceRequest either takes a CurrencyPair, or an identifier for the
+// CurrencyPair in the format base/quote
+message GetPriceRequest {
+  oneof ticker_id {
+    CurrencyPair currency_pair = 1;
+    string currency_pair_id = 2;
+  }
+}
+
+message GetPriceResponse { QuotePrice price = 1; }
