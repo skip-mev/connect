@@ -1,8 +1,8 @@
 package types
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 )
 
 // ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly
@@ -31,7 +31,7 @@ func CurrencyPairFromString(s string) CurrencyPair {
 		return CurrencyPair{}
 	}
 	return CurrencyPair{
-		Base: split[0],
+		Base:  split[0],
 		Quote: split[1],
 	}
 }
