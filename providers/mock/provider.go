@@ -13,7 +13,7 @@ type (
 	// MockProvider defines a mocked exchange rate provider using fixed exchange
 	// rates.
 	MockProvider struct {
-		exchangeRates map[string]types.TickerPrice
+		exchangeRates map[types.CurrencyPair]types.TickerPrice
 		currencyPairs []types.CurrencyPair
 	}
 
@@ -35,17 +35,17 @@ type (
 // will always return the same static data. Meant to be used for testing.
 func NewMockProvider() *MockProvider {
 	return &MockProvider{
-		exchangeRates: map[string]types.TickerPrice{
-			"ATOM/USDC": {Price: sdk.MustNewDecFromStr("11.34")},
-			"ATOM/USDT": {Price: sdk.MustNewDecFromStr("11.36")},
-			"ATOM/USD":  {Price: sdk.MustNewDecFromStr("11.35")},
-			"OSMO/USDC": {Price: sdk.MustNewDecFromStr("1.34")},
-			"OSMO/USDT": {Price: sdk.MustNewDecFromStr("1.36")},
-			"OSMO/USD":  {Price: sdk.MustNewDecFromStr("1.35")},
-			"WETH/USDC": {Price: sdk.MustNewDecFromStr("1560.34")},
-			"WETH/USDT": {Price: sdk.MustNewDecFromStr("1560.36")},
-			"WETH/USD":  {Price: sdk.MustNewDecFromStr("1560.35")},
-			"BTC/USD":   {Price: sdk.MustNewDecFromStr("50000.00")},
+		exchangeRates: map[types.CurrencyPair]types.TickerPrice{
+			{Base: "ATOM", Quote: "USDC"}: {Price: sdk.MustNewDecFromStr("11.34")},
+			{Base: "ATOM", Quote: "USDT"}: {Price: sdk.MustNewDecFromStr("11.36")},
+			{Base: "ATOM", Quote: "USD"}:  {Price: sdk.MustNewDecFromStr("11.35")},
+			{Base: "OSMO", Quote: "USDC"}: {Price: sdk.MustNewDecFromStr("1.34")},
+			{Base: "OSMO", Quote: "USDT"}: {Price: sdk.MustNewDecFromStr("1.36")},
+			{Base: "OSMO", Quote: "USD"}:  {Price: sdk.MustNewDecFromStr("1.35")},
+			{Base: "WETH", Quote: "USDC"}: {Price: sdk.MustNewDecFromStr("1560.34")},
+			{Base: "WETH", Quote: "USDT"}: {Price: sdk.MustNewDecFromStr("1560.36")},
+			{Base: "WETH", Quote: "USD"}:  {Price: sdk.MustNewDecFromStr("1560.35")},
+			{Base: "BTC", Quote: "USD"}:   {Price: sdk.MustNewDecFromStr("50000.00")},
 		},
 		currencyPairs: []types.CurrencyPair{
 			{Base: "ATOM", Quote: "USDC"},
@@ -68,7 +68,7 @@ func (p MockProvider) Name() string {
 }
 
 // GetPrices returns the mocked exchange rates.
-func (p MockProvider) GetPrices() (map[string]types.TickerPrice, error) {
+func (p MockProvider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
 	return p.exchangeRates, nil
 }
 
@@ -79,6 +79,8 @@ func (p MockProvider) SetPairs(pairs ...types.CurrencyPair) {}
 func (p MockProvider) GetPairs() []types.CurrencyPair {
 	return p.currencyPairs
 }
+
+var _ types.Provider = (*FailingMockProvider)(nil)
 
 // NewFailingMockProvider returns a new failing mock provider.
 func NewFailingMockProvider() *FailingMockProvider {
@@ -93,9 +95,11 @@ func (p FailingMockProvider) Name() string {
 }
 
 // GetPrices always fails for the failing mock provider.
-func (p FailingMockProvider) GetPrices() (map[string]types.TickerPrice, error) {
+func (p FailingMockProvider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
 	panic("mock provider always fails")
 }
+
+var _ types.Provider = (*TimeoutMockProvider)(nil)
 
 // NewTimeoutMockProvider returns a new timeout mock provider.
 func NewTimeoutMockProvider(timeout time.Duration) *TimeoutMockProvider {
@@ -111,7 +115,7 @@ func (p TimeoutMockProvider) Name() string {
 }
 
 // GetPrices always times out for the timeout mock provider.
-func (p TimeoutMockProvider) GetPrices() (map[string]types.TickerPrice, error) {
+func (p TimeoutMockProvider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
 	time.Sleep(1*time.Second + p.timeout)
 
 	panic("mock provider should always times out")

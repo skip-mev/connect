@@ -35,8 +35,8 @@ func (p *Provider) Name() string {
 // GetPrices returns the current set of prices for each of the currency pairs. The
 // prices are fetched from the Coinbase API. The price is returned is the spot price
 // for the given currency pair.
-func (p *Provider) GetPrices() (map[string]types.TickerPrice, error) {
-	resp := make(map[string]types.TickerPrice)
+func (p *Provider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
+	resp := make(map[types.CurrencyPair]types.TickerPrice)
 
 	for _, currencyPair := range p.pairs {
 		spotPrice, err := getPriceForPair(currencyPair)
@@ -45,7 +45,7 @@ func (p *Provider) GetPrices() (map[string]types.TickerPrice, error) {
 			continue
 		}
 
-		resp[currencyPair.String()] = *spotPrice
+		resp[currencyPair] = *spotPrice
 	}
 
 	return resp, nil
