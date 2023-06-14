@@ -14,3 +14,9 @@ const (
 func (cp CurrencyPair) GetStoreKeyForCurrencyPair() []byte {
 	return append([]byte{keyPrefixCurrencyPair}, []byte(cp.ToString())...)
 }
+
+func GetCurrencyPairFromKey(bz []byte) CurrencyPair {
+	// chop off prefix
+	bz = bz[1:]
+	return CurrencyPairFromString(string(bz))
+}
