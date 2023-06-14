@@ -18,32 +18,46 @@ func NewKeeper(sk storetypes.StoreKey) Keeper {
 	}
 }
 
-// Get the TickerPrice for a given Ticker
-func (k Keeper) GetPriceForTicker(ctx sdk.Context, t types.Ticker) (types.TickerPrice, error) {
-	// get TickerPrice for ticker (if any is stored)
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(t.GetStoreKeyForTicker())
-	
-	if len(bz) == 0 {
-		return types.TickerPrice{}, fmt.Errorf("no ticker price found for ticker")
+// Get the QuotePrice for a given CurrencyPair
+func (k Keeper) GetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (types.QuotePrice, error) {
+	// check validity of cp
+	if err := cp.ValidateBasic(); err != nil {
+		return types.QuotePrice{}, err
 	}
 
-	tp := types.TickerPrice{}
+	// get QuotePrice for CurrencyPair (if any is stored)
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(cp.GetStoreKeyForCurrencyPair())
+	
+	if len(bz) == 0 {
+		return types.QuotePrice{}, fmt.Errorf("no CurrencyPair price found for CurrencyPair")
+	}
+
+	tp := types.QuotePrice{}
 	if err := tp.Unmarshal(bz); err != nil {
-		return types.TickerPrice{}, err
+		return types.QuotePrice{}, err
 	}
 	return tp, nil
 }
 
-// Set the TickerPrice for a given Ticker
-func (k Keeper) SetPriceForTicker(ctx sdk.Context, t types.Ticker, tp types.TickerPrice) error {
-	store := ctx.KVStore(k.storeKey)
-	// marshal TickerPrice
-	bz, err := tp.Marshal()
-	if err != nil {
-		return fmt.Errorf("error marshalling TickerPrice: %v", err)
+// Set the QuotePrice for a given CurrencyPair
+func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, qp types.QuotePrice) error {
+	// check validity of currency pair
+	if err := cp.ValidateBasic(); err != nil {
+		return err
 	}
-	// set the marshalled TickerPrice to state under the Ticker's store-key
-	store.Set(t.GetStoreKeyForTicker(), bz)
+
+	store := ctx.KVStore(k.storeKey)
+	// marshal QuotePrice
+	bz, err := qp.Marshal()
+	if err != nil {
+		return fmt.Errorf("error marshalling QuotePrice: %v", err)
+	}
+	// set the marshalled QuotePrice to state under the CurrencyPair's store-key
+	store.Set(cp.GetStoreKeyForCurrencyPair(), bz)
 	return nil
+}
+
+
+func (k Keeper) GetAllTickers(ctx sdk.Context) ([]types.CurrencyPair, error) {
 }

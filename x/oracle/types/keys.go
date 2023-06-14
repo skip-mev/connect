@@ -8,9 +8,9 @@ const (
 )
 
 const (
-	keyPrefixTicker = iota
+	keyPrefixCurrencyPair = iota
 )
 
-func (t Ticker) GetStoreKeyForTicker() []byte {
-	return append([]byte{keyPrefixTicker}, []byte(t.String())...)
+func (cp CurrencyPair) GetStoreKeyForCurrencyPair() []byte {
+	return append([]byte{keyPrefixCurrencyPair}, []byte(cp.ToString())...)
 }
