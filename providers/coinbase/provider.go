@@ -20,6 +20,8 @@ type Provider struct {
 }
 
 // NewProvider returns a new Coinbase provider.
+//
+// THIS PROVIDER SHOULD NOT BE USED IN PRODUCTION. IT IS ONLY MEANT FOR TESTING.
 func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
 	return &Provider{
 		pairs:  pairs,
@@ -41,7 +43,11 @@ func (p *Provider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error)
 	for _, currencyPair := range p.pairs {
 		spotPrice, err := getPriceForPair(currencyPair)
 		if err != nil {
-			p.logger.Error(p.Name(), "failed to get price for pair", err)
+			p.logger.Error(
+				p.Name(),
+				"failed to get price for pair", currencyPair,
+				"err", err,
+			)
 			continue
 		}
 

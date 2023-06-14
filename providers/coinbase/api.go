@@ -18,6 +18,8 @@ var (
 		"COSMOS":   "ATOM",
 		"ETHEREUM": "ETH",
 		"USD":      "USD",
+		"POLKADOT": "DOT",
+		"POLYGON":  "MATIC",
 	}
 )
 
@@ -40,7 +42,17 @@ func getSpotPriceEndpoint(base, quote string) string {
 //	  }
 //	}
 func getPriceForPair(pair types.CurrencyPair) (*types.TickerPrice, error) {
-	url := getSpotPriceEndpoint(NameToSymbol[pair.Base], NameToSymbol[pair.Quote])
+	baseSymbol, ok := NameToSymbol[pair.Base]
+	if !ok {
+		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
+	}
+
+	quoteSymbol, ok := NameToSymbol[pair.Quote]
+	if !ok {
+		return nil, fmt.Errorf("invalid quote currency %s", pair.Quote)
+	}
+
+	url := getSpotPriceEndpoint(baseSymbol, quoteSymbol)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
