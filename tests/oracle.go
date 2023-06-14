@@ -36,7 +36,6 @@ func main() {
 
 	// Define the providers
 	providers := []types.Provider{
-		// mockProvider,
 		mock.NewTimeoutMockProvider(oracleTicker),
 		mock.NewFailingMockProvider(),
 		coinbase.NewProvider(logger, currencyPairs),
