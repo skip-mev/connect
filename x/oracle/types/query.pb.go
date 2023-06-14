@@ -28,21 +28,21 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type GetAllTickersRequest struct {
+type GetAllCurrencyPairsRequest struct {
 }
 
-func (m *GetAllTickersRequest) Reset()         { *m = GetAllTickersRequest{} }
-func (m *GetAllTickersRequest) String() string { return proto.CompactTextString(m) }
-func (*GetAllTickersRequest) ProtoMessage()    {}
-func (*GetAllTickersRequest) Descriptor() ([]byte, []int) {
+func (m *GetAllCurrencyPairsRequest) Reset()         { *m = GetAllCurrencyPairsRequest{} }
+func (m *GetAllCurrencyPairsRequest) String() string { return proto.CompactTextString(m) }
+func (*GetAllCurrencyPairsRequest) ProtoMessage()    {}
+func (*GetAllCurrencyPairsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c7eac55a0ef62584, []int{0}
 }
-func (m *GetAllTickersRequest) XXX_Unmarshal(b []byte) error {
+func (m *GetAllCurrencyPairsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GetAllTickersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *GetAllCurrencyPairsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GetAllTickersRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_GetAllCurrencyPairsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -52,34 +52,34 @@ func (m *GetAllTickersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *GetAllTickersRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAllTickersRequest.Merge(m, src)
+func (m *GetAllCurrencyPairsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAllCurrencyPairsRequest.Merge(m, src)
 }
-func (m *GetAllTickersRequest) XXX_Size() int {
+func (m *GetAllCurrencyPairsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *GetAllTickersRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAllTickersRequest.DiscardUnknown(m)
+func (m *GetAllCurrencyPairsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAllCurrencyPairsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAllTickersRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetAllCurrencyPairsRequest proto.InternalMessageInfo
 
-type GetAllTickersResponse struct {
-	Tickers []*Ticker `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers,omitempty"`
+type GetAllCurrencyPairsResponse struct {
+	CurrencyPair []*CurrencyPair `protobuf:"bytes,1,rep,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
 }
 
-func (m *GetAllTickersResponse) Reset()         { *m = GetAllTickersResponse{} }
-func (m *GetAllTickersResponse) String() string { return proto.CompactTextString(m) }
-func (*GetAllTickersResponse) ProtoMessage()    {}
-func (*GetAllTickersResponse) Descriptor() ([]byte, []int) {
+func (m *GetAllCurrencyPairsResponse) Reset()         { *m = GetAllCurrencyPairsResponse{} }
+func (m *GetAllCurrencyPairsResponse) String() string { return proto.CompactTextString(m) }
+func (*GetAllCurrencyPairsResponse) ProtoMessage()    {}
+func (*GetAllCurrencyPairsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c7eac55a0ef62584, []int{1}
 }
-func (m *GetAllTickersResponse) XXX_Unmarshal(b []byte) error {
+func (m *GetAllCurrencyPairsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GetAllTickersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *GetAllCurrencyPairsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GetAllTickersResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_GetAllCurrencyPairsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -89,29 +89,31 @@ func (m *GetAllTickersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *GetAllTickersResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAllTickersResponse.Merge(m, src)
+func (m *GetAllCurrencyPairsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAllCurrencyPairsResponse.Merge(m, src)
 }
-func (m *GetAllTickersResponse) XXX_Size() int {
+func (m *GetAllCurrencyPairsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *GetAllTickersResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAllTickersResponse.DiscardUnknown(m)
+func (m *GetAllCurrencyPairsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAllCurrencyPairsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAllTickersResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetAllCurrencyPairsResponse proto.InternalMessageInfo
 
-func (m *GetAllTickersResponse) GetTickers() []*Ticker {
+func (m *GetAllCurrencyPairsResponse) GetCurrencyPair() []*CurrencyPair {
 	if m != nil {
-		return m.Tickers
+		return m.CurrencyPair
 	}
 	return nil
 }
 
+// GetPriceRequest either takes a CurrencyPair, or an identifier for the
+// CurrencyPair in the format base/quote
 type GetPriceRequest struct {
 	// Types that are valid to be assigned to TickerId:
-	//	*GetPriceRequest_Ticker
-	//	*GetPriceRequest_TickerName
+	//	*GetPriceRequest_CurrencyPair
+	//	*GetPriceRequest_CurrencyPairId
 	TickerId isGetPriceRequest_TickerId `protobuf_oneof:"ticker_id"`
 }
 
@@ -154,15 +156,15 @@ type isGetPriceRequest_TickerId interface {
 	Size() int
 }
 
-type GetPriceRequest_Ticker struct {
-	Ticker *Ticker `protobuf:"bytes,1,opt,name=ticker,proto3,oneof" json:"ticker,omitempty"`
+type GetPriceRequest_CurrencyPair struct {
+	CurrencyPair *CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3,oneof" json:"currency_pair,omitempty"`
 }
-type GetPriceRequest_TickerName struct {
-	TickerName string `protobuf:"bytes,2,opt,name=ticker_name,json=tickerName,proto3,oneof" json:"ticker_name,omitempty"`
+type GetPriceRequest_CurrencyPairId struct {
+	CurrencyPairId string `protobuf:"bytes,2,opt,name=currency_pair_id,json=currencyPairId,proto3,oneof" json:"currency_pair_id,omitempty"`
 }
 
-func (*GetPriceRequest_Ticker) isGetPriceRequest_TickerId()     {}
-func (*GetPriceRequest_TickerName) isGetPriceRequest_TickerId() {}
+func (*GetPriceRequest_CurrencyPair) isGetPriceRequest_TickerId()   {}
+func (*GetPriceRequest_CurrencyPairId) isGetPriceRequest_TickerId() {}
 
 func (m *GetPriceRequest) GetTickerId() isGetPriceRequest_TickerId {
 	if m != nil {
@@ -171,16 +173,16 @@ func (m *GetPriceRequest) GetTickerId() isGetPriceRequest_TickerId {
 	return nil
 }
 
-func (m *GetPriceRequest) GetTicker() *Ticker {
-	if x, ok := m.GetTickerId().(*GetPriceRequest_Ticker); ok {
-		return x.Ticker
+func (m *GetPriceRequest) GetCurrencyPair() *CurrencyPair {
+	if x, ok := m.GetTickerId().(*GetPriceRequest_CurrencyPair); ok {
+		return x.CurrencyPair
 	}
 	return nil
 }
 
-func (m *GetPriceRequest) GetTickerName() string {
-	if x, ok := m.GetTickerId().(*GetPriceRequest_TickerName); ok {
-		return x.TickerName
+func (m *GetPriceRequest) GetCurrencyPairId() string {
+	if x, ok := m.GetTickerId().(*GetPriceRequest_CurrencyPairId); ok {
+		return x.CurrencyPairId
 	}
 	return ""
 }
@@ -188,13 +190,13 @@ func (m *GetPriceRequest) GetTickerName() string {
 // XXX_OneofWrappers is for the internal use of the proto package.
 func (*GetPriceRequest) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*GetPriceRequest_Ticker)(nil),
-		(*GetPriceRequest_TickerName)(nil),
+		(*GetPriceRequest_CurrencyPair)(nil),
+		(*GetPriceRequest_CurrencyPairId)(nil),
 	}
 }
 
 type GetPriceResponse struct {
-	Price *TickerPrice `protobuf:"bytes,1,opt,name=price,proto3" json:"price,omitempty"`
+	Price *QuotePrice `protobuf:"bytes,1,opt,name=price,proto3" json:"price,omitempty"`
 }
 
 func (m *GetPriceResponse) Reset()         { *m = GetPriceResponse{} }
@@ -230,7 +232,7 @@ func (m *GetPriceResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetPriceResponse proto.InternalMessageInfo
 
-func (m *GetPriceResponse) GetPrice() *TickerPrice {
+func (m *GetPriceResponse) GetPrice() *QuotePrice {
 	if m != nil {
 		return m.Price
 	}
@@ -238,8 +240,8 @@ func (m *GetPriceResponse) GetPrice() *TickerPrice {
 }
 
 func init() {
-	proto.RegisterType((*GetAllTickersRequest)(nil), "slinky.module.v1.GetAllTickersRequest")
-	proto.RegisterType((*GetAllTickersResponse)(nil), "slinky.module.v1.GetAllTickersResponse")
+	proto.RegisterType((*GetAllCurrencyPairsRequest)(nil), "slinky.module.v1.GetAllCurrencyPairsRequest")
+	proto.RegisterType((*GetAllCurrencyPairsResponse)(nil), "slinky.module.v1.GetAllCurrencyPairsResponse")
 	proto.RegisterType((*GetPriceRequest)(nil), "slinky.module.v1.GetPriceRequest")
 	proto.RegisterType((*GetPriceResponse)(nil), "slinky.module.v1.GetPriceResponse")
 }
@@ -247,32 +249,33 @@ func init() {
 func init() { proto.RegisterFile("slinky/module/v1/query.proto", fileDescriptor_c7eac55a0ef62584) }
 
 var fileDescriptor_c7eac55a0ef62584 = []byte{
-	// 396 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x52, 0x41, 0x8b, 0xda, 0x40,
-	0x18, 0xcd, 0x58, 0xd4, 0x3a, 0xb6, 0x54, 0x86, 0xb6, 0x48, 0x6a, 0x83, 0x89, 0xd0, 0xea, 0xa1,
-	0x09, 0x5a, 0xe8, 0xa1, 0xb7, 0xda, 0x83, 0x9e, 0x4a, 0x1b, 0x7a, 0xea, 0x45, 0x62, 0xfc, 0x48,
-	0x07, 0x93, 0x4c, 0xcc, 0x4c, 0x42, 0xbd, 0xf6, 0xba, 0x2c, 0x2c, 0xec, 0x9f, 0xda, 0xa3, 0xb0,
-	0x97, 0x3d, 0x2e, 0xba, 0x3f, 0x64, 0xd1, 0x99, 0xb0, 0xae, 0x2b, 0xbb, 0xb7, 0xf0, 0xde, 0xcb,
-	0x7b, 0xdf, 0xf7, 0xbe, 0xc1, 0x2d, 0x1e, 0xd2, 0x78, 0xbe, 0x74, 0x22, 0x36, 0xcb, 0x42, 0x70,
-	0xf2, 0xbe, 0xb3, 0xc8, 0x20, 0x5d, 0xda, 0x49, 0xca, 0x04, 0x23, 0x0d, 0xc9, 0xda, 0x92, 0xb5,
-	0xf3, 0xbe, 0xde, 0x0a, 0x18, 0x0b, 0x42, 0x70, 0xbc, 0x84, 0x3a, 0x5e, 0x1c, 0x33, 0xe1, 0x09,
-	0xca, 0x62, 0x2e, 0xf5, 0xba, 0xf1, 0xc0, 0x2d, 0x80, 0x18, 0x38, 0x55, 0xbc, 0xf5, 0x16, 0xbf,
-	0x1e, 0x81, 0xf8, 0x16, 0x86, 0xbf, 0xa9, 0x3f, 0x87, 0x94, 0xbb, 0xb0, 0xc8, 0x80, 0x0b, 0xeb,
-	0x2b, 0x7e, 0x73, 0x80, 0xf3, 0x84, 0xc5, 0x1c, 0x88, 0x89, 0xab, 0x42, 0x42, 0x4d, 0xd4, 0x7e,
-	0xd6, 0xad, 0x0f, 0xaa, 0xb6, 0x94, 0xb8, 0x05, 0x6e, 0xcd, 0xf0, 0xab, 0x11, 0x88, 0x9f, 0x29,
-	0xf5, 0x41, 0xd9, 0x11, 0x13, 0x57, 0x24, 0xdb, 0x44, 0x6d, 0xb4, 0xf7, 0xd3, 0x58, 0x73, 0x15,
-	0x41, 0x4c, 0x5c, 0x97, 0x5f, 0x93, 0xd8, 0x8b, 0xa0, 0x59, 0x6a, 0xa3, 0x6e, 0x6d, 0xac, 0xb9,
-	0x58, 0x82, 0x3f, 0xbc, 0x08, 0x86, 0x75, 0x5c, 0x53, 0x12, 0x3a, 0xb3, 0xbe, 0xe0, 0xc6, 0x5d,
-	0x8a, 0x1a, 0xce, 0xc2, 0xe5, 0x64, 0x0b, 0xa8, 0x94, 0x17, 0x2a, 0x45, 0x8a, 0x24, 0x35, 0x38,
-	0x2d, 0xe1, 0xf2, 0xaf, 0x6d, 0xa3, 0xe4, 0x04, 0xe1, 0x97, 0xf7, 0x96, 0x24, 0x1f, 0xec, 0xc3,
-	0x7a, 0xed, 0x63, 0xed, 0xe8, 0x1f, 0x9f, 0xd4, 0xc9, 0x81, 0xac, 0xde, 0xff, 0xcb, 0x9b, 0xf3,
-	0x52, 0x87, 0x98, 0x8e, 0xba, 0x03, 0x4b, 0x3d, 0xbf, 0xb8, 0x83, 0x98, 0x78, 0x61, 0x38, 0x51,
-	0xad, 0x91, 0x1c, 0x3f, 0x2f, 0xf6, 0x21, 0xe6, 0x51, 0xff, 0xfd, 0x46, 0x75, 0xeb, 0x31, 0x89,
-	0x4a, 0xef, 0xec, 0xd2, 0xdf, 0x93, 0x77, 0xc7, 0xd3, 0x77, 0x7d, 0x0c, 0xbf, 0x5f, 0xac, 0x0d,
-	0xb4, 0x5a, 0x1b, 0xe8, 0x7a, 0x6d, 0xa0, 0xb3, 0x8d, 0xa1, 0xad, 0x36, 0x86, 0x76, 0xb5, 0x31,
-	0xb4, 0x3f, 0xbd, 0x80, 0x8a, 0xbf, 0xd9, 0xd4, 0xf6, 0x59, 0xe4, 0xf0, 0x39, 0x4d, 0x3e, 0x45,
-	0x90, 0x17, 0x4e, 0xff, 0x0a, 0x2f, 0xb1, 0x4c, 0x80, 0x4f, 0x2b, 0xbb, 0xd7, 0xf4, 0xf9, 0x36,
-	0x00, 0x00, 0xff, 0xff, 0x3a, 0xff, 0x69, 0x74, 0xbd, 0x02, 0x00, 0x00,
+	// 405 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0xce, 0xd2, 0x40,
+	0x18, 0xec, 0x62, 0x7e, 0xe3, 0xbf, 0x88, 0x92, 0xf5, 0x42, 0x0a, 0x36, 0x50, 0x2e, 0x60, 0x64,
+	0x1b, 0x50, 0x1f, 0x40, 0x38, 0x80, 0x37, 0xe0, 0xe8, 0xa5, 0x29, 0xe5, 0x4b, 0xdd, 0x50, 0xba,
+	0x65, 0x77, 0xdb, 0xd8, 0x9b, 0xf1, 0x09, 0x4c, 0x3c, 0x1b, 0x5f, 0xc7, 0x23, 0x89, 0x17, 0x8f,
+	0x06, 0x7c, 0x10, 0x03, 0x6d, 0x63, 0x91, 0x6a, 0xfe, 0xe3, 0xee, 0xcc, 0xce, 0x7c, 0xdf, 0xcc,
+	0xe2, 0x96, 0xf4, 0x59, 0xb0, 0x49, 0xac, 0x2d, 0x5f, 0x47, 0x3e, 0x58, 0xf1, 0xd0, 0xda, 0x45,
+	0x20, 0x12, 0x1a, 0x0a, 0xae, 0x38, 0xa9, 0xa7, 0x28, 0x4d, 0x51, 0x1a, 0x0f, 0xf5, 0x96, 0xc7,
+	0xb9, 0xe7, 0x83, 0xe5, 0x84, 0xcc, 0x72, 0x82, 0x80, 0x2b, 0x47, 0x31, 0x1e, 0xc8, 0x94, 0xaf,
+	0x1b, 0x57, 0x6a, 0x1e, 0x04, 0x20, 0x59, 0x86, 0x9b, 0x2d, 0xac, 0x4f, 0x41, 0xbd, 0xf6, 0xfd,
+	0x49, 0x24, 0x04, 0x04, 0x6e, 0x32, 0x77, 0x98, 0x90, 0x4b, 0xd8, 0x45, 0x20, 0x95, 0xb9, 0xc0,
+	0xcd, 0x52, 0x54, 0x86, 0x3c, 0x90, 0x40, 0x46, 0xb8, 0xe6, 0x66, 0x80, 0x1d, 0x3a, 0x4c, 0x34,
+	0x50, 0xfb, 0x5e, 0xaf, 0x3a, 0xaa, 0xd1, 0x22, 0x7d, 0xf9, 0xd0, 0x2d, 0x9c, 0xcc, 0x0f, 0x08,
+	0x3f, 0x9e, 0x82, 0x9a, 0x0b, 0xe6, 0x42, 0x66, 0x43, 0x5e, 0x5e, 0xeb, 0xa0, 0x2b, 0x9d, 0x99,
+	0x76, 0xa9, 0x44, 0x9e, 0xe1, 0xfa, 0xc5, 0x2b, 0x9b, 0xad, 0x1b, 0x95, 0x36, 0xea, 0xdd, 0xce,
+	0xb4, 0xe5, 0xa3, 0x22, 0xf3, 0xcd, 0x7a, 0x5c, 0xc5, 0xb7, 0x8a, 0xb9, 0x1b, 0x38, 0x91, 0xcc,
+	0x57, 0xb8, 0xfe, 0x67, 0x82, 0x6c, 0x95, 0x0e, 0xbe, 0x09, 0x4f, 0x17, 0x99, 0x75, 0x95, 0x2e,
+	0x22, 0xae, 0x20, 0xe5, 0xa4, 0xc8, 0xe8, 0x6b, 0x05, 0xdf, 0x2c, 0x4e, 0x55, 0x90, 0x2f, 0x08,
+	0x3f, 0x29, 0xc9, 0x85, 0x3c, 0xa7, 0x7f, 0xb7, 0x43, 0xff, 0x1d, 0xae, 0x3e, 0xb8, 0x23, 0x3b,
+	0x9d, 0xd0, 0xec, 0x7f, 0xfc, 0xfe, 0xeb, 0x73, 0xa5, 0x4b, 0x3a, 0x56, 0x56, 0x29, 0x17, 0x8e,
+	0x9b, 0x57, 0xaa, 0x6c, 0xc7, 0xf7, 0xed, 0x74, 0x45, 0x49, 0x62, 0xfc, 0x20, 0x5f, 0x90, 0x74,
+	0x4a, 0x5d, 0x8a, 0xf1, 0xeb, 0xe6, 0xff, 0x28, 0x99, 0x7b, 0xf7, 0xec, 0xfe, 0x94, 0x34, 0xcb,
+	0xdd, 0xcf, 0x09, 0x8d, 0x27, 0xdf, 0x0e, 0x06, 0xda, 0x1f, 0x0c, 0xf4, 0xf3, 0x60, 0xa0, 0x4f,
+	0x47, 0x43, 0xdb, 0x1f, 0x0d, 0xed, 0xc7, 0xd1, 0xd0, 0xde, 0xf6, 0x3d, 0xa6, 0xde, 0x45, 0x2b,
+	0xea, 0xf2, 0xad, 0x25, 0x37, 0x2c, 0x1c, 0x6c, 0x21, 0xce, 0x95, 0xde, 0xe7, 0x5a, 0x2a, 0x09,
+	0x41, 0xae, 0xee, 0x9f, 0x3f, 0xe6, 0x8b, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x60, 0x73, 0xa0,
+	0x80, 0x08, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -287,7 +290,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	GetAllTickers(ctx context.Context, in *GetAllTickersRequest, opts ...grpc.CallOption) (*GetAllTickersResponse, error)
+	// Get all the currency pairs the x/oracle module is tracking price-data for
+	GetAllCurrencyPairs(ctx context.Context, in *GetAllCurrencyPairsRequest, opts ...grpc.CallOption) (*GetAllCurrencyPairsResponse, error)
+	// Given a CurrencyPair (or its identifier) return the latest QuotePrice for
+	// that CurrencyPair
 	GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error)
 }
 
@@ -299,9 +305,9 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) GetAllTickers(ctx context.Context, in *GetAllTickersRequest, opts ...grpc.CallOption) (*GetAllTickersResponse, error) {
-	out := new(GetAllTickersResponse)
-	err := c.cc.Invoke(ctx, "/slinky.module.v1.Query/GetAllTickers", in, out, opts...)
+func (c *queryClient) GetAllCurrencyPairs(ctx context.Context, in *GetAllCurrencyPairsRequest, opts ...grpc.CallOption) (*GetAllCurrencyPairsResponse, error) {
+	out := new(GetAllCurrencyPairsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.module.v1.Query/GetAllCurrencyPairs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -319,7 +325,10 @@ func (c *queryClient) GetPrice(ctx context.Context, in *GetPriceRequest, opts ..
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	GetAllTickers(context.Context, *GetAllTickersRequest) (*GetAllTickersResponse, error)
+	// Get all the currency pairs the x/oracle module is tracking price-data for
+	GetAllCurrencyPairs(context.Context, *GetAllCurrencyPairsRequest) (*GetAllCurrencyPairsResponse, error)
+	// Given a CurrencyPair (or its identifier) return the latest QuotePrice for
+	// that CurrencyPair
 	GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error)
 }
 
@@ -327,8 +336,8 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) GetAllTickers(ctx context.Context, req *GetAllTickersRequest) (*GetAllTickersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllTickers not implemented")
+func (*UnimplementedQueryServer) GetAllCurrencyPairs(ctx context.Context, req *GetAllCurrencyPairsRequest) (*GetAllCurrencyPairsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCurrencyPairs not implemented")
 }
 func (*UnimplementedQueryServer) GetPrice(ctx context.Context, req *GetPriceRequest) (*GetPriceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrice not implemented")
@@ -338,20 +347,20 @@ func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_GetAllTickers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllTickersRequest)
+func _Query_GetAllCurrencyPairs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllCurrencyPairsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetAllTickers(ctx, in)
+		return srv.(QueryServer).GetAllCurrencyPairs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/slinky.module.v1.Query/GetAllTickers",
+		FullMethod: "/slinky.module.v1.Query/GetAllCurrencyPairs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetAllTickers(ctx, req.(*GetAllTickersRequest))
+		return srv.(QueryServer).GetAllCurrencyPairs(ctx, req.(*GetAllCurrencyPairsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -379,8 +388,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetAllTickers",
-			Handler:    _Query_GetAllTickers_Handler,
+			MethodName: "GetAllCurrencyPairs",
+			Handler:    _Query_GetAllCurrencyPairs_Handler,
 		},
 		{
 			MethodName: "GetPrice",
@@ -391,7 +400,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	Metadata: "slinky/module/v1/query.proto",
 }
 
-func (m *GetAllTickersRequest) Marshal() (dAtA []byte, err error) {
+func (m *GetAllCurrencyPairsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -401,12 +410,12 @@ func (m *GetAllTickersRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GetAllTickersRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *GetAllCurrencyPairsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetAllTickersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GetAllCurrencyPairsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -414,7 +423,7 @@ func (m *GetAllTickersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GetAllTickersResponse) Marshal() (dAtA []byte, err error) {
+func (m *GetAllCurrencyPairsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -424,20 +433,20 @@ func (m *GetAllTickersResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GetAllTickersResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *GetAllCurrencyPairsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetAllTickersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GetAllCurrencyPairsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Tickers) > 0 {
-		for iNdEx := len(m.Tickers) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.CurrencyPair) > 0 {
+		for iNdEx := len(m.CurrencyPair) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Tickers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.CurrencyPair[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -483,16 +492,16 @@ func (m *GetPriceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GetPriceRequest_Ticker) MarshalTo(dAtA []byte) (int, error) {
+func (m *GetPriceRequest_CurrencyPair) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetPriceRequest_Ticker) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GetPriceRequest_CurrencyPair) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
-	if m.Ticker != nil {
+	if m.CurrencyPair != nil {
 		{
-			size, err := m.Ticker.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.CurrencyPair.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -504,16 +513,16 @@ func (m *GetPriceRequest_Ticker) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	}
 	return len(dAtA) - i, nil
 }
-func (m *GetPriceRequest_TickerName) MarshalTo(dAtA []byte) (int, error) {
+func (m *GetPriceRequest_CurrencyPairId) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetPriceRequest_TickerName) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GetPriceRequest_CurrencyPairId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
-	i -= len(m.TickerName)
-	copy(dAtA[i:], m.TickerName)
-	i = encodeVarintQuery(dAtA, i, uint64(len(m.TickerName)))
+	i -= len(m.CurrencyPairId)
+	copy(dAtA[i:], m.CurrencyPairId)
+	i = encodeVarintQuery(dAtA, i, uint64(len(m.CurrencyPairId)))
 	i--
 	dAtA[i] = 0x12
 	return len(dAtA) - i, nil
@@ -564,7 +573,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *GetAllTickersRequest) Size() (n int) {
+func (m *GetAllCurrencyPairsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -573,14 +582,14 @@ func (m *GetAllTickersRequest) Size() (n int) {
 	return n
 }
 
-func (m *GetAllTickersResponse) Size() (n int) {
+func (m *GetAllCurrencyPairsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Tickers) > 0 {
-		for _, e := range m.Tickers {
+	if len(m.CurrencyPair) > 0 {
+		for _, e := range m.CurrencyPair {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -600,25 +609,25 @@ func (m *GetPriceRequest) Size() (n int) {
 	return n
 }
 
-func (m *GetPriceRequest_Ticker) Size() (n int) {
+func (m *GetPriceRequest_CurrencyPair) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Ticker != nil {
-		l = m.Ticker.Size()
+	if m.CurrencyPair != nil {
+		l = m.CurrencyPair.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
-func (m *GetPriceRequest_TickerName) Size() (n int) {
+func (m *GetPriceRequest_CurrencyPairId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.TickerName)
+	l = len(m.CurrencyPairId)
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -641,7 +650,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *GetAllTickersRequest) Unmarshal(dAtA []byte) error {
+func (m *GetAllCurrencyPairsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -664,10 +673,10 @@ func (m *GetAllTickersRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GetAllTickersRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: GetAllCurrencyPairsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GetAllTickersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: GetAllCurrencyPairsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -691,7 +700,7 @@ func (m *GetAllTickersRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *GetAllTickersResponse) Unmarshal(dAtA []byte) error {
+func (m *GetAllCurrencyPairsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -714,15 +723,15 @@ func (m *GetAllTickersResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GetAllTickersResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: GetAllCurrencyPairsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GetAllTickersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: GetAllCurrencyPairsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Tickers", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPair", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -749,8 +758,8 @@ func (m *GetAllTickersResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Tickers = append(m.Tickers, &Ticker{})
-			if err := m.Tickers[len(m.Tickers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.CurrencyPair = append(m.CurrencyPair, &CurrencyPair{})
+			if err := m.CurrencyPair[len(m.CurrencyPair)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -806,7 +815,7 @@ func (m *GetPriceRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPair", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -833,15 +842,15 @@ func (m *GetPriceRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			v := &Ticker{}
+			v := &CurrencyPair{}
 			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			m.TickerId = &GetPriceRequest_Ticker{v}
+			m.TickerId = &GetPriceRequest_CurrencyPair{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TickerName", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPairId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -869,7 +878,7 @@ func (m *GetPriceRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TickerId = &GetPriceRequest_TickerName{string(dAtA[iNdEx:postIndex])}
+			m.TickerId = &GetPriceRequest_CurrencyPairId{string(dAtA[iNdEx:postIndex])}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -951,7 +960,7 @@ func (m *GetPriceResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Price == nil {
-				m.Price = &TickerPrice{}
+				m.Price = &QuotePrice{}
 			}
 			if err := m.Price.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
