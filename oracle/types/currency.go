@@ -16,7 +16,7 @@ type CurrencyPair struct {
 func NewCurrencyPair(ticker string) (CurrencyPair, error) {
 	tokens := strings.Split(ticker, "/")
 	if len(tokens) != 2 {
-		return CurrencyPair{}, fmt.Errorf("%s: %w", ticker, ErrInvalidTicker)
+		return CurrencyPair{}, fmt.Errorf("invalid ticker %s", ticker)
 	}
 
 	return CurrencyPair{
@@ -29,17 +29,4 @@ func NewCurrencyPair(ticker string) (CurrencyPair, error) {
 // querying the exchange rate.
 func (cp CurrencyPair) String() string {
 	return cp.Base + "/" + cp.Quote
-}
-
-// MapPairsToSlice returns the map of currency pairs as slice.
-func MapPairsToSlice(mapPairs map[string]CurrencyPair) []CurrencyPair {
-	currencyPairs := make([]CurrencyPair, len(mapPairs))
-
-	iterator := 0
-	for _, cp := range mapPairs {
-		currencyPairs[iterator] = cp
-		iterator++
-	}
-
-	return currencyPairs
 }

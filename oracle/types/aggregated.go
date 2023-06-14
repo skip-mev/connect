@@ -11,10 +11,6 @@ type (
 	// AggregatedProviderPrices defines a type alias for a map
 	// of provider -> asset -> TickerPrice
 	AggregatedProviderPrices map[string]map[string]TickerPrice
-
-	// AggregatedProviderCandles defines a type alias for a map
-	// of provider -> asset -> []Candle
-	AggregatedProviderCandles map[string]map[string][]Candle
 )
 
 // PriceAggregator is a simple aggregator for provider prices and candles.
@@ -23,68 +19,37 @@ type (
 type PriceAggregator struct {
 	mtx sync.RWMutex
 
-	providerPrices  AggregatedProviderPrices
-	providerCandles AggregatedProviderCandles
+	providerPrices AggregatedProviderPrices
 }
 
 func NewPriceAggregator() *PriceAggregator {
 	return &PriceAggregator{
-		providerPrices:  make(AggregatedProviderPrices),
-		providerCandles: make(AggregatedProviderCandles),
+		providerPrices: make(AggregatedProviderPrices),
 	}
 }
 
-func (p *PriceAggregator) SetTickerPricesAndCandles(
-	providerName string,
-	prices map[string]TickerPrice,
-	candles map[string][]Candle,
-	pair CurrencyPair,
-) bool {
+// SetTickerPrices returns true if the provided prices were set successfully.
+func (p *PriceAggregator) SetPrices(provider Provider, prices map[string]TickerPrice) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
-	providerName = strings.ToLower(providerName)
+	providerName := strings.ToLower(provider.Name())
 
-	// set prices and candles for this provider if we haven't seen it before
-	if _, ok := p.providerPrices[providerName]; !ok {
+	if len(prices) == 0 {
 		p.providerPrices[providerName] = make(map[string]TickerPrice)
-	}
-	if _, ok := p.providerCandles[providerName]; !ok {
-		p.providerCandles[providerName] = make(map[string][]Candle)
+		return
 	}
 
-	// set price for provider/base (e.g. Binance -> ATOM -> 11.98)
-	tp, pricesOk := prices[pair.String()]
-	if pricesOk {
-		p.providerPrices[providerName][pair.Base] = tp
-	}
-
-	// set candle for provider/base (e.g. Binance -> ATOM-> [<11.98, 24000, 12:00UTC>])
-	cp, candlesOk := candles[pair.String()]
-	if candlesOk {
-		p.providerCandles[providerName][pair.Base] = cp
-	}
-
-	// return true if we set at least one price or candle
-	return pricesOk || candlesOk
+	p.providerPrices[providerName] = prices
 }
 
+// GetProviderPrices returns a copy of the aggregated provider prices.
 func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
 	cpy := make(AggregatedProviderPrices)
 	maps.Copy(cpy, p.providerPrices)
-
-	return cpy
-}
-
-func (p *PriceAggregator) GetProviderCandles() AggregatedProviderCandles {
-	p.mtx.RLock()
-	defer p.mtx.RUnlock()
-
-	cpy := make(AggregatedProviderCandles)
-	maps.Copy(cpy, p.providerCandles)
 
 	return cpy
 }
