@@ -163,7 +163,9 @@ func (o *Oracle) tick(ctx context.Context) {
 			o.logger.Error("oracle tick panicked", "err", r)
 
 			cancel()
-			g.Wait()
+			if err := g.Wait(); err != nil {
+				o.logger.Error("wait group failed with error", "err", err)
+			}
 
 			o.logger.Info("oracle tick finished after recovering from panic")
 		}
