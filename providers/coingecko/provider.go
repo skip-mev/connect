@@ -1,6 +1,8 @@
 package coingecko
 
 import (
+	"strings"
+
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/skip-mev/slinky/oracle/types"
 )
@@ -19,40 +21,35 @@ type Provider struct {
 	logger log.Logger
 
 	// cache is a map of base currencies to the quote currencies that the
-	// provider should fetch prices for. We use this to filter out pairs
-	// that the provider does not support when fetching prices.
+	// provider should fetch prices for. This is meant to be a simple optimization
+	// to avoid computing prices for pairs that the provider does not support since
+	// the CoinGecko API will return price info in a single response for all pairs.
 	cache map[string]map[string]struct{}
 
 	// bases is a list of base currencies that the provider should fetch
 	// prices for.
-	bases []string
+	bases string
 
 	// quotes is a list of quote currencies that the provider should fetch
 	// prices for.
-	quotes []string
+	quotes string
 }
 
 // NewProvider returns a new CoinGecko provider.
 func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
 	cache := make(map[string]map[string]struct{})
 
-	seenBases := make(map[string]struct{})
-	bases := make([]string, 0)
-
 	seenQuotes := make(map[string]struct{})
 	quotes := make([]string, 0)
+	bases := make([]string, 0)
 
 	for _, pair := range pairs {
 		if _, ok := cache[pair.Base]; !ok {
 			cache[pair.Base] = make(map[string]struct{})
+			bases = append(bases, pair.Base)
 		}
 
 		cache[pair.Base][pair.Quote] = struct{}{}
-
-		if _, ok := seenBases[pair.Base]; !ok {
-			seenBases[pair.Base] = struct{}{}
-			bases = append(bases, pair.Base)
-		}
 
 		if _, ok := seenQuotes[pair.Quote]; !ok {
 			seenQuotes[pair.Quote] = struct{}{}
@@ -64,8 +61,8 @@ func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
 		pairs:  pairs,
 		logger: logger,
 		cache:  cache,
-		bases:  bases,
-		quotes: quotes,
+		bases:  strings.Join(bases, ","),
+		quotes: strings.Join(quotes, ","),
 	}
 }
 
@@ -74,9 +71,7 @@ func (p *Provider) Name() string {
 	return Name
 }
 
-// GetPrices returns the current set of prices for each of the currency pairs. The
-// prices are fetched from the CoinGecko API. The price is returned is aggregated
-// from the exchanges that CoinGecko supports.
+// GetPrices returns the current set of prices for each of the currency pairs.
 func (p *Provider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
 	return p.getPrices()
 }

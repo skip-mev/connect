@@ -13,7 +13,10 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
-// getPriceForPair returns the price of a currency pair.
+// getPriceForPair returns the price of a currency pair. The price is fetched
+// from the CoinGecko API in a single request for all pairs. Since the CoinGecko
+// response will match some base denoms to quote denoms that should not be supported,
+// we filter out pairs that are not supported by the provider.
 //
 // Response format:
 //
@@ -26,7 +29,7 @@ import (
 //	  }
 //	}
 func (p *Provider) getPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
-	url := getPriceEndpoint(strings.Join(p.bases, ","), strings.Join(p.quotes, ","))
+	url := getPriceEndpoint(p.bases, p.quotes)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -51,10 +54,10 @@ func (p *Provider) getPrices() (map[types.CurrencyPair]types.TickerPrice, error)
 			base = strings.ToUpper(base)
 			quote = strings.ToUpper(quote)
 
+			// Only return prices for pairs that the provider supports.
 			if _, ok := p.cache[base]; !ok {
 				continue
 			}
-
 			if _, ok := p.cache[base][quote]; !ok {
 				continue
 			}
