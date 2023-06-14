@@ -191,7 +191,7 @@ func (o *Oracle) tick(ctx context.Context) {
 	o.SetPrices(prices)
 	o.SetLastSyncTime(time.Now().UTC())
 
-	o.logger.Info("oracle updated prices for %d assets", len(prices))
+	o.logger.Info(fmt.Sprintf("oracle updated prices for %d assets", len(prices)))
 }
 
 // fetchPrices returns a closure that fetches prices from the given provider. This is meant

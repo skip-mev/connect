@@ -12,44 +12,51 @@ const (
 
 var _ types.Provider = (*Provider)(nil)
 
-type (
-	Provider struct {
-		log   log.Logger
-		pairs []types.CurrencyPair
-	}
-)
+// Provider implements the Provider interface for Coinbase. This provider
+// is a very simple implementation that fetches spot prices from the Coinbase API.
+type Provider struct {
+	pairs  []types.CurrencyPair
+	logger log.Logger
+}
 
-func NewProvider(logger log.Logger) *Provider {
+// NewProvider returns a new Coinbase provider.
+func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
 	return &Provider{
-		log: logger,
+		pairs:  pairs,
+		logger: logger,
 	}
 }
 
+// Name returns the name of the provider.
 func (p *Provider) Name() string {
 	return Name
 }
 
+// GetPrices returns the current set of prices for each of the currency pairs. The
+// prices are fetched from the Coinbase API. The price is returned is the spot price
+// for the given currency pair.
 func (p *Provider) GetPrices() (map[string]types.TickerPrice, error) {
 	resp := make(map[string]types.TickerPrice)
 
 	for _, currencyPair := range p.pairs {
 		spotPrice, err := getPriceForPair(currencyPair)
 		if err != nil {
-			return nil, err
+			p.logger.Error(p.Name(), "failed to get price for pair", err)
+			continue
 		}
 
-		if spotPrice != nil {
-			resp[currencyPair.String()] = *spotPrice
-		}
+		resp[currencyPair.String()] = *spotPrice
 	}
 
 	return resp, nil
 }
 
+// SetPairs sets the currency pairs that the provider will fetch prices for.
 func (p *Provider) SetPairs(pairs ...types.CurrencyPair) {
 	p.pairs = pairs
 }
 
+// GetPairs returns the currency pairs that the provider is fetching prices for.
 func (p *Provider) GetPairs() []types.CurrencyPair {
 	return p.pairs
 }
