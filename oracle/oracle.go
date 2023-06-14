@@ -11,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
-	"golang.org/x/exp/maps"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -46,9 +45,6 @@ type Oracle struct {
 
 	// status is the current status of the oracle (running or not).
 	status atomic.Bool
-
-	// prices is the current set of prices aggregated across the providers.
-	prices map[types.CurrencyPair]sdk.Dec
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
@@ -86,7 +82,6 @@ func New(
 		providerTimeout: providerTimeout,
 		oracleTicker:    oracleTicker,
 		providers:       providers,
-		prices:          make(map[types.CurrencyPair]sdk.Dec),
 		priceAggregator: types.NewPriceAggregator(aggregateFn),
 	}
 }
@@ -192,11 +187,10 @@ func (o *Oracle) tick(ctx context.Context) {
 	}
 
 	// Compute aggregated prices and update the oracle.
-	prices := o.priceAggregator.GetPrices()
-	o.SetPrices(prices)
+	o.priceAggregator.UpdatePrices()
 	o.SetLastSyncTime(time.Now().UTC())
 
-	o.logger.Info(fmt.Sprintf("oracle updated prices for %d assets", len(prices)))
+	o.logger.Info("oracle updated prices")
 }
 
 // fetchPrices returns a closure that fetches prices from the given provider. This is meant
@@ -216,7 +210,7 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 			// Recover from any panics while fetching prices.
 			defer func() {
 				if r := recover(); r != nil {
-					errCh <- fmt.Errorf("panic when fetching prices for provider %s: %v", provider.Name(), r)
+					errCh <- fmt.Errorf("panic when fetching prices %v", r)
 				}
 			}()
 
@@ -227,7 +221,7 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 				return
 			}
 
-			o.priceAggregator.SetPrices(provider, prices)
+			o.priceAggregator.SetProviderPrices(provider, prices)
 
 			doneCh <- true
 		}()
@@ -239,12 +233,12 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 
 		case err := <-errCh:
 			o.logger.Error("failed to fetch prices from provider", provider.Name(), err)
-			o.priceAggregator.SetPrices(provider, nil)
+			o.priceAggregator.SetProviderPrices(provider, nil)
 			break
 
 		case <-time.After(o.providerTimeout):
 			o.logger.Error("provider timed out", provider.Name())
-			o.priceAggregator.SetPrices(provider, nil)
+			o.priceAggregator.SetProviderPrices(provider, nil)
 			break
 		}
 
@@ -268,21 +262,7 @@ func (o *Oracle) GetLastSyncTime() time.Time {
 	return o.lastPriceSync
 }
 
-// SetPrices sets the aggregate prices for the oracle.
-func (o *Oracle) SetPrices(prices map[types.CurrencyPair]sdk.Dec) {
-	o.mtx.Lock()
-	defer o.mtx.Unlock()
-
-	o.prices = prices
-}
-
 // GetPrices returns the aggregate prices from the oracle.
 func (o *Oracle) GetPrices() map[types.CurrencyPair]sdk.Dec {
-	o.mtx.RLock()
-	defer o.mtx.RUnlock()
-
-	p := make(map[types.CurrencyPair]sdk.Dec, len(o.prices))
-	maps.Copy(p, o.prices)
-
-	return p
+	return o.priceAggregator.GetPrices()
 }
