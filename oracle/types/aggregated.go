@@ -13,7 +13,7 @@ type (
 	AggregatedProviderPrices map[string]map[string]TickerPrice
 )
 
-// PriceAggregator is a simple aggregator for provider prices and candles.
+// PriceAggregator is a simple aggregator for provider prices.
 // It is thread-safe since it is assumed to be called concurrently in price
 // fetching goroutines.
 type PriceAggregator struct {
@@ -28,7 +28,8 @@ func NewPriceAggregator() *PriceAggregator {
 	}
 }
 
-// SetTickerPrices returns true if the provided prices were set successfully.
+// SetTickerPrices updates the price aggregator with the latest ticker prices
+// from the given provider.
 func (p *PriceAggregator) SetPrices(provider Provider, prices map[string]TickerPrice) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
