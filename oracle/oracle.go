@@ -18,45 +18,43 @@ import (
 
 // Oracle implements the core component responsible for fetching exchange rates
 // for a given set of currency pairs and determining exchange rates.
-type (
-	Oracle struct {
-		// --------------------- General Config --------------------- //
-		mtx    sync.RWMutex
-		logger log.Logger
-		closer *ssync.Closer
+type Oracle struct {
+	// --------------------- General Config --------------------- //
+	mtx    sync.RWMutex
+	logger log.Logger
+	closer *ssync.Closer
 
-		// --------------------- Provider Config --------------------- //
-		// providerTimeout is the maximum amount of time to wait for a provider to
-		// respond to a price request. If a provider fails to respond within this
-		// timeout, the oracle will ignore the provider and continue to fetch prices
-		// from the remaining providers.
-		providerTimeout time.Duration
+	// --------------------- Provider Config --------------------- //
+	// providerTimeout is the maximum amount of time to wait for a provider to
+	// respond to a price request. If a provider fails to respond within this
+	// timeout, the oracle will ignore the provider and continue to fetch prices
+	// from the remaining providers.
+	providerTimeout time.Duration
 
-		// Providers is the set of providers that the oracle will fetch prices from.
-		// Each provider is responsible for fetching prices for a given set of
-		// currency pairs (base, quote). The oracle will fetch prices from each
-		// provider concurrently.
-		providers []types.Provider
+	// Providers is the set of providers that the oracle will fetch prices from.
+	// Each provider is responsible for fetching prices for a given set of
+	// currency pairs (base, quote). The oracle will fetch prices from each
+	// provider concurrently.
+	providers []types.Provider
 
-		// --------------------- Oracle Config --------------------- //
-		// oracleTicker is the interval at which the oracle will fetch prices from
-		// providers.
-		oracleTicker time.Duration
+	// --------------------- Oracle Config --------------------- //
+	// oracleTicker is the interval at which the oracle will fetch prices from
+	// providers.
+	oracleTicker time.Duration
 
-		// lastPriceSync is the last time the oracle successfully updated its prices.
-		lastPriceSync time.Time
+	// lastPriceSync is the last time the oracle successfully updated its prices.
+	lastPriceSync time.Time
 
-		// status is the current status of the oracle (running or not).
-		status atomic.Bool
+	// status is the current status of the oracle (running or not).
+	status atomic.Bool
 
-		// prices is the current set of prices aggregated across the providers.
-		prices map[string]sdk.Dec
+	// prices is the current set of prices aggregated across the providers.
+	prices map[string]sdk.Dec
 
-		// aggregateFn is the function used to aggregate prices from each provider.
-		// By default, the oracle will compute the median price across all providers.
-		aggregateFn utils.AggregateFn
-	}
-)
+	// aggregateFn is the function used to aggregate prices from each provider.
+	// By default, the oracle will compute the median price across all providers.
+	aggregateFn utils.AggregateFn
+}
 
 // New returns a new instance of an Oracle. The oracle inputs providers that are
 // responsible for fetching prices for a given set of currency pairs (base, quote). The oracle
