@@ -11,19 +11,31 @@ option go_package = "github.com/skip-mev/slinky/x/oracle/types";
 
 service Msg {
   option (cosmos.msg.v1.service) = true;
-  rpc AddTicker(MsgAddTicker) returns (MsgAddTickerResponse);
+
+  // This method will be used explicitly by governance to update the set of
+  // available CurrencyPairs. Given a set of CurrencyPairGenesis objects, update
+  // the available currecy pairs in the module + their genesis prices (if they
+  // exist)
+  rpc AddCurrencyPair(MsgSetCurrencyPairs)
+      returns (MsgSetCurrencyPairsResponse);
 }
 
-message MsgAddTicker {
+// Given an authority + a set of CurrencyPairGeneses, the x/oracle module will
+// check to see that the authority has permissions to update the set of
+// CurrencyPairs tracked in the oracle, and add the given CurrencyPairs to be
+// tracked in each VoteExtension
+message MsgSetCurrencyPairs {
   option (cosmos.msg.v1.signer) = "authority";
   option (amino.name) = "slinky/x/oracle/MsgAddTicker";
 
   option (gogoproto.equal) = false;
 
   // authority is the address of the account that is authorized to update the
-  // x/oracle module parameters.
+  // x/oracle's CurrencyPairs
   string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
-  TickerGenesis ticker_genesis = 2;
+  // set of CurrencyPairs to be added to the module (+ prices if they are to be
+  // set)
+  repeated CurrencyPairGenesis currency_pair_genesis = 2;
 }
 
-message MsgAddTickerResponse {}
+message MsgSetCurrencyPairsResponse {}
