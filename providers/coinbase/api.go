@@ -11,7 +11,17 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
-// GetSpotPriceEndpoint is the Coinbase endpoint for getting the spot price of a
+var (
+	// NameToSymbol is a map of currency names to their symbols.
+	NameToSymbol = map[string]string{
+		"BITCOIN":  "BTC",
+		"COSMOS":   "ATOM",
+		"ETHEREUM": "ETH",
+		"USD":      "USD",
+	}
+)
+
+// getSpotPriceEndpoint is the Coinbase endpoint for getting the spot price of a
 // currency pair.
 func getSpotPriceEndpoint(base, quote string) string {
 	return fmt.Sprintf("https://api.coinbase.com/v2/prices/%s-%s/spot", base, quote)
@@ -30,7 +40,7 @@ func getSpotPriceEndpoint(base, quote string) string {
 //	  }
 //	}
 func getPriceForPair(pair types.CurrencyPair) (*types.TickerPrice, error) {
-	url := getSpotPriceEndpoint(pair.Base, pair.Quote)
+	url := getSpotPriceEndpoint(NameToSymbol[pair.Base], NameToSymbol[pair.Quote])
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
