@@ -7,7 +7,7 @@ type (
 		Name() string
 
 		// GetPrices returns the aggregated prices based on the provided currency pairs.
-		GetPrices() (map[string]TickerPrice, error)
+		GetPrices() (map[CurrencyPair]TickerPrice, error)
 
 		// SetPairs sets the pairs that the provider should fetch prices for.
 		SetPairs(...CurrencyPair)
