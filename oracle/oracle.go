@@ -156,7 +156,8 @@ func (o *Oracle) Stop() {
 func (o *Oracle) tick(ctx context.Context) {
 	o.logger.Info("starting oracle tick")
 
-	// Create a goroutine group to fetch prices from each provider concurrently.
+	// Create a goroutine group to fetch prices from each provider concurrently. All
+	// of the goroutines will be cancelled after the oracle timeout.
 	groupCtx, cancel := context.WithDeadline(ctx, time.Now().Add(o.oracleTicker))
 	g, _ := errgroup.WithContext(groupCtx)
 	g.SetLimit(len(o.providers))
