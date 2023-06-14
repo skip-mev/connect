@@ -7,10 +7,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// TickerPrice defines price information for a given symbol given
+// TickerPrice defines price information for a given CurrencyPair provided
 // by a price provider.
 type TickerPrice struct {
-	Price     sdk.Dec   // last trade price
+	Price     sdk.Dec   // last aggregated price
 	Timestamp time.Time // timestamp
 }
 

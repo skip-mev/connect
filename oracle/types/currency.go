@@ -6,8 +6,6 @@ import (
 )
 
 // CurrencyPair defines a currency exchange pair consisting of a base and a quote.
-// We primarily utilize the base for broadcasting exchange rates and use the
-// pair for querying for the ticker prices.
 type CurrencyPair struct {
 	Base  string
 	Quote string
@@ -29,4 +27,14 @@ func NewCurrencyPair(ticker string) (CurrencyPair, error) {
 // querying the exchange rate.
 func (cp CurrencyPair) String() string {
 	return cp.Base + "/" + cp.Quote
+}
+
+// GetBase returns the base currency.
+func (cp CurrencyPair) GetBase() string {
+	return cp.Base
+}
+
+// GetQuote returns the quote currency.
+func (cp CurrencyPair) GetQuote() string {
+	return cp.Quote
 }

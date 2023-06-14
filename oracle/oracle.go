@@ -17,50 +17,59 @@ import (
 )
 
 // Oracle implements the core component responsible for fetching exchange rates
-// for a given set of tickers and determining exchange rates.
-type Oracle struct {
-	// --------------------- General Config --------------------- //
-	mtx    sync.RWMutex
-	logger log.Logger
-	closer *ssync.Closer
+// for a given set of currency pairs and determining exchange rates.
+type (
+	Oracle struct {
+		// --------------------- General Config --------------------- //
+		mtx    sync.RWMutex
+		logger log.Logger
+		closer *ssync.Closer
 
-	// --------------------- Provider Config --------------------- //
-	// providerTimeout is the maximum amount of time to wait for a provider to
-	// respond to a price request.
-	providerTimeout time.Duration
+		// --------------------- Provider Config --------------------- //
+		// providerTimeout is the maximum amount of time to wait for a provider to
+		// respond to a price request. If a provider fails to respond within this
+		// timeout, the oracle will ignore the provider and continue to fetch prices
+		// from the remaining providers.
+		providerTimeout time.Duration
 
-	// Providers is the set of providers that the oracle will fetch prices from.
-	// Each provider is responsible for fetching prices for a given set of
-	// currency pairs (base, quote). The oracle will fetch prices from each
-	// provider concurrently.
-	providers []types.Provider
+		// Providers is the set of providers that the oracle will fetch prices from.
+		// Each provider is responsible for fetching prices for a given set of
+		// currency pairs (base, quote). The oracle will fetch prices from each
+		// provider concurrently.
+		providers []types.Provider
 
-	// --------------------- Oracle Config --------------------- //
-	// oracleTicker is the interval at which the oracle will fetch prices from
-	// providers.
-	oracleTicker time.Duration
+		// --------------------- Oracle Config --------------------- //
+		// oracleTicker is the interval at which the oracle will fetch prices from
+		// providers.
+		oracleTicker time.Duration
 
-	// lastPriceSync is the last time the oracle successfully fetched prices from
-	// providers.
-	lastPriceSync time.Time
+		// lastPriceSync is the last time the oracle successfully updated its prices.
+		lastPriceSync time.Time
 
-	// status is the current status of the oracle (running or not).
-	status atomic.Bool
+		// status is the current status of the oracle (running or not).
+		status atomic.Bool
 
-	// prices is the current set of prices fetched from providers.
-	prices map[string]sdk.Dec
-}
+		// prices is the current set of prices aggregated across the providers.
+		prices map[string]sdk.Dec
+
+		// aggregateFn is the function used to aggregate prices from each provider.
+		// By default, the oracle will compute the median price across all providers.
+		aggregateFn utils.AggregateFn
+	}
+)
 
 // New returns a new instance of an Oracle. The oracle inputs providers that are
 // responsible for fetching prices for a given set of currency pairs (base, quote). The oracle
 // will fetch new prices concurrently every oracleTicker interval. In the case where
 // the oracle fails to fetch prices from a given provider, it will continue to fetch prices
 // from the remaining providers. The oracle currently assumes that each provider aggregates prices
-// using TWAPs, TVWAPs, or something similar. When determining the aggregated price for a
+// using TWAPs, TVWAPs, etc. When determining the aggregated price for a
 // given curreny pair, the oracle will compute the median price across all providers.
-func New(logger log.Logger,
+func New(
+	logger log.Logger,
 	providerTimeout, oracleTicker time.Duration,
 	providers []types.Provider,
+	aggregateFn utils.AggregateFn,
 ) *Oracle {
 	if logger == nil {
 		panic("logger cannot be nil")
@@ -70,6 +79,10 @@ func New(logger log.Logger,
 		panic("price providers cannot be nil")
 	}
 
+	if providerTimeout > oracleTicker {
+		panic("provider timeout cannot be greater than oracle ticker")
+	}
+
 	return &Oracle{
 		logger:          logger,
 		closer:          ssync.NewCloser(),
@@ -77,7 +90,24 @@ func New(logger log.Logger,
 		oracleTicker:    oracleTicker,
 		providers:       providers,
 		prices:          make(map[string]sdk.Dec),
+		aggregateFn:     aggregateFn,
 	}
+}
+
+// NewDefaultOracle returns a new instance of an Oracle with a default aggregate
+// function. It registers the given providers with the same set of currency pairs.
+// The default aggregate function computes the median price across all providers.
+func NewDefaultOracle(
+	logger log.Logger,
+	providerTimeout, oracleTicker time.Duration,
+	providers []types.Provider,
+	currencyPairs []types.CurrencyPair,
+) *Oracle {
+	for _, provider := range providers {
+		provider.SetPairs(currencyPairs...)
+	}
+
+	return New(logger, providerTimeout, oracleTicker, providers, utils.ComputeMedian())
 }
 
 // IsRunning returns true if the oracle is running.
@@ -135,9 +165,8 @@ func (o *Oracle) tick(ctx context.Context) {
 	// Create a price aggregator to aggregate prices from each provider.
 	priceAgg := types.NewPriceAggregator()
 
-	// In the case where the oracle panics, we will log the error and cancel all of the
-	// the goroutines. In the case where anything panics, the oracle will not update
-	// the prices and will attempt to fetch prices again on the next tick.
+	// In the case where the oracle panics, the oracle will log the error, cancel all of the
+	// the goroutines, will not update the prices and will attempt to fetch prices again on the next tick.
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("oracle tick panicked", "err", r)
@@ -146,25 +175,25 @@ func (o *Oracle) tick(ctx context.Context) {
 	}()
 
 	// Fetch prices from each provider concurrently. Each provider is responsible
-	// for fetching prices for the given set of (base, quote) currency pairs. In the case where
-	// a provider fails to fetch prices, we will log the error and continue to
-	// aggregate prices from the remaining providers.
+	// for fetching prices for the given set of (base, quote) currency pairs.
 	for _, priceProvider := range o.providers {
 		g.Go(o.fetchPricesFn(priceProvider, priceAgg))
 	}
 
-	// By default, errorgroup will wait for all goroutines to finish before returning.
+	// By default, errorgroup will wait for all goroutines to finish before returning. In
+	// the case where any one of the goroutines fails, the entire set of goroutines will
+	// be cancelled and the oracle will not update the prices.
 	if err := g.Wait(); err != nil {
 		o.logger.Error("wait group failed with error", "err", err)
 		return
 	}
 
 	// Compute aggregated prices and update the oracle.
-	medianPrices := utils.ComputeMedian(priceAgg.GetProviderPrices())
-	o.SetPrices(medianPrices)
+	prices := o.aggregateFn(priceAgg.GetProviderPrices())
+	o.SetPrices(prices)
 	o.SetLastSyncTime(time.Now().UTC())
 
-	o.logger.Info("oracle updated prices")
+	o.logger.Info("oracle updated prices for %d assets", len(prices))
 }
 
 // fetchPrices returns a closure that fetches prices from the given provider. This is meant
