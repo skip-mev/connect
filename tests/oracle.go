@@ -21,7 +21,7 @@ import (
 func main() {
 	// Oracle config
 	logger := NewLogger()
-	providerTimeout := 5 * time.Second
+	providerTimeout := 2 * time.Second
 	oracleTicker := 5 * time.Second
 
 	// Currency pairs each of the providers will
