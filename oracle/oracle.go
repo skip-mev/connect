@@ -216,7 +216,7 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 			// Recover from any panics while fetching prices.
 			defer func() {
 				if r := recover(); r != nil {
-					errCh <- fmt.Errorf("panic when fetching prices for provider %s: %v", provider.Name(), r)
+					errCh <- fmt.Errorf("panic when fetching prices %v", r)
 				}
 			}()
 
