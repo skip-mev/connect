@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/utils"
 	"github.com/skip-mev/slinky/providers/coinbase"
 	"github.com/skip-mev/slinky/providers/mock"
+	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/client"
 )
 
@@ -21,15 +22,19 @@ func main() {
 	oracleTicker := 5 * time.Second
 
 	// Coinbase provider
-	coinbaseProvider := coinbase.NewProvider(logger)
-	coinbaseProvider.SetPairs(
-		types.CurrencyPair{Base: "BTC", Quote: "USD"},
+	coinbaseProvider := coinbase.NewProvider(
+		logger,
+		[]types.CurrencyPair{
+			{Base: "BTC", Quote: "USD"},
+			{Base: "ETH", Quote: "USD"},
+			{Base: "LTC", Quote: "USD"},
+		},
 	)
 
 	// Mock providers for testing
 	mockProvider := mock.NewMockProvider()
 	faillingMockProvider := mock.NewFailingMockProvider()
-	timeoutMockProvider := mock.NewTimeoutMockProvider()
+	timeoutMockProvider := mock.NewTimeoutMockProvider(oracleTicker)
 
 	// Define the providers
 	providers := []types.Provider{
@@ -50,8 +55,37 @@ func main() {
 
 	// Client set up and start
 	client := client.NewLocalClient(oracle)
-	if err := client.Start(context.Background()); err != nil {
-		panic(err)
+
+	// Start the oracle
+	go func() {
+		if err := client.Start(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Wait for the oracle to start
+	for !oracle.IsRunning() {
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	// Start up a local client that makes requests to the oracle
+	for {
+		time.Sleep(10 * time.Second)
+
+		// Get the latest prices
+		prices, err := client.Prices(context.Background(), &service.QueryPricesRequest{})
+		if err != nil {
+			logger.Error("failed to get prices", err)
+			continue
+		}
+
+		// Print the prices
+		responseString := "\n\tPrices: \n"
+		for pair, price := range prices.Prices {
+			responseString += fmt.Sprintf("\t\t%s: %s\n", pair, price)
+		}
+
+		fmt.Println(responseString)
 	}
 }
 

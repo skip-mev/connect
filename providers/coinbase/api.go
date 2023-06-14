@@ -17,7 +17,7 @@ func getSpotPriceEndpoint(base, quote string) string {
 	return fmt.Sprintf("https://api.coinbase.com/v2/prices/%s-%s/spot", base, quote)
 }
 
-// GetSpotPriceHandler returns the spot price of a currency pair. In practice,
+// getPriceForPair returns the spot price of a currency pair. In practice,
 // this should not be used because price data should come from an aggregated
 // price feed - API that uses a TWAP, TVWAP, or median price.
 //

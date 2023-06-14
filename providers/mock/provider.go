@@ -27,6 +27,7 @@ type (
 	// times out when fetching prices.
 	TimeoutMockProvider struct {
 		*MockProvider
+		timeout time.Duration
 	}
 )
 
@@ -97,9 +98,10 @@ func (p FailingMockProvider) GetPrices() (map[string]types.TickerPrice, error) {
 }
 
 // NewTimeoutMockProvider returns a new timeout mock provider.
-func NewTimeoutMockProvider() *TimeoutMockProvider {
+func NewTimeoutMockProvider(timeout time.Duration) *TimeoutMockProvider {
 	return &TimeoutMockProvider{
 		MockProvider: NewMockProvider(),
+		timeout:      timeout,
 	}
 }
 
@@ -110,7 +112,7 @@ func (p TimeoutMockProvider) Name() string {
 
 // GetPrices always times out for the timeout mock provider.
 func (p TimeoutMockProvider) GetPrices() (map[string]types.TickerPrice, error) {
-	time.Sleep(1000 * time.Second)
+	time.Sleep(1*time.Second + p.timeout)
 
 	panic("mock provider should always times out")
 }
