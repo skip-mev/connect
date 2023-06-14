@@ -157,7 +157,8 @@ func (o *Oracle) tick(ctx context.Context) {
 	o.logger.Info("starting oracle tick")
 
 	// Create a goroutine group to fetch prices from each provider concurrently.
-	g, groupCtx := errgroup.WithContext(ctx)
+	groupCtx, cancel := context.WithDeadline(ctx, time.Now().Add(o.oracleTicker))
+	g, _ := errgroup.WithContext(groupCtx)
 	g.SetLimit(len(o.providers))
 
 	// Create a price aggregator to aggregate prices from each provider.
@@ -168,7 +169,11 @@ func (o *Oracle) tick(ctx context.Context) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("oracle tick panicked", "err", r)
-			groupCtx.Done()
+
+			cancel()
+			g.Wait()
+
+			o.logger.Info("oracle tick finished after recovering from panic")
 		}
 	}()
 
