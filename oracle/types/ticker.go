@@ -2,29 +2,23 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// TickerPrice defines price and volume information for a symbol or ticker
-// exchange rate.
-//
-// XXX: Consider replacing sdk.Dec with another decimal type.
+// TickerPrice defines price information for a given CurrencyPair provided
+// by a price provider.
 type TickerPrice struct {
-	Price  sdk.Dec // last trade price
-	Volume sdk.Dec // 24h volume
+	Price     sdk.Dec   // last aggregated price
+	Timestamp time.Time // timestamp
 }
 
-func NewTickerPrice(provider, symbol, lastPrice, volume string) (TickerPrice, error) {
+func NewTickerPrice(lastPrice string, timestamp time.Time) (TickerPrice, error) {
 	price, err := sdk.NewDecFromStr(lastPrice)
 	if err != nil {
-		return TickerPrice{}, fmt.Errorf("failed to parse %s price (%s) for %s: %w", provider, lastPrice, symbol, err)
+		return TickerPrice{}, fmt.Errorf("failed to parse %s price (%s)", lastPrice, err)
 	}
 
-	volumeDec, err := sdk.NewDecFromStr(volume)
-	if err != nil {
-		return TickerPrice{}, fmt.Errorf("failed to parse %s volume (%s) for %s: %w", provider, volume, symbol, err)
-	}
-
-	return TickerPrice{Price: price, Volume: volumeDec}, nil
+	return TickerPrice{Price: price, Timestamp: timestamp}, nil
 }

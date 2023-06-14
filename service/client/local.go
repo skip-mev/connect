@@ -3,10 +3,7 @@ package client
 import (
 	"context"
 	"errors"
-	"fmt"
-	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/service"
 )
@@ -32,55 +29,13 @@ func (c *LocalClient) Prices(_ context.Context, req *service.QueryPricesRequest)
 		return nil, ErrorNilRequest
 	}
 
-	var prices map[string]sdk.Dec
-	switch {
-	case len(req.Provider) == 0 && len(req.Tickers) == 0:
-		// if no provider or tickers are specified, return all prices
-		prices = c.oracle.GetPrices()
-
-	case len(req.Provider) == 0 && len(req.Tickers) != 0:
-		// filter based on tickers only
-		prices = make(map[string]sdk.Dec, len(req.Tickers))
-		for k, v := range c.oracle.GetPrices() {
-			for _, ticker := range req.Tickers {
-				if strings.EqualFold(ticker, k) {
-					prices[k] = v
-				}
-			}
-		}
-
-	case len(req.Provider) != 0 && len(req.Tickers) == 0:
-		// filter based on provider only
-		pPrices := c.oracle.GetProviderPrices()
-		v, ok := pPrices[strings.ToLower(req.Provider)]
-		if !ok {
-			return nil, fmt.Errorf("%s: %w", req.Provider, ErrorProviderNotFound)
-		}
-
-		prices = v
-
-	case len(req.Provider) != 0 && len(req.Tickers) != 0:
-		// filter based on both provider and tickers
-		prices = make(map[string]sdk.Dec, len(req.Tickers))
-		pPrices := c.oracle.GetProviderPrices()
-		v, ok := pPrices[strings.ToLower(req.Provider)]
-		if !ok {
-			return nil, fmt.Errorf("%s: %w", req.Provider, ErrorProviderNotFound)
-		}
-
-		for _, ticker := range req.Tickers {
-			for k, v := range v {
-				if strings.EqualFold(ticker, k) {
-					prices[k] = v
-				}
-			}
-		}
-	}
+	prices := c.oracle.GetPrices()
 
 	resp := &service.QueryPricesResponse{
 		Prices:    make(map[string]string, len(prices)),
 		Timestamp: c.oracle.GetLastSyncTime(),
 	}
+
 	for k, v := range prices {
 		resp.Prices[k] = v.String()
 	}
