@@ -17,13 +17,7 @@ service Oracle {
 }
 
 // QueryPricesRequest defines the request type for the the Prices method.
-message QueryPricesRequest {
-  // optional tickers to fetch.
-  repeated string tickers = 1;
-
-  // optional provider to query against.
-  string provider = 2;
-}
+message QueryPricesRequest {}
 
 // QueryPricesResponse defines the response type for the Prices method.
 message QueryPricesResponse {
