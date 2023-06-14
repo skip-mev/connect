@@ -7,6 +7,10 @@ import (
 
 // ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly
 func (cp CurrencyPair) ValidateBasic() error {
+	// strings must be valid
+	if cp.Base == "" || cp.Quote == "" {
+		return fmt.Errorf("empty quote or base string")
+	}
 	// check formatting of base / quote
 	if strings.ToUpper(cp.Base) != cp.Base {
 		return fmt.Errorf("incorrectly formatted base string, expected: %s got: %s", strings.ToUpper(cp.Base), strings.ToUpper(cp.Base))

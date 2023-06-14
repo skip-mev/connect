@@ -30,6 +30,22 @@ func TestValidateBasic(t *testing.T) {
 			false,
 		},
 		{
+			"if the base string is empty - fail",
+			types.CurrencyPair{
+				Base: "",
+				Quote: "BB",
+			},
+			false,
+		},
+		{
+			"if the quote string is empty - fail",
+			types.CurrencyPair{
+				Base: "AA",
+				Quote: "",
+			},
+			false,
+		},
+		{
 			"if both Quote + Base are formatted correctly - pass",
 			types.CurrencyPair{
 				Base: "BB",

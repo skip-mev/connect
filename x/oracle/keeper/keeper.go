@@ -60,4 +60,13 @@ func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, 
 
 
 func (k Keeper) GetAllTickers(ctx sdk.Context) ([]types.CurrencyPair, error) {
+	// get store
+	store := ctx.KVStore(k.storeKey)
+	// iterate over all keys in store
+	it := store.Iterator(nil, nil)
+	cps := make([]types.CurrencyPair, 0)
+	for ; it.Valid(); it.Next() {
+		cps = append(cps, types.GetCurrencyPairFromKey(it.Key()))
+	}
+	return cps, nil
 }

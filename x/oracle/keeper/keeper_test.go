@@ -87,3 +87,37 @@ func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 	assert.Equal(t, qp1.BlockTimestamp.UnixMilli(), qp2.BlockTimestamp.UnixMilli())
 	assert.Equal(t, qp1.Price.Int64(), qp2.Price.Int64())
 }
+
+func (s *KeeperTestSuite) TestGetAllTickers() {
+	// insert multiple currency pairs
+	cp1 := types.CurrencyPair{
+		Base: "AA",
+		Quote: "BB",
+	}
+	qp1 := types.QuotePrice{
+		Price: sdk.NewInt(100),
+	}
+	cp2 := types.CurrencyPair{
+		Base: "CC",
+		Quote: "DD",
+	}
+	qp2 := types.QuotePrice{
+		Price: sdk.NewInt(120),
+	}
+
+	// insert
+	assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
+	assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
+	
+	// get all tickers
+	expectedTickers := map[string]struct{}{"AA/BB":{}, "CC/DD":{}}
+	tickers, err := s.oracleKeeper.GetAllTickers(s.ctx)
+	assert.Nil(s.T(), err)
+	
+	// check for inclusion
+	for _, ticker := range tickers {
+		ts := ticker.ToString()
+		_, ok := expectedTickers[ts]
+		assert.True(s.T(), ok)
+	}
+}
