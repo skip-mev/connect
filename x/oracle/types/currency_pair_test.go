@@ -64,7 +64,6 @@ func TestValidateBasic(t *testing.T) {
 			default:
 				assert.NotNil(t, err)
 			}
-
 		})
 	}
 }
