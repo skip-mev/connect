@@ -8,15 +8,23 @@ const (
 )
 
 const (
-	keyPrefixCurrencyPair = iota
+	keyPrefixCurrencyPairIdx = iota
 )
 
+var (
+	// Key Prefix under which all CurrencyPairs + QuotePrices will be stored under
+	KeyPrefixCurrencyPair = []byte{keyPrefixCurrencyPairIdx}
+)
+
+// Get the Prefix for a given QuotePrice for a CurrencyPair
 func (cp CurrencyPair) GetStoreKeyForCurrencyPair() []byte {
-	return append([]byte{keyPrefixCurrencyPair}, []byte(cp.ToString())...)
+	return append(KeyPrefixCurrencyPair, []byte(cp.ToString())...)
 }
 
-func GetCurrencyPairFromKey(bz []byte) CurrencyPair {
+// Get a CurrencyPair from a CurrencyPair store-index. This method errors if the
+// CurrencyPair store-index is incorrectly formatted.
+func GetCurrencyPairFromKey(bz []byte) (CurrencyPair, error) {
 	// chop off prefix
-	bz = bz[1:]
+	bz = bz[len(KeyPrefixCurrencyPair):]
 	return CurrencyPairFromString(string(bz))
 }

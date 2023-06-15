@@ -73,25 +73,33 @@ func TestToFromString(t *testing.T) {
 	tcs := []struct {
 		name string
 		// string formatted CurrencyPair
-		cps string
-		cp  types.CurrencyPair
+		cps        string
+		cp         types.CurrencyPair
+		expectPass bool
 	}{
 		{
 			"if string is incorrectly formatted, return an empty CurrencyPair",
 			"aa",
 			types.CurrencyPair{},
+			false,
 		},
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
 			types.CurrencyPair{Base: "A", Quote: "B"}.ToString(),
 			types.CurrencyPair{Base: "A", Quote: "B"},
+			true,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			cp := types.CurrencyPairFromString(tc.cps)
-			assert.Equal(t, cp, tc.cp)
+			cp, err := types.CurrencyPairFromString(tc.cps)
+			if tc.expectPass {
+				assert.Nil(t, err)
+				assert.Equal(t, cp, tc.cp)
+			} else {
+				assert.NotNil(t, err)
+			}
 		})
 	}
 }

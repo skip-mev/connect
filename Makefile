@@ -10,6 +10,23 @@ HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 
 ###############################################################################
+###                               Testing                                   ###
+###############################################################################
+
+test:
+	go test -v -race ./...
+
+###############################################################################
+###                              Formatting                                 ###
+###############################################################################
+
+format:
+	gofmt -s -w ./
+
+tidy: format
+	go mod tidy
+
+###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
 
@@ -18,12 +35,6 @@ protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
-
-format:
-	gofmt -s -w ./
-
-tidy: format
-	go mod tidy
 
 proto-gen:
 	@echo "Generating Protobuf files"
