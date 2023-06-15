@@ -21,4 +21,4 @@
 go.work
 
 # Testing script folder
-tests/
+/tests/
