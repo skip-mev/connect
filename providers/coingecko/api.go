@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,30 +48,19 @@ func (p *Provider) getPrices() (map[types.CurrencyPair]types.TickerPrice, error)
 
 	prices := make(map[types.CurrencyPair]types.TickerPrice)
 
-	for base, data := range respMap {
-		for quote, price := range data {
-			base = strings.ToUpper(base)
-			quote = strings.ToUpper(quote)
+	for _, pair := range p.pairs {
+		if _, ok := respMap[pair.Base]; !ok {
+			continue
+		}
 
-			// Only return prices for pairs that the provider supports.
-			if _, ok := p.cache[base]; !ok {
-				continue
-			}
-			if _, ok := p.cache[base][quote]; !ok {
-				continue
-			}
+		if _, ok := respMap[pair.Base][pair.Quote]; !ok {
+			continue
+		}
 
-			cp := types.CurrencyPair{
-				Base:  base,
-				Quote: quote,
-			}
-
-			price := types.TickerPrice{
-				Price:     float64ToDec(price),
-				Timestamp: time.Now(),
-			}
-
-			prices[cp] = price
+		price := float64ToDec(respMap[pair.Base][pair.Quote])
+		prices[pair] = types.TickerPrice{
+			Price:     price,
+			Timestamp: time.Now(),
 		}
 	}
 
