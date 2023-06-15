@@ -3,7 +3,7 @@ package mock
 import (
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
@@ -13,7 +13,7 @@ type (
 	// NormalMockProvider defines a mocked exchange rate provider using fixed exchange
 	// rates.
 	NormalMockProvider struct {
-		exchangeRates map[types.CurrencyPair]types.TickerPrice
+		exchangeRates map[types.CurrencyPair]types.QuotePrice
 		currencyPairs []types.CurrencyPair
 	}
 
@@ -35,29 +35,29 @@ type (
 // will always return the same static data. Meant to be used for testing.
 func NewMockProvider() *NormalMockProvider {
 	return &NormalMockProvider{
-		exchangeRates: map[types.CurrencyPair]types.TickerPrice{
-			{Base: "ATOM", Quote: "USDC"}: {Price: sdk.MustNewDecFromStr("11.34")},
-			{Base: "ATOM", Quote: "USDT"}: {Price: sdk.MustNewDecFromStr("11.36")},
-			{Base: "ATOM", Quote: "USD"}:  {Price: sdk.MustNewDecFromStr("11.35")},
-			{Base: "OSMO", Quote: "USDC"}: {Price: sdk.MustNewDecFromStr("1.34")},
-			{Base: "OSMO", Quote: "USDT"}: {Price: sdk.MustNewDecFromStr("1.36")},
-			{Base: "OSMO", Quote: "USD"}:  {Price: sdk.MustNewDecFromStr("1.35")},
-			{Base: "WETH", Quote: "USDC"}: {Price: sdk.MustNewDecFromStr("1560.34")},
-			{Base: "WETH", Quote: "USDT"}: {Price: sdk.MustNewDecFromStr("1560.36")},
-			{Base: "WETH", Quote: "USD"}:  {Price: sdk.MustNewDecFromStr("1560.35")},
-			{Base: "BTC", Quote: "USD"}:   {Price: sdk.MustNewDecFromStr("50000.00")},
+		exchangeRates: map[types.CurrencyPair]types.QuotePrice{
+			types.NewCurrencyPair("ATOM", "USDC", 6): {Price: uint256.NewInt(1134)},
+			types.NewCurrencyPair("ATOM", "USDT", 6): {Price: uint256.NewInt(1135)},
+			types.NewCurrencyPair("ATOM", "USD", 6):  {Price: uint256.NewInt(1136)},
+			types.NewCurrencyPair("OSMO", "USDC", 6): {Price: uint256.NewInt(1137)},
+			types.NewCurrencyPair("OSMO", "USDT", 6): {Price: uint256.NewInt(1138)},
+			types.NewCurrencyPair("OSMO", "USD", 6):  {Price: uint256.NewInt(1139)},
+			types.NewCurrencyPair("WETH", "USDC", 6): {Price: uint256.NewInt(1140)},
+			types.NewCurrencyPair("WETH", "USDT", 6): {Price: uint256.NewInt(1141)},
+			types.NewCurrencyPair("WETH", "USD", 6):  {Price: uint256.NewInt(1142)},
+			types.NewCurrencyPair("BTC", "USD", 6):   {Price: uint256.NewInt(1143)},
 		},
 		currencyPairs: []types.CurrencyPair{
-			{Base: "ATOM", Quote: "USDC"},
-			{Base: "ATOM", Quote: "USDT"},
-			{Base: "ATOM", Quote: "USD"},
-			{Base: "OSMO", Quote: "USDC"},
-			{Base: "OSMO", Quote: "USDT"},
-			{Base: "OSMO", Quote: "USD"},
-			{Base: "WETH", Quote: "USDC"},
-			{Base: "WETH", Quote: "USDT"},
-			{Base: "WETH", Quote: "USD"},
-			{Base: "BTC", Quote: "USD"},
+			types.NewCurrencyPair("ATOM", "USDC", 6),
+			types.NewCurrencyPair("ATOM", "USDT", 6),
+			types.NewCurrencyPair("ATOM", "USD", 6),
+			types.NewCurrencyPair("OSMO", "USDC", 6),
+			types.NewCurrencyPair("OSMO", "USDT", 6),
+			types.NewCurrencyPair("OSMO", "USD", 6),
+			types.NewCurrencyPair("WETH", "USDC", 6),
+			types.NewCurrencyPair("WETH", "USDT", 6),
+			types.NewCurrencyPair("WETH", "USD", 6),
+			types.NewCurrencyPair("BTC", "USD", 6),
 		},
 	}
 }
@@ -68,7 +68,7 @@ func (p NormalMockProvider) Name() string {
 }
 
 // GetPrices returns the mocked exchange rates.
-func (p NormalMockProvider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
+func (p NormalMockProvider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
 	return p.exchangeRates, nil
 }
 
@@ -95,7 +95,7 @@ func (p FailingMockProvider) Name() string {
 }
 
 // GetPrices always fails for the failing mock provider.
-func (p FailingMockProvider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
+func (p FailingMockProvider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
 	panic("mock provider always fails")
 }
 
@@ -115,7 +115,7 @@ func (p TimeoutMockProvider) Name() string {
 }
 
 // GetPrices always times out for the timeout mock provider.
-func (p TimeoutMockProvider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
+func (p TimeoutMockProvider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
 	time.Sleep(1*time.Second + p.timeout)
 
 	panic("mock provider should always times out")

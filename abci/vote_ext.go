@@ -3,11 +3,10 @@ package abci
 import (
 	"fmt"
 
-	sdkmath "cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/service"
 )
 
@@ -65,10 +64,7 @@ func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHan
 
 		// verify tickers and prices are valid
 		for ticker, price := range voteExt.Prices {
-			if _, err := types.NewCurrencyPair(ticker); err != nil {
-				return nil, fmt.Errorf("invalid ticker in oracle vote extension %s: %w", ticker, err)
-			}
-			if _, err := sdkmath.LegacyNewDecFromStr(price); err != nil {
+			if _, err := uint256.FromHex(price); err != nil {
 				return nil, fmt.Errorf("invalid price in oracle vote extension %s: %w", ticker, err)
 			}
 		}

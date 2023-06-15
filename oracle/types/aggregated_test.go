@@ -3,107 +3,130 @@ package types_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
 var (
-	btcusd = types.CurrencyPair{
-		Base:  "btc",
-		Quote: "usd",
-	}
+	btcusd = types.NewCurrencyPair("btc", "usd", 6)
 
-	ethusd = types.CurrencyPair{
-		Base:  "eth",
-		Quote: "usd",
-	}
+	ethusd = types.NewCurrencyPair("eth", "usd", 6)
 
-	usdtusd = types.CurrencyPair{
-		Base:  "usdt",
-		Quote: "usd",
-	}
+	usdtusd = types.NewCurrencyPair("usdt", "usd", 6)
 )
 
 func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
 		providerPrices types.AggregatedProviderPrices
-		expectedPrices map[types.CurrencyPair]sdk.Dec
+		expectedPrices map[types.CurrencyPair]*uint256.Int
 	}{
 		{
 			"empty provider prices",
 			types.AggregatedProviderPrices{},
-			map[types.CurrencyPair]sdk.Dec{},
+			map[types.CurrencyPair]*uint256.Int{},
 		},
 		{
 			"single provider price",
 			types.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(100)),
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(100),
 					},
-					ethusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(200)),
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
 					},
 				},
 			},
-			map[types.CurrencyPair]sdk.Dec{
-				btcusd: sdk.NewDecFromInt(sdk.NewInt(100)),
-				ethusd: sdk.NewDecFromInt(sdk.NewInt(200)),
+			map[types.CurrencyPair]*uint256.Int{
+				btcusd: uint256.NewInt(100),
+				ethusd: uint256.NewInt(200),
 			},
 		},
 		{
 			"multiple provider prices",
 			types.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(100)),
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(100),
 					},
-					ethusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(200)),
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
 					},
 				},
 				"provider2": {
-					btcusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(200)),
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
 					},
-					ethusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(300)),
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(300),
 					},
 				},
 			},
-			map[types.CurrencyPair]sdk.Dec{
-				btcusd: sdk.NewDecFromInt(sdk.NewInt(200)),
-				ethusd: sdk.NewDecFromInt(sdk.NewInt(300)),
+			map[types.CurrencyPair]*uint256.Int{
+				btcusd: uint256.NewInt(150),
+				ethusd: uint256.NewInt(250),
 			},
 		},
 		{
 			"multiple provider prices with different assets",
 			types.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(100)),
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(100),
 					},
-					ethusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(200)),
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
 					},
 				},
 				"provider2": {
-					btcusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(200)),
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
 					},
-					ethusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(300)),
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(300),
 					},
-					usdtusd: types.TickerPrice{
-						Price: sdk.NewDecFromInt(sdk.NewInt(400)),
+					usdtusd: types.QuotePrice{
+						Price: nil, // should be ignored
 					},
 				},
 			},
-			map[types.CurrencyPair]sdk.Dec{
-				btcusd:  sdk.NewDecFromInt(sdk.NewInt(200)),
-				ethusd:  sdk.NewDecFromInt(sdk.NewInt(300)),
-				usdtusd: sdk.NewDecFromInt(sdk.NewInt(400)),
+			map[types.CurrencyPair]*uint256.Int{
+				btcusd: uint256.NewInt(150),
+				ethusd: uint256.NewInt(250),
+			},
+		},
+		{
+			"odd number of provider prices",
+			types.AggregatedProviderPrices{
+				"provider1": {
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(100),
+					},
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
+					},
+				},
+				"provider2": {
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(200),
+					},
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(300),
+					},
+				},
+				"provider3": {
+					btcusd: types.QuotePrice{
+						Price: uint256.NewInt(300),
+					},
+					ethusd: types.QuotePrice{
+						Price: uint256.NewInt(400),
+					},
+				},
+			},
+			map[types.CurrencyPair]*uint256.Int{
+				btcusd: uint256.NewInt(200),
+				ethusd: uint256.NewInt(300),
 			},
 		},
 	}
@@ -123,7 +146,7 @@ func TestComputeMedian(t *testing.T) {
 					t.Fatalf("expected price for asset %s", asset)
 				}
 
-				if !price.Equal(expectedPrice) {
+				if price.Cmp(expectedPrice) != 0 {
 					t.Fatalf("expected price %s, got %s", expectedPrice, price)
 				}
 			}

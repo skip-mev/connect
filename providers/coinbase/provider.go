@@ -35,8 +35,8 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
-	resp := make(map[types.CurrencyPair]types.TickerPrice)
+func (p *Provider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
+	resp := make(map[types.CurrencyPair]types.QuotePrice)
 
 	for _, currencyPair := range p.pairs {
 		spotPrice, err := getPriceForPair(currencyPair)
