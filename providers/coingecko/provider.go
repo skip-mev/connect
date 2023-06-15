@@ -31,23 +31,7 @@ type Provider struct {
 
 // NewProvider returns a new CoinGecko provider.
 func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
-	seenQuotes := make(map[string]struct{})
-	quotes := make([]string, 0)
-
-	seenBases := make(map[string]struct{})
-	bases := make([]string, 0)
-
-	for _, pair := range pairs {
-		if _, ok := seenQuotes[pair.Quote]; !ok {
-			seenQuotes[pair.Quote] = struct{}{}
-			quotes = append(quotes, pair.Quote)
-		}
-
-		if _, ok := seenBases[pair.Base]; !ok {
-			seenBases[pair.Base] = struct{}{}
-			bases = append(bases, pair.Base)
-		}
-	}
+	bases, quotes := getUniqueBaseAndQuoteDenoms(pairs)
 
 	return &Provider{
 		pairs:  pairs,
@@ -69,6 +53,10 @@ func (p *Provider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error)
 
 // SetPairs sets the currency pairs that the provider will fetch prices for.
 func (p *Provider) SetPairs(pairs ...types.CurrencyPair) {
+	bases, quotes := getUniqueBaseAndQuoteDenoms(pairs)
+	p.bases = strings.Join(bases, ",")
+	p.quotes = strings.Join(quotes, ",")
+
 	p.pairs = pairs
 }
 
