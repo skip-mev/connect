@@ -37,7 +37,7 @@ func (c *LocalClient) Prices(_ context.Context, req *service.QueryPricesRequest)
 	}
 
 	for k, v := range prices {
-		resp.Prices[k] = v.String()
+		resp.Prices[k.String()] = v.String()
 	}
 
 	return resp, nil
