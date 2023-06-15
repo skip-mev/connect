@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
+	"strings"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers"
 )
 
 // getPriceForPair returns the price of a currency pair. The price is fetched
@@ -20,14 +20,14 @@ import (
 // Response format:
 //
 //	{
-//	  "atom": {
+//	  "cosmos": {
 //	    "usd": 11.35
 //	  },
-//	  "btc": {
+//	  "bitcoin": {
 //	    "usd": 10000
 //	  }
 //	}
-func (p *Provider) getPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
+func (p *Provider) getPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
 	url := getPriceEndpoint(p.bases, p.quotes)
 
 	resp, err := http.Get(url) //nolint:all
@@ -47,31 +47,32 @@ func (p *Provider) getPrices() (map[types.CurrencyPair]types.TickerPrice, error)
 		return nil, err
 	}
 
-	prices := make(map[types.CurrencyPair]types.TickerPrice)
+	prices := make(map[types.CurrencyPair]types.QuotePrice)
 
 	for _, pair := range p.pairs {
-		if _, ok := respMap[pair.Base]; !ok {
+		base := strings.ToLower(pair.Base)
+		quote := strings.ToLower(pair.Quote)
+
+		if _, ok := respMap[base]; !ok {
 			continue
 		}
 
-		if _, ok := respMap[pair.Base][pair.Quote]; !ok {
+		if _, ok := respMap[base][quote]; !ok {
 			continue
 		}
 
-		price := float64ToDec(respMap[pair.Base][pair.Quote])
-		prices[pair] = types.TickerPrice{
-			Price:     price,
-			Timestamp: time.Now(),
+		quotePrice, err := types.NewQuotePrice(
+			providers.Float64ToUint256(respMap[base][quote], pair.QuoteDecimals),
+			time.Now(),
+		)
+		if err != nil {
+			continue
 		}
+
+		prices[pair] = quotePrice
 	}
 
 	return prices, nil
-}
-
-// float64ToDec converts a float64 to a sdk.Dec.
-func float64ToDec(f float64) sdk.Dec {
-	float := strconv.FormatFloat(f, 'g', 10, 64)
-	return sdk.MustNewDecFromStr(float)
 }
 
 // getPriceEndpoint is the CoinGecko endpoint for getting the price of a

@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers"
 )
 
 // NameToSymbol is a map of currency names to their symbols.
@@ -33,7 +33,7 @@ var NameToSymbol = map[string]string{
 //	    "currency": "USD"
 //	  }
 //	}
-func getPriceForPair(pair types.CurrencyPair) (*types.TickerPrice, error) {
+func getPriceForPair(pair types.CurrencyPair) (*types.QuotePrice, error) {
 	baseSymbol, ok := NameToSymbol[pair.Base]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
@@ -72,13 +72,13 @@ func getPriceForPair(pair types.CurrencyPair) (*types.TickerPrice, error) {
 		return nil, fmt.Errorf("failed to parse response")
 	}
 
-	sdkAmount, err := sdk.NewDecFromStr(amount)
+	price, err := providers.Float64StringToUint256(amount, pair.QuoteDecimals)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.TickerPrice{
-		Price:     sdkAmount,
+	return &types.QuotePrice{
+		Price:     price,
 		Timestamp: time.Now(),
 	}, nil
 }

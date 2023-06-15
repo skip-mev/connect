@@ -47,7 +47,7 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
+func (p *Provider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
 	return p.getPrices()
 }
 

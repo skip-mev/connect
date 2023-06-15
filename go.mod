@@ -11,6 +11,7 @@ require (
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/holiman/uint256 v1.2.2
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/sync v0.2.0

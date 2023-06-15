@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/cometbft/cometbft/libs/log"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	"golang.org/x/sync/errgroup"
@@ -224,13 +224,13 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 			}
 
 			o.priceAggregator.SetProviderPrices(provider, prices)
+			o.logger.Info(provider.Name(), "number of assets fetched", len(prices))
 
 			doneCh <- true
 		}()
 
 		select {
 		case <-doneCh:
-			o.logger.Info("fetched prices from provider", provider.Name())
 			break
 
 		case err := <-errCh:
@@ -265,6 +265,6 @@ func (o *Oracle) GetLastSyncTime() time.Time {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *Oracle) GetPrices() map[types.CurrencyPair]sdk.Dec {
+func (o *Oracle) GetPrices() map[types.CurrencyPair]*uint256.Int {
 	return o.priceAggregator.GetPrices()
 }
