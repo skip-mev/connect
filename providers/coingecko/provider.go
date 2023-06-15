@@ -20,12 +20,6 @@ type Provider struct {
 	pairs  []types.CurrencyPair
 	logger log.Logger
 
-	// cache is a map of base currencies to the quote currencies that the
-	// provider should fetch prices for. This is meant to be a simple optimization
-	// to avoid computing prices for pairs that the provider does not support since
-	// the CoinGecko API will return price info in a single response for all pairs.
-	cache map[string]map[string]struct{}
-
 	// bases is a list of base currencies that the provider should fetch
 	// prices for.
 	bases string
@@ -37,30 +31,27 @@ type Provider struct {
 
 // NewProvider returns a new CoinGecko provider.
 func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
-	cache := make(map[string]map[string]struct{})
-
 	seenQuotes := make(map[string]struct{})
 	quotes := make([]string, 0)
+
+	seenBases := make(map[string]struct{})
 	bases := make([]string, 0)
 
 	for _, pair := range pairs {
-		if _, ok := cache[pair.Base]; !ok {
-			cache[pair.Base] = make(map[string]struct{})
-			bases = append(bases, pair.Base)
-		}
-
-		cache[pair.Base][pair.Quote] = struct{}{}
-
 		if _, ok := seenQuotes[pair.Quote]; !ok {
 			seenQuotes[pair.Quote] = struct{}{}
 			quotes = append(quotes, pair.Quote)
+		}
+
+		if _, ok := seenBases[pair.Base]; !ok {
+			seenBases[pair.Base] = struct{}{}
+			bases = append(bases, pair.Base)
 		}
 	}
 
 	return &Provider{
 		pairs:  pairs,
 		logger: logger,
-		cache:  cache,
 		bases:  strings.Join(bases, ","),
 		quotes: strings.Join(quotes, ","),
 	}
