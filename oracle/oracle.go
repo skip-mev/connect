@@ -57,7 +57,7 @@ type Oracle struct {
 // the oracle fails to fetch prices from a given provider, it will continue to fetch prices
 // from the remaining providers. The oracle currently assumes that each provider aggregates prices
 // using TWAPs, TVWAPs, etc. When determining the aggregated price for a
-// given curreny pair, the oracle will compute the median price across all providers.
+// given currency pair, the oracle will compute the median price across all providers.
 func New(
 	logger log.Logger,
 	providerTimeout, oracleTicker time.Duration,

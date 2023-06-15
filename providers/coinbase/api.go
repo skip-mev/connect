@@ -11,17 +11,15 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
-var (
-	// NameToSymbol is a map of currency names to their symbols.
-	NameToSymbol = map[string]string{
-		"BITCOIN":  "BTC",
-		"COSMOS":   "ATOM",
-		"ETHEREUM": "ETH",
-		"USD":      "USD",
-		"POLKADOT": "DOT",
-		"POLYGON":  "MATIC",
-	}
-)
+// NameToSymbol is a map of currency names to their symbols.
+var NameToSymbol = map[string]string{
+	"BITCOIN":  "BTC",
+	"COSMOS":   "ATOM",
+	"ETHEREUM": "ETH",
+	"USD":      "USD",
+	"POLKADOT": "DOT",
+	"POLYGON":  "MATIC",
+}
 
 // getPriceForPair returns the spot price of a currency pair. In practice,
 // this should not be used because price data should come from an aggregated
@@ -47,7 +45,7 @@ func getPriceForPair(pair types.CurrencyPair) (*types.TickerPrice, error) {
 	}
 
 	url := getSpotPriceEndpoint(baseSymbol, quoteSymbol)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:all
 	if err != nil {
 		return nil, err
 	}

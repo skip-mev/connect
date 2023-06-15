@@ -29,7 +29,8 @@ import (
 //	}
 func (p *Provider) getPrices() (map[types.CurrencyPair]types.TickerPrice, error) {
 	url := getPriceEndpoint(p.bases, p.quotes)
-	resp, err := http.Get(url)
+
+	resp, err := http.Get(url) //nolint:all
 	if err != nil {
 		return nil, err
 	}
