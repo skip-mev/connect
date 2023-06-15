@@ -73,6 +73,39 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	}
 }
 
+func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
+	// insert a cp + qp pair, and check that the nonce is zero
+	cp := types.CurrencyPair{
+		Base:  "AA",
+		Quote: "BB",
+	}
+	qp := types.QuotePrice{
+		Price: sdk.NewInt(100),
+	}
+	// attempt to get the qp for cp (should fail)
+	_, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	assert.NotNil(s.T(), err)
+
+	// set the qp
+	err = s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp, qp)
+	assert.Nil(s.T(), err)
+
+	// check that the nonce is zero for the cp
+	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), qpn.Nonce(), uint64(0))
+
+	// update the qp
+	qp.Price = sdk.NewInt(101)
+	err = s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp, qp)
+	assert.Nil(s.T(), err)
+
+	// get the nonce again, and expect it to have incremented
+	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), qpn.Nonce(), uint64(1))
+}
+
 func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 	assert.Equal(t, qp1.BlockHeight, qp2.BlockHeight)
 	assert.Equal(t, qp1.BlockTimestamp.UnixMilli(), qp2.BlockTimestamp.UnixMilli())
@@ -103,6 +136,8 @@ func (s *KeeperTestSuite) TestGetAllTickers() {
 	// get all tickers
 	expectedTickers := map[string]struct{}{"AA/BB": {}, "CC/DD": {}}
 	tickers := s.oracleKeeper.GetAllTickers(s.ctx)
+
+	assert.Equal(s.T(), len(tickers), 2)
 
 	// check for inclusion
 	for _, ticker := range tickers {

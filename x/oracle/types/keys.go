@@ -13,23 +13,33 @@ const (
 
 const (
 	keyPrefixCurrencyPairIdx = iota
+	keyPrefixCurrencyPairNonceIdx
 )
 
-// KeyPrefixCurrencyPair is the key prefix under which all CurrencyPairs + QuotePrices will be stored under
-var KeyPrefixCurrencyPair = []byte{keyPrefixCurrencyPairIdx}
+var (
+	// KeyPrefixQuotePrice is the key prefix under which all CurrencyPairs + QuotePrices will be stored under
+	KeyPrefixQuotePrice = []byte{keyPrefixCurrencyPairIdx}
+	// KeyPrefixNonce is the key prefix under which all CurrencyPairs + nonces are stored
+	KeyPrefixNonce = []byte{keyPrefixCurrencyPairNonceIdx}
+)
 
-// GetStoreKeyForCurrencyPair gets the QuotePrice store-key for a CurrencyPair
-func (cp CurrencyPair) GetStoreKeyForCurrencyPair() []byte {
-	return append(KeyPrefixCurrencyPair, []byte(cp.ToString())...)
+// GetStoreKeyForQuotePrice gets the QuotePrice store-prefix for a CurrencyPair
+func (cp CurrencyPair) GetStoreKeyForQuotePrice() []byte {
+	return append(KeyPrefixQuotePrice, []byte(cp.ToString())...)
 }
 
-// GetCurrencyPairFromKey gets a CurrencyPair from a CurrencyPair store-index. This method errors if the
+// GetStoreKeyForNonce gets the store-prefix for nonces from the CurrencyPair
+func (cp CurrencyPair) GetStoreKeyForNonce() []byte {
+	return append(KeyPrefixNonce, []byte(cp.ToString())...)
+}
+
+// GetCurrencyPairFromQuotePriceKey gets a CurrencyPair from a CurrencyPair store-index. This method errors if the
 // CurrencyPair store-index is incorrectly formatted.
-func GetCurrencyPairFromKey(bz []byte) (CurrencyPair, error) {
-	if len(bz) < len(KeyPrefixCurrencyPair) {
+func GetCurrencyPairFromQuotePriceKey(bz []byte) (CurrencyPair, error) {
+	if len(bz) < len(KeyPrefixQuotePrice) {
 		return CurrencyPair{}, fmt.Errorf("invalid length of key: %v", len(bz))
 	}
 	// chop off prefix
-	bz = bz[len(KeyPrefixCurrencyPair):]
+	bz = bz[len(KeyPrefixQuotePrice):]
 	return CurrencyPairFromString(string(bz))
 }
