@@ -62,6 +62,7 @@ func (k Keeper) GetAllTickers(ctx sdk.Context) []types.CurrencyPair {
 
 	// iterate over all keys in store
 	it := storetypes.KVStorePrefixIterator(store, types.KeyPrefixCurrencyPair)
+	defer it.Close()
 	cps := make([]types.CurrencyPair, 0)
 
 	// iterate over all keys
