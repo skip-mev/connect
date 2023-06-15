@@ -18,54 +18,60 @@ func NewKeeper(sk storetypes.StoreKey) Keeper {
 	}
 }
 
-// Get the QuotePrice for a given CurrencyPair
+// GetPriceForCurrencyPair retrieves the QuotePrice for a given CurrencyPair. if a QuotePrice does not
+// exist for the given CurrencyPair, this function errors and returns an empty QuotePrice
 func (k Keeper) GetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (types.QuotePrice, error) {
-	// check validity of cp
-	if err := cp.ValidateBasic(); err != nil {
-		return types.QuotePrice{}, err
-	}
+	store := ctx.KVStore(k.storeKey)
 
 	// get QuotePrice for CurrencyPair (if any is stored)
-	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(cp.GetStoreKeyForCurrencyPair())
 
 	if len(bz) == 0 {
-		return types.QuotePrice{}, fmt.Errorf("no CurrencyPair price found for CurrencyPair")
+		return types.QuotePrice{}, fmt.Errorf("no QuotePrice price found for CurrencyPair: %s", cp)
 	}
 
+	// unmarshal
 	tp := types.QuotePrice{}
 	if err := tp.Unmarshal(bz); err != nil {
 		return types.QuotePrice{}, err
 	}
+
 	return tp, nil
 }
 
-// Set the QuotePrice for a given CurrencyPair
+// SetPriceForCurrencyPair sets the given QuotePrice for a given CurrencyPair. Note, no validation is performed on
+// either the CurrencyPair or the QuotePrice (it is expected the caller performs this validation).
 func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, qp types.QuotePrice) error {
-	// check validity of currency pair
-	if err := cp.ValidateBasic(); err != nil {
-		return err
-	}
-
 	store := ctx.KVStore(k.storeKey)
+
 	// marshal QuotePrice
 	bz, err := qp.Marshal()
 	if err != nil {
 		return fmt.Errorf("error marshalling QuotePrice: %v", err)
 	}
+
 	// set the marshalled QuotePrice to state under the CurrencyPair's store-key
 	store.Set(cp.GetStoreKeyForCurrencyPair(), bz)
+
 	return nil
 }
 
-func (k Keeper) GetAllTickers(ctx sdk.Context) ([]types.CurrencyPair, error) {
-	// get store
+// GetAllTickers returns all tickers that have currently been stored to state.
+func (k Keeper) GetAllTickers(ctx sdk.Context) []types.CurrencyPair {
 	store := ctx.KVStore(k.storeKey)
+
 	// iterate over all keys in store
-	it := store.Iterator(nil, nil)
+	it := storetypes.KVStorePrefixIterator(store, types.KeyPrefixCurrencyPair)
 	cps := make([]types.CurrencyPair, 0)
+
+	// iterate over all keys
 	for ; it.Valid(); it.Next() {
-		cps = append(cps, types.GetCurrencyPairFromKey(it.Key()))
+		cp, err := types.GetCurrencyPairFromKey(it.Key())
+		if err != nil {
+			continue
+		}
+		cps = append(cps, cp)
 	}
-	return cps, nil
+
+	return cps
 }

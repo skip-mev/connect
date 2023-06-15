@@ -39,15 +39,6 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 		expectPass bool
 	}{
 		{
-			"if the currency pair is incorrectly formatted - fail",
-			types.CurrencyPair{
-				Base:  "AA",
-				Quote: "aB",
-			},
-			types.QuotePrice{},
-			false,
-		},
-		{
 			"if the currency pair is correctly formatted - pass",
 			types.CurrencyPair{
 				Base:  "AA",
@@ -111,8 +102,7 @@ func (s *KeeperTestSuite) TestGetAllTickers() {
 
 	// get all tickers
 	expectedTickers := map[string]struct{}{"AA/BB": {}, "CC/DD": {}}
-	tickers, err := s.oracleKeeper.GetAllTickers(s.ctx)
-	assert.Nil(s.T(), err)
+	tickers := s.oracleKeeper.GetAllTickers(s.ctx)
 
 	// check for inclusion
 	for _, ticker := range tickers {
