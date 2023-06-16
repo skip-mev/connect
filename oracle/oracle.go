@@ -202,8 +202,8 @@ func (o *Oracle) tick(ctx context.Context) {
 // function panics, the wait group will cancel all other goroutines and skip the update for the
 // oracle.
 func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
-	return func() (err error) {
-		o.logger.Info("fetching prices from provider", provider.Name())
+	return func() error {
+		o.logger.Info(provider.Name(), "fetching prices")
 
 		doneCh := make(chan bool, 1)
 		errCh := make(chan error, 1)
@@ -212,8 +212,14 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 			// Recover from any panics while fetching prices.
 			defer func() {
 				if r := recover(); r != nil {
-					errCh <- fmt.Errorf("panic when fetching prices %v", r)
+					errCh <- fmt.Errorf("panic when fetching prices %s", r)
 				}
+
+				// In order to avoid a channel send after close, we close the channels
+				// in the defer statement. Additionally, this unblocks any goroutines
+				// waiting on the channels.
+				close(doneCh)
+				close(errCh)
 			}()
 
 			// Fetch and set prices from the provider.
@@ -224,22 +230,22 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 			}
 
 			o.priceAggregator.SetProviderPrices(provider, prices)
-			o.logger.Info(provider.Name(), "number of assets fetched", len(prices))
 
 			doneCh <- true
 		}()
 
 		select {
 		case <-doneCh:
+			o.logger.Info(provider.Name(), "successfully fetched prices")
 			break
 
 		case err := <-errCh:
-			o.logger.Error("failed to fetch prices from provider", provider.Name(), err)
+			o.logger.Error(provider.Name(), "failed to fetch prices", "err", err)
 			o.priceAggregator.SetProviderPrices(provider, nil)
 			break
 
 		case <-time.After(o.providerTimeout):
-			o.logger.Error("provider timed out", provider.Name())
+			o.logger.Error(provider.Name(), "timed out")
 			o.priceAggregator.SetProviderPrices(provider, nil)
 			break
 		}
