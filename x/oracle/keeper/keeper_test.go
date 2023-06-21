@@ -13,6 +13,12 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+const (
+	moduleAuth = "authority"
+)
+
+var moduleAuthAddr = sdk.AccAddress([]byte(moduleAuth))
+
 type KeeperTestSuite struct {
 	suite.Suite
 
@@ -23,7 +29,7 @@ type KeeperTestSuite struct {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.key = storetypes.NewKVStoreKey(types.StoreKey)
-	s.oracleKeeper = keeper.NewKeeper(s.key)
+	s.oracleKeeper = keeper.NewKeeper(s.key, moduleAuthAddr)
 	s.ctx = testutil.DefaultContext(s.key, storetypes.NewTransientStoreKey("transient_key"))
 }
 
@@ -54,22 +60,24 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	}
 
 	for _, tc := range tcs {
-		// set the price to state
-		err := s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, tc.cp, tc.price)
+		s.T().Run(tc.name, func(t *testing.T) {
+			// set the price to state
+			err := s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, tc.cp, tc.price)
 
-		switch tc.expectPass {
-		case true:
-			// expect the quote price to be written to state for the currency pair
-			assert.Nil(s.T(), err)
-			// expect that we can retrieve the QuotePrice for the currency pair
-			qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, tc.cp)
-			assert.Nil(s.T(), err)
-			// check equality
-			checkQuotePriceEqual(s.T(), qp, tc.price)
-		default:
-			// check that there was a failure setting the currency pair
-			assert.NotNil(s.T(), err)
-		}
+			switch tc.expectPass {
+			case true:
+				// expect the quote price to be written to state for the currency pair
+				assert.Nil(s.T(), err)
+				// expect that we can retrieve the QuotePrice for the currency pair
+				qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, tc.cp)
+				assert.Nil(s.T(), err)
+				// check equality
+				checkQuotePriceEqual(s.T(), qp, tc.price)
+			default:
+				// check that there was a failure setting the currency pair
+				assert.NotNil(s.T(), err)
+			}
+		})
 	}
 }
 
@@ -84,6 +92,10 @@ func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	}
 	// attempt to get the qp for cp (should fail)
 	_, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	assert.NotNil(s.T(), err)
+
+	// attempt to get the nonce for the cp (should fail)
+	_, err = s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
 	assert.NotNil(s.T(), err)
 
 	// set the qp
@@ -112,7 +124,7 @@ func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 	assert.Equal(t, qp1.Price.Int64(), qp2.Price.Int64())
 }
 
-func (s *KeeperTestSuite) TestGetAllTickers() {
+func (s *KeeperTestSuite) TestGetAllCPs() {
 	// insert multiple currency pairs
 	cp1 := types.CurrencyPair{
 		Base:  "AA",
@@ -133,16 +145,16 @@ func (s *KeeperTestSuite) TestGetAllTickers() {
 	assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
 	assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
 
-	// get all tickers
-	expectedTickers := map[string]struct{}{"AA/BB": {}, "CC/DD": {}}
-	tickers := s.oracleKeeper.GetAllTickers(s.ctx)
+	// get all cps
+	expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}}
+	tickers := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
 
 	assert.Equal(s.T(), len(tickers), 2)
 
 	// check for inclusion
 	for _, ticker := range tickers {
 		ts := ticker.ToString()
-		_, ok := expectedTickers[ts]
+		_, ok := expectedCurrencyPairs[ts]
 		assert.True(s.T(), ok)
 	}
 }

@@ -7,6 +7,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	cosmossdk.io/store v0.1.0-alpha.1.0.20230606190835-3e18f4088b2c
 	github.com/cometbft/cometbft v0.38.0-rc1
+	github.com/cosmos/cosmos-db v1.0.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.50.0-alpha.0
 	github.com/cosmos/gogoproto v1.4.10
@@ -45,7 +46,6 @@ require (
 	github.com/cockroachdb/redact v1.1.4 // indirect
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
-	github.com/cosmos/cosmos-db v1.0.0 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/iavl v1.0.0-beta.2 // indirect

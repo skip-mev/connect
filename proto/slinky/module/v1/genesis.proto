@@ -32,13 +32,22 @@ message QuotePrice {
   uint64 block_height = 3;
 }
 
-// TickerGenesis is the information necessary for initialization of a Ticker,
-// both a CurrencyPair + QuotePrice object is required
+// CurrencyPairGenesis is the information necessary for initialization of a
+// CurrencyPair.
 message CurrencyPairGenesis {
-  CurrencyPair currency_pair = 1;
+  // The CurrencyPair to be added to module state
+  CurrencyPair currency_pair = 1 [ (gogoproto.nullable) = false ];
+  // A genesis price if one exists (note this will be empty, unless it results
+  // from forking the state of this module)
   QuotePrice currency_pair_price = 2 [ (gogoproto.nullable) = true ];
+  // nonce is the nonce (number of updates) for the CP (same case as above,
+  // likely 0 unless it results from fork of module)
+  uint64 nonce = 3;
 }
 
 // GenesisState is the genesis-state for the x/oracle module, it takes a set of
-// predefined CurrencyPairs + prices
-message GenesisState { repeated CurrencyPairGenesis currency_pair_genesis = 1; }
+// predefined CurrencyPairGeneses
+message GenesisState {
+  repeated CurrencyPairGenesis currency_pair_genesis = 1
+      [ (gogoproto.nullable) = false ];
+}

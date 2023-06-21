@@ -1,6 +1,7 @@
 syntax = "proto3";
 package slinky.module.v1;
 
+import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "slinky/module/v1/genesis.proto";
 
@@ -22,15 +23,32 @@ service Query {
 
 message GetAllCurrencyPairsRequest {}
 
-message GetAllCurrencyPairsResponse { repeated CurrencyPair currency_pair = 1; }
+// GetAllCurrencyPairsResponse returns all CurrencyPairs that the module is
+// currently tracking
+message GetAllCurrencyPairsResponse {
+  repeated CurrencyPair currency_pairs = 1 [ (gogoproto.nullable) = false ];
+}
 
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
 // CurrencyPair in the format base/quote
 message GetPriceRequest {
-  oneof ticker_id {
+  // CurrencyPairSelector represents the types that the user may provide to the
+  // request to identify a CurrencyPair
+  oneof currency_pair_selector {
+    // CurrencyPair type
     CurrencyPair currency_pair = 1;
+    // stringified representation of the CurrencyPair (notice, this must be the
+    // result of CurrencyPair.ToString())
     string currency_pair_id = 2;
   }
 }
 
-message GetPriceResponse { QuotePrice price = 1; }
+// GetPriceResponse is the response from the GetPrice grpc method exposed from
+// the x/oracle query service
+message GetPriceResponse {
+  // QuotePrice represents the quote-price for the CurrencyPair given in
+  // GetPriceRequest (possibly nil if no update has been made)
+  QuotePrice price = 1 [ (gogoproto.nullable) = true ];
+  // nonce represents the nonce for the CurrencyPair if it exists in state
+  uint64 nonce = 2;
+}
