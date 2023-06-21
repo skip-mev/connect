@@ -33,13 +33,23 @@ func (cp CurrencyPair) GetStoreKeyForNonce() []byte {
 	return append(KeyPrefixNonce, []byte(cp.ToString())...)
 }
 
-// GetCurrencyPairFromQuotePriceKey gets a CurrencyPair from a CurrencyPair store-index. This method errors if the
+// GetCurrencyPairFromNonceKey gets a CurrencyPair from a CurrencyPair store-index. This method errors if the
 // CurrencyPair store-index is incorrectly formatted.
-func GetCurrencyPairFromQuotePriceKey(bz []byte) (CurrencyPair, error) {
-	if len(bz) < len(KeyPrefixQuotePrice) {
+func GetCurrencyPairFromNonceKey(bz []byte) (CurrencyPair, error) {
+	return getCurrencyPairFromKey(bz, KeyPrefixNonce)
+}
+
+// GetCurrencyPairFromPriceKey gets a CurrencyPair from a QuotePrice Key. This method errors if the
+// CurrencyPair store-index is incorrectly formatted.
+func GetCurrencyPairFromPriceKey(bz []byte) (CurrencyPair, error) {
+	return getCurrencyPairFromKey(bz, KeyPrefixQuotePrice)
+}
+
+func getCurrencyPairFromKey(bz []byte, prefix []byte) (CurrencyPair, error) {
+	if len(bz) <= len(prefix) {
 		return CurrencyPair{}, fmt.Errorf("invalid length of key: %v", len(bz))
 	}
 	// chop off prefix
-	bz = bz[len(KeyPrefixQuotePrice):]
+	bz = bz[len(prefix):]
 	return CurrencyPairFromString(string(bz))
 }

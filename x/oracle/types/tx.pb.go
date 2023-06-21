@@ -35,27 +35,27 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // check to see that the authority has permissions to update the set of
 // CurrencyPairs tracked in the oracle, and add the given CurrencyPairs to be
 // tracked in each VoteExtension
-type MsgSetCurrencyPairs struct {
+type MsgAddCurrencyPairs struct {
 	// authority is the address of the account that is authorized to update the
 	// x/oracle's CurrencyPairs
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// set of CurrencyPairs to be added to the module (+ prices if they are to be
 	// set)
-	CurrencyPairGenesis []*CurrencyPairGenesis `protobuf:"bytes,2,rep,name=currency_pair_genesis,json=currencyPairGenesis,proto3" json:"currency_pair_genesis,omitempty"`
+	CurrencyPairs []CurrencyPair `protobuf:"bytes,2,rep,name=currency_pairs,json=currencyPairs,proto3" json:"currency_pairs"`
 }
 
-func (m *MsgSetCurrencyPairs) Reset()         { *m = MsgSetCurrencyPairs{} }
-func (m *MsgSetCurrencyPairs) String() string { return proto.CompactTextString(m) }
-func (*MsgSetCurrencyPairs) ProtoMessage()    {}
-func (*MsgSetCurrencyPairs) Descriptor() ([]byte, []int) {
+func (m *MsgAddCurrencyPairs) Reset()         { *m = MsgAddCurrencyPairs{} }
+func (m *MsgAddCurrencyPairs) String() string { return proto.CompactTextString(m) }
+func (*MsgAddCurrencyPairs) ProtoMessage()    {}
+func (*MsgAddCurrencyPairs) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c6759b8cd4a1f8c9, []int{0}
 }
-func (m *MsgSetCurrencyPairs) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddCurrencyPairs) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetCurrencyPairs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddCurrencyPairs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetCurrencyPairs.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddCurrencyPairs.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -65,47 +65,47 @@ func (m *MsgSetCurrencyPairs) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSetCurrencyPairs) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetCurrencyPairs.Merge(m, src)
+func (m *MsgAddCurrencyPairs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddCurrencyPairs.Merge(m, src)
 }
-func (m *MsgSetCurrencyPairs) XXX_Size() int {
+func (m *MsgAddCurrencyPairs) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetCurrencyPairs) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetCurrencyPairs.DiscardUnknown(m)
+func (m *MsgAddCurrencyPairs) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddCurrencyPairs.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetCurrencyPairs proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddCurrencyPairs proto.InternalMessageInfo
 
-func (m *MsgSetCurrencyPairs) GetAuthority() string {
+func (m *MsgAddCurrencyPairs) GetAuthority() string {
 	if m != nil {
 		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgSetCurrencyPairs) GetCurrencyPairGenesis() []*CurrencyPairGenesis {
+func (m *MsgAddCurrencyPairs) GetCurrencyPairs() []CurrencyPair {
 	if m != nil {
-		return m.CurrencyPairGenesis
+		return m.CurrencyPairs
 	}
 	return nil
 }
 
-type MsgSetCurrencyPairsResponse struct {
+type MsgAddCurrencyPairsResponse struct {
 }
 
-func (m *MsgSetCurrencyPairsResponse) Reset()         { *m = MsgSetCurrencyPairsResponse{} }
-func (m *MsgSetCurrencyPairsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSetCurrencyPairsResponse) ProtoMessage()    {}
-func (*MsgSetCurrencyPairsResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAddCurrencyPairsResponse) Reset()         { *m = MsgAddCurrencyPairsResponse{} }
+func (m *MsgAddCurrencyPairsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddCurrencyPairsResponse) ProtoMessage()    {}
+func (*MsgAddCurrencyPairsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c6759b8cd4a1f8c9, []int{1}
 }
-func (m *MsgSetCurrencyPairsResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddCurrencyPairsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetCurrencyPairsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddCurrencyPairsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetCurrencyPairsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddCurrencyPairsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -115,27 +115,121 @@ func (m *MsgSetCurrencyPairsResponse) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgSetCurrencyPairsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetCurrencyPairsResponse.Merge(m, src)
+func (m *MsgAddCurrencyPairsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddCurrencyPairsResponse.Merge(m, src)
 }
-func (m *MsgSetCurrencyPairsResponse) XXX_Size() int {
+func (m *MsgAddCurrencyPairsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetCurrencyPairsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetCurrencyPairsResponse.DiscardUnknown(m)
+func (m *MsgAddCurrencyPairsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddCurrencyPairsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetCurrencyPairsResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddCurrencyPairsResponse proto.InternalMessageInfo
+
+type MsgRemoveCurrencyPairs struct {
+	// authority is the address of the account that is authorized to update the
+	// x/oracle's CurrencyPairs
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// currency_pair_ids are the stringified representation of a currency-pairs
+	// (base/quote) to be removed from the module's state
+	CurrencyPairIds []string `protobuf:"bytes,2,rep,name=currency_pair_ids,json=currencyPairIds,proto3" json:"currency_pair_ids,omitempty"`
+}
+
+func (m *MsgRemoveCurrencyPairs) Reset()         { *m = MsgRemoveCurrencyPairs{} }
+func (m *MsgRemoveCurrencyPairs) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveCurrencyPairs) ProtoMessage()    {}
+func (*MsgRemoveCurrencyPairs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c6759b8cd4a1f8c9, []int{2}
+}
+func (m *MsgRemoveCurrencyPairs) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveCurrencyPairs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveCurrencyPairs.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveCurrencyPairs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveCurrencyPairs.Merge(m, src)
+}
+func (m *MsgRemoveCurrencyPairs) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveCurrencyPairs) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveCurrencyPairs.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveCurrencyPairs proto.InternalMessageInfo
+
+func (m *MsgRemoveCurrencyPairs) GetAuthority() string {
+	if m != nil {
+		return m.Authority
+	}
+	return ""
+}
+
+func (m *MsgRemoveCurrencyPairs) GetCurrencyPairIds() []string {
+	if m != nil {
+		return m.CurrencyPairIds
+	}
+	return nil
+}
+
+type MsgRemoveCurrencyPairsResponse struct {
+}
+
+func (m *MsgRemoveCurrencyPairsResponse) Reset()         { *m = MsgRemoveCurrencyPairsResponse{} }
+func (m *MsgRemoveCurrencyPairsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveCurrencyPairsResponse) ProtoMessage()    {}
+func (*MsgRemoveCurrencyPairsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c6759b8cd4a1f8c9, []int{3}
+}
+func (m *MsgRemoveCurrencyPairsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRemoveCurrencyPairsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRemoveCurrencyPairsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRemoveCurrencyPairsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveCurrencyPairsResponse.Merge(m, src)
+}
+func (m *MsgRemoveCurrencyPairsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRemoveCurrencyPairsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveCurrencyPairsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRemoveCurrencyPairsResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgSetCurrencyPairs)(nil), "slinky.module.v1.MsgSetCurrencyPairs")
-	proto.RegisterType((*MsgSetCurrencyPairsResponse)(nil), "slinky.module.v1.MsgSetCurrencyPairsResponse")
+	proto.RegisterType((*MsgAddCurrencyPairs)(nil), "slinky.module.v1.MsgAddCurrencyPairs")
+	proto.RegisterType((*MsgAddCurrencyPairsResponse)(nil), "slinky.module.v1.MsgAddCurrencyPairsResponse")
+	proto.RegisterType((*MsgRemoveCurrencyPairs)(nil), "slinky.module.v1.MsgRemoveCurrencyPairs")
+	proto.RegisterType((*MsgRemoveCurrencyPairsResponse)(nil), "slinky.module.v1.MsgRemoveCurrencyPairsResponse")
 }
 
 func init() { proto.RegisterFile("slinky/module/v1/tx.proto", fileDescriptor_c6759b8cd4a1f8c9) }
 
 var fileDescriptor_c6759b8cd4a1f8c9 = []byte{
-	// 383 bytes of a gzipped FileDescriptorProto
+	// 441 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2c, 0xce, 0xc9, 0xcc,
 	0xcb, 0xae, 0xd4, 0xcf, 0xcd, 0x4f, 0x29, 0xcd, 0x49, 0xd5, 0x2f, 0x33, 0xd4, 0x2f, 0xa9, 0xd0,
 	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x80, 0x48, 0xe9, 0x41, 0xa4, 0xf4, 0xca, 0x0c, 0xa5,
@@ -143,23 +237,27 @@ var fileDescriptor_c6759b8cd4a1f8c9 = []byte{
 	0x17, 0xe7, 0xe6, 0x17, 0xc7, 0x83, 0x79, 0xfa, 0x10, 0x0e, 0x54, 0x4a, 0x1c, 0xc2, 0xd3, 0xcf,
 	0x2d, 0x4e, 0x07, 0xe9, 0xcb, 0x2d, 0x4e, 0x87, 0x4a, 0x08, 0x26, 0xe6, 0x66, 0xe6, 0xe5, 0xeb,
 	0x83, 0x49, 0xa8, 0x90, 0x48, 0x7a, 0x7e, 0x7a, 0x3e, 0xc4, 0x0c, 0x10, 0x0b, 0x22, 0xaa, 0x74,
-	0x86, 0x91, 0x4b, 0xd8, 0xb7, 0x38, 0x3d, 0x38, 0xb5, 0xc4, 0xb9, 0xb4, 0xa8, 0x28, 0x35, 0x2f,
+	0x94, 0x91, 0x4b, 0xd8, 0xb7, 0x38, 0xdd, 0x31, 0x25, 0xc5, 0xb9, 0xb4, 0xa8, 0x28, 0x35, 0x2f,
 	0xb9, 0x32, 0x20, 0x31, 0xb3, 0xa8, 0x58, 0xc8, 0x8c, 0x8b, 0x33, 0xb1, 0xb4, 0x24, 0x23, 0xbf,
 	0x28, 0xb3, 0xa4, 0x52, 0x82, 0x51, 0x81, 0x51, 0x83, 0xd3, 0x49, 0xe2, 0xd2, 0x16, 0x5d, 0x11,
 	0xa8, 0xf5, 0x8e, 0x29, 0x29, 0x45, 0xa9, 0xc5, 0xc5, 0xc1, 0x25, 0x45, 0x99, 0x79, 0xe9, 0x41,
-	0x08, 0xa5, 0x42, 0x1e, 0x5c, 0xa2, 0xc9, 0x50, 0x83, 0xe2, 0x0b, 0x12, 0x33, 0x8b, 0xe2, 0xa1,
-	0x7e, 0x91, 0x60, 0x52, 0x60, 0xd6, 0xe0, 0x36, 0x12, 0xd1, 0x43, 0xb6, 0xc6, 0x1d, 0x22, 0x17,
-	0x24, 0x9c, 0x8c, 0x29, 0x68, 0x65, 0xfc, 0x62, 0x81, 0x3c, 0x43, 0xd3, 0xf3, 0x0d, 0x5a, 0x08,
-	0xd3, 0xbb, 0x9e, 0x6f, 0xd0, 0x92, 0x81, 0x86, 0x56, 0x85, 0x7e, 0x7e, 0x51, 0x62, 0x72, 0x4e,
-	0xaa, 0xbe, 0x6f, 0x71, 0xba, 0x63, 0x4a, 0x4a, 0x48, 0x66, 0x72, 0x76, 0x6a, 0x91, 0x92, 0x2c,
-	0x97, 0x34, 0x16, 0xdf, 0x04, 0xa5, 0x16, 0x17, 0xe4, 0xe7, 0x15, 0xa7, 0x1a, 0x95, 0x72, 0x31,
-	0xfb, 0x16, 0xa7, 0x0b, 0xa5, 0x73, 0xf1, 0x3b, 0xa6, 0xa4, 0x20, 0x2b, 0x11, 0x52, 0xd5, 0x43,
-	0x8f, 0x17, 0x3d, 0x2c, 0x06, 0x49, 0xe9, 0x12, 0xa5, 0x0c, 0x66, 0x9f, 0x14, 0x6b, 0xc3, 0xf3,
-	0x0d, 0x5a, 0x8c, 0x4e, 0xce, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91,
-	0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0xa5,
-	0x99, 0x9e, 0x59, 0x92, 0x51, 0x9a, 0xa4, 0x97, 0x9c, 0x9f, 0xab, 0x5f, 0x9c, 0x9d, 0x59, 0xa0,
-	0x9b, 0x9b, 0x5a, 0xa6, 0x8f, 0xee, 0xc3, 0x92, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0x70, 0x84,
-	0x19, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x80, 0x1c, 0xcf, 0xfc, 0x5c, 0x02, 0x00, 0x00,
+	0x08, 0xa5, 0x42, 0x56, 0x5c, 0x7c, 0xc9, 0x50, 0x83, 0xe2, 0x0b, 0x40, 0x26, 0x49, 0x30, 0x29,
+	0x30, 0x6b, 0x70, 0x1b, 0xf1, 0xea, 0x21, 0x9b, 0xef, 0xc4, 0x72, 0xe2, 0x9e, 0x3c, 0x43, 0x10,
+	0x6f, 0x32, 0xb2, 0x9d, 0x56, 0x56, 0x2f, 0x16, 0xc8, 0x33, 0x34, 0x3d, 0xdf, 0xa0, 0x85, 0x30,
+	0xaf, 0xeb, 0xf9, 0x06, 0x2d, 0x65, 0x68, 0xf8, 0x54, 0xe8, 0xe7, 0x17, 0x25, 0x26, 0xe7, 0xa4,
+	0xea, 0xfb, 0x16, 0xa7, 0x07, 0xa7, 0x96, 0xa0, 0xb8, 0x57, 0x49, 0x96, 0x4b, 0x1a, 0x8b, 0x37,
+	0x82, 0x52, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a, 0x53, 0x95, 0x76, 0x30, 0x72, 0x89, 0xf9, 0x16, 0xa7,
+	0x07, 0xa5, 0xe6, 0xe6, 0x97, 0xa5, 0x52, 0xc7, 0xa7, 0x5a, 0x5c, 0x82, 0x28, 0x3e, 0x8d, 0xcf,
+	0x4c, 0x81, 0x78, 0x96, 0x33, 0x88, 0x1f, 0xd9, 0x5f, 0x9e, 0x29, 0x94, 0xf9, 0x4c, 0x81, 0x4b,
+	0x0e, 0xbb, 0xcb, 0x61, 0x9e, 0x33, 0x7a, 0xc9, 0xc8, 0xc5, 0xec, 0x5b, 0x9c, 0x2e, 0x94, 0xc1,
+	0x25, 0x80, 0x11, 0x8f, 0xaa, 0x7a, 0xe8, 0xe9, 0x4d, 0x0f, 0x4b, 0x38, 0x49, 0xe9, 0x12, 0xa5,
+	0x0c, 0x66, 0xa3, 0x50, 0x21, 0x97, 0x30, 0xb6, 0xa0, 0xd4, 0xc0, 0x6a, 0x0a, 0x16, 0x95, 0x52,
+	0x06, 0xc4, 0xaa, 0x84, 0x59, 0x29, 0xc5, 0xda, 0xf0, 0x7c, 0x83, 0x16, 0xa3, 0x93, 0xf3, 0x89,
+	0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0xc3,
+	0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x44, 0x69, 0xa6, 0x67, 0x96, 0x64, 0x94, 0x26,
+	0xe9, 0x25, 0xe7, 0xe7, 0xea, 0x17, 0x67, 0x67, 0x16, 0xe8, 0xe6, 0xa6, 0x96, 0xe9, 0xa3, 0x07,
+	0x70, 0x49, 0x65, 0x41, 0x6a, 0x71, 0x12, 0x1b, 0x38, 0xed, 0x1b, 0x03, 0x02, 0x00, 0x00, 0xff,
+	0xff, 0x21, 0x06, 0xf2, 0x52, 0xa7, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -174,11 +272,14 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// This method will be used explicitly by governance to update the set of
+	// AddCurrencyPair will be used explicitly by governance to update the set of
 	// available CurrencyPairs. Given a set of CurrencyPairGenesis objects, update
 	// the available currecy pairs in the module + their genesis prices (if they
 	// exist)
-	AddCurrencyPair(ctx context.Context, in *MsgSetCurrencyPairs, opts ...grpc.CallOption) (*MsgSetCurrencyPairsResponse, error)
+	AddCurrencyPairs(ctx context.Context, in *MsgAddCurrencyPairs, opts ...grpc.CallOption) (*MsgAddCurrencyPairsResponse, error)
+	// RemoveCurrencyPairs will be used explicitly by governance to remove the set
+	// of CurrencyPairs that the oracle will be providing feeds for.
+	RemoveCurrencyPairs(ctx context.Context, in *MsgRemoveCurrencyPairs, opts ...grpc.CallOption) (*MsgRemoveCurrencyPairsResponse, error)
 }
 
 type msgClient struct {
@@ -189,9 +290,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) AddCurrencyPair(ctx context.Context, in *MsgSetCurrencyPairs, opts ...grpc.CallOption) (*MsgSetCurrencyPairsResponse, error) {
-	out := new(MsgSetCurrencyPairsResponse)
-	err := c.cc.Invoke(ctx, "/slinky.module.v1.Msg/AddCurrencyPair", in, out, opts...)
+func (c *msgClient) AddCurrencyPairs(ctx context.Context, in *MsgAddCurrencyPairs, opts ...grpc.CallOption) (*MsgAddCurrencyPairsResponse, error) {
+	out := new(MsgAddCurrencyPairsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.module.v1.Msg/AddCurrencyPairs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RemoveCurrencyPairs(ctx context.Context, in *MsgRemoveCurrencyPairs, opts ...grpc.CallOption) (*MsgRemoveCurrencyPairsResponse, error) {
+	out := new(MsgRemoveCurrencyPairsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.module.v1.Msg/RemoveCurrencyPairs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -200,39 +310,63 @@ func (c *msgClient) AddCurrencyPair(ctx context.Context, in *MsgSetCurrencyPairs
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// This method will be used explicitly by governance to update the set of
+	// AddCurrencyPair will be used explicitly by governance to update the set of
 	// available CurrencyPairs. Given a set of CurrencyPairGenesis objects, update
 	// the available currecy pairs in the module + their genesis prices (if they
 	// exist)
-	AddCurrencyPair(context.Context, *MsgSetCurrencyPairs) (*MsgSetCurrencyPairsResponse, error)
+	AddCurrencyPairs(context.Context, *MsgAddCurrencyPairs) (*MsgAddCurrencyPairsResponse, error)
+	// RemoveCurrencyPairs will be used explicitly by governance to remove the set
+	// of CurrencyPairs that the oracle will be providing feeds for.
+	RemoveCurrencyPairs(context.Context, *MsgRemoveCurrencyPairs) (*MsgRemoveCurrencyPairsResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) AddCurrencyPair(ctx context.Context, req *MsgSetCurrencyPairs) (*MsgSetCurrencyPairsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddCurrencyPair not implemented")
+func (*UnimplementedMsgServer) AddCurrencyPairs(ctx context.Context, req *MsgAddCurrencyPairs) (*MsgAddCurrencyPairsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCurrencyPairs not implemented")
+}
+func (*UnimplementedMsgServer) RemoveCurrencyPairs(ctx context.Context, req *MsgRemoveCurrencyPairs) (*MsgRemoveCurrencyPairsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveCurrencyPairs not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_AddCurrencyPair_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetCurrencyPairs)
+func _Msg_AddCurrencyPairs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddCurrencyPairs)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AddCurrencyPair(ctx, in)
+		return srv.(MsgServer).AddCurrencyPairs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/slinky.module.v1.Msg/AddCurrencyPair",
+		FullMethod: "/slinky.module.v1.Msg/AddCurrencyPairs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddCurrencyPair(ctx, req.(*MsgSetCurrencyPairs))
+		return srv.(MsgServer).AddCurrencyPairs(ctx, req.(*MsgAddCurrencyPairs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RemoveCurrencyPairs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRemoveCurrencyPairs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RemoveCurrencyPairs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.module.v1.Msg/RemoveCurrencyPairs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RemoveCurrencyPairs(ctx, req.(*MsgRemoveCurrencyPairs))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -242,15 +376,19 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AddCurrencyPair",
-			Handler:    _Msg_AddCurrencyPair_Handler,
+			MethodName: "AddCurrencyPairs",
+			Handler:    _Msg_AddCurrencyPairs_Handler,
+		},
+		{
+			MethodName: "RemoveCurrencyPairs",
+			Handler:    _Msg_RemoveCurrencyPairs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "slinky/module/v1/tx.proto",
 }
 
-func (m *MsgSetCurrencyPairs) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddCurrencyPairs) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -260,20 +398,20 @@ func (m *MsgSetCurrencyPairs) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetCurrencyPairs) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddCurrencyPairs) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetCurrencyPairs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddCurrencyPairs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.CurrencyPairGenesis) > 0 {
-		for iNdEx := len(m.CurrencyPairGenesis) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.CurrencyPairs) > 0 {
+		for iNdEx := len(m.CurrencyPairs) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.CurrencyPairGenesis[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.CurrencyPairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -294,7 +432,7 @@ func (m *MsgSetCurrencyPairs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetCurrencyPairsResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddCurrencyPairsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -304,12 +442,74 @@ func (m *MsgSetCurrencyPairsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetCurrencyPairsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddCurrencyPairsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetCurrencyPairsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddCurrencyPairsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveCurrencyPairs) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveCurrencyPairs) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveCurrencyPairs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CurrencyPairIds) > 0 {
+		for iNdEx := len(m.CurrencyPairIds) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.CurrencyPairIds[iNdEx])
+			copy(dAtA[i:], m.CurrencyPairIds[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.CurrencyPairIds[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRemoveCurrencyPairsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRemoveCurrencyPairsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRemoveCurrencyPairsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -328,7 +528,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgSetCurrencyPairs) Size() (n int) {
+func (m *MsgAddCurrencyPairs) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -338,8 +538,8 @@ func (m *MsgSetCurrencyPairs) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if len(m.CurrencyPairGenesis) > 0 {
-		for _, e := range m.CurrencyPairGenesis {
+	if len(m.CurrencyPairs) > 0 {
+		for _, e := range m.CurrencyPairs {
 			l = e.Size()
 			n += 1 + l + sovTx(uint64(l))
 		}
@@ -347,7 +547,35 @@ func (m *MsgSetCurrencyPairs) Size() (n int) {
 	return n
 }
 
-func (m *MsgSetCurrencyPairsResponse) Size() (n int) {
+func (m *MsgAddCurrencyPairsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgRemoveCurrencyPairs) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.CurrencyPairIds) > 0 {
+		for _, s := range m.CurrencyPairIds {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgRemoveCurrencyPairsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -362,7 +590,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgSetCurrencyPairs) Unmarshal(dAtA []byte) error {
+func (m *MsgAddCurrencyPairs) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -385,10 +613,10 @@ func (m *MsgSetCurrencyPairs) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetCurrencyPairs: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddCurrencyPairs: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetCurrencyPairs: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddCurrencyPairs: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -425,7 +653,7 @@ func (m *MsgSetCurrencyPairs) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPairGenesis", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPairs", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -452,8 +680,8 @@ func (m *MsgSetCurrencyPairs) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CurrencyPairGenesis = append(m.CurrencyPairGenesis, &CurrencyPairGenesis{})
-			if err := m.CurrencyPairGenesis[len(m.CurrencyPairGenesis)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.CurrencyPairs = append(m.CurrencyPairs, CurrencyPair{})
+			if err := m.CurrencyPairs[len(m.CurrencyPairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -478,7 +706,7 @@ func (m *MsgSetCurrencyPairs) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSetCurrencyPairsResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddCurrencyPairsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -501,10 +729,174 @@ func (m *MsgSetCurrencyPairsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetCurrencyPairsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddCurrencyPairsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetCurrencyPairsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddCurrencyPairsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveCurrencyPairs) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveCurrencyPairs: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveCurrencyPairs: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPairIds", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CurrencyPairIds = append(m.CurrencyPairIds, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRemoveCurrencyPairsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgRemoveCurrencyPairsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgRemoveCurrencyPairsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
