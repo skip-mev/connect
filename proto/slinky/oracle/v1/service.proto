@@ -26,12 +26,3 @@ message QueryPricesResponse {
   google.protobuf.Timestamp timestamp = 2
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }
-
-// OracleVoteExtension defines the vote extension structure for oracle prices.
-message OracleVoteExtension {
-  // prices defines the list of prices.
-  map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
-  google.protobuf.Timestamp timestamp = 2
-      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
-  int64 height = 3;
-}
