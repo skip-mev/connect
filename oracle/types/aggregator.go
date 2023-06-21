@@ -65,20 +65,29 @@ func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
 	return cpy
 }
 
+// GetPricesByProvider returns the prices for a given provider.
+func (p *PriceAggregator) GetPricesByProvider(provider string) map[CurrencyPair]QuotePrice {
+	p.mtx.RLock()
+	defer p.mtx.RUnlock()
+
+	cpy := make(map[CurrencyPair]QuotePrice)
+	maps.Copy(cpy, p.providerPrices[provider])
+
+	return cpy
+}
+
 // SetQuotePrices updates the price aggregator with the latest ticker prices
 // from the given provider.
-func (p *PriceAggregator) SetProviderPrices(provider Provider, prices map[CurrencyPair]QuotePrice) {
+func (p *PriceAggregator) SetProviderPrices(provider string, prices map[CurrencyPair]QuotePrice) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
-	providerName := provider.Name()
-
 	if len(prices) == 0 {
-		p.providerPrices[providerName] = make(map[CurrencyPair]QuotePrice)
+		p.providerPrices[provider] = make(map[CurrencyPair]QuotePrice)
 		return
 	}
 
-	p.providerPrices[providerName] = prices
+	p.providerPrices[provider] = prices
 }
 
 // ResetProviderPrices resets the price aggregator for all providers.
@@ -93,8 +102,13 @@ func (p *PriceAggregator) ResetProviderPrices() {
 func (p *PriceAggregator) UpdatePrices() {
 	providerPrices := p.GetProviderPrices()
 
-	prices := p.aggregateFn(providerPrices)
-	p.SetPrices(prices)
+	// Ensure nil prices are not set
+	if prices := p.aggregateFn(providerPrices); prices != nil {
+		p.SetPrices(prices)
+		return
+	}
+
+	p.SetPrices(make(map[CurrencyPair]*uint256.Int))
 }
 
 // GetPrices returns the aggregated prices based on the provided currency pairs.

@@ -229,7 +229,7 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 				return
 			}
 
-			o.priceAggregator.SetProviderPrices(provider, prices)
+			o.priceAggregator.SetProviderPrices(provider.Name(), prices)
 
 			doneCh <- true
 		}()
@@ -241,12 +241,12 @@ func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
 
 		case err := <-errCh:
 			o.logger.Error(provider.Name(), "failed to fetch prices", "err", err)
-			o.priceAggregator.SetProviderPrices(provider, nil)
+			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
 			break
 
 		case <-time.After(o.providerTimeout):
 			o.logger.Error(provider.Name(), "timed out")
-			o.priceAggregator.SetProviderPrices(provider, nil)
+			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
 			break
 		}
 

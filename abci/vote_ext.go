@@ -7,6 +7,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
+	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/service"
 )
 
@@ -35,7 +36,7 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		h.logger.Info("retrieved oracle prices for vote extension", "height", req.Height, "last_sync_time", resp.Timestamp)
 
-		voteExt := &service.OracleVoteExtension{
+		voteExt := &types.OracleVoteExtension{
 			Height:    req.Height,
 			Prices:    resp.Prices,
 			Timestamp: resp.Timestamp,
@@ -52,7 +53,7 @@ func (h *VoteExtHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 func (h *VoteExtHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
-		voteExt := &service.OracleVoteExtension{}
+		voteExt := &types.OracleVoteExtension{}
 
 		if err := voteExt.Unmarshal(req.VoteExtension); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal vote extension: %w", err)

@@ -463,7 +463,7 @@ func (suite *OracleTestSuite) aggregateProviderData(
 		prices, err := provider.GetPrices()
 		suite.Require().NoError(err)
 
-		priceAggregator.SetProviderPrices(provider, prices)
+		priceAggregator.SetProviderPrices(provider.Name(), prices)
 	}
 
 	return priceAggregator.GetPrices()
