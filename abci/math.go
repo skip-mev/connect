@@ -5,7 +5,6 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/holiman/uint256"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 )
@@ -17,16 +16,6 @@ import (
 var DefaultPowerThreshold = math.LegacyNewDecWithPrec(667, 3)
 
 type (
-	// ValidatorStore defines the interface contract required for verifying vote
-	// extension data. This interface is used by the price aggregator to verify
-	// the voting power of each validator and currency pair.
-	//
-	//go:generate mockery --name ValidatorStore --filename mock_store.go
-	ValidatorStore interface {
-		GetValidator(ctx sdk.Context, addr sdk.ValAddress) (stakingtypes.Validator, bool)
-		TotalBondedTokens(ctx sdk.Context) math.Int
-	}
-
 	// StakeWeightPriceInfo tracks the stake weight(s) + price(s) for a given currency pair.
 	StakeWeightPriceInfo struct {
 		Prices      []StakeWeightPrice

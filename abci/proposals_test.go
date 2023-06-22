@@ -7,7 +7,9 @@ import (
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/skip-mev/slinky/abci"
+	"github.com/skip-mev/slinky/abci/mocks"
 	"github.com/skip-mev/slinky/abci/types"
+	oracletypes "github.com/skip-mev/slinky/oracle/types"
 )
 
 func (suite *ABCITestSuite) TestPrepareProposal() {
@@ -278,6 +280,9 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
 				aggregateFn,
+				mocks.NewApp(suite.T()),
+				mocks.NewOracleKeeper(suite.T()),
+				suite.NoOpValidateVEFn(),
 			)
 			prepareProposalHandler := suite.proposalHandler.PrepareProposalHandler()
 
@@ -309,5 +314,302 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 }
 
 func (suite *ABCITestSuite) TestProcessProposal() {
-	suite.T().Skip("TODO")
+	cases := []struct {
+		name          string
+		getTxs        func() [][]byte
+		expectedError bool
+	}{
+		{
+			name: "no txs",
+			getTxs: func() [][]byte {
+				return nil
+			},
+			expectedError: true,
+		},
+		{
+			name: "single tx (no oracle data)",
+			getTxs: func() [][]byte {
+				return [][]byte{
+					[]byte("tx"),
+				}
+			},
+			expectedError: true,
+		},
+		{
+			name: "empty oracle data and vote extensions",
+			getTxs: func() [][]byte {
+				oracleData := types.OracleData{}
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+				}
+			},
+			expectedError: false,
+		},
+		{
+			name: "empty oracle data and non-empty vote extensions",
+			getTxs: func() [][]byte {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1},
+				)
+
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+				}
+			},
+			expectedError: true,
+		},
+		{
+			name: "non-empty oracle data and empty vote extensions",
+			getTxs: func() [][]byte {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1},
+				)
+
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+				}
+			},
+			expectedError: true,
+		},
+		{
+			name: "non-empty oracle data and non-empty vote extensions",
+			getTxs: func() [][]byte {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1},
+				)
+
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+				}
+			},
+			expectedError: false,
+		},
+		{
+			name: "non-empty oracle data and non-empty vote extensions (multiple validators)",
+			getTxs: func() [][]byte {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+						"ETH/USD/6":  "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1, voteExtension2},
+				)
+
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+				}
+			},
+			expectedError: false,
+		},
+		{
+			name: "non-empty oracle data and non-empty vote extensions (multiple validators, multiple txs)",
+			getTxs: func() [][]byte {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+						"ETH/USD/6":  "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1, voteExtension2},
+				)
+
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+					[]byte("tx"),
+					[]byte("tx2"),
+				}
+			},
+			expectedError: false,
+		},
+		{
+			name: "multiple validators posting prices for same asset",
+			getTxs: func() [][]byte {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"BTC/ETH/18": "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension3 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"BTC/ETH/18": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18": "0x2",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{
+						voteExtension1,
+						voteExtension2,
+						voteExtension3,
+					},
+				)
+
+				oracleDataBytes, err := oracleData.Marshal()
+				suite.Require().NoError(err)
+
+				return [][]byte{
+					oracleDataBytes,
+				}
+			},
+			expectedError: false,
+		},
+	}
+
+	for _, tc := range cases {
+		suite.Run(tc.name, func() {
+			suite.SetupTest()
+
+			// Create a proposal handler.
+			suite.proposalHandler = abci.NewProposalHandler(
+				log.NewNopLogger(),
+				suite.prepareProposalHandler,
+				suite.processProposalHandler,
+				oracletypes.ComputeMedian(),
+				suite.createMockBaseApp(suite.ctx, tc.expectedError == false),
+				suite.oracleKeeper,
+				suite.NoOpValidateVEFn(),
+			)
+			processProposalHandler := suite.proposalHandler.ProcessProposalHandler()
+
+			// Create a proposal.
+			req := &cometabci.RequestProcessProposal{
+				Txs: tc.getTxs(),
+			}
+			resp, err := processProposalHandler(suite.ctx, req)
+			if tc.expectedError {
+				suite.Require().Error(err)
+				suite.Require().Nil(resp)
+			} else {
+				suite.Require().NoError(err)
+				suite.Require().NotNil(resp)
+			}
+		})
+	}
 }
