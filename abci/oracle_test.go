@@ -3,8 +3,12 @@ package abci_test
 import (
 	"time"
 
+	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/holiman/uint256"
+	"github.com/skip-mev/slinky/abci"
+	"github.com/skip-mev/slinky/abci/mocks"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 )
@@ -281,6 +285,385 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 				price, err := uint256.FromHex(priceStr)
 				suite.Require().NoError(err)
 				suite.Require().Equal(expectedPrice, price)
+			}
+		})
+	}
+}
+
+func (suite *ABCITestSuite) TestVerifyOracleData() {
+	cases := []struct {
+		name          string
+		getOracleInfo func() abcitypes.OracleData
+		expectedError bool
+	}{
+		{
+			name: "empty oracle info",
+			getOracleInfo: func() abcitypes.OracleData {
+				return abcitypes.OracleData{}
+			},
+			expectedError: false,
+		},
+		{
+			name: "valid oracle info with a single price",
+			getOracleInfo: func() abcitypes.OracleData {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1},
+				)
+
+				return oracleData
+			},
+			expectedError: false,
+		},
+		{
+			name: "valid oracle info with multiple prices from single validator",
+			getOracleInfo: func() abcitypes.OracleData {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1},
+				)
+
+				return oracleData
+			},
+			expectedError: false,
+		},
+		{
+			name: "valid oracle info with multiple prices from multiple validators",
+			getOracleInfo: func() abcitypes.OracleData {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+						"ETH/USD/6":  "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18":  "0x1",
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1, voteExtension2},
+				)
+
+				return oracleData
+			},
+			expectedError: false,
+		},
+		{
+			name: "vote extensions with multiple prices but some are missing in oracle data",
+			getOracleInfo: func() abcitypes.OracleData {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+						"ETH/USD/6":  "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"ETH/USD/6":   "0x2",
+						"ATOM/USDC/6": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{voteExtension1, voteExtension2},
+				)
+
+				return oracleData
+			},
+			expectedError: true,
+		},
+		{
+			name: "multiple vote extensions for the same asset but with different prices",
+			getOracleInfo: func() abcitypes.OracleData {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"BTC/ETH/18": "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension3 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"BTC/ETH/18": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18": "0x2",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{
+						voteExtension1,
+						voteExtension2,
+						voteExtension3,
+					},
+				)
+
+				return oracleData
+			},
+			expectedError: false,
+		},
+		{
+			name: "oracle data reported the wrong prices",
+			getOracleInfo: func() abcitypes.OracleData {
+				voteExtension1 := suite.createExtendedVoteInfo(
+					validator1,
+					map[string]string{
+						"BTC/ETH/18": "0x1",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension2 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"BTC/ETH/18": "0x2",
+					},
+					time.Now(),
+					100,
+				)
+
+				voteExtension3 := suite.createExtendedVoteInfo(
+					validator2,
+					map[string]string{
+						"BTC/ETH/18": "0x3",
+					},
+					time.Now(),
+					100,
+				)
+
+				oracleData := suite.createOracleData(
+					map[string]string{
+						"BTC/ETH/18": "0x3",
+					},
+					time.Now(),
+					100,
+					[]cometabci.ExtendedVoteInfo{
+						voteExtension1,
+						voteExtension2,
+						voteExtension3,
+					},
+				)
+
+				return oracleData
+			},
+			expectedError: true,
+		},
+	}
+
+	for _, tc := range cases {
+		suite.Run(tc.name, func() {
+			suite.proposalHandler = abci.NewProposalHandler(
+				log.NewNopLogger(),
+				suite.prepareProposalHandler,
+				suite.processProposalHandler,
+				oracletypes.ComputeMedian(),
+				mocks.NewApp(suite.T()),
+				mocks.NewOracleKeeper(suite.T()),
+				suite.NoOpValidateVEFn(),
+			)
+
+			oracleInfo := tc.getOracleInfo()
+
+			extendedCommitInfo := cometabci.ExtendedCommitInfo{}
+			suite.Require().NoError(extendedCommitInfo.Unmarshal(oracleInfo.ExtendedCommitInfo))
+
+			_, err := suite.proposalHandler.VerifyOracleData(suite.ctx, oracleInfo, extendedCommitInfo)
+			if tc.expectedError {
+				suite.Require().Error(err)
+			} else {
+				suite.Require().NoError(err)
+			}
+		})
+	}
+}
+
+func (suite *ABCITestSuite) TestWriteOracleData() {
+	cases := []struct {
+		name          string
+		oracleData    *abcitypes.OracleData
+		expectedError bool
+	}{
+		{
+			name: "empty oracle data",
+			oracleData: &abcitypes.OracleData{
+				Prices: map[string]string{},
+				Height: 2,
+			},
+			expectedError: false,
+		},
+		{
+			name: "single valid oracle data",
+			oracleData: &abcitypes.OracleData{
+				Prices: map[string]string{
+					"BTC/ETH": "0x1",
+				},
+				Height: 2,
+			},
+			expectedError: false,
+		},
+		{
+			name: "multiple valid oracle data",
+			oracleData: &abcitypes.OracleData{
+				Prices: map[string]string{
+					"BTC/ETH": "0x1",
+					"ETH/USD": "0x2",
+				},
+				Height: 2,
+			},
+			expectedError: false,
+		},
+		{
+			name: "posting prices that are not supported by the oracle module",
+			oracleData: &abcitypes.OracleData{
+				Prices: map[string]string{
+					"BTC/ETH":   "0x1",
+					"ETH/USD":   "0x2",
+					"ATOM/USDC": "0x3",
+				},
+				Height: 2,
+			},
+			expectedError: false,
+		},
+		{
+			name: "posting prices that are not supported by the oracle module",
+			oracleData: &abcitypes.OracleData{
+				Prices: map[string]string{
+					"BTC/ETH": "1",
+				},
+				Height: 2,
+			},
+			expectedError: true,
+		},
+	}
+
+	for _, tc := range cases {
+		suite.Run(tc.name, func() {
+			suite.oracleKeeper.InitGenesis(suite.ctx, suite.genesis)
+
+			suite.proposalHandler = abci.NewProposalHandler(
+				log.NewNopLogger(),
+				suite.prepareProposalHandler,
+				suite.processProposalHandler,
+				suite.aggregateFn,
+				suite.createMockBaseApp(suite.ctx, true),
+				suite.oracleKeeper,
+				suite.NoOpValidateVEFn(),
+			)
+
+			err := suite.proposalHandler.WriteOracleData(suite.ctx, tc.oracleData)
+			// ensure that no new currency pairs were added to the module
+			currencyPairs := suite.oracleKeeper.GetAllCurrencyPairs(suite.ctx)
+			keeperCPs := make(map[string]struct{})
+			oracleCPs := make(map[string]struct{})
+
+			for _, cp := range suite.currencyPairs {
+				keeperCPs[cp.ToString()] = struct{}{}
+			}
+
+			for _, cp := range currencyPairs {
+				oracleCPs[cp.ToString()] = struct{}{}
+			}
+			suite.Require().Equal(keeperCPs, oracleCPs)
+
+			if tc.expectedError {
+				suite.Require().Error(err)
+				return
+			}
+
+			// ensure that the prices were written to the store
+			for _, currencyPair := range currencyPairs {
+				// If the currency pair is not in the oracle data, then skip it.
+				priceHex, ok := tc.oracleData.Prices[currencyPair.ToString()]
+				if !ok {
+					continue
+				}
+
+				price, err := uint256.FromHex(priceHex)
+				suite.Require().NoError(err)
+				sdkInt := math.NewIntFromBigInt(price.ToBig())
+
+				priceInfo, err := suite.oracleKeeper.GetPriceWithNonceForCurrencyPair(suite.ctx, currencyPair)
+				suite.Require().NoError(err)
+
+				suite.Require().Equal(sdkInt, priceInfo.Price)
+				suite.Require().Equal(uint64(tc.oracleData.Height), priceInfo.BlockHeight)
+				suite.Require().Equal(uint64(1), priceInfo.Nonce())
 			}
 		})
 	}

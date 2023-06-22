@@ -15,8 +15,9 @@ import (
 	"github.com/skip-mev/slinky/abci"
 	"github.com/skip-mev/slinky/abci/mocks"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
-	oraclemoduletypes "github.com/skip-mev/slinky/x/oracle/types"
+	oracleservice "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -28,7 +29,12 @@ type ABCITestSuite struct {
 	proposalHandler        *abci.ProposalHandler
 	prepareProposalHandler sdk.PrepareProposalHandler
 	processProposalHandler sdk.ProcessProposalHandler
-	aggregateFn            oracletypes.AggregateFn
+	aggregateFn            oracleservice.AggregateFn
+
+	// oracle keeper set up.
+	oracleKeeper  keeper.Keeper
+	currencyPairs []oracletypes.CurrencyPair
+	genesis       oracletypes.GenesisState
 }
 
 func TestABCITestSuite(t *testing.T) {
@@ -36,24 +42,94 @@ func TestABCITestSuite(t *testing.T) {
 }
 
 func (suite *ABCITestSuite) SetupTest() {
-	testCtx := testutil.DefaultContextWithDB(
-		suite.T(),
-		storetypes.NewKVStoreKey(oraclemoduletypes.StoreKey),
-		storetypes.NewTransientStoreKey("transient_test"),
-	)
-	suite.ctx = testCtx.Ctx.WithBlockHeight(1)
+	suite.setUpOracleKeeper()
 
 	// Use the default no-op prepare and process proposal handlers from the sdk.
 	suite.prepareProposalHandler = baseapp.NoOpPrepareProposal()
 	suite.processProposalHandler = baseapp.NoOpProcessProposal()
-	suite.aggregateFn = oracletypes.ComputeMedian()
+	suite.aggregateFn = oracleservice.ComputeMedian()
 
 	suite.proposalHandler = abci.NewProposalHandler(
 		log.NewNopLogger(),
 		suite.prepareProposalHandler,
 		suite.processProposalHandler,
 		suite.aggregateFn,
+		mocks.NewApp(suite.T()),
+		suite.oracleKeeper,
+		suite.NoOpValidateVEFn(),
 	)
+}
+
+func (suite *ABCITestSuite) NoOpValidateVEFn() abci.ValidateVoteExtensionsFn {
+	return func(extendedCommitInfo cometabci.ExtendedCommitInfo) error {
+		return nil
+	}
+}
+
+func (suite *ABCITestSuite) setUpOracleKeeper() {
+	key := storetypes.NewKVStoreKey(oracletypes.StoreKey)
+	suite.oracleKeeper = keeper.NewKeeper(
+		key,
+		sdk.AccAddress([]byte("authority")),
+	)
+
+	testCtx := testutil.DefaultContextWithDB(
+		suite.T(),
+		key,
+		storetypes.NewTransientStoreKey("transient_test"),
+	)
+	suite.ctx = testCtx.Ctx.WithBlockHeight(2)
+
+	suite.currencyPairs = []oracletypes.CurrencyPair{
+		{
+			Base:  "BTC",
+			Quote: "ETH",
+		},
+		{
+			Base:  "BTC",
+			Quote: "USD",
+		},
+		{
+			Base:  "ETH",
+			Quote: "USD",
+		},
+	}
+	genesisCPs := []oracletypes.CurrencyPairGenesis{
+		{
+			CurrencyPair: suite.currencyPairs[0],
+			Nonce:        0,
+		},
+		{
+			CurrencyPair: suite.currencyPairs[1],
+			Nonce:        0,
+		},
+		{
+			CurrencyPair: suite.currencyPairs[2],
+			Nonce:        0,
+		},
+	}
+	suite.genesis = oracletypes.GenesisState{
+		CurrencyPairGenesis: genesisCPs,
+	}
+
+	suite.oracleKeeper.InitGenesis(suite.ctx, suite.genesis)
+}
+
+func (suite *ABCITestSuite) createMockBaseApp(
+	ctx sdk.Context,
+	called bool,
+) *mocks.App {
+	app := mocks.NewApp(suite.T())
+
+	if called {
+		app.On(
+			"GetFinalizeBlockStateCtx",
+		).Return(
+			ctx,
+		)
+	}
+
+	return app
 }
 
 func (suite *ABCITestSuite) createMockValidatorStore(
@@ -145,4 +221,22 @@ func (suite *ABCITestSuite) createVoteExtension(
 
 func (suite *ABCITestSuite) createValAddress(prefix string) sdk.ValAddress {
 	return sdk.ValAddress(prefix + suite.T().Name())
+}
+
+func (suite *ABCITestSuite) createOracleData(
+	finalPrices map[string]string,
+	timestamp time.Time,
+	height int64,
+	extendedVoteInfos []cometabci.ExtendedVoteInfo,
+) abcitypes.OracleData {
+	extendedCommitInfo := suite.createExtendedCommitInfo(extendedVoteInfos)
+	infoBz, err := extendedCommitInfo.Marshal()
+	suite.Require().NoError(err)
+
+	return abcitypes.OracleData{
+		Prices:             finalPrices,
+		Timestamp:          timestamp,
+		Height:             height,
+		ExtendedCommitInfo: infoBz,
+	}
 }

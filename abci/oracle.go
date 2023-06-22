@@ -3,11 +3,13 @@ package abci
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci/types"
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	oracleservice "github.com/skip-mev/slinky/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // AggregateOracleData ingresses extended commit info which contains all of the
@@ -73,7 +75,7 @@ func (h *ProposalHandler) AggregateOracleData(
 func (h *ProposalHandler) BuildOracleTx(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
-	prices map[oracletypes.CurrencyPair]*uint256.Int,
+	prices map[oracleservice.CurrencyPair]*uint256.Int,
 ) ([]byte, error) {
 	// Convert the prices to a string map of currency pair -> price.
 	priceMap := make(map[string]string)
@@ -116,7 +118,7 @@ func (h *ProposalHandler) AddOracleDataToAggregator(address string, oracleData *
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
-	prices := make(map[oracletypes.CurrencyPair]oracletypes.QuotePrice)
+	prices := make(map[oracleservice.CurrencyPair]oracleservice.QuotePrice)
 	for asset, priceString := range oracleData.Prices {
 		// Convert the price to a uint256.Int. All price feeds are expected to be
 		// in the form of a string hex before conversion.
@@ -126,12 +128,12 @@ func (h *ProposalHandler) AddOracleDataToAggregator(address string, oracleData *
 		}
 
 		// Convert the asset into a currency pair.
-		currencyPair, err := oracletypes.NewCurrencyPairFromString(asset)
+		currencyPair, err := oracleservice.NewCurrencyPairFromString(asset)
 		if err != nil {
 			continue
 		}
 
-		prices[currencyPair] = oracletypes.QuotePrice{
+		prices[currencyPair] = oracleservice.QuotePrice{
 			Price:     price,
 			Timestamp: oracleData.Timestamp,
 		}
@@ -155,4 +157,105 @@ func (h *ProposalHandler) GetOracleDataFromVE(voteExtension []byte) (*types.Orac
 	}
 
 	return oracleData, nil
+}
+
+// VerifyOracleData verifies that the oracle data provided by the proposer is valid. The
+// oracle data is valid if:
+//  1. The number of prices in the oracle data matches the number of prices in the
+//     proposal oracle data.
+//  2. The prices for each asset in the oracle data matches the prices for each asset
+//     in the proposal oracle data.
+//
+// The same exact aggregation logic that was run in the prepare proposal handler is
+// run here to verify the oracle data.
+func (h *ProposalHandler) VerifyOracleData(
+	ctx sdk.Context,
+	proposalOracleData types.OracleData,
+	extendedCommitInfo cometabci.ExtendedCommitInfo,
+) (*types.OracleData, error) {
+	// Process the oracle info by re-running the same aggregation logic
+	// that was run in the prepare proposal handler.
+	oracleInfoBytes, err := h.AggregateOracleData(ctx, extendedCommitInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	oracleData := &types.OracleData{}
+	if err := oracleData.Unmarshal(oracleInfoBytes); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal oracle data: %w", err)
+	}
+
+	// invariant 1: The number of prices in calculated oracle data must match the number of prices
+	// in the proposal oracle data.
+	if len(oracleData.Prices) != len(proposalOracleData.Prices) {
+		return nil, fmt.Errorf("invalid number of prices in oracle data")
+	}
+
+	// invariant 2: The prices for each asset in the calculated oracle data must match the prices
+	// for each asset in the proposal oracle data.
+	for asset, priceStr := range oracleData.Prices {
+		proposalPriceStr, ok := proposalOracleData.Prices[asset]
+		if !ok {
+			return nil, fmt.Errorf("missing asset %s in oracle data", asset)
+		}
+
+		price, err := uint256.FromHex(priceStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid price %s for asset %s", priceStr, asset)
+		}
+
+		proposalPrice, err := uint256.FromHex(proposalPriceStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid proposal price %s for asset %s", proposalPrice, asset)
+		}
+
+		if !price.Eq(proposalPrice) {
+			return nil, fmt.Errorf("price mismatch for asset %s", asset)
+		}
+	}
+
+	return oracleData, nil
+}
+
+// WriteOracleData writes the oracle data to state for the supported assets.
+func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData *types.OracleData) error {
+	// Per the cosmos sdk, the first block should not utilize the latest finalize block state.
+	//
+	// Ref: https://github.com/cosmos/cosmos-sdk/blob/2100a73dcea634ce914977dbddb4991a020ee345/baseapp/baseapp.go#L488-L495
+	if ctx.BlockHeight() <= 1 {
+		h.logger.Info("skipping oracle data write for first block")
+		return nil
+	}
+
+	// Get the latest finalize state to write data to.
+	stateCtx := h.baseApp.GetFinalizeBlockStateCtx()
+
+	// Get the currency pairs currently supported by the oracle module.
+	currencyPairs := h.oracleKeeper.GetAllCurrencyPairs(ctx)
+	for _, cp := range currencyPairs {
+		// Check if there is a price update for the given currency pair.
+		priceStr, ok := oracleData.Prices[cp.ToString()]
+		if !ok {
+			continue
+		}
+
+		// Set the price for the currency pair.
+		price, err := uint256.FromHex(priceStr)
+		if err != nil {
+			return err
+		}
+
+		// convert big int to sdk int
+		quotePrice := oracletypes.QuotePrice{
+			Price:          math.NewIntFromBigInt(price.ToBig()),
+			BlockTimestamp: oracleData.Timestamp,
+			BlockHeight:    uint64(oracleData.Height),
+		}
+
+		if err := h.oracleKeeper.SetPriceForCurrencyPair(stateCtx, cp, quotePrice); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

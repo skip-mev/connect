@@ -6,22 +6,46 @@ import (
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/abci/types"
+	oracleservice "github.com/skip-mev/slinky/oracle/types"
 )
 
-type ProposalHandler struct {
-	logger log.Logger
+const (
+	// NumInjectedTxs is the number of transactions that were injected into
+	// the proposal but are not actual transactions. In this case, the oracle
+	// info is injected into the proposal but should be ignored by the application.
+	NumInjectedTxs = 1
 
-	// prepareProposalHandler fills a proposal with transactions.
-	prepareProposalHandler sdk.PrepareProposalHandler
+	// OracleInfoIndex is the index of the oracle info in the proposal.
+	OracleInfoIndex = 0
+)
 
-	// processProposalHandler processes transactions in a proposal.
-	processProposalHandler sdk.ProcessProposalHandler
+type (
+	ProposalHandler struct {
+		logger log.Logger
 
-	// priceAggregator is responsible for aggregating prices from each validator
-	// and computing the final oracle price for each asset.
-	priceAggregator *oracletypes.PriceAggregator
-}
+		// prepareProposalHandler fills a proposal with transactions.
+		prepareProposalHandler sdk.PrepareProposalHandler
+
+		// processProposalHandler processes transactions in a proposal.
+		processProposalHandler sdk.ProcessProposalHandler
+
+		// priceAggregator is responsible for aggregating prices from each validator
+		// and computing the final oracle price for each asset.
+		priceAggregator *oracleservice.PriceAggregator
+
+		// baseApp is the base application. This is utilized to retrieve the
+		// state context for writing oracle data to state.
+		baseApp App
+
+		// oraclekeeper is the keeper for the oracle module. This is utilized
+		// to write oracle data to state.
+		oracleKeeper OracleKeeper
+
+		// validateVoteExtensionsFn is the function responsible for validating vote extensions.
+		validateVoteExtensionsFn ValidateVoteExtensionsFn
+	}
+)
 
 // NewProposalHandler returns a new ProposalHandler. The proposalhandler is responsible
 // primarily for:
@@ -34,13 +58,19 @@ func NewProposalHandler(
 	logger log.Logger,
 	prepareProposalHandler sdk.PrepareProposalHandler,
 	processProposalHandler sdk.ProcessProposalHandler,
-	aggregateFn oracletypes.AggregateFn,
+	aggregateFn oracleservice.AggregateFn,
+	baseapp App,
+	oracleKeeper OracleKeeper,
+	validateVoteExtensionsFn ValidateVoteExtensionsFn,
 ) *ProposalHandler {
 	return &ProposalHandler{
-		prepareProposalHandler: prepareProposalHandler,
-		processProposalHandler: processProposalHandler,
-		logger:                 logger,
-		priceAggregator:        oracletypes.NewPriceAggregator(aggregateFn),
+		prepareProposalHandler:   prepareProposalHandler,
+		processProposalHandler:   processProposalHandler,
+		logger:                   logger,
+		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn),
+		baseApp:                  baseapp,
+		oracleKeeper:             oracleKeeper,
+		validateVoteExtensionsFn: validateVoteExtensionsFn,
 	}
 }
 
@@ -86,9 +116,70 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 	}
 }
 
+// ProcessProposalHandler returns a ProcessProposalHandler that will be called
+// by base app when a new block proposal needs to be verified. The ProcessProposalHandler
+// will first verify that the vote extensions included in the proposal are valid and compose
+// a supermajority of signatures and vote extensions for the current block. Then, the
+// handler will verify that the oracle data provided by the proposer matches the vote extensions
+// included in the proposal. Finally, the handler will write the oracle data to state and
+// process the transactions in the proposal with the oracle data removed.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 		h.logger.Info("processing proposal for height %d", req.Height)
-		return h.processProposalHandler(ctx, req)
+
+		// There must be at least one slot in the proposal for the oracle info.
+		if len(req.Txs) < NumInjectedTxs {
+			h.logger.Error("invalid number of transactions in proposal", "height", req.Height)
+			return nil, fmt.Errorf("invalid number of transactions in proposal; expected at least %d txs", NumInjectedTxs)
+		}
+
+		// Retrieve the oracle info from the proposal. This cannot be empty as we have to at least
+		// verify that vote extensions were included and that they are valid.
+		oracleInfoBytes := req.Txs[OracleInfoIndex]
+		if len(oracleInfoBytes) == 0 {
+			return nil, fmt.Errorf("oracle data is nil")
+		}
+
+		proposalOracleData := types.OracleData{}
+		if err := proposalOracleData.Unmarshal(oracleInfoBytes); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal oracle data: %w", err)
+		}
+
+		// Unmarshal the latest commit info which contains all of the vote extensions that were utilized
+		// to create the oracle info.
+		extendedCommitInfo := cometabci.ExtendedCommitInfo{}
+		if err := extendedCommitInfo.Unmarshal(proposalOracleData.ExtendedCommitInfo); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal extended commit info: %w", err)
+		}
+
+		// Verify that the vote extensions included in the proposal are valid.
+		if err := h.validateVoteExtensionsFn(extendedCommitInfo); err != nil {
+			h.logger.Error("failed to validate vote extensions", "err", err)
+			return nil, err
+		}
+
+		// Verify that the oracle data provided by the proposer matches the vote extensions
+		// included in the proposal.
+		oracleData, err := h.VerifyOracleData(ctx, proposalOracleData, extendedCommitInfo)
+		if err != nil {
+			h.logger.Error("failed to verify oracle data", "err", err)
+			return nil, err
+		}
+
+		// Write the oracle data to state.
+		if err := h.WriteOracleData(ctx, oracleData); err != nil {
+			h.logger.Error("failed to write oracle data to state", "err", err)
+			return nil, err
+		}
+
+		// Process the transactions in the proposal with the oracle data removed.
+		req.Txs = req.Txs[NumInjectedTxs:]
+		resp, err := h.processProposalHandler(ctx, req)
+		if err != nil {
+			h.logger.Error("failed to process proposal", "err", err)
+			return nil, err
+		}
+
+		return resp, nil
 	}
 }
