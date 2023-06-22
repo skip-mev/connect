@@ -65,6 +65,8 @@ func (m *GetAllCurrencyPairsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetAllCurrencyPairsRequest proto.InternalMessageInfo
 
+// GetAllCurrencyPairsResponse returns all CurrencyPairs that the module is
+// currently tracking
 type GetAllCurrencyPairsResponse struct {
 	CurrencyPairs []CurrencyPair `protobuf:"bytes,1,rep,name=currency_pairs,json=currencyPairs,proto3" json:"currency_pairs"`
 }
@@ -112,7 +114,8 @@ func (m *GetAllCurrencyPairsResponse) GetCurrencyPairs() []CurrencyPair {
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
 // CurrencyPair in the format base/quote
 type GetPriceRequest struct {
-	// CurrencyPairSelector represents the types that the user may provide to the request to identify a CurrencyPair
+	// CurrencyPairSelector represents the types that the user may provide to the
+	// request to identify a CurrencyPair
 	//
 	// Types that are valid to be assigned to CurrencyPairSelector:
 	//	*GetPriceRequest_CurrencyPair
@@ -198,9 +201,11 @@ func (*GetPriceRequest) XXX_OneofWrappers() []interface{} {
 	}
 }
 
-// GetPriceResponse is the response from the GetPrice grpc method exposed from the x/oracle query service
+// GetPriceResponse is the response from the GetPrice grpc method exposed from
+// the x/oracle query service
 type GetPriceResponse struct {
-	// QuotePrice represents the quote-price for the CurrencyPair given in GetPriceRequest (possibly nil if no update has been made)
+	// QuotePrice represents the quote-price for the CurrencyPair given in
+	// GetPriceRequest (possibly nil if no update has been made)
 	Price *QuotePrice `protobuf:"bytes,1,opt,name=price,proto3" json:"price,omitempty"`
 	// nonce represents the nonce for the CurrencyPair if it exists in state
 	Nonce uint64 `protobuf:"varint,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
