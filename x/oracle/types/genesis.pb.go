@@ -142,8 +142,8 @@ func (m *QuotePrice) GetBlockHeight() uint64 {
 	return 0
 }
 
-// TickerGenesis is the information necessary for initialization of a Ticker,
-// both a CurrencyPair + QuotePrice object is required
+// CurrencyPairGenesis is the information necessary for initialization of a
+// CurrencyPair.
 type CurrencyPairGenesis struct {
 	// The CurrencyPair to be added to module state
 	CurrencyPair CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair"`
@@ -210,7 +210,7 @@ func (m *CurrencyPairGenesis) GetNonce() uint64 {
 }
 
 // GenesisState is the genesis-state for the x/oracle module, it takes a set of
-// predefined CurrencyPairs + prices
+// predefined CurrencyPairGeneses
 type GenesisState struct {
 	CurrencyPairGenesis []CurrencyPairGenesis `protobuf:"bytes,1,rep,name=currency_pair_genesis,json=currencyPairGenesis,proto3" json:"currency_pair_genesis"`
 }

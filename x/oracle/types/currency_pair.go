@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+func NewCurrencyPair(base, quote string) CurrencyPair {
+	return CurrencyPair{
+		Base:  base,
+		Quote: quote,
+	}
+}
+
 // ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e
 // Base + Quote are non-empty, and are in upper-case.
 func (cp CurrencyPair) ValidateBasic() error {

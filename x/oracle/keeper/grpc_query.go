@@ -48,9 +48,9 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
 	}
-
 	// determine what type the selector from the response is giving
 	switch cpI := req.CurrencyPairSelector.(type) {
+
 	case *types.GetPriceRequest_CurrencyPairId:
 		// retrieve the currency pair from the stringified ID, and fail if incorrectly formatted
 		cp, err = types.CurrencyPairFromString(cpI.CurrencyPairId)
@@ -58,6 +58,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %v", err)
 		}
+
 	case *types.GetPriceRequest_CurrencyPair:
 		// retrieve CurrencyPair directly from selector
 		if cpI.CurrencyPair == nil {
