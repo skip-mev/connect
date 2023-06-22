@@ -3,6 +3,7 @@ module github.com/skip-mev/slinky
 go 1.20
 
 require (
+	cosmossdk.io/core v0.8.0
 	cosmossdk.io/log v1.1.0
 	cosmossdk.io/math v1.0.1
 	cosmossdk.io/store v0.1.0-alpha.1.0.20230606190835-3e18f4088b2c
@@ -12,6 +13,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.0-alpha.0
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/golang/protobuf v1.5.3
+	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/holiman/uint256 v1.2.2
 	github.com/spf13/cobra v1.7.0
@@ -26,7 +28,6 @@ require (
 require (
 	cosmossdk.io/api v0.4.2 // indirect
 	cosmossdk.io/collections v0.2.0 // indirect
-	cosmossdk.io/core v0.8.0 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
 	cosmossdk.io/errors v1.0.0-beta.7.0.20230524212735-6cabb6aa5741 // indirect
 	cosmossdk.io/x/tx v0.8.0 // indirect
@@ -77,7 +78,6 @@ require (
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
