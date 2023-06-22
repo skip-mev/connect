@@ -185,13 +185,13 @@ func (h *ProposalHandler) VerifyOracleData(
 		return nil, fmt.Errorf("failed to unmarshal oracle data: %w", err)
 	}
 
-	// invariant 1: The number of prices in calculated oracle data must match the number of prices
+	// Invariant 1: The number of prices in calculated oracle data must match the number of prices
 	// in the proposal oracle data.
 	if len(oracleData.Prices) != len(proposalOracleData.Prices) {
 		return nil, fmt.Errorf("invalid number of prices in oracle data")
 	}
 
-	// invariant 2: The prices for each asset in the calculated oracle data must match the prices
+	// Invariant 2: The prices for each asset in the calculated oracle data must match the prices
 	// for each asset in the proposal oracle data.
 	for asset, priceStr := range oracleData.Prices {
 		proposalPriceStr, ok := proposalOracleData.Prices[asset]
