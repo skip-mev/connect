@@ -2,12 +2,88 @@
 
 export VERSION := $(shell echo $(shell git describe --always --match "v*") | sed 's/^v//')
 export COMMIT := $(shell git log -1 --format='%H')
+export COMETBFT_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
 
 BIN_DIR ?= $(GOPATH)/bin
 BUILD_DIR ?= $(CURDIR)/build
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
+
+###############################################################################
+###                                Test App                                 ###
+###############################################################################
+
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=testapp \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=testappd \
+		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+		  -X github.com/cometbft/cometbft/version.TMCoreSemVer=$(COMETBFT_VERSION)
+
+# DB backend selection
+ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
+  build_tags += gcc
+endif
+ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
+  build_tags += badgerdb
+endif
+# handle rocksdb
+ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
+  CGO_ENABLED=1
+  build_tags += rocksdb
+endif
+# handle boltdb
+ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
+  build_tags += boltdb
+endif
+
+ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+  ldflags += -w -s
+endif
+
+ldflags += $(LDFLAGS)
+ldflags := $(strip $(ldflags))
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+
+# check for nostrip option
+ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+  BUILD_FLAGS += -trimpath
+endif
+
+BUILD_TARGETS := build-test-app
+
+build-test-app: BUILD_ARGS=-o $(BUILD_DIR)/
+
+$(BUILD_TARGETS): $(BUILD_DIR)/
+	cd $(CURDIR)/tests/simapp && go build -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+
+$(BUILD_DIR)/:
+	mkdir -p $(BUILD_DIR)/
+
+.PHONY: build-test-app
+
+# build-and-start-app builds a slinky simulation application binary in the build folder
+# and initializes a single validator configuration. If desired, users can suppliment
+# other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
+# This will allow users to bootstrap their wallet with a balance.
+build-and-start-app: build-test-app
+	./build/slinkyd init val --chain-id auction
+	./build/slinkyd keys add val
+	./build/slinkyd genesis add-genesis-account val 10000000000000000000000000stake
+	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake
+	./build/slinkyd genesis gentx val 1000000000stake --chain-id auction
+	./build/slinkyd genesis collect-gentxs
+	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug
 
 ###############################################################################
 ###                               Testing                                   ###
