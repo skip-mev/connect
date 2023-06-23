@@ -9,7 +9,16 @@ BUILD_DIR ?= $(CURDIR)/build
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
+CONFIG_FILE ?= $(CURDIR)/conf/dev/config.toml
 
+###############################################################################
+###                               build                                     ###
+###############################################################################
+build:
+	go build -o ./build/ ./...
+
+run-oracle-server: build
+	./build/oracle -config ${CONFIG_FILE}
 ###############################################################################
 ###                                Test App                                 ###
 ###############################################################################

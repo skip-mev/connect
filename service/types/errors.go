@@ -1,4 +1,4 @@
-package client
+package types
 
 import (
 	"errors"
@@ -8,4 +8,6 @@ import (
 var (
 	ErrorNilRequest       = errors.New("request cannot be nil")
 	ErrorProviderNotFound = errors.New("provider not found")
+	ErrorOracleNotRunning = errors.New("oracle is not running")
+	ErrorContextCancelled = errors.New("context cancelled")
 )

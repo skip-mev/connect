@@ -16,3 +16,7 @@ type Provider interface {
 	// GetPairs returns the pairs that the provider is fetching prices for.
 	GetPairs() []CurrencyPair
 }
+
+type ProviderConfig struct {
+	Name string `mapstructure:"name"`
+}

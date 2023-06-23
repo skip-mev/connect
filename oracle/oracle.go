@@ -86,6 +86,17 @@ func New(
 	}
 }
 
+// NewOracleFromConfig returns a new oracle instance from the given OracleConfig.
+func NewOracleFromConfig(logger log.Logger, cfg *Config) (*Oracle, error) {
+	// construct providers from the given currency pairs
+	providers, err := cfg.GetProviders(logger)
+	if err != nil {
+		return nil, err
+	}
+
+	return New(logger, cfg.UpdateInterval, cfg.UpdateInterval, providers, types.ComputeMedian()), nil
+}
+
 // NewDefaultOracle returns a new instance of an Oracle with a default aggregate
 // function. It registers the given providers with the same set of currency pairs.
 // The default aggregate function computes the median price across all providers.

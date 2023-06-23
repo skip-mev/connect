@@ -20,5 +20,11 @@
 # Go workspace file
 go.work
 
-# Ignore the build directory
-build/
+# Testing script folder
+/tests/
+
+# build dir
+/build/
+
+run.go
+
