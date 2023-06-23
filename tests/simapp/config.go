@@ -25,6 +25,7 @@ import (
 	upgrademodulev1 "cosmossdk.io/api/cosmos/upgrade/module/v1"
 	vestingmodulev1 "cosmossdk.io/api/cosmos/vesting/module/v1"
 	"cosmossdk.io/depinject"
+	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
 
 	_ "cosmossdk.io/x/circuit"                        // import for side-effects
 	_ "cosmossdk.io/x/upgrade"                        // import for side-effects
@@ -42,6 +43,7 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/params"       // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"     // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
+	_ "github.com/skip-mev/slinky/x/oracle"         // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -64,6 +66,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -75,6 +78,7 @@ var (
 		{Account: stakingtypes.BondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: stakingtypes.NotBondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: govtypes.ModuleName, Permissions: []string{authtypes.Burner}},
+		{Account: oracletypes.ModuleName, Permissions: []string{}},
 	}
 
 	// blocked account addresses
@@ -107,6 +111,7 @@ var (
 						stakingtypes.ModuleName,
 						genutiltypes.ModuleName,
 						authz.ModuleName,
+						oracletypes.ModuleName,
 					},
 					EndBlockers: []string{
 						crisistypes.ModuleName,
@@ -114,6 +119,7 @@ var (
 						stakingtypes.ModuleName,
 						genutiltypes.ModuleName,
 						group.ModuleName,
+						oracletypes.ModuleName,
 					},
 					OverrideStoreKeys: []*runtimev1alpha1.StoreKeyConfig{
 						{
@@ -141,6 +147,7 @@ var (
 						vestingtypes.ModuleName,
 						consensustypes.ModuleName,
 						circuittypes.ModuleName,
+						oracletypes.ModuleName,
 					},
 					// When ExportGenesis is not specified, the export genesis module order
 					// is equal to the init genesis order
@@ -184,6 +191,10 @@ var (
 			{
 				Name:   "tx",
 				Config: appconfig.WrapAny(&txconfigv1.Config{}),
+			},
+			{
+				Name:   oracletypes.ModuleName,
+				Config: appconfig.WrapAny(&oraclemodulev1.Module{}),
 			},
 			{
 				Name:   genutiltypes.ModuleName,

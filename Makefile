@@ -77,11 +77,11 @@ $(BUILD_DIR)/:
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
 build-and-start-app: build-test-app
-	./build/slinkyd init val --chain-id auction
-	./build/slinkyd keys add val
-	./build/slinkyd genesis add-genesis-account val 10000000000000000000000000stake
+	./build/slinkyd init validator --chain-id skip-1
+	./build/slinkyd keys add validator
+	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake
 	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake
-	./build/slinkyd genesis gentx val 1000000000stake --chain-id auction
+	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1
 	./build/slinkyd genesis collect-gentxs
 	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug
 

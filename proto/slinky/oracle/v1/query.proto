@@ -1,9 +1,9 @@
 syntax = "proto3";
-package slinky.module.v1;
+package slinky.oracle.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "slinky/module/v1/genesis.proto";
+import "slinky/oracle/v1/genesis.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/oracle/types";
 

@@ -5,15 +5,20 @@ import (
 	"encoding/json"
 
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/depinject"
 
+	storetypes "cosmossdk.io/store/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
 	"github.com/skip-mev/slinky/x/oracle/client/cli"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -103,9 +108,9 @@ func (am AppModule) RegisterServices(cfc module.Configurator) {
 
 // DefaultGenesis returns default genesis state as raw bytes for the oracle
 // module.
-func (AppModuleBasic) DefaultGenesis(codec.JSONCodec) json.RawMessage {
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	// by default no CurrencyPairs will be added to state initially
-	return json.RawMessage{}
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
 // ValidateGenesis performs genesis state validation for the oracle module.
@@ -148,4 +153,43 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.Ra
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	gs := am.k.ExportGenesis(ctx)
 	return cdc.MustMarshalJSON(gs)
+}
+
+func init() {
+	appmodule.Register(
+		&oraclemodulev1.Module{},
+		appmodule.Provide(ProvideModule),
+	)
+}
+
+type Inputs struct {
+	depinject.In
+
+	Config *oraclemodulev1.Module
+	Cdc    codec.Codec
+	Key    *storetypes.KVStoreKey
+}
+
+type Outputs struct {
+	depinject.Out
+
+	OracleKeeper keeper.Keeper
+	Module       appmodule.AppModule
+}
+
+func ProvideModule(in Inputs) Outputs {
+	// default to governance authority if not provided
+	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
+	if in.Config.Authority != "" {
+		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
+	}
+
+	oracleKeeper := keeper.NewKeeper(
+		in.Key,
+		authority,
+	)
+
+	m := NewAppModule(in.Cdc, oracleKeeper)
+
+	return Outputs{OracleKeeper: oracleKeeper, Module: m}
 }

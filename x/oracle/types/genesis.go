@@ -26,6 +26,11 @@ func NewGenesisState(cpgs []CurrencyPairGenesis) *GenesisState {
 	}
 }
 
+// DefaultGenesisState returns a default genesis state for the oracle module
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(nil)
+}
+
 // Validate validates the currency-pair geneses that the Genesis-State is composed of
 func (gs GenesisState) Validate() error {
 	for _, cpg := range gs.CurrencyPairGenesis {
