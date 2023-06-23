@@ -1,4 +1,5 @@
 syntax = "proto3";
+package slinky.oracle.v1;
 
 option go_package = "github.com/skip-mev/slinky/x/oracle/types";
 

@@ -1,7 +1,7 @@
 syntax = "proto3";
-package slinky.module.v1;
+package slinky.oracle.v1;
 
-import "slinky/module/v1/genesis.proto";
+import "slinky/oracle/v1/genesis.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/msg/v1/msg.proto";
 import "amino/amino.proto";
