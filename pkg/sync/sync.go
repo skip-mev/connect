@@ -11,11 +11,18 @@ import (
 type Closer struct {
 	closeOnce sync.Once
 	doneCh    chan struct{}
+	cb        func()
 }
 
 // NewCloser returns a reference to a new Closer.
 func NewCloser() *Closer {
 	return &Closer{doneCh: make(chan struct{})}
+}
+
+// WithCallback adds additional logic to be triggered on the closure of the Closer
+func (c *Closer) WithCallback(cb func()) *Closer {
+	c.cb = cb
+	return c
 }
 
 // Done returns the internal done channel allowing the caller either block or wait
@@ -28,6 +35,10 @@ func (c *Closer) Done() <-chan struct{} {
 // it is safe to call it successive times.
 func (c *Closer) Close() {
 	c.closeOnce.Do(func() {
+		// execute call-back
+		if c.cb != nil {
+			c.cb()
+		}
 		close(c.doneCh)
 	})
 }

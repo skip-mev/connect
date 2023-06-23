@@ -9,14 +9,14 @@ import (
 // CurrencyPair defines a currency exchange pair consisting of a base and a quote.
 type CurrencyPair struct {
 	// Base defines the base currency.
-	Base string
+	Base string `mapstructure:"base"`
 
 	// Quote defines the quote currency i.e. the currency that the base currency
 	// is being exchanged for.
-	Quote string
+	Quote string `mapstructure:"quote"`
 
 	// QuoteDecimals defines the number of decimals for the quote currency.
-	QuoteDecimals int
+	QuoteDecimals int `mapstructure:"quote_decimals"`
 }
 
 func NewCurrencyPair(base, quote string, decimals int) CurrencyPair {

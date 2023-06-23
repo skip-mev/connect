@@ -1,0 +1,16 @@
+# Oracle Configuration
+## Update Interval (in seconds) is the time between each time the oracle triggers providers to update price-data
+update_interval = "1s"
+
+# Providers
+[[providers]]
+## Name of provier to query price-data from
+name = "coingecko"
+[[providers]]
+name = "coinbase"
+
+# Currency Pairs
+[[currency_pairs]]
+base = "BITCOIN"
+quote = "USD"
+quote_decimals = 8
