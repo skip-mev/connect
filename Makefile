@@ -14,11 +14,23 @@ CONFIG_FILE ?= $(CURDIR)/conf/dev/config.toml
 ###############################################################################
 ###                               build                                     ###
 ###############################################################################
+
 build:
 	go build -o ./build/ ./...
 
 run-oracle-server: build
 	./build/oracle -config ${CONFIG_FILE}
+
+
+###############################################################################
+##                                  Docker                                   ##
+###############################################################################
+
+docker-build:
+	@echo "Building E2E Docker image..."
+	@DOCKER_BUILDKIT=1 docker build -t skip-mev/pob-e2e -f contrib/images/slinky.e2e.Dockerfile .
+
+
 ###############################################################################
 ###                                Test App                                 ###
 ###############################################################################
@@ -97,6 +109,13 @@ build-and-start-app: build-test-app
 ###############################################################################
 ###                               Testing                                   ###
 ###############################################################################
+
+TEST_E2E_TAGS = e2e
+TEST_E2E_DEPS = docker-build
+
+test-e2e: $(TEST_E2E_DEPS)
+	@echo "Running E2E tests..."
+	@go test ./tests/e2e/... -mod=readonly -timeout 30m -race -v -tags='$(TEST_E2E_TAGS)'
 
 test:
 	@go test -v -race ./...
