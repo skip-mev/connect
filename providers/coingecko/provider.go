@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"context"
 	"strings"
 
 	"github.com/cometbft/cometbft/libs/log"
@@ -47,8 +48,8 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
-	return p.getPrices()
+func (p *Provider) GetPrices(ctx context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
+	return p.getPrices(ctx)
 }
 
 // SetPairs sets the currency pairs that the provider will fetch prices for.
