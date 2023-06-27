@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,10 +28,10 @@ import (
 //	    "usd": 10000
 //	  }
 //	}
-func (p *Provider) getPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
+func (p *Provider) getPrices(ctx context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
 	url := getPriceEndpoint(p.bases, p.quotes)
 
-	resp, err := http.Get(url) //nolint:all
+	resp, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}

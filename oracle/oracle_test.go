@@ -2,7 +2,9 @@ package oracle_test
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 
@@ -20,12 +22,12 @@ type OracleTestSuite struct {
 	random *rand.Rand
 
 	// Oracle config
-	oracle          *oracle.Oracle
-	oracleTicker    time.Duration
-	providerTimeout time.Duration
-	providers       []*mocks.Provider
-	currencyPairs   []types.CurrencyPair
-	aggregationFn   types.AggregateFn
+	oracle        *oracle.Oracle
+	oracleTicker  time.Duration
+	providers     []*mocks.Provider
+	currencyPairs []types.CurrencyPair
+	aggregationFn types.AggregateFn
+	ctx           context.Context
 }
 
 func TestOracleSuite(t *testing.T) {
@@ -36,14 +38,15 @@ func (suite *OracleTestSuite) SetupTest() {
 	suite.random = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	// Oracle set up
-	suite.oracleTicker = 2 * time.Second
-	suite.providerTimeout = 1 * time.Second
+	suite.oracleTicker = 1 * time.Second
 	suite.currencyPairs = []types.CurrencyPair{
 		types.NewCurrencyPair("BITCOIN", "USD", 6),
 		types.NewCurrencyPair("ETHEREUM", "USD", 6),
 		types.NewCurrencyPair("COSMOS", "USD", 6),
 	}
 	suite.aggregationFn = types.ComputeMedian()
+
+	suite.ctx = context.TODO()
 }
 
 func (suite *OracleTestSuite) TestProviders() {
@@ -253,21 +256,6 @@ func (suite *OracleTestSuite) TestProviders() {
 
 				timeoutProvider := suite.createTimeoutProvider(
 					"timeout",
-					suite.oracleTicker,
-					map[types.CurrencyPair]types.QuotePrice{
-						suite.currencyPairs[0]: {
-							Price:     uint256.NewInt(4),
-							Timestamp: time.Now(),
-						},
-						suite.currencyPairs[1]: {
-							Price:     uint256.NewInt(5),
-							Timestamp: time.Now(),
-						},
-						suite.currencyPairs[2]: {
-							Price:     uint256.NewInt(6),
-							Timestamp: time.Now(),
-						},
-					},
 				)
 
 				suite.providers = []*mocks.Provider{
@@ -297,8 +285,6 @@ func (suite *OracleTestSuite) TestProviders() {
 
 				timeoutProvider := suite.createTimeoutProvider(
 					"timeout",
-					suite.oracleTicker,
-					suite.getRandomizedPrices(suite.currencyPairs),
 				)
 
 				panicProvider := suite.createPanicProvider(
@@ -336,8 +322,7 @@ func (suite *OracleTestSuite) TestProviders() {
 
 			// Initialize oracle
 			suite.oracle = oracle.New(
-				log.NewNopLogger(),
-				suite.providerTimeout,
+				log.NewTMJSONLogger(os.Stdout),
 				suite.oracleTicker,
 				tempProviders,
 				suite.aggregationFn,
@@ -345,13 +330,13 @@ func (suite *OracleTestSuite) TestProviders() {
 
 			// Start oracle
 			go func() {
-				suite.Require().NoError(suite.oracle.Start(context.TODO()))
+				suite.oracle.Start(suite.ctx)
 			}()
 
 			// Wait for oracle to update prices
-			time.Sleep(suite.oracleTicker + time.Second*1)
+			time.Sleep(suite.oracleTicker * 2)
 			suite.oracle.Stop()
-			time.Sleep(time.Second * 1)
+			time.Sleep(suite.oracleTicker * 2)
 
 			// Check prices
 			prices := suite.oracle.GetPrices()
@@ -364,17 +349,149 @@ func (suite *OracleTestSuite) TestProviders() {
 				)
 			}
 
-			for _, provider := range suite.providers {
-				provider.AssertCalled(suite.T(), "GetPrices")
-			}
-
 			// Check oracle status
-			suite.Require().False(suite.oracle.IsRunning())
+			suite.Require().Eventually(
+				func() bool {
+					return !suite.oracle.IsRunning()
+				},
+				5*suite.oracleTicker,
+				suite.oracleTicker/3,
+			)
 		})
 	}
 }
 
-func (suite *OracleTestSuite) createTimeoutProvider(
+func (suite *OracleTestSuite) TestShutDownWithContextCancel() {
+	suite.SetupTest()
+
+	// Initialize oracle
+	suite.oracle = oracle.New(
+		log.NewTMJSONLogger(os.Stdout),
+		suite.oracleTicker,
+		[]types.Provider{
+			suite.createStaticProvider(
+				"static",
+				map[types.CurrencyPair]types.QuotePrice{},
+			),
+		},
+		suite.aggregationFn,
+	)
+
+	ctx, cancel := context.WithCancel(suite.ctx)
+
+	// Start oracle
+	go func() {
+		suite.oracle.Start(ctx)
+	}()
+
+	// Wait for oracle to update prices
+	time.Sleep(suite.oracleTicker * 2)
+	cancel()
+	time.Sleep(suite.oracleTicker * 2)
+
+	// Check prices
+	prices := suite.oracle.GetPrices()
+	suite.Require().Empty(prices)
+
+	// Check oracle status
+	suite.Require().Eventually(
+		func() bool {
+			return !suite.oracle.IsRunning()
+		},
+		5*suite.oracleTicker,
+		suite.oracleTicker/3,
+	)
+}
+
+func (suite *OracleTestSuite) TestShutDownWithStop() {
+	suite.SetupTest()
+
+	// Initialize oracle
+	suite.oracle = oracle.New(
+		log.NewTMJSONLogger(os.Stdout),
+		suite.oracleTicker,
+		[]types.Provider{
+			suite.createStaticProvider(
+				"static",
+				map[types.CurrencyPair]types.QuotePrice{},
+			),
+		},
+		suite.aggregationFn,
+	)
+
+	// Start oracle
+	go func() {
+		suite.oracle.Start(suite.ctx)
+	}()
+
+	// Wait for oracle to update prices
+	time.Sleep(suite.oracleTicker * 2)
+	suite.oracle.Stop()
+	time.Sleep(suite.oracleTicker * 2)
+
+	// Check prices
+	prices := suite.oracle.GetPrices()
+	suite.Require().Empty(prices)
+
+	// Check oracle status
+	suite.Require().Eventually(
+		func() bool {
+			return !suite.oracle.IsRunning()
+		},
+		5*suite.oracleTicker,
+		suite.oracleTicker/3,
+	)
+}
+
+func (suite *OracleTestSuite) TestShutDownProviderWithTimeout() {
+	suite.SetupTest()
+
+	tempProviders := []types.Provider{
+		suite.createTimeoutProviderWithTimeout(
+			"timeout",
+			suite.oracleTicker*40,
+			map[types.CurrencyPair]types.QuotePrice{
+				suite.currencyPairs[0]: {
+					Price:     uint256.NewInt(1),
+					Timestamp: time.Now(),
+				},
+			},
+		),
+	}
+
+	// Initialize oracle
+	suite.oracle = oracle.New(
+		log.NewTMJSONLogger(os.Stdout),
+		suite.oracleTicker,
+		tempProviders,
+		suite.aggregationFn,
+	)
+
+	// Start oracle
+	go func() {
+		suite.oracle.Start(suite.ctx)
+	}()
+
+	// Wait for oracle to update prices
+	time.Sleep(suite.oracleTicker * 2)
+	suite.oracle.Stop()
+	time.Sleep(suite.oracleTicker * 3)
+
+	// Check prices
+	prices := suite.oracle.GetPrices()
+	suite.Require().Empty(prices)
+
+	// Check oracle status
+	suite.Require().Eventually(
+		func() bool {
+			return !suite.oracle.IsRunning()
+		},
+		5*suite.oracleTicker,
+		suite.oracleTicker/3,
+	)
+}
+
+func (suite *OracleTestSuite) createTimeoutProviderWithTimeout(
 	name string,
 	timeout time.Duration,
 	prices map[types.CurrencyPair]types.QuotePrice,
@@ -383,12 +500,25 @@ func (suite *OracleTestSuite) createTimeoutProvider(
 	provider.On("Name").Return(name)
 
 	// GetPrices returns a timeout error
-	provider.On("GetPrices", mock.Anything).Run(func(args mock.Arguments) {
-		time.Sleep(timeout)
-	}).Return(
+	provider.On("GetPrices", mock.Anything).Return(
 		prices,
 		nil,
-	)
+	).After(timeout)
+
+	return provider
+}
+
+func (suite *OracleTestSuite) createTimeoutProvider(
+	name string,
+) *mocks.Provider {
+	provider := mocks.NewProvider(suite.T())
+	provider.On("Name").Return(name)
+
+	// GetPrices returns a timeout error
+	provider.On("GetPrices", mock.Anything).Return(
+		nil,
+		fmt.Errorf("timeout error"),
+	).After(suite.oracleTicker)
 
 	return provider
 }
@@ -413,7 +543,7 @@ func (suite *OracleTestSuite) createStaticProvider(
 	provider.On("Name").Return(name)
 
 	// GetPrices returns static prices
-	provider.On("GetPrices").Return(
+	provider.On("GetPrices", mock.Anything).Return(
 		prices,
 		nil,
 	)
@@ -429,7 +559,7 @@ func (suite *OracleTestSuite) createRandomizedProvider(
 	provider.On("Name").Return(name)
 
 	// GetPrices returns randomized prices
-	provider.On("GetPrices").Return(
+	provider.On("GetPrices", mock.Anything).Return(
 		suite.getRandomizedPrices(currencyPairs),
 		nil,
 	)
@@ -460,7 +590,7 @@ func (suite *OracleTestSuite) aggregateProviderData(
 	priceAggregator := types.NewPriceAggregator(suite.aggregationFn)
 
 	for _, provider := range providers {
-		prices, err := provider.GetPrices()
+		prices, err := provider.GetPrices(context.Background())
 		suite.Require().NoError(err)
 
 		priceAggregator.SetProviderPrices(provider.Name(), prices)

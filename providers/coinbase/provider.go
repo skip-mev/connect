@@ -1,6 +1,8 @@
 package coinbase
 
 import (
+	"context"
+
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/skip-mev/slinky/oracle/types"
 )
@@ -35,11 +37,11 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
+func (p *Provider) GetPrices(ctx context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
 	resp := make(map[types.CurrencyPair]types.QuotePrice)
 
 	for _, currencyPair := range p.pairs {
-		spotPrice, err := getPriceForPair(currencyPair)
+		spotPrice, err := getPriceForPair(ctx, currencyPair)
 		if err != nil {
 			p.logger.Error(
 				p.Name(),

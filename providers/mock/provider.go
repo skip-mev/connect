@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"context"
 	"time"
 
 	"github.com/holiman/uint256"
@@ -68,7 +69,7 @@ func (p NormalMockProvider) Name() string {
 }
 
 // GetPrices returns the mocked exchange rates.
-func (p NormalMockProvider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
+func (p NormalMockProvider) GetPrices(_ context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
 	return p.exchangeRates, nil
 }
 
@@ -95,7 +96,7 @@ func (p FailingMockProvider) Name() string {
 }
 
 // GetPrices always fails for the failing mock provider.
-func (p FailingMockProvider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
+func (p FailingMockProvider) GetPrices(_ context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
 	panic("mock provider always fails")
 }
 
@@ -115,7 +116,7 @@ func (p TimeoutMockProvider) Name() string {
 }
 
 // GetPrices always times out for the timeout mock provider.
-func (p TimeoutMockProvider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
+func (p TimeoutMockProvider) GetPrices(_ context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
 	time.Sleep(1*time.Second + p.timeout)
 
 	panic("mock provider should always times out")

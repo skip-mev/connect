@@ -11,8 +11,11 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
+	servicetypes "github.com/skip-mev/slinky/service/types"
 	"golang.org/x/sync/errgroup"
 )
+
+var _ servicetypes.Oracle = (*Oracle)(nil)
 
 // Oracle implements the core component responsible for fetching exchange rates
 // for a given set of currency pairs and determining exchange rates.
@@ -23,12 +26,6 @@ type Oracle struct {
 	closer *ssync.Closer
 
 	// --------------------- Provider Config --------------------- //
-	// providerTimeout is the maximum amount of time to wait for a provider to
-	// respond to a price request. If a provider fails to respond within this
-	// timeout, the oracle will ignore the provider and continue to fetch prices
-	// from the remaining providers.
-	providerTimeout time.Duration
-
 	// Providers is the set of providers that the oracle will fetch prices from.
 	// Each provider is responsible for fetching prices for a given set of
 	// currency pairs (base, quote). The oracle will fetch prices from each
@@ -56,11 +53,12 @@ type Oracle struct {
 // will fetch new prices concurrently every oracleTicker interval. In the case where
 // the oracle fails to fetch prices from a given provider, it will continue to fetch prices
 // from the remaining providers. The oracle currently assumes that each provider aggregates prices
-// using TWAPs, TVWAPs, etc. When determining the aggregated price for a
-// given currency pair, the oracle will compute the median price across all providers.
+// using TWAPs, TVWAPs, etc. When determining final prices, the oracle will utilize the aggregateFn
+// to compute the final price for each currency pair. By default, the oracle will compute the median
+// price across all providers.
 func New(
 	logger log.Logger,
-	providerTimeout, oracleTicker time.Duration,
+	oracleTicker time.Duration,
 	providers []types.Provider,
 	aggregateFn types.AggregateFn,
 ) *Oracle {
@@ -72,14 +70,9 @@ func New(
 		panic("price providers cannot be nil")
 	}
 
-	if providerTimeout > oracleTicker {
-		panic("provider timeout cannot be greater than oracle ticker")
-	}
-
 	return &Oracle{
 		logger:          logger,
 		closer:          ssync.NewCloser(),
-		providerTimeout: providerTimeout,
 		oracleTicker:    oracleTicker,
 		providers:       providers,
 		priceAggregator: types.NewPriceAggregator(aggregateFn),
@@ -94,7 +87,7 @@ func NewOracleFromConfig(logger log.Logger, cfg *Config) (*Oracle, error) {
 		return nil, err
 	}
 
-	return New(logger, cfg.UpdateInterval, cfg.UpdateInterval, providers, types.ComputeMedian()), nil
+	return New(logger, cfg.UpdateInterval, providers, types.ComputeMedian()), nil
 }
 
 // NewDefaultOracle returns a new instance of an Oracle with a default aggregate
@@ -102,7 +95,7 @@ func NewOracleFromConfig(logger log.Logger, cfg *Config) (*Oracle, error) {
 // The default aggregate function computes the median price across all providers.
 func NewDefaultOracle(
 	logger log.Logger,
-	providerTimeout, oracleTicker time.Duration,
+	oracleTicker time.Duration,
 	providers []types.Provider,
 	currencyPairs []types.CurrencyPair,
 ) *Oracle {
@@ -110,7 +103,7 @@ func NewDefaultOracle(
 		provider.SetPairs(currencyPairs...)
 	}
 
-	return New(logger, providerTimeout, oracleTicker, providers, types.ComputeMedian())
+	return New(logger, oracleTicker, providers, types.ComputeMedian())
 }
 
 // IsRunning returns true if the oracle is running.
@@ -124,6 +117,9 @@ func (o *Oracle) IsRunning() bool {
 func (o *Oracle) Start(ctx context.Context) error {
 	o.logger.Info("starting oracle")
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	o.status.Store(true)
 	defer o.status.Store(false)
 
@@ -134,9 +130,11 @@ func (o *Oracle) Start(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			o.Stop()
+			o.logger.Info("oracle stopped via context")
 			return ctx.Err()
 
 		case <-o.closer.Done():
+			o.logger.Info("oracle stopped via closer")
 			return nil
 
 		case <-ticker.C:
@@ -161,14 +159,26 @@ func (o *Oracle) Stop() {
 func (o *Oracle) tick(ctx context.Context) {
 	o.logger.Info("starting oracle tick")
 
+	// For safety, we first check if the context is cancelled before
+	// fetching prices from each provider. Since go routines are non-preemptive
+	// and are chosen at random when multiple are ready, we want to ensure that
+	// we do not fetch prices from any provider if the context is cancelled.
+	if ctx.Err() != nil {
+		o.logger.Info("oracle tick skipped", "err", ctx.Err())
+		return
+	}
+
 	// Create a goroutine group to fetch prices from each provider concurrently. All
 	// of the goroutines will be cancelled after the oracle timeout.
 	groupCtx, cancel := context.WithDeadline(ctx, time.Now().Add(o.oracleTicker))
+	defer cancel()
+
 	g, _ := errgroup.WithContext(groupCtx)
 	g.SetLimit(len(o.providers))
 
-	// In the case where the oracle panics, the oracle will log the error, cancel all of the
-	// the goroutines, will not update the prices and will attempt to fetch prices again on the next tick.
+	// In the case where the oracle panics, the oracle will log the error, cancel
+	// all of the the goroutines, will not update the prices and will attempt to
+	// fetch prices again on the next tick.
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("oracle tick panicked", "err", r)
@@ -188,16 +198,21 @@ func (o *Oracle) tick(ctx context.Context) {
 	// Fetch prices from each provider concurrently. Each provider is responsible
 	// for fetching prices for the given set of (base, quote) currency pairs.
 	for _, priceProvider := range o.providers {
-		g.Go(o.fetchPricesFn(priceProvider))
+		g.Go(o.fetchPricesFn(groupCtx, priceProvider))
 	}
 
 	// By default, errorgroup will wait for all goroutines to finish before returning. In
 	// the case where any one of the goroutines fails, the entire set of goroutines will
 	// be cancelled and the oracle will not update the prices.
+	//
+	// NOTE: Although each fetch routine catches and handles errors/panics, we expect this
+	// to only happen in the case where the oracle is shutting down.
 	if err := g.Wait(); err != nil {
 		o.logger.Error("wait group failed with error", "err", err)
 		return
 	}
+
+	o.logger.Info("oracle fetched prices from providers")
 
 	// Compute aggregated prices and update the oracle.
 	o.priceAggregator.UpdatePrices()
@@ -207,58 +222,62 @@ func (o *Oracle) tick(ctx context.Context) {
 }
 
 // fetchPrices returns a closure that fetches prices from the given provider. This is meant
-// to be used in a goroutine. It accepts the provider and price aggregator as inputs. In the
-// case where the provider fails to fetch prices, we will log the error and not update the
-// price aggregator. We gracefully handle panics by recovering and logging the error. If the
-// function panics, the wait group will cancel all other goroutines and skip the update for the
-// oracle.
-func (o *Oracle) fetchPricesFn(provider types.Provider) func() error {
-	return func() error {
-		o.logger.Info(provider.Name(), "fetching prices")
+// to be used in a goroutine. It accepts the ctx and provider as inputs. In the case where the
+// main go group gets cancelled, this will trigger this go routine to short-circuit return.
+// In the case where the provider fails to fetch prices, we will log the error and not update
+// the price aggregator. We gracefully handle panics by recovering and logging the error.
+func (o *Oracle) fetchPricesFn(ctx context.Context, provider types.Provider) func() error {
+	return func() (err error) {
+		o.logger.Info("fetching prices", "provider", provider.Name())
 
-		doneCh := make(chan bool, 1)
-		errCh := make(chan error, 1)
+		pricesCh := make(chan map[types.CurrencyPair]types.QuotePrice)
+		errCh := make(chan error)
 
 		go func() {
 			// Recover from any panics while fetching prices.
 			defer func() {
 				if r := recover(); r != nil {
-					errCh <- fmt.Errorf("panic when fetching prices %s", r)
+					errCh <- fmt.Errorf("panic while fetching prices: %v", r)
 				}
 
-				// In order to avoid a channel send after close, we close the channels
-				// in the defer statement. Additionally, this unblocks any goroutines
-				// waiting on the channels.
-				close(doneCh)
+				close(pricesCh)
 				close(errCh)
 			}()
 
 			// Fetch and set prices from the provider.
-			prices, err := provider.GetPrices()
+			//
+			// Note: Each provider MUST return a set of prices within the oracle timeout i.e.
+			// the context deadline. In the case where the provider fails to return a set of
+			// prices within the deadline, the provider prices will be ignored. If the context
+			// gets cancelled before the provider returns a set of prices, the provider must
+			// short-circuit return.
+			prices, err := provider.GetPrices(ctx)
 			if err != nil {
 				errCh <- err
 				return
 			}
 
-			o.priceAggregator.SetProviderPrices(provider.Name(), prices)
+			// Switch on the context error. In the case where the context is cancelled or
+			// the deadline is exceeded, we will log the error and not update the price
+			// aggregator.
+			if err := ctx.Err(); err != nil {
+				errCh <- err
+				return
+			}
 
-			doneCh <- true
+			pricesCh <- prices
 		}()
 
 		select {
-		case <-doneCh:
-			o.logger.Info(provider.Name(), "successfully fetched prices")
-			break
-
+		case <-ctx.Done():
+			o.logger.Info("context ended before receiving response", "provider", provider.Name(), "err", ctx.Err())
+			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
+		case prices := <-pricesCh:
+			o.logger.Info("fetching prices finished", "provider", provider.Name(), "num_prices", len(prices))
+			o.priceAggregator.SetProviderPrices(provider.Name(), prices)
 		case err := <-errCh:
-			o.logger.Error(provider.Name(), "failed to fetch prices", "err", err)
+			o.logger.Error("fetching prices failed", "provider", provider.Name(), "err", err)
 			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
-			break
-
-		case <-time.After(o.providerTimeout):
-			o.logger.Error(provider.Name(), "timed out")
-			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
-			break
 		}
 
 		return nil

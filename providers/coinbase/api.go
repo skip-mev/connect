@@ -1,6 +1,7 @@
 package coinbase
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -33,7 +34,7 @@ var NameToSymbol = map[string]string{
 //	    "currency": "USD"
 //	  }
 //	}
-func getPriceForPair(pair types.CurrencyPair) (*types.QuotePrice, error) {
+func getPriceForPair(ctx context.Context, pair types.CurrencyPair) (*types.QuotePrice, error) {
 	baseSymbol, ok := NameToSymbol[pair.Base]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
@@ -45,7 +46,7 @@ func getPriceForPair(pair types.CurrencyPair) (*types.QuotePrice, error) {
 	}
 
 	url := getSpotPriceEndpoint(baseSymbol, quoteSymbol)
-	resp, err := http.Get(url) //nolint:all
+	resp, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}

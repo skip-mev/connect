@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	types "github.com/skip-mev/slinky/oracle/types"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -28,25 +30,25 @@ func (_m *Provider) GetPairs() []types.CurrencyPair {
 	return r0
 }
 
-// GetPrices provides a mock function with given fields:
-func (_m *Provider) GetPrices() (map[types.CurrencyPair]types.QuotePrice, error) {
-	ret := _m.Called()
+// GetPrices provides a mock function with given fields: _a0
+func (_m *Provider) GetPrices(_a0 context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
+	ret := _m.Called(_a0)
 
 	var r0 map[types.CurrencyPair]types.QuotePrice
 	var r1 error
-	if rf, ok := ret.Get(0).(func() (map[types.CurrencyPair]types.QuotePrice, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(context.Context) (map[types.CurrencyPair]types.QuotePrice, error)); ok {
+		return rf(_a0)
 	}
-	if rf, ok := ret.Get(0).(func() map[types.CurrencyPair]types.QuotePrice); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(context.Context) map[types.CurrencyPair]types.QuotePrice); ok {
+		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[types.CurrencyPair]types.QuotePrice)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)
 	}
