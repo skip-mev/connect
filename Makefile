@@ -27,6 +27,17 @@ run-oracle-server: build
 .PHONY: build run-oracle-server
 
 ###############################################################################
+##                                  Docker                                   ##
+###############################################################################
+
+docker-build:
+	@echo "Building E2E Docker image..."
+	@DOCKER_BUILDKIT=1 docker build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
+
+
+.PHONY: docker-build
+
+###############################################################################
 ###                                Test App                                 ###
 ###############################################################################
 
@@ -112,10 +123,17 @@ build-and-start-app: build-test-app build-configs
 ###                               Testing                                   ###
 ###############################################################################
 
-test:
-	@go test -v -race ./...
+TEST_E2E_TAGS = e2e
+TEST_E2E_DEPS = docker-build
 
-.PHONY: test
+test-e2e: $(TEST_E2E_DEPS)
+	@echo "Running E2E tests..."
+	@go test ./tests/e2e/... -mod=readonly -timeout 30m -race -v -tags='$(TEST_E2E_TAGS)'
+
+test:
+	@go test -v -race $(shell go list ./... | grep -v tests/)
+
+.PHONY: test test-e2e
 
 ###############################################################################
 ###                              Formatting                                 ###
