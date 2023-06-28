@@ -20,6 +20,9 @@
 # Go workspace file
 go.work
 
+# Testing script folder
+/tests/.slinkyd
+
 # build dir
 /build/
 

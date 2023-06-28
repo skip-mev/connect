@@ -26,7 +26,14 @@ remote_address="localhost:8080"
 name = "coingecko"
 
 [[oracle.providers]]
-name = "coinbase"
+name = "coinmarketcap"
+[oracle.providers.token_name_to_symbol]
+BITCOIN = "BTC"
+ETHEREUM = "ETH"
+COSMOS = "ATOM"
+USD = "USD"
+OSMOSIS = "OSMO"
+
 
 # Currency Pairs
 [[oracle.currency_pairs]]

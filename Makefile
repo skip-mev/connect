@@ -110,14 +110,18 @@ build-configs: build-test-app
 	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS) 
 	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BITCOIN", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
+# start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
+start-app:
+	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug --home $(HOMEDIR)
+
+
 # build-and-start-app builds a slinky simulation application binary in the build folder
 # and initializes a single validator configuration. If desired, users can suppliment
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
-build-and-start-app: build-test-app build-configs
-	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug --home $(HOMEDIR)
+build-and-start-app: build-test-app build-configs start-app
 
-.PHONY: build-test-app build-configs build-and-start-app
+.PHONY: build-test-app build-configs build-and-start-app start-app
 
 ###############################################################################
 ###                               Testing                                   ###

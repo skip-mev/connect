@@ -9,7 +9,9 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/coinbase"
 	"github.com/skip-mev/slinky/providers/coingecko"
+	"github.com/skip-mev/slinky/providers/coinmarketcap"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
@@ -70,6 +72,8 @@ func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.Curr
 		return coingecko.NewProvider(l, cps), nil
 	case "coinbase":
 		return coinbase.NewProvider(l, cps), nil
+	case "coinmarketcap":
+		return coinmarketcap.NewProvider(l, cps, cfg.Apikey, cfg.TokenNameToSymbol), nil
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
@@ -170,6 +174,25 @@ func providerConfigFromToml(iface interface{}) (types.ProviderConfig, error) {
 	if v, ok := iFaceMap["name"]; ok {
 		if providerCfg.Name, ok = v.(string); !ok {
 			return providerCfg, fmt.Errorf("failed to convert name to string")
+		}
+	}
+
+	// get the apikey
+	if v, ok := iFaceMap["apikey"]; ok {
+		if providerCfg.Apikey, ok = v.(string); !ok {
+			return providerCfg, fmt.Errorf("failed to convert apikey to string")
+		}
+	}
+
+	// get the token name to symbol map
+	if v, ok := iFaceMap["token_name_to_symbol"]; ok {
+		if tokenNameToSymbol, ok := v.(map[string]interface{}); ok {
+			providerCfg.TokenNameToSymbol = make(map[string]string)
+			for k, v := range tokenNameToSymbol {
+				if symbol, ok := v.(string); ok {
+					providerCfg.TokenNameToSymbol[k] = symbol
+				}
+			}
 		}
 	}
 
