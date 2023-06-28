@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/pkg/sync"
 	"github.com/skip-mev/slinky/service"
 	servicetypes "github.com/skip-mev/slinky/service/types"

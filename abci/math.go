@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // DefaultPowerThreshold defines the total voting power % that must be
@@ -46,9 +47,9 @@ func StakeWeightedMedian(
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) oracletypes.AggregateFn {
-	return func(providers oracletypes.AggregatedProviderPrices) map[oracletypes.CurrencyPair]*uint256.Int {
+	return func(providers oracletypes.AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
 		// Iterate through all providers and store stake weight + price for each currency pair.
-		priceInfo := make(map[oracletypes.CurrencyPair]StakeWeightPriceInfo)
+		priceInfo := make(map[types.CurrencyPair]StakeWeightPriceInfo)
 
 		for valAddress, validatorPrices := range providers {
 			for currencyPair, quotePrice := range validatorPrices {
@@ -89,7 +90,7 @@ func StakeWeightedMedian(
 		}
 
 		// Iterate through all prices and compute the median price for each asset.
-		prices := make(map[oracletypes.CurrencyPair]*uint256.Int)
+		prices := make(map[types.CurrencyPair]*uint256.Int)
 		totalBondedTokens := validatorStore.TotalBondedTokens(ctx) // TODO: determine if total bonded tokens should be the staking metric that is used.
 
 		for currencyPair, info := range priceInfo {

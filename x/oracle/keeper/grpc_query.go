@@ -82,7 +82,8 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 
 	// return the QuotePrice + Nonce
 	return &types.GetPriceResponse{
-		Price: &qpn.QuotePrice,
-		Nonce: qpn.Nonce(),
+		Price:    &qpn.QuotePrice,
+		Nonce:    qpn.Nonce(),
+		Decimals: uint64(cp.Decimals()),
 	}, nil
 }

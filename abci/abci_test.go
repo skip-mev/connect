@@ -61,9 +61,7 @@ func (suite *ABCITestSuite) SetupTest() {
 }
 
 func (suite *ABCITestSuite) NoOpValidateVEFn() abci.ValidateVoteExtensionsFn {
-	return func(extendedCommitInfo cometabci.ExtendedCommitInfo) error {
-		return nil
-	}
+	return abci.NoOpValidateVoteExtensions
 }
 
 func (suite *ABCITestSuite) setUpOracleKeeper() {

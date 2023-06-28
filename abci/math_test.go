@@ -6,6 +6,7 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type validator struct {
@@ -25,23 +26,22 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 		providerPrices    oracletypes.AggregatedProviderPrices
 		validators        []validator
 		totalBondedTokens math.Int
-		expectedPrices    map[oracletypes.CurrencyPair]*uint256.Int
+		expectedPrices    map[types.CurrencyPair]*uint256.Int
 	}{
 		{
 			name:              "no providers",
 			providerPrices:    oracletypes.AggregatedProviderPrices{},
 			validators:        []validator{},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices:    map[oracletypes.CurrencyPair]*uint256.Int{},
+			expectedPrices:    map[types.CurrencyPair]*uint256.Int{},
 		},
 		{
 			name: "single provider entire stake + single price",
 			providerPrices: oracletypes.AggregatedProviderPrices{
-				validator1.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator1.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(100),
 					},
@@ -54,22 +54,20 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 				},
 			},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices: map[oracletypes.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
-					Base:          "BTC",
-					Quote:         "USD",
-					QuoteDecimals: 8,
+					Base:  "BTC",
+					Quote: "USD",
 				}: uint256.NewInt(100),
 			},
 		},
 		{
 			name: "single provider with not enough stake + single price",
 			providerPrices: oracletypes.AggregatedProviderPrices{
-				validator1.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator1.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(100),
 					},
@@ -82,23 +80,21 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 				},
 			},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices:    map[oracletypes.CurrencyPair]*uint256.Int{},
+			expectedPrices:    map[types.CurrencyPair]*uint256.Int{},
 		},
 		{
 			name: "single provider with just enough stake + multiple prices",
 			providerPrices: oracletypes.AggregatedProviderPrices{
-				validator1.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator1.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(100),
 					},
 					{
-						Base:          "ETH",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "ETH",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(200),
 					},
@@ -111,36 +107,32 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 				},
 			},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices: map[oracletypes.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
-					Base:          "BTC",
-					Quote:         "USD",
-					QuoteDecimals: 8,
+					Base:  "BTC",
+					Quote: "USD",
 				}: uint256.NewInt(100),
 				{
-					Base:          "ETH",
-					Quote:         "USD",
-					QuoteDecimals: 8,
+					Base:  "ETH",
+					Quote: "USD",
 				}: uint256.NewInt(200),
 			},
 		},
 		{
 			name: "2 providers with equal stake + single asset",
 			providerPrices: oracletypes.AggregatedProviderPrices{
-				validator1.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator1.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(100),
 					},
 				},
-				validator2.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator2.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(200),
 					},
@@ -157,40 +149,36 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 				},
 			},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices: map[oracletypes.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
-					Base:          "BTC",
-					Quote:         "USD",
-					QuoteDecimals: 8,
+					Base:  "BTC",
+					Quote: "USD",
 				}: uint256.NewInt(100),
 			},
 		},
 		{
 			name: "3 providers with equal stake + single asset",
 			providerPrices: oracletypes.AggregatedProviderPrices{
-				validator1.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator1.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(100),
 					},
 				},
-				validator2.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator2.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(200),
 					},
 				},
-				validator3.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator3.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(300),
 					},
@@ -211,54 +199,48 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 				},
 			},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices: map[oracletypes.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
-					Base:          "BTC",
-					Quote:         "USD",
-					QuoteDecimals: 8,
+					Base:  "BTC",
+					Quote: "USD",
 				}: uint256.NewInt(200),
 			},
 		},
 		{
 			name: "3 providers with equal stake + multiple assets",
 			providerPrices: oracletypes.AggregatedProviderPrices{
-				validator1.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator1.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(100),
 					},
 					{
-						Base:          "ETH",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "ETH",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(200),
 					},
 				},
-				validator2.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator2.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(300),
 					},
 					{
-						Base:          "ETH",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "ETH",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(400),
 					},
 				},
-				validator3.String(): map[oracletypes.CurrencyPair]oracletypes.QuotePrice{
+				validator3.String(): map[types.CurrencyPair]oracletypes.QuotePrice{
 					{
-						Base:          "BTC",
-						Quote:         "USD",
-						QuoteDecimals: 8,
+						Base:  "BTC",
+						Quote: "USD",
 					}: {
 						Price: uint256.NewInt(500),
 					},
@@ -279,11 +261,10 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 				},
 			},
 			totalBondedTokens: math.NewInt(100),
-			expectedPrices: map[oracletypes.CurrencyPair]*uint256.Int{ // only btc/usd should be included
+			expectedPrices: map[types.CurrencyPair]*uint256.Int{ // only btc/usd should be included
 				{
-					Base:          "BTC",
-					Quote:         "USD",
-					QuoteDecimals: 8,
+					Base:  "BTC",
+					Quote: "USD",
 				}: uint256.NewInt(300),
 			},
 		},

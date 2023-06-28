@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/service"
 	servicetypes "github.com/skip-mev/slinky/service/types"
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -96,15 +96,13 @@ func (s *ClientTestSuite) TestClientReturnsValidPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
 	cp1 := types.CurrencyPair{
-		Base:          "BTC",
-		Quote:         "USD",
-		QuoteDecimals: 1,
+		Base:  "BTC",
+		Quote: "USD",
 	}
 
 	cp2 := types.CurrencyPair{
-		Base:          "ETH",
-		Quote:         "USD",
-		QuoteDecimals: 12,
+		Base:  "ETH",
+		Quote: "USD",
 	}
 
 	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*uint256.Int{
@@ -120,6 +118,6 @@ func (s *ClientTestSuite) TestClientReturnsValidPrices() {
 	s.Require().NoError(err)
 
 	// check response
-	s.Require().Equal(resp.Prices[cp1.String()], uint256.NewInt(100).String())
-	s.Require().Equal(resp.Prices[cp2.String()], uint256.NewInt(200).String())
+	s.Require().Equal(resp.Prices[cp1.ToString()], uint256.NewInt(100).String())
+	s.Require().Equal(resp.Prices[cp2.ToString()], uint256.NewInt(200).String())
 }

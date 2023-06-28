@@ -91,6 +91,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 		// Create a proposal full of transactions.
 		h.logger.Info("preparing proposal", "height", req.Height)
+
 		resp, err := h.prepareProposalHandler(ctx, req)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "height", req.Height, "err", err)
@@ -125,7 +126,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 // process the transactions in the proposal with the oracle data removed.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
-		h.logger.Info("processing proposal for height %d", req.Height)
+		h.logger.Info("processing proposal", "height", req.Height)
 
 		// There must be at least one slot in the proposal for the oracle info.
 		if len(req.Txs) < NumInjectedTxs {
@@ -153,7 +154,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		}
 
 		// Verify that the vote extensions included in the proposal are valid.
-		if err := h.validateVoteExtensionsFn(extendedCommitInfo); err != nil {
+		if err := h.validateVoteExtensionsFn(ctx, req.Height, extendedCommitInfo); err != nil {
 			h.logger.Error("failed to validate vote extensions", "err", err)
 			return nil, err
 		}

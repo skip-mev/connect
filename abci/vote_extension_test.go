@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	"github.com/skip-mev/slinky/abci"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/service"

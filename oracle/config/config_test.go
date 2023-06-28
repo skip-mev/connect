@@ -1,11 +1,12 @@
-package oracle_test
+package config_test
 
 import (
 	"os"
 	"testing"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,11 +32,10 @@ quote_decimals = 8
 	assert.NoError(t, err)
 
 	// read config from file
-	cfg, err := oracle.ReadConfigFromFile(file.Name())
+	cfg, err := config.ReadConfigFromFile(file.Name())
 	assert.NoError(t, err)
 
 	// create oracle from config
-	tmLogger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
-	_, err = oracle.NewOracleFromConfig(tmLogger, cfg)
+	_, err = oracle.NewOracleFromConfig(log.NewNopLogger(), cfg)
 	assert.NoError(t, err)
 }

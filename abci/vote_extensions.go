@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
@@ -72,6 +72,8 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 			return &abci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 		}
+
+		h.logger.Info("extending vote with oracle prices", "num_prices", len(oracleResp.Prices))
 
 		voteExt := &abcitypes.OracleVoteExtension{
 			Height:    req.Height,

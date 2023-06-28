@@ -75,12 +75,14 @@ func (h *ProposalHandler) AggregateOracleData(
 func (h *ProposalHandler) BuildOracleTx(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
-	prices map[oracleservice.CurrencyPair]*uint256.Int,
+	prices map[oracletypes.CurrencyPair]*uint256.Int,
 ) ([]byte, error) {
+	h.logger.Info("building oracle tx", "num_prices", len(prices), "num_votes", len(extendedCommitInfo.Votes))
+
 	// Convert the prices to a string map of currency pair -> price.
 	priceMap := make(map[string]string)
 	for currencyPair, price := range prices {
-		priceMap[currencyPair.String()] = price.String()
+		priceMap[currencyPair.ToString()] = price.String()
 	}
 
 	// Inject the extended commit info into the proposal which contains all vote extensions.
@@ -118,7 +120,7 @@ func (h *ProposalHandler) AddOracleDataToAggregator(address string, oracleData *
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
-	prices := make(map[oracleservice.CurrencyPair]oracleservice.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]oracleservice.QuotePrice)
 	for asset, priceString := range oracleData.Prices {
 		// Convert the price to a uint256.Int. All price feeds are expected to be
 		// in the form of a string hex before conversion.
@@ -128,7 +130,7 @@ func (h *ProposalHandler) AddOracleDataToAggregator(address string, oracleData *
 		}
 
 		// Convert the asset into a currency pair.
-		currencyPair, err := oracleservice.NewCurrencyPairFromString(asset)
+		currencyPair, err := oracletypes.CurrencyPairFromString(asset)
 		if err != nil {
 			continue
 		}
@@ -138,6 +140,8 @@ func (h *ProposalHandler) AddOracleDataToAggregator(address string, oracleData *
 			Timestamp: oracleData.Timestamp,
 		}
 	}
+
+	h.logger.Info("adding oracle data to aggregator", "prices", len(prices), "validator_address", address)
 
 	// insert the prices into the price aggregator.
 	h.priceAggregator.SetProviderPrices(address, prices)
@@ -230,19 +234,39 @@ func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData *types.Ora
 	// Get the latest finalize state to write data to.
 	stateCtx := h.baseApp.GetFinalizeBlockStateCtx()
 
+	// convert the OracleData prices map to a format that is compatible with the oracle module.
+	modulePrices, err := toPriceMap(oracleData)
+	if err != nil {
+		return err
+	}
+
 	// Get the currency pairs currently supported by the oracle module.
 	currencyPairs := h.oracleKeeper.GetAllCurrencyPairs(ctx)
 	for _, cp := range currencyPairs {
 		// Check if there is a price update for the given currency pair.
-		priceStr, ok := oracleData.Prices[cp.ToString()]
+		quotePrice, ok := modulePrices[cp.ToString()]
 		if !ok {
 			continue
 		}
 
-		// Set the price for the currency pair.
+		if err := h.oracleKeeper.SetPriceForCurrencyPair(stateCtx, cp, quotePrice); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func toPriceMap(oracleData *types.OracleData) (map[string]oracletypes.QuotePrice, error) {
+	// initialize map
+	modulePrices := make(map[string]oracletypes.QuotePrice)
+
+	// for each CurrencyPair in the oracleData, convert to a oracletypes.CurrencyPair + format as string
+	for currencyPairStr, priceStr := range oracleData.Prices {
+		// convert big int string to big int
 		price, err := uint256.FromHex(priceStr)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// convert big int to sdk int
@@ -252,10 +276,9 @@ func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData *types.Ora
 			BlockHeight:    uint64(oracleData.Height),
 		}
 
-		if err := h.oracleKeeper.SetPriceForCurrencyPair(stateCtx, cp, quotePrice); err != nil {
-			return err
-		}
+		// set the quote price for the currency pair
+		modulePrices[currencyPairStr] = quotePrice
 	}
 
-	return nil
+	return modulePrices, nil
 }

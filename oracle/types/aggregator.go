@@ -5,19 +5,20 @@ import (
 	"sync"
 
 	"github.com/holiman/uint256"
+	"github.com/skip-mev/slinky/x/oracle/types"
 	"golang.org/x/exp/maps"
 )
 
 type (
 	// AggregatedProviderPrices defines a type alias for a map
 	// of provider -> asset -> QuotePrice
-	AggregatedProviderPrices map[string]map[CurrencyPair]QuotePrice
+	AggregatedProviderPrices map[string]map[types.CurrencyPair]QuotePrice
 
 	// AggregateFn is the function used to aggregate prices from each provider. Providers
 	// should be responsible for aggregating prices using TWAPs, TVWAPs, etc. The oracle
 	// will then compute the canonical price for a given currency pair by computing the
 	// median price across all providers.
-	AggregateFn func(providers AggregatedProviderPrices) map[CurrencyPair]*uint256.Int
+	AggregateFn func(providers AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int
 )
 
 // PriceAggregator is a simple aggregator for provider prices.
@@ -33,7 +34,7 @@ type PriceAggregator struct {
 	providerPrices AggregatedProviderPrices
 
 	// prices is the current set of prices aggregated across the providers.
-	prices map[CurrencyPair]*uint256.Int
+	prices map[types.CurrencyPair]*uint256.Int
 }
 
 // NewPriceAggregator returns a PriceAggregator. The PriceAggregator
@@ -50,7 +51,7 @@ func NewPriceAggregator(aggregateFn AggregateFn) *PriceAggregator {
 	return &PriceAggregator{
 		providerPrices: make(AggregatedProviderPrices),
 		aggregateFn:    aggregateFn,
-		prices:         make(map[CurrencyPair]*uint256.Int),
+		prices:         make(map[types.CurrencyPair]*uint256.Int),
 	}
 }
 
@@ -66,11 +67,11 @@ func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
 }
 
 // GetPricesByProvider returns the prices for a given provider.
-func (p *PriceAggregator) GetPricesByProvider(provider string) map[CurrencyPair]QuotePrice {
+func (p *PriceAggregator) GetPricesByProvider(provider string) map[types.CurrencyPair]QuotePrice {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	cpy := make(map[CurrencyPair]QuotePrice)
+	cpy := make(map[types.CurrencyPair]QuotePrice)
 	maps.Copy(cpy, p.providerPrices[provider])
 
 	return cpy
@@ -78,12 +79,12 @@ func (p *PriceAggregator) GetPricesByProvider(provider string) map[CurrencyPair]
 
 // SetQuotePrices updates the price aggregator with the latest ticker prices
 // from the given provider.
-func (p *PriceAggregator) SetProviderPrices(provider string, prices map[CurrencyPair]QuotePrice) {
+func (p *PriceAggregator) SetProviderPrices(provider string, prices map[types.CurrencyPair]QuotePrice) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
 	if len(prices) == 0 {
-		p.providerPrices[provider] = make(map[CurrencyPair]QuotePrice)
+		p.providerPrices[provider] = make(map[types.CurrencyPair]QuotePrice)
 		return
 	}
 
@@ -108,22 +109,22 @@ func (p *PriceAggregator) UpdatePrices() {
 		return
 	}
 
-	p.SetPrices(make(map[CurrencyPair]*uint256.Int))
+	p.SetPrices(make(map[types.CurrencyPair]*uint256.Int))
 }
 
 // GetPrices returns the aggregated prices based on the provided currency pairs.
-func (p *PriceAggregator) GetPrices() map[CurrencyPair]*uint256.Int {
+func (p *PriceAggregator) GetPrices() map[types.CurrencyPair]*uint256.Int {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	cpy := make(map[CurrencyPair]*uint256.Int)
+	cpy := make(map[types.CurrencyPair]*uint256.Int)
 	maps.Copy(cpy, p.prices)
 
 	return cpy
 }
 
 // SetPrices sets the current set of prices.
-func (p *PriceAggregator) SetPrices(prices map[CurrencyPair]*uint256.Int) {
+func (p *PriceAggregator) SetPrices(prices map[types.CurrencyPair]*uint256.Int) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
@@ -133,28 +134,28 @@ func (p *PriceAggregator) SetPrices(prices map[CurrencyPair]*uint256.Int) {
 // ComputeMedian inputs the aggregated prices from all providers and computes
 // the median price for each asset.
 func ComputeMedian() AggregateFn {
-	return func(providers AggregatedProviderPrices) map[CurrencyPair]*uint256.Int {
-		pricesByAsset := make(map[CurrencyPair][]QuotePrice)
+	return func(providers AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
+		pricesByAsset := make(map[types.CurrencyPair][]QuotePrice)
 		for _, providerPrices := range providers {
-			for currencyPair, ticker := range providerPrices {
+			for cp, ticker := range providerPrices {
 				// Only include prices that are not nil
 				if ticker.Price == nil {
 					continue
 				}
 
 				// Initialize the asset array if it doesn't exist
-				if _, ok := pricesByAsset[currencyPair]; !ok {
-					pricesByAsset[currencyPair] = make([]QuotePrice, 0)
+				if _, ok := pricesByAsset[cp]; !ok {
+					pricesByAsset[cp] = make([]QuotePrice, 0)
 				}
 
-				pricesByAsset[currencyPair] = append(pricesByAsset[currencyPair], ticker)
+				pricesByAsset[cp] = append(pricesByAsset[cp], ticker)
 			}
 		}
 
-		medianPrices := make(map[CurrencyPair]*uint256.Int)
+		medianPrices := make(map[types.CurrencyPair]*uint256.Int)
 
 		// Iterate through all assets and compute the median price
-		for currencyPair, prices := range pricesByAsset {
+		for cp, prices := range pricesByAsset {
 			if len(prices) == 0 {
 				continue
 			}
@@ -171,9 +172,9 @@ func ComputeMedian() AggregateFn {
 				medianPrice := new(uint256.Int).Add(prices[middle-1].Price, prices[middle].Price)
 				medianPrice = medianPrice.Div(medianPrice, new(uint256.Int).SetUint64(2))
 
-				medianPrices[currencyPair] = medianPrice
+				medianPrices[cp] = medianPrice
 			} else {
-				medianPrices[currencyPair] = prices[middle].Price
+				medianPrices[cp] = prices[middle].Price
 			}
 		}
 

@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	mock "github.com/stretchr/testify/mock"
 
 	time "time"

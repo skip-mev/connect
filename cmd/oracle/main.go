@@ -7,15 +7,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/service/server"
 )
 
 var (
-	host   = flag.String("host", "localhost", "host for the grpc-service to listen on")
-	port   = flag.String("port", "8080", "port for the grpc-service to listen on")
-	config = flag.String("config", "config.toml", "path to config file")
+	host    = flag.String("host", "localhost", "host for the grpc-service to listen on")
+	port    = flag.String("port", "8080", "port for the grpc-service to listen on")
+	cfgPath = flag.String("config", "config.toml", "path to config file")
 )
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -32,10 +33,10 @@ func main() {
 	// parse flags
 	flag.Parse()
 
-	logger := log.NewTMLogger(log.NewSyncWriter(os.Stderr))
+	logger := log.NewLogger(os.Stderr)
 
 	// create oracle
-	cfg, err := oracle.ReadConfigFromFile(*config)
+	cfg, err := config.ReadConfigFromFile(*cfgPath)
 	if err != nil {
 		logger.Error("failed to read config file", "err", err)
 		return
