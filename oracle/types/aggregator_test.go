@@ -5,26 +5,27 @@ import (
 
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
-	btcusd = types.NewCurrencyPair("btc", "usd", 6)
+	btcusd = oracletypes.NewCurrencyPair("btc", "usd")
 
-	ethusd = types.NewCurrencyPair("eth", "usd", 6)
+	ethusd = oracletypes.NewCurrencyPair("eth", "usd")
 
-	usdtusd = types.NewCurrencyPair("usdt", "usd", 6)
+	usdtusd = oracletypes.NewCurrencyPair("usdt", "usd")
 )
 
 func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
 		providerPrices types.AggregatedProviderPrices
-		expectedPrices map[types.CurrencyPair]*uint256.Int
+		expectedPrices map[oracletypes.CurrencyPair]*uint256.Int
 	}{
 		{
 			"empty provider prices",
 			types.AggregatedProviderPrices{},
-			map[types.CurrencyPair]*uint256.Int{},
+			map[oracletypes.CurrencyPair]*uint256.Int{},
 		},
 		{
 			"single provider price",
@@ -38,7 +39,7 @@ func TestComputeMedian(t *testing.T) {
 					},
 				},
 			},
-			map[types.CurrencyPair]*uint256.Int{
+			map[oracletypes.CurrencyPair]*uint256.Int{
 				btcusd: uint256.NewInt(100),
 				ethusd: uint256.NewInt(200),
 			},
@@ -63,7 +64,7 @@ func TestComputeMedian(t *testing.T) {
 					},
 				},
 			},
-			map[types.CurrencyPair]*uint256.Int{
+			map[oracletypes.CurrencyPair]*uint256.Int{
 				btcusd: uint256.NewInt(150),
 				ethusd: uint256.NewInt(250),
 			},
@@ -91,7 +92,7 @@ func TestComputeMedian(t *testing.T) {
 					},
 				},
 			},
-			map[types.CurrencyPair]*uint256.Int{
+			map[oracletypes.CurrencyPair]*uint256.Int{
 				btcusd: uint256.NewInt(150),
 				ethusd: uint256.NewInt(250),
 			},
@@ -124,7 +125,7 @@ func TestComputeMedian(t *testing.T) {
 					},
 				},
 			},
-			map[types.CurrencyPair]*uint256.Int{
+			map[oracletypes.CurrencyPair]*uint256.Int{
 				btcusd: uint256.NewInt(200),
 				ethusd: uint256.NewInt(300),
 			},

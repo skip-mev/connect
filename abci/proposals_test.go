@@ -55,7 +55,7 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				timestamps := time.Now()
 				heights := suite.ctx.BlockHeight()
 				prices := map[string]string{
-					"BTC/ETH/18": "0x5",
+					"BTC/ETH": "0x5",
 				}
 				extendVoteInfo := suite.createExtendedVoteInfo(
 					validator1,
@@ -79,7 +79,7 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			totalBonded: math.NewInt(100),
 			expectedPrices: map[string]string{
-				"BTC/ETH/18": "0x5",
+				"BTC/ETH": "0x5",
 			},
 			expectedError: false,
 		},
@@ -90,7 +90,7 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				timestamps := time.Now()
 				heights := suite.ctx.BlockHeight()
 				prices := map[string]string{
-					"BTC/ETH/18": "0x5",
+					"BTC/ETH": "0x5",
 				}
 				extendVoteInfoA := suite.createExtendedVoteInfo(
 					validator1,
@@ -101,7 +101,7 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 
 				// Create a vote extension with price updates for validator b
 				prices = map[string]string{
-					"BTC/ETH/18": "0x1",
+					"BTC/ETH": "0x1",
 				}
 				extendVoteInfoB := suite.createExtendedVoteInfo(
 					validator2,
@@ -129,7 +129,7 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			totalBonded: math.NewInt(100),
 			expectedPrices: map[string]string{
-				"BTC/ETH/18": "0x5",
+				"BTC/ETH": "0x5",
 			},
 			expectedError: false,
 		},
@@ -139,8 +139,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				timestamps := time.Now()
 				heights := suite.ctx.BlockHeight()
 				prices := map[string]string{
-					"BTC/ETH/18": "0x5",
-					"BTC/USD/8":  "0x1",
+					"BTC/ETH": "0x5",
+					"BTC/USD": "0x1",
 				}
 				extendVoteInfoA := suite.createExtendedVoteInfo(
 					validator1,
@@ -151,8 +151,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 
 				// Create a vote extension with price updates for validator b
 				prices = map[string]string{
-					"BTC/ETH/18": "0x1",
-					"BTC/USD/8":  "0x3",
+					"BTC/ETH": "0x1",
+					"BTC/USD": "0x3",
 				}
 				extendVoteInfoB := suite.createExtendedVoteInfo(
 					validator2,
@@ -180,8 +180,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			totalBonded: math.NewInt(100),
 			expectedPrices: map[string]string{
-				"BTC/ETH/18": "0x5",
-				"BTC/USD/8":  "0x1",
+				"BTC/ETH": "0x5",
+				"BTC/USD": "0x1",
 			},
 			expectedError: false,
 		},
@@ -192,8 +192,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				timestamps := time.Now()
 				heights := suite.ctx.BlockHeight()
 				prices := map[string]string{
-					"BTC/ETH/18": "0x5",
-					"BTC/USD/8":  "0x1",
+					"BTC/ETH": "0x5",
+					"BTC/USD": "0x1",
 				}
 				extendVoteInfoA := suite.createExtendedVoteInfo(
 					validator1,
@@ -204,8 +204,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 
 				// Create a vote extension with price updates for validator b
 				prices = map[string]string{
-					"BTC/ETH/18": "0x1",
-					"BTC/USD/8":  "0x3",
+					"BTC/ETH": "0x1",
+					"BTC/USD": "0x3",
 				}
 				extendVoteInfoB := suite.createExtendedVoteInfo(
 					validator2,
@@ -215,8 +215,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				)
 
 				prices = map[string]string{
-					"BTC/ETH/18": "0x3",
-					"BTC/USD/8":  "0x2",
+					"BTC/ETH": "0x3",
+					"BTC/USD": "0x2",
 				}
 				extendVoteInfoC := suite.createExtendedVoteInfo(
 					validator3,
@@ -255,8 +255,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			totalBonded: math.NewInt(100),
 			expectedPrices: map[string]string{
-				"BTC/ETH/18": "0x3",
-				"BTC/USD/8":  "0x2",
+				"BTC/ETH": "0x3",
+				"BTC/USD": "0x2",
 			},
 		},
 	}
@@ -354,9 +354,9 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension1 := suite.createExtendedVoteInfo(
 					validator1,
 					map[string]string{
-						"BTC/ETH/18":  "0x1",
-						"ETH/USD/6":   "0x2",
-						"ATOM/USDC/6": "0x3",
+						"BTC/ETH":   "0x1",
+						"ETH/USD":   "0x2",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -390,9 +390,9 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 				oracleData := suite.createOracleData(
 					map[string]string{
-						"BTC/ETH/18":  "0x1",
-						"ETH/USD/6":   "0x2",
-						"ATOM/USDC/6": "0x3",
+						"BTC/ETH":   "0x1",
+						"ETH/USD":   "0x2",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -414,9 +414,9 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension1 := suite.createExtendedVoteInfo(
 					validator1,
 					map[string]string{
-						"BTC/ETH/18":  "0x1",
-						"ETH/USD/6":   "0x2",
-						"ATOM/USDC/6": "0x3",
+						"BTC/ETH":   "0x1",
+						"ETH/USD":   "0x2",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -424,9 +424,9 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 				oracleData := suite.createOracleData(
 					map[string]string{
-						"BTC/ETH/18":  "0x1",
-						"ETH/USD/6":   "0x2",
-						"ATOM/USDC/6": "0x3",
+						"BTC/ETH":   "0x1",
+						"ETH/USD":   "0x2",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -448,8 +448,8 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension1 := suite.createExtendedVoteInfo(
 					validator1,
 					map[string]string{
-						"BTC/ETH/18": "0x1",
-						"ETH/USD/6":  "0x2",
+						"BTC/ETH": "0x1",
+						"ETH/USD": "0x2",
 					},
 					time.Now(),
 					100,
@@ -458,7 +458,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension2 := suite.createExtendedVoteInfo(
 					validator2,
 					map[string]string{
-						"ATOM/USDC/6": "0x3",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -466,9 +466,9 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 				oracleData := suite.createOracleData(
 					map[string]string{
-						"BTC/ETH/18":  "0x1",
-						"ETH/USD/6":   "0x2",
-						"ATOM/USDC/6": "0x3",
+						"BTC/ETH":   "0x1",
+						"ETH/USD":   "0x2",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -490,8 +490,8 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension1 := suite.createExtendedVoteInfo(
 					validator1,
 					map[string]string{
-						"BTC/ETH/18": "0x1",
-						"ETH/USD/6":  "0x2",
+						"BTC/ETH": "0x1",
+						"ETH/USD": "0x2",
 					},
 					time.Now(),
 					100,
@@ -500,7 +500,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension2 := suite.createExtendedVoteInfo(
 					validator2,
 					map[string]string{
-						"ATOM/USDC/6": "0x3",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -508,9 +508,9 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 				oracleData := suite.createOracleData(
 					map[string]string{
-						"BTC/ETH/18":  "0x1",
-						"ETH/USD/6":   "0x2",
-						"ATOM/USDC/6": "0x3",
+						"BTC/ETH":   "0x1",
+						"ETH/USD":   "0x2",
+						"ATOM/USDC": "0x3",
 					},
 					time.Now(),
 					100,
@@ -534,7 +534,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension1 := suite.createExtendedVoteInfo(
 					validator1,
 					map[string]string{
-						"BTC/ETH/18": "0x1",
+						"BTC/ETH": "0x1",
 					},
 					time.Now(),
 					100,
@@ -543,7 +543,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension2 := suite.createExtendedVoteInfo(
 					validator2,
 					map[string]string{
-						"BTC/ETH/18": "0x2",
+						"BTC/ETH": "0x2",
 					},
 					time.Now(),
 					100,
@@ -552,7 +552,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				voteExtension3 := suite.createExtendedVoteInfo(
 					validator2,
 					map[string]string{
-						"BTC/ETH/18": "0x3",
+						"BTC/ETH": "0x3",
 					},
 					time.Now(),
 					100,
@@ -560,7 +560,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 				oracleData := suite.createOracleData(
 					map[string]string{
-						"BTC/ETH/18": "0x2",
+						"BTC/ETH": "0x2",
 					},
 					time.Now(),
 					100,

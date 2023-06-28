@@ -3,8 +3,9 @@ package coinbase
 import (
 	"context"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -17,14 +18,14 @@ var _ types.Provider = (*Provider)(nil)
 // Provider implements the Provider interface for Coinbase. This provider
 // is a very simple implementation that fetches spot prices from the Coinbase API.
 type Provider struct {
-	pairs  []types.CurrencyPair
+	pairs  []oracletypes.CurrencyPair
 	logger log.Logger
 }
 
 // NewProvider returns a new Coinbase provider.
 //
 // THIS PROVIDER SHOULD NOT BE USED IN PRODUCTION. IT IS ONLY MEANT FOR TESTING.
-func NewProvider(logger log.Logger, pairs []types.CurrencyPair) *Provider {
+func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair) *Provider {
 	return &Provider{
 		pairs:  pairs,
 		logger: logger,
@@ -37,8 +38,8 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices(ctx context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
-	resp := make(map[types.CurrencyPair]types.QuotePrice)
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+	resp := make(map[oracletypes.CurrencyPair]types.QuotePrice)
 
 	for _, currencyPair := range p.pairs {
 		spotPrice, err := getPriceForPair(ctx, currencyPair)
@@ -58,11 +59,11 @@ func (p *Provider) GetPrices(ctx context.Context) (map[types.CurrencyPair]types.
 }
 
 // SetPairs sets the currency pairs that the provider will fetch prices for.
-func (p *Provider) SetPairs(pairs ...types.CurrencyPair) {
+func (p *Provider) SetPairs(pairs ...oracletypes.CurrencyPair) {
 	p.pairs = pairs
 }
 
 // GetPairs returns the currency pairs that the provider is fetching prices for.
-func (p *Provider) GetPairs() []types.CurrencyPair {
+func (p *Provider) GetPairs() []oracletypes.CurrencyPair {
 	return p.pairs
 }

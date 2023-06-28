@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (

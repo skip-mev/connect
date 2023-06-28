@@ -10,6 +10,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // NameToSymbol is a map of currency names to their symbols.
@@ -34,7 +35,7 @@ var NameToSymbol = map[string]string{
 //	    "currency": "USD"
 //	  }
 //	}
-func getPriceForPair(ctx context.Context, pair types.CurrencyPair) (*types.QuotePrice, error) {
+func getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*types.QuotePrice, error) {
 	baseSymbol, ok := NameToSymbol[pair.Base]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
@@ -73,7 +74,7 @@ func getPriceForPair(ctx context.Context, pair types.CurrencyPair) (*types.Quote
 		return nil, fmt.Errorf("failed to parse response")
 	}
 
-	price, err := providers.Float64StringToUint256(amount, pair.QuoteDecimals)
+	price, err := providers.Float64StringToUint256(amount, pair.Decimals())
 	if err != nil {
 		return nil, err
 	}

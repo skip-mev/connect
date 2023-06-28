@@ -41,6 +41,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the main function.
@@ -157,7 +158,8 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		WASM WASMConfig `mapstructure:"wasm"`
+		WASM   WASMConfig          `mapstructure:"wasm"`
+		Oracle oracleconfig.Config `mapstructure:"oracle"`
 	}
 
 	// Optionally allow the chain developer to overwrite the SDK's default
@@ -184,6 +186,7 @@ func initAppConfig() (string, interface{}) {
 			LruSize:       1,
 			QueryGasLimit: 300000,
 		},
+		Oracle: oracleconfig.Config{},
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate + `
@@ -192,7 +195,7 @@ func initAppConfig() (string, interface{}) {
 query_gas_limit = 300000
 # This is the number of wasm vm instances we keep cached in memory for speed-up
 # Warning: this is currently unstable and may lead to crashes, best to keep for 0 unless testing locally
-lru_size = 0`
+lru_size = 0` + oracleconfig.DefaultConfigTemplate
 
 	return customAppTemplate, customAppConfig
 }

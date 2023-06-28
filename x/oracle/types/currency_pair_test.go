@@ -102,3 +102,28 @@ func TestToFromString(t *testing.T) {
 		})
 	}
 }
+
+func TestDecimals(t *testing.T) {
+	tcs := []struct {
+		name string
+		cp   types.CurrencyPair
+		dec  int
+	}{
+		{
+			"if the quote is ethereum, return 18",
+			types.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
+			18,
+		},
+		{
+			"if the quote is not ethereum or eth, return 8",
+			types.CurrencyPair{Base: "A", Quote: "B"},
+			8,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.cp.Decimals(), tc.dec)
+		})
+	}
+}

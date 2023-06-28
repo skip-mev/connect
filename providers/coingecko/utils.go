@@ -1,6 +1,6 @@
 package coingecko
 
-import "github.com/skip-mev/slinky/oracle/types"
+import "github.com/skip-mev/slinky/x/oracle/types"
 
 // getUniqueBaseAndQuoteDenoms returns a list of unique base and quote denoms
 // from a list of currency pairs.

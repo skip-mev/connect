@@ -10,15 +10,22 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 CONFIG_FILE ?= $(CURDIR)/conf/dev/config.toml
+HOMEDIR ?= $(CURDIR)/tests/.slinkyd
+GENESIS ?= $(HOMEDIR)/config/genesis.json
+GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
 
 ###############################################################################
 ###                               build                                     ###
 ###############################################################################
+
 build:
 	go build -o ./build/ ./...
 
 run-oracle-server: build
 	./build/oracle -config ${CONFIG_FILE}
+
+.PHONY: build run-oracle-server
+
 ###############################################################################
 ###                                Test App                                 ###
 ###############################################################################
@@ -79,20 +86,27 @@ $(BUILD_TARGETS): $(BUILD_DIR)/
 $(BUILD_DIR)/:
 	mkdir -p $(BUILD_DIR)/
 
-.PHONY: build-test-app
+# build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
+build-configs: build-test-app
+	rm -rf $(HOMEDIR)
+
+	./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
+	./build/slinkyd keys add validator --home $(HOMEDIR)
+	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR)
+	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR)
+	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR)
+	./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
+	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS) 
+	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BITCOIN", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
 # build-and-start-app builds a slinky simulation application binary in the build folder
 # and initializes a single validator configuration. If desired, users can suppliment
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
-build-and-start-app: build-test-app
-	./build/slinkyd init validator --chain-id skip-1
-	./build/slinkyd keys add validator
-	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake
-	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake
-	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1
-	./build/slinkyd genesis collect-gentxs
-	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug
+build-and-start-app: build-test-app build-configs
+	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug --home $(HOMEDIR)
+
+.PHONY: build-test-app build-configs build-and-start-app
 
 ###############################################################################
 ###                               Testing                                   ###
@@ -100,6 +114,8 @@ build-and-start-app: build-test-app
 
 test:
 	@go test -v -race ./...
+
+.PHONY: test
 
 ###############################################################################
 ###                              Formatting                                 ###
@@ -110,6 +126,8 @@ format:
 
 tidy: format
 	go mod tidy
+
+.PHONY: format tidy
 
 ###############################################################################
 ###                                Protobuf                                 ###
@@ -142,7 +160,7 @@ proto-update-deps:
 	@echo "Updating Protobuf dependencies"
 	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
-.PHONY: proto-all proto-gen proto-format proto-lint proto-check-breaking proto-update-deps
+.PHONY: proto-all proto-gen proto-pulsar-gen proto-format proto-lint proto-check-breaking proto-update-deps
 
 ###############################################################################
 ###                                Linting                                  ###

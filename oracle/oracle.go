@@ -7,11 +7,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/holiman/uint256"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	servicetypes "github.com/skip-mev/slinky/service/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -80,7 +82,7 @@ func New(
 }
 
 // NewOracleFromConfig returns a new oracle instance from the given OracleConfig.
-func NewOracleFromConfig(logger log.Logger, cfg *Config) (*Oracle, error) {
+func NewOracleFromConfig(logger log.Logger, cfg *config.Config) (*Oracle, error) {
 	// construct providers from the given currency pairs
 	providers, err := cfg.GetProviders(logger)
 	if err != nil {
@@ -97,8 +99,15 @@ func NewDefaultOracle(
 	logger log.Logger,
 	oracleTicker time.Duration,
 	providers []types.Provider,
-	currencyPairs []types.CurrencyPair,
+	currencyPairs []oracletypes.CurrencyPair,
 ) *Oracle {
+	// validate the currency-pairs
+	for _, cp := range currencyPairs {
+		if err := cp.ValidateBasic(); err != nil {
+			panic(fmt.Sprintf("invalid currency pair %s", cp))
+		}
+	}
+
 	for _, provider := range providers {
 		provider.SetPairs(currencyPairs...)
 	}
@@ -230,7 +239,7 @@ func (o *Oracle) fetchPricesFn(ctx context.Context, provider types.Provider) fun
 	return func() (err error) {
 		o.logger.Info("fetching prices", "provider", provider.Name())
 
-		pricesCh := make(chan map[types.CurrencyPair]types.QuotePrice)
+		pricesCh := make(chan map[oracletypes.CurrencyPair]types.QuotePrice)
 		errCh := make(chan error)
 
 		go func() {
@@ -301,6 +310,6 @@ func (o *Oracle) GetLastSyncTime() time.Time {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *Oracle) GetPrices() map[types.CurrencyPair]*uint256.Int {
+func (o *Oracle) GetPrices() map[oracletypes.CurrencyPair]*uint256.Int {
 	return o.priceAggregator.GetPrices()
 }

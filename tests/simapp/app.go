@@ -1,9 +1,11 @@
 package simapp
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"cosmossdk.io/log"
 	dbm "github.com/cosmos/cosmos-db"
@@ -14,10 +16,12 @@ import (
 	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 
+	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -58,12 +62,16 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"github.com/skip-mev/slinky/abci"
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
+	oracleservice "github.com/skip-mev/slinky/service/client"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )
 
 const (
-	ChainID = "chain-id-0"
+	ChainID = "skip-1"
 )
 
 var (
@@ -245,10 +253,55 @@ func NewSimApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	// read oracle config from app-opts, and construct oracle service
+	cfg, err := oracleconfig.ReadConfigFromAppOpts(appOpts)
+	if err != nil {
+		panic(err)
+	}
+
+	oracle, err := oracleservice.NewOracleServiceFromConfig(*cfg, app.Logger())
+	if err != nil {
+		panic(err)
+	}
+
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {
 		panic(err)
 	}
+
+	vs := app.GetValidatorStore()
+	validateVoteExtensionsFn := func() abci.ValidateVoteExtensionsFn {
+		return func(ctx sdk.Context, height int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error {
+			app.Logger().Info("validating vote extensions", "height", height, "store", vs, "commit info", extendedCommitInfo)
+			return abci.ValidateVoteExtensions(ctx, vs, height, app.ChainID(), extendedCommitInfo)
+		}
+	}
+
+	proposalHandler := abci.NewProposalHandler(
+		app.Logger(),
+		baseapp.NoOpPrepareProposal(),
+		baseapp.NoOpProcessProposal(),
+		types.ComputeMedian(),
+		app.App,
+		app.OracleKeeper,
+		validateVoteExtensionsFn(), // Move to using upstream sdk's ValidateVoteExtensionsFn whenever it is fixed
+	)
+
+	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
+	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
+
+	voteExtensionsHandler := abci.NewVoteExtensionHandler(
+		app.Logger(),
+		oracle,
+		time.Second,
+	)
+	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
+	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
+
+	// Wrap the base-app's tx-decoder
+	app.SetTxDecoder(
+		abci.NewOracleTxDecoder(app.TxConfig().TxDecoder()), // TODO(nikhil): remove this once upstream changes are merged into baseapp: https://github.com/cosmos/cosmos-sdk/pull/16700
+	)
 
 	/****  Module Options ****/
 
@@ -391,4 +444,28 @@ func BlockedAddresses() map[string]bool {
 	}
 
 	return result
+}
+
+// GetValidatorStore gets the expected interface required by the x/staking module for the ValidateVoteExtensions method.
+// This interface is used in ProcessProposal to verify that injected vote-extensions satisfy a supermajority of the validator set.
+// This method returns a wrapper around the App's x/staking keeper
+func (app *SimApp) GetValidatorStore() baseapp.ValidatorStore {
+	if app.StakingKeeper == nil {
+		panic("staking keeper is nil")
+	}
+	return &validatorStoreImpl{
+		*app.StakingKeeper,
+	}
+}
+
+type validatorStoreImpl struct {
+	stakingkeeper.Keeper
+}
+
+func (v *validatorStoreImpl) GetValidatorByConsAddr(ctx sdk.Context, address cryptotypes.Address) (baseapp.Validator, error) {
+	validator, ok := v.Keeper.GetValidatorByConsAddr(ctx, sdk.ConsAddress(address))
+	if !ok {
+		return nil, fmt.Errorf("validator %s not found", address)
+	}
+	return validator, nil
 }

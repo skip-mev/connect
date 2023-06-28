@@ -11,6 +11,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // getPriceForPair returns the price of a currency pair. The price is fetched
@@ -28,7 +29,7 @@ import (
 //	    "usd": 10000
 //	  }
 //	}
-func (p *Provider) getPrices(ctx context.Context) (map[types.CurrencyPair]types.QuotePrice, error) {
+func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
 	url := getPriceEndpoint(p.bases, p.quotes)
 
 	resp, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -48,7 +49,7 @@ func (p *Provider) getPrices(ctx context.Context) (map[types.CurrencyPair]types.
 		return nil, err
 	}
 
-	prices := make(map[types.CurrencyPair]types.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]types.QuotePrice)
 
 	for _, pair := range p.pairs {
 		base := strings.ToLower(pair.Base)
@@ -63,7 +64,7 @@ func (p *Provider) getPrices(ctx context.Context) (map[types.CurrencyPair]types.
 		}
 
 		quotePrice, err := types.NewQuotePrice(
-			providers.Float64ToUint256(respMap[base][quote], pair.QuoteDecimals),
+			providers.Float64ToUint256(respMap[base][quote], pair.Decimals()),
 			time.Now(),
 		)
 		if err != nil {
@@ -79,5 +80,5 @@ func (p *Provider) getPrices(ctx context.Context) (map[types.CurrencyPair]types.
 // getPriceEndpoint is the CoinGecko endpoint for getting the price of a
 // currency pair.
 func getPriceEndpoint(base, quote string) string {
-	return fmt.Sprintf("https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s", base, quote)
+	return fmt.Sprintf("https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s&precision=18", base, quote)
 }

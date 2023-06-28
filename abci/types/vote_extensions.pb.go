@@ -31,7 +31,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // OracleVoteExtension defines the vote extension structure for oracle prices.
 type OracleVoteExtension struct {
-	// Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" -> "0x1234".
+	// Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" ->
+	// "0x1234".
 	Prices map[string]string `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Timestamp defines the block timestamp when the oracle data was validated.
 	Timestamp time.Time `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
@@ -93,16 +94,19 @@ func (m *OracleVoteExtension) GetHeight() int64 {
 	return 0
 }
 
-// OracleData defines the deterministic final oracle prices and data that will be inserted (PrepareProposal)
-// and verified (ProcessProposal) in every block proposal.
+// OracleData defines the deterministic final oracle prices and data that will
+// be inserted (PrepareProposal) and verified (ProcessProposal) in every block
+// proposal.
 type OracleData struct {
-	// Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" -> "0x1234".
+	// Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" ->
+	// "0x1234".
 	Prices map[string]string `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Timestamp defines the block timestamp when the oracle data was validated.
 	Timestamp time.Time `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
 	// Height defines the block height when the oracle data was validated.
 	Height int64 `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
-	// ExtendedCommitInfo defines the last commit info which contains all vote extension data.
+	// ExtendedCommitInfo defines the last commit info which contains all vote
+	// extension data.
 	ExtendedCommitInfo []byte `protobuf:"bytes,5,opt,name=extended_commit_info,json=extendedCommitInfo,proto3" json:"extended_commit_info,omitempty"`
 }
 

@@ -1,6 +1,9 @@
 package types
 
-import "golang.org/x/net/context"
+import (
+	"github.com/skip-mev/slinky/x/oracle/types"
+	"golang.org/x/net/context"
+)
 
 // Provider defines an interface an exchange price provider must implement.
 //
@@ -10,13 +13,13 @@ type Provider interface {
 	Name() string
 
 	// GetPrices returns the aggregated prices based on the provided currency pairs.
-	GetPrices(context.Context) (map[CurrencyPair]QuotePrice, error)
+	GetPrices(context.Context) (map[types.CurrencyPair]QuotePrice, error)
 
 	// SetPairs sets the pairs that the provider should fetch prices for.
-	SetPairs(...CurrencyPair)
+	SetPairs(...types.CurrencyPair)
 
 	// GetPairs returns the pairs that the provider is fetching prices for.
-	GetPairs() []CurrencyPair
+	GetPairs() []types.CurrencyPair
 }
 
 type ProviderConfig struct {

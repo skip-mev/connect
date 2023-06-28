@@ -69,7 +69,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			CurrencyPair: types.CurrencyPair{
 				Base:  "AA",
-				Quote: "BB",
+				Quote: "ETHEREUM",
 			},
 			CurrencyPairPrice: &types.QuotePrice{
 				Price: sdk.NewInt(100),
@@ -129,20 +129,22 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "CC/BB"},
 			},
 			&types.GetPriceResponse{
-				Nonce: 0,
+				Nonce:    0,
+				Decimals: uint64(8),
 			},
 			true,
 		},
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &types.CurrencyPair{Base: "AA", Quote: "BB"}},
+				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &types.CurrencyPair{Base: "AA", Quote: "ETHEREUM"}},
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
 				Price: &types.QuotePrice{
 					Price: sdk.NewInt(100),
 				},
+				Decimals: uint64(18),
 			},
 			true,
 		},
@@ -169,6 +171,9 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			if tc.res.Price != nil {
 				checkQuotePriceEqual(s.T(), *tc.res.Price, *res.Price)
 			}
+
+			// check decimals
+			assert.Equal(s.T(), tc.res.Decimals, res.Decimals)
 		})
 	}
 }
