@@ -29,7 +29,12 @@ func ValidateVoteExtensions( // TODO(nikhil): use sdk's ValidateVoteExtensions m
 	extCommit abci.ExtendedCommitInfo,
 ) error {
 	cp := ctx.ConsensusParams()
-	extsEnabled := cp.Abci != nil && cp.Abci.VoteExtensionsEnableHeight <= currentHeight
+	extsEnabled := cp.Abci != nil && cp.Abci.VoteExtensionsEnableHeight < currentHeight
+
+	// skip first block + any block before VEs were enabled
+	if currentHeight <= cp.Abci.VoteExtensionsEnableHeight {
+		return nil
+	}
 
 	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
 		var buf bytes.Buffer

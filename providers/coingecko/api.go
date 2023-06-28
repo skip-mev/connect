@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"strings"
 	"time"
 
@@ -32,20 +30,12 @@ import (
 func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
 	url := getPriceEndpoint(p.bases, p.quotes)
 
-	resp, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+	// make the request to url and unmarshal the response into respMap
 	respMap := make(map[string]map[string]float64)
-	if err := json.Unmarshal(body, &respMap); err != nil {
+
+	if err := providers.GetWithContext(ctx, url, func(body []byte) error {
+		return json.Unmarshal(body, &respMap)
+	}); err != nil {
 		return nil, err
 	}
 
