@@ -7,7 +7,6 @@ import (
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/skip-mev/slinky/abci"
-	"github.com/skip-mev/slinky/abci/mocks"
 	"github.com/skip-mev/slinky/abci/types"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 )
@@ -20,7 +19,6 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 		validators     []validator
 		totalBonded    math.Int
 		expectedPrices map[string]string
-		expectedError  bool
 	}{
 		{
 			name: "no txs single vote extension with no price updates",
@@ -46,7 +44,6 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			validators:     []validator{},
 			totalBonded:    math.NewInt(100),
 			expectedPrices: map[string]string{},
-			expectedError:  false,
 		},
 		{
 			name: "no txs single vote extension with price updates for single asset",
@@ -81,7 +78,6 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			expectedPrices: map[string]string{
 				"BTC/ETH": "0x5",
 			},
-			expectedError: false,
 		},
 		{
 			name: "multiple validators with price updates for single asset",
@@ -131,7 +127,6 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			expectedPrices: map[string]string{
 				"BTC/ETH": "0x5",
 			},
-			expectedError: false,
 		},
 		{
 			name: "multiple validators with price updates for multiple assets",
@@ -183,7 +178,6 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				"BTC/ETH": "0x5",
 				"BTC/USD": "0x1",
 			},
-			expectedError: false,
 		},
 		{
 			name: "multiple validators with price updates for multiple assets and txs",
@@ -276,28 +270,25 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 
 			// Create a proposal handler.
 			suite.proposalHandler = abci.NewProposalHandler(
-				log.NewNopLogger(),
+				log.NewTestLogger(suite.T()),
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
 				aggregateFn,
-				mocks.NewApp(suite.T()),
-				mocks.NewOracleKeeper(suite.T()),
+				suite.createMockBaseApp(suite.ctx),
+				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 			)
 			prepareProposalHandler := suite.proposalHandler.PrepareProposalHandler()
 
 			// Create a proposal.
 			resp, err := prepareProposalHandler(suite.ctx, tc.getReq())
-			if tc.expectedError {
-				suite.Require().Error(err)
-				suite.Require().Nil(resp)
-			} else {
-				suite.Require().NoError(err)
+			suite.Require().NoError(err)
 
-				// first index must be the oracle data
-				suite.Require().GreaterOrEqual(len(resp.Txs), 1)
+			// first index must be the oracle data
+			suite.Require().GreaterOrEqual(len(resp.Txs), 1)
 
-				// There cannot be any errors when unmarshalling the oracle data.
+			// There cannot be any errors when unmarshalling the oracle data.
+			if suite.ctx.ConsensusParams().Abci.VoteExtensionsEnableHeight > suite.voteExtensionsEnabledHeight {
 				oracleData := types.OracleData{}
 				err := oracleData.Unmarshal(resp.Txs[0])
 				suite.Require().NoError(err)
@@ -320,7 +311,16 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 		expectedError bool
 	}{
 		{
-			name: "no txs",
+			name: "no txs before vote extensions enabled",
+			getTxs: func() [][]byte {
+				suite.ctx = suite.ctx.WithBlockHeight(0)
+
+				return nil
+			},
+			expectedError: false,
+		},
+		{
+			name: "no txs after vote extensions enabled",
 			getTxs: func() [][]byte {
 				return nil
 			},
@@ -550,7 +550,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				)
 
 				voteExtension3 := suite.createExtendedVoteInfo(
-					validator2,
+					validator3,
 					map[string]string{
 						"BTC/ETH": "0x3",
 					},
@@ -588,11 +588,11 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 			// Create a proposal handler.
 			suite.proposalHandler = abci.NewProposalHandler(
-				log.NewNopLogger(),
+				log.NewTestLogger(suite.T()),
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
 				oracletypes.ComputeMedian(),
-				suite.createMockBaseApp(suite.ctx, tc.expectedError == false),
+				suite.createMockBaseApp(suite.ctx),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 			)

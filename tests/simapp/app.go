@@ -269,11 +269,11 @@ func NewSimApp(
 		panic(err)
 	}
 
-	vs := app.GetValidatorStore()
+	// vs := app.GetValidatorStore()
 	validateVoteExtensionsFn := func() abci.ValidateVoteExtensionsFn {
 		return func(ctx sdk.Context, height int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error {
-			app.Logger().Info("validating vote extensions", "height", height, "store", vs, "commit info", extendedCommitInfo)
-			return abci.ValidateVoteExtensions(ctx, vs, height, app.ChainID(), extendedCommitInfo)
+			// app.Logger().Info("validating vote extensions", "height", height, "store", vs, "commit info", extendedCommitInfo)
+			return abci.NoOpValidateVoteExtensions(ctx, height, extendedCommitInfo)
 		}
 	}
 
