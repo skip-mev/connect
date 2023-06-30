@@ -9,12 +9,12 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ types.Provider = (*NormalMockProvider)(nil)
+var _ types.Provider = (*StaticMockProvider)(nil)
 
 type (
-	// NormalMockProvider defines a mocked exchange rate provider using fixed exchange
+	// StaticMockProvider defines a mocked exchange rate provider using fixed exchange
 	// rates.
-	NormalMockProvider struct {
+	StaticMockProvider struct {
 		exchangeRates map[oracletypes.CurrencyPair]types.QuotePrice
 		currencyPairs []oracletypes.CurrencyPair
 	}
@@ -22,21 +22,21 @@ type (
 	// FailingMockProvider defines a mocked exchange rate provider that always
 	// fails when fetching prices.
 	FailingMockProvider struct {
-		*NormalMockProvider
+		*StaticMockProvider
 	}
 
 	// TimeoutMockProvider defines a mocked exchange rate provider that always
 	// times out when fetching prices.
 	TimeoutMockProvider struct {
-		*NormalMockProvider
+		*StaticMockProvider
 		timeout time.Duration
 	}
 )
 
-// NewMockProvider returns a new mock provider. The mock provider
+// NewStaticMockProvider returns a new mock provider. The mock provider
 // will always return the same static data. Meant to be used for testing.
-func NewMockProvider() *NormalMockProvider {
-	return &NormalMockProvider{
+func NewStaticMockProvider() *StaticMockProvider {
+	return &StaticMockProvider{
 		exchangeRates: map[oracletypes.CurrencyPair]types.QuotePrice{
 			oracletypes.NewCurrencyPair("COSMOS", "USDC"):   {Price: uint256.NewInt(1134)},
 			oracletypes.NewCurrencyPair("COSMOS", "USDT"):   {Price: uint256.NewInt(1135)},
@@ -65,20 +65,20 @@ func NewMockProvider() *NormalMockProvider {
 }
 
 // Name returns the name of the mock provider.
-func (p NormalMockProvider) Name() string {
-	return "mock-provider"
+func (p StaticMockProvider) Name() string {
+	return "static-mock-provider"
 }
 
 // GetPrices returns the mocked exchange rates.
-func (p NormalMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p StaticMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
 	return p.exchangeRates, nil
 }
 
 // SetPairs is a no-op for the mock provider.
-func (p NormalMockProvider) SetPairs(_ ...oracletypes.CurrencyPair) {}
+func (p StaticMockProvider) SetPairs(_ ...oracletypes.CurrencyPair) {}
 
 // GetPairs is a no-op for the mock provider.
-func (p NormalMockProvider) GetPairs() []oracletypes.CurrencyPair {
+func (p StaticMockProvider) GetPairs() []oracletypes.CurrencyPair {
 	return p.currencyPairs
 }
 
@@ -87,7 +87,7 @@ var _ types.Provider = (*FailingMockProvider)(nil)
 // NewFailingMockProvider returns a new failing mock provider.
 func NewFailingMockProvider() *FailingMockProvider {
 	return &FailingMockProvider{
-		NormalMockProvider: NewMockProvider(),
+		StaticMockProvider: NewStaticMockProvider(),
 	}
 }
 
@@ -106,7 +106,7 @@ var _ types.Provider = (*TimeoutMockProvider)(nil)
 // NewTimeoutMockProvider returns a new timeout mock provider.
 func NewTimeoutMockProvider(timeout time.Duration) *TimeoutMockProvider {
 	return &TimeoutMockProvider{
-		NormalMockProvider: NewMockProvider(),
+		StaticMockProvider: NewStaticMockProvider(),
 		timeout:            timeout,
 	}
 }

@@ -8,39 +8,12 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-type (
-	// ProposalPhase defines whether the application is currently in the prepare or
-	// process proposal phase.
-	ProposalPhase int
-
-	// ValidateVoteExtensionsFn defines the function for validating vote extensions. This
-	// function is not explicitly used to validate the oracle data but rather that
-	// the signed vote extensions included in the proposal are valid and provide
-	// a supermajority of vote extensions for the current block. This method is
-	// expected to be used in ProcessProposal, the expected ctx is the ProcessProposalState's ctx.
-	ValidateVoteExtensionsFn func(ctx sdk.Context, currentHeight int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error
-)
-
-const (
-	// PrepareProposalPhase indicates that the application is currently in the
-	// prepare proposal phase.
-	PrepareProposalPhase ProposalPhase = 1
-
-	// ProcessProposalPhase indicates that the application is currently in the
-	// process proposal phase.
-	ProcessProposalPhase ProposalPhase = 2
-)
-
-func (pp ProposalPhase) String() string {
-	switch pp {
-	case PrepareProposalPhase:
-		return "prepare"
-	case ProcessProposalPhase:
-		return "process"
-	default:
-		return "unknown"
-	}
-}
+// ValidateVoteExtensionsFn defines the function for validating vote extensions. This
+// function is not explicitly used to validate the oracle data but rather that
+// the signed vote extensions included in the proposal are valid and provide
+// a supermajority of vote extensions for the current block. This method is
+// expected to be used in ProcessProposal, the expected ctx is the ProcessProposalState's ctx.
+type ValidateVoteExtensionsFn func(ctx sdk.Context, currentHeight int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error
 
 // App defines the interface that must be fulfilled by the base application. This
 // interface is utilized by the proposal handler to retrieve the state context

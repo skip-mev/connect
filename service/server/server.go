@@ -88,7 +88,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 	// start the server
 	eg.Go(func() error {
 		// serve, and return any errors
-		os.logger.Info("starting grpc server")
+		os.logger.Info("starting grpc server", "host", host, "port", port)
 		err := os.srv.Serve(listener)
 		if err != nil {
 			return fmt.Errorf("[grpc server]: error serving: %v", err)

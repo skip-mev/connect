@@ -40,7 +40,11 @@ type chain struct {
 }
 
 func newChain() (*chain, error) {
-	tmpDir, err := os.MkdirTemp("", "slinky-e2e-testnet-")
+	pwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	tmpDir, err := os.MkdirTemp(pwd, ".slinky-e2e-testnet-")
 	if err != nil {
 		return nil, err
 	}

@@ -28,6 +28,12 @@ func NewOracleServiceFromConfig(cfg config.Config, l log.Logger) (service.Oracle
 	}
 
 	// start the service in a go-routine
-	go oracleService.Start(context.Background())
+	go func() {
+		l.Info("starting oracle service")
+		if err := oracleService.Start(context.Background()); err != nil {
+			l.Error("failed to start oracle service", "err", err)
+		}
+	}()
+
 	return oracleService, nil
 }

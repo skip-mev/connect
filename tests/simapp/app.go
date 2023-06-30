@@ -17,6 +17,7 @@ import (
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -64,7 +65,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/skip-mev/slinky/abci"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
+	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	oracleservice "github.com/skip-mev/slinky/service/client"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
@@ -269,11 +270,11 @@ func NewSimApp(
 		panic(err)
 	}
 
-	// vs := app.GetValidatorStore()
+	// TODO: Migrate to sdk-ValidateVoteExtensions when ready
+	vs := app.GetValidatorStore()
 	validateVoteExtensionsFn := func() abci.ValidateVoteExtensionsFn {
 		return func(ctx sdk.Context, height int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error {
-			// app.Logger().Info("validating vote extensions", "height", height, "store", vs, "commit info", extendedCommitInfo)
-			return abci.NoOpValidateVoteExtensions(ctx, height, extendedCommitInfo)
+			return abci.ValidateVoteExtensions(ctx, vs, height, ctx.ChainID(), extendedCommitInfo)
 		}
 	}
 
@@ -281,7 +282,7 @@ func NewSimApp(
 		app.Logger(),
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
-		types.ComputeMedian(),
+		oracleservicetypes.ComputeMedian(),
 		app.App,
 		app.OracleKeeper,
 		validateVoteExtensionsFn(), // Move to using upstream sdk's ValidateVoteExtensionsFn whenever it is fixed
@@ -330,8 +331,8 @@ func NewSimApp(
 	// However, when registering a module manually (i.e. that does not support app wiring), the module version map
 	// must be set manually as follow. The upgrade module will de-duplicate the module version map.
 	//
-	// app.SetInitChainer(func(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-	// 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap())
+	// app.SetInitChainer(func(ctx sdk.Context, req *cometabci.RequestInitChain) (*cometabci.ResponseInitChain, error) {
+	// 	req.ConsensusParams.Abci.VoteExtensionsEnableHeight = 2
 	// 	return app.App.InitChainer(ctx, req)
 	// })
 
@@ -340,6 +341,30 @@ func NewSimApp(
 	}
 
 	return app
+}
+
+// TODO: remove this once we have a proper config file
+func (app *SimApp) InitChain(req *cometabci.RequestInitChain) (*cometabci.ResponseInitChain, error) {
+	req.ConsensusParams.Abci.VoteExtensionsEnableHeight = 2
+	resp, err := app.App.InitChain(req)
+	if resp == nil {
+		resp = &cometabci.ResponseInitChain{}
+	}
+	resp.ConsensusParams = &tmtypes.ConsensusParams{
+		Abci: &tmtypes.ABCIParams{
+			VoteExtensionsEnableHeight: 2,
+		},
+	}
+	return resp, err
+}
+
+// TODO: remove this once we have a proper config file
+func (app *SimApp) FinalizeBlock(req *cometabci.RequestFinalizeBlock) (*cometabci.ResponseFinalizeBlock, error) {
+	resp, err := app.App.FinalizeBlock(req)
+	if resp != nil {
+		resp.ConsensusParamUpdates = nil
+	}
+	return resp, err
 }
 
 // Name returns the name of the App

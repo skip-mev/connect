@@ -50,3 +50,4 @@ The following components are still in progress or need to be implemented complet
 * various providers in `oracle/provider/` such Kraken, Binance, etc...
 * config type definition in `config/`
 * tests!!!
+

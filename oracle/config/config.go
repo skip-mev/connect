@@ -10,6 +10,7 @@ import (
 	"github.com/skip-mev/slinky/providers/coinbase"
 	"github.com/skip-mev/slinky/providers/coingecko"
 	"github.com/skip-mev/slinky/providers/coinmarketcap"
+	"github.com/skip-mev/slinky/providers/mock"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
 	"github.com/spf13/cast"
@@ -29,22 +30,22 @@ const (
 // grpc-client of the grpc-server running at RemoteAddress is instantiated, otherwise, an in-process LocalClient oracle is instantiated.
 type Config struct {
 	// InProcess specifies whether the oracle configured, is currently running as a remote grpc-server, or will be run in process
-	InProcess bool `mapstructure:"in_process"`
+	InProcess bool `mapstructure:"in_process" toml:"in_process"`
 
 	// Timeout is the time that the client is willing to wait for responses from the oracle
-	Timeout time.Duration `mapstructure:"timeout"`
+	Timeout time.Duration `mapstructure:"timeout" toml:"timeout"`
 
 	// RemoteAddress is the address of the remote oracle server (if it is running out-of-process)
-	RemoteAddress string `mapstructure:"remote_address"`
+	RemoteAddress string `mapstructure:"remote_address" toml:"remote_address"`
 
 	// UpdateInterval is the interval at which the oracle will fetch prices from providers
-	UpdateInterval time.Duration `mapstructure:"update_interval"`
+	UpdateInterval time.Duration `mapstructure:"update_interval" toml:"update_interval"`
 
 	// Providers is the set of providers that the oracle will fetch prices from.
-	Providers []types.ProviderConfig `mapstructure:"providers"`
+	Providers []types.ProviderConfig `mapstructure:"providers" toml:"providers"`
 
 	// CurrencyPairs is the set of currency pairs that the oracle will fetch prices for
-	CurrencyPairs []oracletypes.CurrencyPair `mapstructure:"currency_pairs"`
+	CurrencyPairs []oracletypes.CurrencyPair `mapstructure:"currency_pairs" toml:"currency_pairs"`
 }
 
 // ReadConfigFromFile reads a config from a file and returns the config.
@@ -74,6 +75,15 @@ func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.Curr
 		return coinbase.NewProvider(l, cps), nil
 	case "coinmarketcap":
 		return coinmarketcap.NewProvider(l, cps, cfg.Apikey, cfg.TokenNameToSymbol), nil
+	case "timeout-mock-provider":
+		// This will timeout after the configured timeout + 1 second
+		return mock.NewTimeoutMockProvider(cfg.ProviderTimeout + time.Second), nil
+	case "failing-mock-provider":
+		// This will always panic whenever GetPrices is called
+		return mock.NewFailingMockProvider(), nil
+	case "static-mock-provider":
+		// This will return mock prices (randomly generated) for the configured currency pairs
+		return mock.NewStaticMockProvider(), nil
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
@@ -196,6 +206,13 @@ func providerConfigFromToml(iface interface{}) (types.ProviderConfig, error) {
 		}
 	}
 
+	// get the provider timeout
+	if v, ok := iFaceMap["provider_timeout"]; ok {
+		if providerCfg.ProviderTimeout, ok = v.(time.Duration); !ok {
+			return providerCfg, fmt.Errorf("failed to convert provider timeout to duration")
+		}
+	}
+
 	return providerCfg, nil
 }
 
@@ -213,10 +230,18 @@ func currencyPairConfigFromToml(iface interface{}) (oracletypes.CurrencyPair, er
 		if currencyPair.Base, ok = v.(string); !ok {
 			return currencyPair, fmt.Errorf("failed to convert base currency to string")
 		}
+	} else if v, ok := iFaceMap["Base"]; ok {
+		if currencyPair.Base, ok = v.(string); !ok {
+			return currencyPair, fmt.Errorf("failed to convert base currency to string")
+		}
 	}
 
 	// get the quote currency
 	if v, ok := iFaceMap["quote"]; ok {
+		if currencyPair.Quote, ok = v.(string); !ok {
+			return currencyPair, fmt.Errorf("failed to convert quote currency to string")
+		}
+	} else if v, ok := iFaceMap["Quote"]; ok {
 		if currencyPair.Quote, ok = v.(string); !ok {
 			return currencyPair, fmt.Errorf("failed to convert quote currency to string")
 		}
