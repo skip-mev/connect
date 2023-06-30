@@ -26,7 +26,7 @@ type VoteExtensionHandler struct {
 
 func NewVoteExtensionHandler(logger log.Logger, oracle service.OracleService, timeout time.Duration) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
-		logger:  logger.With("module", "VoteExtensionHandler"),
+		logger:  logger,
 		oracle:  oracle,
 		timeout: timeout,
 	}

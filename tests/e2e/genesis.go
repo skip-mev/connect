@@ -12,6 +12,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func getGenDoc(path string) (*comettypes.GenesisDoc, error) {
@@ -38,7 +39,7 @@ func getGenDoc(path string) (*comettypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func initGenesisFile(path, moniker, amountStr string, accAddr sdk.AccAddress) error {
+func initGenesisFile(path, moniker, amountStr string, accAddr sdk.AccAddress, oracleGenesis oracletypes.GenesisState) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
@@ -99,6 +100,13 @@ func initGenesisFile(path, moniker, amountStr string, accAddr sdk.AccAddress) er
 	}
 
 	appState[banktypes.ModuleName] = bankGenStateBz
+
+	oracleGenStateBz, err := cdc.MarshalJSON(&oracleGenesis)
+	if err != nil {
+		return fmt.Errorf("failed to marshal oracle genesis state: %w", err)
+	}
+
+	appState[oracletypes.ModuleName] = oracleGenStateBz
 
 	appStateJSON, err := json.Marshal(appState)
 	if err != nil {

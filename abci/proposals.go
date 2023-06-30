@@ -43,10 +43,6 @@ type (
 
 		// validateVoteExtensionsFn is the function responsible for validating vote extensions.
 		validateVoteExtensionsFn ValidateVoteExtensionsFn
-
-		// proposalPhase indicates whether the application is currently in the
-		// prepare or process proposal phase.
-		proposalPhase ProposalPhase
 	}
 )
 
@@ -92,7 +88,6 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		}
 
 		oracleDataBz := []byte{}
-		h.proposalPhase = PrepareProposalPhase
 		voteExtensionsEnabled := h.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
@@ -150,7 +145,6 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 // process the transactions in the proposal with the oracle data removed.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
-		h.proposalPhase = ProcessProposalPhase
 		voteExtensionsEnabled := h.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(

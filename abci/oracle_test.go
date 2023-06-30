@@ -552,7 +552,6 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 	cases := []struct {
 		name       string
 		oracleData abcitypes.OracleData
-		phase      abci.ProposalPhase
 	}{
 		{
 			name: "empty oracle data",

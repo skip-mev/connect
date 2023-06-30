@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"github.com/skip-mev/slinky/x/oracle/types"
 	"golang.org/x/net/context"
 )
@@ -24,12 +26,15 @@ type Provider interface {
 
 type ProviderConfig struct {
 	// Name identifies which provider this config is for
-	Name string `mapstructure:"name"`
+	Name string `mapstructure:"name" toml:"name"`
 
 	// Apikey is the api-key accompanying requests to the provider's API.
-	Apikey string `mapstructure:"apikey"`
+	Apikey string `mapstructure:"apikey" toml:"apikey"`
 
 	// TokenNameToSymbol is a map of token names to their symbols, i.e how each token in the CurrencyPair should
 	// map to the token references in the queried provider's API.
 	TokenNameToSymbol map[string]string `mapstructure:"token_name_to_symbol"`
+
+	// ProviderTimeout is the maximum amount of time to wait for a response from the provider.
+	ProviderTimeout time.Duration `mapstructure:"provider_timeout"`
 }

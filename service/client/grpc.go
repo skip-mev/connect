@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/skip-mev/slinky/service"
@@ -25,6 +26,8 @@ type GRPCClient struct {
 	conn *grpc.ClientConn
 	// timeout for the client, Price requests will block for this duration.
 	timeout time.Duration
+	// mutex to protect the client
+	mtx sync.Mutex
 }
 
 // NewGRPCClient creates a new grpc client of the oracle service, given the
@@ -33,6 +36,7 @@ func NewGRPCClient(addr string, t time.Duration) *GRPCClient {
 	return &GRPCClient{
 		addr:    addr,
 		timeout: t,
+		mtx:     sync.Mutex{},
 	}
 }
 
@@ -48,23 +52,35 @@ func (c *GRPCClient) Start(ctx context.Context) error {
 		return fmt.Errorf("failed to dial oracle gRPC server: %w", err)
 	}
 
+	c.mtx.Lock()
 	c.client = service.NewOracleClient(conn)
 	c.conn = conn
+	c.mtx.Unlock()
 
 	return nil
 }
 
 // Stop stops the GRPC client. This method closes the connection to the remote.
 func (c *GRPCClient) Stop(ctx context.Context) error {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+
 	return c.conn.Close()
 }
 
 // Prices returns the prices from the remote oracle service. This method blocks for the timeout duration configured on the client,
 // otherwise it returns the response from the remote oracle.
 func (c *GRPCClient) Prices(ctx context.Context, req *service.QueryPricesRequest) (*service.QueryPricesResponse, error) {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+
 	// set deadline on the context
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
+
+	if c.client == nil {
+		return nil, fmt.Errorf("oracle client not started")
+	}
 
 	return c.client.Prices(ctx, req, grpc.WaitForReady(true))
 }

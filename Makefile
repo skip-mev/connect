@@ -33,7 +33,7 @@ run-oracle-server: build
 docker-build:
 	@echo "Building E2E Docker image..."
 	@DOCKER_BUILDKIT=1 docker build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
-
+	@DOCKER_BUILDKIT=1 docker build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.e2e.oracle.Dockerfile .
 
 .PHONY: docker-build
 

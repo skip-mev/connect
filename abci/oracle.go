@@ -308,13 +308,13 @@ func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData types.Orac
 
 // writeCurrencyPairToState writes the currency pair price info to state. There are two different types of writes
 // that can occur:
-//  1. Prepare Proposal Phase: The currency pair price info is written to only the prepare proposal state.
-//  2. Process Proposal Phase: The currency pair price info is written to both the prepare and finalize proposal state.
+//  1. Prepare Proposal Mode: The currency pair price info is written to only the prepare proposal state.
+//  2. Process Proposal Mode: The currency pair price info is written to both the prepare and finalize proposal state.
 //
-// We do not write oracle data to finalize block state in prepare proposal phase because that will directly
-// apply state changes for a proposal that may be rejected. When current phase is process proposal, we write to the current
+// We do not write oracle data to finalize block state in prepare proposal mode because that will directly
+// apply state changes for a proposal that may be rejected. When current mode is process proposal, we write to the current
 // context (ProcessProposalState) and finalize context (FinalizeBlockState). This is the desired behavior as otherwise
-// there may be inconsistency in whether transactions are successfully executed in the different phases (Prepare,
+// there may be inconsistency in whether transactions are successfully executed in the different modes (Prepare,
 // Process, Finalize).
 func (h *ProposalHandler) writeCurrencyPairToState(
 	ctx sdk.Context,
@@ -322,10 +322,10 @@ func (h *ProposalHandler) writeCurrencyPairToState(
 	quotePrice oracletypes.QuotePrice,
 ) error {
 	if err := h.oracleKeeper.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
-		return fmt.Errorf("failed to write oracle data to %s phase: %w", h.proposalPhase, err)
+		return fmt.Errorf("failed to write oracle data to state: %s", err)
 	}
 
-	if h.proposalPhase == PrepareProposalPhase {
+	if ctx.ExecMode() == sdk.ExecModePrepareProposal {
 		return nil
 	}
 

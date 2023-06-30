@@ -23,7 +23,11 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	"github.com/pelletier/go-toml/v2"
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/tests/simapp"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
 )
@@ -45,11 +49,17 @@ type (
 	IntegrationTestSuite struct {
 		suite.Suite
 
-		tmpDirs      []string
-		chain        *chain
-		dkrPool      *dockertest.Pool
-		dkrNet       *dockertest.Network
-		valResources []*dockertest.Resource
+		tmpDirs         []string
+		chain           *chain
+		dkrPool         *dockertest.Pool
+		dkrNet          *dockertest.Network
+		valResources    []*dockertest.Resource
+		oracleResources []*dockertest.Resource
+	}
+
+	SlinkyAppConfig struct {
+		*srvconfig.Config
+		Oracle oracleconfig.Config `mapstructure:"oracle" toml:"oracle"`
 	}
 )
 
@@ -81,6 +91,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initNodes()
 	s.initGenesis()
 	s.initValidatorConfigs()
+	s.initOracleConfigs()
+	s.runOracles()
 	s.runValidators()
 }
 
@@ -100,12 +112,19 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 		s.Require().NoError(s.dkrPool.Purge(vc))
 	}
 
+	for _, oc := range s.oracleResources {
+		s.Require().NoError(s.dkrPool.Purge(oc))
+	}
+
 	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
 	os.RemoveAll(s.chain.dataDir)
 	for _, td := range s.tmpDirs {
 		os.RemoveAll(td)
 	}
+
+	// remove temp directories
+	os.RemoveAll(s.chain.dataDir)
 }
 
 func (s *IntegrationTestSuite) initNodes() {
@@ -114,11 +133,49 @@ func (s *IntegrationTestSuite) initNodes() {
 	// initialize a genesis file for the first validator
 	val0ConfigDir := s.chain.validators[0].configDir()
 
+	// OracleGenesis is the genesis state for the oracle module.
+	oracleGenesis := oracletypes.GenesisState{
+		CurrencyPairGenesis: []oracletypes.CurrencyPairGenesis{
+			{
+				CurrencyPair: oracletypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USD",
+				},
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+			},
+			{
+				CurrencyPair: oracletypes.CurrencyPair{
+					Base:  "ETHEREUM",
+					Quote: "USD",
+				},
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+			},
+			{
+				CurrencyPair: oracletypes.CurrencyPair{
+					Base:  "COSMOS",
+					Quote: "USD",
+				},
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+			},
+			{
+				CurrencyPair: oracletypes.CurrencyPair{
+					Base:  "OSMOSIS",
+					Quote: "USD",
+				},
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+			},
+		},
+	}
+
 	for _, val := range s.chain.validators {
 		valAddr, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 
-		s.Require().NoError(initGenesisFile(val0ConfigDir, "", initBalanceStr, valAddr))
+		s.Require().NoError(initGenesisFile(val0ConfigDir, "", initBalanceStr, valAddr, oracleGenesis))
 	}
 
 	// copy the genesis file to the remaining validators
@@ -210,6 +267,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		valConfig.RPC.ListenAddress = "tcp://0.0.0.0:26657"
 		valConfig.StateSync.Enable = false
 		valConfig.LogLevel = "info"
+		valConfig.BaseConfig.Genesis = filepath.Join("config", "genesis.json")
+		valConfig.RootDir = filepath.Join("root", ".simapp")
 
 		var peers []string
 
@@ -234,7 +293,107 @@ func (s *IntegrationTestSuite) initValidatorConfigs() {
 		appConfig.API.Address = "tcp://0.0.0.0:1317"
 		appConfig.GRPC.Address = "0.0.0.0:9090"
 
-		srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		// generate oracle config
+		oCfg := s.generateOracleConfig(i)
+
+		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate + oracleconfig.DefaultConfigTemplate)
+
+		srvconfig.WriteConfigFile(appCfgPath, SlinkyAppConfig{
+			Config: appConfig,
+			Oracle: oCfg,
+		})
+	}
+}
+
+// generate oracle config
+func (s *IntegrationTestSuite) generateOracleConfig(valIdx int) oracleconfig.Config {
+	return oracleconfig.Config{
+		InProcess:      false,
+		Timeout:        3 * time.Second,
+		RemoteAddress:  fmt.Sprintf("%s-oracle:%d", s.chain.validators[valIdx].instanceName(), 8080),
+		UpdateInterval: 10 * time.Second,
+		Providers: []oracleservicetypes.ProviderConfig{
+			{
+				Name:   "coinmarketcap",
+				Apikey: os.Getenv(fmt.Sprintf("COINMARKETCAP_API_KEY_%d", valIdx)),
+				TokenNameToSymbol: map[string]string{
+					"BITCOIN":  "BTC",
+					"ETHEREUM": "ETH",
+				},
+			},
+			{
+				Name: "coingecko",
+			},
+			{
+				Name: "coinbase",
+			},
+			{
+				Name: "timeout-mock-provider",
+			},
+			{
+				Name: "failing-mock-provider",
+			},
+		},
+		CurrencyPairs: []oracletypes.CurrencyPair{
+			{
+				Base:  "BITCOIN",
+				Quote: "USD",
+			},
+			{
+				Base:  "ETHEREUM",
+				Quote: "USD",
+			},
+			{
+				Base:  "OSMOSIS",
+				Quote: "USD",
+			},
+			{
+				Base:  "COSMOS",
+				Quote: "USD",
+			},
+		},
+	}
+}
+
+func (s *IntegrationTestSuite) initOracleConfigs() {
+	// for each validator, initialize the oracle config
+	for i, val := range s.chain.validators {
+		oCfg := s.generateOracleConfig(i)
+		bz, err := toml.Marshal(oCfg)
+
+		s.Require().NoError(err)
+
+		// make oracle config dir
+		s.Require().NoError(os.MkdirAll(filepath.Join(val.configDir(), "oracle"), 0o755))
+
+		s.Require().NoError(writeFile(filepath.Join(val.configDir(), "oracle", "config.toml"), bz))
+	}
+}
+
+func (s *IntegrationTestSuite) runOracles() {
+	s.T().Log("starting SLINKY TestApp oracle containers...")
+
+	// for each validator, run the corresponding oracle
+	s.oracleResources = make([]*dockertest.Resource, len(s.chain.validators))
+	for i, val := range s.chain.validators {
+		// set up the run-options for the oracle
+		runOpts := &dockertest.RunOptions{
+			Name:      fmt.Sprintf("%s-oracle", val.instanceName()),
+			NetworkID: s.dkrNet.Network.ID,
+			Mounts: []string{
+				fmt.Sprintf("%s:/oracle", filepath.Join(val.configDir(), "oracle")),
+			},
+			Repository: "docker.io/skip-mev/slinky-e2e-oracle",
+			PortBindings: map[docker.Port][]docker.PortBinding{
+				"8080/tcp": {{HostIP: "", HostPort: fmt.Sprintf("%d", 8080+i)}},
+			},
+		}
+
+		// run the container + save the resources
+		resource, err := s.dkrPool.RunWithOptions(runOpts, noRestart)
+		s.Require().NoError(err)
+		s.oracleResources[i] = resource
+		s.T().Logf("started SLINKY TestApp oracle container: %s for validator: %d", resource.Container.ID, i)
 	}
 }
 
