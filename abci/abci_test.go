@@ -8,6 +8,7 @@ import (
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,7 +24,8 @@ import (
 
 type ABCITestSuite struct {
 	suite.Suite
-	ctx sdk.Context
+	ctx                         sdk.Context
+	voteExtensionsEnabledHeight int64
 
 	// ProposalHandler set up.
 	proposalHandler        *abci.ProposalHandler
@@ -50,7 +52,7 @@ func (suite *ABCITestSuite) SetupTest() {
 	suite.aggregateFn = oracleservice.ComputeMedian()
 
 	suite.proposalHandler = abci.NewProposalHandler(
-		log.NewNopLogger(),
+		log.NewTestLogger(suite.T()),
 		suite.prepareProposalHandler,
 		suite.processProposalHandler,
 		suite.aggregateFn,
@@ -76,7 +78,15 @@ func (suite *ABCITestSuite) setUpOracleKeeper() {
 		key,
 		storetypes.NewTransientStoreKey("transient_test"),
 	)
-	suite.ctx = testCtx.Ctx.WithBlockHeight(2)
+	suite.ctx = testCtx.Ctx.WithBlockHeight(3)
+
+	suite.voteExtensionsEnabledHeight = 1
+	params := cmtproto.ConsensusParams{
+		Abci: &cmtproto.ABCIParams{
+			VoteExtensionsEnableHeight: suite.voteExtensionsEnabledHeight,
+		},
+	}
+	suite.ctx = suite.ctx.WithConsensusParams(params)
 
 	suite.currencyPairs = []oracletypes.CurrencyPair{
 		{
@@ -115,17 +125,16 @@ func (suite *ABCITestSuite) setUpOracleKeeper() {
 
 func (suite *ABCITestSuite) createMockBaseApp(
 	ctx sdk.Context,
-	called bool,
 ) *mocks.App {
 	app := mocks.NewApp(suite.T())
 
-	if called {
-		app.On(
-			"GetFinalizeBlockStateCtx",
-		).Return(
-			ctx,
-		)
-	}
+	cacheCtx, _ := ctx.CacheContext()
+
+	app.On(
+		"GetFinalizeBlockStateCtx",
+	).Return(
+		cacheCtx,
+	).Maybe()
 
 	return app
 }

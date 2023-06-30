@@ -12,6 +12,56 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
+// CheckOracleData checks the validity of the oracle data in the proposal by re-running
+// the same aggregation logic on the vote extensions that was run in the prepare proposal
+// handler. The oracle data is valid if:
+//  1. The oracle/vote extension data is present in the proposal and is not nil.
+//  2. The vote extensions included compose of a supermajority of signatures (2/3+). This
+//     is enforced by the validateVoteExtensionsFn which can be replaced by the application.
+//  3. The number of prices in the oracle data included in a proposal matches the number of prices
+//     the proposer calculates off of the vote extensions.
+//  4. The prices for each asset in the oracle data included in a proposal matches the prices for
+//     each asset the proposer calculates off of the vote extensions.
+func (h *ProposalHandler) CheckOracleData(ctx sdk.Context, req *cometabci.RequestProcessProposal) (types.OracleData, error) {
+	h.logger.Info("verifying oracle data included in proposal")
+
+	// There must be at least one slot in the proposal for the oracle data.
+	if len(req.Txs) < NumInjectedTxs {
+		return types.OracleData{}, fmt.Errorf("invalid number of transactions in proposal; expected at least %d txs", NumInjectedTxs)
+	}
+
+	// Retrieve the oracle info from the proposal. This cannot be empty as we have to at least
+	// verify that vote extensions were included and that they are valid.
+	oracleInfoBytes := req.Txs[OracleInfoIndex]
+	if len(oracleInfoBytes) == 0 {
+		return types.OracleData{}, fmt.Errorf("oracle data is nil")
+	}
+
+	proposalOracleData := types.OracleData{}
+	if err := proposalOracleData.Unmarshal(oracleInfoBytes); err != nil {
+		return types.OracleData{}, fmt.Errorf("failed to unmarshal oracle data: %w", err)
+	}
+
+	extendedCommitInfo := cometabci.ExtendedCommitInfo{}
+	if err := extendedCommitInfo.Unmarshal(proposalOracleData.ExtendedCommitInfo); err != nil {
+		return types.OracleData{}, fmt.Errorf("failed to unmarshal extended commit info: %w", err)
+	}
+
+	// Verify that the vote extensions included in the proposal are valid.
+	if err := h.validateVoteExtensionsFn(ctx, req.Height, extendedCommitInfo); err != nil {
+		return types.OracleData{}, fmt.Errorf("failed to validate vote extensions: %w", err)
+	}
+
+	// Verify that the oracle price info provided by the proposer matches the vote extensions
+	// included in the proposal.
+	oracleData, err := h.VerifyOraclePrices(ctx, proposalOracleData, extendedCommitInfo)
+	if err != nil {
+		return types.OracleData{}, err
+	}
+
+	return oracleData, err
+}
+
 // AggregateOracleData ingresses extended commit info which contains all of the
 // vote extensions each validator extended in the previous block. Each vote extension
 // corresponds to the oracle data that the validator is providing for the current
@@ -26,11 +76,11 @@ import (
 //
 // In order for a currency pair to be included in the final oracle price, the currency
 // pair must be provided by a supermajority (2/3+) of validators. This is enforced by the
-// price aggregator.
+// price aggregator but can be replaced by the application.
 func (h *ProposalHandler) AggregateOracleData(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
-) ([]byte, error) {
+) (types.OracleData, error) {
 	// Reset the price aggregator.
 	h.priceAggregator.ResetProviderPrices()
 
@@ -67,17 +117,21 @@ func (h *ProposalHandler) AggregateOracleData(
 	h.priceAggregator.UpdatePrices()
 
 	// Build the oracle transaction and return it.
-	return h.BuildOracleTx(ctx, extendedCommitInfo, h.priceAggregator.GetPrices())
+	return h.BuildOracleData(ctx, extendedCommitInfo, h.priceAggregator.GetPrices())
 }
 
-// BuildOracleTx marshals the final oracle prices, vote extensions and more into bytes so that
-// it can be included in a proposal. Note that this is not an actual transaction.
-func (h *ProposalHandler) BuildOracleTx(
+// BuildOracleData combinens all of the price information and vote extensions
+// into a single oracle data object.
+func (h *ProposalHandler) BuildOracleData(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 	prices map[oracletypes.CurrencyPair]*uint256.Int,
-) ([]byte, error) {
-	h.logger.Info("building oracle tx", "num_prices", len(prices), "num_votes", len(extendedCommitInfo.Votes))
+) (types.OracleData, error) {
+	h.logger.Info(
+		"aggregating oracle data",
+		"num_votes", len(extendedCommitInfo.Votes),
+		"num_prices", len(prices),
+	)
 
 	// Convert the prices to a string map of currency pair -> price.
 	priceMap := make(map[string]string)
@@ -88,24 +142,18 @@ func (h *ProposalHandler) BuildOracleTx(
 	// Inject the extended commit info into the proposal which contains all vote extensions.
 	commitInfoBz, err := extendedCommitInfo.Marshal()
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal commit info: %w", err)
+		return types.OracleData{}, fmt.Errorf("failed to marshal commit info: %w", err)
 	}
 
 	// Create the injected oracle data.
-	aggregatedOracleData := &types.OracleData{
+	aggregatedOracleData := types.OracleData{
 		Prices:             priceMap,
 		ExtendedCommitInfo: commitInfoBz,
 		Height:             ctx.BlockHeight(),
 		Timestamp:          ctx.BlockHeader().Time,
 	}
 
-	// Marshal the oracle data and attempt to include it in the proposal.
-	bz, err := aggregatedOracleData.Marshal()
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal oracle data: %w", err)
-	}
-
-	return bz, nil
+	return aggregatedOracleData, nil
 }
 
 // AddOracleDataToAggregator consolidates the oracle data from a single validator
@@ -141,9 +189,13 @@ func (h *ProposalHandler) AddOracleDataToAggregator(address string, oracleData *
 		}
 	}
 
-	h.logger.Info("adding oracle data to aggregator", "prices", len(prices), "validator_address", address)
-
 	// insert the prices into the price aggregator.
+	h.logger.Debug(
+		"adding oracle prices to aggregator",
+		"num_prices", len(prices),
+		"validator_address", address,
+	)
+
 	h.priceAggregator.SetProviderPrices(address, prices)
 }
 
@@ -163,36 +215,31 @@ func (h *ProposalHandler) GetOracleDataFromVE(voteExtension []byte) (*types.Orac
 	return oracleData, nil
 }
 
-// VerifyOracleData verifies that the oracle data provided by the proposer is valid. The
-// oracle data is valid if:
-//  1. The number of prices in the oracle data matches the number of prices in the
-//     proposal oracle data.
-//  2. The prices for each asset in the oracle data matches the prices for each asset
-//     in the proposal oracle data.
+// VerifyOraclePrices verifies that the oracle prices provided by the proposer are valid. The
+// oracle prices are valid if:
+//  1. The number of prices in the oracle data included in a proposal matches the number of prices
+//     the proposer calculates off of the vote extensions.
+//  2. The prices for each asset in the oracle data included in a proposal matches the prices for
+//     each asset the proposer calculates off of the vote extensions.
 //
 // The same exact aggregation logic that was run in the prepare proposal handler is
 // run here to verify the oracle data.
-func (h *ProposalHandler) VerifyOracleData(
+func (h *ProposalHandler) VerifyOraclePrices(
 	ctx sdk.Context,
 	proposalOracleData types.OracleData,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
-) (*types.OracleData, error) {
+) (types.OracleData, error) {
 	// Process the oracle info by re-running the same aggregation logic
 	// that was run in the prepare proposal handler.
-	oracleInfoBytes, err := h.AggregateOracleData(ctx, extendedCommitInfo)
+	oracleData, err := h.AggregateOracleData(ctx, extendedCommitInfo)
 	if err != nil {
-		return nil, err
-	}
-
-	oracleData := &types.OracleData{}
-	if err := oracleData.Unmarshal(oracleInfoBytes); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal oracle data: %w", err)
+		return types.OracleData{}, err
 	}
 
 	// Invariant 1: The number of prices in calculated oracle data must match the number of prices
 	// in the proposal oracle data.
 	if len(oracleData.Prices) != len(proposalOracleData.Prices) {
-		return nil, fmt.Errorf("invalid number of prices in oracle data")
+		return types.OracleData{}, fmt.Errorf("invalid number of prices in oracle data")
 	}
 
 	// Invariant 2: The prices for each asset in the calculated oracle data must match the prices
@@ -200,21 +247,21 @@ func (h *ProposalHandler) VerifyOracleData(
 	for asset, priceStr := range oracleData.Prices {
 		proposalPriceStr, ok := proposalOracleData.Prices[asset]
 		if !ok {
-			return nil, fmt.Errorf("missing asset %s in oracle data", asset)
+			return types.OracleData{}, fmt.Errorf("missing asset %s in oracle data", asset)
 		}
 
 		price, err := uint256.FromHex(priceStr)
 		if err != nil {
-			return nil, fmt.Errorf("invalid price %s for asset %s", priceStr, asset)
+			return types.OracleData{}, fmt.Errorf("invalid price %s for asset %s", priceStr, asset)
 		}
 
 		proposalPrice, err := uint256.FromHex(proposalPriceStr)
 		if err != nil {
-			return nil, fmt.Errorf("invalid proposal price %s for asset %s", proposalPrice, asset)
+			return types.OracleData{}, fmt.Errorf("invalid proposal price %s for asset %s", proposalPrice, asset)
 		}
 
 		if !price.Eq(proposalPrice) {
-			return nil, fmt.Errorf("price mismatch for asset %s", asset)
+			return types.OracleData{}, fmt.Errorf("price mismatch for asset %s", asset)
 		}
 	}
 
@@ -222,23 +269,13 @@ func (h *ProposalHandler) VerifyOracleData(
 }
 
 // WriteOracleData writes the oracle data to state for the supported assets.
-func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData *types.OracleData) error {
-	// Per the cosmos sdk, the first block should not utilize the latest finalize block state.
-	//
-	// Ref: https://github.com/cosmos/cosmos-sdk/blob/2100a73dcea634ce914977dbddb4991a020ee345/baseapp/baseapp.go#L488-L495
-	if ctx.BlockHeight() <= 1 {
-		h.logger.Info("skipping oracle data write for first block")
+func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData types.OracleData) error {
+	if len(oracleData.Prices) == 0 {
 		return nil
 	}
 
-	// Get the latest finalize state to write data to.
-	stateCtx := h.baseApp.GetFinalizeBlockStateCtx()
-
 	// convert the OracleData prices map to a format that is compatible with the oracle module.
-	modulePrices, err := toPriceMap(oracleData)
-	if err != nil {
-		return err
-	}
+	modulePrices := h.toModulePrices(ctx, oracleData)
 
 	// Get the currency pairs currently supported by the oracle module.
 	currencyPairs := h.oracleKeeper.GetAllCurrencyPairs(ctx)
@@ -246,19 +283,61 @@ func (h *ProposalHandler) WriteOracleData(ctx sdk.Context, oracleData *types.Ora
 		// Check if there is a price update for the given currency pair.
 		quotePrice, ok := modulePrices[cp.ToString()]
 		if !ok {
+			h.logger.Debug(
+				"no price update",
+				"currency_pair", cp.ToString(),
+			)
+
 			continue
 		}
 
-		if err := h.oracleKeeper.SetPriceForCurrencyPair(stateCtx, cp, quotePrice); err != nil {
+		// Write the currency pair price info to state.
+		if err := h.writeCurrencyPairToState(ctx, cp, quotePrice); err != nil {
 			return err
 		}
+
+		h.logger.Info(
+			"price data written to state",
+			"currency_pair", cp.ToString(),
+			"price", quotePrice.Price,
+		)
 	}
 
 	return nil
 }
 
-func toPriceMap(oracleData *types.OracleData) (map[string]oracletypes.QuotePrice, error) {
-	// initialize map
+// writeCurrencyPairToState writes the currency pair price info to state. There are two different types of writes
+// that can occur:
+//  1. Prepare Proposal Phase: The currency pair price info is written to only the prepare proposal state.
+//  2. Process Proposal Phase: The currency pair price info is written to both the prepare and finalize proposal state.
+//
+// We do not write oracle data to finalize block state in prepare proposal phase because that will directly
+// apply state changes for a proposal that may be rejected. When current phase is process proposal, we write to the current
+// context (ProcessProposalState) and finalize context (FinalizeBlockState). This is the desired behavior as otherwise
+// there may be inconsistency in whether transactions are successfully executed in the different phases (Prepare,
+// Process, Finalize).
+func (h *ProposalHandler) writeCurrencyPairToState(
+	ctx sdk.Context,
+	cp oracletypes.CurrencyPair,
+	quotePrice oracletypes.QuotePrice,
+) error {
+	if err := h.oracleKeeper.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
+		return fmt.Errorf("failed to write oracle data to %s phase: %w", h.proposalPhase, err)
+	}
+
+	if h.proposalPhase == PrepareProposalPhase {
+		return nil
+	}
+
+	finalizeCtx := h.baseApp.GetFinalizeBlockStateCtx()
+	if err := h.oracleKeeper.SetPriceForCurrencyPair(finalizeCtx, cp, quotePrice); err != nil {
+		return fmt.Errorf("failed to write oracle data to finalize state: %w", err)
+	}
+
+	return nil
+}
+
+func (h *ProposalHandler) toModulePrices(ctx sdk.Context, oracleData types.OracleData) map[string]oracletypes.QuotePrice {
 	modulePrices := make(map[string]oracletypes.QuotePrice)
 
 	// for each CurrencyPair in the oracleData, convert to a oracletypes.CurrencyPair + format as string
@@ -266,19 +345,26 @@ func toPriceMap(oracleData *types.OracleData) (map[string]oracletypes.QuotePrice
 		// convert big int string to big int
 		price, err := uint256.FromHex(priceStr)
 		if err != nil {
-			return nil, err
+			h.logger.Debug(
+				"failed to convert price string to big int",
+				"currency_pair", currencyPairStr,
+				"price", priceStr,
+				"err", err,
+			)
+
+			continue
 		}
 
 		// convert big int to sdk int
 		quotePrice := oracletypes.QuotePrice{
 			Price:          math.NewIntFromBigInt(price.ToBig()),
-			BlockTimestamp: oracleData.Timestamp,
-			BlockHeight:    uint64(oracleData.Height),
+			BlockTimestamp: ctx.BlockHeader().Time,
+			BlockHeight:    uint64(ctx.BlockHeight()),
 		}
 
 		// set the quote price for the currency pair
 		modulePrices[currencyPairStr] = quotePrice
 	}
 
-	return modulePrices, nil
+	return modulePrices
 }

@@ -134,7 +134,7 @@ func (suite *ABCITestSuite) TestExtendVoteExtension() {
 	for _, tc := range cases {
 		suite.Run(tc.name, func() {
 			h := abci.NewVoteExtensionHandler(
-				log.NewNopLogger(),
+				log.NewTestLogger(suite.T()),
 				tc.oracleService(),
 				time.Second*1,
 			)
@@ -304,7 +304,7 @@ func (suite *ABCITestSuite) TestVerifyVoteExtension() {
 	for _, tc := range cases {
 		suite.Run(tc.name, func() {
 			handler := abci.NewVoteExtensionHandler(
-				log.NewNopLogger(),
+				log.NewTestLogger(suite.T()),
 				mocks.NewOracleService(suite.T()),
 				time.Second*1,
 			).VerifyVoteExtensionHandler()

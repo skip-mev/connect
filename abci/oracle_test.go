@@ -8,7 +8,6 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci"
-	"github.com/skip-mev/slinky/abci/mocks"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -266,15 +265,12 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 			suite.SetupTest()
 
 			commitInfos := suite.createExtendedCommitInfo(tc.getCommitInfos())
-			oracleInfoBz, err := suite.proposalHandler.AggregateOracleData(suite.ctx, commitInfos)
+			oracleData, err := suite.proposalHandler.AggregateOracleData(suite.ctx, commitInfos)
 			suite.Require().NoError(err)
 
-			oracleInfo := &abcitypes.OracleData{}
-			suite.Require().NoError(oracleInfo.Unmarshal(oracleInfoBz))
+			suite.Require().Equal(len(tc.expectedPrices), len(oracleData.Prices))
 
-			suite.Require().Equal(len(tc.expectedPrices), len(oracleInfo.Prices))
-
-			for currencyPairStr, priceStr := range oracleInfo.Prices {
+			for currencyPairStr, priceStr := range oracleData.Prices {
 				currencyPair, err := oracletypes.CurrencyPairFromString(currencyPairStr)
 				suite.Require().NoError(err)
 
@@ -289,7 +285,7 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 	}
 }
 
-func (suite *ABCITestSuite) TestVerifyOracleData() {
+func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 	cases := []struct {
 		name          string
 		getOracleInfo func() abcitypes.OracleData
@@ -528,12 +524,12 @@ func (suite *ABCITestSuite) TestVerifyOracleData() {
 	for _, tc := range cases {
 		suite.Run(tc.name, func() {
 			suite.proposalHandler = abci.NewProposalHandler(
-				log.NewNopLogger(),
+				log.NewTestLogger(suite.T()),
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
 				types.ComputeMedian(),
-				mocks.NewApp(suite.T()),
-				mocks.NewOracleKeeper(suite.T()),
+				suite.createMockBaseApp(suite.ctx),
+				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 			)
 
@@ -542,7 +538,7 @@ func (suite *ABCITestSuite) TestVerifyOracleData() {
 			extendedCommitInfo := cometabci.ExtendedCommitInfo{}
 			suite.Require().NoError(extendedCommitInfo.Unmarshal(oracleInfo.ExtendedCommitInfo))
 
-			_, err := suite.proposalHandler.VerifyOracleData(suite.ctx, oracleInfo, extendedCommitInfo)
+			_, err := suite.proposalHandler.VerifyOraclePrices(suite.ctx, oracleInfo, extendedCommitInfo)
 			if tc.expectedError {
 				suite.Require().Error(err)
 			} else {
@@ -554,60 +550,50 @@ func (suite *ABCITestSuite) TestVerifyOracleData() {
 
 func (suite *ABCITestSuite) TestWriteOracleData() {
 	cases := []struct {
-		name          string
-		oracleData    *abcitypes.OracleData
-		expectedError bool
+		name       string
+		oracleData abcitypes.OracleData
+		phase      abci.ProposalPhase
 	}{
 		{
 			name: "empty oracle data",
-			oracleData: &abcitypes.OracleData{
+			oracleData: abcitypes.OracleData{
 				Prices: map[string]string{},
-				Height: 2,
 			},
-			expectedError: false,
 		},
 		{
 			name: "single valid oracle data",
-			oracleData: &abcitypes.OracleData{
+			oracleData: abcitypes.OracleData{
 				Prices: map[string]string{
 					"BTC/ETH": "0x1",
 				},
-				Height: 2,
 			},
-			expectedError: false,
 		},
 		{
 			name: "multiple valid oracle data",
-			oracleData: &abcitypes.OracleData{
+			oracleData: abcitypes.OracleData{
 				Prices: map[string]string{
 					"BTC/ETH": "0x1",
 					"ETH/USD": "0x2",
 				},
-				Height: 2,
 			},
-			expectedError: false,
 		},
 		{
 			name: "posting prices that are not supported by the oracle module",
-			oracleData: &abcitypes.OracleData{
+			oracleData: abcitypes.OracleData{
 				Prices: map[string]string{
 					"BTC/ETH":   "0x1",
 					"ETH/USD":   "0x2",
 					"ATOM/USDC": "0x3",
 				},
-				Height: 2,
 			},
-			expectedError: false,
 		},
 		{
 			name: "posting prices that are not supported by the oracle module",
-			oracleData: &abcitypes.OracleData{
+			oracleData: abcitypes.OracleData{
 				Prices: map[string]string{
 					"BTC/ETH": "1",
 				},
-				Height: 2,
 			},
-			expectedError: true,
 		},
 	}
 
@@ -616,16 +602,17 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 			suite.oracleKeeper.InitGenesis(suite.ctx, suite.genesis)
 
 			suite.proposalHandler = abci.NewProposalHandler(
-				log.NewNopLogger(),
+				log.NewTestLogger(suite.T()),
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
 				suite.aggregateFn,
-				suite.createMockBaseApp(suite.ctx, true),
+				suite.createMockBaseApp(suite.ctx),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 			)
 
-			err := suite.proposalHandler.WriteOracleData(suite.ctx, tc.oracleData)
+			suite.proposalHandler.WriteOracleData(suite.ctx, tc.oracleData)
+
 			// ensure that no new currency pairs were added to the module
 			currencyPairs := suite.oracleKeeper.GetAllCurrencyPairs(suite.ctx)
 			keeperCPs := make(map[string]struct{})
@@ -640,13 +627,6 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 			}
 			suite.Require().Equal(keeperCPs, oracleCPs)
 
-			if tc.expectedError {
-				suite.Require().Error(err)
-				return
-			}
-
-			suite.Require().NoError(err)
-
 			// ensure that the prices were written to the store
 			for _, currencyPair := range currencyPairs {
 				// If the currency pair is not in the oracle data, then skip it.
@@ -656,15 +636,19 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 				}
 
 				price, err := uint256.FromHex(priceHex)
-				suite.Require().NoError(err)
+				if err != nil {
+					continue
+				}
+
 				sdkInt := math.NewIntFromBigInt(price.ToBig())
 
 				priceInfo, err := suite.oracleKeeper.GetPriceWithNonceForCurrencyPair(suite.ctx, currencyPair)
 				suite.Require().NoError(err)
 
 				suite.Require().Equal(sdkInt, priceInfo.Price)
-				suite.Require().Equal(uint64(tc.oracleData.Height), priceInfo.BlockHeight)
+				suite.Require().Equal(priceInfo.BlockHeight, uint64(suite.ctx.BlockHeight()))
 				suite.Require().Equal(uint64(1), priceInfo.Nonce())
+				suite.Require().Equal(priceInfo.BlockTimestamp, suite.ctx.BlockHeader().Time)
 			}
 		})
 	}
