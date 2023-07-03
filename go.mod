@@ -3,7 +3,7 @@ module github.com/skip-mev/slinky
 go 1.20
 
 require (
-	cosmossdk.io/api v0.4.3-0.20230615032830-feb87fce5495
+	cosmossdk.io/api v0.5.0
 	cosmossdk.io/client/v2 v2.0.0-20230623124934-8d4ff7a19a24
 	cosmossdk.io/core v0.9.0
 	cosmossdk.io/depinject v1.0.0-alpha.3
