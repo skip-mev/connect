@@ -13,7 +13,7 @@ require (
 	cosmossdk.io/tools/confix v0.0.0-20230623124934-8d4ff7a19a24
 	cosmossdk.io/x/circuit v0.0.0-20230623124934-8d4ff7a19a24
 	cosmossdk.io/x/upgrade v0.0.0-20230623124934-8d4ff7a19a24
-	github.com/cometbft/cometbft v0.38.0-rc2
+	github.com/cometbft/cometbft v0.38.0-rc3
 	github.com/cosmos/cosmos-db v1.0.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.50.0-alpha.1
