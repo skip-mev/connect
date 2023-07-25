@@ -22,7 +22,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/holiman/uint256 v1.2.2
+	github.com/holiman/uint256 v1.2.3
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/pelletier/go-toml/v2 v2.0.9
 	github.com/spf13/cast v1.5.1
