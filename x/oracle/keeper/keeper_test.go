@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -53,7 +54,7 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 			types.QuotePrice{
 				BlockTimestamp: time.Now(),
 				BlockHeight:    100,
-				Price:          sdk.NewInt(100),
+				Price:          sdkmath.NewInt(100),
 			},
 			true,
 		},
@@ -88,7 +89,7 @@ func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 		Quote: "BB",
 	}
 	qp := types.QuotePrice{
-		Price: sdk.NewInt(100),
+		Price: sdkmath.NewInt(100),
 	}
 	// attempt to get the qp for cp (should fail)
 	_, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
@@ -108,7 +109,7 @@ func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	assert.Equal(s.T(), qpn.Nonce(), uint64(0))
 
 	// update the qp
-	qp.Price = sdk.NewInt(101)
+	qp.Price = sdkmath.NewInt(101)
 	err = s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp, qp)
 	assert.Nil(s.T(), err)
 
@@ -131,14 +132,14 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 		Quote: "BB",
 	}
 	qp1 := types.QuotePrice{
-		Price: sdk.NewInt(100),
+		Price: sdkmath.NewInt(100),
 	}
 	cp2 := types.CurrencyPair{
 		Base:  "CC",
 		Quote: "DD",
 	}
 	qp2 := types.QuotePrice{
-		Price: sdk.NewInt(120),
+		Price: sdkmath.NewInt(120),
 	}
 
 	// insert

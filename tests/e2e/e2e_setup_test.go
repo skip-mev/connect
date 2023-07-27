@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	cometcfg "github.com/cometbft/cometbft/config"
 	cometjson "github.com/cometbft/cometbft/libs/json"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
@@ -34,9 +35,9 @@ import (
 
 var (
 	numValidators   = 4
-	minGasPrice     = sdk.NewDecCoinFromDec(simapp.BondDenom, sdk.MustNewDecFromStr("0.02")).String()
+	minGasPrice     = sdk.NewDecCoinFromDec(simapp.BondDenom, sdkmath.LegacyMustNewDecFromStr("0.02")).String()
 	initBalanceStr  = sdk.NewInt64Coin(simapp.BondDenom, 1000000000000000000).String()
-	stakeAmount     = sdk.NewInt(100000000000)
+	stakeAmount     = sdkmath.NewInt(100000000000)
 	stakeAmountCoin = sdk.NewCoin(simapp.BondDenom, stakeAmount)
 )
 
@@ -206,7 +207,7 @@ func (s *IntegrationTestSuite) initGenesis() {
 
 	votingPeriod := 5 * time.Second
 	govGenState.Params.VotingPeriod = &votingPeriod
-	govGenState.Params.MinDeposit = sdk.NewCoins(sdk.NewCoin(simapp.BondDenom, sdk.NewInt(100)))
+	govGenState.Params.MinDeposit = sdk.NewCoins(sdk.NewCoin(simapp.BondDenom, sdkmath.NewInt(100)))
 
 	bz, err := cdc.MarshalJSON(&govGenState)
 	s.Require().NoError(err)

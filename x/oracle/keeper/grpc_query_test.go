@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -47,7 +48,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
 			Base:  "GG",
 			Quote: "HH",
-		}, types.QuotePrice{Price: sdk.NewInt(100)})
+		}, types.QuotePrice{Price: sdkmath.NewInt(100)})
 
 		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
 
@@ -72,7 +73,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				Quote: "ETHEREUM",
 			},
 			CurrencyPairPrice: &types.QuotePrice{
-				Price: sdk.NewInt(100),
+				Price: sdkmath.NewInt(100),
 			},
 			Nonce: 12,
 		},
@@ -142,7 +143,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			&types.GetPriceResponse{
 				Nonce: 12,
 				Price: &types.QuotePrice{
-					Price: sdk.NewInt(100),
+					Price: sdkmath.NewInt(100),
 				},
 				Decimals: uint64(18),
 			},
