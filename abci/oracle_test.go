@@ -57,7 +57,14 @@ func (suite *ABCITestSuite) TestGetOracleDataFromVE() {
 		suite.Run(tc.name, func() {
 			voteExtensionBz := tc.getVoteExtension()
 
-			voteExtension, err := suite.proposalHandler.GetOracleDataFromVE(voteExtensionBz)
+			oracle := abci.NewOracle(
+				log.NewTestLogger(suite.T()),
+				types.ComputeMedian(),
+				suite.oracleKeeper,
+				suite.NoOpValidateVEFn(),
+			)
+
+			voteExtension, err := oracle.GetOracleDataFromVE(voteExtensionBz)
 			if tc.expectedError {
 				suite.Require().Error(err)
 				suite.Require().Nil(voteExtension)
@@ -264,8 +271,15 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 		suite.Run(tc.name, func() {
 			suite.SetupTest()
 
+			oracle := abci.NewOracle(
+				log.NewTestLogger(suite.T()),
+				types.ComputeMedian(),
+				suite.oracleKeeper,
+				suite.NoOpValidateVEFn(),
+			)
+
 			commitInfos := suite.createExtendedCommitInfo(tc.getCommitInfos())
-			oracleData, err := suite.proposalHandler.AggregateOracleData(suite.ctx, commitInfos)
+			oracleData, err := oracle.AggregateOracleData(suite.ctx, commitInfos)
 			suite.Require().NoError(err)
 
 			suite.Require().Equal(len(tc.expectedPrices), len(oracleData.Prices))
@@ -523,12 +537,9 @@ func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 
 	for _, tc := range cases {
 		suite.Run(tc.name, func() {
-			suite.proposalHandler = abci.NewProposalHandler(
+			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				suite.prepareProposalHandler,
-				suite.processProposalHandler,
 				types.ComputeMedian(),
-				suite.createMockBaseApp(suite.ctx),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 			)
@@ -538,7 +549,7 @@ func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 			extendedCommitInfo := cometabci.ExtendedCommitInfo{}
 			suite.Require().NoError(extendedCommitInfo.Unmarshal(oracleInfo.ExtendedCommitInfo))
 
-			_, err := suite.proposalHandler.VerifyOraclePrices(suite.ctx, oracleInfo, extendedCommitInfo)
+			_, err := oracle.VerifyOraclePrices(suite.ctx, oracleInfo, extendedCommitInfo)
 			if tc.expectedError {
 				suite.Require().Error(err)
 			} else {
@@ -600,17 +611,14 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 		suite.Run(tc.name, func() {
 			suite.oracleKeeper.InitGenesis(suite.ctx, suite.genesis)
 
-			suite.proposalHandler = abci.NewProposalHandler(
+			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				suite.prepareProposalHandler,
-				suite.processProposalHandler,
-				suite.aggregateFn,
-				suite.createMockBaseApp(suite.ctx),
+				types.ComputeMedian(),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 			)
 
-			suite.proposalHandler.WriteOracleData(suite.ctx, tc.oracleData)
+			oracle.WriteOracleData(suite.ctx, tc.oracleData)
 
 			// ensure that no new currency pairs were added to the module
 			currencyPairs := suite.oracleKeeper.GetAllCurrencyPairs(suite.ctx)

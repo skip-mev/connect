@@ -6,7 +6,6 @@ import (
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	oracleservice "github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -29,20 +28,8 @@ type (
 		// processProposalHandler processes transactions in a proposal.
 		processProposalHandler sdk.ProcessProposalHandler
 
-		// priceAggregator is responsible for aggregating prices from each validator
-		// and computing the final oracle price for each asset.
-		priceAggregator *oracleservice.PriceAggregator
-
-		// baseApp is the base application. This is utilized to retrieve the
-		// state context for writing oracle data to state.
-		baseApp App
-
-		// oraclekeeper is the keeper for the oracle module. This is utilized
-		// to write oracle data to state.
-		oracleKeeper OracleKeeper
-
-		// validateVoteExtensionsFn is the function responsible for validating vote extensions.
-		validateVoteExtensionsFn ValidateVoteExtensionsFn
+		// oracle tracks, updates, and verifies oracle data.
+		oracle *Oracle
 	}
 )
 
@@ -57,19 +44,13 @@ func NewProposalHandler(
 	logger log.Logger,
 	prepareProposalHandler sdk.PrepareProposalHandler,
 	processProposalHandler sdk.ProcessProposalHandler,
-	aggregateFn oracleservice.AggregateFn,
-	baseApp App,
-	oracleKeeper OracleKeeper,
-	validateVoteExtensionsFn ValidateVoteExtensionsFn,
+	oracle *Oracle,
 ) *ProposalHandler {
 	return &ProposalHandler{
-		prepareProposalHandler:   prepareProposalHandler,
-		processProposalHandler:   processProposalHandler,
-		logger:                   logger,
-		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn),
-		baseApp:                  baseApp,
-		oracleKeeper:             oracleKeeper,
-		validateVoteExtensionsFn: validateVoteExtensionsFn,
+		logger:                 logger,
+		prepareProposalHandler: prepareProposalHandler,
+		processProposalHandler: processProposalHandler,
+		oracle:                 oracle,
 	}
 }
 
@@ -88,7 +69,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		}
 
 		oracleDataBz := []byte{}
-		voteExtensionsEnabled := h.VoteExtensionsEnabled(ctx)
+		voteExtensionsEnabled := VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
 			"preparing proposal",
@@ -98,7 +79,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 		if voteExtensionsEnabled {
 			// Aggregate all of the oracle data provided by the validators in their vote extensions.
-			oracleData, err := h.AggregateOracleData(ctx, req.LocalLastCommit)
+			oracleData, err := h.oracle.AggregateOracleData(ctx, req.LocalLastCommit)
 			if err != nil {
 				h.logger.Error("failed to aggregate oracle vote extensions", "err", err)
 				return nil, err
@@ -106,7 +87,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 			// Apply the oracle data to the current state so that transactions can be executed
 			// on top of the latest oracle data.
-			if err := h.WriteOracleData(ctx, oracleData); err != nil {
+			if err := h.oracle.WriteOracleData(ctx, oracleData); err != nil {
 				h.logger.Error("failed to write oracle data to state", "err", err)
 				return nil, err
 			}
@@ -145,7 +126,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 // process the transactions in the proposal with the oracle data removed.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
-		voteExtensionsEnabled := h.VoteExtensionsEnabled(ctx)
+		voteExtensionsEnabled := VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
 			"processing proposal",
@@ -156,7 +137,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		if voteExtensionsEnabled {
 			// Verify that the oracle data is valid
-			oracleData, err := h.CheckOracleData(ctx, req)
+			oracleData, err := h.oracle.CheckOracleData(ctx, req.Txs, req.Height)
 			if err != nil {
 				h.logger.Error("failed to verify oracle data", "err", err)
 				return nil, err
@@ -164,7 +145,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 			// Apply the oracle data to the current state so that transactions can be executed
 			// on top of the latest oracle data.
-			if err := h.WriteOracleData(ctx, oracleData); err != nil {
+			if err := h.oracle.WriteOracleData(ctx, oracleData); err != nil {
 				h.logger.Error("failed to write oracle data to state", "err", err)
 				return nil, err
 			}
@@ -181,24 +162,4 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		return resp, nil
 	}
-}
-
-// VoteExtensionsEnabled determines if vote extensions are enabled for the current block.
-func (h *ProposalHandler) VoteExtensionsEnabled(ctx sdk.Context) bool {
-	cp := ctx.ConsensusParams()
-	if cp.Abci == nil || cp.Abci.VoteExtensionsEnableHeight == 0 {
-		return false
-	}
-
-	// Per the cosmos sdk, the first block should not utilize the latest finalize block state. This means
-	// vote extensions should NOT be making state changes.
-	//
-	// Ref: https://github.com/cosmos/cosmos-sdk/blob/2100a73dcea634ce914977dbddb4991a020ee345/baseapp/baseapp.go#L488-L495
-	if ctx.BlockHeight() <= 1 {
-		return false
-	}
-
-	// We do a +1 here because the vote extensions are enabled at height h
-	// but a proposer will only receive vote extensions in height h+1.
-	return cp.Abci.VoteExtensionsEnableHeight+1 < ctx.BlockHeight()
 }
