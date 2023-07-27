@@ -8,7 +8,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/skip-mev/slinky/abci"
 	"github.com/skip-mev/slinky/abci/types"
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 )
 
 func (suite *ABCITestSuite) TestPrepareProposal() {
@@ -268,15 +268,19 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			// Create a stake weighted median aggregator.
 			aggregateFn := abci.StakeWeightedMedian(suite.ctx, validatorStore, abci.DefaultPowerThreshold)
 
+			oracle := abci.NewOracle(
+				log.NewTestLogger(suite.T()),
+				aggregateFn,
+				suite.oracleKeeper,
+				suite.NoOpValidateVEFn(),
+			)
+
 			// Create a proposal handler.
 			suite.proposalHandler = abci.NewProposalHandler(
 				log.NewTestLogger(suite.T()),
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
-				aggregateFn,
-				suite.createMockBaseApp(suite.ctx),
-				suite.oracleKeeper,
-				suite.NoOpValidateVEFn(),
+				oracle,
 			)
 			prepareProposalHandler := suite.proposalHandler.PrepareProposalHandler()
 
@@ -586,15 +590,19 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 		suite.Run(tc.name, func() {
 			suite.SetupTest()
 
+			oracle := abci.NewOracle(
+				log.NewTestLogger(suite.T()),
+				oracleservicetypes.ComputeMedian(),
+				suite.oracleKeeper,
+				suite.NoOpValidateVEFn(),
+			)
+
 			// Create a proposal handler.
 			suite.proposalHandler = abci.NewProposalHandler(
 				log.NewTestLogger(suite.T()),
 				suite.prepareProposalHandler,
 				suite.processProposalHandler,
-				oracletypes.ComputeMedian(),
-				suite.createMockBaseApp(suite.ctx),
-				suite.oracleKeeper,
-				suite.NoOpValidateVEFn(),
+				oracle,
 			)
 			processProposalHandler := suite.proposalHandler.ProcessProposalHandler()
 

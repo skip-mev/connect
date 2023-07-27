@@ -5,9 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"reflect"
 	"time"
-	"unsafe"
 
 	"cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
@@ -263,7 +261,7 @@ func NewSimApp(
 		panic(err)
 	}
 
-	oracle, err := oracleservice.NewOracleServiceFromConfig(*cfg, app.Logger())
+	oracleService, err := oracleservice.NewOracleServiceFromConfig(*cfg, app.Logger())
 	if err != nil {
 		panic(err)
 	}
@@ -274,38 +272,51 @@ func NewSimApp(
 	}
 
 	// TODO: Migrate to sdk-ValidateVoteExtensions when ready
-	vs := app.GetValidatorStore()
-	validateVoteExtensionsFn := func() abci.ValidateVoteExtensionsFn {
-		return func(ctx sdk.Context, height int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error {
-			return abci.ValidateVoteExtensions(ctx, vs, height, ctx.ChainID(), extendedCommitInfo)
-		}
-	}
+	// vs := app.GetValidatorStore()
+	// validateVoteExtensionsFn := func() abci.ValidateVoteExtensionsFn {
+	// 	return func(ctx sdk.Context, height int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error {
+	// 		return abci.ValidateVoteExtensions(ctx, vs, height, ctx.ChainID(), extendedCommitInfo)
+	// 	}
+	// }
 
+	// Create the oracle that will be running in the proposal handlers and the
+	// pre-finalize block hook. This oracle is responsible for aggregating and
+	// verifiying oracle data.
+	oracle := abci.NewOracle(
+		app.Logger(),
+		oracleservicetypes.ComputeMedian(),
+		app.OracleKeeper,
+		abci.NoOpValidateVoteExtensions,
+	)
+
+	// Create the proposal handler that will be used to fill proposals with
+	// transactions and oracle data.
 	proposalHandler := abci.NewProposalHandler(
 		app.Logger(),
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
-		oracleservicetypes.ComputeMedian(),
-		app,
-		app.OracleKeeper,
-		validateVoteExtensionsFn(), // Move to using upstream sdk's ValidateVoteExtensionsFn whenever it is fixed
+		oracle,
 	)
-
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
 
-	voteExtensionsHandler := abci.NewVoteExtensionHandler(
+	// Create the pre-finalize block hook that will be used to apply oracle data
+	// to the state before any transactions are executed (in finalize block).
+	preFinalizeBlockHandler := abci.NewPreFinalizeBlockHandler(
 		app.Logger(),
 		oracle,
+	)
+	app.SetPreFinalizeBlockHook(preFinalizeBlockHandler.PreFinalizeBlockHook())
+
+	// Create the vote extensions handler that will be used to extend and verify
+	// vote extensions (i.e. oracle data).
+	voteExtensionsHandler := abci.NewVoteExtensionHandler(
+		app.Logger(),
+		oracleService,
 		time.Second,
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
-
-	// Wrap the base-app's tx-decoder
-	app.SetTxDecoder(
-		abci.NewOracleTxDecoder(app.TxConfig().TxDecoder()), // TODO(nikhil): remove this once upstream changes are merged into baseapp: https://github.com/cosmos/cosmos-sdk/pull/16700
-	)
 
 	/****  Module Options ****/
 
@@ -368,13 +379,6 @@ func (app *SimApp) FinalizeBlock(req *cometabci.RequestFinalizeBlock) (*cometabc
 		resp.ConsensusParamUpdates = nil
 	}
 	return resp, err
-}
-
-func (app *SimApp) GetFinalizeBlockStateCtx() sdk.Context {
-	v := reflect.ValueOf(app.App.BaseApp).Elem()
-	f := v.FieldByName("finalizeBlockState")
-	rf := reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
-	return rf.MethodByName("Context").Call(nil)[0].Interface().(sdk.Context)
 }
 
 // Name returns the name of the App

@@ -51,14 +51,18 @@ func (suite *ABCITestSuite) SetupTest() {
 	suite.processProposalHandler = baseapp.NoOpProcessProposal()
 	suite.aggregateFn = oracleservice.ComputeMedian()
 
+	oracle := abci.NewOracle(
+		log.NewTestLogger(suite.T()),
+		suite.aggregateFn,
+		suite.oracleKeeper,
+		suite.NoOpValidateVEFn(),
+	)
+
 	suite.proposalHandler = abci.NewProposalHandler(
 		log.NewTestLogger(suite.T()),
 		suite.prepareProposalHandler,
 		suite.processProposalHandler,
-		suite.aggregateFn,
-		mocks.NewApp(suite.T()),
-		suite.oracleKeeper,
-		suite.NoOpValidateVEFn(),
+		oracle,
 	)
 }
 
@@ -121,22 +125,6 @@ func (suite *ABCITestSuite) setUpOracleKeeper() {
 	}
 
 	suite.oracleKeeper.InitGenesis(suite.ctx, suite.genesis)
-}
-
-func (suite *ABCITestSuite) createMockBaseApp(
-	ctx sdk.Context,
-) *mocks.App {
-	app := mocks.NewApp(suite.T())
-
-	cacheCtx, _ := ctx.CacheContext()
-
-	app.On(
-		"GetFinalizeBlockStateCtx",
-	).Return(
-		cacheCtx,
-	).Maybe()
-
-	return app
 }
 
 func (suite *ABCITestSuite) createMockValidatorStore(
