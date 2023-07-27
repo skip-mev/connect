@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -51,7 +52,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 							Quote: "CC",
 						},
 						CurrencyPairPrice: &types.QuotePrice{
-							Price: sdk.NewInt(100),
+							Price: sdkmath.NewInt(100),
 						},
 						Nonce: 12,
 					},
@@ -114,14 +115,14 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			Quote: "BB",
 		}
 		qp1 := types.QuotePrice{
-			Price: sdk.NewInt(100),
+			Price: sdkmath.NewInt(100),
 		}
 		cp2 := types.CurrencyPair{
 			Base:  "CC",
 			Quote: "DD",
 		}
 		qp2 := types.QuotePrice{
-			Price: sdk.NewInt(120),
+			Price: sdkmath.NewInt(120),
 		}
 
 		// insert
@@ -159,7 +160,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 						Quote: "BB",
 					},
 					CurrencyPairPrice: &types.QuotePrice{
-						Price: sdk.NewInt(100),
+						Price: sdkmath.NewInt(100),
 					},
 					Nonce: 100,
 				},
@@ -169,7 +170,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 						Quote: "DD",
 					},
 					CurrencyPairPrice: &types.QuotePrice{
-						Price: sdk.NewInt(101),
+						Price: sdkmath.NewInt(101),
 					},
 					Nonce: 101,
 				},
@@ -199,10 +200,10 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
 		expectedQuotePrices := map[string]types.QuotePrice{
 			"AA/BB": {
-				Price: sdk.NewInt(100),
+				Price: sdkmath.NewInt(100),
 			},
 			"CC/DD": {
-				Price: sdk.NewInt(101),
+				Price: sdkmath.NewInt(101),
 			},
 		}
 		expectedNonces := map[string]uint64{"AA/BB": 100, "CC/DD": 101}

@@ -1,7 +1,7 @@
 package abci_test
 
 import (
-	"cosmossdk.io/math"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci"
@@ -10,7 +10,7 @@ import (
 )
 
 type validator struct {
-	stake   math.Int
+	stake   sdkmath.Int
 	address sdk.ValAddress
 }
 
@@ -25,14 +25,14 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 		name              string
 		providerPrices    oracletypes.AggregatedProviderPrices
 		validators        []validator
-		totalBondedTokens math.Int
+		totalBondedTokens sdkmath.Int
 		expectedPrices    map[types.CurrencyPair]*uint256.Int
 	}{
 		{
 			name:              "no providers",
 			providerPrices:    oracletypes.AggregatedProviderPrices{},
 			validators:        []validator{},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices:    map[types.CurrencyPair]*uint256.Int{},
 		},
 		{
@@ -49,11 +49,11 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(100),
+					stake:   sdkmath.NewInt(100),
 					address: validator1,
 				},
 			},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
 					Base:  "BTC",
@@ -75,11 +75,11 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(50),
+					stake:   sdkmath.NewInt(50),
 					address: validator1,
 				},
 			},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices:    map[types.CurrencyPair]*uint256.Int{},
 		},
 		{
@@ -102,11 +102,11 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(68),
+					stake:   sdkmath.NewInt(68),
 					address: validator1,
 				},
 			},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
 					Base:  "BTC",
@@ -140,15 +140,15 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(50),
+					stake:   sdkmath.NewInt(50),
 					address: validator1,
 				},
 				{
-					stake:   math.NewInt(50),
+					stake:   sdkmath.NewInt(50),
 					address: validator2,
 				},
 			},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
 					Base:  "BTC",
@@ -186,19 +186,19 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(33),
+					stake:   sdkmath.NewInt(33),
 					address: validator1,
 				},
 				{
-					stake:   math.NewInt(33),
+					stake:   sdkmath.NewInt(33),
 					address: validator2,
 				},
 				{
-					stake:   math.NewInt(33),
+					stake:   sdkmath.NewInt(33),
 					address: validator3,
 				},
 			},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices: map[types.CurrencyPair]*uint256.Int{
 				{
 					Base:  "BTC",
@@ -248,19 +248,19 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(33),
+					stake:   sdkmath.NewInt(33),
 					address: validator1,
 				},
 				{
-					stake:   math.NewInt(33),
+					stake:   sdkmath.NewInt(33),
 					address: validator2,
 				},
 				{
-					stake:   math.NewInt(33),
+					stake:   sdkmath.NewInt(33),
 					address: validator3,
 				},
 			},
-			totalBondedTokens: math.NewInt(100),
+			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices: map[types.CurrencyPair]*uint256.Int{ // only btc/usd should be included
 				{
 					Base:  "BTC",
@@ -299,11 +299,11 @@ func (suite *ABCITestSuite) TestComputeStakeWeightedMedian() {
 			priceInfo: abci.StakeWeightPriceInfo{
 				Prices: []abci.StakeWeightPrice{
 					{
-						StakeWeight: sdk.NewInt(1),
+						StakeWeight: sdkmath.NewInt(1),
 						Price:       uint256.NewInt(100),
 					},
 				},
-				TotalWeight: sdk.NewInt(1),
+				TotalWeight: sdkmath.NewInt(1),
 			},
 			expected: uint256.NewInt(100),
 		},
@@ -312,15 +312,15 @@ func (suite *ABCITestSuite) TestComputeStakeWeightedMedian() {
 			priceInfo: abci.StakeWeightPriceInfo{
 				Prices: []abci.StakeWeightPrice{
 					{
-						StakeWeight: sdk.NewInt(1),
+						StakeWeight: sdkmath.NewInt(1),
 						Price:       uint256.NewInt(100),
 					},
 					{
-						StakeWeight: sdk.NewInt(1),
+						StakeWeight: sdkmath.NewInt(1),
 						Price:       uint256.NewInt(100),
 					},
 				},
-				TotalWeight: sdk.NewInt(2),
+				TotalWeight: sdkmath.NewInt(2),
 			},
 			expected: uint256.NewInt(100),
 		},
@@ -329,15 +329,15 @@ func (suite *ABCITestSuite) TestComputeStakeWeightedMedian() {
 			priceInfo: abci.StakeWeightPriceInfo{
 				Prices: []abci.StakeWeightPrice{
 					{
-						StakeWeight: sdk.NewInt(1),
+						StakeWeight: sdkmath.NewInt(1),
 						Price:       uint256.NewInt(100),
 					},
 					{
-						StakeWeight: sdk.NewInt(1),
+						StakeWeight: sdkmath.NewInt(1),
 						Price:       uint256.NewInt(200),
 					},
 				},
-				TotalWeight: sdk.NewInt(2),
+				TotalWeight: sdkmath.NewInt(2),
 			},
 			expected: uint256.NewInt(100),
 		},
@@ -346,15 +346,15 @@ func (suite *ABCITestSuite) TestComputeStakeWeightedMedian() {
 			priceInfo: abci.StakeWeightPriceInfo{
 				Prices: []abci.StakeWeightPrice{
 					{
-						StakeWeight: sdk.NewInt(10),
+						StakeWeight: sdkmath.NewInt(10),
 						Price:       uint256.NewInt(100),
 					},
 					{
-						StakeWeight: sdk.NewInt(20),
+						StakeWeight: sdkmath.NewInt(20),
 						Price:       uint256.NewInt(200),
 					},
 				},
-				TotalWeight: sdk.NewInt(30),
+				TotalWeight: sdkmath.NewInt(30),
 			},
 			expected: uint256.NewInt(200),
 		},
@@ -363,19 +363,19 @@ func (suite *ABCITestSuite) TestComputeStakeWeightedMedian() {
 			priceInfo: abci.StakeWeightPriceInfo{
 				Prices: []abci.StakeWeightPrice{
 					{
-						StakeWeight: sdk.NewInt(10),
+						StakeWeight: sdkmath.NewInt(10),
 						Price:       uint256.NewInt(100),
 					},
 					{
-						StakeWeight: sdk.NewInt(20),
+						StakeWeight: sdkmath.NewInt(20),
 						Price:       uint256.NewInt(200),
 					},
 					{
-						StakeWeight: sdk.NewInt(30),
+						StakeWeight: sdkmath.NewInt(30),
 						Price:       uint256.NewInt(300),
 					},
 				},
-				TotalWeight: sdk.NewInt(60),
+				TotalWeight: sdkmath.NewInt(60),
 			},
 			expected: uint256.NewInt(200),
 		},

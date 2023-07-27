@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -105,7 +106,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			{
 				CurrencyPair: initCP,
 				CurrencyPairPrice: &types.QuotePrice{
-					Price: sdk.NewInt(100),
+					Price: sdkmath.NewInt(100),
 				},
 				Nonce: 100,
 			},
@@ -161,14 +162,14 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			{
 				CurrencyPair: cp1,
 				CurrencyPairPrice: &types.QuotePrice{
-					Price: sdk.NewInt(100),
+					Price: sdkmath.NewInt(100),
 				},
 				Nonce: 100,
 			},
 			{
 				CurrencyPair: cp2,
 				CurrencyPairPrice: &types.QuotePrice{
-					Price: sdk.NewInt(100),
+					Price: sdkmath.NewInt(100),
 				},
 				Nonce: 101,
 			},

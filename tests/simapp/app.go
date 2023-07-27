@@ -5,9 +5,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"time"
+	"unsafe"
 
 	"cosmossdk.io/log"
+	sdkmath "cosmossdk.io/math"
 	dbm "github.com/cosmos/cosmos-db"
 
 	"cosmossdk.io/depinject"
@@ -283,7 +286,7 @@ func NewSimApp(
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
 		oracleservicetypes.ComputeMedian(),
-		app.App,
+		app,
 		app.OracleKeeper,
 		validateVoteExtensionsFn(), // Move to using upstream sdk's ValidateVoteExtensionsFn whenever it is fixed
 	)
@@ -365,6 +368,13 @@ func (app *SimApp) FinalizeBlock(req *cometabci.RequestFinalizeBlock) (*cometabc
 		resp.ConsensusParamUpdates = nil
 	}
 	return resp, err
+}
+
+func (app *SimApp) GetFinalizeBlockStateCtx() sdk.Context {
+	v := reflect.ValueOf(app.App.BaseApp).Elem()
+	f := v.FieldByName("finalizeBlockState")
+	rf := reflect.NewAt(f.Type(), unsafe.Pointer(f.UnsafeAddr())).Elem()
+	return rf.MethodByName("Context").Call(nil)[0].Interface().(sdk.Context)
 }
 
 // Name returns the name of the App
@@ -484,13 +494,21 @@ func (app *SimApp) GetValidatorStore() baseapp.ValidatorStore {
 }
 
 type validatorStoreImpl struct {
-	stakingkeeper.Keeper
+	sk stakingkeeper.Keeper
 }
 
 func (v *validatorStoreImpl) GetValidatorByConsAddr(ctx sdk.Context, address cryptotypes.Address) (baseapp.Validator, error) {
-	validator, ok := v.Keeper.GetValidatorByConsAddr(ctx, sdk.ConsAddress(address))
-	if !ok {
+	validator, err := v.sk.GetValidatorByConsAddr(ctx, sdk.ConsAddress(address))
+	if err != nil {
 		return nil, fmt.Errorf("validator %s not found", address)
 	}
 	return validator, nil
+}
+
+func (v *validatorStoreImpl) TotalBondedTokens(ctx sdk.Context) sdkmath.Int {
+	res, err := v.sk.TotalBondedTokens(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return res
 }
