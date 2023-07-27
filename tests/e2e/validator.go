@@ -197,7 +197,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	return stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(valAddr),
+		sdk.ValAddress(valAddr).String(), // todo: switch to address codec.
 		valPubKey,
 		amount,
 		description,
