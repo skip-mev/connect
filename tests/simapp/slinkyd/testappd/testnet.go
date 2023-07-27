@@ -15,14 +15,13 @@ import (
 
 	"cosmossdk.io/math"
 	"cosmossdk.io/math/unsafe"
-	"github.com/skip-mev/slinky/tests/simapp"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -34,6 +33,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/skip-mev/slinky/tests/simapp"
 )
 
 var (
@@ -219,6 +219,8 @@ func initTestnetFiles(
 	simappConfig.Telemetry.PrometheusRetentionTime = 60
 	simappConfig.Telemetry.EnableHostnameLabel = false
 	simappConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	addrCodec := clientCtx.TxConfig.SigningContext().AddressCodec()
+	valAddrCodec := clientCtx.TxConfig.SigningContext().ValidatorAddressCodec()
 
 	var (
 		genAccounts []authtypes.GenesisAccount
@@ -293,12 +295,21 @@ func initTestnetFiles(
 			sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
 		}
 
-		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: coins.Sort()})
+		addrStr, err := addrCodec.BytesToString(addr)
+		if err != nil {
+			return err
+		}
+
+		genBalances = append(genBalances, banktypes.Balance{Address: addrStr, Coins: coins.Sort()})
 		genAccounts = append(genAccounts, authtypes.NewBaseAccount(addr, nil, 0, 0))
 
 		valTokens := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
+		valAddrStr, err := valAddrCodec.BytesToString(addr)
+		if err != nil {
+			return err
+		}
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
-			sdk.ValAddress(addr),
+			valAddrStr,
 			valPubKeys[i],
 			sdk.NewCoin(sdk.DefaultBondDenom, valTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
@@ -345,7 +356,7 @@ func initTestnetFiles(
 
 	err := collectGenFiles(
 		clientCtx, nodeConfig, args.chainID, nodeIDs, valPubKeys, args.numValidators,
-		args.outputDir, args.nodeDirPrefix, args.nodeDaemonHome, genBalIterator,
+		args.outputDir, args.nodeDirPrefix, args.nodeDaemonHome, genBalIterator, valAddrCodec,
 	)
 	if err != nil {
 		return err
@@ -402,7 +413,7 @@ func initGenFiles(
 func collectGenFiles(
 	clientCtx client.Context, nodeConfig *cmtconfig.Config, chainID string,
 	nodeIDs []string, valPubKeys []cryptotypes.PubKey, numValidators int,
-	outputDir, nodeDirPrefix, nodeDaemonHome string, genBalIterator banktypes.GenesisBalancesIterator,
+	outputDir, nodeDirPrefix, nodeDaemonHome string, genBalIterator banktypes.GenesisBalancesIterator, valAddrCodec runtime.ValidatorAddressCodec,
 ) error {
 	var appState json.RawMessage
 	genTime := cmttime.Now()
@@ -423,7 +434,7 @@ func collectGenFiles(
 			return err
 		}
 
-		nodeAppState, err := genutil.GenAppStateFromConfig(clientCtx.Codec, clientCtx.TxConfig, nodeConfig, initCfg, appGenesis, genBalIterator, genutiltypes.DefaultMessageValidator)
+		nodeAppState, err := genutil.GenAppStateFromConfig(clientCtx.Codec, clientCtx.TxConfig, nodeConfig, initCfg, appGenesis, genBalIterator, genutiltypes.DefaultMessageValidator, valAddrCodec)
 		if err != nil {
 			return err
 		}
