@@ -40,11 +40,7 @@ func NewPreFinalizeBlockHandler(
 func (hook *PreFinalizeBlockHandler) PreFinalizeBlockHook() sdk.PreFinalizeBlockHook {
 	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) error {
 		// If vote extensions are not enabled, then we don't need to do anything.
-		if !VoteExtensionsEnabled(ctx) {
-			return nil
-		}
-
-		if req == nil {
+		if !VoteExtensionsEnabled(ctx) || req == nil {
 			return nil
 		}
 
