@@ -2,7 +2,7 @@ package abci
 
 import (
 	"cosmossdk.io/log"
-	abci "github.com/cometbft/cometbft/abci/types"
+	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -38,7 +38,7 @@ func NewPreFinalizeBlockHandler(
 // TODO: Figure out what (if any) are the consequences of committing prices in
 // PreFinalizeBlock instead of ProcessProposal.
 func (hook *PreFinalizeBlockHandler) PreFinalizeBlockHook() sdk.PreFinalizeBlockHook {
-	return func(ctx sdk.Context, req *abci.RequestFinalizeBlock) error {
+	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) error {
 		// If vote extensions are not enabled, then we don't need to do anything.
 		if !VoteExtensionsEnabled(ctx) || req == nil {
 			return nil

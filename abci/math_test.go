@@ -10,14 +10,14 @@ import (
 )
 
 type validator struct {
-	stake   sdkmath.Int
-	address sdk.ValAddress
+	stake    sdkmath.Int
+	consAddr sdk.ConsAddress
 }
 
 var (
-	validator1 = sdk.ValAddress("validator1")
-	validator2 = sdk.ValAddress("validator2")
-	validator3 = sdk.ValAddress("validator3")
+	validator1 = sdk.ConsAddress("validator1")
+	validator2 = sdk.ConsAddress("validator2")
+	validator3 = sdk.ConsAddress("validator3")
 )
 
 func (suite *ABCITestSuite) TestStakeWeightedMedian() {
@@ -49,8 +49,8 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   sdkmath.NewInt(100),
-					address: validator1,
+					stake:    sdkmath.NewInt(100),
+					consAddr: validator1,
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
@@ -75,8 +75,8 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   sdkmath.NewInt(50),
-					address: validator1,
+					stake:    sdkmath.NewInt(50),
+					consAddr: validator1,
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
@@ -102,8 +102,8 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   sdkmath.NewInt(68),
-					address: validator1,
+					stake:    sdkmath.NewInt(68),
+					consAddr: validator1,
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
@@ -140,12 +140,12 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   sdkmath.NewInt(50),
-					address: validator1,
+					stake:    sdkmath.NewInt(50),
+					consAddr: validator1,
 				},
 				{
-					stake:   sdkmath.NewInt(50),
-					address: validator2,
+					stake:    sdkmath.NewInt(50),
+					consAddr: validator2,
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
@@ -186,16 +186,16 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   sdkmath.NewInt(33),
-					address: validator1,
+					stake:    sdkmath.NewInt(33),
+					consAddr: validator1,
 				},
 				{
-					stake:   sdkmath.NewInt(33),
-					address: validator2,
+					stake:    sdkmath.NewInt(33),
+					consAddr: validator2,
 				},
 				{
-					stake:   sdkmath.NewInt(33),
-					address: validator3,
+					stake:    sdkmath.NewInt(33),
+					consAddr: validator3,
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
@@ -248,16 +248,16 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 			},
 			validators: []validator{
 				{
-					stake:   sdkmath.NewInt(33),
-					address: validator1,
+					stake:    sdkmath.NewInt(33),
+					consAddr: validator1,
 				},
 				{
-					stake:   sdkmath.NewInt(33),
-					address: validator2,
+					stake:    sdkmath.NewInt(33),
+					consAddr: validator2,
 				},
 				{
-					stake:   sdkmath.NewInt(33),
-					address: validator3,
+					stake:    sdkmath.NewInt(33),
+					consAddr: validator3,
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
@@ -274,7 +274,6 @@ func (suite *ABCITestSuite) TestStakeWeightedMedian() {
 		suite.Run(tc.name, func() {
 			// Create a mock validator store.
 			mockValidatorStore := suite.createMockValidatorStore(tc.validators, tc.totalBondedTokens)
-
 			// Compute the stake weighted median.
 			aggregateFn := abci.StakeWeightedMedian(suite.ctx, mockValidatorStore, abci.DefaultPowerThreshold)
 			result := aggregateFn(tc.providerPrices)

@@ -6,6 +6,7 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci/types"
@@ -34,6 +35,8 @@ type Oracle struct {
 
 	// validateVoteExtensionsFn is the function responsible for validating vote extensions.
 	validateVoteExtensionsFn ValidateVoteExtensionsFn
+
+	validatorStore baseapp.ValidatorStore
 }
 
 // NewOracle returns a new Oracle.
@@ -42,12 +45,14 @@ func NewOracle(
 	aggregateFn oracleservice.AggregateFn,
 	oracleKeeper OracleKeeper,
 	validateVoteExtensionsFn ValidateVoteExtensionsFn,
+	validatorStore baseapp.ValidatorStore,
 ) *Oracle {
 	return &Oracle{
 		logger:                   logger,
 		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn),
 		oracleKeeper:             oracleKeeper,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
+		validatorStore:           validatorStore,
 	}
 }
 
@@ -61,8 +66,8 @@ func NewOracle(
 //     the proposer calculates off of the vote extensions.
 //  4. The prices for each asset in the oracle data included in a proposal matches the prices for
 //     each asset the proposer calculates off of the vote extensions.
-func (h *Oracle) CheckOracleData(ctx sdk.Context, txs [][]byte, height int64) (types.OracleData, error) {
-	h.logger.Info("verifying oracle data included in proposal")
+func (o *Oracle) CheckOracleData(ctx sdk.Context, txs [][]byte, height int64) (types.OracleData, error) {
+	o.logger.Info("verifying oracle data included in proposal")
 
 	// There must be at least one slot in the proposal for the oracle data.
 	if len(txs) < NumInjectedTxs {
@@ -87,13 +92,13 @@ func (h *Oracle) CheckOracleData(ctx sdk.Context, txs [][]byte, height int64) (t
 	}
 
 	// Verify that the vote extensions included in the proposal are valid.
-	if err := h.validateVoteExtensionsFn(ctx, height, extendedCommitInfo); err != nil {
+	if err := o.validateVoteExtensionsFn(ctx, o.validatorStore, height, ctx.ChainID(), extendedCommitInfo); err != nil {
 		return types.OracleData{}, fmt.Errorf("failed to validate vote extensions: %w", err)
 	}
 
 	// Verify that the oracle price info provided by the proposer matches the vote extensions
 	// included in the proposal.
-	oracleData, err := h.VerifyOraclePrices(ctx, proposalOracleData, extendedCommitInfo)
+	oracleData, err := o.VerifyOraclePrices(ctx, proposalOracleData, extendedCommitInfo)
 	if err != nil {
 		return types.OracleData{}, err
 	}
@@ -116,19 +121,19 @@ func (h *Oracle) CheckOracleData(ctx sdk.Context, txs [][]byte, height int64) (t
 // In order for a currency pair to be included in the final oracle price, the currency
 // pair must be provided by a supermajority (2/3+) of validators. This is enforced by the
 // price aggregator but can be replaced by the application.
-func (h *Oracle) AggregateOracleData(
+func (o *Oracle) AggregateOracleData(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) (types.OracleData, error) {
 	// Reset the price aggregator.
-	h.priceAggregator.ResetProviderPrices()
+	o.priceAggregator.ResetProviderPrices()
 
 	// Iterate through all vote extensions and consolidate all price info before
 	// aggregating.
 	for _, commitInfo := range extendedCommitInfo.Votes {
 		address := &sdk.ValAddress{}
 		if err := address.Unmarshal(commitInfo.Validator.Address); err != nil {
-			h.logger.Debug(
+			o.logger.Debug(
 				"failed to unmarshal validator address",
 				"err", err,
 			)
@@ -137,9 +142,9 @@ func (h *Oracle) AggregateOracleData(
 		}
 
 		// Retrieve the oracle data from the vote extension.
-		oracleData, err := h.GetOracleDataFromVE(commitInfo.VoteExtension)
+		oracleData, err := o.GetOracleDataFromVE(commitInfo.VoteExtension)
 		if err != nil {
-			h.logger.Debug(
+			o.logger.Debug(
 				"failed to get oracle data from vote extension",
 				"validator", address.String(),
 				"err", err,
@@ -149,24 +154,24 @@ func (h *Oracle) AggregateOracleData(
 		}
 
 		// Add the validator data to the price aggregator.
-		h.AddOracleDataToAggregator(address.String(), oracleData)
+		o.AddOracleDataToAggregator(address.String(), oracleData)
 	}
 
 	// Compute the final prices for each currency pair.
-	h.priceAggregator.UpdatePrices()
+	o.priceAggregator.UpdatePrices()
 
 	// Build the oracle transaction and return it.
-	return h.BuildOracleData(ctx, extendedCommitInfo, h.priceAggregator.GetPrices())
+	return o.BuildOracleData(ctx, extendedCommitInfo, o.priceAggregator.GetPrices())
 }
 
 // BuildOracleData combinens all of the price information and vote extensions
 // into a single oracle data object.
-func (h *Oracle) BuildOracleData(
+func (o *Oracle) BuildOracleData(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 	prices map[oracletypes.CurrencyPair]*uint256.Int,
 ) (types.OracleData, error) {
-	h.logger.Info(
+	o.logger.Info(
 		"aggregating oracle data",
 		"num_votes", len(extendedCommitInfo.Votes),
 		"num_prices", len(prices),
@@ -201,7 +206,7 @@ func (h *Oracle) BuildOracleData(
 // the validator is providing for the current block. In the case where the vote
 // extension is nil, or price info is not contained within the vote extension,
 // the oracle data is not added to the price aggregator.
-func (h *Oracle) AddOracleDataToAggregator(address string, oracleData *types.OracleVoteExtension) {
+func (o *Oracle) AddOracleDataToAggregator(address string, oracleData *types.OracleVoteExtension) {
 	if len(oracleData.Prices) == 0 {
 		return
 	}
@@ -229,19 +234,19 @@ func (h *Oracle) AddOracleDataToAggregator(address string, oracleData *types.Ora
 	}
 
 	// insert the prices into the price aggregator.
-	h.logger.Debug(
+	o.logger.Debug(
 		"adding oracle prices to aggregator",
 		"num_prices", len(prices),
 		"validator_address", address,
 	)
 
-	h.priceAggregator.SetProviderPrices(address, prices)
+	o.priceAggregator.SetProviderPrices(address, prices)
 }
 
 // GetOracleDataFromVE inputs the raw vote extension bytes and returns the
 // oracle data contained within. In the case where the vote extension is nil,
 // or price info is not contained within the vote extension, an error is returned.
-func (h *Oracle) GetOracleDataFromVE(voteExtension []byte) (*types.OracleVoteExtension, error) {
+func (o *Oracle) GetOracleDataFromVE(voteExtension []byte) (*types.OracleVoteExtension, error) {
 	if len(voteExtension) == 0 {
 		return nil, fmt.Errorf("vote extension is nil")
 	}
@@ -263,14 +268,14 @@ func (h *Oracle) GetOracleDataFromVE(voteExtension []byte) (*types.OracleVoteExt
 //
 // The same exact aggregation logic that was run in the prepare proposal handler is
 // run here to verify the oracle data.
-func (h *Oracle) VerifyOraclePrices(
+func (o *Oracle) VerifyOraclePrices(
 	ctx sdk.Context,
 	proposalOracleData types.OracleData,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) (types.OracleData, error) {
 	// Process the oracle info by re-running the same aggregation logic
 	// that was run in the prepare proposal handler.
-	oracleData, err := h.AggregateOracleData(ctx, extendedCommitInfo)
+	oracleData, err := o.AggregateOracleData(ctx, extendedCommitInfo)
 	if err != nil {
 		return types.OracleData{}, err
 	}
@@ -308,21 +313,21 @@ func (h *Oracle) VerifyOraclePrices(
 }
 
 // WriteOracleData writes the oracle data to state for the supported assets.
-func (h *Oracle) WriteOracleData(ctx sdk.Context, oracleData types.OracleData) error {
+func (o *Oracle) WriteOracleData(ctx sdk.Context, oracleData types.OracleData) error {
 	if len(oracleData.Prices) == 0 {
 		return nil
 	}
 
 	// convert the OracleData prices map to a format that is compatible with the oracle module.
-	modulePrices := h.toModulePrices(ctx, oracleData)
+	modulePrices := o.toModulePrices(ctx, oracleData)
 
 	// Get the currency pairs currently supported by the oracle module.
-	currencyPairs := h.oracleKeeper.GetAllCurrencyPairs(ctx)
+	currencyPairs := o.oracleKeeper.GetAllCurrencyPairs(ctx)
 	for _, cp := range currencyPairs {
 		// Check if there is a price update for the given currency pair.
 		quotePrice, ok := modulePrices[cp.ToString()]
 		if !ok {
-			h.logger.Debug(
+			o.logger.Debug(
 				"no price update",
 				"currency_pair", cp.ToString(),
 			)
@@ -331,11 +336,11 @@ func (h *Oracle) WriteOracleData(ctx sdk.Context, oracleData types.OracleData) e
 		}
 
 		// Write the currency pair price info to state.
-		if err := h.oracleKeeper.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
+		if err := o.oracleKeeper.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
 			return fmt.Errorf("failed to write oracle data to state: %s", err)
 		}
 
-		h.logger.Info(
+		o.logger.Info(
 			"price data written to state",
 			"currency_pair", cp.ToString(),
 			"price", quotePrice.Price,
@@ -345,7 +350,7 @@ func (h *Oracle) WriteOracleData(ctx sdk.Context, oracleData types.OracleData) e
 	return nil
 }
 
-func (h *Oracle) toModulePrices(ctx sdk.Context, oracleData types.OracleData) map[string]oracletypes.QuotePrice {
+func (o *Oracle) toModulePrices(ctx sdk.Context, oracleData types.OracleData) map[string]oracletypes.QuotePrice {
 	modulePrices := make(map[string]oracletypes.QuotePrice)
 
 	// for each CurrencyPair in the oracleData, convert to a oracletypes.CurrencyPair + format as string
@@ -353,7 +358,7 @@ func (h *Oracle) toModulePrices(ctx sdk.Context, oracleData types.OracleData) ma
 		// convert big int string to big int
 		price, err := uint256.FromHex(priceStr)
 		if err != nil {
-			h.logger.Debug(
+			o.logger.Debug(
 				"failed to convert price string to big int",
 				"currency_pair", currencyPairStr,
 				"price", priceStr,

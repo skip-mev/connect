@@ -1,14 +1,12 @@
 package simapp
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
 
 	"cosmossdk.io/log"
-	sdkmath "cosmossdk.io/math"
 	dbm "github.com/cosmos/cosmos-db"
 
 	"cosmossdk.io/depinject"
@@ -23,7 +21,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -271,14 +268,6 @@ func NewSimApp(
 		panic(err)
 	}
 
-	// TODO: Migrate to sdk-ValidateVoteExtensions when ready
-	// vs := app.GetValidatorStore()
-	// validateVoteExtensionsFn := func() abci.ValidateVoteExtensionsFn {
-	// 	return func(ctx sdk.Context, height int64, extendedCommitInfo cometabci.ExtendedCommitInfo) error {
-	// 		return abci.ValidateVoteExtensions(ctx, vs, height, ctx.ChainID(), extendedCommitInfo)
-	// 	}
-	// }
-
 	// Create the oracle that will be running in the proposal handlers and the
 	// pre-finalize block hook. This oracle is responsible for aggregating and
 	// verifiying oracle data.
@@ -286,7 +275,8 @@ func NewSimApp(
 		app.Logger(),
 		oracleservicetypes.ComputeMedian(),
 		app.OracleKeeper,
-		abci.NoOpValidateVoteExtensions,
+		baseapp.ValidateVoteExtensions, // Nice and safe :)
+		app.StakingKeeper,
 	)
 
 	// Create the proposal handler that will be used to fill proposals with
@@ -483,36 +473,4 @@ func BlockedAddresses() map[string]bool {
 	}
 
 	return result
-}
-
-// GetValidatorStore gets the expected interface required by the x/staking module for the ValidateVoteExtensions method.
-// This interface is used in ProcessProposal to verify that injected vote-extensions satisfy a supermajority of the validator set.
-// This method returns a wrapper around the App's x/staking keeper
-func (app *SimApp) GetValidatorStore() baseapp.ValidatorStore {
-	if app.StakingKeeper == nil {
-		panic("staking keeper is nil")
-	}
-	return &validatorStoreImpl{
-		*app.StakingKeeper,
-	}
-}
-
-type validatorStoreImpl struct {
-	sk stakingkeeper.Keeper
-}
-
-func (v *validatorStoreImpl) GetValidatorByConsAddr(ctx sdk.Context, address cryptotypes.Address) (baseapp.Validator, error) {
-	validator, err := v.sk.GetValidatorByConsAddr(ctx, sdk.ConsAddress(address))
-	if err != nil {
-		return nil, fmt.Errorf("validator %s not found", address)
-	}
-	return validator, nil
-}
-
-func (v *validatorStoreImpl) TotalBondedTokens(ctx sdk.Context) sdkmath.Int {
-	res, err := v.sk.TotalBondedTokens(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return res
 }

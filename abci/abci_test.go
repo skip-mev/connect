@@ -4,15 +4,19 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	crypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/skip-mev/slinky/abci"
 	"github.com/skip-mev/slinky/abci/mocks"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
@@ -34,9 +38,10 @@ type ABCITestSuite struct {
 	aggregateFn            oracleservice.AggregateFn
 
 	// oracle keeper set up.
-	oracleKeeper  keeper.Keeper
-	currencyPairs []oracletypes.CurrencyPair
-	genesis       oracletypes.GenesisState
+	oracleKeeper   keeper.Keeper
+	currencyPairs  []oracletypes.CurrencyPair
+	genesis        oracletypes.GenesisState
+	validatorStore baseapp.ValidatorStore
 }
 
 func TestABCITestSuite(t *testing.T) {
@@ -51,11 +56,18 @@ func (suite *ABCITestSuite) SetupTest() {
 	suite.processProposalHandler = baseapp.NoOpProcessProposal()
 	suite.aggregateFn = oracleservice.ComputeMedian()
 
+	// Create an empty default mock validator store.
+	suite.validatorStore = suite.createMockValidatorStore(
+		[]validator{},
+		math.NewIntFromUint64(0),
+	)
+
 	oracle := abci.NewOracle(
 		log.NewTestLogger(suite.T()),
 		suite.aggregateFn,
 		suite.oracleKeeper,
 		suite.NoOpValidateVEFn(),
+		suite.validatorStore,
 	)
 
 	suite.proposalHandler = abci.NewProposalHandler(
@@ -133,18 +145,23 @@ func (suite *ABCITestSuite) createMockValidatorStore(
 ) *mocks.ValidatorStore {
 	store := mocks.NewValidatorStore(suite.T())
 	if len(validators) != 0 {
-		for _, val := range validators {
+		valPubKeys := make([]crypto.PublicKey, len(validators))
+
+		for i, val := range validators {
+			var err error
+			valPubKeys[i], err = cryptocodec.ToCmtProtoPublicKey(ed25519.GenPrivKey().PubKey())
+			if err != nil {
+				panic(err)
+			}
 			store.On(
-				"GetValidator",
+				"BondedTokensAndPubKeyByConsAddr",
 				suite.ctx,
-				val.address,
+				val.consAddr,
 			).Return(
-				stakingtypes.Validator{
-					Tokens: val.stake,
-					Status: stakingtypes.Bonded,
-				},
-				true,
-			)
+				val.stake,
+				valPubKeys[i],
+				nil,
+			).Maybe()
 		}
 	}
 
@@ -152,8 +169,8 @@ func (suite *ABCITestSuite) createMockValidatorStore(
 		"TotalBondedTokens",
 		suite.ctx,
 	).Return(
-		totalTokens,
-	)
+		totalTokens, nil,
+	).Maybe()
 
 	return store
 }
@@ -177,14 +194,14 @@ func (suite *ABCITestSuite) createExtendedCommitInfo(
 }
 
 func (suite *ABCITestSuite) createExtendedVoteInfo(
-	valAddress sdk.ValAddress,
+	consAddr sdk.ConsAddress,
 	prices map[string]string,
 	timestamp time.Time,
 	height int64,
 ) cometabci.ExtendedVoteInfo {
 	return cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
-			Address: valAddress.Bytes(),
+			Address: consAddr,
 		},
 		VoteExtension: suite.createVoteExtensionBytes(prices, timestamp, height),
 	}
@@ -214,8 +231,8 @@ func (suite *ABCITestSuite) createVoteExtension(
 	}
 }
 
-func (suite *ABCITestSuite) createValAddress(prefix string) sdk.ValAddress {
-	return sdk.ValAddress(prefix + suite.T().Name())
+func (suite *ABCITestSuite) createValAddress(prefix string) sdk.ConsAddress {
+	return sdk.ConsAddress(prefix + suite.T().Name())
 }
 
 func (suite *ABCITestSuite) createOracleData(

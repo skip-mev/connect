@@ -9,7 +9,6 @@ import (
 //go:generate mockery --name OracleService --filename mock_oracle_service.go
 type OracleService interface {
 	OracleServer
-
 	Start(context.Context) error
 	Stop(context.Context) error
 }

@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
-	abci "github.com/cometbft/cometbft/abci/types"
+	cometabci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
@@ -37,7 +38,7 @@ func NewVoteExtensionHandler(logger log.Logger, oracle service.OracleService, ti
 // or correctly marshalled, the handler will return an empty vote extension to
 // ensure liveliness.
 func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
-	return func(ctx sdk.Context, req *abci.RequestExtendVote) (resp *abci.ResponseExtendVote, err error) {
+	return func(ctx sdk.Context, req *cometabci.RequestExtendVote) (resp *cometabci.ResponseExtendVote, err error) {
 		// Catch any panic that occurs in the oracle request.
 		defer func() {
 			if r := recover(); r != nil {
@@ -46,7 +47,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					"err", r,
 				)
 
-				resp, err = &abci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 			}
 		}()
 
@@ -60,7 +61,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			return &abci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 		}
 
 		// If we get no response, we return an empty vote extension.
@@ -70,7 +71,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"height", req.Height,
 			)
 
-			return &abci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 		}
 
 		h.logger.Info("extending vote with oracle prices", "num_prices", len(oracleResp.Prices))
@@ -89,10 +90,10 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			return &abci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 		}
 
-		return &abci.ResponseExtendVote{VoteExtension: bz}, nil
+		return &cometabci.ResponseExtendVote{VoteExtension: bz}, nil
 	}
 }
 
@@ -101,40 +102,51 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 // that the validator was unable to fetch prices from the oracle and is voting an empty vote extension.
 // We reject any vote extensions that are not empty and fail to unmarshal or contain invalid prices.
 func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
-	return func(ctx sdk.Context, req *abci.RequestVerifyVoteExtension) (*abci.ResponseVerifyVoteExtension, error) {
+	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (*cometabci.ResponseVerifyVoteExtension, error) {
 		voteExtension := req.VoteExtension
 
 		// If we get an empty vote extension, we return ACCEPT. This means that the validator was unable
 		// to fetch prices from the oracle and is voting on an empty vote extension.
 		if len(voteExtension) == 0 {
-			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
+			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_ACCEPT}, nil
 		}
 
 		voteExt := &abcitypes.OracleVoteExtension{}
 		if err := voteExt.Unmarshal(voteExtension); err != nil {
-			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_REJECT},
+			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT},
 				fmt.Errorf("failed to unmarshal vote extension: %w", err)
 		}
 
 		// The height of the vote extension must match the height of the request.
 		if voteExt.Height != req.Height {
-			return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_REJECT},
+			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT},
 				fmt.Errorf("vote extension height does not match request height; expected: %d, got: %d", req.Height, voteExt.Height)
 		}
 
 		// Verify tickers and prices are valid.
 		for currencyPair, price := range voteExt.Prices {
 			if _, err := oracletypes.CurrencyPairFromString(currencyPair); err != nil {
-				return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_REJECT},
+				return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT},
 					fmt.Errorf("invalid ticker in oracle vote extension %s: %w", currencyPair, err)
 			}
 
 			if _, err := uint256.FromHex(price); err != nil {
-				return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_REJECT},
+				return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT},
 					fmt.Errorf("invalid price in oracle vote extension %s: %w", currencyPair, err)
 			}
 		}
 
-		return &abci.ResponseVerifyVoteExtension{Status: abci.ResponseVerifyVoteExtension_ACCEPT}, nil
+		return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}
+}
+
+// NoOpValidateVoteExtensions is a no-op validation method (purely used for testing)
+func NoOpValidateVoteExtensions(
+	_ sdk.Context,
+	_ baseapp.ValidatorStore,
+	_ int64,
+	_ string,
+	_ cometabci.ExtendedCommitInfo,
+) error {
+	return nil
 }
