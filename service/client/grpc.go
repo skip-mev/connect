@@ -42,7 +42,7 @@ func NewGRPCClient(addr string, t time.Duration) *GRPCClient {
 
 // Start starts the GRPC client. This method dials the remote oracle-service
 // and errors if the connection fails.
-func (c *GRPCClient) Start(ctx context.Context) error {
+func (c *GRPCClient) Start(_ context.Context) error {
 	conn, err := grpc.Dial(
 		c.addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -61,7 +61,7 @@ func (c *GRPCClient) Start(ctx context.Context) error {
 }
 
 // Stop stops the GRPC client. This method closes the connection to the remote.
-func (c *GRPCClient) Stop(ctx context.Context) error {
+func (c *GRPCClient) Stop(_ context.Context) error {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 

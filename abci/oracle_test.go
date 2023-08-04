@@ -62,6 +62,7 @@ func (suite *ABCITestSuite) TestGetOracleDataFromVE() {
 				types.ComputeMedian(),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
+				suite.validatorStore,
 			)
 
 			voteExtension, err := oracle.GetOracleDataFromVE(voteExtensionBz)
@@ -276,6 +277,7 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 				types.ComputeMedian(),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
+				suite.validatorStore,
 			)
 
 			commitInfos := suite.createExtendedCommitInfo(tc.getCommitInfos())
@@ -542,6 +544,7 @@ func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 				types.ComputeMedian(),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
+				suite.validatorStore,
 			)
 
 			oracleInfo := tc.getOracleInfo()
@@ -616,6 +619,7 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 				types.ComputeMedian(),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
+				suite.validatorStore,
 			)
 
 			oracle.WriteOracleData(suite.ctx, tc.oracleData)

@@ -140,18 +140,6 @@ test:
 .PHONY: test test-e2e
 
 ###############################################################################
-###                              Formatting                                 ###
-###############################################################################
-
-format:
-	gofmt -s -w ./
-
-tidy: format
-	go mod tidy
-
-.PHONY: format tidy
-
-###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
 
@@ -184,20 +172,30 @@ proto-update-deps:
 
 .PHONY: proto-all proto-gen proto-pulsar-gen proto-format proto-lint proto-check-breaking proto-update-deps
 
+
+###############################################################################
+###                              Formatting                                 ###
+###############################################################################
+
+tidy:
+	go mod tidy
+
+.PHONY: tidy
+
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
 
 golangci_lint_cmd=golangci-lint
-golangci_version=v1.51.2
+golangci_version=v1.53.3
 
 lint:
-	@echo "--> Running linter"
+	@echo "--> Running linters"
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
 	@golangci-lint run
 
-lint-fix:
-	@echo "--> Running linter"
+format:
+	@echo "--> Running formatters"
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
 	@golangci-lint run --fix
 
@@ -206,3 +204,4 @@ lint-markdown:
 	@markdownlint **/*.md
 
 .PHONY: lint lint-fix lint-markdown
+

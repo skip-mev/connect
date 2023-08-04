@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
@@ -44,7 +45,7 @@ type (
 //     median price weighted by the stake of each validator that submitted a price.
 func StakeWeightedMedian(
 	ctx sdk.Context,
-	validatorStore ValidatorStore,
+	validatorStore baseapp.ValidatorStore,
 	threshold math.LegacyDec,
 ) oracletypes.AggregateFn {
 	return func(providers oracletypes.AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
@@ -59,13 +60,13 @@ func StakeWeightedMedian(
 				}
 
 				// Retrieve the validator from the validator store.
-				address, err := sdk.ValAddressFromBech32(valAddress)
+				address, err := sdk.ConsAddressFromBech32(valAddress)
 				if err != nil {
 					continue
 				}
 
-				validator, ok := validatorStore.GetValidator(ctx, address)
-				if !ok {
+				stakeWeight, _, err := validatorStore.BondedTokensAndPubKeyByConsAddr(ctx, address)
+				if err != nil {
 					continue
 				}
 
@@ -81,17 +82,21 @@ func StakeWeightedMedian(
 				cpInfo := priceInfo[currencyPair]
 				priceInfo[currencyPair] = StakeWeightPriceInfo{
 					Prices: append(cpInfo.Prices, StakeWeightPrice{
-						StakeWeight: validator.BondedTokens(),
+						StakeWeight: stakeWeight,
 						Price:       quotePrice.Price,
 					}),
-					TotalWeight: cpInfo.TotalWeight.Add(validator.BondedTokens()),
+					TotalWeight: cpInfo.TotalWeight.Add(stakeWeight),
 				}
 			}
 		}
 
 		// Iterate through all prices and compute the median price for each asset.
 		prices := make(map[types.CurrencyPair]*uint256.Int)
-		totalBondedTokens := validatorStore.TotalBondedTokens(ctx) // TODO: determine if total bonded tokens should be the staking metric that is used.
+		totalBondedTokens, err := validatorStore.TotalBondedTokens(ctx) // TODO: determine if total bonded tokens should be the staking metric that is used.
+		if err != nil {
+			// This should never error.
+			panic(err)
+		}
 
 		for currencyPair, info := range priceInfo {
 			// The total voting power % that submitted a price update for the given currency pair must be

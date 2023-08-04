@@ -70,8 +70,8 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(100),
-					address: validator1,
+					stake:    math.NewInt(100),
+					consAddr: validator1,
 				},
 			},
 			totalBonded: math.NewInt(100),
@@ -115,12 +115,12 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(80),
-					address: validator1,
+					stake:    math.NewInt(80),
+					consAddr: validator1,
 				},
 				{
-					stake:   math.NewInt(20),
-					address: validator2,
+					stake:    math.NewInt(20),
+					consAddr: validator2,
 				},
 			},
 			totalBonded: math.NewInt(100),
@@ -165,12 +165,12 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(80),
-					address: validator1,
+					stake:    math.NewInt(80),
+					consAddr: validator1,
 				},
 				{
-					stake:   math.NewInt(20),
-					address: validator2,
+					stake:    math.NewInt(20),
+					consAddr: validator2,
 				},
 			},
 			totalBonded: math.NewInt(100),
@@ -235,16 +235,16 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			},
 			validators: []validator{
 				{
-					stake:   math.NewInt(30),
-					address: validator1,
+					stake:    math.NewInt(30),
+					consAddr: validator1,
 				},
 				{
-					stake:   math.NewInt(30),
-					address: validator2,
+					stake:    math.NewInt(30),
+					consAddr: validator2,
 				},
 				{
-					stake:   math.NewInt(40),
-					address: validator3,
+					stake:    math.NewInt(40),
+					consAddr: validator3,
 				},
 			},
 			totalBonded: math.NewInt(100),
@@ -273,6 +273,7 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 				aggregateFn,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
+				validatorStore,
 			)
 
 			// Create a proposal handler.
@@ -595,6 +596,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 				oracleservicetypes.ComputeMedian(),
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
+				suite.validatorStore,
 			)
 
 			// Create a proposal handler.
