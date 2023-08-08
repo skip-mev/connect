@@ -4,6 +4,7 @@ import (
 	"sort"
 	"sync"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/x/oracle/types"
 	"golang.org/x/exp/maps"
@@ -19,6 +20,11 @@ type (
 	// will then compute the canonical price for a given currency pair by computing the
 	// median price across all providers.
 	AggregateFn func(providers AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int
+
+	// AggregateFnFromContext is a function that is used to parametrize an aggregateFn by an sdk.Context. This is used
+	// to allow the aggregateFn to access the latest state of an application. I.e computing a stake weighted median based
+	// on the latest validator set.
+	AggregateFnFromContext func(ctx sdk.Context) AggregateFn
 )
 
 // PriceAggregator is a simple aggregator for provider prices.
@@ -99,6 +105,14 @@ func (p *PriceAggregator) ResetProviderPrices() {
 	p.providerPrices = make(AggregatedProviderPrices)
 }
 
+// SetAggregationFn sets the aggregate function used to aggregate prices from each provider.
+func (p *PriceAggregator) SetAggregationFn(fn AggregateFn) {
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
+
+	p.aggregateFn = fn
+}
+
 // UpdatePrices updates the current set of prices by using the aggregate function.
 func (p *PriceAggregator) UpdatePrices() {
 	providerPrices := p.GetProviderPrices()
@@ -110,6 +124,10 @@ func (p *PriceAggregator) UpdatePrices() {
 	}
 
 	p.SetPrices(make(map[types.CurrencyPair]*uint256.Int))
+}
+
+func ComputeMedianWithContext(_ sdk.Context) AggregateFn {
+	return ComputeMedian()
 }
 
 // GetPrices returns the aggregated prices based on the provided currency pairs.

@@ -33,6 +33,9 @@ type Oracle struct {
 	// to write oracle data to state.
 	oracleKeeper OracleKeeper
 
+	// aggregateFnWithCtx is the aggregate function parametrized by the latest state of the application.
+	aggregateFnWithCtx oracleservice.AggregateFnFromContext
+
 	// validateVoteExtensionsFn is the function responsible for validating vote extensions.
 	validateVoteExtensionsFn ValidateVoteExtensionsFn
 
@@ -42,14 +45,15 @@ type Oracle struct {
 // NewOracle returns a new Oracle.
 func NewOracle(
 	logger log.Logger,
-	aggregateFn oracleservice.AggregateFn,
+	aggregateFn oracleservice.AggregateFnFromContext,
 	oracleKeeper OracleKeeper,
 	validateVoteExtensionsFn ValidateVoteExtensionsFn,
 	validatorStore baseapp.ValidatorStore,
 ) *Oracle {
 	return &Oracle{
 		logger:                   logger,
-		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn),
+		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		aggregateFnWithCtx:       aggregateFn,
 		oracleKeeper:             oracleKeeper,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
 		validatorStore:           validatorStore,
@@ -125,13 +129,16 @@ func (o *Oracle) AggregateOracleData(
 	ctx sdk.Context,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) (types.OracleData, error) {
+	// Reset the price aggregator and set the aggregationFn to use the latest application-state.
+	o.priceAggregator.SetAggregationFn(o.aggregateFnWithCtx(ctx))
+
 	// Reset the price aggregator.
 	o.priceAggregator.ResetProviderPrices()
 
 	// Iterate through all vote extensions and consolidate all price info before
 	// aggregating.
 	for _, commitInfo := range extendedCommitInfo.Votes {
-		address := &sdk.ValAddress{}
+		address := &sdk.ConsAddress{}
 		if err := address.Unmarshal(commitInfo.Validator.Address); err != nil {
 			o.logger.Debug(
 				"failed to unmarshal validator address",

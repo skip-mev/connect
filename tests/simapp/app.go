@@ -63,7 +63,6 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/skip-mev/slinky/abci"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	oracleservice "github.com/skip-mev/slinky/service/client"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
@@ -273,7 +272,10 @@ func NewSimApp(
 	// verifiying oracle data.
 	oracle := abci.NewOracle(
 		app.Logger(),
-		oracleservicetypes.ComputeMedian(),
+		abci.VoteWeightedMedianFromContext(
+			app.StakingKeeper,
+			abci.DefaultPowerThreshold,
+		),
 		app.OracleKeeper,
 		baseapp.ValidateVoteExtensions, // Nice and safe :)
 		app.StakingKeeper,
