@@ -59,7 +59,7 @@ func (suite *ABCITestSuite) TestGetOracleDataFromVE() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedian(),
+				types.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
@@ -274,7 +274,7 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedian(),
+				types.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
@@ -541,7 +541,7 @@ func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 		suite.Run(tc.name, func() {
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedian(),
+				types.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
@@ -616,7 +616,7 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedian(),
+				types.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,

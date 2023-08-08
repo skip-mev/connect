@@ -266,7 +266,10 @@ func (suite *ABCITestSuite) TestPrepareProposal() {
 			)
 
 			// Create a stake weighted median aggregator.
-			aggregateFn := abci.StakeWeightedMedian(suite.ctx, validatorStore, abci.DefaultPowerThreshold)
+			aggregateFn := abci.VoteWeightedMedianFromContext(
+				validatorStore,
+				abci.DefaultPowerThreshold,
+			)
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
@@ -593,7 +596,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				oracleservicetypes.ComputeMedian(),
+				oracleservicetypes.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,

@@ -35,7 +35,7 @@ type ABCITestSuite struct {
 	proposalHandler        *abci.ProposalHandler
 	prepareProposalHandler sdk.PrepareProposalHandler
 	processProposalHandler sdk.ProcessProposalHandler
-	aggregateFn            oracleservice.AggregateFn
+	aggregateFn            oracleservice.AggregateFnFromContext
 
 	// oracle keeper set up.
 	oracleKeeper   keeper.Keeper
@@ -54,7 +54,7 @@ func (suite *ABCITestSuite) SetupTest() {
 	// Use the default no-op prepare and process proposal handlers from the sdk.
 	suite.prepareProposalHandler = baseapp.NoOpPrepareProposal()
 	suite.processProposalHandler = baseapp.NoOpProcessProposal()
-	suite.aggregateFn = oracleservice.ComputeMedian()
+	suite.aggregateFn = oracleservice.ComputeMedianWithContext
 
 	// Create an empty default mock validator store.
 	suite.validatorStore = suite.createMockValidatorStore(
