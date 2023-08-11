@@ -78,6 +78,19 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		)
 
 		if voteExtensionsEnabled {
+			// Validate the vote extensions provided by the validators.
+			if err := h.oracle.validateVoteExtensionsFn(
+				ctx,
+				h.oracle.validatorStore,
+				req.Height,
+				ctx.ChainID(),
+				req.LocalLastCommit,
+			); err != nil {
+				err = fmt.Errorf("%w; extended_commit_info: %+v", err, req.LocalLastCommit)
+				h.logger.Error("failed to validate vote extensions", "err", err)
+				return nil, err
+			}
+
 			// Aggregate all of the oracle data provided by the validators in their vote extensions.
 			oracleData, err := h.oracle.AggregateOracleData(ctx, req.LocalLastCommit)
 			if err != nil {
