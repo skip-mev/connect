@@ -97,7 +97,7 @@ func (o *Oracle) CheckOracleData(ctx sdk.Context, txs [][]byte, height int64) (t
 
 	// Verify that the vote extensions included in the proposal are valid.
 	if err := o.validateVoteExtensionsFn(ctx, o.validatorStore, height, ctx.ChainID(), extendedCommitInfo); err != nil {
-		return types.OracleData{}, fmt.Errorf("failed to validate vote extensions: %w", err)
+		return types.OracleData{}, fmt.Errorf("failed to validate vote extensions: %w; extended commit info: %+v", err, extendedCommitInfo)
 	}
 
 	// Verify that the oracle price info provided by the proposer matches the vote extensions
