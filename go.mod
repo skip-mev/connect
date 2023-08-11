@@ -44,7 +44,7 @@ require (
 require (
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.54.0
-	github.com/vektra/mockery/v2 v2.32.3
+	github.com/vektra/mockery/v2 v2.32.4
 )
 
 require (
