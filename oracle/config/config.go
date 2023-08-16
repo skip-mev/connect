@@ -70,7 +70,7 @@ func ReadConfigFromFile(path string) (*Config, error) {
 func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.CurrencyPair, l log.Logger) (types.Provider, error) {
 	switch cfg.Name {
 	case "coingecko":
-		return coingecko.NewProvider(l, cps), nil
+		return coingecko.NewProvider(l, cps, cfg.Apikey), nil
 	case "coinbase":
 		return coinbase.NewProvider(l, cps), nil
 	case "coinmarketcap":

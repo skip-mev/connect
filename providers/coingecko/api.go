@@ -4,12 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+)
+
+const (
+	apiKeyHeader = "x-cg-pro-api-key"
+	baseURL      = "https://api.coingecko.com/api/v3"
+	apiURL       = "https://pro-api.coingecko.com/api/v3"
+
+	pairPriceRequest = "/simple/price?ids=%s&vs_currencies=%s"
+	precision        = "&precision=18"
 )
 
 // getPriceForPair returns the price of a currency pair. The price is fetched
@@ -28,14 +38,22 @@ import (
 //	  }
 //	}
 func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
-	url := getPriceEndpoint(p.bases, p.quotes)
+	url := p.getPriceEndpoint(p.bases, p.quotes)
 
 	// make the request to url and unmarshal the response into respMap
 	respMap := make(map[string]map[string]float64)
 
-	if err := providers.GetWithContext(ctx, url, func(body []byte) error {
+	// if an API key is set, add it to the request
+	var reqFn providers.ReqFn
+	if p.apiKey != "" {
+		reqFn = func(req *http.Request) {
+			req.Header.Set(apiKeyHeader, p.apiKey)
+		}
+	}
+
+	if err := providers.GetWithContextAndHeader(ctx, url, func(body []byte) error {
 		return json.Unmarshal(body, &respMap)
-	}); err != nil {
+	}, reqFn); err != nil {
 		return nil, err
 	}
 
@@ -69,6 +87,9 @@ func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 
 // getPriceEndpoint is the CoinGecko endpoint for getting the price of a
 // currency pair.
-func getPriceEndpoint(base, quote string) string {
-	return fmt.Sprintf("https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s&precision=18", base, quote)
+func (p *Provider) getPriceEndpoint(base, quote string) string {
+	if p.apiKey != "" {
+		return fmt.Sprintf(apiURL+pairPriceRequest+precision, base, quote)
+	}
+	return fmt.Sprintf(baseURL+pairPriceRequest+precision, base, quote)
 }
