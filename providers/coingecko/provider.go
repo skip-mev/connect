@@ -29,10 +29,13 @@ type Provider struct {
 	// quotes is a list of quote currencies that the provider should fetch
 	// prices for.
 	quotes string
+
+	// apiKey is the API key used to make requests to the CoinGecko API.
+	apiKey string
 }
 
 // NewProvider returns a new CoinGecko provider.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair) *Provider {
+func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey string) *Provider {
 	bases, quotes := getUniqueBaseAndQuoteDenoms(pairs)
 
 	return &Provider{
@@ -40,6 +43,7 @@ func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair) *Provider 
 		logger: logger,
 		bases:  strings.Join(bases, ","),
 		quotes: strings.Join(quotes, ","),
+		apiKey: apiKey,
 	}
 }
 
