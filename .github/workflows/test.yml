@@ -36,3 +36,7 @@ jobs:
         if: env.GIT_DIFF
         run: |
           make test
+      - name: integration testing
+        if: env.GIT_DIFF
+        run: |
+          make test-integration
