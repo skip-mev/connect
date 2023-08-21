@@ -18,7 +18,7 @@
 # vendor/
 
 # Go workspace file
-go.work
+go.work*
 
 # Testing script folder
 /tests/.slinkyd

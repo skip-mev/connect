@@ -2,6 +2,7 @@ package mock
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/holiman/uint256"
@@ -62,6 +63,33 @@ func NewStaticMockProvider() *StaticMockProvider {
 			oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 		},
 	}
+}
+
+// NewStaticMockProviderFromConfig constructs a new static mock provider from the config
+// Notice this method expects the TokenNameToSymbol map to be populated w/ entries of the form
+// CurrencyPair.ToString(): uint256.NewInt(price)
+func NewStaticMockProviderFromConfig(config types.ProviderConfig) *StaticMockProvider {
+	s := StaticMockProvider{
+		exchangeRates: make(map[oracletypes.CurrencyPair]types.QuotePrice),
+		currencyPairs: make([]oracletypes.CurrencyPair, 0),
+	}
+
+	for cpString, priceString := range config.TokenNameToSymbol {
+		cp, err := oracletypes.CurrencyPairFromString(cpString)
+		if err != nil {
+			continue
+		}
+
+		priceInt, err := strconv.Atoi(priceString)
+		if err != nil {
+			continue
+		}
+
+		s.exchangeRates[cp] = types.QuotePrice{Price: uint256.NewInt(uint64(priceInt))}
+		s.currencyPairs = append(s.currencyPairs, cp)
+	}
+
+	return &s
 }
 
 // Name returns the name of the mock provider.

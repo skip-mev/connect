@@ -1,11 +1,11 @@
 FROM golang:1.20-bullseye AS builder
 
 WORKDIR /src/slinky
-COPY go.mod go.sum ./
-RUN go mod download
-
-WORKDIR /src/slinky
 COPY . .
+
+RUN go work init
+RUN go work edit -use ./
+RUN make tidy
 RUN make build-test-app
 
 ## Prepare the final clear binary

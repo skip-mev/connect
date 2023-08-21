@@ -75,10 +75,13 @@ func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []
 	app.CrisisKeeper.AssertInvariants(ctx)
 
 	/* Handle fee distribution state. */
-
 	// withdraw all validator commission
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+		valAddress, err := sdk.ValAddressFromBech32(val.GetOperator())
+		if err != nil {
+			return true
+		}
+		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, valAddress)
 		return false
 	})
 
@@ -110,8 +113,12 @@ func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []
 
 	// reinitialize all validators
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+		valAddress, err := sdk.ValAddressFromBech32(val.GetOperator())
+		if err != nil {
+			panic(err)
+		}
 		// donate any unwithdrawn outstanding reward fraction tokens to the community pool
-		scraps, err := app.DistrKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
+		scraps, err := app.DistrKeeper.GetValidatorOutstandingRewardsCoins(ctx, valAddress)
 		if err != nil {
 			panic(err)
 		}
@@ -124,7 +131,7 @@ func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []
 			panic(err)
 		}
 
-		if err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator()); err != nil {
+		if err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, valAddress); err != nil {
 			panic(err)
 		}
 		return false

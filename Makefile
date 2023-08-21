@@ -127,14 +127,11 @@ build-and-start-app: build-test-app build-configs start-app
 ###                               Testing                                   ###
 ###############################################################################
 
-TEST_E2E_TAGS = e2e
-TEST_E2E_DEPS = docker-build
+test-integration: docker-build
+	@echo "Running integration tests..."
+	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race ./...
 
-test-e2e: $(TEST_E2E_DEPS)
-	@echo "Running E2E tests..."
-	@go test ./tests/e2e/... -mod=readonly -timeout 30m -race -v -tags='$(TEST_E2E_TAGS)'
-
-test:
+test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
 
 .PHONY: test test-e2e

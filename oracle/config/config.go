@@ -83,6 +83,10 @@ func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.Curr
 		return mock.NewFailingMockProvider(), nil
 	case "static-mock-provider":
 		// This will return mock prices (randomly generated) for the configured currency pairs
+		if cfg.TokenNameToSymbol != nil {
+			return mock.NewStaticMockProviderFromConfig(cfg), nil
+		}
+
 		return mock.NewStaticMockProvider(), nil
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
