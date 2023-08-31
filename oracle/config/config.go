@@ -212,7 +212,8 @@ func providerConfigFromToml(iface interface{}) (types.ProviderConfig, error) {
 
 	// get the provider timeout
 	if v, ok := iFaceMap["provider_timeout"]; ok {
-		if providerCfg.ProviderTimeout, ok = v.(time.Duration); !ok {
+		var err error
+		if providerCfg.ProviderTimeout, err = cast.ToDurationE(v); err != nil {
 			return providerCfg, fmt.Errorf("failed to convert provider timeout to duration")
 		}
 	}
