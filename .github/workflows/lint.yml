@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.20.6
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Lint markdown
         uses: avto-dev/markdown-lint@v1
