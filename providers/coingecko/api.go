@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	apiKeyHeader = "x-cg-pro-api-key"
+	apiKeyHeader = "x-cg-pro-api-key" // #nosec G101
 	baseURL      = "https://api.coingecko.com/api/v3"
 	apiURL       = "https://pro-api.coingecko.com/api/v3"
 

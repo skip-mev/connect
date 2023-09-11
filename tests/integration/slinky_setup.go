@@ -27,6 +27,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	abcitypes "github.com/skip-mev/slinky/abci/types"
 )
 
 const (
@@ -341,6 +342,9 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypes.QueryPro
 	client := govtypes.NewQueryClient(cc)
 
 	propId, err := strconv.ParseUint(propID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
 	// query the currency pairs
 	return client.Proposal(context.Background(), &govtypes.QueryProposalRequest{
 		ProposalId: propId,
@@ -369,4 +373,43 @@ func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Durati
 
 		return h >= height, nil
 	})
+}
+
+// WaitForOracleUpdate waits for the first oracle update. This method returns the height that the oracle update occurred
+// it returns an error if there is no oracle update by the timeout
+func WaitForOracleUpdate(chain *cosmos.CosmosChain, timeout time.Duration, cp oracletypes.CurrencyPair) (uint64, error) {
+	client := chain.Nodes()[0].Client 
+	var height int64
+
+	if err := testutil.WaitForCondition(timeout, 1 * time.Second, func() (bool, error) {
+		blockHeight, err := chain.Height(context.Background())
+		if err != nil {
+			return false, err
+		}
+		height = int64(blockHeight)
+		
+		block, err := client.Block(context.Background(), &height)
+		if err != nil {
+			return false, err
+		}
+
+		// check if the first tx is an oracle update
+		if len(block.Block.Txs) == 0 {
+			return false, err
+		}
+
+		var ve abcitypes.OracleVoteExtension
+		if err := ve.Unmarshal(block.Block.Txs[0]); err != nil {
+			return false, err
+		}
+
+		// check if the currency-pair has an update included for it
+		_, ok := ve.Prices[cp.ToString()]
+
+		return ok, nil
+	}); err != nil {
+		return 0, err
+	}
+
+	return uint64(height), nil
 }
