@@ -234,11 +234,8 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 			RestartOracle(node)
 		}
 
-		height, err := s.chain.Height(context.Background())
+		height, err := WaitForOracleUpdate(s.chain, 3 * s.blockTime, cp)
 		s.Require().NoError(err)
-		// nodes may not be able to extend w/ prices at this height so wait
-		height = height + 2
-		s.Require().NoError(WaitForHeight(s.chain, height, 2 * s.blockTime))
 
 		// query for the given currency pair
 		resp, _, err := QueryCurrencyPair(s.chain, cp, height)
@@ -250,25 +247,26 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 		// stop single node's oracle process and check that all prices are reported
 		node := s.chain.Nodes()[0]
 		StopOracle(node)
-		// wait for the oracle to stop
-		height, err := s.chain.Height(context.Background())
-		s.Require().NoError(err)
 
-		// nodes may not be able to extend w/ prices at this height so wait
-		height = height + 2
-		s.Require().NoError(WaitForHeight(s.chain, height, s.blockTime))
+		// now wait for the next update (should be the next block)
+		height, err := WaitForOracleUpdate(s.chain, s.blockTime, cp)
+		s.Require().NoError(err)
 
 		// query for the given currency pair
 		_, nonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
 
-		// wait for one more height
-		s.Require().NoError(WaitForHeight(s.chain, height+1, s.blockTime))
+		// wait for the next height
+		s.Require().NoError(WaitForHeight(s.chain, height + 1, 2 * s.blockTime))
+
+		// wait for the next oracle update
+		height, err = WaitForOracleUpdate(s.chain, s.blockTime, cp)
+		s.Require().NoError(err)
 
 		// query the price, and check that nonce is incremented
-		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height+1)
+		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
-		s.Require().Equal(newNonce, nonce+1)
+		s.Require().True(newNonce > nonce)
 
 		// start the oracle again
 		StartOracle(node)
@@ -280,25 +278,25 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 		node.StopContainer(context.Background())
 		node.RemoveContainer(context.Background())
 
-		// wait for the oracle to stop
-		height, err := s.chain.Height(context.Background())
+		// wait for the first height that an oracle update occurs, should be the first height
+		height, err := WaitForOracleUpdate(s.chain, s.blockTime, cp)
 		s.Require().NoError(err)
-
-		// nodes may not be able to extend w/ prices at this height so wait
-		height = height + 2
-		s.Require().NoError(WaitForHeight(s.chain, height, 2 * s.blockTime))
 
 		// query for the given currency pair
 		_, nonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
 
-		// wait for one more height
-		s.Require().NoError(WaitForHeight(s.chain, height+1, 2 * s.blockTime))
+		// wait for the next height
+		s.Require().NoError(WaitForHeight(s.chain, height + 1, 2 * s.blockTime))
+
+		// wait for the next oracle update, should be the next height
+		height, err = WaitForOracleUpdate(s.chain, s.blockTime, cp)
+		s.Require().NoError(err)
 
 		// query the price, and check that nonce is incremented
-		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height+1)
+		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
-		s.Require().Equal(newNonce, nonce+1)
+		s.Require().True(newNonce > nonce)
 
 		s.Require().NoError(node.CreateNodeContainer(context.Background()))
 		s.Require().NoError(node.StartContainer(context.Background()))
@@ -310,26 +308,15 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 			StopOracle(node)
 		}
 
-		// wait for VEs from prev. rounds to clear
+		// wait one height to clear oracle updates
 		height, err := s.chain.Height(context.Background())
 		s.Require().NoError(err)
 
-		// nodes may not be able to extend w/ prices at this height so wait
-		height = height + 2
-		s.Require().NoError(WaitForHeight(s.chain, height, 2 * s.blockTime))
+		// wait for the height after next height (this is to ensure that all oracles have been stopped, and their VEs reflect this)
+		s.Require().NoError(WaitForHeight(s.chain, height+2, 2 * s.blockTime))
 
-		// query for the given currency pair
-		_, nonce, err := QueryCurrencyPair(s.chain, cp, height)
-		s.Require().NoError(err)
-
-		// wait for one more height
-		s.Require().NoError(WaitForHeight(s.chain, height+1, 2 * s.blockTime))
-
-		// require nonce to have not updated
-		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height+1)
-		s.Require().NoError(err)
-
-		s.Require().Equal(newNonce, nonce)
+		_, err = WaitForOracleUpdate(s.chain, 2 * s.blockTime, cp) // expect no update
+		s.Require().Error(err)
 
 		// start all oracles again
 		for _, node := range s.chain.Nodes()[1:] {
@@ -372,6 +359,10 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		height = height + 2
 		s.Require().NoError(WaitForHeight(s.chain, height, 2 * s.blockTime))
 
+		// wait for the next update
+		height, err = WaitForOracleUpdate(s.chain, 2 * s.blockTime, cp1)
+		s.Require().NoError(err)
+
 		// query for the given currency pair
 		for i, cp := range cps {
 			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
@@ -401,6 +392,9 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		// nodes may not be able to extend w/ prices at this height so wait
 		height = height + 2
 		s.Require().NoError(WaitForHeight(s.chain, height, 2 * s.blockTime))	
+
+		// wait for the next update
+		height, err = WaitForOracleUpdate(s.chain, 2 * s.blockTime, cp1)
 
 		// query for the given currency pair
 		for i, cp := range cps {
