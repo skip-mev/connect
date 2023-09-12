@@ -9,6 +9,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/strangelove-ventures/interchaintest/v7"
@@ -379,9 +380,13 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		oCfg := DefaultOracleConfig()
 		oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
 			Name:    "static-mock-provider",
-			TokenNameToSymbol: map[string]string{
-				cp2.ToString(): "1141",
-				cp3.ToString(): "1142",
+			TokenNameToMetadata: map[string]types.TokenMetadata{
+                cp2.ToString(): {
+                    Symbol: "1141",
+                },
+				cp3.ToString(): {
+                    Symbol: "1142",
+                },
 			},
 		})
 		SetOracleConfig(node, oCfg)

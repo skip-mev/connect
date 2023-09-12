@@ -74,12 +74,13 @@ func NewStaticMockProviderFromConfig(config types.ProviderConfig) *StaticMockPro
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
 
-	for cpString, priceString := range config.TokenNameToSymbol {
+	for cpString, metadata := range config.TokenNameToMetadata {
 		cp, err := oracletypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			continue
 		}
 
+		priceString := metadata.Symbol
 		priceInt, err := strconv.Atoi(priceString)
 		if err != nil {
 			continue

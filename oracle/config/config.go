@@ -10,6 +10,8 @@ import (
 	"github.com/skip-mev/slinky/providers/coinbase"
 	"github.com/skip-mev/slinky/providers/coingecko"
 	"github.com/skip-mev/slinky/providers/coinmarketcap"
+	"github.com/skip-mev/slinky/providers/evm/erc4626"
+	"github.com/skip-mev/slinky/providers/evm/erc4626sharepriceoracle"
 	"github.com/skip-mev/slinky/providers/mock"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
@@ -74,7 +76,21 @@ func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.Curr
 	case "coinbase":
 		return coinbase.NewProvider(l, cps), nil
 	case "coinmarketcap":
-		return coinmarketcap.NewProvider(l, cps, cfg.Apikey, cfg.TokenNameToSymbol), nil
+		return coinmarketcap.NewProvider(l, cps, cfg.Apikey, cfg.TokenNameToMetadata), nil
+	case "erc4626":
+		provider, err := erc4626.NewProvider(l, cps, cfg.Apikey, cfg.TokenNameToMetadata)
+		if err != nil {
+			return nil, err
+		}
+
+		return provider, nil
+	case "erc4626-share-price-oracle":
+		provider, err := erc4626sharepriceoracle.NewProvider(l, cps, cfg.Apikey, cfg.TokenNameToMetadata)
+		if err != nil {
+			return nil, err
+		}
+
+		return provider, nil
 	case "timeout-mock-provider":
 		// This will timeout after the configured timeout + 1 second
 		return mock.NewTimeoutMockProvider(cfg.ProviderTimeout + time.Second), nil
@@ -83,7 +99,7 @@ func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.Curr
 		return mock.NewFailingMockProvider(), nil
 	case "static-mock-provider":
 		// This will return mock prices (randomly generated) for the configured currency pairs
-		if cfg.TokenNameToSymbol != nil {
+		if cfg.TokenNameToMetadata != nil {
 			return mock.NewStaticMockProviderFromConfig(cfg), nil
 		}
 
@@ -198,13 +214,13 @@ func providerConfigFromToml(iface interface{}) (types.ProviderConfig, error) {
 		}
 	}
 
-	// get the token name to symbol map
-	if v, ok := iFaceMap["token_name_to_symbol"]; ok {
-		if tokenNameToSymbol, ok := v.(map[string]interface{}); ok {
-			providerCfg.TokenNameToSymbol = make(map[string]string)
-			for k, v := range tokenNameToSymbol {
-				if symbol, ok := v.(string); ok {
-					providerCfg.TokenNameToSymbol[k] = symbol
+	// get the token name to metadata map
+	if v, ok := iFaceMap["token_name_to_metadata"]; ok {
+		if tokenNameToMetadata, ok := v.(map[string]interface{}); ok {
+			providerCfg.TokenNameToMetadata = make(map[string]types.TokenMetadata)
+			for k, v := range tokenNameToMetadata {
+				if metadata, ok := v.(types.TokenMetadata); ok {
+					providerCfg.TokenNameToMetadata[k] = metadata
 				}
 			}
 		}

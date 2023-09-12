@@ -28,10 +28,14 @@ name = "{{ $provider.Name }}"
 apikey = "{{ $provider.Apikey }}"
 provider_timeout = "{{ $provider.ProviderTimeout }}"
 
-# Token Name to Symbol
-[[oracle.providers.token_name_to_symbol]]
-{{- range $key, $value := $provider.TokenNameToSymbol }}
-{{ $key }} = "{{ $value }}"
+# Token Name to TokenMetadata
+[[oracle.providers.token_name_to_metadata]]
+{{- range $key, $value := $provider.TokenNameToMetadata }}
+{{ $key }} = {
+    symbol = "{{ $value.Symbol }}"
+    decimals = {{ $value.Decimals }}
+    is_twap = {{ $value.IsTWAP }}
+}
 {{- end }}
 {{- end }}
 

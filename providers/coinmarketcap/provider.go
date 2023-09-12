@@ -27,17 +27,17 @@ type Provider struct {
 	// api-key is the api-key accompanying requests to the coinmarketcap api.
 	apiKey string
 
-	// TokenNameToSymbol is a map of currency pairs to their symbols.
-	tokenNameToSymbol map[string]string
+	// TokenNameToMetadata is a map of currency pairs to their metadata.
+	tokenNameToMetadata map[string]types.TokenMetadata
 }
 
 // NewProvider returns a new coinmarketcap provider. It uses the provided API-key in the header of outgoing requests to coinmarketcap's API.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey string, tokenNameToSymbol map[string]string) *Provider {
+func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey string, tokenNameToMetadata map[string]types.TokenMetadata) *Provider {
 	return &Provider{
-		pairs:             pairs,
-		logger:            logger,
-		apiKey:            apiKey,
-		tokenNameToSymbol: tokenNameToSymbol,
+		pairs:               pairs,
+		logger:              logger,
+		apiKey:              apiKey,
+		tokenNameToMetadata: tokenNameToMetadata,
 	}
 }
 
@@ -115,8 +115,8 @@ func (p *Provider) GetPairs() []oracletypes.CurrencyPair {
 
 // getSymbolForPair returns the symbol for a currency pair.
 func (p *Provider) getSymbolForTokenName(tokenName string) string {
-	if symbol, ok := p.tokenNameToSymbol[tokenName]; ok {
-		return symbol
+	if metadata, ok := p.tokenNameToMetadata[tokenName]; ok {
+		return metadata.Symbol
 	}
 
 	return tokenName

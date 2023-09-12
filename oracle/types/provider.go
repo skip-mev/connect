@@ -31,9 +31,14 @@ type ProviderConfig struct {
 	// Apikey is the api-key accompanying requests to the provider's API.
 	Apikey string `mapstructure:"apikey" toml:"apikey"`
 
-	// TokenNameToSymbol is a map of token names to their symbols, i.e how each token in the CurrencyPair should
-	// map to the token references in the queried provider's API.
-	TokenNameToSymbol map[string]string `mapstructure:"token_name_to_symbol"`
+	// TokenNameToMetadata is a map of token names to their metadata, i.e how each token in the CurrencyPair should
+	// map to the token references in the queried provider's API, and required decimals for on-chain data sources.
+	TokenNameToMetadata map[string]TokenMetadata `mapstructure:"token_name_to_metadata"`
+
+	// PairToContractAddress is a map of pairs to the address of a contract that provides the price for that pair
+	// for providers that use on-chain data. The key of the outer map is the quote token, the key of the inner map
+	// is the base token.
+	PairToContractAddress map[string]map[string]string `mapstructure:"pair_to_contract_address"`
 
 	// ProviderTimeout is the maximum amount of time to wait for a response from the provider.
 	ProviderTimeout time.Duration `mapstructure:"provider_timeout"`
