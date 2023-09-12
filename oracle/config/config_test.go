@@ -18,6 +18,12 @@ update_interval = "1s"
 name = "coingecko"
 [[providers]]
 name = "coinbase"
+[[providers]]
+name = "erc4626"
+token_name_to_metadata = { "ryETH" = { symbol = "0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec", decimals = 18 } }
+[[providers]]
+name = "erc4626-share-price-oracle"
+token_name_to_metadata = { "ryBTC" = { symbol = "0x0274a704a6D9129F90A62dDC6f6024b33EcDad36", decimals = 18 } }
 [[currency_pairs]]
 base = "ATOM"
 quote = "USD"
