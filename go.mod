@@ -44,7 +44,7 @@ require (
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.54.2
-	github.com/vektra/mockery/v2 v2.33.0
+	github.com/vektra/mockery/v2 v2.33.2
 )
 
 require (
