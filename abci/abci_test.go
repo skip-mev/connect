@@ -10,11 +10,11 @@ import (
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	crypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
+	"github.com/cometbft/cometbft/proto/tendermint/crypto"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/skip-mev/slinky/abci"
@@ -41,7 +41,7 @@ type ABCITestSuite struct {
 	oracleKeeper   keeper.Keeper
 	currencyPairs  []oracletypes.CurrencyPair
 	genesis        oracletypes.GenesisState
-	validatorStore baseapp.ValidatorStore
+	validatorStore abci.ValidatorStore
 }
 
 func TestABCITestSuite(t *testing.T) {
@@ -145,20 +145,37 @@ func (suite *ABCITestSuite) createMockValidatorStore(
 ) *mocks.ValidatorStore {
 	store := mocks.NewValidatorStore(suite.T())
 	if len(validators) != 0 {
+		mockVals := make([]*mocks.ValidatorI, len(validators))
 		valPubKeys := make([]crypto.PublicKey, len(validators))
 
 		for i, val := range validators {
+			mockVals[i] = mocks.NewValidatorI(suite.T())
+			mockVals[i].On(
+				"GetBondedTokens",
+			).Return(
+				val.stake,
+			).Maybe()
+
+			store.On(
+				"ValidatorByConsAddr",
+				suite.ctx,
+				val.consAddr,
+			).Return(
+				mockVals[i],
+				nil,
+			).Maybe()
+
 			var err error
 			valPubKeys[i], err = cryptocodec.ToCmtProtoPublicKey(ed25519.GenPrivKey().PubKey())
 			if err != nil {
 				panic(err)
 			}
+
 			store.On(
-				"BondedTokensAndPubKeyByConsAddr",
+				"GetPubKeyByConsAddr",
 				suite.ctx,
 				val.consAddr,
 			).Return(
-				val.stake,
 				valPubKeys[i],
 				nil,
 			).Maybe()

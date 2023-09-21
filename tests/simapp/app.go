@@ -294,11 +294,11 @@ func NewSimApp(
 
 	// Create the pre-finalize block hook that will be used to apply oracle data
 	// to the state before any transactions are executed (in finalize block).
-	preFinalizeBlockHandler := abci.NewPreFinalizeBlockHandler(
+	preFinalizeBlockHandler := abci.NewPreBlockHandler(
 		app.Logger(),
 		oracle,
 	)
-	app.SetPreFinalizeBlockHook(preFinalizeBlockHandler.PreFinalizeBlockHook())
+	app.SetPreBlocker(preFinalizeBlockHandler.PreBlockHook())
 
 	// Create the vote extensions handler that will be used to extend and verify
 	// vote extensions (i.e. oracle data).

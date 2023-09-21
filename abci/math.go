@@ -4,7 +4,6 @@ import (
 	"sort"
 
 	"cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
@@ -45,7 +44,7 @@ type (
 //     median price weighted by the stake of each validator that submitted a price.
 func VoteWeightedMedian(
 	ctx sdk.Context,
-	validatorStore baseapp.ValidatorStore,
+	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) oracletypes.AggregateFn {
 	return func(providers oracletypes.AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
@@ -59,16 +58,16 @@ func VoteWeightedMedian(
 					continue
 				}
 
-				// Retrieve the validator from the validator store.
+				// Retrieve the validator from the validator store and get its vote weight.
 				address, err := sdk.ConsAddressFromBech32(valAddress)
 				if err != nil {
 					continue
 				}
-
-				voteWeight, _, err := validatorStore.BondedTokensAndPubKeyByConsAddr(ctx, address)
+				validator, err := validatorStore.ValidatorByConsAddr(ctx, address)
 				if err != nil {
 					continue
 				}
+				voteWeight := validator.GetBondedTokens()
 
 				// Initialize the price info if it does not exist for the given currency pair.
 				if _, ok := priceInfo[currencyPair]; !ok {
@@ -113,7 +112,7 @@ func VoteWeightedMedian(
 // VoteWeightedMedianFromContext returns a new VoteWeightedMedian aggregate function that is parametrized by the
 // latest state of the application.
 func VoteWeightedMedianFromContext(
-	validatorStore baseapp.ValidatorStore,
+	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) oracletypes.AggregateFnFromContext {
 	return func(ctx sdk.Context) oracletypes.AggregateFn {
