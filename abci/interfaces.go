@@ -1,16 +1,15 @@
 package abci
 
 import (
+	"context"
+
+	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
-
-// ValidatorStore defines the interface contract required for calculating
-// stake-weighted median prices + total voting power for a given currency pair.
-//
-//go:generate mockery --srcpkg=github.com/cosmos/cosmos-sdk/baseapp --name ValidatorStore --filename mock_validator_store.go
 
 // ValidateVoteExtensionsFn defines the function for validating vote extensions. This
 // function is not explicitly used to validate the oracle data but rather that
@@ -33,4 +32,15 @@ type ValidateVoteExtensionsFn func(
 type OracleKeeper interface {
 	GetAllCurrencyPairs(ctx sdk.Context) []oracletypes.CurrencyPair
 	SetPriceForCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair, qp oracletypes.QuotePrice) error
+}
+
+// ValidatorStore defines the interface contract required for calculating stake-weighted median
+// prices + total voting power for a given currency pair.
+//
+//go:generate mockery --srcpkg=github.com/cosmos/cosmos-sdk/x/staking/types --name ValidatorI --filename mock_validator.go
+//go:generate mockery --name ValidatorStore --filename mock_validator_store.go
+type ValidatorStore interface {
+	baseapp.ValidatorStore
+	ValidatorByConsAddr(ctx context.Context, addr sdk.ConsAddress) (stakingtypes.ValidatorI, error)
+	TotalBondedTokens(ctx context.Context) (math.Int, error)
 }

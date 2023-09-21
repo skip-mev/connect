@@ -6,42 +6,40 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// PreFinalizeBlockHook is called by the base app before the block is finalized. It is
-// responsible for aggregating oracle data from each validator and writing the oracle data
-// into the store before any transactions are finalized for a given block.
-type PreFinalizeBlockHandler struct {
+// PreBlockHandler is responsible for aggregating oracle data from each validator and writing the
+// oracle data into the store before any transactions are finalized for a given block.
+type PreBlockHandler struct {
 	logger log.Logger
 
 	// oracle tracks, updates, and verifies oracle data.
 	oracle *Oracle
 }
 
-// NewPreFinalizeBlockHandler returns a new PreFinalizeBlockHandler. The handler is
-// responsible for writing oracle data included in vote extensions to state.
-func NewPreFinalizeBlockHandler(
+// NewPreBlockHandler returns a new PreBlockHandler. The handler is responsible for writing oracle
+// data included in vote extensions to state.
+func NewPreBlockHandler(
 	logger log.Logger,
 	oracle *Oracle,
-) *PreFinalizeBlockHandler {
-	return &PreFinalizeBlockHandler{
+) *PreBlockHandler {
+	return &PreBlockHandler{
 		logger: logger.With("module", "oracle"),
 		oracle: oracle,
 	}
 }
 
-// PreFinalizeBlock is called by the base app before the block is finalized.
-// It is responsible for aggregating oracle data from each validator and writing the oracle data
-// to the store.
+// PreBlockHook is called by the base app before the block is finalized. It is responsible
+// for aggregating oracle data from each validator and writing the oracle data to the store.
 //
 // NOTE: The results of the oracle verification between PrepareProposal, ProcessProposal and
-// PreFinalizeBlock SHOULD be the same.
+// PreBlock SHOULD be the same.
 //
-// TODO: Figure out what (if any) are the consequences of committing prices in
-// PreFinalizeBlock instead of ProcessProposal.
-func (hook *PreFinalizeBlockHandler) PreFinalizeBlockHook() sdk.PreFinalizeBlockHook {
-	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) error {
+// TODO: Figure out what (if any) are the consequences of committing prices in PreBlock instead of
+// ProcessProposal.
+func (hook *PreBlockHandler) PreBlockHook() sdk.PreBlocker {
+	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 		// If vote extensions are not enabled, then we don't need to do anything.
 		if !VoteExtensionsEnabled(ctx) || req == nil {
-			return nil
+			return &sdk.ResponsePreBlock{}, nil
 		}
 
 		hook.logger.Info(
@@ -58,8 +56,7 @@ func (hook *PreFinalizeBlockHandler) PreFinalizeBlockHook() sdk.PreFinalizeBlock
 				"num_txs", len(req.Txs),
 				"err", err,
 			)
-
-			return err
+			return &sdk.ResponsePreBlock{}, err
 		}
 
 		// Write the oracle data to the store. This should never fail because the
@@ -70,10 +67,9 @@ func (hook *PreFinalizeBlockHandler) PreFinalizeBlockHook() sdk.PreFinalizeBlock
 				"num_prices", len(oracleData.Prices),
 				"err", err,
 			)
-
-			return err
+			return &sdk.ResponsePreBlock{}, err
 		}
 
-		return nil
+		return &sdk.ResponsePreBlock{}, nil
 	}
 }

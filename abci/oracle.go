@@ -6,7 +6,6 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci/types"
@@ -39,7 +38,7 @@ type Oracle struct {
 	// validateVoteExtensionsFn is the function responsible for validating vote extensions.
 	validateVoteExtensionsFn ValidateVoteExtensionsFn
 
-	validatorStore baseapp.ValidatorStore
+	validatorStore ValidatorStore
 }
 
 // NewOracle returns a new Oracle.
@@ -48,7 +47,7 @@ func NewOracle(
 	aggregateFn oracleservice.AggregateFnFromContext,
 	oracleKeeper OracleKeeper,
 	validateVoteExtensionsFn ValidateVoteExtensionsFn,
-	validatorStore baseapp.ValidatorStore,
+	validatorStore ValidatorStore,
 ) *Oracle {
 	return &Oracle{
 		logger:                   logger,
