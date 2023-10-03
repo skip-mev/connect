@@ -64,6 +64,8 @@ import (
 	"github.com/skip-mev/slinky/abci"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracleservice "github.com/skip-mev/slinky/service/client"
+	"github.com/skip-mev/slinky/x/incentives"
+	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )
@@ -102,6 +104,7 @@ var (
 		vesting.AppModuleBasic{},
 		consensus.AppModuleBasic{},
 		oracle.AppModuleBasic{},
+		incentives.AppModuleBasic{},
 	)
 )
 
@@ -136,6 +139,7 @@ type SimApp struct {
 	ConsensusParamsKeeper consensuskeeper.Keeper
 	CircuitBreakerKeeper  circuitkeeper.Keeper
 	OracleKeeper          oraclekeeper.Keeper
+	IncentivesKeeper      incentiveskeeper.Keeper
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -219,6 +223,7 @@ func NewSimApp(
 		&app.ConsensusParamsKeeper,
 		&app.CircuitBreakerKeeper,
 		&app.OracleKeeper,
+		&app.IncentivesKeeper,
 	); err != nil {
 		panic(err)
 	}

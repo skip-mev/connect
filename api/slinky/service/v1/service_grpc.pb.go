@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: slinky/service/v1/service.proto
 
-package oraclev1
+package servicev1
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Oracle_Prices_FullMethodName = "/slinky.oracle.v1.Oracle/Prices"
+	Oracle_Prices_FullMethodName = "/slinky.service.v1.Oracle/Prices"
 )
 
 // OracleClient is the client API for Oracle service.
@@ -98,7 +98,7 @@ func _Oracle_Prices_Handler(srv interface{}, ctx context.Context, dec func(inter
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Oracle_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "slinky.oracle.v1.Oracle",
+	ServiceName: "slinky.service.v1.Oracle",
 	HandlerType: (*OracleServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
