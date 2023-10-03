@@ -61,6 +61,13 @@ func main() {
 		cancel()
 	}()
 
+	// start prometheus metrics
+	logger.Info("starting prometheus metrics")
+	if err := config.StartPrometheusServer(cfg.Metrics, logger); err != nil {
+		logger.Error("failed to start prometheus metrics", "err", err)
+		return
+	}
+
 	// start oracle + server, and wait for either to finish
 	if err := srv.StartServer(ctx, *host, *port); err != nil {
 		logger.Error("stopping server", "err", err)

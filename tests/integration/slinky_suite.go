@@ -9,6 +9,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -32,7 +33,7 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 		ProcessName: "oracle",
 		Image:       image,
 		HomeDir:     "/oracle",
-		Ports:       []string{"8080"},
+		Ports:       []string{"8080", "8081"},
 		StartCmd: []string{
 			"oracle", "-config", "/oracle/oracle.toml", "-host", "0.0.0.0", "-port", "8080",
 		},
@@ -43,7 +44,15 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 
 func DefaultOracleConfig() oracleconfig.Config {
 	return oracleconfig.Config{
-		UpdateInterval: time.Millisecond,
+		Oracle: oracleconfig.Oracle{
+			UpdateInterval: time.Millisecond,
+		},
+		Metrics: oracleconfig.Metrics{
+			PrometheusServerAddress: "0.0.0.0:8081",
+			OracleMetrics: oraclemetrics.Config{
+				Enabled: true,
+			},
+		},
 	}
 }
 

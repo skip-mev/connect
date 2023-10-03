@@ -10,6 +10,7 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci/types"
 	oracleservice "github.com/skip-mev/slinky/oracle/types"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -39,6 +40,37 @@ type Oracle struct {
 	validateVoteExtensionsFn ValidateVoteExtensionsFn
 
 	validatorStore ValidatorStore
+
+	// metrics is responsible for reporting / aggregating consensus-specific metrics for this validator.
+	metrics servicemetrics.Metrics
+
+	// validatorAddress is the consensus address of the validator running this oracle.
+	validatorAddress sdk.ConsAddress
+}
+
+func NewOracleWithMetrics(
+	logger log.Logger,
+	aggregateFn oracleservice.AggregateFnFromContext,
+	oracleKeeper OracleKeeper,
+	validateVoteExtensionsFn ValidateVoteExtensionsFn,
+	validatorStore ValidatorStore,
+	validatorConsAddress sdk.ConsAddress,
+	metrics servicemetrics.Metrics,
+) *Oracle {
+	if metrics == nil {
+		metrics = servicemetrics.NewNopMetrics()
+	}
+
+	return &Oracle{
+		logger:                   logger,
+		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		aggregateFnWithCtx:       aggregateFn,
+		oracleKeeper:             oracleKeeper,
+		validateVoteExtensionsFn: validateVoteExtensionsFn,
+		validatorStore:           validatorStore,
+		validatorAddress:         validatorConsAddress,
+		metrics:                  metrics,
+	}
 }
 
 // NewOracle returns a new Oracle.
@@ -56,6 +88,7 @@ func NewOracle(
 		oracleKeeper:             oracleKeeper,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
 		validatorStore:           validatorStore,
+		metrics:                  servicemetrics.NewNopMetrics(),
 	}
 }
 
@@ -134,6 +167,8 @@ func (o *Oracle) AggregateOracleData(
 	// Reset the price aggregator.
 	o.priceAggregator.ResetProviderPrices()
 
+	isVotePresentInCommit := false
+
 	// Iterate through all vote extensions and consolidate all price info before
 	// aggregating.
 	for _, commitInfo := range extendedCommitInfo.Votes {
@@ -145,6 +180,10 @@ func (o *Oracle) AggregateOracleData(
 			)
 
 			continue
+		}
+
+		if address.String() == o.validatorAddress.String() {
+			isVotePresentInCommit = true
 		}
 
 		// Retrieve the oracle data from the vote extension.
@@ -166,8 +205,30 @@ func (o *Oracle) AggregateOracleData(
 	// Compute the final prices for each currency pair.
 	o.priceAggregator.UpdatePrices()
 
+	// only record metrics in PreFinalizeBlock
+	if ctx.ExecMode() == sdk.ExecModeFinalize {
+		o.logger.Info("recording metrics for validator", "validator", o.validatorAddress.String(), "exec_mode", ctx.ExecMode(), "is_vote_present_in_commit", isVotePresentInCommit)
+		o.recordMetrics(isVotePresentInCommit)
+	}
+
 	// Build the oracle transaction and return it.
 	return o.BuildOracleData(ctx, extendedCommitInfo, o.priceAggregator.GetPrices())
+}
+
+// recordMetrics reports whether the validator's vote-extension was included in the last commit, and
+// the number of tickers for which the validator reported a price.
+func (o *Oracle) recordMetrics(validatorVotePresent bool) {
+	// determine if the validator's vote was included in the last commit
+	o.metrics.AddVoteIncludedInLastCommit(validatorVotePresent)
+
+	// determine which tickers this validator reported prices for
+	prices := o.priceAggregator.GetPrices()
+	validatorPrices := o.priceAggregator.GetPricesByProvider(o.validatorAddress.String())
+
+	for ticker := range prices {
+		_, ok := validatorPrices[ticker]
+		o.metrics.AddTickerInclusionStatus(ticker.ToString(), ok)
+	}
 }
 
 // BuildOracleData combinens all of the price information and vote extensions
