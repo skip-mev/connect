@@ -46,5 +46,20 @@ provider_timeout = "{{ $provider.ProviderTimeout }}"
 base = "{{ $pair.Base }}"
 quote = "{{ $pair.Quote }}"
 {{- end }}
+
+[oracle.metrics]
+## PrometheusServerAddress is the address of the prometheus server that the oracle will expose metrics to
+prometheus_server_address = "{{ .Oracle.Metrics.PrometheusServerAddress }}"
+
+## Oracle Metrics
+[oracle.metrics.oracle_metrics]
+## This will enable metrics to be reported for the oracle side-car, this will only be enabled if the oracle is running in the configured process
+enabled = {{ .Oracle.OracleMetrics.Enabled }}
+
+## App Metrics
+[oracle.metrics.app_metrics]
+## This will enable metrics to be reported for the oracle client in the application, this should always be enabled if oracle metrics are desired
+enabled = {{ .Oracle.AppMetrics.Enabled }}
+validator_cons_address = "{{ .Oracle.AppMetrics.ValidatorConsAddress }}"
 `
 )

@@ -6,10 +6,12 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/oracle/types"
+	metrics_mocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -560,6 +562,124 @@ func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 			}
 		})
 	}
+}
+
+func (suite *ABCITestSuite) TestMetrics() {
+	mockMetrics := metrics_mocks.NewMetrics(suite.T())
+
+	oracle := abci.NewOracleWithMetrics(
+		log.NewTestLogger(suite.T()),
+		types.ComputeMedianWithContext,
+		suite.oracleKeeper,
+		suite.NoOpValidateVEFn(),
+		suite.validatorStore,
+		validator1,
+		mockMetrics,
+	)
+
+	suite.Run("metrics are only recorded on FinalizeBlock", func() {
+		// create a last commit with a single vote, that is not the validators
+		voteExtension2 := suite.createExtendedVoteInfo(
+			validator2,
+			map[string]string{
+				"BTC/ETH": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+
+		voteExtension3 := suite.createExtendedVoteInfo(
+			validator3,
+			map[string]string{
+				"BTC/ETH": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+
+		extendedVoteInfo := cometabci.ExtendedCommitInfo{
+			Votes: []cometabci.ExtendedVoteInfo{voteExtension2, voteExtension3},
+		}
+
+		suite.ctx = suite.ctx.WithExecMode(sdk.ExecModePrepareProposal)
+
+		oracle.AggregateOracleData(suite.ctx, extendedVoteInfo)
+	})
+
+	suite.Run("validator's vote is not present in the last commit", func() {
+		// create a last commit with a single vote, that is not the validators
+		voteExtension2 := suite.createExtendedVoteInfo(
+			validator2,
+			map[string]string{
+				"BTC/ETH": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+
+		voteExtension3 := suite.createExtendedVoteInfo(
+			validator3,
+			map[string]string{
+				"BTC/ETH": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+
+		extendedVoteInfo := cometabci.ExtendedCommitInfo{
+			Votes: []cometabci.ExtendedVoteInfo{voteExtension2, voteExtension3},
+		}
+
+		mockMetrics.On("AddVoteIncludedInLastCommit", false).Return().Once()
+		mockMetrics.On("AddTickerInclusionStatus", "BTC/ETH", false).Return().Once()
+
+		suite.ctx = suite.ctx.WithExecMode(sdk.ExecModeFinalize)
+
+		oracle.AggregateOracleData(suite.ctx, extendedVoteInfo)
+	})
+
+	suite.Run("validator's vote is present in the last commit, but has not reported for a price", func() {
+		// create a last commit with a single vote, that is not the validators
+		voteExtension1 := suite.createExtendedVoteInfo(
+			validator1,
+			map[string]string{
+				"BTC/ETH": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+
+		voteExtension2 := suite.createExtendedVoteInfo(
+			validator2,
+			map[string]string{
+				"BTC/ETH": "0x2",
+				"BTC/USD": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+
+		voteExtension3 := suite.createExtendedVoteInfo(
+			validator3,
+			map[string]string{
+				"BTC/ETH": "0x2",
+				"BTC/USD": "0x2",
+			},
+			time.Now(),
+			100,
+		)
+		extendedVoteInfo := cometabci.ExtendedCommitInfo{
+			Votes: []cometabci.ExtendedVoteInfo{voteExtension1, voteExtension2, voteExtension3},
+		}
+
+		suite.ctx = suite.ctx.WithExecMode(sdk.ExecModeFinalize)
+
+		mockMetrics.On("AddVoteIncludedInLastCommit", true).Return().Once()
+		mockMetrics.On("AddTickerInclusionStatus", "BTC/ETH", true).Return().Once()
+		mockMetrics.On("AddTickerInclusionStatus", "BTC/USD", false).Return().Once()
+
+		oracle.AggregateOracleData(suite.ctx, extendedVoteInfo)
+	})
 }
 
 func (suite *ABCITestSuite) TestWriteOracleData() {

@@ -10,6 +10,7 @@ import (
 	"cosmossdk.io/log"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	servicetypes "github.com/skip-mev/slinky/service/types"
@@ -48,6 +49,9 @@ type Oracle struct {
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
 	priceAggregator *types.PriceAggregator
+
+	// metrics is the set of metrics that the oracle will expose.
+	metrics metrics.Metrics
 }
 
 // New returns a new instance of an Oracle. The oracle inputs providers that are
@@ -63,6 +67,7 @@ func New(
 	oracleTicker time.Duration,
 	providers []types.Provider,
 	aggregateFn types.AggregateFn,
+	m metrics.Metrics,
 ) *Oracle {
 	if logger == nil {
 		panic("logger cannot be nil")
@@ -72,12 +77,17 @@ func New(
 		panic("price providers cannot be nil")
 	}
 
+	if m == nil {
+		m = metrics.NewNopMetrics()
+	}
+
 	return &Oracle{
 		logger:          logger,
 		closer:          ssync.NewCloser(),
 		oracleTicker:    oracleTicker,
 		providers:       providers,
 		priceAggregator: types.NewPriceAggregator(aggregateFn),
+		metrics:         m,
 	}
 }
 
@@ -89,7 +99,13 @@ func NewOracleFromConfig(logger log.Logger, cfg *config.Config) (*Oracle, error)
 		return nil, err
 	}
 
-	return New(logger, cfg.UpdateInterval, providers, types.ComputeMedian()), nil
+	// configure metrics for the oracle
+	m := metrics.NewNopMetrics()
+	if cfg.OracleMetrics.Enabled {
+		m = metrics.NewMetrics()
+	}
+
+	return New(logger, cfg.UpdateInterval, providers, types.ComputeMedian(), m), nil
 }
 
 // NewDefaultOracle returns a new instance of an Oracle with a default aggregate
@@ -112,7 +128,7 @@ func NewDefaultOracle(
 		provider.SetPairs(currencyPairs...)
 	}
 
-	return New(logger, oracleTicker, providers, types.ComputeMedian())
+	return New(logger, oracleTicker, providers, types.ComputeMedian(), nil)
 }
 
 // IsRunning returns true if the oracle is running.
@@ -227,7 +243,10 @@ func (o *Oracle) tick(ctx context.Context) {
 	o.priceAggregator.UpdatePrices()
 	o.SetLastSyncTime(time.Now().UTC())
 
-	o.logger.Info(fmt.Sprintf("oracle updated prices for %d assets", len(prices)))
+	// update the last sync time
+	o.metrics.AddTick()
+
+	o.logger.Info("oracle updated prices")
 }
 
 // fetchPrices returns a closure that fetches prices from the given provider. This is meant
@@ -236,11 +255,14 @@ func (o *Oracle) tick(ctx context.Context) {
 // In the case where the provider fails to fetch prices, we will log the error and not update
 // the price aggregator. We gracefully handle panics by recovering and logging the error.
 func (o *Oracle) fetchPricesFn(ctx context.Context, provider types.Provider) func() error {
-	return func() (err error) {
+	return func() error {
 		o.logger.Info("fetching prices", "provider", provider.Name())
 
 		pricesCh := make(chan map[oracletypes.CurrencyPair]types.QuotePrice)
 		errCh := make(chan error)
+
+		// start timer
+		start := time.Now()
 
 		go func() {
 			// Recover from any panics while fetching prices.
@@ -277,17 +299,24 @@ func (o *Oracle) fetchPricesFn(ctx context.Context, provider types.Provider) fun
 			pricesCh <- prices
 		}()
 
+		var err error
 		select {
 		case <-ctx.Done():
-			o.logger.Info("context ended before receiving response", "provider", provider.Name(), "err", ctx.Err())
+			err = ctx.Err()
+			o.logger.Info("context ended before receiving response", "provider", provider.Name(), "err", err)
 			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
 		case prices := <-pricesCh:
 			o.logger.Info("fetching prices finished", "provider", provider.Name(), "num_prices", len(prices))
 			o.priceAggregator.SetProviderPrices(provider.Name(), prices)
-		case err := <-errCh:
+		case err = <-errCh:
 			o.logger.Error("fetching prices failed", "provider", provider.Name(), "err", err)
 			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
 		}
+
+		// update the provider status
+		o.metrics.AddProviderResponse(provider.Name(), metrics.StatusFromError(err))
+		// response time
+		o.metrics.ObserveProviderResponseLatency(provider.Name(), time.Since(start))
 
 		return nil
 	}

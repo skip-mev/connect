@@ -326,6 +326,7 @@ func (suite *OracleTestSuite) TestProviders() {
 				suite.oracleTicker,
 				tempProviders,
 				suite.aggregationFn,
+				nil,
 			)
 
 			// Start oracle
@@ -375,6 +376,7 @@ func (suite *OracleTestSuite) TestShutDownWithContextCancel() {
 			),
 		},
 		suite.aggregationFn,
+		nil,
 	)
 
 	ctx, cancel := context.WithCancel(suite.ctx)
@@ -417,6 +419,7 @@ func (suite *OracleTestSuite) TestShutDownWithStop() {
 			),
 		},
 		suite.aggregationFn,
+		nil,
 	)
 
 	// Start oracle
@@ -465,6 +468,7 @@ func (suite *OracleTestSuite) TestShutDownProviderWithTimeout() {
 		suite.oracleTicker,
 		tempProviders,
 		suite.aggregationFn,
+		nil,
 	)
 
 	// Start oracle

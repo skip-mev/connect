@@ -90,6 +90,20 @@ func SetOracleOutOfProcess(node *cosmos.ChainNode) {
 	// set the oracle port
 	oracleConfig["remote_address"] = fmt.Sprintf("%s:%s", oracle.HostName(), "8080")
 
+	// get the consensus address of the node
+	bz, _, err = node.ExecBin(context.Background(), "cometbft", "show-address")
+	if err != nil {
+		panic(err)
+	}
+
+	oracleConfig["metrics"] = map[string]interface{}{
+		"prometheus_server_address" : "0.0.0.0:26655",
+		"app_metrics" : map[string]interface{}{
+			"validator_cons_address" : string(bz[:len(bz) - 1]),
+			"enabled": true,
+		},
+	}
+
 	appConfig["oracle"] = oracleConfig
 
 	// write back
@@ -358,7 +372,7 @@ func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout tim
 		if err != nil {
 			return false, err
 		}
-		fmt.Println("\nproposal", prop) // golint:ignore
+
 		return prop.Proposal.Status == status, nil
 	})
 }

@@ -262,7 +262,12 @@ func NewSimApp(
 		panic(err)
 	}
 
-	oracleService, err := oracleservice.NewOracleServiceFromConfig(*cfg, app.Logger())
+	metrics, consAddress, err := oracleconfig.NewServiceMetricsFromConfig(cfg.Metrics)
+	if err != nil {
+		panic(err)
+	}
+
+	oracleService, err := oracleservice.NewOracleServiceFromConfig(*cfg, metrics, app.Logger())
 	if err != nil {
 		panic(err)
 	}
@@ -275,7 +280,7 @@ func NewSimApp(
 	// Create the oracle that will be running in the proposal handlers and the
 	// pre-finalize block hook. This oracle is responsible for aggregating and
 	// verifiying oracle data.
-	oracle := abci.NewOracle(
+	oracle := abci.NewOracleWithMetrics(
 		app.Logger(),
 		abci.VoteWeightedMedianFromContext(
 			app.StakingKeeper,
@@ -284,6 +289,8 @@ func NewSimApp(
 		app.OracleKeeper,
 		baseapp.ValidateVoteExtensions, // Nice and safe :)
 		app.StakingKeeper,
+		consAddress,
+		metrics,
 	)
 
 	// Create the proposal handler that will be used to fill proposals with
@@ -314,6 +321,11 @@ func NewSimApp(
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
+
+	// start the prometheus server if required
+	if err := oracleconfig.StartPrometheusServer(cfg.Metrics, app.Logger()); err != nil {
+		panic(err)
+	}
 
 	/****  Module Options ****/
 

@@ -15,6 +15,8 @@ import (
 	"github.com/skip-mev/slinky/providers/mock"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
+	oracle_metrics "github.com/skip-mev/slinky/oracle/metrics"
+	service_metrics "github.com/skip-mev/slinky/service/metrics"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
@@ -26,11 +28,30 @@ const (
 	flagOracleProviders      = "oracle.providers"
 	flagOracleCurrencyPairs  = "oracle.currency_pairs"
 	flagTimeout              = "oracle.timeout"
+	flagMetricsServerAddress = "oracle.metrics.prometheus_server_address"
+	flagOracleMetricsEnabled = "oracle.metrics.oracle_metrics.enabled"
+	flagAppMetricsEnabled    = "oracle.metrics.app_metrics.enabled"
+	flagAppMetricsValidator  = "oracle.metrics.app_metrics.validator_cons_address"
 )
 
-// Config is the base config for both out-of-process and in-process oracles. If the oracle is to be configured out-of-process in base-app, a
-// grpc-client of the grpc-server running at RemoteAddress is instantiated, otherwise, an in-process LocalClient oracle is instantiated.
+// Config is the over-arching config for the oracle sidecar and instrumentation. It configures the
+// in-process oracle server, out-of-process oracle client and the instrumentation for both.
 type Config struct {
+	Oracle  `mapstructure:"oracle" toml:"oracle"`
+	Metrics `mapstructure:"metrics" toml:"metrics"`
+}
+
+// Metrics is the base metrics for both out-of-process and in-process oracles.
+type Metrics struct {
+	// PrometheusServerAddress is the address of the prometheus server that the oracle will expose metrics to
+	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
+	OracleMetrics           oracle_metrics.Config
+	AppMetrics              service_metrics.Config
+}
+
+// Oracle is the base config for both out-of-process and in-process oracles. If the oracle is to be configured out-of-process in base-app, a
+// grpc-client of the grpc-server running at RemoteAddress is instantiated, otherwise, an in-process LocalClient oracle is instantiated.
+type Oracle struct {
 	// InProcess specifies whether the oracle configured, is currently running as a remote grpc-server, or will be run in process
 	InProcess bool `mapstructure:"in_process" toml:"in_process"`
 
@@ -188,7 +209,49 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (cfg *Config, err error)
 		}
 	}
 
+	// get the metrics config
+	metrics, err := metricsConfigFromToml(opts)
+	if err != nil {
+		return nil, err
+	}
+	cfg.Metrics = metrics
+
 	return cfg, err
+}
+
+func metricsConfigFromToml(opts servertypes.AppOptions) (Metrics, error) {
+	metrics := Metrics{}
+	var err error
+
+	// get prometheus server address
+	if v := opts.Get(flagMetricsServerAddress); v != nil {
+		if metrics.PrometheusServerAddress, err = cast.ToStringE(v); err != nil {
+			return metrics, err
+		}
+	}
+
+	// get the metrics enabled flag
+	if v := opts.Get(flagOracleMetricsEnabled); v != nil {
+		if metrics.OracleMetrics.Enabled, err = cast.ToBoolE(v); err != nil {
+			return metrics, err
+		}
+	}
+
+	// get the app metrics enabled flag
+	if v := opts.Get(flagAppMetricsEnabled); v != nil {
+		if metrics.AppMetrics.Enabled, err = cast.ToBoolE(v); err != nil {
+			return metrics, err
+		}
+	}
+
+	// get the app metrics validator address
+	if v := opts.Get(flagAppMetricsValidator); v != nil {
+		if metrics.AppMetrics.ValidatorConsAddress, err = cast.ToStringE(v); err != nil {
+			return metrics, err
+		}
+	}
+
+	return metrics, nil
 }
 
 func providerConfigFromToml(iface interface{}) (types.ProviderConfig, error) {
