@@ -44,8 +44,8 @@ require (
 	github.com/ethereum/go-ethereum v1.13.1
 	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.54.2
+	github.com/prometheus/client_golang v1.17.0
 	github.com/vektra/mockery/v2 v2.34.2
-	github.com/prometheus/client_golang v1.16.0
 )
 
 require (
@@ -256,7 +256,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v1.4.4 // indirect
-	github.com/prometheus/client_model v0.4.0 // indirect
+	github.com/prometheus/client_model v0.4.1-0.20230718164431-9a2bf3000d16 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.11.1 // indirect
 	github.com/quasilyte/go-ruleguard v0.4.0 // indirect
