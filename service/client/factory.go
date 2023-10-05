@@ -1,8 +1,6 @@
 package client
 
 import (
-	"context"
-
 	"cosmossdk.io/log"
 
 	"github.com/skip-mev/slinky/oracle"
@@ -32,14 +30,6 @@ func NewOracleServiceFromConfig(cfg config.Config, m metrics.Metrics, l log.Logg
 	if m != nil {
 		oracleService = NewMetricsClient(l, oracleService, m)
 	}
-
-	// start the service in a go-routine
-	go func() {
-		l.Info("starting oracle service")
-		if err := oracleService.Start(context.Background()); err != nil {
-			l.Error("failed to start oracle service", "err", err)
-		}
-	}()
 
 	return oracleService, nil
 }

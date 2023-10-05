@@ -124,3 +124,26 @@ func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
 	}).Inc()
 }
 
+// NewServiceMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
+// returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
+// If the metrics are not enabled, a nop implementation is returned.
+func NewServiceMetricsFromConfig(cfg Config) (Metrics, sdk.ConsAddress, error) {
+	if !cfg.Enabled {
+		return NewNopMetrics(), nil, nil
+	}
+
+	// ensure that the metrics are enabled
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, nil, err
+	}
+
+	// get the cons address
+	consAddress, err := cfg.ConsAddress()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// create the metrics
+	metrics := NewMetrics()
+	return metrics, consAddress, nil
+}

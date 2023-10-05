@@ -10,6 +10,7 @@ import (
 	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/service/server"
 )
 
@@ -63,9 +64,21 @@ func main() {
 
 	// start prometheus metrics
 	logger.Info("starting prometheus metrics")
-	if err := config.StartPrometheusServer(cfg.Metrics, logger); err != nil {
-		logger.Error("failed to start prometheus metrics", "err", err)
-		return
+	if cfg.Metrics.OracleMetrics.Enabled {
+		ps, err := oraclemetrics.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
+		if err != nil {
+			logger.Error("failed to start prometheus metrics", "err", err)
+			return
+		}
+
+		go ps.Start()
+
+		// close server on shut-down
+		go func() {
+			<-ctx.Done()
+			logger.Info("stopping prometheus metrics")
+			ps.Close()
+		}()
 	}
 
 	// start oracle + server, and wait for either to finish
