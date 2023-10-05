@@ -1,6 +1,7 @@
 package simapp
 
 import (
+	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -63,7 +64,10 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/skip-mev/slinky/abci"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	oracleservice "github.com/skip-mev/slinky/service/client"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
+	oracleservice "github.com/skip-mev/slinky/service"
+	oracleclient "github.com/skip-mev/slinky/service/client"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	"github.com/skip-mev/slinky/x/incentives"
 	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
 	"github.com/skip-mev/slinky/x/oracle"
@@ -143,6 +147,10 @@ type SimApp struct {
 
 	// simulation manager
 	sm *module.SimulationManager
+
+	// processes
+	oraclePrometheusServer *oraclemetrics.PrometheusServer
+	oracleService          oracleservice.OracleService
 }
 
 func init() {
@@ -262,15 +270,17 @@ func NewSimApp(
 		panic(err)
 	}
 
-	metrics, consAddress, err := oracleconfig.NewServiceMetricsFromConfig(cfg.Metrics)
+	metrics, consAddress, err := servicemetrics.NewServiceMetricsFromConfig(cfg.Metrics.AppMetrics)
 	if err != nil {
 		panic(err)
 	}
 
-	oracleService, err := oracleservice.NewOracleServiceFromConfig(*cfg, metrics, app.Logger())
+	app.oracleService, err = oracleclient.NewOracleServiceFromConfig(*cfg, metrics, app.Logger())
 	if err != nil {
 		panic(err)
 	}
+	// start the oracle service
+	go app.oracleService.Start(context.Background())
 
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {
@@ -316,15 +326,21 @@ func NewSimApp(
 	// vote extensions (i.e. oracle data).
 	voteExtensionsHandler := abci.NewVoteExtensionHandler(
 		app.Logger(),
-		oracleService,
+		app.oracleService,
 		time.Second,
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
 
 	// start the prometheus server if required
-	if err := oracleconfig.StartPrometheusServer(cfg.Metrics, app.Logger()); err != nil {
-		panic(err)
+	if cfg.Metrics.AppMetrics.Enabled || cfg.Metrics.OracleMetrics.Enabled {
+		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, app.Logger())
+		if err != nil {
+			panic(err)
+		}
+
+		// start the prometheus server
+		go app.oraclePrometheusServer.Start()
 	}
 
 	/****  Module Options ****/
@@ -364,6 +380,26 @@ func NewSimApp(
 	}
 
 	return app
+}
+
+// Close closes the underlying baseapp, the oracle service, and the prometheus server if required.
+// This method blocks on the closure of both the prometheus server, and the oracle-service
+func (app *SimApp) Close() error {
+	if err := app.App.Close(); err != nil {
+		return err
+	}
+
+	// close the oracle service
+	if app.oracleService != nil {
+		app.oracleService.Stop(context.Background()) // TODO(): is this the right context?
+	}
+
+	// close the prometheus server if necessary
+	if app.oraclePrometheusServer != nil {
+		app.oraclePrometheusServer.Close()
+	}
+
+	return nil
 }
 
 // TODO: remove this once we have a proper config file
