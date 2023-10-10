@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos_proto/cosmos.proto";
 
-option go_package = "github.com/skip-mev/slinky/abci/types";
+option go_package = "github.com/skip-mev/slinky/abci/ve/types";
 
 // OracleVoteExtension defines the vote extension structure for oracle prices.
 message OracleVoteExtension {
@@ -20,24 +20,4 @@ message OracleVoteExtension {
 
   // Height defines the block height when the oracle data was validated.
   int64 height = 3;
-}
-
-// OracleData defines the deterministic final oracle prices and data that will
-// be inserted (PrepareProposal) and verified (ProcessProposal) in every block
-// proposal.
-message OracleData {
-  // Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" ->
-  // "0x1234".
-  map<string, string> prices = 1 [ (gogoproto.nullable) = false ];
-
-  // Timestamp defines the block timestamp when the oracle data was validated.
-  google.protobuf.Timestamp timestamp = 2
-      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
-
-  // Height defines the block height when the oracle data was validated.
-  int64 height = 3;
-
-  // ExtendedCommitInfo defines the last commit info which contains all vote
-  // extension data.
-  bytes extended_commit_info = 5;
 }
