@@ -1,10 +1,10 @@
-package types_test
+package aggregator_test
 
 import (
 	"testing"
 
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -19,22 +19,22 @@ var (
 func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
-		providerPrices types.AggregatedProviderPrices
+		providerPrices aggregator.AggregatedProviderPrices
 		expectedPrices map[oracletypes.CurrencyPair]*uint256.Int
 	}{
 		{
 			"empty provider prices",
-			types.AggregatedProviderPrices{},
+			aggregator.AggregatedProviderPrices{},
 			map[oracletypes.CurrencyPair]*uint256.Int{},
 		},
 		{
 			"single provider price",
-			types.AggregatedProviderPrices{
+			aggregator.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(100),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
 				},
@@ -46,20 +46,20 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"multiple provider prices",
-			types.AggregatedProviderPrices{
+			aggregator.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(100),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
 				},
 				"provider2": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(300),
 					},
 				},
@@ -71,23 +71,23 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"multiple provider prices with different assets",
-			types.AggregatedProviderPrices{
+			aggregator.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(100),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
 				},
 				"provider2": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(300),
 					},
-					usdtusd: types.QuotePrice{
+					usdtusd: aggregator.QuotePrice{
 						Price: nil, // should be ignored
 					},
 				},
@@ -99,28 +99,28 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"odd number of provider prices",
-			types.AggregatedProviderPrices{
+			aggregator.AggregatedProviderPrices{
 				"provider1": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(100),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
 				},
 				"provider2": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(200),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(300),
 					},
 				},
 				"provider3": {
-					btcusd: types.QuotePrice{
+					btcusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(300),
 					},
-					ethusd: types.QuotePrice{
+					ethusd: aggregator.QuotePrice{
 						Price: uint256.NewInt(400),
 					},
 				},
@@ -134,7 +134,7 @@ func TestComputeMedian(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			medianFn := types.ComputeMedian()
+			medianFn := aggregator.ComputeMedian()
 			prices := medianFn(tc.providerPrices)
 
 			if len(prices) != len(tc.expectedPrices) {

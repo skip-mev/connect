@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"cosmossdk.io/log"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -53,7 +54,7 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
 	return p.getPrices(ctx)
 }
 

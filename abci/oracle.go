@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci/types"
-	oracleservice "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -27,14 +27,14 @@ type Oracle struct {
 
 	// priceAggregator is responsible for aggregating prices from each validator
 	// and computing the final oracle price for each asset.
-	priceAggregator *oracleservice.PriceAggregator
+	priceAggregator *aggregator.PriceAggregator
 
 	// oraclekeeper is the keeper for the oracle module. This is utilized
 	// to write oracle data to state.
 	oracleKeeper OracleKeeper
 
 	// aggregateFnWithCtx is the aggregate function parametrized by the latest state of the application.
-	aggregateFnWithCtx oracleservice.AggregateFnFromContext
+	aggregateFnWithCtx aggregator.AggregateFnFromContext
 
 	// validateVoteExtensionsFn is the function responsible for validating vote extensions.
 	validateVoteExtensionsFn ValidateVoteExtensionsFn
@@ -50,7 +50,7 @@ type Oracle struct {
 
 func NewOracleWithMetrics(
 	logger log.Logger,
-	aggregateFn oracleservice.AggregateFnFromContext,
+	aggregateFn aggregator.AggregateFnFromContext,
 	oracleKeeper OracleKeeper,
 	validateVoteExtensionsFn ValidateVoteExtensionsFn,
 	validatorStore ValidatorStore,
@@ -63,7 +63,7 @@ func NewOracleWithMetrics(
 
 	return &Oracle{
 		logger:                   logger,
-		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		priceAggregator:          aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
 		aggregateFnWithCtx:       aggregateFn,
 		oracleKeeper:             oracleKeeper,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
@@ -76,14 +76,14 @@ func NewOracleWithMetrics(
 // NewOracle returns a new Oracle.
 func NewOracle(
 	logger log.Logger,
-	aggregateFn oracleservice.AggregateFnFromContext,
+	aggregateFn aggregator.AggregateFnFromContext,
 	oracleKeeper OracleKeeper,
 	validateVoteExtensionsFn ValidateVoteExtensionsFn,
 	validatorStore ValidatorStore,
 ) *Oracle {
 	return &Oracle{
 		logger:                   logger,
-		priceAggregator:          oracleservice.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		priceAggregator:          aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
 		aggregateFnWithCtx:       aggregateFn,
 		oracleKeeper:             oracleKeeper,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
@@ -279,7 +279,7 @@ func (o *Oracle) AddOracleDataToAggregator(address string, oracleData *types.Ora
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
-	prices := make(map[oracletypes.CurrencyPair]oracleservice.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 	for asset, priceString := range oracleData.Prices {
 		// Convert the price to a uint256.Int. All price feeds are expected to be
 		// in the form of a string hex before conversion.
@@ -294,7 +294,7 @@ func (o *Oracle) AddOracleDataToAggregator(address string, oracleData *types.Ora
 			continue
 		}
 
-		prices[currencyPair] = oracleservice.QuotePrice{
+		prices[currencyPair] = aggregator.QuotePrice{
 			Price:     price,
 			Timestamp: oracleData.Timestamp,
 		}

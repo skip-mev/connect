@@ -20,7 +20,7 @@ import (
 	"github.com/skip-mev/slinky/abci"
 	"github.com/skip-mev/slinky/abci/mocks"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
-	oracleservice "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/suite"
@@ -35,7 +35,7 @@ type ABCITestSuite struct {
 	proposalHandler        *abci.ProposalHandler
 	prepareProposalHandler sdk.PrepareProposalHandler
 	processProposalHandler sdk.ProcessProposalHandler
-	aggregateFn            oracleservice.AggregateFnFromContext
+	aggregateFn            aggregator.AggregateFnFromContext
 
 	// oracle keeper set up.
 	oracleKeeper   keeper.Keeper
@@ -54,7 +54,7 @@ func (suite *ABCITestSuite) SetupTest() {
 	// Use the default no-op prepare and process proposal handlers from the sdk.
 	suite.prepareProposalHandler = baseapp.NoOpPrepareProposal()
 	suite.processProposalHandler = baseapp.NoOpProcessProposal()
-	suite.aggregateFn = oracleservice.ComputeMedianWithContext
+	suite.aggregateFn = aggregator.ComputeMedianWithContext
 
 	// Create an empty default mock validator store.
 	suite.validatorStore = suite.createMockValidatorStore(

@@ -10,7 +10,7 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/abci"
 	abcitypes "github.com/skip-mev/slinky/abci/types"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	metrics_mocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -61,7 +61,7 @@ func (suite *ABCITestSuite) TestGetOracleDataFromVE() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedianWithContext,
+				aggregator.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
@@ -276,7 +276,7 @@ func (suite *ABCITestSuite) TestAggregateOracleData() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedianWithContext,
+				aggregator.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
@@ -543,7 +543,7 @@ func (suite *ABCITestSuite) TestVerifyOraclePrices() {
 		suite.Run(tc.name, func() {
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedianWithContext,
+				aggregator.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
@@ -569,7 +569,7 @@ func (suite *ABCITestSuite) TestMetrics() {
 
 	oracle := abci.NewOracleWithMetrics(
 		log.NewTestLogger(suite.T()),
-		types.ComputeMedianWithContext,
+		aggregator.ComputeMedianWithContext,
 		suite.oracleKeeper,
 		suite.NoOpValidateVEFn(),
 		suite.validatorStore,
@@ -736,7 +736,7 @@ func (suite *ABCITestSuite) TestWriteOracleData() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				types.ComputeMedianWithContext,
+				aggregator.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,

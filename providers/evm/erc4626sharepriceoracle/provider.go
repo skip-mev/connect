@@ -7,6 +7,7 @@ import (
 
 	"cosmossdk.io/log"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -63,9 +64,9 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the prices of the given pairs.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
 	type priceData struct {
-		types.QuotePrice
+		aggregator.QuotePrice
 		oracletypes.CurrencyPair
 	}
 
@@ -109,7 +110,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 	}()
 
 	// fan-in
-	prices := make(map[oracletypes.CurrencyPair]types.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 	for price := range resp {
 		prices[price.CurrencyPair] = price.QuotePrice
 	}

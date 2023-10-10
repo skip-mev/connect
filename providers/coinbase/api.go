@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -33,7 +33,7 @@ var NameToSymbol = map[string]string{
 //	    "currency": "USD"
 //	  }
 //	}
-func getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*types.QuotePrice, error) {
+func getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*aggregator.QuotePrice, error) {
 	baseSymbol, ok := NameToSymbol[pair.Base]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
@@ -70,7 +70,7 @@ func getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*types
 		return nil, err
 	}
 
-	return &types.QuotePrice{
+	return &aggregator.QuotePrice{
 		Price:     price,
 		Timestamp: time.Now(),
 	}, nil

@@ -1,31 +1,29 @@
-package abci_test
+package math_test
 
 import (
-	"time"
+	"crypto"
+	"testing"
 
 	"cosmossdk.io/log"
 	sdkmath "cosmossdk.io/math"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/abci"
+
+	preblockmath "github.com/skip-mev/slinky/abci/preblock/math"
+	"github.com/skip-mev/slinky/abci/preblock/math/mocks"
+	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/x/oracle/types"
-
-	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	stakingtestutil "github.com/cosmos/cosmos-sdk/x/staking/testutil"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/golang/mock/gomock"
-
-	storetypes "cosmossdk.io/store/types"
-	cometabci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cosmos/cosmos-sdk/codec/address"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/runtime"
-	"github.com/cosmos/cosmos-sdk/testutil"
-	sdkmock "github.com/cosmos/cosmos-sdk/testutil/mock"
+	"github.com/stretchr/testify/suite"
 )
+
+type MathTestSuite struct {
+	suite.Suite
+
+	ctx sdk.Context
+}
 
 type validator struct {
 	stake    sdkmath.Int
@@ -38,7 +36,15 @@ var (
 	validator3 = sdk.ConsAddress("validator3")
 )
 
-func (suite *ABCITestSuite) TestVoteWeightedMedian() {
+func (s *MathTestSuite) SetupTest() {
+	s.ctx = testutils.CreateBaseSDKContext(s.T())
+}
+
+func TestMathTestSuite(t *testing.T) {
+	suite.Run(t, new(MathTestSuite))
+}
+
+func (s *MathTestSuite) TestVoteWeightedMedian() {
 	cases := []struct {
 		name              string
 		providerPrices    aggregator.AggregatedProviderPrices
@@ -289,32 +295,33 @@ func (suite *ABCITestSuite) TestVoteWeightedMedian() {
 	}
 
 	for _, tc := range cases {
-		suite.Run(tc.name, func() {
+		s.Run(tc.name, func() {
 			// Create a mock validator store.
-			mockValidatorStore := suite.createMockValidatorStore(tc.validators, tc.totalBondedTokens)
+			mockValidatorStore := s.createMockValidatorStore(tc.validators, tc.totalBondedTokens)
+
 			// Compute the stake weighted median.
-			aggregateFn := abci.VoteWeightedMedian(suite.ctx, mockValidatorStore, abci.DefaultPowerThreshold)
+			aggregateFn := preblockmath.VoteWeightedMedian(s.ctx, log.NewTestLogger(s.T()), mockValidatorStore, preblockmath.DefaultPowerThreshold)
 			result := aggregateFn(tc.providerPrices)
 
 			// Verify the result.
-			suite.Require().Len(result, len(tc.expectedPrices))
+			s.Require().Len(result, len(tc.expectedPrices))
 			for currencyPair, expectedPrice := range tc.expectedPrices {
-				suite.Require().Equal(expectedPrice, result[currencyPair])
+				s.Require().Equal(expectedPrice, result[currencyPair])
 			}
 		})
 	}
 }
 
-func (suite *ABCITestSuite) TestComputeVoteWeightedMedian() {
+func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 	cases := []struct {
 		name      string
-		priceInfo abci.VoteWeightedPriceInfo
+		priceInfo preblockmath.VoteWeightedPriceInfo
 		expected  *uint256.Int
 	}{
 		{
 			name: "single price",
-			priceInfo: abci.VoteWeightedPriceInfo{
-				Prices: []abci.VoteWeightedPricePerValidator{
+			priceInfo: preblockmath.VoteWeightedPriceInfo{
+				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
 						Price:      uint256.NewInt(100),
@@ -326,8 +333,8 @@ func (suite *ABCITestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "two prices that are equal",
-			priceInfo: abci.VoteWeightedPriceInfo{
-				Prices: []abci.VoteWeightedPricePerValidator{
+			priceInfo: preblockmath.VoteWeightedPriceInfo{
+				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
 						Price:      uint256.NewInt(100),
@@ -343,8 +350,8 @@ func (suite *ABCITestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "two prices that are not equal",
-			priceInfo: abci.VoteWeightedPriceInfo{
-				Prices: []abci.VoteWeightedPricePerValidator{
+			priceInfo: preblockmath.VoteWeightedPriceInfo{
+				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
 						Price:      uint256.NewInt(100),
@@ -360,8 +367,8 @@ func (suite *ABCITestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "two prices that are not equal with different weights",
-			priceInfo: abci.VoteWeightedPriceInfo{
-				Prices: []abci.VoteWeightedPricePerValidator{
+			priceInfo: preblockmath.VoteWeightedPriceInfo{
+				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(10),
 						Price:      uint256.NewInt(100),
@@ -377,8 +384,8 @@ func (suite *ABCITestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "three prices that are not equal with different weights",
-			priceInfo: abci.VoteWeightedPriceInfo{
-				Prices: []abci.VoteWeightedPricePerValidator{
+			priceInfo: preblockmath.VoteWeightedPriceInfo{
+				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(10),
 						Price:      uint256.NewInt(100),
@@ -399,129 +406,62 @@ func (suite *ABCITestSuite) TestComputeVoteWeightedMedian() {
 	}
 
 	for _, tc := range cases {
-		suite.Run(tc.name, func() {
-			result := abci.ComputeVoteWeightedMedian(tc.priceInfo)
-			suite.Require().Equal(tc.expected, result)
+		s.Run(tc.name, func() {
+			result := preblockmath.ComputeVoteWeightedMedian(tc.priceInfo)
+			s.Require().Equal(tc.expected, result)
 		})
 	}
 }
 
-func (suite *ABCITestSuite) TestAggregationWithContext() {
-	// create staking-keeper + context
-	key := storetypes.NewKVStoreKey(stakingtypes.StoreKey)
-	ec := moduletestutil.MakeTestEncodingConfig()
+func (s *MathTestSuite) createMockValidatorStore(
+	validators []validator,
+	totalTokens sdkmath.Int,
+) *mocks.ValidatorStore {
+	store := mocks.NewValidatorStore(s.T())
+	if len(validators) != 0 {
+		mockVals := make([]*mocks.ValidatorI, len(validators))
+		valPubKeys := make([]crypto.PublicKey, len(validators))
 
-	ctrl := gomock.NewController(suite.T())
-	bk := stakingtestutil.NewMockBankKeeper(ctrl)
-	ak := stakingtestutil.NewMockAccountKeeper(ctrl)
+		for i, val := range validators {
+			mockVals[i] = mocks.NewValidatorI(s.T())
+			mockVals[i].On(
+				"GetBondedTokens",
+			).Return(
+				val.stake,
+			).Maybe()
 
-	ctx := testutil.DefaultContextWithDB(suite.T(), key, storetypes.NewTransientStoreKey("transient"))
+			store.On(
+				"ValidatorByConsAddr",
+				s.ctx,
+				val.consAddr,
+			).Return(
+				mockVals[i],
+				nil,
+			).Maybe()
 
-	const (
-		bondedPoolAccAddr = "bonded-pool"
-	)
-	bondedPoolAcc := authtypes.NewModuleAccount(authtypes.NewBaseAccount(sdk.AccAddress(bondedPoolAccAddr), nil, 0, 0), stakingtypes.BondedPoolName)
+			var err error
+			valPubKeys[i], err = cryptocodec.ToCmtProtoPublicKey(ed25519.GenPrivKey().PubKey())
+			if err != nil {
+				panic(err)
+			}
 
-	ak.EXPECT().GetModuleAddress(stakingtypes.BondedPoolName).Return(bondedPoolAcc.GetAddress())
-	ak.EXPECT().GetModuleAddress(stakingtypes.NotBondedPoolName).Return(sdk.AccAddress("ignore-this"))
-	ak.EXPECT().AddressCodec().Return(address.NewBech32Codec("cosmos")).AnyTimes()
+			store.On(
+				"GetPubKeyByConsAddr",
+				s.ctx,
+				val.consAddr,
+			).Return(
+				valPubKeys[i],
+				nil,
+			).Maybe()
+		}
+	}
 
-	ak.EXPECT().GetModuleAccount(ctx.Ctx, stakingtypes.BondedPoolName).Return(bondedPoolAcc)
-	bk.EXPECT().GetBalance(ctx.Ctx, bondedPoolAcc.GetAddress(), "stake").Return(sdk.NewInt64Coin("stake", 300))
+	store.On(
+		"TotalBondedTokens",
+		s.ctx,
+	).Return(
+		totalTokens, nil,
+	).Maybe()
 
-	stakingKeeper := stakingkeeper.NewKeeper(ec.Codec, runtime.NewKVStoreService(key), ak, bk, sdk.AccAddress("does-not-matter").String(), ec.Codec.InterfaceRegistry().SigningContext().AddressCodec(), ec.InterfaceRegistry.SigningContext().ValidatorAddressCodec())
-	stakingKeeper.SetParams(ctx.Ctx, stakingtypes.DefaultParams())
-
-	valCons1 := sdk.ConsAddress("valcons1")
-	valCons2 := sdk.ConsAddress("valcons2")
-	valCons3 := sdk.ConsAddress("valcons3")
-
-	// set three validators in state, w/ equal stake
-	pk := sdkmock.NewPV().PrivKey.PubKey()
-
-	fakePk, err := codectypes.NewAnyWithValue(pk)
-	suite.Require().NoError(err)
-
-	stakingstore := ctx.Ctx.KVStore(key)
-	stakingstore.Set(stakingtypes.GetValidatorKey(sdk.ValAddress(valCons1)), stakingtypes.MustMarshalValidator(ec.Codec, &stakingtypes.Validator{
-		Status:          stakingtypes.Bonded,
-		Tokens:          sdkmath.NewInt(100),
-		ConsensusPubkey: fakePk,
-	}))
-	stakingstore.Set(stakingtypes.GetValidatorByConsAddrKey(valCons1), sdk.ValAddress(valCons1))
-
-	stakingstore.Set(stakingtypes.GetValidatorKey(sdk.ValAddress(valCons2)), stakingtypes.MustMarshalValidator(ec.Codec, &stakingtypes.Validator{
-		Status:          stakingtypes.Bonded,
-		Tokens:          sdkmath.NewInt(100),
-		ConsensusPubkey: fakePk,
-	}))
-	stakingstore.Set(stakingtypes.GetValidatorByConsAddrKey(valCons2), sdk.ValAddress(valCons2))
-
-	stakingstore.Set(stakingtypes.GetValidatorKey(sdk.ValAddress(valCons3)), stakingtypes.MustMarshalValidator(ec.Codec, &stakingtypes.Validator{
-		Status:          stakingtypes.Bonded,
-		Tokens:          sdkmath.NewInt(100),
-		ConsensusPubkey: fakePk,
-	}))
-	stakingstore.Set(stakingtypes.GetValidatorByConsAddrKey(valCons3), sdk.ValAddress(valCons3))
-
-	// create commit
-	valCons1Vote := suite.createExtendedVoteInfo(valCons1, map[string]string{"BTC/USD": "0x123"}, time.Now(), 1)
-	valCons2Vote := suite.createExtendedVoteInfo(valCons2, map[string]string{"BTC/USD": "0x456"}, time.Now(), 1)
-	valCons3Vote := suite.createExtendedVoteInfo(valCons3, map[string]string{"BTC/USD": "0x789"}, time.Now(), 1)
-
-	oracle := abci.NewOracle(
-		log.NewTestLogger(suite.T()),
-		abci.VoteWeightedMedianFromContext(
-			stakingKeeper,
-			abci.DefaultPowerThreshold,
-		),
-		suite.oracleKeeper,
-		abci.NoOpValidateVoteExtensions,
-		suite.validatorStore,
-	)
-
-	od, err := oracle.AggregateOracleData(ctx.Ctx, suite.createExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valCons1Vote, valCons2Vote, valCons3Vote}))
-	suite.Require().NoError(err)
-	// expect price to be middle
-	suite.Require().Equal("0x456", od.Prices["BTC/USD"])
-
-	// create new multi-store + context w/ diff powers, and execute
-	ctx = testutil.DefaultContextWithDB(suite.T(), key, storetypes.NewTransientStoreKey("transient"))
-
-	ak.EXPECT().GetModuleAccount(ctx.Ctx, stakingtypes.BondedPoolName).Return(bondedPoolAcc)
-	bk.EXPECT().GetBalance(ctx.Ctx, bondedPoolAcc.GetAddress(), "stake").Return(sdk.NewCoin("stake", sdkmath.NewInt(300)))
-
-	stakingstore = ctx.Ctx.KVStore(key)
-
-	stakingKeeper.SetParams(ctx.Ctx, stakingtypes.DefaultParams())
-	stakingstore.Set(stakingtypes.GetValidatorKey(sdk.ValAddress(valCons1)), stakingtypes.MustMarshalValidator(ec.Codec, &stakingtypes.Validator{
-		Status:          stakingtypes.Bonded,
-		Tokens:          sdkmath.NewInt(151),
-		ConsensusPubkey: fakePk,
-	}))
-	stakingstore.Set(stakingtypes.GetValidatorByConsAddrKey(valCons1), sdk.ValAddress(valCons1))
-
-	stakingstore.Set(stakingtypes.GetValidatorKey(sdk.ValAddress(valCons2)), stakingtypes.MustMarshalValidator(ec.Codec, &stakingtypes.Validator{
-		Status:          stakingtypes.Bonded,
-		Tokens:          sdkmath.NewInt(74),
-		ConsensusPubkey: fakePk,
-	}))
-	stakingstore.Set(stakingtypes.GetValidatorByConsAddrKey(valCons2), sdk.ValAddress(valCons2))
-
-	stakingstore.Set(stakingtypes.GetValidatorKey(sdk.ValAddress(valCons3)), stakingtypes.MustMarshalValidator(ec.Codec, &stakingtypes.Validator{
-		Status:          stakingtypes.Bonded,
-		Tokens:          sdkmath.NewInt(75),
-		ConsensusPubkey: fakePk,
-	}))
-	stakingstore.Set(stakingtypes.GetValidatorByConsAddrKey(valCons3), sdk.ValAddress(valCons3))
-
-	// create commit
-	valCons1Vote = suite.createExtendedVoteInfo(valCons1, map[string]string{"BTC/USD": "0x123"}, time.Now(), 1)
-	valCons2Vote = suite.createExtendedVoteInfo(valCons2, map[string]string{"BTC/USD": "0x456"}, time.Now(), 1)
-	valCons3Vote = suite.createExtendedVoteInfo(valCons3, map[string]string{"BTC/USD": "0x789"}, time.Now(), 1)
-
-	od, err = oracle.AggregateOracleData(ctx.Ctx, suite.createExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valCons1Vote, valCons2Vote, valCons3Vote}))
-	suite.Require().NoError(err)
-	// expect price to be middle
-	suite.Require().Equal("0x123", od.Prices["BTC/USD"])
+	return store
 }
