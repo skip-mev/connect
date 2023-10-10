@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	metric_mocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
@@ -52,7 +53,7 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 		log.NewNopLogger(),
 		oracleTicker,
 		[]types.Provider{s.mockProvider1, s.mockProvider2},
-		types.ComputeMedian(),
+		aggregator.ComputeMedian(),
 		s.mockMetrics,
 	)
 }

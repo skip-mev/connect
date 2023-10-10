@@ -9,6 +9,7 @@ import (
 
 	"cosmossdk.io/log"
 	"github.com/holiman/uint256"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -48,7 +49,7 @@ type Oracle struct {
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *types.PriceAggregator
+	priceAggregator *aggregator.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
@@ -66,7 +67,7 @@ func New(
 	logger log.Logger,
 	oracleTicker time.Duration,
 	providers []types.Provider,
-	aggregateFn types.AggregateFn,
+	aggregateFn aggregator.AggregateFn,
 	m metrics.Metrics,
 ) *Oracle {
 	if logger == nil {
@@ -86,7 +87,7 @@ func New(
 		closer:          ssync.NewCloser(),
 		oracleTicker:    oracleTicker,
 		providers:       providers,
-		priceAggregator: types.NewPriceAggregator(aggregateFn),
+		priceAggregator: aggregator.NewPriceAggregator(aggregateFn),
 		metrics:         m,
 	}
 }
@@ -105,7 +106,7 @@ func NewOracleFromConfig(logger log.Logger, cfg *config.Config) (*Oracle, error)
 		m = metrics.NewMetrics()
 	}
 
-	return New(logger, cfg.UpdateInterval, providers, types.ComputeMedian(), m), nil
+	return New(logger, cfg.UpdateInterval, providers, aggregator.ComputeMedian(), m), nil
 }
 
 // NewDefaultOracle returns a new instance of an Oracle with a default aggregate
@@ -128,7 +129,7 @@ func NewDefaultOracle(
 		provider.SetPairs(currencyPairs...)
 	}
 
-	return New(logger, oracleTicker, providers, types.ComputeMedian(), nil)
+	return New(logger, oracleTicker, providers, aggregator.ComputeMedian(), nil)
 }
 
 // IsRunning returns true if the oracle is running.
@@ -258,7 +259,7 @@ func (o *Oracle) fetchPricesFn(ctx context.Context, provider types.Provider) fun
 	return func() error {
 		o.logger.Info("fetching prices", "provider", provider.Name())
 
-		pricesCh := make(chan map[oracletypes.CurrencyPair]types.QuotePrice)
+		pricesCh := make(chan map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 		errCh := make(chan error)
 
 		// start timer

@@ -8,26 +8,26 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const AlchemyURL string = "https://eth-mainnet.g.alchemy.com/v2/"
 
-func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (types.QuotePrice, error) {
+func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.QuotePrice, error) {
 	client, err := ethclient.Dial(p.rpcEndpoint)
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	contractAddress, found := p.getPairContractAddress(pair)
 	if !found {
-		return types.QuotePrice{}, fmt.Errorf("contract address for pair %v not found", pair)
+		return aggregator.QuotePrice{}, fmt.Errorf("contract address for pair %v not found", pair)
 	}
 
 	contract, err := NewERC4626(common.HexToAddress(contractAddress), client)
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	// we've already confirmed the entry exists in the map so we can skip the check
@@ -35,17 +35,17 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (types.QuotePr
 	one := getUnitValueFromDecimals(decimals)
 	_price, err := contract.PreviewRedeem(&bind.CallOpts{}, one)
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	price, ok := uint256.FromBig(_price)
 	if !ok {
-		return types.QuotePrice{}, fmt.Errorf("failed to convert price %v to uint256 for pair %v", _price, pair)
+		return aggregator.QuotePrice{}, fmt.Errorf("failed to convert price %v to uint256 for pair %v", _price, pair)
 	}
 
-	quote, err := types.NewQuotePrice(price, time.Now())
+	quote, err := aggregator.NewQuotePrice(price, time.Now())
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	return quote, nil

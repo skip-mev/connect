@@ -9,36 +9,36 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const AlchemyURL string = "https://eth-mainnet.g.alchemy.com/v2/"
 
-func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (types.QuotePrice, error) {
+func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.QuotePrice, error) {
 	metadata, ok := p.tokenNameToMetadata[pair.Quote]
 	if !ok {
-		return types.QuotePrice{}, fmt.Errorf("token %s metadata not found", pair.Quote)
+		return aggregator.QuotePrice{}, fmt.Errorf("token %s metadata not found", pair.Quote)
 	}
 
 	client, err := ethclient.Dial(p.rpcEndpoint)
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	contractAddress, found := p.getPairContractAddress(pair)
 	if !found {
-		return types.QuotePrice{}, fmt.Errorf("contract address for pair %v not found", pair)
+		return aggregator.QuotePrice{}, fmt.Errorf("contract address for pair %v not found", pair)
 	}
 
 	contract, err := NewERC4626SharePriceOracle(common.HexToAddress(contractAddress), client)
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	latest, err := contract.GetLatest(&bind.CallOpts{})
 	if err != nil || latest.NotSafeToUse {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	var _price *big.Int
@@ -50,12 +50,12 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (types.QuotePr
 	}
 	price, ok = uint256.FromBig(_price)
 	if !ok {
-		return types.QuotePrice{}, fmt.Errorf("failed to convert price %v to uint256 for pair %v", _price, pair)
+		return aggregator.QuotePrice{}, fmt.Errorf("failed to convert price %v to uint256 for pair %v", _price, pair)
 	}
 
-	quote, err := types.NewQuotePrice(price, time.Now())
+	quote, err := aggregator.NewQuotePrice(price, time.Now())
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	return quote, nil

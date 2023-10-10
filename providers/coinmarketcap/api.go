@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -39,7 +39,7 @@ const (
 //		  ]
 //		}
 //	  }
-func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (types.QuotePrice, error) {
+func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (aggregator.QuotePrice, error) {
 	p.logger.Info("Fetching price for pair", "pair", pair)
 
 	// make request to coinmarketcap api w/ X-CMC_PRO_API_KEY header set to api-key
@@ -60,16 +60,16 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 			req.Header.Add(headerFieldKey, p.apiKey)
 		},
 	); err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
 	// unmarshal request body to get price
 	price, err := unmarshalRequest(resp, pair.Base, pair.Quote)
 	if err != nil {
-		return types.QuotePrice{}, err
+		return aggregator.QuotePrice{}, err
 	}
 
-	return types.QuotePrice{
+	return aggregator.QuotePrice{
 		Price:     providers.Float64ToUint256(price, pair.Decimals()),
 		Timestamp: time.Now(),
 	}, nil

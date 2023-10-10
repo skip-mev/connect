@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"cosmossdk.io/log"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -44,9 +45,9 @@ func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey str
 // GetPrices returns the current set of prices for each of the currency pairs. This method starts all
 // price requests concurrently, and waits for them all to finish, or for the context to be cancelled,
 // at which point it aggregates the responses and returns.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
 	type priceData struct {
-		types.QuotePrice
+		aggregator.QuotePrice
 		oracletypes.CurrencyPair
 	}
 
@@ -90,7 +91,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 	}()
 
 	// fan-in
-	prices := make(map[oracletypes.CurrencyPair]types.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 	for price := range resp {
 		prices[price.CurrencyPair] = price.QuotePrice
 	}

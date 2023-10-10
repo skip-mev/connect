@@ -1,8 +1,9 @@
-package abci
+package math
 
 import (
 	"sort"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
@@ -30,6 +31,18 @@ type (
 	}
 )
 
+// VoteWeightedMedianFromContext returns a new VoteWeightedMedian aggregate function that is parametrized by the
+// latest state of the application.
+func VoteWeightedMedianFromContext(
+	logger log.Logger,
+	validatorStore ValidatorStore,
+	threshold math.LegacyDec,
+) aggregator.AggregateFnFromContext {
+	return func(ctx sdk.Context) aggregator.AggregateFn {
+		return VoteWeightedMedian(ctx, logger, validatorStore, threshold)
+	}
+}
+
 // VoteWeightedMedian returns an aggregation function that computes the stake weighted median price as the
 // final deterministic oracle price for any qualifying currency pair (base, quote). There are a few things to
 // note about the implementation:
@@ -44,30 +57,52 @@ type (
 //     median price weighted by the stake of each validator that submitted a price.
 func VoteWeightedMedian(
 	ctx sdk.Context,
+	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) aggregator.AggregateFn {
 	return func(providers aggregator.AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
-		// Iterate through all providers and store stake weight + price for each currency pair.
 		priceInfo := make(map[types.CurrencyPair]VoteWeightedPriceInfo)
 
+		// Iterate through all providers and store stake weight + price for each currency pair.
 		for valAddress, validatorPrices := range providers {
+			// Retrieve the validator from the validator store and get its vote weight.
+			address, err := sdk.ConsAddressFromBech32(valAddress)
+			if err != nil {
+				logger.Info(
+					"failed to parse validator address; skipping validator prices",
+					"validator_address", valAddress,
+					"err", err,
+				)
+
+				continue
+			}
+
+			validator, err := validatorStore.ValidatorByConsAddr(ctx, address)
+			if err != nil {
+				logger.Info(
+					"failed to retrieve validator from store; skipping validator prices",
+					"validator_address", valAddress,
+					"err", err,
+				)
+
+				continue
+			}
+
+			voteWeight := validator.GetBondedTokens()
+
+			// Iterate through all prices and store the price + vote weight for each currency pair.
 			for currencyPair, quotePrice := range validatorPrices {
 				// Only include prices that are not nil.
 				if quotePrice.Price == nil {
-					continue
-				}
+					logger.Info(
+						"price is nil",
+						"currency_pair", currencyPair.ToString(),
+						"validator_address", valAddress,
+					)
 
-				// Retrieve the validator from the validator store and get its vote weight.
-				address, err := sdk.ConsAddressFromBech32(valAddress)
-				if err != nil {
 					continue
 				}
-				validator, err := validatorStore.ValidatorByConsAddr(ctx, address)
-				if err != nil {
-					continue
-				}
-				voteWeight := validator.GetBondedTokens()
 
 				// Initialize the price info if it does not exist for the given currency pair.
 				if _, ok := priceInfo[currencyPair]; !ok {
@@ -91,7 +126,7 @@ func VoteWeightedMedian(
 
 		// Iterate through all prices and compute the median price for each asset.
 		prices := make(map[types.CurrencyPair]*uint256.Int)
-		totalBondedTokens, err := validatorStore.TotalBondedTokens(ctx) // TODO: determine if total bonded tokens should be the staking metric that is used.
+		totalBondedTokens, err := validatorStore.TotalBondedTokens(ctx)
 		if err != nil {
 			// This should never error.
 			panic(err)
@@ -102,21 +137,25 @@ func VoteWeightedMedian(
 			// greater than the threshold to be included in the final oracle price.
 			if percentSubmitted := math.LegacyNewDecFromInt(info.TotalWeight).Quo(math.LegacyNewDecFromInt(totalBondedTokens)); percentSubmitted.GTE(threshold) {
 				prices[currencyPair] = ComputeVoteWeightedMedian(info)
+
+				logger.Info(
+					"computed stake-weighted median price for currency pair",
+					"currency_pair", currencyPair.ToString(),
+					"percent_submitted", percentSubmitted.String(),
+					"threshold", threshold.String(),
+					"final_price", prices[currencyPair].String(),
+				)
+			} else {
+				logger.Info(
+					"not enough voting power to compute stake-weighted median price price for currency pair",
+					"currency_pair", currencyPair.ToString(),
+					"threshold", threshold.String(),
+					"percent_submitted", percentSubmitted.String(),
+				)
 			}
 		}
 
 		return prices
-	}
-}
-
-// VoteWeightedMedianFromContext returns a new VoteWeightedMedian aggregate function that is parametrized by the
-// latest state of the application.
-func VoteWeightedMedianFromContext(
-	validatorStore ValidatorStore,
-	threshold math.LegacyDec,
-) aggregator.AggregateFnFromContext {
-	return func(ctx sdk.Context) aggregator.AggregateFn {
-		return VoteWeightedMedian(ctx, validatorStore, threshold)
 	}
 }
 

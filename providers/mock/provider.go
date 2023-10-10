@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/holiman/uint256"
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -16,7 +17,7 @@ type (
 	// StaticMockProvider defines a mocked exchange rate provider using fixed exchange
 	// rates.
 	StaticMockProvider struct {
-		exchangeRates map[oracletypes.CurrencyPair]types.QuotePrice
+		exchangeRates map[oracletypes.CurrencyPair]aggregator.QuotePrice
 		currencyPairs []oracletypes.CurrencyPair
 	}
 
@@ -38,7 +39,7 @@ type (
 // will always return the same static data. Meant to be used for testing.
 func NewStaticMockProvider() *StaticMockProvider {
 	return &StaticMockProvider{
-		exchangeRates: map[oracletypes.CurrencyPair]types.QuotePrice{
+		exchangeRates: map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 			oracletypes.NewCurrencyPair("COSMOS", "USDC"):   {Price: uint256.NewInt(1134)},
 			oracletypes.NewCurrencyPair("COSMOS", "USDT"):   {Price: uint256.NewInt(1135)},
 			oracletypes.NewCurrencyPair("COSMOS", "USD"):    {Price: uint256.NewInt(1136)},
@@ -70,7 +71,7 @@ func NewStaticMockProvider() *StaticMockProvider {
 // CurrencyPair.ToString(): uint256.NewInt(price)
 func NewStaticMockProviderFromConfig(config types.ProviderConfig) *StaticMockProvider {
 	s := StaticMockProvider{
-		exchangeRates: make(map[oracletypes.CurrencyPair]types.QuotePrice),
+		exchangeRates: make(map[oracletypes.CurrencyPair]aggregator.QuotePrice),
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
 
@@ -86,7 +87,7 @@ func NewStaticMockProviderFromConfig(config types.ProviderConfig) *StaticMockPro
 			continue
 		}
 
-		s.exchangeRates[cp] = types.QuotePrice{Price: uint256.NewInt(uint64(priceInt))}
+		s.exchangeRates[cp] = aggregator.QuotePrice{Price: uint256.NewInt(uint64(priceInt))}
 		s.currencyPairs = append(s.currencyPairs, cp)
 	}
 
@@ -99,7 +100,7 @@ func (p StaticMockProvider) Name() string {
 }
 
 // GetPrices returns the mocked exchange rates.
-func (p StaticMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p StaticMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
 	return p.exchangeRates, nil
 }
 
@@ -126,7 +127,7 @@ func (p FailingMockProvider) Name() string {
 }
 
 // GetPrices always fails for the failing mock provider.
-func (p FailingMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p FailingMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
 	panic("mock provider always fails")
 }
 
@@ -146,7 +147,7 @@ func (p TimeoutMockProvider) Name() string {
 }
 
 // GetPrices always times out for the timeout mock provider.
-func (p TimeoutMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]types.QuotePrice, error) {
+func (p TimeoutMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
 	time.Sleep(1*time.Second + p.timeout)
 
 	panic("mock provider should always times out")

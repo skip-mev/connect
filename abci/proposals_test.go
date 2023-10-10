@@ -8,7 +8,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/skip-mev/slinky/abci"
 	"github.com/skip-mev/slinky/abci/types"
-	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/aggregator"
 )
 
 func (suite *ABCITestSuite) TestPrepareProposal() {
@@ -596,7 +596,7 @@ func (suite *ABCITestSuite) TestProcessProposal() {
 
 			oracle := abci.NewOracle(
 				log.NewTestLogger(suite.T()),
-				oracleservicetypes.ComputeMedianWithContext,
+				aggregator.ComputeMedianWithContext,
 				suite.oracleKeeper,
 				suite.NoOpValidateVEFn(),
 				suite.validatorStore,
