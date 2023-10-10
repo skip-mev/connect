@@ -12,12 +12,11 @@ import (
 	"github.com/cometbft/cometbft/libs/rand"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/pelletier/go-toml"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/strangelove-ventures/interchaintest/v7"
+	interchaintest "github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v7/ibc"
 	"github.com/strangelove-ventures/interchaintest/v7/testutil"
@@ -27,7 +26,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	abcitypes "github.com/skip-mev/slinky/abci/types"
 )
 
 const (
@@ -97,10 +95,10 @@ func SetOracleOutOfProcess(node *cosmos.ChainNode) {
 	}
 
 	oracleConfig["metrics"] = map[string]interface{}{
-		"prometheus_server_address" : "0.0.0.0:26655",
-		"app_metrics" : map[string]interface{}{
-			"validator_cons_address" : string(bz[:len(bz) - 1]),
-			"enabled": true,
+		"prometheus_server_address": "0.0.0.0:26655",
+		"app_metrics": map[string]interface{}{
+			"validator_cons_address": string(bz[:len(bz)-1]),
+			"enabled":                true,
 		},
 	}
 
@@ -197,7 +195,7 @@ func RestartOracle(node *cosmos.ChainNode) error {
 
 // StopOracle stops the oracle sidecar for a given node
 func StopOracle(node *cosmos.ChainNode) error {
-	if len(node.Sidecars) != 1 { 
+	if len(node.Sidecars) != 1 {
 		panic("expected node to have oracle sidecar")
 	}
 
@@ -263,11 +261,11 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{
 			CurrencyPair: &cp,
 		},
-	},)
+	})
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	return res.Price, int64(res.Nonce), nil
 }
 
@@ -314,14 +312,14 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 // and waits for the proposal to pass.
 func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...oracletypes.CurrencyPair) error {
 	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
-		Authority: authority,
+		Authority:     authority,
 		CurrencyPairs: cps,
 	}}...)
 
 	if err != nil {
 		return err
 	}
-	
+
 	return PassProposal(chain, propId, timeout)
 }
 
@@ -329,19 +327,19 @@ func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposi
 // and waits for the proposal to pass.
 func RemoveCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cpIDs ...string) error {
 	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgRemoveCurrencyPairs{
-		Authority: authority,
+		Authority:       authority,
 		CurrencyPairIds: cpIDs,
 	}}...)
 
 	if err != nil {
 		return err
 	}
-	
+
 	return PassProposal(chain, propId, timeout)
 }
 
 // QueryProposal queries the chain for a given proposal
-func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypes.QueryProposalResponse, error) {
+func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryProposalResponse, error) {
 	// get grpc address
 	grpcAddr := chain.GetHostGRPCAddress()
 
@@ -353,21 +351,21 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypes.QueryPro
 	defer cc.Close()
 
 	// create the oracle client
-	client := govtypes.NewQueryClient(cc)
+	client := govtypesv1.NewQueryClient(cc)
 
 	propId, err := strconv.ParseUint(propID, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 	// query the currency pairs
-	return client.Proposal(context.Background(), &govtypes.QueryProposalRequest{
+	return client.Proposal(context.Background(), &govtypesv1.QueryProposalRequest{
 		ProposalId: propId,
 	})
 }
 
 // WaitForVotingPeriod, waits for the deposit period for the proposal to end
-func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypes.ProposalStatus) error {
-	return testutil.WaitForCondition(timeout, 1 * time.Second, func() (bool, error) {
+func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
+	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)
 		if err != nil {
 			return false, err
@@ -379,7 +377,7 @@ func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout tim
 
 // WaitForHeight waits for the giuve height to be reached
 func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Duration) error {
-	return testutil.WaitForCondition(timeout, 1 * time.Second, func() (bool, error) {
+	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		h, err := chain.Height(context.Background())
 		if err != nil {
 			return false, err
@@ -392,35 +390,32 @@ func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Durati
 // WaitForOracleUpdate waits for the first oracle update. This method returns the height that the oracle update occurred
 // it returns an error if there is no oracle update by the timeout
 func WaitForOracleUpdate(chain *cosmos.CosmosChain, timeout time.Duration, cp oracletypes.CurrencyPair) (uint64, error) {
-	client := chain.Nodes()[0].Client 
-	var height int64
+	blockHeight, err := chain.Height(context.Background())
+	if err != nil {
+		return 0, err
+	}
+	height := int64(blockHeight)
 
-	if err := testutil.WaitForCondition(timeout, 1 * time.Second, func() (bool, error) {
+	// Ensure that the price update occurs after the start height
+	_, startNonce, err := QueryCurrencyPair(chain, cp, uint64(height))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		blockHeight, err := chain.Height(context.Background())
 		if err != nil {
 			return false, err
 		}
-		height = int64(blockHeight)
-		
-		block, err := client.Block(context.Background(), &height)
+
+		_, currentNonce, err := QueryCurrencyPair(chain, cp, blockHeight)
 		if err != nil {
 			return false, err
 		}
 
-		// check if the first tx is an oracle update
-		if len(block.Block.Txs) == 0 {
-			return false, err
-		}
+		height = int64(blockHeight)
 
-		var ve abcitypes.OracleVoteExtension
-		if err := ve.Unmarshal(block.Block.Txs[0]); err != nil {
-			return false, err
-		}
-
-		// check if the currency-pair has an update included for it
-		_, ok := ve.Prices[cp.ToString()]
-
-		return ok, nil
+		return startNonce < currentNonce, nil
 	}); err != nil {
 		return 0, err
 	}

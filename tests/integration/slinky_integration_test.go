@@ -66,6 +66,10 @@ var (
 			Key:   "app_state.gov.params.quorum",
 			Value: "0",
 		},
+		{
+			Key:   "consensus.params.abci.vote_extensions_enable_height",
+			Value: "2",
+		},
 	}
 
 	denom = "stake"
@@ -94,7 +98,7 @@ var (
 			TrustingPeriod:         "48h",
 			NoHostMount:            noHostMount,
 			UsingNewGenesisCommand: true,
-			ModifyGenesis: cosmos.ModifyGenesis(defaultGenesisKV),
+			ModifyGenesis:          cosmos.ModifyGenesis(defaultGenesisKV),
 		},
 	}
 )

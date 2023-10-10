@@ -16,8 +16,6 @@ import (
 	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 
-	cometabci "github.com/cometbft/cometbft/abci/types"
-	tmtypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -62,7 +60,11 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"github.com/skip-mev/slinky/abci"
+
+	"github.com/skip-mev/slinky/abci/preblock"
+	"github.com/skip-mev/slinky/abci/preblock/math"
+	"github.com/skip-mev/slinky/abci/proposals"
+	"github.com/skip-mev/slinky/abci/ve"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	oracleservice "github.com/skip-mev/slinky/service"
@@ -287,44 +289,40 @@ func NewSimApp(
 		panic(err)
 	}
 
-	// Create the oracle that will be running in the proposal handlers and the
-	// pre-finalize block hook. This oracle is responsible for aggregating and
-	// verifiying oracle data.
-	oracle := abci.NewOracleWithMetrics(
-		app.Logger(),
-		abci.VoteWeightedMedianFromContext(
-			app.StakingKeeper,
-			abci.DefaultPowerThreshold,
-		),
-		app.OracleKeeper,
-		baseapp.ValidateVoteExtensions, // Nice and safe :)
-		app.StakingKeeper,
-		consAddress,
-		metrics,
-	)
-
 	// Create the proposal handler that will be used to fill proposals with
 	// transactions and oracle data.
-	proposalHandler := abci.NewProposalHandler(
+	proposalHandler := proposals.NewProposalHandler(
 		app.Logger(),
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
-		oracle,
+		ve.NewDefaultValidateVoteExtensionsFn(app.ChainID(), app.StakingKeeper),
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
 
+	// Create the aggregation function that will be used to aggregate oracle data
+	// from each validator.
+	aggregatorFn := math.VoteWeightedMedianFromContext(
+		app.Logger(),
+		app.StakingKeeper,
+		math.DefaultPowerThreshold,
+	)
+
 	// Create the pre-finalize block hook that will be used to apply oracle data
 	// to the state before any transactions are executed (in finalize block).
-	preFinalizeBlockHandler := abci.NewPreBlockHandler(
+	oraclePreBlockHandler := preblock.NewOraclePreBlockHandler(
 		app.Logger(),
-		oracle,
+		aggregatorFn,
+		app.OracleKeeper,
+		consAddress,
+		metrics,
 	)
-	app.SetPreBlocker(preFinalizeBlockHandler.PreBlockHook())
+
+	app.SetPreBlocker(oraclePreBlockHandler.PreBlocker())
 
 	// Create the vote extensions handler that will be used to extend and verify
 	// vote extensions (i.e. oracle data).
-	voteExtensionsHandler := abci.NewVoteExtensionHandler(
+	voteExtensionsHandler := ve.NewVoteExtensionHandler(
 		app.Logger(),
 		app.oracleService,
 		time.Second,
@@ -400,30 +398,6 @@ func (app *SimApp) Close() error {
 	}
 
 	return nil
-}
-
-// TODO: remove this once we have a proper config file
-func (app *SimApp) InitChain(req *cometabci.RequestInitChain) (*cometabci.ResponseInitChain, error) {
-	req.ConsensusParams.Abci.VoteExtensionsEnableHeight = 2
-	resp, err := app.App.InitChain(req)
-	if resp == nil {
-		resp = &cometabci.ResponseInitChain{}
-	}
-	resp.ConsensusParams = &tmtypes.ConsensusParams{
-		Abci: &tmtypes.ABCIParams{
-			VoteExtensionsEnableHeight: 2,
-		},
-	}
-	return resp, err
-}
-
-// TODO: remove this once we have a proper config file
-func (app *SimApp) FinalizeBlock(req *cometabci.RequestFinalizeBlock) (*cometabci.ResponseFinalizeBlock, error) {
-	resp, err := app.App.FinalizeBlock(req)
-	if resp != nil {
-		resp.ConsensusParamUpdates = nil
-	}
-	return resp, err
 }
 
 // Name returns the name of the App
