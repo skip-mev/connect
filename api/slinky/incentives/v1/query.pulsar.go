@@ -1822,7 +1822,7 @@ type GetIncentivesByTypeResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Incentives is the list of incentives of the given type.
+	// Entries is the list of incentives of the given type.
 	Entries [][]byte `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 }
 
@@ -1888,7 +1888,7 @@ type GetAllIncentivesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Incentives is the list of all incentives.
+	// Registry is the list of all incentives, grouped by type.
 	Registry []*IncentivesByType `protobuf:"bytes,1,rep,name=registry,proto3" json:"registry,omitempty"`
 }
 
