@@ -212,6 +212,9 @@ func (m *CurrencyPairGenesis) GetNonce() uint64 {
 // GenesisState is the genesis-state for the x/oracle module, it takes a set of
 // predefined CurrencyPairGeneses
 type GenesisState struct {
+	// CurrencyPairGenesis is the set of CurrencyPairGeneses for the module. I.e
+	// the starting set of CurrencyPairs for the module + information regarding their
+	// latest update.
 	CurrencyPairGenesis []CurrencyPairGenesis `protobuf:"bytes,1,rep,name=currency_pair_genesis,json=currencyPairGenesis,proto3" json:"currency_pair_genesis"`
 }
 

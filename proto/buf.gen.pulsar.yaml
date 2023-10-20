@@ -1,4 +1,5 @@
 version: v1
+
 managed:
   enabled: true
   go_package_prefix:
@@ -8,6 +9,7 @@ managed:
       - buf.build/cosmos/gogo-proto
       - buf.build/cosmos/cosmos-proto
     override:
+      buf.build/skip-mev/slinky: github.com/skip-mev/slinky/api
 plugins:
   - name: go-pulsar
     out: ../api

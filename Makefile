@@ -202,3 +202,10 @@ lint-markdown:
 
 .PHONY: lint lint-fix lint-markdown
 
+###############################################################################
+###                                Mocks                                    ###
+###############################################################################
+mocks:
+	@echo "--> generating mocks"
+	@go install github.com/golang/mock/mockgen@v1.6.0
+	@sh ./scripts/mockgen.sh

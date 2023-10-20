@@ -15,3 +15,6 @@ echo "Cleaning API directory"
 
 echo "Generating API module"
 (cd proto; buf generate --template buf.gen.pulsar.yaml)
+
+echo "fixing alerts.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/alerts/v1/alerts.pulsar.go && rm ./api/slinky/alerts/v1/alerts.pulsar.go.bak

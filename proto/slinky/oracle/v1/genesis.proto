@@ -49,6 +49,9 @@ message CurrencyPairGenesis {
 // GenesisState is the genesis-state for the x/oracle module, it takes a set of
 // predefined CurrencyPairGeneses
 message GenesisState {
+  // CurrencyPairGenesis is the set of CurrencyPairGeneses for the module. I.e 
+  // the starting set of CurrencyPairs for the module + information regarding their
+  // latest update.
   repeated CurrencyPairGenesis currency_pair_genesis = 1
       [ (gogoproto.nullable) = false ];
 }
