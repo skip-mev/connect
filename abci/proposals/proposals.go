@@ -1,6 +1,7 @@
 package proposals
 
 import (
+	"bytes"
 	"fmt"
 
 	"cosmossdk.io/log"
@@ -62,16 +63,14 @@ func NewProposalHandler(
 // enabled, the handler will inject the extended commit info into the proposal.
 func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+		var (
+			extInfoBz []byte
+			err       error
+		)
+
 		if req == nil {
 			h.logger.Error("prepare proposal received a nil request")
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, fmt.Errorf("received a nil request")
-		}
-
-		// Build the proposal.
-		resp, err := h.prepareProposalHandler(ctx, req)
-		if err != nil {
-			h.logger.Error("failed to prepare proposal", "err", err)
-			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
 
 		// If vote extensions are enabled, the current proposer must inject the extended commit
@@ -99,7 +98,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 			// Inject the vote extensions into the proposal. These contain the oracle data
 			// for the current block which will be committed to state in PreBlock.
-			extInfoBz, err := extInfo.Marshal()
+			extInfoBz, err = extInfo.Marshal()
 			if err != nil {
 				h.logger.Error(
 					"failed to extended commit info",
@@ -110,6 +109,19 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
 
+			req.Txs = append([][]byte{extInfoBz}, req.Txs...)
+		}
+
+		// Build the proposal.
+		resp, err := h.prepareProposalHandler(ctx, req)
+		if err != nil {
+			h.logger.Error("failed to prepare proposal", "err", err)
+			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
+		}
+
+		// If the embedded prepare proposal handler threw out the injected data.
+		// Re-inject it.
+		if voteExtensionsEnabled && (len(resp.Txs) < 1 || !bytes.Equal(resp.Txs[0], extInfoBz)) {
 			resp.Txs = append([][]byte{extInfoBz}, resp.Txs...)
 		}
 
