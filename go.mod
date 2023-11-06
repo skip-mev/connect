@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/store v1.0.0-rc.0
 	cosmossdk.io/tools/confix v0.0.0-20230608151552-9b9e319d1abc
 	cosmossdk.io/x/circuit v0.0.0-20230726190121-58855c685902
-	cosmossdk.io/x/tx v0.10.0 // indirect
+	cosmossdk.io/x/tx v0.10.0
 	cosmossdk.io/x/upgrade v0.0.0-20230704191127-8d80df8e3c5a
 	github.com/cometbft/cometbft v0.38.0
 	github.com/cosmos/cosmos-db v1.0.0
@@ -42,9 +42,11 @@ require (
 
 require (
 	github.com/ethereum/go-ethereum v1.13.2
+	github.com/gogo/protobuf v1.3.2
+	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.54.2
 	github.com/prometheus/client_golang v1.17.0
-	github.com/vektra/mockery/v2 v2.35.1
+	github.com/vektra/mockery/v2 v2.36.0
 )
 
 require (
@@ -154,10 +156,8 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/glog v1.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/golangci/check v0.0.0-20180506172741-cfe4005ccda2 // indirect
 	github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a // indirect
