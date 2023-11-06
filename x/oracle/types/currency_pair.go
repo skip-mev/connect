@@ -9,6 +9,7 @@ const (
 	ethereum = "ETHEREUM"
 )
 
+// NewCurrencyPair returns a new CurrencyPair with the given base and quote strings.
 func NewCurrencyPair(base, quote string) CurrencyPair {
 	return CurrencyPair{
 		Base:  base,
@@ -33,6 +34,10 @@ func (cp CurrencyPair) ValidateBasic() error {
 	return nil
 }
 
+// ToString returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
+//
+// NOTICE: prefer ToString over the default String method, as the ToString method is used for marshalling
+// currency-pairs into vote-extensions.
 func (cp CurrencyPair) ToString() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
@@ -42,10 +47,12 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 	if len(split) != 2 {
 		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)
 	}
-	return CurrencyPair{
-		Base:  split[0],
-		Quote: split[1],
-	}, nil
+	cp := CurrencyPair{
+		Base:  strings.ToUpper(split[0]),
+		Quote: strings.ToUpper(split[1]),
+	}
+
+	return cp, cp.ValidateBasic()
 }
 
 // Decimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then

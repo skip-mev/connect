@@ -1,22 +1,12 @@
-name: Tests / Code Coverage
-on:
+name: E2E tests
+on: 
   pull_request:
-  merge_group:
-  push:
     branches:
       - main
-    paths-ignore:
-      - tests/**
-
-permissions:
-  contents: read
-
-concurrency:
-  group: ci-${{ github.ref }}-tests
-  cancel-in-progress: true
-
+  workflow_dispatch:
+    
 jobs:
-  test:
+  e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,4 +25,4 @@ jobs:
       - name: tests
         if: env.GIT_DIFF
         run: |
-          make test
+          make test-integration

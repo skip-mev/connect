@@ -120,7 +120,7 @@ func providerFromProviderConfig(cfg types.ProviderConfig, cps []oracletypes.Curr
 		return mock.NewFailingMockProvider(), nil
 	case "static-mock-provider":
 		// This will return mock prices (randomly generated) for the configured currency pairs
-		if cfg.TokenNameToMetadata != nil {
+		if len(cfg.TokenNameToMetadata) != 0 {
 			return mock.NewStaticMockProviderFromConfig(cfg), nil
 		}
 

@@ -70,6 +70,8 @@ import (
 	oracleservice "github.com/skip-mev/slinky/service"
 	oracleclient "github.com/skip-mev/slinky/service/client"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	"github.com/skip-mev/slinky/x/alerts"
+	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
 	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
 	"github.com/skip-mev/slinky/x/oracle"
@@ -111,6 +113,7 @@ var (
 		consensus.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		incentives.AppModuleBasic{},
+		alerts.AppModuleBasic{},
 	)
 )
 
@@ -146,6 +149,7 @@ type SimApp struct {
 	CircuitBreakerKeeper  circuitkeeper.Keeper
 	OracleKeeper          oraclekeeper.Keeper
 	IncentivesKeeper      incentiveskeeper.Keeper
+	AlertsKeeper          alertskeeper.Keeper
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -234,6 +238,7 @@ func NewSimApp(
 		&app.CircuitBreakerKeeper,
 		&app.OracleKeeper,
 		&app.IncentivesKeeper,
+		&app.AlertsKeeper,
 	); err != nil {
 		panic(err)
 	}

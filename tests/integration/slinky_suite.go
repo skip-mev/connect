@@ -10,13 +10,13 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/oracle/types"
 	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v7/ibc"
 	"github.com/stretchr/testify/suite"
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 )
 
 const (
@@ -131,7 +131,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.user = users[0]
 }
 
-func (s *SlinkyIntegrationSuite) TeardownSuite() {
+func (s *SlinkyIntegrationSuite) TearDownSuite() {
 	// get the oracle integration-test suite keep alive env
 	if ok := os.Getenv(envKeepAlive); ok == "" {
 		return
@@ -161,10 +161,19 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 
 	// remove all currency-pairs
 	s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, ids...))
-
 }
 
-func (s *SlinkyIntegrationSuite) TestOracleModule() {
+type SlinkyOracleIntegrationSuite struct {
+	*SlinkyIntegrationSuite
+}
+
+func NewSlinkyOracleIntegrationSuite(suite *SlinkyIntegrationSuite) *SlinkyOracleIntegrationSuite {
+	return &SlinkyOracleIntegrationSuite{
+		SlinkyIntegrationSuite: suite,
+	}
+}
+
+func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	// query the oracle module grpc service for any CurrencyPairs
 	s.Run("QueryCurrencyPairs - no currency-pairs reported", func() {
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -222,7 +231,7 @@ func (s *SlinkyIntegrationSuite) TestOracleModule() {
 	})
 }
 
-func (s *SlinkyIntegrationSuite) TestNodeFailures() {
+func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	cp := oracletypes.CurrencyPair{
 		Base:  "ETHEREUM",
 		Quote: "USDC",
@@ -239,15 +248,40 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 			oCfg := DefaultOracleConfig()
 			oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
 				Name: "static-mock-provider",
+				TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
+					"ETHEREUM/USDC": {
+						Symbol: "1140",
+					},
+				},
 			})
 
 			SetOracleConfig(node, oCfg)
 			RestartOracle(node)
 		}
 
-		height, err := WaitForOracleUpdate(s.chain, 3*s.blockTime, cp)
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},				
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},			
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},				
+			},
+		})
 		s.Require().NoError(err)
-
 		// query for the given currency pair
 		resp, _, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
@@ -259,25 +293,37 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 		node := s.chain.Nodes()[0]
 		StopOracle(node)
 
-		// now wait for the next update (should be the next block)
-		height, err := WaitForOracleUpdate(s.chain, s.blockTime, cp)
+		// expect the following vote-extensions
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+			{
+				Prices: map[string]string{},				
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},			
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},				
+			},
+		})
 		s.Require().NoError(err)
 
-		// query for the given currency pair
-		_, nonce, err := QueryCurrencyPair(s.chain, cp, height)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height - 1)
 		s.Require().NoError(err)
 
-		// wait for the next height
-		s.Require().NoError(WaitForHeight(s.chain, height+1, 2*s.blockTime))
-
-		// wait for the next oracle update
-		height, err = WaitForOracleUpdate(s.chain, s.blockTime, cp)
-		s.Require().NoError(err)
-
-		// query the price, and check that nonce is incremented
 		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
-		s.Require().True(newNonce > nonce)
+
+		// expect update for height
+		s.Require().Equal(newNonce, oldNonce + 1)
 
 		// start the oracle again
 		StartOracle(node)
@@ -289,25 +335,37 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 		node.StopContainer(context.Background())
 		node.RemoveContainer(context.Background())
 
-		// wait for the first height that an oracle update occurs, should be the first height
-		height, err := WaitForOracleUpdate(s.chain, s.blockTime, cp)
+		// expect the following vote-extensions
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+			{
+				Prices: map[string]string{},				
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},			
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},				
+			},
+		})
 		s.Require().NoError(err)
 
-		// query for the given currency pair
-		_, nonce, err := QueryCurrencyPair(s.chain, cp, height)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height - 1)
 		s.Require().NoError(err)
 
-		// wait for the next height
-		s.Require().NoError(WaitForHeight(s.chain, height+1, 2*s.blockTime))
-
-		// wait for the next oracle update, should be the next height
-		height, err = WaitForOracleUpdate(s.chain, s.blockTime, cp)
-		s.Require().NoError(err)
-
-		// query the price, and check that nonce is incremented
 		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
-		s.Require().True(newNonce > nonce)
+
+		// expect update for height
+		s.Require().Equal(newNonce, oldNonce + 1)
 
 		s.Require().NoError(node.CreateNodeContainer(context.Background()))
 		s.Require().NoError(node.StartContainer(context.Background()))
@@ -319,15 +377,33 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 			StopOracle(node)
 		}
 
-		// wait one height to clear oracle updates
-		height, err := s.chain.Height(context.Background())
+		// expect the given oracle reports
+		height, err := ExpectVoteExtensions(s.chain ,s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+			{
+				Prices: map[string]string{},
+			},
+			{
+				Prices: map[string]string{},			
+			},
+			{
+				Prices: map[string]string{},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+				},			
+			},
+		})
 		s.Require().NoError(err)
 
-		// wait for the height after next height (this is to ensure that all oracles have been stopped, and their VEs reflect this)
-		s.Require().NoError(WaitForHeight(s.chain, height+2, 2*s.blockTime))
+		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height - 1)
+		s.Require().NoError(err)
 
-		_, err = WaitForOracleUpdate(s.chain, 2*s.blockTime, cp) // expect no update
-		s.Require().Error(err)
+		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
+		s.Require().NoError(err)
+
+		// expect no update for the height
+		s.Require().Equal(newNonce, oldNonce)
 
 		// start all oracles again
 		for _, node := range s.chain.Nodes()[1:] {
@@ -336,7 +412,7 @@ func (s *SlinkyIntegrationSuite) TestNodeFailures() {
 	})
 }
 
-func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
+func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	cp1 := oracletypes.NewCurrencyPair("ETHEREUM", "USDC")
 	cp2 := oracletypes.NewCurrencyPair("ETHEREUM", "USDT")
 	cp3 := oracletypes.NewCurrencyPair("ETHEREUM", "USD")
@@ -355,6 +431,17 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		oCfg := DefaultOracleConfig()
 		oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
 			Name: "static-mock-provider",
+			TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
+				"ETHEREUM/USDC": {
+					Symbol: "1140",
+				},
+				"ETHEREUM/USDT": {
+					Symbol: "1141",
+				},
+				"ETHEREUM/USD": {
+					Symbol: "1142",
+				},
+			},
 		})
 
 		SetOracleConfig(node, oCfg)
@@ -362,15 +449,36 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 	}
 
 	s.Run("all oracles running for multiple price feeds", func() {
-
-		height, err := s.chain.Height(context.Background())
-		s.Require().NoError(err)
-		// nodes may not be able to extend w/ prices at this height so wait
-		height = height + 2
-		s.Require().NoError(WaitForHeight(s.chain, height, 2*s.blockTime))
-
-		// wait for the next update
-		height, err = WaitForOracleUpdate(s.chain, 2*s.blockTime, cp1)
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+		})
 		s.Require().NoError(err)
 
 		// query for the given currency pair
@@ -389,7 +497,7 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		oCfg := DefaultOracleConfig()
 		oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
 			Name: "static-mock-provider",
-			TokenNameToMetadata: map[string]types.TokenMetadata{
+			TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
 				cp2.ToString(): {
 					Symbol: "1141",
 				},
@@ -401,14 +509,35 @@ func (s *SlinkyIntegrationSuite) TestMultiplePriceFeeds() {
 		SetOracleConfig(node, oCfg)
 		RestartOracle(node)
 
-		height, err := s.chain.Height(context.Background())
-		s.Require().NoError(err)
-		// nodes may not be able to extend w/ prices at this height so wait
-		height = height + 2
-		s.Require().NoError(WaitForHeight(s.chain, height, 2*s.blockTime))
-
-		// wait for the next update
-		height, err = WaitForOracleUpdate(s.chain, 2*s.blockTime, cp1)
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},
+			{
+				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
+					"ETHEREUM/USDT": "0x475",
+					"ETHEREUM/USD": "0x476",
+				},
+			},	
+		})
 		s.Require().NoError(err)
 
 		// query for the given currency pair

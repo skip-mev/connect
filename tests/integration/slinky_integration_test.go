@@ -13,6 +13,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v7/ibc"
 	"github.com/stretchr/testify/suite"
+	"github.com/skip-mev/slinky/x/alerts"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
 var (
@@ -36,6 +38,8 @@ var (
 		bank.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 		gov.AppModuleBasic{},
+		alerts.AppModuleBasic{},
+		auth.AppModuleBasic{},
 	)
 
 	VotingPeriod     = "10s"
@@ -103,9 +107,21 @@ var (
 	}
 )
 
-func TestSlinkyIntegration(t *testing.T) {
-	suite.Run(t, integration.NewSlinkyIntegrationSuite(
+
+func TestSlinkyOracleIntegration(t *testing.T) {
+	baseSuite := integration.NewSlinkyIntegrationSuite(
 		spec,
 		oracleImage,
-	))
+	)
+
+	suite.Run(t, integration.NewSlinkyOracleIntegrationSuite(baseSuite))
+}
+
+func TestSlinkySlashingIntegration(t *testing.T) {
+	baseSuite := integration.NewSlinkyIntegrationSuite(
+		spec,
+		oracleImage,
+	)
+
+	suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
 }

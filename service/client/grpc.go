@@ -65,6 +65,10 @@ func (c *GRPCClient) Stop(_ context.Context) error {
 	c.mtx.Lock()
 	defer c.mtx.Unlock()
 
+	if c.conn == nil {
+		return nil
+	}
+
 	return c.conn.Close()
 }
 

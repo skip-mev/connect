@@ -3,17 +3,20 @@ package integration
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strconv"
 
 	"testing"
 	"time"
 
 	"cosmossdk.io/math"
+	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/rand"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/pelletier/go-toml"
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v7"
@@ -22,10 +25,11 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v7/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
-	"golang.org/x/sync/errgroup"
+	"sync"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"github.com/holiman/uint256"
 )
 
 const (
@@ -215,6 +219,22 @@ func StartOracle(node *cosmos.ChainNode) error {
 	return oracle.StartContainer(context.Background())
 }
 
+// GetChainGRPC gets a GRPC client of the given chain
+// 
+// NOTICE: this client must be closed after use
+func GetChainGRPC(chain *cosmos.CosmosChain) (cc *grpc.ClientConn, close func(), err error) {
+	// get grpc address
+	grpcAddr := chain.GetHostGRPCAddress()
+
+	// create the client
+	cc, err = grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return cc, func() { cc.Close() }, nil
+}
+
 // QueryCurrencyPair queries the chain for the given CurrencyPair, this method returns the grpc response from the module
 func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyPairsResponse, error) {
 	// get grpc address
@@ -291,22 +311,23 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 	}
 
 	// have all nodes vote on the proposal
-	wg := errgroup.Group{}
+	wg := sync.WaitGroup{}
 	for _, node := range chain.Nodes() {
-		n := node // pin
-		wg.Go(func() error {
-			return n.VoteOnProposal(context.Background(), validatorKey, propId, yes)
-		})
+		wg.Add(1)
+		go func(node *cosmos.ChainNode) {
+			defer wg.Done()
+			node.VoteOnProposal(context.Background(), validatorKey, propId, yes)
+		}(node)
 	}
-	if err := wg.Wait(); err != nil {
-		return err
-	}
+	wg.Wait()
+
 	// wait for the proposal to pass
 	if err := WaitForProposalStatus(chain, propId, timeout, govtypesv1.StatusPassed); err != nil {
 		return fmt.Errorf("proposal did not pass: %v", err)
 	}
 	return nil
 }
+
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
@@ -377,7 +398,7 @@ func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout tim
 
 // WaitForHeight waits for the giuve height to be reached
 func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Duration) error {
-	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
+	return testutil.WaitForCondition(timeout, 100*time.Millisecond, func() (bool, error) {
 		h, err := chain.Height(context.Background())
 		if err != nil {
 			return false, err
@@ -387,38 +408,109 @@ func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Durati
 	})
 }
 
-// WaitForOracleUpdate waits for the first oracle update. This method returns the height that the oracle update occurred
-// it returns an error if there is no oracle update by the timeout
-func WaitForOracleUpdate(chain *cosmos.CosmosChain, timeout time.Duration, cp oracletypes.CurrencyPair) (uint64, error) {
-	blockHeight, err := chain.Height(context.Background())
-	if err != nil {
-		return 0, err
-	}
-	height := int64(blockHeight)
+// ExpectVoteExtensions waits for empty oracle update waits for a pre-determined number of blocks for an extended commit with the given oracle-vote extensions provided
+// per validator. This method returns the height at which the condition was satisfied. 
+//
+// Notice: the height returned is safe for querying, i.e the prices will have been written to state if a quorum reported
+func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves []slinkyabci.OracleVoteExtension) (uint64, error) {
+	client := chain.Nodes()[0].Client
 
-	// Ensure that the price update occurs after the start height
-	_, startNonce, err := QueryCurrencyPair(chain, cp, uint64(height))
-	if err != nil {
-		return 0, err
-	}
+	var blockHeight uint64
+	if err := testutil.WaitForCondition(timeout, 100*time.Millisecond, func() (bool, error) {
+		var err error
 
-	if err := testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
-		blockHeight, err := chain.Height(context.Background())
+		blockHeight, err = chain.Height(context.Background())
 		if err != nil {
 			return false, err
 		}
 
-		_, currentNonce, err := QueryCurrencyPair(chain, cp, blockHeight)
+		height := int64(blockHeight)
+		// get the block
+		block, err := client.Block(context.Background(), &height)
 		if err != nil {
 			return false, err
 		}
 
-		height = int64(blockHeight)
+		// get the oracle update
+		if len(block.Block.Txs) == 0 {
+			return false, fmt.Errorf("block is invalid: no oracle transaction")
+		}
 
-		return startNonce < currentNonce, nil
+		// attempt to unmarshal extended commit info
+		var extendedCommitInfo cmtabci.ExtendedCommitInfo
+		if err := extendedCommitInfo.Unmarshal(block.Block.Txs[0]); err != nil {
+			return false, err
+		}
+
+		sort.Sort(validatorVotes(extendedCommitInfo.Votes))
+
+		// iterate through all votes (votes in the extended-commit are deterministically ordered by voting power -> address)
+		for i, vote := range extendedCommitInfo.Votes {
+			// get the oracle vote extension
+			var gotVe slinkyabci.OracleVoteExtension
+			if err := gotVe.Unmarshal(vote.VoteExtension); err != nil {
+				return false, err
+			}
+
+			if len(ves[i].Prices) != len(gotVe.Prices) {
+				return false, nil
+			}
+
+			// check that the vote extension is correct
+			for ticker, price := range gotVe.Prices {
+				if price != ves[i].Prices[ticker] {
+					return false, nil
+				}
+			}
+		}
+
+		return true, nil
 	}); err != nil {
 		return 0, err
 	}
 
-	return uint64(height), nil
+	// we want to wait for the application state to reflect the proposed state from blockHeight
+	return blockHeight, WaitForHeight(chain, blockHeight + 1, timeout)
+}
+
+// wrapper around extendedVoteInfo for use in sorting (to make ordering deterministic in tests)
+type validatorVotes []cmtabci.ExtendedVoteInfo
+
+func (vv validatorVotes) Len() int { return len(vv) }
+
+func (vv validatorVotes) Swap(i, j int) { vv[i], vv[j] = vv[j], vv[i]}
+
+// order the votes by the number of reports first, then by the contents of the vote-extensions.
+func (vv validatorVotes) Less(i, j int) bool {
+	// break ties by vote-extension data
+	var (
+		iPrice, jPrice, iTotalPrice, jTotalPrice int
+	)
+	var ve slinkyabci.OracleVoteExtension
+	if err := ve.Unmarshal(vv[i].VoteExtension); err == nil {
+		iPrice = len(ve.Prices)
+
+		for _, priceStr := range ve.Prices {
+			if price, err := uint256.FromHex(priceStr); err == nil {
+				iTotalPrice += int(price.Uint64())
+			}
+		}
+	}
+	if err := ve.Unmarshal(vv[j].VoteExtension); err == nil {
+		jPrice = len(ve.Prices)
+
+		for _, priceStr := range ve.Prices {
+			if price, err := uint256.FromHex(priceStr); err == nil {
+				jTotalPrice += int(price.Uint64())
+			}
+		}
+	}
+	
+	// check if the number of prices is different
+	if iPrice != jPrice {
+		return iPrice < jPrice
+	}
+
+	// break ties by the sum of the prices for each validator
+	return iTotalPrice < jTotalPrice
 }

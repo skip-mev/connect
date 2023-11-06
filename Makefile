@@ -129,7 +129,7 @@ build-and-start-app: build-test-app build-configs start-app
 
 test-integration: docker-build
 	@echo "Running integration tests..."
-	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race ./...
+	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race -timeout 30m -run TestSlinkyOracleIntegration
 
 test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
