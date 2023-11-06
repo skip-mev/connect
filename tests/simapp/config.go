@@ -25,6 +25,7 @@ import (
 	upgrademodulev1 "cosmossdk.io/api/cosmos/upgrade/module/v1"
 	vestingmodulev1 "cosmossdk.io/api/cosmos/vesting/module/v1"
 	"cosmossdk.io/depinject"
+	alertmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
 	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
 	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
 
@@ -68,9 +69,19 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
+
+// ProvideIncentives provides the incentive strategies for the incentive module, wrt the expected Keeper dependencies for
+// incentive handler.
+func ProvideIncentives(bk alerttypes.BankKeeper, sk alerttypes.StakingKeeper) map[incentivetypes.Incentive]incentivetypes.Strategy {
+	return map[incentivetypes.Incentive]incentivetypes.Strategy{
+		&strategies.ValidatorAlertIncentive{}: strategies.DefaultValidatorAlertIncentiveStrategy(sk, bk),
+	}
+}
 
 var (
 	// module account permissions
@@ -83,6 +94,7 @@ var (
 		{Account: govtypes.ModuleName, Permissions: []string{authtypes.Burner}},
 		{Account: oracletypes.ModuleName, Permissions: []string{}},
 		{Account: incentivetypes.ModuleName, Permissions: []string{}},
+		{Account: alerttypes.ModuleName, Permissions: []string{authtypes.Burner, authtypes.Minter}},
 	}
 
 	// blocked account addresses
@@ -117,6 +129,7 @@ var (
 						authz.ModuleName,
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
+						alerttypes.ModuleName,
 					},
 					EndBlockers: []string{
 						crisistypes.ModuleName,
@@ -125,6 +138,8 @@ var (
 						genutiltypes.ModuleName,
 						group.ModuleName,
 						oracletypes.ModuleName,
+						// alert Endblock must precede incentives types EndBlocker (issued incentives shld be executed same block)
+						alerttypes.ModuleName,
 						incentivetypes.ModuleName,
 					},
 					OverrideStoreKeys: []*runtimev1alpha1.StoreKeyConfig{
@@ -155,6 +170,7 @@ var (
 						circuittypes.ModuleName,
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
+						alerttypes.ModuleName,
 					},
 					// When ExportGenesis is not specified, the export genesis module order
 					// is equal to the init genesis order
@@ -250,8 +266,16 @@ var (
 				Name:   circuittypes.ModuleName,
 				Config: appconfig.WrapAny(&circuitmodulev1.Module{}),
 			},
+			{
+				Name: alerttypes.ModuleName,
+				Config: appconfig.WrapAny(&alertmodulev1.Module{
+					Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+				}),
+			},
 		},
 	}),
+		depinject.Provide(alerttypes.ProvideMsgAlertGetSigners),
+		depinject.Provide(ProvideIncentives),
 		depinject.Supply(
 			// supply custom module basics
 			map[string]module.AppModuleBasic{
@@ -262,5 +286,8 @@ var (
 					},
 				),
 			},
+
+			// Supply the Incentive Handler for the Alerts module's ProvideModule Inputs
+			strategies.DefaultHandleValidatorIncentive(),
 		))
 )

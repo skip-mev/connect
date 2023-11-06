@@ -34,7 +34,7 @@ type ProviderConfig struct {
 
 	// TokenNameToMetadata is a map of token names to their metadata, i.e how each token in the CurrencyPair should
 	// map to the token references in the queried provider's API, and required decimals for on-chain data sources.
-	TokenNameToMetadata map[string]TokenMetadata `mapstructure:"token_name_to_metadata"`
+	TokenNameToMetadata map[string]TokenMetadata `mapstructure:"token_name_to_metadata" toml:"token_name_to_metadata"`
 
 	// PairToContractAddress is a map of pairs to the address of a contract that provides the price for that pair
 	// for providers that use on-chain data. The key of the outer map is the quote token, the key of the inner map

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -122,7 +123,7 @@ func TestStrategy(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockStakingKeeper := testutil.NewMockStakingKeeper(ctrl)
 	mockBankKeeper := testutil.NewMockBankKeeper(ctrl)
-	ctx := sdk.Context{}
+	ctx := sdk.Context{}.WithLogger(log.NewNopLogger())
 
 	slashFraction := math.LegacyNewDecFromIntWithPrec(math.NewInt(5), 1)
 

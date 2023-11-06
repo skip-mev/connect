@@ -88,6 +88,12 @@ func TestToFromString(t *testing.T) {
 			types.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
+		{
+			"if the string is not formatted upper-case, return the original CurrencyPair",
+			"a/B",
+			types.CurrencyPair{Base: "A", Quote: "B"},
+			true,
+		},
 	}
 
 	for _, tc := range tcs {

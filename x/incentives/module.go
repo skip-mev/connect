@@ -163,6 +163,9 @@ type Inputs struct {
 	Config *incentivesmodulev1.Module
 	Cdc    codec.Codec
 	Key    *storetypes.KVStoreKey
+
+	// IncentiveStrategies
+	IncentiveStrategies map[types.Incentive]types.Strategy `optional:"true"`
 }
 
 type Outputs struct {
@@ -175,7 +178,7 @@ type Outputs struct {
 func ProvideModule(in Inputs) Outputs {
 	incentivesKeeper := keeper.NewKeeper(
 		in.Key,
-		nil,
+		in.IncentiveStrategies,
 	)
 
 	m := NewAppModule(in.Cdc, incentivesKeeper)

@@ -143,6 +143,8 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 		return nil, fmt.Errorf("failed to verify conclusion: %v", err)
 	}
 
+	m.k.Logger(ctx).Info("conclusion verified", "conclusion", conclusion.String(), "params", verificationParams.String())
+
 	// conclusion has been verified, mark the alert as concluded
 	if err := m.k.ConcludeAlert(ctx, conclusion.GetAlert(), boolToConclusionStatus(conclusion.GetStatus())); err != nil {
 		return nil, fmt.Errorf("failed to conclude alert: %v", err)
@@ -156,6 +158,8 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 
 		// determine whether or not to issue an incentive to each validator who signed a vote in the Commit referenced
 		for _, vote := range extCommit.Votes {
+			m.k.Logger(ctx).Info("issuing incentive to validator", "validator", sdk.ConsAddress(vote.Validator.Address).String(), "alert", fmt.Sprintf("%X", conclusion.GetAlert().UID()))
+
 			// execute the ValidatorIncentiveHandler to determine if validator should be issued an incentive
 			incentive, err := m.k.validatorIncentiveHandler(vote, conclusion.GetPriceBound(), conclusion.GetAlert())
 			if err != nil {
@@ -164,6 +168,7 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 
 			// if the incentive is non-nil, then add it to the list of incentives to issue
 			if incentive != nil {
+				m.k.Logger(ctx).Info("incentive issued to validator", "validator", vote.Validator.Address, "incentive", incentive.String(), "alert", fmt.Sprintf("%X", conclusion.GetAlert().UID()))
 				incentives = append(incentives, incentive)
 			}
 		}
