@@ -29,3 +29,7 @@ go.work*
 run.go
 
 /tests/e2e/.slinky-e2e-testnet-*
+
+# ide
+.idea/*
+.vscode/*
