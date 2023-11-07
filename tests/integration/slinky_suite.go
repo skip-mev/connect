@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
@@ -16,7 +17,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v7/ibc"
 	"github.com/stretchr/testify/suite"
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 )
 
 const (
@@ -259,11 +259,11 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			RestartOracle(node)
 		}
 
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},				
+				},
 			},
 			{
 				Prices: map[string]string{
@@ -273,12 +273,12 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},			
+				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},				
+				},
 			},
 		})
 		s.Require().NoError(err)
@@ -294,9 +294,9 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		StopOracle(node)
 
 		// expect the following vote-extensions
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{},				
+				Prices: map[string]string{},
 			},
 			{
 				Prices: map[string]string{
@@ -306,24 +306,24 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},			
+				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},				
+				},
 			},
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height - 1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height-1)
 		s.Require().NoError(err)
 
 		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
 
 		// expect update for height
-		s.Require().Equal(newNonce, oldNonce + 1)
+		s.Require().Equal(newNonce, oldNonce+1)
 
 		// start the oracle again
 		StartOracle(node)
@@ -336,9 +336,9 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		node.RemoveContainer(context.Background())
 
 		// expect the following vote-extensions
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{},				
+				Prices: map[string]string{},
 			},
 			{
 				Prices: map[string]string{
@@ -348,24 +348,24 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},			
+				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},				
+				},
 			},
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height - 1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height-1)
 		s.Require().NoError(err)
 
 		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
 		s.Require().NoError(err)
 
 		// expect update for height
-		s.Require().Equal(newNonce, oldNonce + 1)
+		s.Require().Equal(newNonce, oldNonce+1)
 
 		s.Require().NoError(node.CreateNodeContainer(context.Background()))
 		s.Require().NoError(node.StartContainer(context.Background()))
@@ -378,12 +378,12 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		}
 
 		// expect the given oracle reports
-		height, err := ExpectVoteExtensions(s.chain ,s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[string]string{},
 			},
 			{
-				Prices: map[string]string{},			
+				Prices: map[string]string{},
 			},
 			{
 				Prices: map[string]string{},
@@ -391,12 +391,12 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
-				},			
+				},
 			},
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height - 1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, cp, height-1)
 		s.Require().NoError(err)
 
 		_, newNonce, err := QueryCurrencyPair(s.chain, cp, height)
@@ -449,33 +449,33 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	}
 
 	s.Run("all oracles running for multiple price feeds", func() {
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 		})
@@ -509,34 +509,34 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		SetOracleConfig(node, oCfg)
 		RestartOracle(node)
 
-		height, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{
 				Prices: map[string]string{
 					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD": "0x476",
+					"ETHEREUM/USD":  "0x476",
 				},
-			},	
+			},
 		})
 		s.Require().NoError(err)
 

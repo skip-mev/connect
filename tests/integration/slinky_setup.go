@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
-
 	"testing"
 	"time"
 
@@ -294,7 +293,6 @@ func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter strin
 	// build the proposal
 	rand := rand.Str(10)
 	prop, err := chain.BuildProposal(msgs, rand, rand, rand, deposit.String())
-
 	if err != nil {
 		return "", err
 	}
@@ -336,7 +334,6 @@ func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposi
 		Authority:     authority,
 		CurrencyPairs: cps,
 	}}...)
-
 	if err != nil {
 		return err
 	}
@@ -351,7 +348,6 @@ func RemoveCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, dep
 		Authority:       authority,
 		CurrencyPairIds: cpIDs,
 	}}...)
-
 	if err != nil {
 		return err
 	}
