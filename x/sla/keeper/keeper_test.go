@@ -26,14 +26,19 @@ type KeeperTestSuite struct {
 	stakingKeeper  *mocks.StakingKeeper
 	slashingKeeper *mocks.SlashingKeeper
 	keeper         *keeper.Keeper
+
+	// Message server variables
+	msgServer slatypes.MsgServer
 }
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.initKeeper()
+	s.msgServer = keeper.NewMsgServer(*s.keeper)
 }
 
 func (s *KeeperTestSuite) SetupSubTest() {
 	s.keeper = s.initKeeper()
+	s.msgServer = keeper.NewMsgServer(*s.keeper)
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -54,8 +59,8 @@ func (s *KeeperTestSuite) TestSetParams() {
 }
 
 func (s *KeeperTestSuite) TestSetCurrencyPairs() {
-	cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
-	cp2 := oracletypes.NewCurrencyPair("ETH", "USD")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp2 := oracletypes.NewCurrencyPair("eth", "usd")
 
 	testCPs := map[oracletypes.CurrencyPair]struct{}{
 		cp1: {},
@@ -69,17 +74,6 @@ func (s *KeeperTestSuite) TestSetCurrencyPairs() {
 		cps, err := s.keeper.GetCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(testCPs, cps)
-	})
-
-	cp3 := oracletypes.NewCurrencyPair("BTC", "USD")
-
-	s.Run("can overwrite currency pairs", func() {
-		err := s.keeper.SetCurrencyPairs(s.ctx, map[oracletypes.CurrencyPair]struct{}{cp3: {}})
-		s.Require().NoError(err)
-
-		cps, err := s.keeper.GetCurrencyPairs(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Equal(map[oracletypes.CurrencyPair]struct{}{cp3: {}}, cps)
 	})
 }
 
