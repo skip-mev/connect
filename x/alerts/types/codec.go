@@ -28,6 +28,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// register the conclusion verification params interfaces / MultiSigConclusionVerificationParams implementation
 	cdc.RegisterInterface((*ConclusionVerificationParams)(nil), nil)
 	cdc.RegisterConcrete(&MultiSigConclusionVerificationParams{}, "slinky/x/alerts/ConclusionVerificationParams", nil)
+
 	// register the msg-types
 	legacy.RegisterAminoMsg(cdc, &MsgAlert{}, "slinky/x/alerts/MsgAlert")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "slinky/x/alerts/MsgUpdateParams")

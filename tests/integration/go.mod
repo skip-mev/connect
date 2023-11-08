@@ -13,7 +13,7 @@ toolchain go1.21.0
 require (
 	cosmossdk.io/math v1.1.3-rc.1
 	github.com/cometbft/cometbft v0.38.0
-	github.com/cosmos/cosmos-sdk v0.50.0-rc.0.0.20230915171831-2196edacb99d
+	github.com/cosmos/cosmos-sdk v0.50.0-rc.1
 	github.com/holiman/uint256 v1.2.3
 	github.com/pelletier/go-toml v1.9.5
 	github.com/skip-mev/slinky v0.0.0-00010101000000-000000000000

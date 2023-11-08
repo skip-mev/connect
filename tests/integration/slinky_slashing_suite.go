@@ -9,31 +9,30 @@ import (
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/holiman/uint256"
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/holiman/uint256"
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 )
 
-var cdc *codec.ProtoCodec
+// var cdc *codec.ProtoCodec
 
 const validatorStake = 5000000000000
 
-func init() {
-	ir := codectypes.NewInterfaceRegistry()
+// func init() {
+// 	ir := codectypes.NewInterfaceRegistry()
 
-	// register alerttypes interfaces
-	alerttypes.RegisterInterfaces(ir)
-	cryptocodec.RegisterInterfaces(ir)
-	cdc = codec.NewProtoCodec(ir)
-}
+// 	// register alerttypes interfaces
+// 	alerttypes.RegisterInterfaces(ir)
+// 	cryptocodec.RegisterInterfaces(ir)
+// 	cdc = codec.NewProtoCodec(ir)
+// }
 
 type SlinkySlashingIntegrationSuite struct {
 	*SlinkyIntegrationSuite
@@ -74,7 +73,7 @@ func (s *SlinkySlashingIntegrationSuite) SetupTest() {
 	// for any validators that do not have correct stake, delegate to them
 	for _, validator := range validators {
 		if validator.Tokens.Int64() < validatorStake {
-			toStake := sdk.NewCoin(s.denom, math.NewInt(validatorStake - validator.Tokens.Int64()))
+			toStake := sdk.NewCoin(s.denom, math.NewInt(validatorStake-validator.Tokens.Int64()))
 
 			// delegate to the validator
 			resp, err := s.Delegate(s.multiSigUser1, validator.OperatorAddress, toStake)
@@ -101,11 +100,11 @@ func (s *SlinkySlashingIntegrationSuite) TestAlerts() {
 		cc, close, err := GetChainGRPC(s.chain)
 		s.Require().NoError(err)
 		defer close()
-		
+
 		expectedParams := alerttypes.DefaultParams("stake", nil)
 
 		// set default params for the module
-		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, expectedParams)
+		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, expectedParams)
 		s.Require().NoError(err)
 
 		// create an alerts client
@@ -130,13 +129,13 @@ func (s *SlinkySlashingIntegrationSuite) TestAlerts() {
 			// update the alert Params
 			expect := alerttypes.Params{
 				PruningParams: alerttypes.PruningParams{
-					Enabled: true,
+					Enabled:       true,
 					BlocksToPrune: 100,
 				},
 			}
 
 			// update the module's alert-params
-			_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, expect)
+			_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, expect)
 			s.Require().NoError(err)
 
 			// get the params
@@ -156,16 +155,17 @@ func compareParams(a, b alerttypes.Params) bool {
 }
 
 // TestSubmittingAlerts will test the alert-submission process, specifically
-//  - submitting an alert when alerts are disabled, and expect that the alert is not submitted
-//  - submitting an alert when alerts are enabled, but the alert is too old, and expect that the alert is not submitted
-//  - submitting an alert when alerts are enabled, and the alert references a non-existent currency-pair, and expect that the alert is not submitted
-//  - submitting an alert when alerts are enabled, and the alert is valid, and expect that the alert is submitted. On submission check that the 
+//   - submitting an alert when alerts are disabled, and expect that the alert is not submitted
+//   - submitting an alert when alerts are enabled, but the alert is too old, and expect that the alert is not submitted
+//   - submitting an alert when alerts are enabled, and the alert references a non-existent currency-pair, and expect that the alert is not submitted
+//   - submitting an alert when alerts are enabled, and the alert is valid, and expect that the alert is submitted. On submission check that the
+//
 // alert's bond is escrowed at the alert module
-//  - submitting an alert when alerts are enabled, and the alert is valid, but the alert has already been submitted, and expect that the alert is not submitted
+//   - submitting an alert when alerts are enabled, and the alert is valid, but the alert has already been submitted, and expect that the alert is not submitted
 func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 	s.Run("test submitting an alert when alerts are disabled - fail", func() {
 		// set params to have alerts disabled
-		_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, alerttypes.Params{
+		_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 			AlertParams: alerttypes.AlertParams{
 				Enabled: false,
 			},
@@ -193,11 +193,11 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 
 	s.Run("test submitting an alert with a block-age > max-block-age - fail", func() {
 		// update the max-block-age so that it's feasible for us to submit an alert with a block-age (ctx.Height() - alert.Height) > max-block-age
-		_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, alerttypes.Params{
+		_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 			AlertParams: alerttypes.AlertParams{
 				MaxBlockAge: 1,
-				Enabled: true,
-				BondAmount: sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
+				Enabled:     true,
+				BondAmount:  sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
 			},
 		})
 		s.Require().NoError(err)
@@ -213,7 +213,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		resp, err := s.SubmitAlert(
 			s.multiSigUser1,
 			alerttypes.NewAlert(
-				height - 5,
+				height-5,
 				alertSubmitter,
 				oracletypes.NewCurrencyPair("BTC", "USD"),
 			),
@@ -233,11 +233,11 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
 
 		// update the max-block-age
-		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, alerttypes.Params{
+		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 			AlertParams: alerttypes.AlertParams{
 				MaxBlockAge: 20,
-				Enabled: true,
-				BondAmount: sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
+				Enabled:     true,
+				BondAmount:  sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
 			},
 		})
 		s.Require().NoError(err)
@@ -251,7 +251,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		})
 		if err == nil {
 			// remove the currency-pair
-			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, []string{cp.ToString()}...))
+			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.ToString()}...))
 		}
 
 		// get the current height
@@ -265,7 +265,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		resp, err := s.SubmitAlert(
 			s.multiSigUser1,
 			alerttypes.NewAlert(
-				height - 1,
+				height-1,
 				alertSubmitter,
 				cp,
 			),
@@ -298,7 +298,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		})
 		if err != nil {
 			// remove the currency-pair
-			s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, cp))
+			s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 		}
 
 		alertSubmitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -316,7 +316,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 
 		// submit the alerts
 		alert := alerttypes.NewAlert(
-			height - 1,
+			height-1,
 			alertSubmitter,
 			cp,
 		)
@@ -352,7 +352,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		newBalance, err := s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
 		s.Require().NoError(err)
 
-		s.Require().Equal(balance.Sub(bondAmt).Int64() - (resp.TxResult.GasWanted * gasPrice), newBalance.Int64())
+		s.Require().Equal(balance.Sub(bondAmt).Int64()-(resp.TxResult.GasWanted*gasPrice), newBalance.Int64())
 
 		// check the balance of the module account
 		newModAcctBalance, err := s.chain.GetBalance(context.Background(), modAcct.String(), s.denom)
@@ -370,7 +370,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 
 		alert := alerttypes.NewAlert(
-			height - 1,
+			height-1,
 			alertSubmitter,
 			cp,
 		)
@@ -383,13 +383,13 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		// check the response from the chain
 		s.Require().NoError(err)
 		s.Require().Equal(resp.TxResult.Code, uint32(1))
-	
+
 		s.Require().True(strings.Contains(resp.TxResult.Log, fmt.Sprintf("alert with UID %X already exists", alert.UID())))
 	})
 }
 
 // TestAlertPruning tests the pruning of alerts, specifically we submit 2 alerts, wait for some period of time between them,
-// and expect that they are pruned afer BlocksToPrune has passed. Also test that after an alert is concluded, it's BlocksToPrune 
+// and expect that they are pruned afer BlocksToPrune has passed. Also test that after an alert is concluded, it's BlocksToPrune
 // is updated to alert.Height + MaxBlockAge, so that the same alert cannot be submitted + concluded twice.
 func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	// check if the BTC/USD currency pair exists
@@ -409,30 +409,30 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	})
 	if err != nil {
 		// remove the currency-pair
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, cp))
+		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 	}
 	// add pruning params with updated max-block-age
 
 	var (
-		maxBlockAge = uint64(20)
+		maxBlockAge   = uint64(20)
 		blocksToPrune = uint64(10)
 	)
 
-	_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, alerttypes.Params{
+	_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 		AlertParams: alerttypes.AlertParams{
 			MaxBlockAge: maxBlockAge,
-			Enabled: true,
-			BondAmount: sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
+			Enabled:     true,
+			BondAmount:  sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
 		},
 		PruningParams: alerttypes.PruningParams{
-			Enabled: true,
+			Enabled:       true,
 			BlocksToPrune: blocksToPrune,
 		},
 	})
-	s.Require().NoError(err)	
+	s.Require().NoError(err)
 
 	s.Run("expect all alerts to have been pruned", func() {
-		_, err := ExpectAlerts(s.chain, 3 * s.blockTime, nil)
+		_, err := ExpectAlerts(s.chain, 3*s.blockTime, nil)
 		s.Require().NoError(err)
 	})
 
@@ -454,12 +454,12 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 		)
 
 		alert2 := alerttypes.NewAlert(
-			height + 1,
+			height+1,
 			submitter2,
 			cp,
 		)
-	
-		// get the balances of the accounts before alert submission, so that we can compare after submission whether the bond 
+
+		// get the balances of the accounts before alert submission, so that we can compare after submission whether the bond
 		// is in escrow.
 		balance1Before, err := s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
 		s.Require().NoError(err)
@@ -468,7 +468,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 		s.Require().NoError(err)
 
 		var (
-			commitHeight, commitHeight2 uint64
+			commitHeight, commitHeight2  uint64
 			balance2After, balance1After math.Int
 		)
 		s.Run("submit the first alert, from the first multi-sig address", func() {
@@ -485,7 +485,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			// expect the alert to have been committed in state
 			commitHeight = uint64(resp.Height)
 
-			// query for the alert, 
+			// query for the alert,
 			alertClient := alerttypes.NewQueryClient(cc)
 			alertResp, err := alertClient.Alerts(context.Background(), &alerttypes.AlertsRequest{
 				Status: alerttypes.AlertStatusID_CONCLUSION_STATUS_UNCONCLUDED,
@@ -500,9 +500,9 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			// check the bond was escrowed
 			balance1After, err = s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
 			s.Require().NoError(err)
-			
+
 			// check the balance, expect the bond to be in escrow
-			s.Require().Equal(balance1Before.Sub(balance1After).Int64() - resp.TxResult.GasWanted * gasPrice, alerttypes.DefaultBondAmount.Int64())
+			s.Require().Equal(balance1Before.Sub(balance1After).Int64()-resp.TxResult.GasWanted*gasPrice, alerttypes.DefaultBondAmount.Int64())
 		})
 
 		s.Run("submit the second alert, from the second multi-sig", func() {
@@ -533,16 +533,16 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			s.Require().NoError(err)
 
 			// check the balance
-			s.Require().Equal(balance2Before.Sub(balance2After).Int64() - resp.TxResult.GasWanted * gasPrice, alerttypes.DefaultBondAmount.Int64())
+			s.Require().Equal(balance2Before.Sub(balance2After).Int64()-resp.TxResult.GasWanted*gasPrice, alerttypes.DefaultBondAmount.Int64())
 		})
 
 		s.Run("wait for 10 blocks after commit height of first alert, and expect it to be pruned", func() {
 			// wait for commitheight + 10
-			height, err := ExpectAlerts(s.chain, s.blockTime * 3, []alerttypes.Alert{alert2})
+			height, err := ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{alert2})
 			s.Require().NoError(err)
 
 			// check that height > commitHeight + 10
-			s.Require().True(height >= commitHeight + 10)
+			s.Require().True(height >= commitHeight+10)
 
 			// check the bond was returned
 			balance1Final, err := s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
@@ -554,11 +554,11 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 		s.Run("wait for blocksToPrune blocks after commit height of second alert, and expect it to be pruned", func() {
 			// wait for commitheight + 10
-			height, err := ExpectAlerts(s.chain, s.blockTime * 3, []alerttypes.Alert{})
+			height, err := ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{})
 			s.Require().NoError(err)
 
 			// check that height > commitHeight + 10
-			s.Require().True(height >= commitHeight2 + 10)
+			s.Require().True(height >= commitHeight2+10)
 
 			// check the bond was returned
 			balance2Final, err := s.chain.GetBalance(context.Background(), s.multiSigUser2.FormattedAddress(), s.denom)
@@ -574,14 +574,14 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 		s.Require().NoError(err)
 
 		defer close()
-		
+
 		alertClient := alerttypes.NewQueryClient(cc)
 
 		var (
 			moduleBalanceBefore math.Int
-			alertHeight uint64
-			maxBlockAge uint64 = 20
-			alert alerttypes.Alert
+			alertHeight         uint64
+			maxBlockAge         uint64 = 20
+			alert               alerttypes.Alert
 		)
 
 		s.Run("update the params to have multiSigAddress1 / 2 as signers", func() {
@@ -597,14 +597,14 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			s.Require().NoError(err)
 
 			// update the params
-			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, alerttypes.Params{
+			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 				AlertParams: alerttypes.AlertParams{
 					MaxBlockAge: maxBlockAge,
-					Enabled: true,
-					BondAmount: sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
+					Enabled:     true,
+					BondAmount:  sdk.NewCoin(s.denom, alerttypes.DefaultBondAmount),
 				},
 				PruningParams: alerttypes.PruningParams{
-					Enabled: true,
+					Enabled:       true,
 					BlocksToPrune: blocksToPrune,
 				},
 				ConclusionVerificationParams: any,
@@ -616,6 +616,8 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			s.Require().NoError(err)
 
 			// check the params
+			cdc := s.chain.Config().EncodingConfig.Codec
+
 			var expectedCVP alerttypes.ConclusionVerificationParams
 			s.Require().NoError(cdc.UnpackAny(params.Params.ConclusionVerificationParams, &expectedCVP))
 			cvpGot, ok := expectedCVP.(*alerttypes.MultiSigConclusionVerificationParams)
@@ -629,14 +631,14 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 				s.Require().NoError(cdc.UnpackAny(cvp.(*alerttypes.MultiSigConclusionVerificationParams).Signers[i], &pk2))
 				s.Require().True(pk1.Equals(pk2))
 			}
-		})	
-		
+		})
+
 		alertHeight, err = s.chain.Height(context.Background())
 		s.Require().NoError(err)
 
 		s.Run("submit an alert from multiSigAddress1", func() {
 			submitAddr, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
-			
+
 			alert = alerttypes.NewAlert(
 				alertHeight,
 				submitAddr,
@@ -646,7 +648,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 				),
 			)
 			s.Require().NoError(err)
-			
+
 			balance1Before, err := s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
 			s.Require().NoError(err)
 
@@ -682,7 +684,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			s.Require().NoError(err)
 
 			// check the balance
-			s.Require().Equal(balance1Before.Sub(balance1).Int64(), alerttypes.DefaultBondAmount.Int64() + resp.TxResult.GasWanted * gasPrice)
+			s.Require().Equal(balance1Before.Sub(balance1).Int64(), alerttypes.DefaultBondAmount.Int64()+resp.TxResult.GasWanted*gasPrice)
 
 			// check the balance of the module account after alert submission
 			moduleBalanceAfter, err := s.chain.GetBalance(context.Background(), authtypes.NewModuleAddress(alerttypes.ModuleName).String(), s.denom)
@@ -701,12 +703,12 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			alert := alertResp.Alerts[0]
 
 			conclusion := alerttypes.MultiSigConclusion{
-				Alert: alert,
+				Alert:              alert,
 				ExtendedCommitInfo: cmtabci.ExtendedCommitInfo{},
-				Status: false,
+				Status:             false,
 				PriceBound: alerttypes.PriceBound{
 					High: "0x1",
-					Low: "0x0",
+					Low:  "0x0",
 				},
 				Signatures: make([]alerttypes.Signature, 0),
 			}
@@ -723,11 +725,11 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			s.Require().NoError(err)
 
 			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer: sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+				Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
 				Signature: sig1,
 			})
 			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer: sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
+				Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
 				Signature: sig2,
 			})
 
@@ -740,7 +742,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			s.Require().Equal(resp.TxResult.Code, uint32(0))
 
 			s.Run("expect that the bond is burned", func() {
-				// get the final module account balance 
+				// get the final module account balance
 				moduleBalanceAfter, err := s.chain.GetBalance(context.Background(), authtypes.NewModuleAddress(alerttypes.ModuleName).String(), s.denom)
 				s.Require().NoError(err)
 
@@ -756,7 +758,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 				s.Require().NoError(err)
 
 				// query for the alert (if it still should exist)
-				if alertHeight + maxBlockAge > currentHeight {
+				if alertHeight+maxBlockAge > currentHeight {
 					s.T().Log("alert should still exist", "alertHeight", alertHeight, "max-block-age", maxBlockAge, "currentHeight", currentHeight)
 					alertResp, err := alertClient.Alerts(context.Background(), &alerttypes.AlertsRequest{
 						Status: alerttypes.AlertStatusID_CONCLUSION_STATUS_CONCLUDED,
@@ -778,7 +780,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 				s.Require().NoError(err)
 
 				// submit the same alert again
-				if alertHeight + maxBlockAge > currentHeight {
+				if alertHeight+maxBlockAge > currentHeight {
 					s.T().Log("alert should still exist", "alertHeight", alertHeight, "max-block-age", maxBlockAge, "currentHeight", currentHeight)
 
 					alertSigner, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -804,10 +806,10 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 			s.Run("submitting same alert now fails (alert is too old)", func() {
 				// wait for original alert to be pruned
-				ExpectAlerts(s.chain, s.blockTime * 3, nil)
+				ExpectAlerts(s.chain, s.blockTime*3, nil)
 
 				// wait for the alert's height to pass max block-age
-				WaitForHeight(s.chain, alertHeight + maxBlockAge, s.blockTime * 10)
+				WaitForHeight(s.chain, alertHeight+maxBlockAge, s.blockTime*10)
 
 				// attempt to resubmit the alert, and expect it to fail
 				resp, err := s.SubmitAlert(s.multiSigUser1, alert)
@@ -831,6 +833,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 // - conclusion submission fails if the alert has already been concluded
 // - For negative conclusions
 //   - conclusion submission passes, and there are no slashing events, and the alert signer is refunded
+//
 // - For positive conclusions
 //   - conclusion submission passes, and there are slashing events, and the alert signer is rewarded the amount slashed
 func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
@@ -850,13 +853,13 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	})
 	if err != nil {
 		// add the currency-pair
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, cp))
+		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 	}
 
 	s.Run("test Conclusion failures", func() {
 		s.Run("fails when alerts are disabled", func() {
 			// update the params to disable alerts
-			_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, alerttypes.Params{
+			_, err := UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 				ConclusionVerificationParams: nil,
 				AlertParams: alerttypes.AlertParams{
 					Enabled: false,
@@ -871,8 +874,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC")),
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1", 
-					Low: "0x0",
+					High: "0x1",
+					Low:  "0x0",
 				},
 				Signatures: []alerttypes.Signature{
 					{
@@ -903,7 +906,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			params := alerttypes.DefaultParams(s.denom, cvp)
 
 			// update the params to enable alerts
-			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, params)
+			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, params)
 			s.Require().NoError(err)
 
 			submitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -913,8 +916,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC")),
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1", 
-					Low: "0x0",
+					High: "0x1",
+					Low:  "0x0",
 				},
 			}
 
@@ -929,7 +932,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			// set the signature
 			conclusion.Signatures = []alerttypes.Signature{
 				{
-					Signer: sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+					Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
 					Signature: sig,
 				},
 			}
@@ -956,7 +959,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			params := alerttypes.DefaultParams(s.denom, cvp)
 
 			// update the params to enable alerts
-			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, params)
+			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, params)
 			s.Require().NoError(err)
 
 			submitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -967,8 +970,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1", 
-					Low: "0x0",
+					High: "0x1",
+					Low:  "0x0",
 				},
 			}
 
@@ -983,7 +986,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			// set the signature
 			conclusion.Signatures = []alerttypes.Signature{
 				{
-					Signer: sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+					Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
 					Signature: sig,
 				},
 			}
@@ -992,7 +995,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			sig, err = s.multiSigPk2.Sign(sigBytes)
 			s.Require().NoError(err)
 			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer: sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
+				Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
 				Signature: sig,
 			})
 
@@ -1018,7 +1021,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			params := alerttypes.DefaultParams(s.denom, cvp)
 
 			// update the params to enable alerts
-			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, params)
+			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, params)
 			s.Require().NoError(err)
 
 			submitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -1041,25 +1044,24 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			s.Require().Equal(resp.CheckTx.Code, uint32(0))
 			s.Require().Equal(resp.TxResult.Code, uint32(0))
 
-			// expect bond to be escrowed	
+			// expect bond to be escrowed
 			senderBalanceAfterAlert, err := s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
 			s.Require().NoError(err)
 
 			moduleBalanceAfterAlert, err := s.chain.GetBalance(context.Background(), authtypes.NewModuleAddress(alerttypes.ModuleName).String(), s.denom)
 			s.Require().NoError(err)
 
-			s.Require().Equal(senderBalanceBeforeAlert.Sub(senderBalanceAfterAlert).Int64(), alerttypes.DefaultBondAmount.Int64() + resp.TxResult.GasWanted * gasPrice)
+			s.Require().Equal(senderBalanceBeforeAlert.Sub(senderBalanceAfterAlert).Int64(), alerttypes.DefaultBondAmount.Int64()+resp.TxResult.GasWanted*gasPrice)
 			s.Require().Equal(moduleBalanceAfterAlert.Sub(moduleBalanceBeforeAlert).Int64(), alerttypes.DefaultBondAmount.Int64())
-			
+
 			validatorsBeforeConclusion, err := QueryValidators(s.chain)
 			s.Require().NoError(err)
 
-			// submit a conclusion
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1", 
-					Low: "0x0",
+					High: "0x1",
+					Low:  "0x0",
 				},
 			}
 
@@ -1074,7 +1076,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			// set the signature
 			conclusion.Signatures = []alerttypes.Signature{
 				{
-					Signer: sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+					Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
 					Signature: sig,
 				},
 			}
@@ -1083,7 +1085,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			sig, err = s.multiSigPk2.Sign(sigBytes)
 			s.Require().NoError(err)
 			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer: sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
+				Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
 				Signature: sig,
 			})
 
@@ -1101,7 +1103,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			moduleBalanceFinal, err := s.chain.GetBalance(context.Background(), authtypes.NewModuleAddress(alerttypes.ModuleName).String(), s.denom)
 			s.Require().NoError(err)
 
-			// sender balance is the same 
+			// sender balance is the same
 			s.Require().Equal(senderBalanceAfterAlert.Uint64(), senderBalanceFinal.Uint64())
 
 			// module balance is decremented by the bond amount
@@ -1127,8 +1129,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1", 
-					Low: "0x0",
+					High: "0x1",
+					Low:  "0x0",
 				},
 			}
 
@@ -1143,7 +1145,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			// set the signature
 			conclusion.Signatures = []alerttypes.Signature{
 				{
-					Signer: sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+					Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
 					Signature: sig,
 				},
 			}
@@ -1152,7 +1154,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			sig, err = s.multiSigPk2.Sign(sigBytes)
 			s.Require().NoError(err)
 			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer: sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
+				Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
 				Signature: sig,
 			})
 
@@ -1172,7 +1174,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		s.Run("update validator oracles", func() {
 			// update first validator's oracle to submit incorrect prices
 			nodes := s.chain.Nodes()
-	
+
 			// update the first node to report incorrect prices (too high)
 			s.Require().NoError(UpdateNodePrices(nodes[0], cp, 152))
 
@@ -1189,9 +1191,10 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		validatorsPreSlash, err := QueryValidators(s.chain)
 		s.Require().NoError(err)
 
-		validatorPreSlashMap := mapValidators(validatorsPreSlash)
-	
-		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+		cdc := s.chain.Config().EncodingConfig.Codec
+		validatorPreSlashMap := mapValidators(validatorsPreSlash, cdc)
+
+		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[string]string{
 					cp.ToString(): "0x94", // 148
@@ -1259,7 +1262,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			params := alerttypes.DefaultParams(s.denom, cvp)
 
 			// update the params to enable alerts
-			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.multiSigUser1, params)
+			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, params)
 			s.Require().NoError(err)
 		})
 
@@ -1284,11 +1287,11 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 
 			// create the conclusion
 			conclusion := &alerttypes.MultiSigConclusion{
-				Alert: alert,
+				Alert:              alert,
 				ExtendedCommitInfo: extendedCommit,
 				PriceBound: alerttypes.PriceBound{
 					High: "0x97",
-					Low: "0x95",
+					Low:  "0x95",
 				},
 				Status: true,
 			}
@@ -1302,7 +1305,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 
 			conclusion.Signatures = []alerttypes.Signature{
 				{
-					Signer: sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+					Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
 					Signature: sig,
 				},
 			}
@@ -1312,7 +1315,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			s.Require().NoError(err)
 
 			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer: sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
+				Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
 				Signature: sig,
 			})
 
@@ -1325,7 +1328,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			s.Require().Equal(resp.TxResult.Code, uint32(0))
 
 			// wait for a block for the incentive to be executed
-			WaitForHeight(s.chain, uint64(resp.Height) + 2, 4 * s.blockTime)
+			WaitForHeight(s.chain, uint64(resp.Height)+2, 4*s.blockTime)
 		})
 
 		s.Run("expect that slashing / rewarding is executed", func() {
@@ -1333,7 +1336,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			validatorsPostSlash, err := QueryValidators(s.chain)
 			s.Require().NoError(err)
 
-			validatorPostSlashMap := mapValidators(validatorsPostSlash)
+			cdc := s.chain.Config().EncodingConfig.Codec
+			validatorPostSlashMap := mapValidators(validatorsPostSlash, cdc)
 
 			reward := math.NewInt(0)
 			// check that the validators are slashed / rewarded correctly
@@ -1370,10 +1374,10 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	})
 }
 
-func mapValidators(vals []stakingtypes.Validator) map[string]stakingtypes.Validator {
+func mapValidators(vals []stakingtypes.Validator, cdc codec.Codec) map[string]stakingtypes.Validator {
 	m := make(map[string]stakingtypes.Validator)
 	for _, v := range vals {
-		key, err := pkToKey(v.ConsensusPubkey)
+		key, err := pkToKey(v.ConsensusPubkey, cdc)
 		if err != nil {
 			continue
 		}
@@ -1382,10 +1386,15 @@ func mapValidators(vals []stakingtypes.Validator) map[string]stakingtypes.Valida
 	return m
 }
 
-func pkToKey(pkAny *codectypes.Any) (string, error) {
+func pkToKey(pkAny *codectypes.Any, cdc codec.Codec) (string, error) {
+	protoCodec, ok := cdc.(*codec.ProtoCodec)
+	if !ok {
+		return "", fmt.Errorf("expected codec to be a proto codec")
+	}
+
 	var pk cryptotypes.PubKey
 
-	if err := cdc.UnpackAny(pkAny, &pk); err != nil {
+	if err := protoCodec.UnpackAny(pkAny, &pk); err != nil {
 		return "", err
 	}
 
