@@ -29,16 +29,21 @@ type KeeperTestSuite struct {
 
 	// Message server variables
 	msgServer slatypes.MsgServer
+
+	// Query server variables
+	queryServer slatypes.QueryServer
 }
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.initKeeper()
 	s.msgServer = keeper.NewMsgServer(*s.keeper)
+	s.queryServer = keeper.NewQueryServer(*s.keeper)
 }
 
 func (s *KeeperTestSuite) SetupSubTest() {
 	s.keeper = s.initKeeper()
 	s.msgServer = keeper.NewMsgServer(*s.keeper)
+	s.queryServer = keeper.NewQueryServer(*s.keeper)
 }
 
 func TestKeeperTestSuite(t *testing.T) {

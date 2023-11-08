@@ -10,13 +10,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	id1 = "testId"
+)
+
 func (s *KeeperTestSuite) TestSetPriceFeed() {
 	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
 
-	id1 := "testId"
 	priceFeed1, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,
@@ -91,7 +94,6 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
 
-	id1 := "testId"
 	priceFeed1, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,
