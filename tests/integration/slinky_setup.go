@@ -14,6 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	"github.com/holiman/uint256"
 	"github.com/pelletier/go-toml"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -24,11 +25,10 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v7/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
-	"sync"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"github.com/holiman/uint256"
+	"sync"
 )
 
 const (
@@ -219,7 +219,7 @@ func StartOracle(node *cosmos.ChainNode) error {
 }
 
 // GetChainGRPC gets a GRPC client of the given chain
-// 
+//
 // NOTICE: this client must be closed after use
 func GetChainGRPC(chain *cosmos.CosmosChain) (cc *grpc.ClientConn, close func(), err error) {
 	// get grpc address
@@ -326,7 +326,6 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 	return nil
 }
 
-
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...oracletypes.CurrencyPair) error {
@@ -405,7 +404,7 @@ func WaitForHeight(chain *cosmos.CosmosChain, height uint64, timeout time.Durati
 }
 
 // ExpectVoteExtensions waits for empty oracle update waits for a pre-determined number of blocks for an extended commit with the given oracle-vote extensions provided
-// per validator. This method returns the height at which the condition was satisfied. 
+// per validator. This method returns the height at which the condition was satisfied.
 //
 // Notice: the height returned is safe for querying, i.e the prices will have been written to state if a quorum reported
 func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves []slinkyabci.OracleVoteExtension) (uint64, error) {
@@ -466,7 +465,7 @@ func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves 
 	}
 
 	// we want to wait for the application state to reflect the proposed state from blockHeight
-	return blockHeight, WaitForHeight(chain, blockHeight + 1, timeout)
+	return blockHeight, WaitForHeight(chain, blockHeight+1, timeout)
 }
 
 // wrapper around extendedVoteInfo for use in sorting (to make ordering deterministic in tests)
@@ -474,7 +473,7 @@ type validatorVotes []cmtabci.ExtendedVoteInfo
 
 func (vv validatorVotes) Len() int { return len(vv) }
 
-func (vv validatorVotes) Swap(i, j int) { vv[i], vv[j] = vv[j], vv[i]}
+func (vv validatorVotes) Swap(i, j int) { vv[i], vv[j] = vv[j], vv[i] }
 
 // order the votes by the number of reports first, then by the contents of the vote-extensions.
 func (vv validatorVotes) Less(i, j int) bool {
@@ -501,7 +500,7 @@ func (vv validatorVotes) Less(i, j int) bool {
 			}
 		}
 	}
-	
+
 	// check if the number of prices is different
 	if iPrice != jPrice {
 		return iPrice < jPrice
