@@ -46,8 +46,8 @@ message GetAllSLAsResponse {
 
 // QueryGetPriceFeedsRequest is the request type for the Query/GetPriceFeeds RPC method.
 message GetPriceFeedsRequest {
-    // SLA defines the SLA to query price feeds for.
-    string sla = 1;
+    // ID defines the SLA to query price feeds for.
+    string id = 1 [(gogoproto.customname) = "ID"];
 }
 
 // QueryGetPriceFeedsResponse is the response type for the Query/GetPriceFeeds RPC method.
