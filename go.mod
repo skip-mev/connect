@@ -359,4 +359,6 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+	// TODO(nikhil): remove once #1558 and #904 are backported to v0.38.0
+	github.com/cometbft/cometbft => github.com/skip-mev/cometbft v0.2.0
 )
