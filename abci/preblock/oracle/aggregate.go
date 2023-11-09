@@ -1,4 +1,4 @@
-package preblock
+package oracle
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,7 +22,7 @@ import (
 // In order for a currency pair to be included in the final oracle price, the currency
 // pair must be provided by a supermajority (2/3+) of validators. This is enforced by the
 // price aggregator but can be replaced by the application.
-func (h *OraclePreBlockHandler) AggregateOracleVotes(
+func (h *PreBlockHandler) AggregateOracleVotes(
 	ctx sdk.Context,
 	votes []Vote,
 ) (map[oracletypes.CurrencyPair]*uint256.Int, error) {
@@ -34,14 +34,14 @@ func (h *OraclePreBlockHandler) AggregateOracleVotes(
 	// aggregating.
 	isVotePresentInCommit := false
 	for _, vote := range votes {
-		if vote.Validator.String() == h.validatorAddress.String() {
+		if vote.ConsAddress.String() == h.validatorAddress.String() {
 			isVotePresentInCommit = true
 		}
 
-		if err := h.addVoteToAggregator(vote.Validator.String(), vote.OracleVoteExtension); err != nil {
+		if err := h.addVoteToAggregator(vote.ConsAddress.String(), vote.OracleVoteExtension); err != nil {
 			h.logger.Error(
 				"failed to add vote to aggregator",
-				"validator_address", vote.Validator.String(),
+				"validator_address", vote.ConsAddress.String(),
 				"err", err,
 			)
 
@@ -68,7 +68,7 @@ func (h *OraclePreBlockHandler) AggregateOracleVotes(
 // into the price aggregator. The oracle data is provided in the form of a vote
 // extension. The vote extension contains the prices for each currency pair that
 // the validator is providing for the current block.
-func (h *OraclePreBlockHandler) addVoteToAggregator(address string, oracleData types.OracleVoteExtension) error {
+func (h *PreBlockHandler) addVoteToAggregator(address string, oracleData types.OracleVoteExtension) error {
 	if len(oracleData.Prices) == 0 {
 		return nil
 	}

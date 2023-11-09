@@ -1,4 +1,4 @@
-package preblock_test
+package oracle_test
 
 import (
 	"time"
@@ -10,10 +10,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/skip-mev/slinky/abci/preblock"
-	preblockmath "github.com/skip-mev/slinky/abci/preblock/math"
-	"github.com/skip-mev/slinky/abci/preblock/math/mocks"
-	preblockmock "github.com/skip-mev/slinky/abci/preblock/mocks"
+	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
+	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
+	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
+	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	merticmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -47,7 +47,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 	)
 	mockValidatorStore.On("TotalBondedTokens", mock.Anything).Return(math.NewInt(100), nil)
 
-	mockOracleKeeper := preblockmock.NewOracleKeeper(s.T())
+	mockOracleKeeper := preblockmock.NewKeeper(s.T())
 	mockMetrics := merticmock.NewMetrics(s.T())
 
 	handler := preblock.NewOraclePreBlockHandler(
@@ -63,7 +63,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		mockMetrics.On("AddVoteIncludedInLastCommit", false).Once()
@@ -87,7 +87,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -126,7 +126,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -173,7 +173,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -225,7 +225,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -276,7 +276,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -339,7 +339,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -394,7 +394,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := handler.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal)
 		s.Require().NoError(err)
 
 		// Aggregate oracle data
