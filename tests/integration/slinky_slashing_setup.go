@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	cmtabci "github.com/cometbft/cometbft/abci/types"
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -13,16 +14,15 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/skip-mev/slinky/abci/proposals"
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
+	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	cmtabci "github.com/cometbft/cometbft/abci/types"
-	"github.com/skip-mev/slinky/abci/proposals"
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
 )
 
 const gasPrice = 100
@@ -32,7 +32,7 @@ const gasPrice = 100
 func UpdateAlertParams(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, params alerttypes.Params) (string, error) {
 	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&alerttypes.MsgUpdateParams{
 		Authority: authority,
-		Params: params,
+		Params:    params,
 	}}...)
 	if err != nil {
 		return "", err
@@ -205,7 +205,7 @@ func GetOracleDataFromVote(vote cmtabci.ExtendedVoteInfo) (slinkyabci.OracleVote
 	return ve, nil
 }
 
-// ExpectAlerts waits until the provided alerts are in module state or until timeout. This method returns an error if it times-out. Otherwise, 
+// ExpectAlerts waits until the provided alerts are in module state or until timeout. This method returns an error if it times-out. Otherwise,
 // it returns the height for which the condition was satisfied.
 //
 // Notice: the height returned is safe for querying
@@ -220,7 +220,7 @@ func ExpectAlerts(chain *cosmos.CosmosChain, timeout time.Duration, alerts []ale
 
 	var height uint64
 
-	if err := testutil.WaitForCondition(timeout, 100 * time.Millisecond, func() (bool, error) {
+	if err := testutil.WaitForCondition(timeout, 100*time.Millisecond, func() (bool, error) {
 		height, err = chain.Height(context.Background())
 
 		resp, err := alertsClient.Alerts(context.Background(), &alerttypes.AlertsRequest{})
@@ -244,7 +244,7 @@ func ExpectAlerts(chain *cosmos.CosmosChain, timeout time.Duration, alerts []ale
 		return 0, err
 	}
 
-	return height, WaitForHeight(chain, height + 1, timeout)
+	return height, WaitForHeight(chain, height+1, timeout)
 }
 
 func mapAlerts(alerts []alerttypes.Alert) map[string]struct{} {
