@@ -61,8 +61,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	"github.com/skip-mev/slinky/abci/preblock"
-	"github.com/skip-mev/slinky/abci/preblock/math"
+	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
+	oraclepreblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/proposals"
 	"github.com/skip-mev/slinky/abci/ve"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -307,15 +307,15 @@ func NewSimApp(
 
 	// Create the aggregation function that will be used to aggregate oracle data
 	// from each validator.
-	aggregatorFn := math.VoteWeightedMedianFromContext(
+	aggregatorFn := oraclepreblockmath.VoteWeightedMedianFromContext(
 		app.Logger(),
 		app.StakingKeeper,
-		math.DefaultPowerThreshold,
+		oraclepreblockmath.DefaultPowerThreshold,
 	)
 
 	// Create the pre-finalize block hook that will be used to apply oracle data
 	// to the state before any transactions are executed (in finalize block).
-	oraclePreBlockHandler := preblock.NewOraclePreBlockHandler(
+	oraclePreBlockHandler := oraclepreblock.NewOraclePreBlockHandler(
 		app.Logger(),
 		aggregatorFn,
 		app.OracleKeeper,

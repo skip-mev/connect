@@ -30,20 +30,6 @@ func (_m *OracleKeeper) GetAllCurrencyPairs(ctx types.Context) []oracletypes.Cur
 	return r0
 }
 
-// SetPriceForCurrencyPair provides a mock function with given fields: ctx, cp, qp
-func (_m *OracleKeeper) SetPriceForCurrencyPair(ctx types.Context, cp oracletypes.CurrencyPair, qp oracletypes.QuotePrice) error {
-	ret := _m.Called(ctx, cp, qp)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, oracletypes.QuotePrice) error); ok {
-		r0 = rf(ctx, cp, qp)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // NewOracleKeeper creates a new instance of OracleKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewOracleKeeper(t interface {

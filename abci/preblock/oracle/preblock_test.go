@@ -1,4 +1,4 @@
-package preblock_test
+package oracle_test
 
 import (
 	"testing"
@@ -10,9 +10,9 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/abci/preblock"
-	preblockmath "github.com/skip-mev/slinky/abci/preblock/math"
-	"github.com/skip-mev/slinky/abci/preblock/math/mocks"
+	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
+	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
+	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	merticmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -29,7 +29,7 @@ type PreBlockTestSuite struct {
 	key           *storetypes.KVStoreKey
 	transientKey  *storetypes.TransientStoreKey
 	oracleKeeper  keeper.Keeper
-	handler       *preblock.OraclePreBlockHandler
+	handler       *preblock.PreBlockHandler
 }
 
 func TestPreBlockTestSuite(t *testing.T) {

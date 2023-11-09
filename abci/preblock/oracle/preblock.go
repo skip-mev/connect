@@ -1,4 +1,4 @@
-package preblock
+package oracle
 
 import (
 	"cosmossdk.io/log"
@@ -9,10 +9,10 @@ import (
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 )
 
-// OraclePreBlockHandler is responsible for aggregating oracle data from each
+// PreBlockHandler is responsible for aggregating oracle data from each
 // validator and writing the oracle data into the store before any transactions
 // are executed/finalized for a given block.
-type OraclePreBlockHandler struct {
+type PreBlockHandler struct { //golint:ignore
 	logger log.Logger
 
 	// priceAggregator is responsible for aggregating prices from each validator
@@ -33,19 +33,19 @@ type OraclePreBlockHandler struct {
 
 	// keeper is the keeper for the oracle module. This is utilized to write
 	// oracle data to state.
-	keeper OracleKeeper
+	keeper Keeper
 }
 
-// NewOraclePreBlockHandler returns a new OraclePreBlockHandler. The handler
+// NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
 // is responsible for writing oracle data included in vote extensions to state.
 func NewOraclePreBlockHandler(
 	logger log.Logger,
 	aggregateFn aggregator.AggregateFnFromContext,
-	oracleKeeper OracleKeeper,
+	oracleKeeper Keeper,
 	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
-) *OraclePreBlockHandler {
-	return &OraclePreBlockHandler{
+) *PreBlockHandler {
+	return &PreBlockHandler{
 		logger:             logger,
 		priceAggregator:    aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
 		aggregateFnWithCtx: aggregateFn,
@@ -58,7 +58,7 @@ func NewOraclePreBlockHandler(
 // PreBlocker is called by the base app before the block is finalized. It
 // is responsible for aggregating oracle data from each validator and writing
 // the oracle data to the store.
-func (h *OraclePreBlockHandler) PreBlocker() sdk.PreBlocker {
+func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 		// If vote extensions are not enabled, then we don't need to do anything.
 		if !ve.VoteExtensionsEnabled(ctx) || req == nil {
@@ -77,7 +77,7 @@ func (h *OraclePreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 		// If vote extensions have been enabled, the extended commit info - which
 		// contains the vote extensions - must be included in the request.
-		votes, err := h.GetOracleVotes(req.Txs)
+		votes, err := GetOracleVotes(req.Txs)
 		if err != nil {
 			h.logger.Error(
 				"failed to get extended commit info from proposal",
