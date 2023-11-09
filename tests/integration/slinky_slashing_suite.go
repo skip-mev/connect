@@ -1266,9 +1266,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			s.Require().NoError(err)
 		})
 
-		var (
-			alertSignerBalance math.Int
-		)
+		var alertSignerBalance math.Int
 
 		s.Run("submit alert + conclusion", func() {
 			// submit an alert for the infraction height
