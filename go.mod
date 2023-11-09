@@ -41,7 +41,7 @@ require (
 )
 
 require (
-	github.com/bits-and-blooms/bitset v1.8.0
+	github.com/bits-and-blooms/bitset v1.11.0
 	github.com/ethereum/go-ethereum v1.13.2
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0
