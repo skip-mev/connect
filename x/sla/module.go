@@ -5,14 +5,19 @@ import (
 	"encoding/json"
 
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/depinject"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/skip-mev/slinky/x/oracle/client/cli"
+	slamodulev1 "github.com/skip-mev/slinky/api/slinky/sla/module/v1"
+	"github.com/skip-mev/slinky/x/sla/client/cli"
 	"github.com/skip-mev/slinky/x/sla/keeper"
 	"github.com/skip-mev/slinky/x/sla/types"
 	"github.com/spf13/cobra"
@@ -138,18 +143,54 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 	return cdc.MustMarshalJSON(gs)
 }
 
-// DefaultGenesis returns default genesis state as raw bytes for the sla
-// module.
-func (am AppModule) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.NewDefaultGenesisState())
+func init() {
+	appmodule.Register(
+		&slamodulev1.Module{},
+		appmodule.Provide(ProvideModule),
+	)
 }
 
-// ValidateGenesis performs genesis state validation for the sla module.
-func (am AppModule) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
-	var gs types.GenesisState
-	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
-		return err
+type Inputs struct {
+	depinject.In
+
+	Config       *slamodulev1.Module
+	Cdc          codec.Codec
+	StoreService store.KVStoreService
+
+	StakingKeeper  types.StakingKeeper
+	SlashingKeeper types.SlashingKeeper
+}
+
+type Outputs struct {
+	depinject.Out
+
+	SLAKeeper keeper.Keeper
+	Module    appmodule.AppModule
+}
+
+func ProvideModule(in Inputs) Outputs {
+	var (
+		authority sdk.AccAddress
+		err       error
+	)
+	if in.Config.Authority != "" {
+		authority, err = sdk.AccAddressFromBech32(in.Config.Authority)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		authority = authtypes.NewModuleAddress(govtypes.ModuleName)
 	}
 
-	return gs.ValidateBasic()
+	slaKeeper := keeper.NewKeeper(
+		in.StoreService,
+		in.Cdc,
+		authority,
+		in.StakingKeeper,
+		in.SlashingKeeper,
+	)
+
+	m := NewAppModule(in.Cdc, *slaKeeper)
+
+	return Outputs{SLAKeeper: *slaKeeper, Module: m}
 }

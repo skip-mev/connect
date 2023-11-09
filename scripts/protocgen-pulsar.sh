@@ -18,3 +18,6 @@ echo "Generating API module"
 
 echo "fixing alerts.pulsar.go"
 sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/alerts/v1/alerts.pulsar.go && rm ./api/slinky/alerts/v1/alerts.pulsar.go.bak
+
+echo "fixing sla.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/sla/v1/genesis.pulsar.go && rm ./api/slinky/sla/v1/genesis.pulsar.go.bak
