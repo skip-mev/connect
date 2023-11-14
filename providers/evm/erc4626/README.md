@@ -32,7 +32,6 @@ For example, Real Yield ETH uses 18 decimal places. It's metadata entry would
 look like:
 
 ```toml
-[oracle.providers.token_name_to_metadata]
 ryETH = {
     symbol = "0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec",
     decimals = 18
@@ -42,3 +41,6 @@ ryETH = {
 The resulting contract function call for price retrieval would be 
 `previewRedeem(1000000000000000000)`. 
 
+## RPC URL
+
+By default, the `AlchemyURL` "https://eth-mainnet.g.alchemy.com/v2/" is recommended.

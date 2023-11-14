@@ -4,22 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
-
-// NameToSymbol is a map of currency names to their symbols.
-var NameToSymbol = map[string]string{
-	"BITCOIN":  "BTC",
-	"COSMOS":   "ATOM",
-	"ETHEREUM": "ETH",
-	"USD":      "USD",
-	"POLKADOT": "DOT",
-	"POLYGON":  "MATIC",
-}
 
 // getPriceForPair returns the spot price of a currency pair. In practice,
 // this should not be used because price data should come from an aggregated
@@ -33,13 +24,13 @@ var NameToSymbol = map[string]string{
 //	    "currency": "USD"
 //	  }
 //	}
-func getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*aggregator.QuotePrice, error) {
-	baseSymbol, ok := NameToSymbol[pair.Base]
+func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*aggregator.QuotePrice, error) {
+	baseSymbol, ok := p.config.NameToSymbol[strings.ToLower(pair.Base)]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
 	}
 
-	quoteSymbol, ok := NameToSymbol[pair.Quote]
+	quoteSymbol, ok := p.config.NameToSymbol[strings.ToLower(pair.Quote)]
 	if !ok {
 		return nil, fmt.Errorf("invalid quote currency %s", pair.Quote)
 	}

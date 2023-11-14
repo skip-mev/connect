@@ -1,0 +1,36 @@
+###############################################################################
+###                               Oracle                                    ###
+###############################################################################
+# OracleConfig TOML Configuration
+
+# InProcess specifies whether the oracle is currently running in-process (true) or out-of-process (false).
+in_process = true
+
+# Timeout is the time that the client is willing to wait for responses from the oracle.
+timeout = "2s"  # Replace "2s" with your desired timeout duration.
+
+# RemoteAddress is the address of the remote oracle server (if it is running out-of-process).
+remote_address = ""
+
+# UpdateInterval is the interval at which the oracle will fetch prices from providers.
+update_interval = "2s"  # Replace "2s" with your desired update interval duration.
+
+# Providers is the list of providers that the oracle will fetch prices from.
+
+[[providers]]
+name = "coinbase"
+path = "config/local/providers/coinbase.toml"
+
+[[providers]]
+name = "coingecko"
+path = "config/local/providers/coingecko.toml"
+
+[[providers]]
+name = "coinmarketcap"
+path = "config/local/providers/coinmarketcap.toml"
+
+# Currency Pairs
+
+[[currency_pairs]]
+base = "BITCOIN"
+quote = "USD"

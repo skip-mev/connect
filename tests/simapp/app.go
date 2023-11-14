@@ -65,10 +65,11 @@ import (
 	oraclepreblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/proposals"
 	"github.com/skip-mev/slinky/abci/ve"
+	"github.com/skip-mev/slinky/aggregator"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	oracleservice "github.com/skip-mev/slinky/service"
-	oracleclient "github.com/skip-mev/slinky/service/client"
+	serviceclient "github.com/skip-mev/slinky/service/client"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	"github.com/skip-mev/slinky/x/alerts"
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
@@ -271,28 +272,66 @@ func NewSimApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
-	// read oracle config from app-opts, and construct oracle service
+	//----------------------------------------------------------------------//
+	//						  ORACLE INITIALIZATION 						//
+	//----------------------------------------------------------------------//
+
+	// Read general config from app-opts, and construct oracle service.
 	cfg, err := oracleconfig.ReadConfigFromAppOpts(appOpts)
 	if err != nil {
 		panic(err)
 	}
 
-	metrics, consAddress, err := servicemetrics.NewServiceMetricsFromConfig(cfg.Metrics.AppMetrics)
+	oracleCfg, err := oracleconfig.ReadOracleConfigFromFile(cfg.OraclePath)
 	if err != nil {
 		panic(err)
 	}
 
-	app.oracleService, err = oracleclient.NewOracleServiceFromConfig(*cfg, metrics, app.Logger())
+	metricsCfg, err := oracleconfig.ReadMetricsConfigFromFile(cfg.MetricsPath)
 	if err != nil {
 		panic(err)
 	}
+
+	// Create the oracle service.
+	app.oracleService, err = serviceclient.NewOracleService(
+		app.Logger(),
+		oracleCfg,
+		metricsCfg,
+		DefaultProviderFactory(),
+		aggregator.ComputeMedian(),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	// Create the metrics service that will be used on the application.
+	metrics, consAddress, err := servicemetrics.NewServiceMetricsFromConfig(metricsCfg.AppMetrics)
+	if err != nil {
+		panic(err)
+	}
+
+	// If app level instrumentation is enabled, then wrap the oracle service with a metrics client
+	// to get metrics on the oracle service (for ABCI++). This will allow the instrumentation to track
+	// latency in VerifyVoteExtension requests and more.
+	if metricsCfg.AppMetrics.Enabled {
+		app.oracleService = serviceclient.NewMetricsClient(app.Logger(), app.oracleService, metrics)
+	}
+
 	// start the oracle service
-	go app.oracleService.Start(context.Background())
+	go func() {
+		if err := app.oracleService.Start(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
 
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {
 		panic(err)
 	}
+
+	// -------------------------------------------------------------------- //
+	// 						  APP INITIALIZATION   	   					    //
+	// -------------------------------------------------------------------- //
 
 	// Create the proposal handler that will be used to fill proposals with
 	// transactions and oracle data.
@@ -336,8 +375,8 @@ func NewSimApp(
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
 
 	// start the prometheus server if required
-	if cfg.Metrics.AppMetrics.Enabled || cfg.Metrics.OracleMetrics.Enabled {
-		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, app.Logger())
+	if metricsCfg.AppMetrics.Enabled || metricsCfg.OracleMetrics.Enabled {
+		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, app.Logger())
 		if err != nil {
 			panic(err)
 		}

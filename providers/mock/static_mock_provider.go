@@ -2,16 +2,17 @@ package mock
 
 import (
 	"context"
-	"strconv"
-	"time"
+	"fmt"
 
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/spf13/viper"
 )
 
-var _ types.Provider = (*StaticMockProvider)(nil)
+var _ oracle.Provider = (*StaticMockProvider)(nil)
 
 type (
 	// StaticMockProvider defines a mocked exchange rate provider using fixed exchange
@@ -21,17 +22,10 @@ type (
 		currencyPairs []oracletypes.CurrencyPair
 	}
 
-	// FailingMockProvider defines a mocked exchange rate provider that always
-	// fails when fetching prices.
-	FailingMockProvider struct {
-		*StaticMockProvider
-	}
-
-	// TimeoutMockProvider defines a mocked exchange rate provider that always
-	// times out when fetching prices.
-	TimeoutMockProvider struct {
-		*StaticMockProvider
-		timeout time.Duration
+	// StaticMockProviderConfig is a map of token names to their metadata.
+	StaticMockProviderConfig struct {
+		// TokenPrices is a map of token names to their metadata.
+		TokenPrices map[string]string `mapstructure:"tokens" toml:"tokens"`
 	}
 )
 
@@ -69,29 +63,37 @@ func NewStaticMockProvider() *StaticMockProvider {
 // NewStaticMockProviderFromConfig constructs a new static mock provider from the config
 // Notice this method expects the TokenNameToSymbol map to be populated w/ entries of the form
 // CurrencyPair.ToString(): uint256.NewInt(price)
-func NewStaticMockProviderFromConfig(config types.ProviderConfig) *StaticMockProvider {
+func NewStaticMockProviderFromConfig(providerConfig config.ProviderConfig) (*StaticMockProvider, error) {
+	if providerConfig.Name != "static-mock-provider" {
+		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", providerConfig.Name)
+	}
+
+	config, err := ReadStaticMockProviderConfigFromFile(providerConfig.Path)
+	if err != nil {
+		return nil, err
+	}
+
 	s := StaticMockProvider{
 		exchangeRates: make(map[oracletypes.CurrencyPair]aggregator.QuotePrice),
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
 
-	for cpString, metadata := range config.TokenNameToMetadata {
+	for cpString, price := range config.TokenPrices {
 		cp, err := oracletypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			continue
 		}
 
-		priceString := metadata.Symbol
-		priceInt, err := strconv.Atoi(priceString)
+		price, err := uint256.FromHex(price)
 		if err != nil {
-			continue
+			return nil, fmt.Errorf("failed to parse price %s for currency pair %s", price, cpString)
 		}
 
-		s.exchangeRates[cp] = aggregator.QuotePrice{Price: uint256.NewInt(uint64(priceInt))}
+		s.exchangeRates[cp] = aggregator.QuotePrice{Price: price}
 		s.currencyPairs = append(s.currencyPairs, cp)
 	}
 
-	return &s
+	return &s, nil
 }
 
 // Name returns the name of the mock provider.
@@ -112,43 +114,21 @@ func (p StaticMockProvider) GetPairs() []oracletypes.CurrencyPair {
 	return p.currencyPairs
 }
 
-var _ types.Provider = (*FailingMockProvider)(nil)
+// ReadStaticMockProviderConfigFromFile reads the static mock provider config from the given file.
+func ReadStaticMockProviderConfigFromFile(path string) (StaticMockProviderConfig, error) {
+	// read in the config file
+	viper.SetConfigFile(path)
+	viper.SetConfigType("toml")
 
-// NewFailingMockProvider returns a new failing mock provider.
-func NewFailingMockProvider() *FailingMockProvider {
-	return &FailingMockProvider{
-		StaticMockProvider: NewStaticMockProvider(),
+	if err := viper.ReadInConfig(); err != nil {
+		return StaticMockProviderConfig{}, err
 	}
-}
 
-// Name returns the name of the failing mock provider.
-func (p FailingMockProvider) Name() string {
-	return "failing-mock-provider"
-}
-
-// GetPrices always fails for the failing mock provider.
-func (p FailingMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
-	panic("mock provider always fails")
-}
-
-var _ types.Provider = (*TimeoutMockProvider)(nil)
-
-// NewTimeoutMockProvider returns a new timeout mock provider.
-func NewTimeoutMockProvider(timeout time.Duration) *TimeoutMockProvider {
-	return &TimeoutMockProvider{
-		StaticMockProvider: NewStaticMockProvider(),
-		timeout:            timeout,
+	// parse config
+	var config StaticMockProviderConfig
+	if err := viper.Unmarshal(&config); err != nil {
+		return StaticMockProviderConfig{}, err
 	}
-}
 
-// Name returns the name of the timeout mock provider.
-func (p TimeoutMockProvider) Name() string {
-	return "timeout-mock-provider"
-}
-
-// GetPrices always times out for the timeout mock provider.
-func (p TimeoutMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
-	time.Sleep(1*time.Second + p.timeout)
-
-	panic("mock provider should always times out")
+	return config, nil
 }

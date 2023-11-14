@@ -2,11 +2,13 @@ package coinmarketcap
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -15,31 +17,39 @@ const (
 	Name = "coinmarketcap"
 )
 
-var _ types.Provider = (*Provider)(nil)
+var _ oracle.Provider = (*Provider)(nil)
 
 // Provider is the implementation of the oracle's Provider interface for coinmarketcap.
 type Provider struct {
-	// set of pairs to query prices for
-	pairs []oracletypes.CurrencyPair
-
-	// logger
 	logger log.Logger
 
-	// api-key is the api-key accompanying requests to the coinmarketcap api.
-	apiKey string
+	// pairs is a list of currency pairs that the provider should fetch
+	// prices for.
+	pairs []oracletypes.CurrencyPair
 
-	// TokenNameToMetadata is a map of currency pairs to their metadata.
-	tokenNameToMetadata map[string]types.TokenMetadata
+	// config is the coinmarketcap config.
+	config Config
 }
 
 // NewProvider returns a new coinmarketcap provider. It uses the provided API-key in the header of outgoing requests to coinmarketcap's API.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey string, tokenNameToMetadata map[string]types.TokenMetadata) *Provider {
-	return &Provider{
-		pairs:               pairs,
-		logger:              logger,
-		apiKey:              apiKey,
-		tokenNameToMetadata: tokenNameToMetadata,
+func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, providerConfig config.ProviderConfig) (*Provider, error) {
+	if providerConfig.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerConfig.Name)
 	}
+
+	config, err := ReadCoinMarketCapConfigFromFile(providerConfig.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	logger = logger.With("provider", Name)
+	logger.Info("creating new coinmarketcap provider", "pairs", pairs, "config", config)
+
+	return &Provider{
+		pairs:  pairs,
+		logger: logger,
+		config: config,
+	}, nil
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs. This method starts all
@@ -112,26 +122,4 @@ func (p *Provider) SetPairs(pairs ...oracletypes.CurrencyPair) {
 // GetPairs returns the currency pairs that the provider is fetching prices for.
 func (p *Provider) GetPairs() []oracletypes.CurrencyPair {
 	return p.pairs
-}
-
-// getSymbolForPair returns the symbol for a currency pair.
-func (p *Provider) getSymbolForTokenName(tokenName string) string {
-	if metadata, ok := p.tokenNameToMetadata[tokenName]; ok {
-		return metadata.Symbol
-	}
-
-	return tokenName
-}
-
-// finish takes a wait-group, and returns a channel that is sent on when the
-// Waitgroup is finished.
-func finish(wg *sync.WaitGroup) <-chan struct{} {
-	ch := make(chan struct{})
-
-	// non-blocing wait for waitgroup to finish, and return channel
-	go func() {
-		wg.Wait()
-		close(ch)
-	}()
-	return ch
 }

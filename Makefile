@@ -9,7 +9,8 @@ BUILD_DIR ?= $(CURDIR)/build
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
-CONFIG_FILE ?= $(CURDIR)/conf/dev/config.toml
+ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.toml
+METRICS_CONFIG_FILE ?= $(CURDIR)/config/local/metrics.toml
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
@@ -22,7 +23,7 @@ build:
 	go build -o ./build/ ./...
 
 run-oracle-server: build
-	./build/oracle -config ${CONFIG_FILE}
+	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --metrics-config-path ${METRICS_CONFIG_FILE}
 
 .PHONY: build run-oracle-server
 
@@ -102,24 +103,25 @@ build-configs: build-test-app
 	rm -rf $(HOMEDIR)
 
 	./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
-	./build/slinkyd keys add validator --home $(HOMEDIR)
-	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR)
-	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR)
-	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR)
+	./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
+	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
+	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
+	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
 	./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
-	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS) 
+	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BITCOIN", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
+# this will set the enviornment variable for running locally
 start-app:
-	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level debug --home $(HOMEDIR)
+	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level info --home $(HOMEDIR)
 
 
 # build-and-start-app builds a slinky simulation application binary in the build folder
 # and initializes a single validator configuration. If desired, users can suppliment
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
-build-and-start-app: build-test-app build-configs start-app
+build-and-start-app: build-configs start-app
 
 .PHONY: build-test-app build-configs build-and-start-app start-app
 

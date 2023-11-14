@@ -2,10 +2,12 @@ package coinbase
 
 import (
 	"context"
+	"fmt"
 
 	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -14,23 +16,42 @@ const (
 	Name = "coinbase"
 )
 
-var _ types.Provider = (*Provider)(nil)
+var _ oracle.Provider = (*Provider)(nil)
 
 // Provider implements the Provider interface for Coinbase. This provider
 // is a very simple implementation that fetches spot prices from the Coinbase API.
 type Provider struct {
-	pairs  []oracletypes.CurrencyPair
 	logger log.Logger
+
+	// pairs is a list of currency pairs that the provider should fetch
+	// prices for.
+	pairs []oracletypes.CurrencyPair
+
+	// config is the Coinbase config.
+	config Config
 }
 
 // NewProvider returns a new Coinbase provider.
 //
 // THIS PROVIDER SHOULD NOT BE USED IN PRODUCTION. IT IS ONLY MEANT FOR TESTING.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair) *Provider {
+func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, providerConfig config.ProviderConfig) (*Provider, error) {
+	if providerConfig.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerConfig.Name)
+	}
+
+	config, err := ReadCoinbaseConfigFromFile(providerConfig.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	logger = logger.With("provider", Name)
+	logger.Info("creating new coinbase provider", "pairs", pairs, "config", config)
+
 	return &Provider{
 		pairs:  pairs,
 		logger: logger,
-	}
+		config: config,
+	}, nil
 }
 
 // Name returns the name of the provider.
@@ -43,7 +64,9 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 	resp := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 
 	for _, currencyPair := range p.pairs {
-		spotPrice, err := getPriceForPair(ctx, currencyPair)
+		p.logger.Info("fetching price for pair", currencyPair.ToString())
+
+		spotPrice, err := p.getPriceForPair(ctx, currencyPair)
 		if err != nil {
 			p.logger.Error(
 				p.Name(),

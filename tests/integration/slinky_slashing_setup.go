@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"path"
 	"strconv"
 	"time"
 
@@ -14,9 +15,12 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/holiman/uint256"
+	"github.com/pelletier/go-toml/v2"
 	"github.com/skip-mev/slinky/abci/proposals"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/mock"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
@@ -161,16 +165,36 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 		return err
 	}
 
-	oCfg := DefaultOracleConfig()
-	oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
+	oracle := GetOracleSideCar(node)
+
+	oCfg, mCfg := DefaultOracleConfig(node)
+	oCfg.Providers = append(oCfg.Providers, config.ProviderConfig{
 		Name: "static-mock-provider",
-		TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
-			ticker.ToString(): {
-				Symbol: strconv.FormatInt(price, 10),
-			},
-		},
+		Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
 	})
-	SetOracleConfig(node, oCfg)
+	oCfg.CurrencyPairs = append(oCfg.CurrencyPairs, ticker)
+
+	// Configure the default price on the static mock provider.
+	hexPrice, err := uint256.FromDecimal(strconv.FormatInt(price, 10))
+	if err != nil {
+		return err
+	}
+	staticMockProvider := mock.StaticMockProviderConfig{
+		TokenPrices: map[string]string{
+			ticker.ToString(): hexPrice.String(),
+		},
+	}
+
+	// Write the config to the file.
+	bz, err := toml.Marshal(staticMockProvider)
+	if err != nil {
+		return err
+	}
+	if err := oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath); err != nil {
+		return err
+	}
+
+	SetOracleConfigsOnOracle(oracle, oCfg, mCfg)
 
 	return RestartOracle(node)
 }

@@ -44,7 +44,7 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 
 	// make request to coinmarketcap api w/ X-CMC_PRO_API_KEY header set to api-key
 	base, quote := p.getSymbolForTokenName(pair.Base), p.getSymbolForTokenName(pair.Quote)
-	p.logger.Info("Fetching price for pair", "pair", pair, "base", base, "quote", quote, "apikey", p.apiKey)
+	p.logger.Info("Fetching price for pair", "base", base, "quote", quote, "apikey", p.config.APIKey)
 
 	// make request to coinmarketcap api w/ X-CMC_PRO_API_KEY header set to api-key
 	var resp map[string]interface{}
@@ -57,7 +57,7 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 		},
 
 		func(req *http.Request) {
-			req.Header.Add(headerFieldKey, p.apiKey)
+			req.Header.Add(headerFieldKey, p.config.APIKey)
 		},
 	); err != nil {
 		return aggregator.QuotePrice{}, err

@@ -10,13 +10,12 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/aggregator"
+	"github.com/skip-mev/slinky/providers/evm"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const AlchemyURL string = "https://eth-mainnet.g.alchemy.com/v2/"
-
 func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.QuotePrice, error) {
-	metadata, ok := p.tokenNameToMetadata[pair.Quote]
+	metadata, ok := p.config.TokenNameToMetadata[pair.Quote]
 	if !ok {
 		return aggregator.QuotePrice{}, fmt.Errorf("token %s metadata not found", pair.Quote)
 	}
@@ -62,6 +61,6 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.Qu
 }
 
 // getRPCEndpoint returns the endpoint to fetch prices from.
-func getRPCEndpoint(apiKey string) string {
-	return fmt.Sprintf("%s/%s", AlchemyURL, apiKey)
+func getRPCEndpoint(config evm.Config) string {
+	return fmt.Sprintf("%s/%s", config.RPCEndpoint, config.APIKey)
 }

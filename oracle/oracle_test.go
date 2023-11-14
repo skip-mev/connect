@@ -11,8 +11,8 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
-	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/oracle/types/mocks"
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -316,19 +316,30 @@ func (suite *OracleTestSuite) TestProviders() {
 
 			expectedPrices := tc.fetchPrices()
 
-			tempProviders := make([]types.Provider, len(suite.providers))
+			oracleConfig := config.OracleConfig{
+				InProcess:      true,
+				RemoteAddress:  "",
+				UpdateInterval: suite.oracleTicker,
+			}
+
+			tempProviders := make([]oracle.Provider, len(suite.providers))
 			for i, provider := range suite.providers {
 				tempProviders[i] = provider
 			}
+			factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
+				return tempProviders, nil
+			}
 
 			// Initialize oracle
-			suite.oracle = oracle.New(
+			var err error
+			suite.oracle, err = oracle.New(
 				log.NewTestLogger(suite.T()),
-				suite.oracleTicker,
-				tempProviders,
+				oracleConfig,
+				factory,
 				suite.aggregationFn,
 				nil,
 			)
+			suite.Require().NoError(err)
 
 			// Start oracle
 			go func() {
@@ -366,19 +377,30 @@ func (suite *OracleTestSuite) TestProviders() {
 func (suite *OracleTestSuite) TestShutDownWithContextCancel() {
 	suite.SetupTest()
 
-	// Initialize oracle
-	suite.oracle = oracle.New(
-		log.NewTestLogger(suite.T()),
-		suite.oracleTicker,
-		[]types.Provider{
+	oracleConfig := config.OracleConfig{
+		InProcess:      true,
+		RemoteAddress:  "",
+		UpdateInterval: suite.oracleTicker,
+	}
+	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
+		return []oracle.Provider{
 			suite.createStaticProvider(
 				"static",
 				map[oracletypes.CurrencyPair]aggregator.QuotePrice{},
 			),
-		},
+		}, nil
+	}
+
+	// Initialize oracle
+	var err error
+	suite.oracle, err = oracle.New(
+		log.NewTestLogger(suite.T()),
+		oracleConfig,
+		factory,
 		suite.aggregationFn,
 		nil,
 	)
+	suite.Require().NoError(err)
 
 	ctx, cancel := context.WithCancel(suite.ctx)
 
@@ -409,19 +431,30 @@ func (suite *OracleTestSuite) TestShutDownWithContextCancel() {
 func (suite *OracleTestSuite) TestShutDownWithStop() {
 	suite.SetupTest()
 
-	// Initialize oracle
-	suite.oracle = oracle.New(
-		log.NewTestLogger(suite.T()),
-		suite.oracleTicker,
-		[]types.Provider{
+	oracleConfig := config.OracleConfig{
+		InProcess:      true,
+		RemoteAddress:  "",
+		UpdateInterval: suite.oracleTicker,
+	}
+	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
+		return []oracle.Provider{
 			suite.createStaticProvider(
 				"static",
 				map[oracletypes.CurrencyPair]aggregator.QuotePrice{},
 			),
-		},
+		}, nil
+	}
+
+	// Initialize oracle
+	var err error
+	suite.oracle, err = oracle.New(
+		log.NewTestLogger(suite.T()),
+		oracleConfig,
+		factory,
 		suite.aggregationFn,
 		nil,
 	)
+	suite.Require().NoError(err)
 
 	// Start oracle
 	go func() {
@@ -450,7 +483,7 @@ func (suite *OracleTestSuite) TestShutDownWithStop() {
 func (suite *OracleTestSuite) TestShutDownProviderWithTimeout() {
 	suite.SetupTest()
 
-	tempProviders := []types.Provider{
+	tempProviders := []oracle.Provider{
 		suite.createTimeoutProviderWithTimeout(
 			"timeout",
 			suite.oracleTicker*40,
@@ -463,14 +496,25 @@ func (suite *OracleTestSuite) TestShutDownProviderWithTimeout() {
 		),
 	}
 
+	oracleConfig := config.OracleConfig{
+		InProcess:      true,
+		RemoteAddress:  "",
+		UpdateInterval: suite.oracleTicker,
+	}
+	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
+		return tempProviders, nil
+	}
+
 	// Initialize oracle
-	suite.oracle = oracle.New(
+	var err error
+	suite.oracle, err = oracle.New(
 		log.NewTestLogger(suite.T()),
-		suite.oracleTicker,
-		tempProviders,
+		oracleConfig,
+		factory,
 		suite.aggregationFn,
 		nil,
 	)
+	suite.Require().NoError(err)
 
 	// Start oracle
 	go func() {

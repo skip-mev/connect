@@ -9,10 +9,10 @@ import (
 	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	metric_mocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
-	"github.com/skip-mev/slinky/oracle/types"
-	provider_mocks "github.com/skip-mev/slinky/oracle/types/mocks"
+	provider_mocks "github.com/skip-mev/slinky/oracle/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -32,7 +32,7 @@ type OracleMetricsTestSuite struct {
 }
 
 const (
-	oracleTicker = time.Second
+	oracleTicker = 1 * time.Second
 	provider1    = "provider1"
 	provider2    = "provider2"
 )
@@ -49,13 +49,24 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	// mock metrics
 	s.mockMetrics = metric_mocks.NewMetrics(s.T())
 
-	s.o = oracle.New(
+	oracleConfig := config.OracleConfig{
+		InProcess:      true,
+		RemoteAddress:  "",
+		UpdateInterval: oracleTicker,
+	}
+	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
+		return []oracle.Provider{s.mockProvider1, s.mockProvider2}, nil
+	}
+
+	var err error
+	s.o, err = oracle.New(
 		log.NewNopLogger(),
-		oracleTicker,
-		[]types.Provider{s.mockProvider1, s.mockProvider2},
+		oracleConfig,
+		factory,
 		aggregator.ComputeMedian(),
 		s.mockMetrics,
 	)
+	s.Require().NoError(err)
 }
 
 // test Tick metrics are updated correctly

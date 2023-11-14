@@ -1,0 +1,8 @@
+###############################################################################
+###                               CoinGecko                                 ###
+###############################################################################
+# This section contains the configuration for the CoinGecko API. This meant to be
+# used in a testing environment as this API is not production ready.
+
+# APIKey is the API key used to make requests to the CoinGecko API.
+api_key = ""
