@@ -45,9 +45,9 @@ func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 
 	// if an API key is set, add it to the request
 	var reqFn providers.ReqFn
-	if p.apiKey != "" {
+	if p.config.APIKey != "" {
 		reqFn = func(req *http.Request) {
-			req.Header.Set(apiKeyHeader, p.apiKey)
+			req.Header.Set(apiKeyHeader, p.config.APIKey)
 		}
 	}
 
@@ -88,7 +88,7 @@ func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 // getPriceEndpoint is the CoinGecko endpoint for getting the price of a
 // currency pair.
 func (p *Provider) getPriceEndpoint(base, quote string) string {
-	if p.apiKey != "" {
+	if p.config.APIKey != "" {
 		return fmt.Sprintf(apiURL+pairPriceRequest+precision, base, quote)
 	}
 	return fmt.Sprintf(baseURL+pairPriceRequest+precision, base, quote)

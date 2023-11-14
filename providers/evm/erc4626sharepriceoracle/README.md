@@ -40,7 +40,6 @@ be used to record the time weighted price.
 For example, Real Yield ETH's metadata entry would look like:
 
 ```toml
-[oracle.providers.token_name_to_metadata]
 ryETH = {
     symbol = "0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec",
     is_twap = false
@@ -66,3 +65,7 @@ For more information, refer to [the contract][1].
 
 [1]: https://github.com/PeggyJV/cellar-contracts/blob/97cc9070e6bdb3e55d8a3f074df5ac80d64f6be3/src/base/ERC4626SharePriceOracle.sol
 [2]: https://gist.github.com/cbrit/75eb6aeffcaddc17c4f226d8a40db591
+
+## RPC URL
+
+By default, the `AlchemyURL` "https://eth-mainnet.g.alchemy.com/v2/" is recommended.

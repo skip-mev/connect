@@ -2,16 +2,21 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"path"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/pelletier/go-toml"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	oracleservicetypes "github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/oracle/metrics"
+	"github.com/skip-mev/slinky/providers/mock"
+	service_metrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
@@ -35,25 +40,58 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 		HomeDir:     "/oracle",
 		Ports:       []string{"8080", "8081"},
 		StartCmd: []string{
-			"oracle", "-config", "/oracle/oracle.toml", "-host", "0.0.0.0", "-port", "8080",
+			"oracle",
+			"--oracle-config-path", "/oracle/oracle.toml",
+			"--metrics-config-path", "/oracle/metrics.toml",
+			"--host", "0.0.0.0",
+			"--port", "8080",
 		},
 		ValidatorProcess: true,
 		PreStart:         true,
 	}
 }
 
-func DefaultOracleConfig() oracleconfig.Config {
-	return oracleconfig.Config{
-		Oracle: oracleconfig.Oracle{
-			UpdateInterval: time.Millisecond,
+func DefaultOracleConfig(node *cosmos.ChainNode) (
+	oracleconfig.OracleConfig,
+	oracleconfig.MetricsConfig,
+) {
+	oracle := GetOracleSideCar(node)
+
+	// Create the oracle config
+	oracleConfig := oracleconfig.OracleConfig{
+		UpdateInterval: 500 * time.Millisecond,
+		InProcess:      false,
+		RemoteAddress:  fmt.Sprintf("%s:%s", oracle.HostName(), "8080"),
+		Timeout:        500 * time.Millisecond,
+	}
+
+	// get the consensus address of the node
+	bz, _, err := node.ExecBin(context.Background(), "cometbft", "show-address")
+	if err != nil {
+		panic(err)
+	}
+	consAddress := sdk.ConsAddress(bz)
+
+	// Create the metrics config
+	metricsConfig := oracleconfig.MetricsConfig{
+		PrometheusServerAddress: fmt.Sprintf("%s:%s", oracle.HostName(), "8081"),
+		OracleMetrics: metrics.Config{
+			Enabled: true,
 		},
-		Metrics: oracleconfig.Metrics{
-			PrometheusServerAddress: "0.0.0.0:8081",
-			OracleMetrics: oraclemetrics.Config{
-				Enabled: true,
-			},
+		AppMetrics: service_metrics.Config{
+			Enabled:              true,
+			ValidatorConsAddress: consAddress.String(),
 		},
 	}
+
+	return oracleConfig, metricsConfig
+}
+
+func GetOracleSideCar(node *cosmos.ChainNode) *cosmos.SidecarProcess {
+	if len(node.Sidecars) == 0 {
+		panic("no sidecars found")
+	}
+	return node.Sidecars[0]
 }
 
 type SlinkyIntegrationSuite struct {
@@ -116,11 +154,14 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 			node := c.Nodes()[i]
 			// add sidecars to node
 			AddSidecarToNode(node, s.oracleConfig)
+
 			// set config for the oracle
-			SetOracleConfig(node, DefaultOracleConfig())
+			oracleCfg, metricsCfg := DefaultOracleConfig(node)
+			SetOracleConfigsOnOracle(GetOracleSideCar(node), oracleCfg, metricsCfg)
+
 			// set the out-of-process oracle config for all nodes
 			node.WithPrestartNode(func(n *cosmos.ChainNode) {
-				SetOracleOutOfProcess(n)
+				SetOracleConfigsOnApp(n, oracleCfg, metricsCfg)
 			})
 		}
 	})
@@ -245,17 +286,27 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	s.Run("all nodes report prices", func() {
 		// update all oracle configs
 		for _, node := range s.chain.Nodes() {
-			oCfg := DefaultOracleConfig()
-			oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
-				Name: "static-mock-provider",
-				TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
-					"ETHEREUM/USDC": {
-						Symbol: "1140",
-					},
-				},
-			})
+			oracle := GetOracleSideCar(node)
 
-			SetOracleConfig(node, oCfg)
+			oracleConfig, metricsConfig := DefaultOracleConfig(node)
+			oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
+				Name: "static-mock-provider",
+				Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			})
+			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
+
+			// Write the static provider config to the node
+			staticConfig := mock.StaticMockProviderConfig{
+				TokenPrices: map[string]string{
+					cp.ToString(): "0x474",
+				},
+			}
+
+			bz, err := toml.Marshal(staticConfig)
+			s.Require().NoError(err)
+			s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
+
+			SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
 			RestartOracle(node)
 		}
 
@@ -331,9 +382,8 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 	s.Run("single node down, price updates", func() {
 		// stop single node's oracle process and check that all prices are reported
-		node := s.chain.Nodes()[3]
-		node.StopContainer(context.Background())
-		node.RemoveContainer(context.Background())
+		node := s.chain.Nodes()[0]
+		StopOracle(node)
 
 		// expect the following vote-extensions
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
@@ -367,8 +417,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		// expect update for height
 		s.Require().Equal(newNonce, oldNonce+1)
 
-		s.Require().NoError(node.CreateNodeContainer(context.Background()))
-		s.Require().NoError(node.StartContainer(context.Background()))
+		StartOracle(node)
 	})
 
 	s.Run("only 1 node reports a price (oracles are down)", func() {
@@ -428,23 +477,29 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
-		oCfg := DefaultOracleConfig()
-		oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
-			Name: "static-mock-provider",
-			TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
-				"ETHEREUM/USDC": {
-					Symbol: "1140",
-				},
-				"ETHEREUM/USDT": {
-					Symbol: "1141",
-				},
-				"ETHEREUM/USD": {
-					Symbol: "1142",
-				},
-			},
-		})
+		oracle := GetOracleSideCar(node)
 
-		SetOracleConfig(node, oCfg)
+		oracleConfig, metricsConfig := DefaultOracleConfig(node)
+		oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
+			Name: "static-mock-provider",
+			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+		})
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
+
+		// Write the static provider config to the node
+		staticConfig := mock.StaticMockProviderConfig{
+			TokenPrices: map[string]string{
+				cp1.ToString(): "0x474",
+				cp2.ToString(): "0x475",
+				cp3.ToString(): "0x476",
+			},
+		}
+
+		bz, err := toml.Marshal(staticConfig)
+		s.Require().NoError(err)
+		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
+
+		SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
 		RestartOracle(node)
 	}
 
@@ -494,26 +549,35 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		node := s.chain.Nodes()[0]
 		StopOracle(node)
 
-		oCfg := DefaultOracleConfig()
-		oCfg.Providers = append(oCfg.Providers, oracleservicetypes.ProviderConfig{
+		oracle := GetOracleSideCar(node)
+
+		oracleConfig, metricsConfig := DefaultOracleConfig(node)
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
+		oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
 			Name: "static-mock-provider",
-			TokenNameToMetadata: map[string]oracleservicetypes.TokenMetadata{
-				cp2.ToString(): {
-					Symbol: "1141",
-				},
-				cp3.ToString(): {
-					Symbol: "1142",
-				},
-			},
+			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
 		})
-		SetOracleConfig(node, oCfg)
+
+		// Write the static provider config to the node
+		staticConfig := mock.StaticMockProviderConfig{
+			TokenPrices: map[string]string{
+				cp1.ToString(): "0x474",
+				cp2.ToString(): "0x475",
+			},
+		}
+
+		bz, err := toml.Marshal(staticConfig)
+		s.Require().NoError(err)
+		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
+
+		SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
 		RestartOracle(node)
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[string]string{
+					"ETHEREUM/USDC": "0x474",
 					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
 				},
 			},
 			{

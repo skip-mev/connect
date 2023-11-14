@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"path"
 	"sort"
 	"strconv"
 	"sync"
@@ -32,8 +33,11 @@ import (
 )
 
 const (
-	oracleConfigPath = "oracle.toml"
-	appConfigPath    = "config/app.toml"
+	oracleConfigPath             = "oracle.toml"
+	metricsConfigPath            = "metrics.toml"
+	staticMockProviderConfigPath = "providers/static_mock_provider.toml"
+
+	appConfigPath = "config/app.toml"
 )
 
 // construct the network from a spec
@@ -57,63 +61,65 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 	return cosmosChain
 }
 
-// Modify the application config of a node so that the oracle is running out of process
-func SetOracleOutOfProcess(node *cosmos.ChainNode) {
+// SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
+func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.OracleConfig, metricsConfig oracleconfig.MetricsConfig) {
 	// read the app config from the node
 	bz, err := node.ReadFile(context.Background(), appConfigPath)
 	if err != nil {
 		panic(err)
 	}
 
-	// unmarshal the application config
+	// Unmarshall the app config to update the oracle and metrics file paths.
 	var appConfig map[string]interface{}
 	err = toml.Unmarshal(bz, &appConfig)
 	if err != nil {
 		panic(err)
 	}
 
-	// get the oracle config
-	oracleConfig, ok := appConfig["oracle"].(map[string]interface{})
+	oraclePath := path.Join(node.HomeDir(), oracleConfigPath)
+	metricsPath := path.Join(node.HomeDir(), metricsConfigPath)
+
+	oracleAppConfig, ok := appConfig["oracle"].(map[string]interface{})
 	if !ok {
 		panic("oracle config not found")
 	}
 
-	// set the oracle config to out of process
-	oracleConfig["in_process"] = false
-	oracleConfig["timeout"] = "500ms"
+	// Update the file paths to the oracle and metrics configs.
+	oracleAppConfig["oracle_path"] = oraclePath
+	oracleAppConfig["metrics_path"] = metricsPath
 
-	if len(node.Sidecars) == 0 {
-		panic("no sidecars found")
-	}
-
-	// get the oracle sidecar
-	oracle := node.Sidecars[0]
-	// set the oracle port
-	oracleConfig["remote_address"] = fmt.Sprintf("%s:%s", oracle.HostName(), "8080")
-
-	// get the consensus address of the node
-	bz, _, err = node.ExecBin(context.Background(), "cometbft", "show-address")
-	if err != nil {
-		panic(err)
-	}
-
-	oracleConfig["metrics"] = map[string]interface{}{
-		"prometheus_server_address": "0.0.0.0:26655",
-		"app_metrics": map[string]interface{}{
-			"validator_cons_address": string(bz[:len(bz)-1]),
-			"enabled":                true,
-		},
-	}
-
-	appConfig["oracle"] = oracleConfig
-
-	// write back
+	appConfig["oracle"] = oracleAppConfig
 	bz, err = toml.Marshal(appConfig)
 	if err != nil {
 		panic(err)
 	}
 
+	// Write back the app config.
 	err = node.WriteFile(context.Background(), bz, appConfigPath)
+	if err != nil {
+		panic(err)
+	}
+
+	// marshal the oracle config
+	bz, err = toml.Marshal(oracleConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	// write the oracle config to the node
+	err = node.WriteFile(context.Background(), bz, oracleConfigPath)
+	if err != nil {
+		panic(err)
+	}
+
+	// marshal the metrics config
+	bz, err = toml.Marshal(metricsConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	// write the metrics config to the node
+	err = node.WriteFile(context.Background(), bz, metricsConfigPath)
 	if err != nil {
 		panic(err)
 	}
@@ -160,22 +166,33 @@ func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *int
 	return ic
 }
 
-// SetOracleConfig writes the given oracle config to the given node
-func SetOracleConfig(node *cosmos.ChainNode, conf oracleconfig.Config) {
-	if len(node.Sidecars) != 1 {
-		panic("expected node to have oracle sidecar")
-	}
-
-	oracle := node.Sidecars[0]
-
+// SetOracleConfigsOnOracle writes the oracle and metrics configs to the given node's
+// oracle sidecar.
+func SetOracleConfigsOnOracle(
+	oracle *cosmos.SidecarProcess,
+	oracleCfg oracleconfig.OracleConfig,
+	metricsCfg oracleconfig.MetricsConfig,
+) {
 	// marshal the oracle config
-	bz, err := toml.Marshal(conf)
+	bz, err := toml.Marshal(oracleCfg)
 	if err != nil {
 		panic(err)
 	}
 
 	// write the oracle config to the node
 	err = oracle.WriteFile(context.Background(), bz, oracleConfigPath)
+	if err != nil {
+		panic(err)
+	}
+
+	// marshal the metrics config
+	bz, err = toml.Marshal(metricsCfg)
+	if err != nil {
+		panic(err)
+	}
+
+	// write the metrics config to the node
+	err = oracle.WriteFile(context.Background(), bz, metricsConfigPath)
 	if err != nil {
 		panic(err)
 	}

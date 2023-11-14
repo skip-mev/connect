@@ -1,6 +1,10 @@
 package coingecko
 
-import "github.com/skip-mev/slinky/x/oracle/types"
+import (
+	"strings"
+
+	"github.com/skip-mev/slinky/x/oracle/types"
+)
 
 // getUniqueBaseAndQuoteDenoms returns a list of unique base and quote denoms
 // from a list of currency pairs.
@@ -14,12 +18,12 @@ func getUniqueBaseAndQuoteDenoms(pairs []types.CurrencyPair) ([]string, []string
 	for _, pair := range pairs {
 		if _, ok := seenQuotes[pair.Quote]; !ok {
 			seenQuotes[pair.Quote] = struct{}{}
-			quotes = append(quotes, pair.Quote)
+			quotes = append(quotes, strings.ToLower(pair.Quote))
 		}
 
 		if _, ok := seenBases[pair.Base]; !ok {
 			seenBases[pair.Base] = struct{}{}
-			bases = append(bases, pair.Base)
+			bases = append(bases, strings.ToLower(pair.Base))
 		}
 	}
 

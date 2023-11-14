@@ -12,7 +12,6 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/oracle/types"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	servicetypes "github.com/skip-mev/slinky/service/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -34,7 +33,7 @@ type Oracle struct {
 	// Each provider is responsible for fetching prices for a given set of
 	// currency pairs (base, quote). The oracle will fetch prices from each
 	// provider concurrently.
-	providers []types.Provider
+	providers []Provider
 
 	// --------------------- Oracle Config --------------------- //
 	// oracleTicker is the interval at which the oracle will fetch prices from
@@ -65,71 +64,35 @@ type Oracle struct {
 // price across all providers.
 func New(
 	logger log.Logger,
-	oracleTicker time.Duration,
-	providers []types.Provider,
+	config config.OracleConfig,
+	providerFactory ProviderFactory,
 	aggregateFn aggregator.AggregateFn,
 	m metrics.Metrics,
-) *Oracle {
+) (*Oracle, error) {
 	if logger == nil {
-		panic("logger cannot be nil")
+		return nil, fmt.Errorf("logger cannot be nil")
 	}
 
-	if providers == nil {
-		panic("price providers cannot be nil")
+	providers, err := providerFactory(logger, config)
+	if err != nil {
+		return nil, err
 	}
 
 	if m == nil {
 		m = metrics.NewNopMetrics()
 	}
 
+	logger = logger.With("server", "oracle")
+	logger.Info("creating oracle", "update_interval", config.UpdateInterval, "num_providers", len(providers))
+
 	return &Oracle{
 		logger:          logger,
 		closer:          ssync.NewCloser(),
-		oracleTicker:    oracleTicker,
+		oracleTicker:    config.UpdateInterval,
 		providers:       providers,
 		priceAggregator: aggregator.NewPriceAggregator(aggregateFn),
 		metrics:         m,
-	}
-}
-
-// NewOracleFromConfig returns a new oracle instance from the given OracleConfig.
-func NewOracleFromConfig(logger log.Logger, cfg *config.Config) (*Oracle, error) {
-	// construct providers from the given currency pairs
-	providers, err := cfg.GetProviders(logger)
-	if err != nil {
-		return nil, err
-	}
-
-	// configure metrics for the oracle
-	m := metrics.NewNopMetrics()
-	if cfg.OracleMetrics.Enabled {
-		m = metrics.NewMetrics()
-	}
-
-	return New(logger, cfg.UpdateInterval, providers, aggregator.ComputeMedian(), m), nil
-}
-
-// NewDefaultOracle returns a new instance of an Oracle with a default aggregate
-// function. It registers the given providers with the same set of currency pairs.
-// The default aggregate function computes the median price across all providers.
-func NewDefaultOracle(
-	logger log.Logger,
-	oracleTicker time.Duration,
-	providers []types.Provider,
-	currencyPairs []oracletypes.CurrencyPair,
-) *Oracle {
-	// validate the currency-pairs
-	for _, cp := range currencyPairs {
-		if err := cp.ValidateBasic(); err != nil {
-			panic(fmt.Sprintf("invalid currency pair %s", cp))
-		}
-	}
-
-	for _, provider := range providers {
-		provider.SetPairs(currencyPairs...)
-	}
-
-	return New(logger, oracleTicker, providers, aggregator.ComputeMedian(), nil)
+	}, nil
 }
 
 // IsRunning returns true if the oracle is running.
@@ -255,7 +218,7 @@ func (o *Oracle) tick(ctx context.Context) {
 // main go group gets cancelled, this will trigger this go routine to short-circuit return.
 // In the case where the provider fails to fetch prices, we will log the error and not update
 // the price aggregator. We gracefully handle panics by recovering and logging the error.
-func (o *Oracle) fetchPricesFn(ctx context.Context, provider types.Provider) func() error {
+func (o *Oracle) fetchPricesFn(ctx context.Context, provider Provider) func() error {
 	return func() error {
 		o.logger.Info("fetching prices", "provider", provider.Name())
 

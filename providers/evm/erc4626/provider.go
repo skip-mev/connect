@@ -8,7 +8,9 @@ import (
 	"cosmossdk.io/log"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/oracle"
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/evm"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -17,29 +19,39 @@ const (
 	Name = "erc4626"
 )
 
-var _ types.Provider = (*Provider)(nil)
+var _ oracle.Provider = (*Provider)(nil)
 
 // Provider is the implementation of the oracle's Provider interface for an Etheruem smart contract that implements the ERC4626 interface.
 type Provider struct {
-	// set of pairs to provide prices for
-	pairs []oracletypes.CurrencyPair
-
-	// logger
 	logger log.Logger
 
-	// tokenNameToMetadata is a map of names to their metadata.
-	tokenNameToMetadata map[string]types.TokenMetadata
+	// pairs is a list of currency pairs that the provider should fetch
+	// prices for.
+	pairs []oracletypes.CurrencyPair
 
-	// rpcEndpoint is the endpoint of the ethereum rpc node to use for querying
+	// config is the ERC4626 config.
+	config evm.Config
+
+	// rpcEndpoint is the URL of the RPC endpoint. This is used to make RPC calls to the
+	// Ethereum node with a configured API key.
 	rpcEndpoint string
 }
 
 // NewProvider returns a new ERC4626 provider. It uses the provided API-key to make RPC calls to Alchemy.
 // Note that only the Quote denom is used; the Base denom is naturally determined by the contract address.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey string, tokenNameToMetadata map[string]types.TokenMetadata) (*Provider, error) {
+func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, providerCfg config.ProviderConfig) (*Provider, error) {
+	if providerCfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
+	}
+
+	config, err := evm.ReadEVMConfigFromFile(providerCfg.Path)
+	if err != nil {
+		return nil, err
+	}
+
 	provider := &Provider{}
 	for _, pair := range pairs {
-		if metadata, ok := tokenNameToMetadata[pair.Quote]; ok {
+		if metadata, ok := config.TokenNameToMetadata[pair.Quote]; ok {
 			if !common.IsHexAddress(metadata.Symbol) {
 				return nil, fmt.Errorf("invalid contract address: %s", metadata.Symbol)
 			}
@@ -48,9 +60,12 @@ func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, apiKey str
 		}
 	}
 
-	provider.tokenNameToMetadata = tokenNameToMetadata
+	logger = logger.With("provider", Name)
+	logger.Info("creating new ERC4626 provider", "pairs", pairs, "config", config)
+
 	provider.logger = logger
-	provider.rpcEndpoint = getRPCEndpoint(apiKey)
+	provider.rpcEndpoint = getRPCEndpoint(config)
+	provider.config = config
 
 	return provider, nil
 }
@@ -129,7 +144,7 @@ func (p *Provider) SetPairs(pairs ...oracletypes.CurrencyPair) {
 
 // getPairContractAddress gets the contract address for the pair.
 func (p *Provider) getPairContractAddress(pair oracletypes.CurrencyPair) (string, bool) {
-	metadata, found := p.tokenNameToMetadata[pair.Quote]
+	metadata, found := p.config.TokenNameToMetadata[pair.Quote]
 	if found {
 		return metadata.Symbol, found
 	}
@@ -139,7 +154,7 @@ func (p *Provider) getPairContractAddress(pair oracletypes.CurrencyPair) (string
 
 // getQuoteTokenDecimals gets the decimals of the quote token.
 func (p *Provider) getQuoteTokenDecimals(pair oracletypes.CurrencyPair) (uint64, bool) {
-	metadata, found := p.tokenNameToMetadata[pair.Quote]
+	metadata, found := p.config.TokenNameToMetadata[pair.Quote]
 	if found {
 		return metadata.Decimals, found
 	}

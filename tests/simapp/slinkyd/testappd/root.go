@@ -180,13 +180,21 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.MinGasPrices = "0stake"
 	// srvCfg.BaseConfig.IAVLDisableFastNode = true // disable fastnode by default
 
+	// Sample config to run this locally
+	//
+	// oracleConfig := oracleconfig.Config{
+	// 	OraclePath:  "config/local/oracle.toml",
+	// 	MetricsPath: "config/local/metrics.toml",
+	// }
+	oracleConfig := oracleconfig.Config{}
+
 	customAppConfig := CustomAppConfig{
 		Config: *srvCfg,
 		WASM: WASMConfig{
 			LruSize:       1,
 			QueryGasLimit: 300000,
 		},
-		Oracle: oracleconfig.Config{},
+		Oracle: oracleConfig,
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate + `
