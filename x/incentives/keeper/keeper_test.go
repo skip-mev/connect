@@ -6,12 +6,13 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/skip-mev/slinky/x/incentives/keeper"
 	"github.com/skip-mev/slinky/x/incentives/types"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/badprice"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/mocks"
-	"github.com/stretchr/testify/suite"
 )
 
 type KeeperTestSuite struct {

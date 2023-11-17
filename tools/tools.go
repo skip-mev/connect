@@ -10,6 +10,8 @@ package tools
 //nolint
 
 import (
+	_ "github.com/client9/misspell"
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/vektra/mockery/v2"
+	_ "mvdan.cc/gofumpt"
 )

@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"cosmossdk.io/log"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"

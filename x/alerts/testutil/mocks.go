@@ -12,6 +12,7 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gomock "github.com/golang/mock/gomock"
+
 	types1 "github.com/skip-mev/slinky/x/incentives/types"
 	types2 "github.com/skip-mev/slinky/x/oracle/types"
 )

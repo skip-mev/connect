@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/spf13/cobra"
+
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // GetQueryCmd returns the parent command for all x/oracle cli query commands. The

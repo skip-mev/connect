@@ -10,6 +10,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	testutil "github.com/skip-mev/slinky/x/alerts/testutil"
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -17,8 +20,6 @@ import (
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestValidatorAlertIncentive(t *testing.T) {

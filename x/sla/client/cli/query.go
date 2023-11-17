@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
 	"github.com/spf13/cobra"
+
+	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
 // GetQueryCMD returns the parent command for all x/sla cli query commands.

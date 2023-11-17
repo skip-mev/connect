@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/providers"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/providers"
 )
 
 func TestFloat64ToUint256(t *testing.T) {

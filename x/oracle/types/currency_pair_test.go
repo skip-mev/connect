@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestValidateBasic(t *testing.T) {

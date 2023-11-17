@@ -11,6 +11,11 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/pelletier/go-toml"
+	"github.com/strangelove-ventures/interchaintest/v7"
+	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v7/ibc"
+	"github.com/stretchr/testify/suite"
+
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -18,10 +23,6 @@ import (
 	"github.com/skip-mev/slinky/providers/mock"
 	service_metrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
-	"github.com/stretchr/testify/suite"
 )
 
 const (

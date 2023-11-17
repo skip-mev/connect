@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 

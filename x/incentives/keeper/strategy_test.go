@@ -5,11 +5,12 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/skip-mev/slinky/x/incentives/keeper"
 	"github.com/skip-mev/slinky/x/incentives/types"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/badprice"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
-	"github.com/stretchr/testify/mock"
 )
 
 func (s *KeeperTestSuite) TestExecuteByIncentiveType() {

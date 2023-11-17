@@ -6,9 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/skip-mev/slinky/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/skip-mev/slinky/service"
 )
 
 var _ service.OracleService = (*GRPCClient)(nil)

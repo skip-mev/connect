@@ -5,8 +5,9 @@ import (
 	"fmt"
 
 	storetypes "cosmossdk.io/store/types"
-	"github.com/cosmos/cosmos-db"
+	db "github.com/cosmos/cosmos-db"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 

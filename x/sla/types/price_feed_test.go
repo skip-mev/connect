@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (

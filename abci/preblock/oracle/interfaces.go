@@ -2,6 +2,7 @@ package oracle
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 

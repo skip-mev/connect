@@ -8,13 +8,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/skip-mev/slinky/tests/integration"
-	"github.com/skip-mev/slinky/x/alerts"
-	"github.com/skip-mev/slinky/x/oracle"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v7/ibc"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/skip-mev/slinky/tests/integration"
+	"github.com/skip-mev/slinky/x/alerts"
+	"github.com/skip-mev/slinky/x/oracle"
 )
 
 var (

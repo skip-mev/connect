@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
+
 	oracle_metrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/metrics"

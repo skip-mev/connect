@@ -3,8 +3,9 @@ package config
 import (
 	"time"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/spf13/viper"
+
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // OracleConfig is the base config for both out-of-process and in-process oracles.

@@ -7,9 +7,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/skip-mev/slinky/x/alerts/types"
 	oracle_types "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAlertUnmarshal(t *testing.T) {

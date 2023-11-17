@@ -16,6 +16,7 @@ import (
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/log"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
+
 	"github.com/skip-mev/slinky/tests/simapp"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -41,6 +42,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 )
 

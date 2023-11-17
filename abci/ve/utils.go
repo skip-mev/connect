@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
+
 	"github.com/skip-mev/slinky/abci/ve/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )

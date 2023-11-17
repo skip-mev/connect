@@ -5,9 +5,10 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {

@@ -74,7 +74,8 @@ func (_m *ValidatorStore) ValidatorByConsAddr(ctx context.Context, addr types.Co
 func NewValidatorStore(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *ValidatorStore {
+},
+) *ValidatorStore {
 	mock := &ValidatorStore{}
 	mock.Mock.Test(t)
 

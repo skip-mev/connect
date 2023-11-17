@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
-	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/oracle/metrics"
 )
 
 // Test that Starting the server fails if the address is incorrect.

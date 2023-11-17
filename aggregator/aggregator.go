@@ -5,8 +5,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
-	"github.com/skip-mev/slinky/x/oracle/types"
 	"golang.org/x/exp/maps"
+
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type (
