@@ -6,6 +6,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )

@@ -6,6 +6,7 @@ import (
 
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	oracledata "github.com/skip-mev/slinky/x/oracle/types"
 )
 

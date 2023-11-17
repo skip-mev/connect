@@ -3,6 +3,7 @@ package oracle
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
+
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"

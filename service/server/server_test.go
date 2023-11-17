@@ -8,15 +8,16 @@ import (
 
 	"cosmossdk.io/log"
 	"github.com/holiman/uint256"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+	"google.golang.org/grpc/status"
+
 	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/client"
 	"github.com/skip-mev/slinky/service/server"
 	stypes "github.com/skip-mev/slinky/service/types"
 	"github.com/skip-mev/slinky/service/types/mocks"
 	"github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/suite"
-	"google.golang.org/grpc/status"
 )
 
 const (

@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/holiman/uint256"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers/evm"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"

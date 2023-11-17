@@ -3,6 +3,7 @@ package sla
 import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/ve"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"

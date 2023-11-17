@@ -14,12 +14,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	alerttestutil "github.com/skip-mev/slinky/x/alerts/testutil"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/suite"
 )
 
 type KeeperTestSuite struct {

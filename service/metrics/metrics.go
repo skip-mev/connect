@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/skip-mev/slinky/oracle/metrics"
 )
 

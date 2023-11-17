@@ -2,10 +2,11 @@ package oracle
 
 import (
 	"cosmossdk.io/log"
+	"golang.org/x/net/context"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/x/oracle/types"
-	"golang.org/x/net/context"
 )
 
 // Provider defines an interface an exchange price provider must implement.

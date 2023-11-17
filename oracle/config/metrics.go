@@ -1,9 +1,10 @@
 package config
 
 import (
+	"github.com/spf13/viper"
+
 	oracle_metrics "github.com/skip-mev/slinky/oracle/metrics"
 	service_metrics "github.com/skip-mev/slinky/service/metrics"
-	"github.com/spf13/viper"
 )
 
 // MetricsConfig is the metrics configurations for the oracle. This configuration object allows for

@@ -5,6 +5,7 @@ import (
 
 	"github.com/bits-and-blooms/bitset"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 

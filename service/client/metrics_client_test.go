@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/client"
 	metrics_mock "github.com/skip-mev/slinky/service/metrics/mocks"
 	service_mock "github.com/skip-mev/slinky/service/mocks"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/suite"
 )
 
 type MetricsClientTestSuite struct {

@@ -7,6 +7,7 @@ import (
 	"github.com/skip-mev/slinky/x/alerts/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 )
 

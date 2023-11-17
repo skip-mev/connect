@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {

@@ -5,11 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/service/client"
-	"github.com/skip-mev/slinky/service/types/mocks"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/skip-mev/slinky/service/client"
+	"github.com/skip-mev/slinky/service/types/mocks"
+
 	"github.com/holiman/uint256"
+
 	"github.com/skip-mev/slinky/service"
 	servicetypes "github.com/skip-mev/slinky/service/types"
 	"github.com/skip-mev/slinky/x/oracle/types"

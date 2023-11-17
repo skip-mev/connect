@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
 )

@@ -185,7 +185,6 @@ func (_ERC4626 *ERC4626TransactorRaw) Transact(opts *bind.TransactOpts, method s
 func (_ERC4626 *ERC4626Caller) DOMAINSEPARATOR(opts *bind.CallOpts) ([32]byte, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "DOMAIN_SEPARATOR")
-
 	if err != nil {
 		return *new([32]byte), err
 	}
@@ -193,7 +192,6 @@ func (_ERC4626 *ERC4626Caller) DOMAINSEPARATOR(opts *bind.CallOpts) ([32]byte, e
 	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 
 	return out0, err
-
 }
 
 // DOMAINSEPARATOR is a free data retrieval call binding the contract method 0x3644e515.
@@ -216,7 +214,6 @@ func (_ERC4626 *ERC4626CallerSession) DOMAINSEPARATOR() ([32]byte, error) {
 func (_ERC4626 *ERC4626Caller) Allowance(opts *bind.CallOpts, arg0 common.Address, arg1 common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "allowance", arg0, arg1)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -224,7 +221,6 @@ func (_ERC4626 *ERC4626Caller) Allowance(opts *bind.CallOpts, arg0 common.Addres
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
@@ -247,7 +243,6 @@ func (_ERC4626 *ERC4626CallerSession) Allowance(arg0 common.Address, arg1 common
 func (_ERC4626 *ERC4626Caller) Asset(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "asset")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -255,7 +250,6 @@ func (_ERC4626 *ERC4626Caller) Asset(opts *bind.CallOpts) (common.Address, error
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Asset is a free data retrieval call binding the contract method 0x38d52e0f.
@@ -278,7 +272,6 @@ func (_ERC4626 *ERC4626CallerSession) Asset() (common.Address, error) {
 func (_ERC4626 *ERC4626Caller) BalanceOf(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "balanceOf", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -286,7 +279,6 @@ func (_ERC4626 *ERC4626Caller) BalanceOf(opts *bind.CallOpts, arg0 common.Addres
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
@@ -309,7 +301,6 @@ func (_ERC4626 *ERC4626CallerSession) BalanceOf(arg0 common.Address) (*big.Int, 
 func (_ERC4626 *ERC4626Caller) ConvertToAssets(opts *bind.CallOpts, shares *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "convertToAssets", shares)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -317,7 +308,6 @@ func (_ERC4626 *ERC4626Caller) ConvertToAssets(opts *bind.CallOpts, shares *big.
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // ConvertToAssets is a free data retrieval call binding the contract method 0x07a2d13a.
@@ -340,7 +330,6 @@ func (_ERC4626 *ERC4626CallerSession) ConvertToAssets(shares *big.Int) (*big.Int
 func (_ERC4626 *ERC4626Caller) ConvertToShares(opts *bind.CallOpts, assets *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "convertToShares", assets)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -348,7 +337,6 @@ func (_ERC4626 *ERC4626Caller) ConvertToShares(opts *bind.CallOpts, assets *big.
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // ConvertToShares is a free data retrieval call binding the contract method 0xc6e6f592.
@@ -371,7 +359,6 @@ func (_ERC4626 *ERC4626CallerSession) ConvertToShares(assets *big.Int) (*big.Int
 func (_ERC4626 *ERC4626Caller) Decimals(opts *bind.CallOpts) (uint8, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "decimals")
-
 	if err != nil {
 		return *new(uint8), err
 	}
@@ -379,7 +366,6 @@ func (_ERC4626 *ERC4626Caller) Decimals(opts *bind.CallOpts) (uint8, error) {
 	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
 
 	return out0, err
-
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -402,7 +388,6 @@ func (_ERC4626 *ERC4626CallerSession) Decimals() (uint8, error) {
 func (_ERC4626 *ERC4626Caller) MaxDeposit(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "maxDeposit", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -410,7 +395,6 @@ func (_ERC4626 *ERC4626Caller) MaxDeposit(opts *bind.CallOpts, arg0 common.Addre
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // MaxDeposit is a free data retrieval call binding the contract method 0x402d267d.
@@ -433,7 +417,6 @@ func (_ERC4626 *ERC4626CallerSession) MaxDeposit(arg0 common.Address) (*big.Int,
 func (_ERC4626 *ERC4626Caller) MaxMint(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "maxMint", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -441,7 +424,6 @@ func (_ERC4626 *ERC4626Caller) MaxMint(opts *bind.CallOpts, arg0 common.Address)
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // MaxMint is a free data retrieval call binding the contract method 0xc63d75b6.
@@ -464,7 +446,6 @@ func (_ERC4626 *ERC4626CallerSession) MaxMint(arg0 common.Address) (*big.Int, er
 func (_ERC4626 *ERC4626Caller) MaxRedeem(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "maxRedeem", owner)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -472,7 +453,6 @@ func (_ERC4626 *ERC4626Caller) MaxRedeem(opts *bind.CallOpts, owner common.Addre
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // MaxRedeem is a free data retrieval call binding the contract method 0xd905777e.
@@ -495,7 +475,6 @@ func (_ERC4626 *ERC4626CallerSession) MaxRedeem(owner common.Address) (*big.Int,
 func (_ERC4626 *ERC4626Caller) MaxWithdraw(opts *bind.CallOpts, owner common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "maxWithdraw", owner)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -503,7 +482,6 @@ func (_ERC4626 *ERC4626Caller) MaxWithdraw(opts *bind.CallOpts, owner common.Add
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // MaxWithdraw is a free data retrieval call binding the contract method 0xce96cb77.
@@ -526,7 +504,6 @@ func (_ERC4626 *ERC4626CallerSession) MaxWithdraw(owner common.Address) (*big.In
 func (_ERC4626 *ERC4626Caller) Name(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "name")
-
 	if err != nil {
 		return *new(string), err
 	}
@@ -534,7 +511,6 @@ func (_ERC4626 *ERC4626Caller) Name(opts *bind.CallOpts) (string, error) {
 	out0 := *abi.ConvertType(out[0], new(string)).(*string)
 
 	return out0, err
-
 }
 
 // Name is a free data retrieval call binding the contract method 0x06fdde03.
@@ -557,7 +533,6 @@ func (_ERC4626 *ERC4626CallerSession) Name() (string, error) {
 func (_ERC4626 *ERC4626Caller) Nonces(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "nonces", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -565,7 +540,6 @@ func (_ERC4626 *ERC4626Caller) Nonces(opts *bind.CallOpts, arg0 common.Address) 
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Nonces is a free data retrieval call binding the contract method 0x7ecebe00.
@@ -588,7 +562,6 @@ func (_ERC4626 *ERC4626CallerSession) Nonces(arg0 common.Address) (*big.Int, err
 func (_ERC4626 *ERC4626Caller) PreviewDeposit(opts *bind.CallOpts, assets *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "previewDeposit", assets)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -596,7 +569,6 @@ func (_ERC4626 *ERC4626Caller) PreviewDeposit(opts *bind.CallOpts, assets *big.I
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // PreviewDeposit is a free data retrieval call binding the contract method 0xef8b30f7.
@@ -619,7 +591,6 @@ func (_ERC4626 *ERC4626CallerSession) PreviewDeposit(assets *big.Int) (*big.Int,
 func (_ERC4626 *ERC4626Caller) PreviewMint(opts *bind.CallOpts, shares *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "previewMint", shares)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -627,7 +598,6 @@ func (_ERC4626 *ERC4626Caller) PreviewMint(opts *bind.CallOpts, shares *big.Int)
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // PreviewMint is a free data retrieval call binding the contract method 0xb3d7f6b9.
@@ -650,7 +620,6 @@ func (_ERC4626 *ERC4626CallerSession) PreviewMint(shares *big.Int) (*big.Int, er
 func (_ERC4626 *ERC4626Caller) PreviewRedeem(opts *bind.CallOpts, shares *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "previewRedeem", shares)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -658,7 +627,6 @@ func (_ERC4626 *ERC4626Caller) PreviewRedeem(opts *bind.CallOpts, shares *big.In
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // PreviewRedeem is a free data retrieval call binding the contract method 0x4cdad506.
@@ -681,7 +649,6 @@ func (_ERC4626 *ERC4626CallerSession) PreviewRedeem(shares *big.Int) (*big.Int, 
 func (_ERC4626 *ERC4626Caller) PreviewWithdraw(opts *bind.CallOpts, assets *big.Int) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "previewWithdraw", assets)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -689,7 +656,6 @@ func (_ERC4626 *ERC4626Caller) PreviewWithdraw(opts *bind.CallOpts, assets *big.
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // PreviewWithdraw is a free data retrieval call binding the contract method 0x0a28a477.
@@ -712,7 +678,6 @@ func (_ERC4626 *ERC4626CallerSession) PreviewWithdraw(assets *big.Int) (*big.Int
 func (_ERC4626 *ERC4626Caller) Symbol(opts *bind.CallOpts) (string, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "symbol")
-
 	if err != nil {
 		return *new(string), err
 	}
@@ -720,7 +685,6 @@ func (_ERC4626 *ERC4626Caller) Symbol(opts *bind.CallOpts) (string, error) {
 	out0 := *abi.ConvertType(out[0], new(string)).(*string)
 
 	return out0, err
-
 }
 
 // Symbol is a free data retrieval call binding the contract method 0x95d89b41.
@@ -743,7 +707,6 @@ func (_ERC4626 *ERC4626CallerSession) Symbol() (string, error) {
 func (_ERC4626 *ERC4626Caller) TotalAssets(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "totalAssets")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -751,7 +714,6 @@ func (_ERC4626 *ERC4626Caller) TotalAssets(opts *bind.CallOpts) (*big.Int, error
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // TotalAssets is a free data retrieval call binding the contract method 0x01e1d114.
@@ -774,7 +736,6 @@ func (_ERC4626 *ERC4626CallerSession) TotalAssets() (*big.Int, error) {
 func (_ERC4626 *ERC4626Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626.contract.Call(opts, &out, "totalSupply")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -782,7 +743,6 @@ func (_ERC4626 *ERC4626Caller) TotalSupply(opts *bind.CallOpts) (*big.Int, error
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
@@ -1046,7 +1006,6 @@ type ERC4626Approval struct {
 //
 // Solidity: event Approval(address indexed owner, address indexed spender, uint256 amount)
 func (_ERC4626 *ERC4626Filterer) FilterApproval(opts *bind.FilterOpts, owner []common.Address, spender []common.Address) (*ERC4626ApprovalIterator, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -1067,7 +1026,6 @@ func (_ERC4626 *ERC4626Filterer) FilterApproval(opts *bind.FilterOpts, owner []c
 //
 // Solidity: event Approval(address indexed owner, address indexed spender, uint256 amount)
 func (_ERC4626 *ERC4626Filterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *ERC4626Approval, owner []common.Address, spender []common.Address) (event.Subscription, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -1201,7 +1159,6 @@ type ERC4626Deposit struct {
 //
 // Solidity: event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares)
 func (_ERC4626 *ERC4626Filterer) FilterDeposit(opts *bind.FilterOpts, caller []common.Address, owner []common.Address) (*ERC4626DepositIterator, error) {
-
 	var callerRule []interface{}
 	for _, callerItem := range caller {
 		callerRule = append(callerRule, callerItem)
@@ -1222,7 +1179,6 @@ func (_ERC4626 *ERC4626Filterer) FilterDeposit(opts *bind.FilterOpts, caller []c
 //
 // Solidity: event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares)
 func (_ERC4626 *ERC4626Filterer) WatchDeposit(opts *bind.WatchOpts, sink chan<- *ERC4626Deposit, caller []common.Address, owner []common.Address) (event.Subscription, error) {
-
 	var callerRule []interface{}
 	for _, callerItem := range caller {
 		callerRule = append(callerRule, callerItem)
@@ -1355,7 +1311,6 @@ type ERC4626Transfer struct {
 //
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 amount)
 func (_ERC4626 *ERC4626Filterer) FilterTransfer(opts *bind.FilterOpts, from []common.Address, to []common.Address) (*ERC4626TransferIterator, error) {
-
 	var fromRule []interface{}
 	for _, fromItem := range from {
 		fromRule = append(fromRule, fromItem)
@@ -1376,7 +1331,6 @@ func (_ERC4626 *ERC4626Filterer) FilterTransfer(opts *bind.FilterOpts, from []co
 //
 // Solidity: event Transfer(address indexed from, address indexed to, uint256 amount)
 func (_ERC4626 *ERC4626Filterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *ERC4626Transfer, from []common.Address, to []common.Address) (event.Subscription, error) {
-
 	var fromRule []interface{}
 	for _, fromItem := range from {
 		fromRule = append(fromRule, fromItem)
@@ -1511,7 +1465,6 @@ type ERC4626Withdraw struct {
 //
 // Solidity: event Withdraw(address indexed caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)
 func (_ERC4626 *ERC4626Filterer) FilterWithdraw(opts *bind.FilterOpts, caller []common.Address, receiver []common.Address, owner []common.Address) (*ERC4626WithdrawIterator, error) {
-
 	var callerRule []interface{}
 	for _, callerItem := range caller {
 		callerRule = append(callerRule, callerItem)
@@ -1536,7 +1489,6 @@ func (_ERC4626 *ERC4626Filterer) FilterWithdraw(opts *bind.FilterOpts, caller []
 //
 // Solidity: event Withdraw(address indexed caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares)
 func (_ERC4626 *ERC4626Filterer) WatchWithdraw(opts *bind.WatchOpts, sink chan<- *ERC4626Withdraw, caller []common.Address, receiver []common.Address, owner []common.Address) (event.Subscription, error) {
-
 	var callerRule []interface{}
 	for _, callerItem := range caller {
 		callerRule = append(callerRule, callerItem)

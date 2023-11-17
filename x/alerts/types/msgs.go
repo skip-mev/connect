@@ -6,8 +6,9 @@ import (
 	"cosmossdk.io/x/tx/signing"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	alertv1 "github.com/skip-mev/slinky/api/slinky/alerts/v1"
 	"google.golang.org/protobuf/proto"
+
+	alertv1 "github.com/skip-mev/slinky/api/slinky/alerts/v1"
 )
 
 var (

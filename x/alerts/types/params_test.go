@@ -7,8 +7,9 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/skip-mev/slinky/x/alerts/types"
 )
 
 func TestParamsValidation(t *testing.T) {

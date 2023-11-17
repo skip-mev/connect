@@ -25,6 +25,7 @@ import (
 	upgrademodulev1 "cosmossdk.io/api/cosmos/upgrade/module/v1"
 	vestingmodulev1 "cosmossdk.io/api/cosmos/vesting/module/v1"
 	"cosmossdk.io/depinject"
+
 	alertmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
 	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
 	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
@@ -45,8 +46,9 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/params"       // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"     // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
-	_ "github.com/skip-mev/slinky/x/incentives"     // import for side-effects
-	_ "github.com/skip-mev/slinky/x/oracle"         // import for side-effects
+
+	_ "github.com/skip-mev/slinky/x/incentives" // import for side-effects
+	_ "github.com/skip-mev/slinky/x/oracle"     // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -69,6 +71,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"

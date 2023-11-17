@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	slatypes "github.com/skip-mev/slinky/x/sla/types"
 	"github.com/stretchr/testify/require"
+
+	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
 func TestSLAValidateBasic(t *testing.T) {

@@ -6,11 +6,12 @@ import (
 	"net"
 
 	"cosmossdk.io/log"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
+
 	"github.com/skip-mev/slinky/pkg/sync"
 	"github.com/skip-mev/slinky/service"
 	servicetypes "github.com/skip-mev/slinky/service/types"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/grpc"
 )
 
 // OracleServer is the base implementation of the service.OracleServer interface, this is meant to

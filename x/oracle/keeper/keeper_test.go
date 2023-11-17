@@ -8,10 +8,11 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/skip-mev/slinky/x/oracle/keeper"
-	"github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/skip-mev/slinky/x/oracle/keeper"
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (

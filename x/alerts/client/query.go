@@ -5,8 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/spf13/cobra"
+
+	"github.com/skip-mev/slinky/x/alerts/types"
 )
 
 const (

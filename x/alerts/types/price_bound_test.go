@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/alerts/types"
 )
 
 func TestPriceBound(t *testing.T) {

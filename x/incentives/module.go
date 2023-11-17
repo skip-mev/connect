@@ -16,11 +16,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
 	"github.com/skip-mev/slinky/x/incentives/client/cli"
 	"github.com/skip-mev/slinky/x/incentives/keeper"
 	"github.com/skip-mev/slinky/x/incentives/types"
-	"github.com/spf13/cobra"
 )
 
 // ConsensusVersion is the x/incentives module's current version, as modules integrate and

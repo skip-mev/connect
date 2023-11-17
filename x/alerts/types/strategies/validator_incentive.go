@@ -6,6 +6,7 @@ import (
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/x/alerts/types"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 )

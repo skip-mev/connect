@@ -4,6 +4,7 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	db "github.com/cosmos/cosmos-db"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/x/incentives/types"
 )
 

@@ -11,12 +11,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 
+	"github.com/stretchr/testify/suite"
+
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/suite"
 )
 
 type MathTestSuite struct {

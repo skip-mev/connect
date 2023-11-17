@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"cosmossdk.io/math"
+
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 

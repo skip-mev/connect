@@ -185,7 +185,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleTransactorRaw) Transact(o
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) ONESHARE(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "ONE_SHARE")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -193,7 +192,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) ONESHARE(opts *bi
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // ONESHARE is a free data retrieval call binding the contract method 0xb7d122b5.
@@ -216,7 +214,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) ONESHARE()
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) AllowedAnswerChangeLower(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "allowedAnswerChangeLower")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -224,7 +221,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) AllowedAnswerChan
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // AllowedAnswerChangeLower is a free data retrieval call binding the contract method 0x7167adbc.
@@ -247,7 +243,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) AllowedAns
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) AllowedAnswerChangeUpper(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "allowedAnswerChangeUpper")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -255,7 +250,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) AllowedAnswerChan
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // AllowedAnswerChangeUpper is a free data retrieval call binding the contract method 0x7d4cdb4f.
@@ -278,7 +272,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) AllowedAns
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Answer(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "answer")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -286,7 +279,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Answer(opts *bind
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Answer is a free data retrieval call binding the contract method 0x85bb7d69.
@@ -309,7 +301,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Answer() (
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) AutomationRegistry(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "automationRegistry")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -317,7 +308,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) AutomationRegistr
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // AutomationRegistry is a free data retrieval call binding the contract method 0x5dc228a0.
@@ -340,7 +330,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Automation
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) CheckUpkeep(opts *bind.CallOpts, arg0 []byte) (struct {
 	UpkeepNeeded bool
 	PerformData  []byte
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "checkUpkeep", arg0)
 
@@ -356,7 +347,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) CheckUpkeep(opts 
 	outstruct.PerformData = *abi.ConvertType(out[1], new([]byte)).(*[]byte)
 
 	return *outstruct, err
-
 }
 
 // CheckUpkeep is a free data retrieval call binding the contract method 0x6e04ff0d.
@@ -365,7 +355,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) CheckUpkeep(opts 
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleSession) CheckUpkeep(arg0 []byte) (struct {
 	UpkeepNeeded bool
 	PerformData  []byte
-}, error) {
+}, error,
+) {
 	return _ERC4626SharePriceOracle.Contract.CheckUpkeep(&_ERC4626SharePriceOracle.CallOpts, arg0)
 }
 
@@ -375,7 +366,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleSession) CheckUpkeep(arg0
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) CheckUpkeep(arg0 []byte) (struct {
 	UpkeepNeeded bool
 	PerformData  []byte
-}, error) {
+}, error,
+) {
 	return _ERC4626SharePriceOracle.Contract.CheckUpkeep(&_ERC4626SharePriceOracle.CallOpts, arg0)
 }
 
@@ -385,7 +377,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) CheckUpkee
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) CurrentIndex(opts *bind.CallOpts) (uint16, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "currentIndex")
-
 	if err != nil {
 		return *new(uint16), err
 	}
@@ -393,7 +384,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) CurrentIndex(opts
 	out0 := *abi.ConvertType(out[0], new(uint16)).(*uint16)
 
 	return out0, err
-
 }
 
 // CurrentIndex is a free data retrieval call binding the contract method 0x26987b60.
@@ -416,7 +406,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) CurrentInd
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Decimals(opts *bind.CallOpts) (uint8, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "decimals")
-
 	if err != nil {
 		return *new(uint8), err
 	}
@@ -424,7 +413,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Decimals(opts *bi
 	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
 
 	return out0, err
-
 }
 
 // Decimals is a free data retrieval call binding the contract method 0x313ce567.
@@ -447,7 +435,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Decimals()
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) DeviationTrigger(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "deviationTrigger")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -455,7 +442,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) DeviationTrigger(
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // DeviationTrigger is a free data retrieval call binding the contract method 0xfeabaa02.
@@ -479,7 +465,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) GetLatest(opts *b
 	Ans                       *big.Int
 	TimeWeightedAverageAnswer *big.Int
 	NotSafeToUse              bool
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "getLatest")
 
@@ -497,7 +484,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) GetLatest(opts *b
 	outstruct.NotSafeToUse = *abi.ConvertType(out[2], new(bool)).(*bool)
 
 	return *outstruct, err
-
 }
 
 // GetLatest is a free data retrieval call binding the contract method 0xc36af460.
@@ -507,7 +493,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleSession) GetLatest() (str
 	Ans                       *big.Int
 	TimeWeightedAverageAnswer *big.Int
 	NotSafeToUse              bool
-}, error) {
+}, error,
+) {
 	return _ERC4626SharePriceOracle.Contract.GetLatest(&_ERC4626SharePriceOracle.CallOpts)
 }
 
@@ -518,7 +505,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) GetLatest(
 	Ans                       *big.Int
 	TimeWeightedAverageAnswer *big.Int
 	NotSafeToUse              bool
-}, error) {
+}, error,
+) {
 	return _ERC4626SharePriceOracle.Contract.GetLatest(&_ERC4626SharePriceOracle.CallOpts)
 }
 
@@ -528,7 +516,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) GetLatest(
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) GetLatestAnswer(opts *bind.CallOpts) (*big.Int, bool, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "getLatestAnswer")
-
 	if err != nil {
 		return *new(*big.Int), *new(bool), err
 	}
@@ -537,7 +524,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) GetLatestAnswer(o
 	out1 := *abi.ConvertType(out[1], new(bool)).(*bool)
 
 	return out0, out1, err
-
 }
 
 // GetLatestAnswer is a free data retrieval call binding the contract method 0x96237c02.
@@ -560,7 +546,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) GetLatestA
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) GracePeriod(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "gracePeriod")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -568,7 +553,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) GracePeriod(opts 
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // GracePeriod is a free data retrieval call binding the contract method 0xa06db7dc.
@@ -591,7 +575,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) GracePerio
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Heartbeat(opts *bind.CallOpts) (uint64, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "heartbeat")
-
 	if err != nil {
 		return *new(uint64), err
 	}
@@ -599,7 +582,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Heartbeat(opts *b
 	out0 := *abi.ConvertType(out[0], new(uint64)).(*uint64)
 
 	return out0, err
-
 }
 
 // Heartbeat is a free data retrieval call binding the contract method 0x3defb962.
@@ -622,7 +604,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Heartbeat(
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) KillSwitch(opts *bind.CallOpts) (bool, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "killSwitch")
-
 	if err != nil {
 		return *new(bool), err
 	}
@@ -630,7 +611,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) KillSwitch(opts *
 	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
 
 	return out0, err
-
 }
 
 // KillSwitch is a free data retrieval call binding the contract method 0xada14698.
@@ -653,7 +633,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) KillSwitch
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Observations(opts *bind.CallOpts, arg0 *big.Int) (struct {
 	Timestamp  uint64
 	Cumulative *big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "observations", arg0)
 
@@ -669,7 +650,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Observations(opts
 	outstruct.Cumulative = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
-
 }
 
 // Observations is a free data retrieval call binding the contract method 0x252c09d7.
@@ -678,7 +658,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Observations(opts
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleSession) Observations(arg0 *big.Int) (struct {
 	Timestamp  uint64
 	Cumulative *big.Int
-}, error) {
+}, error,
+) {
 	return _ERC4626SharePriceOracle.Contract.Observations(&_ERC4626SharePriceOracle.CallOpts, arg0)
 }
 
@@ -688,7 +669,8 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleSession) Observations(arg
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Observations(arg0 *big.Int) (struct {
 	Timestamp  uint64
 	Cumulative *big.Int
-}, error) {
+}, error,
+) {
 	return _ERC4626SharePriceOracle.Contract.Observations(&_ERC4626SharePriceOracle.CallOpts, arg0)
 }
 
@@ -698,7 +680,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Observatio
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) ObservationsLength(opts *bind.CallOpts) (uint16, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "observationsLength")
-
 	if err != nil {
 		return *new(uint16), err
 	}
@@ -706,7 +687,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) ObservationsLengt
 	out0 := *abi.ConvertType(out[0], new(uint16)).(*uint16)
 
 	return out0, err
-
 }
 
 // ObservationsLength is a free data retrieval call binding the contract method 0xcd7f5ce2.
@@ -729,7 +709,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Observatio
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Target(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "target")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -737,7 +716,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) Target(opts *bind
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Target is a free data retrieval call binding the contract method 0xd4b83992.
@@ -760,7 +738,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCallerSession) Target() (
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) TargetDecimals(opts *bind.CallOpts) (uint8, error) {
 	var out []interface{}
 	err := _ERC4626SharePriceOracle.contract.Call(opts, &out, "targetDecimals")
-
 	if err != nil {
 		return *new(uint8), err
 	}
@@ -768,7 +745,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleCaller) TargetDecimals(op
 	out0 := *abi.ConvertType(out[0], new(uint8)).(*uint8)
 
 	return out0, err
-
 }
 
 // TargetDecimals is a free data retrieval call binding the contract method 0x36c1387e.
@@ -885,7 +861,6 @@ type ERC4626SharePriceOracleKillSwitchActivated struct {
 //
 // Solidity: event KillSwitchActivated(uint256 reportedAnswer, uint256 minAnswer, uint256 maxAnswer)
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleFilterer) FilterKillSwitchActivated(opts *bind.FilterOpts) (*ERC4626SharePriceOracleKillSwitchActivatedIterator, error) {
-
 	logs, sub, err := _ERC4626SharePriceOracle.contract.FilterLogs(opts, "KillSwitchActivated")
 	if err != nil {
 		return nil, err
@@ -897,7 +872,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleFilterer) FilterKillSwitc
 //
 // Solidity: event KillSwitchActivated(uint256 reportedAnswer, uint256 minAnswer, uint256 maxAnswer)
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleFilterer) WatchKillSwitchActivated(opts *bind.WatchOpts, sink chan<- *ERC4626SharePriceOracleKillSwitchActivated) (event.Subscription, error) {
-
 	logs, sub, err := _ERC4626SharePriceOracle.contract.WatchLogs(opts, "KillSwitchActivated")
 	if err != nil {
 		return nil, err
@@ -1023,7 +997,6 @@ type ERC4626SharePriceOracleOracleUpdated struct {
 //
 // Solidity: event OracleUpdated(uint256 timeUpdated, uint256 timeAnswerCalculated, uint256 latestAnswer, uint256 timeWeightedAverageAnswer, bool isNotSafeToUse)
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleFilterer) FilterOracleUpdated(opts *bind.FilterOpts) (*ERC4626SharePriceOracleOracleUpdatedIterator, error) {
-
 	logs, sub, err := _ERC4626SharePriceOracle.contract.FilterLogs(opts, "OracleUpdated")
 	if err != nil {
 		return nil, err
@@ -1035,7 +1008,6 @@ func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleFilterer) FilterOracleUpd
 //
 // Solidity: event OracleUpdated(uint256 timeUpdated, uint256 timeAnswerCalculated, uint256 latestAnswer, uint256 timeWeightedAverageAnswer, bool isNotSafeToUse)
 func (_ERC4626SharePriceOracle *ERC4626SharePriceOracleFilterer) WatchOracleUpdated(opts *bind.WatchOpts, sink chan<- *ERC4626SharePriceOracleOracleUpdated) (event.Subscription, error) {
-
 	logs, sub, err := _ERC4626SharePriceOracle.contract.WatchLogs(opts, "OracleUpdated")
 	if err != nil {
 		return nil, err

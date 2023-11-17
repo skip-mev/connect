@@ -2,6 +2,7 @@ package strategies
 
 import (
 	cmtabci "github.com/cometbft/cometbft/abci/types"
+
 	"github.com/skip-mev/slinky/x/alerts/types"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 )

@@ -9,13 +9,14 @@ import (
 
 	"cosmossdk.io/log"
 	"github.com/holiman/uint256"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	servicetypes "github.com/skip-mev/slinky/service/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"golang.org/x/sync/errgroup"
 )
 
 var _ servicetypes.Oracle = (*Oracle)(nil)

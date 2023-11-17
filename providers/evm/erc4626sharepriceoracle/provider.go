@@ -7,6 +7,7 @@ import (
 
 	"cosmossdk.io/log"
 	"github.com/ethereum/go-ethereum/common"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"

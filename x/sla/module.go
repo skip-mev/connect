@@ -16,11 +16,12 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	slamodulev1 "github.com/skip-mev/slinky/api/slinky/sla/module/v1"
 	"github.com/skip-mev/slinky/x/sla/client/cli"
 	"github.com/skip-mev/slinky/x/sla/keeper"
 	"github.com/skip-mev/slinky/x/sla/types"
-	"github.com/spf13/cobra"
 )
 
 // ConsensusVersion is the x/sla module's consensus version identifier.

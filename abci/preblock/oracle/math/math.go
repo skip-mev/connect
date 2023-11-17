@@ -7,6 +7,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )

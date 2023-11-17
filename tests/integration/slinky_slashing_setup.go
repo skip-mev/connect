@@ -17,16 +17,17 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/holiman/uint256"
 	"github.com/pelletier/go-toml/v2"
+	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
+	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	"github.com/skip-mev/slinky/abci/proposals"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/mock"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const gasPrice = 100

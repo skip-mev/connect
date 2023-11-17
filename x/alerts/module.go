@@ -17,12 +17,13 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	alertsmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
 	alertclient "github.com/skip-mev/slinky/x/alerts/client"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
-	"github.com/spf13/cobra"
 )
 
 // ConsensusVersion is the x/alerts module's current version, as modules integrate and

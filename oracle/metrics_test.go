@@ -7,15 +7,16 @@ import (
 	"time"
 
 	"cosmossdk.io/log"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	metric_mocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
 	provider_mocks "github.com/skip-mev/slinky/oracle/mocks"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/suite"
 )
 
 type OracleMetricsTestSuite struct {

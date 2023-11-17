@@ -5,8 +5,9 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/skip-mev/slinky/x/sla/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/sla/types"
 )
 
 func TestMsgAddSLAs(t *testing.T) {

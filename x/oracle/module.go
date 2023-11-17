@@ -18,11 +18,12 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
 	"github.com/skip-mev/slinky/x/oracle/client/cli"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/spf13/cobra"
 )
 
 // ConsensusVersion is the x/oracle module's current version, as modules integrate and updates are made, this value determines what

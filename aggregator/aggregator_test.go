@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/holiman/uint256"
+
 	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )

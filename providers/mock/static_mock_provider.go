@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/holiman/uint256"
+	"github.com/spf13/viper"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/spf13/viper"
 )
 
 var _ oracle.Provider = (*StaticMockProvider)(nil)
