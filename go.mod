@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/store v1.0.0
 	cosmossdk.io/tools/confix v0.0.0-20230608151552-9b9e319d1abc
 	cosmossdk.io/x/circuit v0.0.0-20230726190121-58855c685902
-	cosmossdk.io/x/tx v0.10.0
+	cosmossdk.io/x/tx v0.12.0
 	cosmossdk.io/x/upgrade v0.0.0-20230704191127-8d80df8e3c5a
 	github.com/bits-and-blooms/bitset v1.11.0
 	github.com/client9/misspell v0.3.4
