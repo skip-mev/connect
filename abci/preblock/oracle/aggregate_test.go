@@ -1,40 +1,51 @@
 package oracle_test
 
 import (
-	"time"
-
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/mock"
 
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
+	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
-	merticmock "github.com/skip-mev/slinky/service/metrics/mocks"
+	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
-	cp1 = oracletypes.CurrencyPair{
+	btcUSD = oracletypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
-	cp2 = oracletypes.CurrencyPair{
+	ethUSD = oracletypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
-	cp3 = oracletypes.CurrencyPair{
+	ethBTC = oracletypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "BTC",
 	}
 
+	oneHundred   = uint256.NewInt(100)
+	twoHundred   = uint256.NewInt(200)
+	threeHundred = uint256.NewInt(300)
+	fourHundred  = uint256.NewInt(400)
+	sixHundred   = uint256.NewInt(600)
+	sevenHundred = uint256.NewInt(700)
+	eightHundred = uint256.NewInt(800)
+	nineHundred  = uint256.NewInt(900)
+
 	val1 = sdk.ConsAddress([]byte("val1"))
 	val2 = sdk.ConsAddress([]byte("val2"))
+
+	ongodhecappin = append([]byte("ongodhecappin"), make([]byte, 32)...)
 )
 
 func (s *PreBlockTestSuite) TestAggregateOracleData() {
@@ -48,7 +59,9 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 	mockValidatorStore.On("TotalBondedTokens", mock.Anything).Return(math.NewInt(100), nil)
 
 	mockOracleKeeper := preblockmock.NewKeeper(s.T())
-	mockMetrics := merticmock.NewMetrics(s.T())
+	mockMetrics := metricmock.NewMetrics(s.T())
+
+	cpID := strategymocks.NewCurrencyPairIDStrategy(s.T())
 
 	handler := preblock.NewOraclePreBlockHandler(
 		log.NewTestLogger(s.T()),
@@ -56,6 +69,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		mockOracleKeeper,
 		s.myVal,
 		mockMetrics,
+		cpID,
 	)
 
 	s.Run("no oracle data", func() {
@@ -76,10 +90,10 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 	s.Run("single oracle data", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[string]string{
-			cp1.ToString(): "0x100",
+		myValPrices := map[uint64][]byte{
+			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -92,7 +106,9 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp1.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Once()
 
 		// Assume the validator takes up all of the voting power
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -109,16 +125,16 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().Len(prices, 1)
 
 		// Check that the prices are correct
-		s.Require().Equal(myValPrices[cp1.ToString()], prices[cp1].String())
+		s.Require().Equal(oneHundred.String(), prices[btcUSD].String())
 	})
 
 	s.Run("multiple prices from a single validator", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[string]string{
-			cp1.ToString(): "0x100",
-			cp2.ToString(): "0x200",
+		myValPrices := map[uint64][]byte{
+			0: oneHundred.Bytes(),
+			1: twoHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -131,8 +147,8 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp1.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp2.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethUSD.ToString(), true).Once()
 
 		// Assume the validator takes up all of the voting power
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -142,6 +158,9 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			},
 			nil,
 		).Once()
+
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Once()
+		cpID.On("FromID", s.ctx, uint64(1)).Return(ethUSD, nil).Once()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -149,23 +168,23 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().Len(prices, 2)
 
 		// Check that the prices are correct
-		s.Require().Equal(myValPrices[cp1.ToString()], prices[cp1].String())
-		s.Require().Equal(myValPrices[cp2.ToString()], prices[cp2].String())
+		s.Require().Equal(oneHundred.String(), prices[btcUSD].String())
+		s.Require().Equal(twoHundred.String(), prices[ethUSD].String())
 	})
 
 	s.Run("single price from two different validators", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[string]string{
-			cp1.ToString(): "0x100",
+		myValPrices := map[uint64][]byte{
+			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
-		otherValPrices := map[string]string{
-			cp1.ToString(): "0x200",
+		otherValPrices := map[uint64][]byte{
+			0: twoHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, time.Now(), 2)
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -178,7 +197,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp1.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
 
 		// Assume the validators have an equal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -195,6 +214,8 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			},
 			nil,
 		).Once()
+
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -202,22 +223,22 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.Require().Len(prices, 1)
 
 		// Check that the prices are correct
-		s.Require().Equal("0x100", prices[cp1].String())
+		s.Require().Equal(oneHundred.String(), prices[btcUSD].String())
 	})
 
 	s.Run("single price update from multiple validators but not enough voting power", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[string]string{
-			cp1.ToString(): "0x100",
+		myValPrices := map[uint64][]byte{
+			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
-		otherValPrices := map[string]string{
-			cp1.ToString(): "0x200",
+		otherValPrices := map[uint64][]byte{
+			0: twoHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, time.Now(), 2)
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -230,7 +251,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp1.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
 
 		// Assume the validators have an equal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -247,6 +268,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			},
 			nil,
 		).Once()
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -256,19 +278,19 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 	s.Run("multiple prices from multiple validators", func() {
 		// Create a vote extension with multiple prices from my validator
-		myValPrices := map[string]string{
-			cp1.ToString(): "0x100",
-			cp2.ToString(): "0x200",
+		myValPrices := map[uint64][]byte{
+			0: oneHundred.Bytes(),
+			1: twoHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
 		// Create a vote extension with multiple prices from another validator
-		otherValPrices := map[string]string{
-			cp1.ToString(): "0x300",
-			cp2.ToString(): "0x400",
+		otherValPrices := map[uint64][]byte{
+			0: threeHundred.Bytes(),
+			1: fourHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, time.Now(), 2)
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -281,8 +303,8 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp1.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp2.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethUSD.ToString(), true).Once()
 
 		// Assume the validators have an unequal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -300,38 +322,41 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			nil,
 		).Once()
 
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
+		cpID.On("FromID", s.ctx, uint64(1)).Return(ethUSD, nil).Twice()
+
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
 		s.Require().NoError(err)
 		s.Require().Len(prices, 2)
 
 		// Check that the prices are correct
-		s.Require().Equal("0x300", prices[cp1].String())
-		s.Require().Equal("0x400", prices[cp2].String())
+		s.Require().Equal(threeHundred.String(), prices[btcUSD].String())
+		s.Require().Equal(fourHundred.String(), prices[ethUSD].String())
 	})
 
 	s.Run("multiple prices from multiple validators but not enough voting power for some", func() {
-		myValPrices := map[string]string{
-			cp1.ToString(): "0x100",
-			cp2.ToString(): "0x200",
-			cp3.ToString(): "0x300",
+		myValPrices := map[uint64][]byte{
+			0: oneHundred.Bytes(),
+			1: twoHundred.Bytes(),
+			2: threeHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
-		val1Prices := map[string]string{
-			cp1.ToString(): "0x400",
-			cp3.ToString(): "0x600",
+		val1Prices := map[uint64][]byte{
+			0: fourHundred.Bytes(),
+			2: sixHundred.Bytes(),
 		}
-		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices, time.Now(), 2)
+		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices)
 		s.Require().NoError(err)
 
-		val2Prices := map[string]string{
-			cp1.ToString(): "0x700",
-			cp2.ToString(): "0x800",
-			cp3.ToString(): "0x900",
+		val2Prices := map[uint64][]byte{
+			0: sevenHundred.Bytes(),
+			1: eightHundred.Bytes(),
+			2: nineHundred.Bytes(),
 		}
-		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices, time.Now(), 2)
+		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -344,9 +369,9 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp1.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp2.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", cp3.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethBTC.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethUSD.ToString(), true).Once()
 
 		// Assume the validators have an unequal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -371,22 +396,28 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			nil,
 		).Once()
 
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
+		cpID.On("FromID", s.ctx, uint64(0)).Return(ethBTC, nil).Once()
+		cpID.On("FromID", s.ctx, uint64(1)).Return(ethBTC, nil).Twice()
+		cpID.On("FromID", s.ctx, uint64(2)).Return(ethUSD, nil).Twice()
+		cpID.On("FromID", s.ctx, uint64(2)).Return(ethBTC, nil).Once()
+
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
 		s.Require().NoError(err)
 		s.Require().Len(prices, 2)
 
 		// Check that the prices are correct
-		s.Require().Equal("0x400", prices[cp1].String())
-		s.Require().Equal("0x600", prices[cp3].String())
+		s.Require().Equal(fourHundred.String(), prices[btcUSD].String())
+		s.Require().Equal(sixHundred.String(), prices[ethUSD].String())
 	})
 
 	s.Run("errors when the validator's prices are malformed", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[string]string{
-			cp1.ToString(): "ongodhecappin",
+		myValPrices := map[uint64][]byte{
+			0: ongodhecappin,
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, time.Now(), 2)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
 		s.Require().NoError(err)
 
 		// Create the extended commit info

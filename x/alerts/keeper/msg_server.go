@@ -162,7 +162,7 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 			m.k.Logger(ctx).Info("issuing incentive to validator", "validator", sdk.ConsAddress(vote.Validator.Address).String(), "alert", fmt.Sprintf("%X", conclusion.GetAlert().UID()))
 
 			// execute the ValidatorIncentiveHandler to determine if validator should be issued an incentive
-			incentive, err := m.k.validatorIncentiveHandler(vote, conclusion.GetPriceBound(), conclusion.GetAlert())
+			incentive, err := m.k.validatorIncentiveHandler(vote, conclusion.GetPriceBound(), conclusion.GetAlert(), conclusion.GetCurrencyPairID())
 			if err != nil {
 				return nil, fmt.Errorf("failed to determine incentive: %v", err)
 			}

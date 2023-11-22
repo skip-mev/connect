@@ -13,8 +13,9 @@ import (
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
+	strategymock "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
-	merticmock "github.com/skip-mev/slinky/service/metrics/mocks"
+	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -30,6 +31,7 @@ type PreBlockTestSuite struct {
 	transientKey  *storetypes.TransientStoreKey
 	oracleKeeper  keeper.Keeper
 	handler       *preblock.PreBlockHandler
+	cpID          *strategymock.CurrencyPairIDStrategy
 }
 
 func TestPreBlockTestSuite(t *testing.T) {
@@ -57,18 +59,22 @@ func (s *PreBlockTestSuite) SetupTest() {
 		{
 			CurrencyPair: s.currencyPairs[0],
 			Nonce:        0,
+			Id:           0,
 		},
 		{
 			CurrencyPair: s.currencyPairs[1],
 			Nonce:        0,
+			Id:           1,
 		},
 		{
 			CurrencyPair: s.currencyPairs[2],
 			Nonce:        0,
+			Id:           2,
 		},
 	}
 	s.genesis = oracletypes.GenesisState{
 		CurrencyPairGenesis: genesisCPs,
+		NextId:              3,
 	}
 }
 
@@ -86,10 +92,12 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	)
 
 	// Use mock metrics
-	mockMetrics := merticmock.NewMetrics(s.T())
+	mockMetrics := metricmock.NewMetrics(s.T())
 
 	// Create the oracle keeper
 	s.oracleKeeper = testutils.CreateTestOracleKeeperWithGenesis(s.ctx, s.key, s.genesis)
+
+	s.cpID = strategymock.NewCurrencyPairIDStrategy(s.T())
 
 	s.handler = preblock.NewOraclePreBlockHandler(
 		log.NewTestLogger(s.T()),
@@ -97,6 +105,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 		s.oracleKeeper,
 		s.myVal,
 		mockMetrics,
+		s.cpID,
 	)
 }
 

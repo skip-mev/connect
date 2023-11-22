@@ -534,8 +534,8 @@ func (s *KeeperTestSuite) TestConclusion() {
 
 		// val1 is not within the price-bound
 		val1VE := slinkyabci.OracleVoteExtension{
-			Prices: map[string]string{
-				"BTC/USD": uint256.NewInt(101).String(),
+			Prices: map[uint64][]byte{
+				0: uint256.NewInt(101).Bytes(),
 			},
 		}
 		val1VEbz, err := val1VE.Marshal()
@@ -543,8 +543,8 @@ func (s *KeeperTestSuite) TestConclusion() {
 
 		// val2 is within the price-bound
 		val2VE := slinkyabci.OracleVoteExtension{
-			Prices: map[string]string{
-				"BTC/USD": uint256.NewInt(99).String(),
+			Prices: map[uint64][]byte{
+				0: uint256.NewInt(99).Bytes(),
 			},
 		}
 		val2VEbz, err := val2VE.Marshal()
@@ -552,8 +552,8 @@ func (s *KeeperTestSuite) TestConclusion() {
 
 		// val3 is not within the price-bound
 		val3VE := slinkyabci.OracleVoteExtension{
-			Prices: map[string]string{
-				"BTC/USD": uint256.NewInt(89).String(),
+			Prices: map[uint64][]byte{
+				0: uint256.NewInt(89).Bytes(),
 			},
 		}
 		val3VEbz, err := val3VE.Marshal()
@@ -584,6 +584,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 			Alert:              alert,
 			Signatures:         make([]types.Signature, 0),
 			Status:             true,
+			CurrencyPairID:     0,
 		}
 		signBz, err := conclusion.SignBytes()
 		s.Require().NoError(err)

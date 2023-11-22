@@ -2,7 +2,6 @@ package sla_test
 
 import (
 	"testing"
-	"time"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -15,11 +14,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/holiman/uint256"
 
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/preblock/sla"
 	"github.com/skip-mev/slinky/abci/preblock/sla/mocks"
+	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	oraclevetypes "github.com/skip-mev/slinky/abci/ve/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -27,6 +30,8 @@ import (
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 	slamocks "github.com/skip-mev/slinky/x/sla/types/mocks"
 )
+
+var oneHundred = uint256.NewInt(100)
 
 type SLAPreBlockerHandlerTestSuite struct {
 	suite.Suite
@@ -37,9 +42,10 @@ type SLAPreBlockerHandlerTestSuite struct {
 	handler *sla.PreBlockHandler
 
 	// Mocks for the handler's dependencies.
-	oracleKeeper  *mocks.OracleKeeper
-	stakingKeeper *mocks.StakingKeeper
-	slaKeeper     *slakeeper.Keeper
+	oracleKeeper           *mocks.OracleKeeper
+	stakingKeeper          *mocks.StakingKeeper
+	slaKeeper              *slakeeper.Keeper
+	currencyPairIDStrategy *strategymocks.CurrencyPairIDStrategy
 
 	val1      stakingtypes.Validator
 	consAddr1 sdk.ConsAddress
@@ -89,6 +95,8 @@ func (s *SLAPreBlockerHandlerTestSuite) SetupTest() {
 	s.cp1 = oracletypes.NewCurrencyPair("btc", "usd")
 	s.cp2 = oracletypes.NewCurrencyPair("eth", "usd")
 	s.cp3 = oracletypes.NewCurrencyPair("btc", "eth")
+
+	s.currencyPairIDStrategy = strategymocks.NewCurrencyPairIDStrategy(s.T())
 
 	// Set a single sla in the store for subsequent testing.
 	s.initHandler(s.veEnabled, s.setSLA)
@@ -166,11 +174,9 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 	s.Run("returns with single validator, single cp, and vote with price", func() {
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[string]string{
-				s.cp1.String(): "0x100",
+			map[uint64][]byte{
+				0: oneHundred.Bytes(),
 			},
-			time.Now(),
-			s.ctx.BlockHeight(),
 		)
 		s.Require().NoError(err)
 
@@ -185,6 +191,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+
+		s.currencyPairIDStrategy.On("ID", mock.Anything, s.cp1).Return(uint64(0), nil)
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -256,9 +264,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 	s.Run("correctly updates with single validator, single cp, and vote extension without the price", func() {
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[string]string{},
-			time.Now(),
-			s.ctx.BlockHeight(),
+			map[uint64][]byte{},
 		)
 		s.Require().NoError(err)
 
@@ -319,11 +325,9 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[string]string{
-				s.cp1.String(): "0x100",
+			map[uint64][]byte{
+				0: oneHundred.Bytes(),
 			},
-			time.Now(),
-			s.ctx.BlockHeight(),
 		)
 		s.Require().NoError(err)
 
@@ -338,6 +342,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -455,9 +461,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[string]string{},
-			time.Now(),
-			s.ctx.BlockHeight(),
+			map[uint64][]byte{},
 		)
 		s.Require().NoError(err)
 
@@ -472,6 +476,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -550,12 +556,14 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -581,10 +589,12 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{},
+					Prices: map[uint64][]byte{},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -602,7 +612,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.Require().Equal(slatypes.VoteWithoutPrice, validator.Updates[s.cp1])
 	})
 
-	s.Run("returns with single validator, multiple cps, and votes with prices", func() {
+	s.Run("returns with single validator, multiple cps, and votes with Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
@@ -610,14 +620,18 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
-						s.cp2.String(): "0x100",
-						s.cp3.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
+						1: oneHundred.Bytes(),
+						2: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp2).Return(uint64(1), nil)
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp3).Return(uint64(2), nil)
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -644,7 +658,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.Require().Equal(slatypes.VoteWithPrice, validator.Updates[s.cp3])
 	})
 
-	s.Run("returns with single validator, multiple cps, and some prices", func() {
+	s.Run("returns with single validator, multiple cps, and some Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
@@ -652,13 +666,17 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
-						s.cp2.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
+						1: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp2).Return(uint64(1), nil)
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp3).Return(uint64(2), nil)
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -685,7 +703,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.Require().Equal(slatypes.VoteWithoutPrice, validator.Updates[s.cp3])
 	})
 
-	s.Run("returns with 2 validators, single cp, and votes with prices", func() {
+	s.Run("returns with 2 validators, single cp, and votes with Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
 
@@ -693,20 +711,22 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
 					},
 				},
 			},
 			{
 				ConsAddress: s.consAddr2,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil).Twice()
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -741,12 +761,14 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -773,7 +795,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.Require().Equal(slatypes.NoVote, validator.Updates[s.cp1])
 	})
 
-	s.Run("multiple validators, multiple cps, and all validators posted prices", func() {
+	s.Run("multiple validators, multiple cps, and all validators posted Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
@@ -781,24 +803,28 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
-						s.cp2.String(): "0x100",
-						s.cp3.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
+						1: oneHundred.Bytes(),
+						2: oneHundred.Bytes(),
 					},
 				},
 			},
 			{
 				ConsAddress: s.consAddr2,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
-						s.cp2.String(): "0x100",
-						s.cp3.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
+						1: oneHundred.Bytes(),
+						2: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil).Twice()
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp2).Return(uint64(1), nil).Twice()
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp3).Return(uint64(2), nil).Twice()
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -839,7 +865,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.Require().Equal(slatypes.VoteWithPrice, validator.Updates[s.cp3])
 	})
 
-	s.Run("3 validators, 3 cps, 1 validator did not vote, 1 validator posted prices for some, 1 posted for all", func() {
+	s.Run("3 validators, 3 cps, 1 validator did not vote, 1 validator posted Prices for some, 1 posted for all", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2, s.val3}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
@@ -847,22 +873,26 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
-						s.cp2.String(): "0x100",
-						s.cp3.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
+						1: oneHundred.Bytes(),
+						2: oneHundred.Bytes(),
 					},
 				},
 			},
 			{
 				ConsAddress: s.consAddr2,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[string]string{
-						s.cp1.String(): "0x100",
+					Prices: map[uint64][]byte{
+						0: oneHundred.Bytes(),
 					},
 				},
 			},
 		}
+
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil).Twice()
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp2).Return(uint64(1), nil)
+		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp3).Return(uint64(2), nil)
 
 		updates, err := s.handler.GetUpdates(s.ctx, votes)
 		s.Require().NoError(err)
@@ -978,5 +1008,6 @@ func (s *SLAPreBlockerHandlerTestSuite) initHandler(veEnabled, setSLA bool) {
 		s.oracleKeeper,
 		s.stakingKeeper,
 		s.slaKeeper,
+		s.currencyPairIDStrategy,
 	)
 }

@@ -84,6 +84,9 @@ message MultiSigConclusion {
 
   // status is the status of the conclusion.
   bool status = 5;
+
+  // CurrencyPairID is the ID of the currency-pair that this conclusion corresponds to.
+  uint64 currency_pair_i_d = 6;
 }
 
 // MultiSigConclusionVerificationParams defines the parameters necessary to verify a MultiSigConclusion. 

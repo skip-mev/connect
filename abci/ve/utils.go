@@ -6,14 +6,12 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/abci/ve/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // ValidateOracleVoteExtension validates the vote extension provided by a validator.
-func ValidateOracleVoteExtension(voteExtension []byte, height int64) error {
+func ValidateOracleVoteExtension(voteExtension []byte) error {
 	if len(voteExtension) == 0 {
 		return nil
 	}
@@ -23,23 +21,11 @@ func ValidateOracleVoteExtension(voteExtension []byte, height int64) error {
 		return fmt.Errorf("failed to unmarshal vote extension: %w", err)
 	}
 
-	// The height of the vote extension must match the height of the request.
-	if voteExt.Height != height {
-		return fmt.Errorf(
-			"vote extension height does not match request height; expected: %d, got: %d",
-			height,
-			voteExt.Height,
-		)
-	}
-
-	// Verify tickers and prices are valid.
-	for currencyPair, price := range voteExt.Prices {
-		if _, err := oracletypes.CurrencyPairFromString(currencyPair); err != nil {
-			return fmt.Errorf("invalid ticker in oracle vote extension %s: %w", currencyPair, err)
-		}
-
-		if _, err := uint256.FromHex(price); err != nil {
-			return fmt.Errorf("invalid price in oracle vote extension %s: %w", currencyPair, err)
+	// Verify prices are valid.
+	for _, bz := range voteExt.Prices {
+		// validate the price bytes
+		if len(bz) > 32 {
+			return fmt.Errorf("price bytes are too long: %d", len(bz))
 		}
 	}
 

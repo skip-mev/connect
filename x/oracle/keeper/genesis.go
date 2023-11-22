@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -28,7 +30,13 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 
 		// set the nonce to state
 		k.setNonceForCurrencyPair(ctx, cpg.CurrencyPair, cpg.Nonce)
+
+		// set the ID to state
+		k.setIDForCurrencyPair(ctx, cpg.CurrencyPair, cpg.Id)
 	}
+
+	// set the next ID to state
+	k.setNextID(ctx, gs.NextId)
 }
 
 // ExportGenesis, retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.
@@ -37,45 +45,32 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	// instantiate genesis-state w/ empty array
 	gs := &types.GenesisState{
 		CurrencyPairGenesis: make([]types.CurrencyPairGenesis, 0),
-	}
-
-	cpCache := make(map[string]struct{})
-
-	// populate genesis-state w/ CurrencyPairs that have valid QuotePrices first, and cache the CurrencyPairs that have
-	// already been traversed
-	if err := k.IterateQuotePrices(ctx, func(cp types.CurrencyPair, qp types.QuotePrice) error {
-		// get the nonce for the currency pair
-		nonce, err := k.GetNonceForCurrencyPair(ctx, cp)
-		if err != nil {
-			return err
-		}
-
-		// aggregate
-		gs.CurrencyPairGenesis = append(gs.CurrencyPairGenesis, types.CurrencyPairGenesis{
-			CurrencyPair:      cp,
-			CurrencyPairPrice: &qp,
-			Nonce:             nonce,
-		})
-
-		// cache cp as already traversed
-		cpCache[cp.ToString()] = struct{}{}
-
-		return nil
-	}); err != nil {
-		panic(err)
+		NextId:              k.getNextID(ctx),
 	}
 
 	// next, iterate over NonceKey to retrieve any CurrencyPairs that have not yet been traversed (CurrencyPairs w/ no Price info)
-	if err := k.IterateNonces(ctx, func(cp types.CurrencyPair) {
-		// check to see if this CurrencyPair has already been traversed, if so, skip
-		if _, ok := cpCache[cp.ToString()]; ok {
-			return
+	if err := k.IterateNonces(ctx, func(cp types.CurrencyPair, nonce uint64) {
+		// get the id for the currency-pair
+		id, ok := k.GetIDForCurrencyPair(ctx, cp)
+		if !ok {
+			panic(fmt.Errorf("currency pair %s has no id", cp.ToString()))
+		}
+
+		cpg := types.CurrencyPairGenesis{
+			CurrencyPair: cp,
+			Id:           id,
+			Nonce:        nonce,
+		}
+
+		// get the price for the currency-pair
+		qp, err := k.GetPriceForCurrencyPair(ctx, cp)
+		if err == nil {
+			// if there is a price, set the price to the genesis
+			cpg.CurrencyPairPrice = &qp
 		}
 
 		// otherwise, aggregate the CurrencyPair and set the Price as nil + nonce as 0
-		gs.CurrencyPairGenesis = append(gs.CurrencyPairGenesis, types.CurrencyPairGenesis{
-			CurrencyPair: cp,
-		})
+		gs.CurrencyPairGenesis = append(gs.CurrencyPairGenesis, cpg)
 	}); err != nil {
 		panic(err)
 	}

@@ -13,6 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/holiman/uint256"
+
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	testutil "github.com/skip-mev/slinky/x/alerts/testutil"
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -251,12 +253,13 @@ func TestDefaultHandler(t *testing.T) {
 		a     types.Alert
 		v     cmtabci.Validator
 		ic    *strategies.ValidatorAlertIncentive
+		id    uint64
 		valid bool
 	}{
 		{
 			"invalid alert",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			types.PriceBound{
 				High: "0x1",
@@ -270,12 +273,13 @@ func TestDefaultHandler(t *testing.T) {
 				Address: []byte("test"),
 			},
 			nil,
+			0,
 			false,
 		},
 		{
 			"invalid price-bound",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			types.PriceBound{
 				High: "0x1",
@@ -293,12 +297,13 @@ func TestDefaultHandler(t *testing.T) {
 				Address: []byte("test"),
 			},
 			nil,
+			0,
 			false,
 		},
 		{
 			"no price report, nil incentive",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			types.PriceBound{
 				High: "0x2",
@@ -316,13 +321,14 @@ func TestDefaultHandler(t *testing.T) {
 				Address: []byte("test"),
 			},
 			nil,
+			0,
 			true,
 		},
 		{
 			"if price is higher than high bound, incentive is non-nil",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[string]string{
-					"A/B": "0x3",
+				Prices: map[uint64][]byte{
+					0: uint256.NewInt(3).Bytes(),
 				},
 			},
 			types.PriceBound{
@@ -347,13 +353,14 @@ func TestDefaultHandler(t *testing.T) {
 				AlertSigner: sdk.AccAddress("signer").String(),
 				AlertHeight: 1,
 			},
+			0,
 			true,
 		},
 		{
 			"if price is lower than low bound, incentive is non-nil",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[string]string{
-					"A/B": "0x0",
+				Prices: map[uint64][]byte{
+					0: uint256.NewInt(0).Bytes(),
 				},
 			},
 			types.PriceBound{
@@ -378,13 +385,14 @@ func TestDefaultHandler(t *testing.T) {
 				AlertSigner: sdk.AccAddress("signer").String(),
 				AlertHeight: 1,
 			},
+			0,
 			true,
 		},
 		{
 			"if price is within bounds, incentive is nil",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[string]string{
-					"A/B": "0x1",
+				Prices: map[uint64][]byte{
+					0: uint256.NewInt(1).Bytes(),
 				},
 			},
 			types.PriceBound{
@@ -403,6 +411,7 @@ func TestDefaultHandler(t *testing.T) {
 				Address: []byte("test"),
 			},
 			nil,
+			0,
 			true,
 		},
 	}
@@ -422,6 +431,7 @@ func TestDefaultHandler(t *testing.T) {
 				},
 				tc.pb,
 				tc.a,
+				tc.id,
 			)
 
 			// check for expected errors

@@ -20,7 +20,7 @@ import (
 var _ protoreflect.Map = (*_OracleVoteExtension_1_map)(nil)
 
 type _OracleVoteExtension_1_map struct {
-	m *map[string]string
+	m *map[uint64][]byte
 }
 
 func (x *_OracleVoteExtension_1_map) Len() int {
@@ -35,8 +35,8 @@ func (x *_OracleVoteExtension_1_map) Range(f func(protoreflect.MapKey, protorefl
 		return
 	}
 	for k, v := range *x.m {
-		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfString(k))
-		mapValue := protoreflect.ValueOfString(v)
+		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfUint64(k))
+		mapValue := protoreflect.ValueOfBytes(v)
 		if !f(mapKey, mapValue) {
 			break
 		}
@@ -47,7 +47,7 @@ func (x *_OracleVoteExtension_1_map) Has(key protoreflect.MapKey) bool {
 	if x.m == nil {
 		return false
 	}
-	keyUnwrapped := key.String()
+	keyUnwrapped := key.Uint()
 	concreteValue := keyUnwrapped
 	_, ok := (*x.m)[concreteValue]
 	return ok
@@ -57,12 +57,94 @@ func (x *_OracleVoteExtension_1_map) Clear(key protoreflect.MapKey) {
 	if x.m == nil {
 		return
 	}
-	keyUnwrapped := key.String()
+	keyUnwrapped := key.Uint()
 	concreteKey := keyUnwrapped
 	delete(*x.m, concreteKey)
 }
 
 func (x *_OracleVoteExtension_1_map) Get(key protoreflect.MapKey) protoreflect.Value {
+	if x.m == nil {
+		return protoreflect.Value{}
+	}
+	keyUnwrapped := key.Uint()
+	concreteKey := keyUnwrapped
+	v, ok := (*x.m)[concreteKey]
+	if !ok {
+		return protoreflect.Value{}
+	}
+	return protoreflect.ValueOfBytes(v)
+}
+
+func (x *_OracleVoteExtension_1_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
+	if !key.IsValid() || !value.IsValid() {
+		panic("invalid key or value provided")
+	}
+	keyUnwrapped := key.Uint()
+	concreteKey := keyUnwrapped
+	valueUnwrapped := value.Bytes()
+	concreteValue := valueUnwrapped
+	(*x.m)[concreteKey] = concreteValue
+}
+
+func (x *_OracleVoteExtension_1_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
+	panic("should not call Mutable on protoreflect.Map whose value is not of type protoreflect.Message")
+}
+
+func (x *_OracleVoteExtension_1_map) NewValue() protoreflect.Value {
+	var v []byte
+	return protoreflect.ValueOfBytes(v)
+}
+
+func (x *_OracleVoteExtension_1_map) IsValid() bool {
+	return x.m != nil
+}
+
+var _ protoreflect.Map = (*_OracleVoteExtension_4_map)(nil)
+
+type _OracleVoteExtension_4_map struct {
+	m *map[string]string
+}
+
+func (x *_OracleVoteExtension_4_map) Len() int {
+	if x.m == nil {
+		return 0
+	}
+	return len(*x.m)
+}
+
+func (x *_OracleVoteExtension_4_map) Range(f func(protoreflect.MapKey, protoreflect.Value) bool) {
+	if x.m == nil {
+		return
+	}
+	for k, v := range *x.m {
+		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfString(k))
+		mapValue := protoreflect.ValueOfString(v)
+		if !f(mapKey, mapValue) {
+			break
+		}
+	}
+}
+
+func (x *_OracleVoteExtension_4_map) Has(key protoreflect.MapKey) bool {
+	if x.m == nil {
+		return false
+	}
+	keyUnwrapped := key.String()
+	concreteValue := keyUnwrapped
+	_, ok := (*x.m)[concreteValue]
+	return ok
+}
+
+func (x *_OracleVoteExtension_4_map) Clear(key protoreflect.MapKey) {
+	if x.m == nil {
+		return
+	}
+	keyUnwrapped := key.String()
+	concreteKey := keyUnwrapped
+	delete(*x.m, concreteKey)
+}
+
+func (x *_OracleVoteExtension_4_map) Get(key protoreflect.MapKey) protoreflect.Value {
 	if x.m == nil {
 		return protoreflect.Value{}
 	}
@@ -75,7 +157,7 @@ func (x *_OracleVoteExtension_1_map) Get(key protoreflect.MapKey) protoreflect.V
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_OracleVoteExtension_1_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
+func (x *_OracleVoteExtension_4_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
 	if !key.IsValid() || !value.IsValid() {
 		panic("invalid key or value provided")
 	}
@@ -86,24 +168,25 @@ func (x *_OracleVoteExtension_1_map) Set(key protoreflect.MapKey, value protoref
 	(*x.m)[concreteKey] = concreteValue
 }
 
-func (x *_OracleVoteExtension_1_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
+func (x *_OracleVoteExtension_4_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
 	panic("should not call Mutable on protoreflect.Map whose value is not of type protoreflect.Message")
 }
 
-func (x *_OracleVoteExtension_1_map) NewValue() protoreflect.Value {
+func (x *_OracleVoteExtension_4_map) NewValue() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_OracleVoteExtension_1_map) IsValid() bool {
+func (x *_OracleVoteExtension_4_map) IsValid() bool {
 	return x.m != nil
 }
 
 var (
-	md_OracleVoteExtension           protoreflect.MessageDescriptor
-	fd_OracleVoteExtension_prices    protoreflect.FieldDescriptor
-	fd_OracleVoteExtension_timestamp protoreflect.FieldDescriptor
-	fd_OracleVoteExtension_height    protoreflect.FieldDescriptor
+	md_OracleVoteExtension                   protoreflect.MessageDescriptor
+	fd_OracleVoteExtension_prices            protoreflect.FieldDescriptor
+	fd_OracleVoteExtension_timestamp         protoreflect.FieldDescriptor
+	fd_OracleVoteExtension_height            protoreflect.FieldDescriptor
+	fd_OracleVoteExtension_deprecated_prices protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -112,6 +195,7 @@ func init() {
 	fd_OracleVoteExtension_prices = md_OracleVoteExtension.Fields().ByName("prices")
 	fd_OracleVoteExtension_timestamp = md_OracleVoteExtension.Fields().ByName("timestamp")
 	fd_OracleVoteExtension_height = md_OracleVoteExtension.Fields().ByName("height")
+	fd_OracleVoteExtension_deprecated_prices = md_OracleVoteExtension.Fields().ByName("deprecated_prices")
 }
 
 var _ protoreflect.Message = (*fastReflection_OracleVoteExtension)(nil)
@@ -197,6 +281,12 @@ func (x *fastReflection_OracleVoteExtension) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
+	if len(x.DeprecatedPrices) != 0 {
+		value := protoreflect.ValueOfMap(&_OracleVoteExtension_4_map{m: &x.DeprecatedPrices})
+		if !f(fd_OracleVoteExtension_deprecated_prices, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -218,6 +308,8 @@ func (x *fastReflection_OracleVoteExtension) Has(fd protoreflect.FieldDescriptor
 		return x.Timestamp != nil
 	case "slinky.abci.v1.OracleVoteExtension.height":
 		return x.Height != int64(0)
+	case "slinky.abci.v1.OracleVoteExtension.deprecated_prices":
+		return len(x.DeprecatedPrices) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.abci.v1.OracleVoteExtension"))
@@ -240,6 +332,8 @@ func (x *fastReflection_OracleVoteExtension) Clear(fd protoreflect.FieldDescript
 		x.Timestamp = nil
 	case "slinky.abci.v1.OracleVoteExtension.height":
 		x.Height = int64(0)
+	case "slinky.abci.v1.OracleVoteExtension.deprecated_prices":
+		x.DeprecatedPrices = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.abci.v1.OracleVoteExtension"))
@@ -268,6 +362,12 @@ func (x *fastReflection_OracleVoteExtension) Get(descriptor protoreflect.FieldDe
 	case "slinky.abci.v1.OracleVoteExtension.height":
 		value := x.Height
 		return protoreflect.ValueOfInt64(value)
+	case "slinky.abci.v1.OracleVoteExtension.deprecated_prices":
+		if len(x.DeprecatedPrices) == 0 {
+			return protoreflect.ValueOfMap(&_OracleVoteExtension_4_map{})
+		}
+		mapValue := &_OracleVoteExtension_4_map{m: &x.DeprecatedPrices}
+		return protoreflect.ValueOfMap(mapValue)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.abci.v1.OracleVoteExtension"))
@@ -296,6 +396,10 @@ func (x *fastReflection_OracleVoteExtension) Set(fd protoreflect.FieldDescriptor
 		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	case "slinky.abci.v1.OracleVoteExtension.height":
 		x.Height = value.Int()
+	case "slinky.abci.v1.OracleVoteExtension.deprecated_prices":
+		mv := value.Map()
+		cmv := mv.(*_OracleVoteExtension_4_map)
+		x.DeprecatedPrices = *cmv.m
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.abci.v1.OracleVoteExtension"))
@@ -318,7 +422,7 @@ func (x *fastReflection_OracleVoteExtension) Mutable(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	case "slinky.abci.v1.OracleVoteExtension.prices":
 		if x.Prices == nil {
-			x.Prices = make(map[string]string)
+			x.Prices = make(map[uint64][]byte)
 		}
 		value := &_OracleVoteExtension_1_map{m: &x.Prices}
 		return protoreflect.ValueOfMap(value)
@@ -327,6 +431,12 @@ func (x *fastReflection_OracleVoteExtension) Mutable(fd protoreflect.FieldDescri
 			x.Timestamp = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "slinky.abci.v1.OracleVoteExtension.deprecated_prices":
+		if x.DeprecatedPrices == nil {
+			x.DeprecatedPrices = make(map[string]string)
+		}
+		value := &_OracleVoteExtension_4_map{m: &x.DeprecatedPrices}
+		return protoreflect.ValueOfMap(value)
 	case "slinky.abci.v1.OracleVoteExtension.height":
 		panic(fmt.Errorf("field height of message slinky.abci.v1.OracleVoteExtension is not mutable"))
 	default:
@@ -343,13 +453,16 @@ func (x *fastReflection_OracleVoteExtension) Mutable(fd protoreflect.FieldDescri
 func (x *fastReflection_OracleVoteExtension) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "slinky.abci.v1.OracleVoteExtension.prices":
-		m := make(map[string]string)
+		m := make(map[uint64][]byte)
 		return protoreflect.ValueOfMap(&_OracleVoteExtension_1_map{m: &m})
 	case "slinky.abci.v1.OracleVoteExtension.timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "slinky.abci.v1.OracleVoteExtension.height":
 		return protoreflect.ValueOfInt64(int64(0))
+	case "slinky.abci.v1.OracleVoteExtension.deprecated_prices":
+		m := make(map[string]string)
+		return protoreflect.ValueOfMap(&_OracleVoteExtension_4_map{m: &m})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.abci.v1.OracleVoteExtension"))
@@ -420,16 +533,19 @@ func (x *fastReflection_OracleVoteExtension) ProtoMethods() *protoiface.Methods 
 		var l int
 		_ = l
 		if len(x.Prices) > 0 {
-			SiZeMaP := func(k string, v string) {
-				mapEntrySize := 1 + len(k) + runtime.Sov(uint64(len(k))) + 1 + len(v) + runtime.Sov(uint64(len(v)))
+			SiZeMaP := func(k uint64, v []byte) {
+				l = 1 + len(v) + runtime.Sov(uint64(len(v)))
+				mapEntrySize := 1 + runtime.Sov(uint64(k)) + l
 				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
 			}
 			if options.Deterministic {
-				sortme := make([]string, 0, len(x.Prices))
+				sortme := make([]uint64, 0, len(x.Prices))
 				for k := range x.Prices {
 					sortme = append(sortme, k)
 				}
-				sort.Strings(sortme)
+				sort.Slice(sortme, func(i, j int) bool {
+					return sortme[i] < sortme[j]
+				})
 				for _, k := range sortme {
 					v := x.Prices[k]
 					SiZeMaP(k, v)
@@ -446,6 +562,27 @@ func (x *fastReflection_OracleVoteExtension) ProtoMethods() *protoiface.Methods 
 		}
 		if x.Height != 0 {
 			n += 1 + runtime.Sov(uint64(x.Height))
+		}
+		if len(x.DeprecatedPrices) > 0 {
+			SiZeMaP := func(k string, v string) {
+				mapEntrySize := 1 + len(k) + runtime.Sov(uint64(len(k))) + 1 + len(v) + runtime.Sov(uint64(len(v)))
+				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
+			}
+			if options.Deterministic {
+				sortme := make([]string, 0, len(x.DeprecatedPrices))
+				for k := range x.DeprecatedPrices {
+					sortme = append(sortme, k)
+				}
+				sort.Strings(sortme)
+				for _, k := range sortme {
+					v := x.DeprecatedPrices[k]
+					SiZeMaP(k, v)
+				}
+			} else {
+				for k, v := range x.DeprecatedPrices {
+					SiZeMaP(k, v)
+				}
+			}
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -476,6 +613,49 @@ func (x *fastReflection_OracleVoteExtension) ProtoMethods() *protoiface.Methods 
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
+		if len(x.DeprecatedPrices) > 0 {
+			MaRsHaLmAp := func(k string, v string) (protoiface.MarshalOutput, error) {
+				baseI := i
+				i -= len(v)
+				copy(dAtA[i:], v)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(v)))
+				i--
+				dAtA[i] = 0x12
+				i -= len(k)
+				copy(dAtA[i:], k)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(k)))
+				i--
+				dAtA[i] = 0xa
+				i = runtime.EncodeVarint(dAtA, i, uint64(baseI-i))
+				i--
+				dAtA[i] = 0x22
+				return protoiface.MarshalOutput{}, nil
+			}
+			if options.Deterministic {
+				keysForDeprecatedPrices := make([]string, 0, len(x.DeprecatedPrices))
+				for k := range x.DeprecatedPrices {
+					keysForDeprecatedPrices = append(keysForDeprecatedPrices, string(k))
+				}
+				sort.Slice(keysForDeprecatedPrices, func(i, j int) bool {
+					return keysForDeprecatedPrices[i] < keysForDeprecatedPrices[j]
+				})
+				for iNdEx := len(keysForDeprecatedPrices) - 1; iNdEx >= 0; iNdEx-- {
+					v := x.DeprecatedPrices[string(keysForDeprecatedPrices[iNdEx])]
+					out, err := MaRsHaLmAp(keysForDeprecatedPrices[iNdEx], v)
+					if err != nil {
+						return out, err
+					}
+				}
+			} else {
+				for k := range x.DeprecatedPrices {
+					v := x.DeprecatedPrices[k]
+					out, err := MaRsHaLmAp(k, v)
+					if err != nil {
+						return out, err
+					}
+				}
+			}
+		}
 		if x.Height != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Height))
 			i--
@@ -496,33 +676,31 @@ func (x *fastReflection_OracleVoteExtension) ProtoMethods() *protoiface.Methods 
 			dAtA[i] = 0x12
 		}
 		if len(x.Prices) > 0 {
-			MaRsHaLmAp := func(k string, v string) (protoiface.MarshalOutput, error) {
+			MaRsHaLmAp := func(k uint64, v []byte) (protoiface.MarshalOutput, error) {
 				baseI := i
 				i -= len(v)
 				copy(dAtA[i:], v)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(v)))
 				i--
 				dAtA[i] = 0x12
-				i -= len(k)
-				copy(dAtA[i:], k)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(k)))
+				i = runtime.EncodeVarint(dAtA, i, uint64(k))
 				i--
-				dAtA[i] = 0xa
+				dAtA[i] = 0x8
 				i = runtime.EncodeVarint(dAtA, i, uint64(baseI-i))
 				i--
 				dAtA[i] = 0xa
 				return protoiface.MarshalOutput{}, nil
 			}
 			if options.Deterministic {
-				keysForPrices := make([]string, 0, len(x.Prices))
+				keysForPrices := make([]uint64, 0, len(x.Prices))
 				for k := range x.Prices {
-					keysForPrices = append(keysForPrices, string(k))
+					keysForPrices = append(keysForPrices, uint64(k))
 				}
 				sort.Slice(keysForPrices, func(i, j int) bool {
 					return keysForPrices[i] < keysForPrices[j]
 				})
 				for iNdEx := len(keysForPrices) - 1; iNdEx >= 0; iNdEx-- {
-					v := x.Prices[string(keysForPrices[iNdEx])]
+					v := x.Prices[uint64(keysForPrices[iNdEx])]
 					out, err := MaRsHaLmAp(keysForPrices[iNdEx], v)
 					if err != nil {
 						return out, err
@@ -617,7 +795,176 @@ func (x *fastReflection_OracleVoteExtension) ProtoMethods() *protoiface.Methods 
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				if x.Prices == nil {
-					x.Prices = make(map[string]string)
+					x.Prices = make(map[uint64][]byte)
+				}
+				var mapkey uint64
+				var mapvalue []byte
+				for iNdEx < postIndex {
+					entryPreIndex := iNdEx
+					var wire uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						wire |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					fieldNum := int32(wire >> 3)
+					if fieldNum == 1 {
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							mapkey |= uint64(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+					} else if fieldNum == 2 {
+						var mapbyteLen uint64
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							mapbyteLen |= uint64(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						intMapbyteLen := int(mapbyteLen)
+						if intMapbyteLen < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						postbytesIndex := iNdEx + intMapbyteLen
+						if postbytesIndex < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if postbytesIndex > l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						mapvalue = make([]byte, mapbyteLen)
+						copy(mapvalue, dAtA[iNdEx:postbytesIndex])
+						iNdEx = postbytesIndex
+					} else {
+						iNdEx = entryPreIndex
+						skippy, err := runtime.Skip(dAtA[iNdEx:])
+						if err != nil {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+						}
+						if (skippy < 0) || (iNdEx+skippy) < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if (iNdEx + skippy) > postIndex {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						iNdEx += skippy
+					}
+				}
+				x.Prices[mapkey] = mapvalue
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+				}
+				x.Height = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Height |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DeprecatedPrices", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.DeprecatedPrices == nil {
+					x.DeprecatedPrices = make(map[string]string)
 				}
 				var mapkey string
 				var mapvalue string
@@ -712,63 +1059,8 @@ func (x *fastReflection_OracleVoteExtension) ProtoMethods() *protoiface.Methods 
 						iNdEx += skippy
 					}
 				}
-				x.Prices[mapkey] = mapvalue
+				x.DeprecatedPrices[mapkey] = mapvalue
 				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Timestamp == nil {
-					x.Timestamp = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
-				}
-				x.Height = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Height |= int64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -823,13 +1115,16 @@ type OracleVoteExtension struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" ->
-	// "0x1234".
-	Prices map[string]string `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 -> 0x123.. (bytes).
+	// Notice the `id` function is determined by the `CurrencyPairIDStrategy` used in the
+	// VoteExtensionHandler.
+	Prices map[uint64][]byte `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Timestamp defines the block timestamp when the oracle data was validated.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// Height defines the block height when the oracle data was validated.
 	Height int64 `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
+	// DeprecatedPrices is to be deprecated, this is vestigial, and will be removed
+	DeprecatedPrices map[string]string `protobuf:"bytes,4,rep,name=deprecated_prices,json=deprecatedPrices,proto3" json:"deprecated_prices,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *OracleVoteExtension) Reset() {
@@ -852,7 +1147,7 @@ func (*OracleVoteExtension) Descriptor() ([]byte, []int) {
 	return file_slinky_abci_v1_vote_extensions_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *OracleVoteExtension) GetPrices() map[string]string {
+func (x *OracleVoteExtension) GetPrices() map[uint64][]byte {
 	if x != nil {
 		return x.Prices
 	}
@@ -873,6 +1168,13 @@ func (x *OracleVoteExtension) GetHeight() int64 {
 	return 0
 }
 
+func (x *OracleVoteExtension) GetDeprecatedPrices() map[string]string {
+	if x != nil {
+		return x.DeprecatedPrices
+	}
+	return nil
+}
+
 var File_slinky_abci_v1_vote_extensions_proto protoreflect.FileDescriptor
 
 var file_slinky_abci_v1_vote_extensions_proto_rawDesc = []byte{
@@ -886,7 +1188,7 @@ var file_slinky_abci_v1_vote_extensions_proto_rawDesc = []byte{
 	0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65,
 	0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xf5, 0x01, 0x0a, 0x13, 0x4f, 0x72, 0x61, 0x63, 0x6c,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa2, 0x03, 0x0a, 0x13, 0x4f, 0x72, 0x61, 0x63, 0x6c,
 	0x65, 0x56, 0x6f, 0x74, 0x65, 0x45, 0x78, 0x74, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x47,
 	0x0a, 0x06, 0x70, 0x72, 0x69, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2f,
 	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x61, 0x62, 0x63, 0x69, 0x2e, 0x76, 0x31, 0x2e,
@@ -898,22 +1200,33 @@ var file_slinky_abci_v1_vote_extensions_proto_rawDesc = []byte{
 	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01,
 	0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x16, 0x0a, 0x06, 0x68,
 	0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x68, 0x65, 0x69,
-	0x67, 0x68, 0x74, 0x1a, 0x39, 0x0a, 0x0b, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x45, 0x6e, 0x74,
-	0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x42, 0xab,
-	0x01, 0x0a, 0x12, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x61, 0x62,
-	0x63, 0x69, 0x2e, 0x76, 0x31, 0x42, 0x13, 0x56, 0x6f, 0x74, 0x65, 0x45, 0x78, 0x74, 0x65, 0x6e,
-	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x26, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x61, 0x62, 0x63, 0x69, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x62,
-	0x63, 0x69, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x41, 0x58, 0xaa, 0x02, 0x0e, 0x53, 0x6c, 0x69,
-	0x6e, 0x6b, 0x79, 0x2e, 0x41, 0x62, 0x63, 0x69, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0e, 0x53, 0x6c,
-	0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x41, 0x62, 0x63, 0x69, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1a, 0x53,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x41, 0x62, 0x63, 0x69, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x3a, 0x3a, 0x41, 0x62, 0x63, 0x69, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x68, 0x74, 0x12, 0x66, 0x0a, 0x11, 0x64, 0x65, 0x70, 0x72, 0x65, 0x63, 0x61, 0x74, 0x65,
+	0x64, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x39,
+	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x61, 0x62, 0x63, 0x69, 0x2e, 0x76, 0x31, 0x2e,
+	0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x56, 0x6f, 0x74, 0x65, 0x45, 0x78, 0x74, 0x65, 0x6e, 0x73,
+	0x69, 0x6f, 0x6e, 0x2e, 0x44, 0x65, 0x70, 0x72, 0x65, 0x63, 0x61, 0x74, 0x65, 0x64, 0x50, 0x72,
+	0x69, 0x63, 0x65, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x10, 0x64, 0x65, 0x70, 0x72, 0x65,
+	0x63, 0x61, 0x74, 0x65, 0x64, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x1a, 0x39, 0x0a, 0x0b, 0x50,
+	0x72, 0x69, 0x63, 0x65, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a, 0x43, 0x0a, 0x15, 0x44, 0x65, 0x70, 0x72, 0x65, 0x63,
+	0x61, 0x74, 0x65, 0x64, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12,
+	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65,
+	0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x42, 0xab, 0x01, 0x0a, 0x12,
+	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x61, 0x62, 0x63, 0x69, 0x2e,
+	0x76, 0x31, 0x42, 0x13, 0x56, 0x6f, 0x74, 0x65, 0x45, 0x78, 0x74, 0x65, 0x6e, 0x73, 0x69, 0x6f,
+	0x6e, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x26, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e,
+	0x6b, 0x79, 0x2f, 0x61, 0x62, 0x63, 0x69, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x62, 0x63, 0x69, 0x76,
+	0x31, 0xa2, 0x02, 0x03, 0x53, 0x41, 0x58, 0xaa, 0x02, 0x0e, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
+	0x2e, 0x41, 0x62, 0x63, 0x69, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0e, 0x53, 0x6c, 0x69, 0x6e, 0x6b,
+	0x79, 0x5c, 0x41, 0x62, 0x63, 0x69, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1a, 0x53, 0x6c, 0x69, 0x6e,
+	0x6b, 0x79, 0x5c, 0x41, 0x62, 0x63, 0x69, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x3a,
+	0x3a, 0x41, 0x62, 0x63, 0x69, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -928,20 +1241,22 @@ func file_slinky_abci_v1_vote_extensions_proto_rawDescGZIP() []byte {
 	return file_slinky_abci_v1_vote_extensions_proto_rawDescData
 }
 
-var file_slinky_abci_v1_vote_extensions_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_slinky_abci_v1_vote_extensions_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_slinky_abci_v1_vote_extensions_proto_goTypes = []interface{}{
 	(*OracleVoteExtension)(nil),   // 0: slinky.abci.v1.OracleVoteExtension
 	nil,                           // 1: slinky.abci.v1.OracleVoteExtension.PricesEntry
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	nil,                           // 2: slinky.abci.v1.OracleVoteExtension.DeprecatedPricesEntry
+	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
 }
 var file_slinky_abci_v1_vote_extensions_proto_depIdxs = []int32{
 	1, // 0: slinky.abci.v1.OracleVoteExtension.prices:type_name -> slinky.abci.v1.OracleVoteExtension.PricesEntry
-	2, // 1: slinky.abci.v1.OracleVoteExtension.timestamp:type_name -> google.protobuf.Timestamp
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 1: slinky.abci.v1.OracleVoteExtension.timestamp:type_name -> google.protobuf.Timestamp
+	2, // 2: slinky.abci.v1.OracleVoteExtension.deprecated_prices:type_name -> slinky.abci.v1.OracleVoteExtension.DeprecatedPricesEntry
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_slinky_abci_v1_vote_extensions_proto_init() }
@@ -969,7 +1284,7 @@ func file_slinky_abci_v1_vote_extensions_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_slinky_abci_v1_vote_extensions_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

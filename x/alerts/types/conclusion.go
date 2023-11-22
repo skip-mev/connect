@@ -34,6 +34,9 @@ type Conclusion interface {
 
 	// PriceBounds returns the price-bounds of the conclusion.
 	GetPriceBound() PriceBound
+
+	// GetCurrencyPairID returns the ID of the CurrencyPair for which the alert is filed
+	GetCurrencyPairID() uint64
 }
 
 // ConclusionVerificationParams defines the parameters necessary to verify a conclusion.

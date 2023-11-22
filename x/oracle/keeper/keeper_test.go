@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -159,4 +160,122 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 		_, ok := expectedCurrencyPairs[ts]
 		assert.True(s.T(), ok)
 	}
+}
+
+func (s *KeeperTestSuite) TestCreateCurrencyPair() {
+	cp := types.CurrencyPair{
+		Base:  "NEW",
+		Quote: "PAIR",
+	}
+	s.Run("creating a new currency-pair initializes correctly", func() {
+		// create the currency pair
+		err := s.oracleKeeper.CreateCurrencyPair(s.ctx, cp)
+		assert.Nil(s.T(), err)
+
+		// check that the currency pair exists
+		nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+		assert.Nil(s.T(), err)
+		assert.Equal(s.T(), nonce, uint64(0))
+
+		// check that the set of all cps includes the currency-pair
+		cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+
+		var found bool
+		for _, cp := range cps {
+			if cp.ToString() == "NEW/PAIR" {
+				found = true
+				break
+			}
+		}
+		assert.True(s.T(), found)
+	})
+
+	s.Run("creating a currency-pair twice fails", func() {
+		err := s.oracleKeeper.CreateCurrencyPair(s.ctx, cp)
+		assert.Equal(s.T(), err.Error(), fmt.Sprintf("currency pair already exists: %s", cp.ToString()))
+	})
+}
+
+func (s *KeeperTestSuite) TestIDForCurrencyPair() {
+	cp1 := types.CurrencyPair{
+		Base:  "PAIR",
+		Quote: "1",
+	}
+
+	cp2 := types.CurrencyPair{
+		Base:  "PAIR",
+		Quote: "2",
+	}
+
+	s.Run("test setting ids for currency pairs", func() {
+		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
+
+		// get the id for the currency-pair
+		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp1)
+		assert.True(s.T(), ok)
+
+		// set the next currency-pair
+		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
+
+		// get the id for the currency-pair
+		id2, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		assert.True(s.T(), ok)
+
+		// check that the ids are different
+		assert.Equal(s.T(), id+1, id2)
+	})
+
+	s.Run("test getting ids for currency-pairs", func() {
+		// get the id for the currency-pair
+		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp1)
+		assert.True(s.T(), ok)
+
+		// get the currency-pair for the id
+		cp, ok := s.oracleKeeper.GetCurrencyPairFromID(s.ctx, id)
+		assert.True(s.T(), ok)
+
+		// check that the currency-pair is the same
+		assert.Equal(s.T(), cp1, cp)
+
+		// get the id for the currency-pair
+		id2, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		assert.True(s.T(), ok)
+
+		// get the currency-pair for the id
+		cp, ok = s.oracleKeeper.GetCurrencyPairFromID(s.ctx, id2)
+		assert.True(s.T(), ok)
+
+		// check that the currency-pair is the same
+		assert.Equal(s.T(), cp2, cp)
+	})
+
+	var unusedID uint64
+	s.Run("test that removing a currency-pair removes the ID for that currency-pair", func() {
+		var ok bool
+		unusedID, ok = s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		assert.True(s.T(), ok)
+
+		// remove the currency-pair
+		s.oracleKeeper.RemoveCurrencyPair(s.ctx, cp2)
+
+		// check that the id is no longer in use
+		_, ok = s.oracleKeeper.GetCurrencyPairFromID(s.ctx, unusedID)
+		assert.False(s.T(), ok)
+	})
+
+	s.Run("insert another currency-pair, and expect that unusedID + 1 is used", func() {
+		cp3 := types.CurrencyPair{
+			Base:  "PAIR",
+			Quote: "3",
+		}
+
+		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp3))
+
+		// get the id for the currency-pair
+		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp3)
+		assert.True(s.T(), ok)
+
+		// check that the id is unusedID + 1
+		assert.Equal(s.T(), unusedID+1, id)
+	})
 }

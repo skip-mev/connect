@@ -46,6 +46,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 							Base:  "AA",
 							Quote: "BB",
 						},
+						Id: 0,
 					},
 					{
 						CurrencyPair: types.CurrencyPair{
@@ -56,8 +57,10 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 							Price: sdkmath.NewInt(100),
 						},
 						Nonce: 12,
+						Id:    1,
 					},
 				},
+				NextId: 2,
 			},
 			true,
 		},
@@ -93,6 +96,12 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 
 					// check equality of nonces
 					assert.Equal(s.T(), nonce, cpg.Nonce)
+
+					// check equality of ids
+					id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
+					assert.True(s.T(), ok)
+
+					assert.Equal(s.T(), id, cpg.Id)
 				}
 			}
 		})
@@ -127,7 +136,10 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		}
 
 		// insert
+		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
 		assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
+
+		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
 		assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
 
 		// insert
@@ -137,7 +149,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		gs := s.oracleKeeper.ExportGenesis(s.ctx)
 		assert.Equal(s.T(), len(gs.CurrencyPairGenesis), 2)
 		expectedCurrencyPairs := map[string]types.QuotePrice{"AA/BB": qp1, "CC/DD": qp2}
-		expectedNonces := map[string]uint64{"AA/BB": 1, "CC/DD": 0}
+		expectedNonces := map[string]uint64{"AA/BB": 2, "CC/DD": 1}
 
 		for _, cpg := range gs.CurrencyPairGenesis {
 			qp, ok := expectedCurrencyPairs[cpg.CurrencyPair.ToString()]
@@ -164,6 +176,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 						Price: sdkmath.NewInt(100),
 					},
 					Nonce: 100,
+					Id:    0,
 				},
 				{
 					CurrencyPair: types.CurrencyPair{
@@ -174,8 +187,10 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 						Price: sdkmath.NewInt(101),
 					},
 					Nonce: 101,
+					Id:    1,
 				},
 			},
+			NextId: 2,
 		}
 		// init genesis
 		s.oracleKeeper.InitGenesis(s.ctx, gs)
@@ -234,6 +249,13 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			} else {
 				assert.Equal(s.T(), cpg.Nonce, uint64(0))
 			}
+
+			// check IDs
+			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
+
+			assert.True(s.T(), ok)
+
+			assert.Equal(s.T(), id, cpg.Id)
 		}
 	})
 }

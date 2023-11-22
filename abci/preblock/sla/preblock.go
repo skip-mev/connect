@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
+	strategies "github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/ve"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
@@ -20,6 +21,10 @@ type PreBlockHandler struct {
 	oracleKeeper  OracleKeeper
 	stakingKeeper StakingKeeper
 	slaKeeper     Keeper
+
+	// currencyPairIDStrategy is the strategy used for generating / retrieving
+	// IDs for currency-pairs
+	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
 }
 
 // NewSLAPreBlockerHandler returns a new PreBlockHandler.
@@ -27,11 +32,13 @@ func NewSLAPreBlockHandler(
 	oracleKeeper OracleKeeper,
 	stakingKeeper StakingKeeper,
 	slaKeeper Keeper,
+	strategy strategies.CurrencyPairIDStrategy,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
-		oracleKeeper:  oracleKeeper,
-		stakingKeeper: stakingKeeper,
-		slaKeeper:     slaKeeper,
+		oracleKeeper:           oracleKeeper,
+		stakingKeeper:          stakingKeeper,
+		slaKeeper:              slaKeeper,
+		currencyPairIDStrategy: strategy,
 	}
 }
 
@@ -138,7 +145,7 @@ func (h *PreBlockHandler) GetUpdates(ctx sdk.Context, votes []oraclepreblock.Vot
 	// Determine the price feed status updates for each validator that included
 	// their vote extension in the block.
 	for _, vote := range votes {
-		valUpdates := getStatuses(currencyPairs, vote.OracleVoteExtension.Prices)
+		valUpdates := getStatuses(ctx, h.currencyPairIDStrategy, currencyPairs, vote.OracleVoteExtension.Prices)
 
 		ctx.Logger().Debug(
 			"retrieved status updates by validator",

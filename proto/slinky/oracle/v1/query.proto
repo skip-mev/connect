@@ -55,4 +55,6 @@ message GetPriceResponse {
   // represented in. For Pairs where ETHEREUM is the quote this will be 18,
   // otherwise it will be 8.
   uint64 decimals = 3;
+  // ID represents the identifier for the CurrencyPair.
+  uint64 id = 4;
 }

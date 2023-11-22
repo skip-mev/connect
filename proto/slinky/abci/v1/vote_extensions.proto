@@ -10,14 +10,8 @@ option go_package = "github.com/skip-mev/slinky/abci/ve/types";
 
 // OracleVoteExtension defines the vote extension structure for oracle prices.
 message OracleVoteExtension {
-  // Prices defines a map of CurrencyPair -> hexPrice. i.e. "BTC/USD/8" ->
-  // "0x1234".
-  map<string, string> prices = 1;
-
-  // Timestamp defines the block timestamp when the oracle data was validated.
-  google.protobuf.Timestamp timestamp = 2
-      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
-
-  // Height defines the block height when the oracle data was validated.
-  int64 height = 3;
+  // Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 -> 0x123.. (bytes).
+  // Notice the `id` function is determined by the `CurrencyPairIDStrategy` used in the
+  // VoteExtensionHandler.
+  map<uint64, bytes> prices = 1;
 }
