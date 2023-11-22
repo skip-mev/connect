@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"path"
@@ -471,7 +472,7 @@ func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves 
 
 			// check that the vote extension is correct
 			for ticker, price := range gotVe.Prices {
-				if price != ves[i].Prices[ticker] {
+				if !bytes.Equal(price, ves[i].Prices[ticker]) {
 					return false, nil
 				}
 			}
@@ -503,19 +504,17 @@ func (vv validatorVotes) Less(i, j int) bool {
 	if err := ve.Unmarshal(vv[i].VoteExtension); err == nil {
 		iPrice = len(ve.Prices)
 
-		for _, priceStr := range ve.Prices {
-			if price, err := uint256.FromHex(priceStr); err == nil {
-				iTotalPrice += int(price.Uint64())
-			}
+		for _, priceBz := range ve.Prices {
+			var price uint256.Int
+			iTotalPrice += int(price.SetBytes(priceBz).Uint64())
 		}
 	}
 	if err := ve.Unmarshal(vv[j].VoteExtension); err == nil {
 		jPrice = len(ve.Prices)
 
-		for _, priceStr := range ve.Prices {
-			if price, err := uint256.FromHex(priceStr); err == nil {
-				jTotalPrice += int(price.Uint64())
-			}
+		for _, priceBz := range ve.Prices {
+			var price uint256.Int
+			jTotalPrice += int(price.SetBytes(priceBz).Uint64())
 		}
 	}
 

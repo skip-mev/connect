@@ -47,7 +47,7 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 
 		if _, ok := err.(*types.CurrencyPairNotExistError); ok {
 			// set to state, initial nonce will be zero (no price updates have been made for this CurrencyPair)
-			m.k.setNonceForCurrencyPair(ctx, cp, 0)
+			m.k.CreateCurrencyPair(ctx, cp)
 		}
 	}
 

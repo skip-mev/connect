@@ -81,10 +81,16 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 		return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %v, the module is not tracking this CurrencyPair", cp)
 	}
 
+	id, ok := q.k.GetIDForCurrencyPair(ctx, cp)
+	if !ok {
+		return nil, fmt.Errorf("no ID found for CurrencyPair: %v", cp)
+	}
+
 	// return the QuotePrice + Nonce
 	return &types.GetPriceResponse{
 		Price:    &qpn.QuotePrice,
 		Nonce:    qpn.Nonce(),
 		Decimals: uint64(cp.Decimals()),
+		Id:       id,
 	}, nil
 }

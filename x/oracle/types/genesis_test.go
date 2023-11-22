@@ -12,6 +12,7 @@ func TestGenesisValidation(t *testing.T) {
 	tcs := []struct {
 		name       string
 		cpgs       []types.CurrencyPairGenesis
+		nextID     uint64
 		expectPass bool
 	}{
 		{
@@ -30,6 +31,7 @@ func TestGenesisValidation(t *testing.T) {
 					},
 				},
 			},
+			0,
 			false,
 		},
 		{
@@ -43,6 +45,7 @@ func TestGenesisValidation(t *testing.T) {
 					Nonce: 10,
 				},
 			},
+			0,
 			false,
 		},
 		{
@@ -53,6 +56,7 @@ func TestGenesisValidation(t *testing.T) {
 						Base:  "AA",
 						Quote: "BB",
 					},
+					Id: 0,
 				},
 				{
 					// invalid CurrencyPairGenesis
@@ -60,15 +64,59 @@ func TestGenesisValidation(t *testing.T) {
 						Base:  "BB",
 						Quote: "CC",
 					},
+					Id: 1,
 				},
 			},
+			2,
 			true,
+		},
+		{
+			"if any of the CurrencyPairGenesis ID's are duplicated - fail",
+			[]types.CurrencyPairGenesis{
+				{
+					CurrencyPair: types.CurrencyPair{
+						Base:  "AA",
+						Quote: "BB",
+					},
+					Id: 1,
+				},
+				{
+					CurrencyPair: types.CurrencyPair{
+						Base:  "BB",
+						Quote: "CC",
+					},
+					Id: 1,
+				},
+			},
+			3,
+			false,
+		},
+		{
+			"if any of the CurrencyPairs are repeated - fail",
+			[]types.CurrencyPairGenesis{
+				{
+					CurrencyPair: types.CurrencyPair{
+						Base:  "AA",
+						Quote: "BB",
+					},
+					Id: 1,
+				},
+				{
+					CurrencyPair: types.CurrencyPair{
+						Base:  "AA",
+						Quote: "BB",
+					},
+					Id: 2,
+				},
+			},
+			3,
+			false,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			gs := types.NewGenesisState(tc.cpgs)
+			gs := types.NewGenesisState(tc.cpgs, tc.nextID)
 			err := gs.Validate()
 
 			if tc.expectPass {

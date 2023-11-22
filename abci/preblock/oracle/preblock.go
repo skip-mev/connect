@@ -5,6 +5,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -35,6 +36,10 @@ type PreBlockHandler struct { //golint:ignore
 	// keeper is the keeper for the oracle module. This is utilized to write
 	// oracle data to state.
 	keeper Keeper
+
+	// currencyPairIDStrategy is the strategy used for generating / retrieving
+	// IDs for currency-pairs
+	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
 }
 
 // NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
@@ -45,14 +50,16 @@ func NewOraclePreBlockHandler(
 	oracleKeeper Keeper,
 	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
+	strategy strategies.CurrencyPairIDStrategy,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
-		logger:             logger,
-		priceAggregator:    aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
-		aggregateFnWithCtx: aggregateFn,
-		keeper:             oracleKeeper,
-		validatorAddress:   validatorConsAddress,
-		metrics:            metrics,
+		logger:                 logger,
+		priceAggregator:        aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		aggregateFnWithCtx:     aggregateFn,
+		keeper:                 oracleKeeper,
+		validatorAddress:       validatorConsAddress,
+		metrics:                metrics,
+		currencyPairIDStrategy: strategy,
 	}
 }
 

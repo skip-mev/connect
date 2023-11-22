@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 
@@ -39,7 +41,7 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 			isVotePresentInCommit = true
 		}
 
-		if err := h.addVoteToAggregator(vote.ConsAddress.String(), vote.OracleVoteExtension); err != nil {
+		if err := h.addVoteToAggregator(ctx, vote.ConsAddress.String(), vote.OracleVoteExtension); err != nil {
 			h.logger.Error(
 				"failed to add vote to aggregator",
 				"validator_address", vote.ConsAddress.String(),
@@ -69,30 +71,36 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 // into the price aggregator. The oracle data is provided in the form of a vote
 // extension. The vote extension contains the prices for each currency pair that
 // the validator is providing for the current block.
-func (h *PreBlockHandler) addVoteToAggregator(address string, oracleData types.OracleVoteExtension) error {
+func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, oracleData types.OracleVoteExtension) error {
 	if len(oracleData.Prices) == 0 {
 		return nil
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
 	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
-	for pair, priceString := range oracleData.Prices {
-		// Convert the price to a uint256.Int. All price feeds are expected to be
-		// in the form of a string hex before conversion.
-		price, err := uint256.FromHex(priceString)
-		if err != nil {
-			return err
+	for cpID, priceBz := range oracleData.Prices {
+
+		// Convert the price to a uint256.Int.
+		var price uint256.Int
+		if val := price.SetBytes(priceBz); val == nil || len(priceBz) > 32 {
+			return fmt.Errorf("invalid price for currency pair %d", cpID)
 		}
 
 		// Convert the asset into a currency pair.
-		currencyPair, err := oracletypes.CurrencyPairFromString(pair)
+		currencyPair, err := h.currencyPairIDStrategy.FromID(ctx, cpID)
 		if err != nil {
-			return err
+			h.logger.Debug(
+				"failed to convert currency pair id to currency pair",
+				"currency_pair_id", cpID,
+				"err", err,
+			)
+
+			// If the currency pair is not supported, continue.
+			continue
 		}
 
 		prices[currencyPair] = aggregator.QuotePrice{
-			Price:     price,
-			Timestamp: oracleData.Timestamp,
+			Price: &price,
 		}
 	}
 

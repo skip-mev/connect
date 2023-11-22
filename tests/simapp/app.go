@@ -64,6 +64,7 @@ import (
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	oraclepreblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/proposals"
+	"github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -360,6 +361,7 @@ func NewSimApp(
 		app.OracleKeeper,
 		consAddress,
 		metrics,
+		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
 	)
 
 	app.SetPreBlocker(oraclePreBlockHandler.PreBlocker())
@@ -370,6 +372,7 @@ func NewSimApp(
 		app.Logger(),
 		app.oracleService,
 		time.Second,
+		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())

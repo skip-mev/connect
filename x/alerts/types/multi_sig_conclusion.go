@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/binary"
 	"fmt"
 
 	cmthash "github.com/cometbft/cometbft/crypto/tmhash"
@@ -241,5 +242,10 @@ func (c MultiSigConclusion) SignBytes() ([]byte, error) {
 	case false:
 		bz = append(bz, 0)
 	}
-	return cmthash.SumTruncated(bz), nil
+
+	// finally append, and sign over the CurrencyPairID
+	cpIDbz := make([]byte, 8)
+	binary.BigEndian.PutUint64(cpIDbz, c.CurrencyPairID)
+
+	return cmthash.SumTruncated(append(bz, cpIDbz...)), nil
 }

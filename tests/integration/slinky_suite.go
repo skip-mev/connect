@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/holiman/uint256"
 	"github.com/pelletier/go-toml"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
@@ -17,12 +18,13 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/providers/mock"
 	service_metrics "github.com/skip-mev/slinky/service/metrics"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -192,6 +194,18 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 
 	s.T().Log("Removing all currency-pairs", resp.CurrencyPairs)
 
+	// reset the oracle services
+	// start all oracles
+	for _, node := range s.chain.Nodes() {
+		oCfg, mCfg := DefaultOracleConfig(node)
+		oCfg.Providers = append(oCfg.Providers, oracleconfig.ProviderConfig{
+			Name: "static-mock-provider",
+		})
+
+		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg, mCfg)
+		RestartOracle(node)
+	}
+
 	if len(resp.CurrencyPairs) == 0 {
 		return
 	}
@@ -223,8 +237,8 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 0)
 	})
 
-	// pass a governance proposal to approve a new currency-pair, and check prices are reported
-	s.Run("Add a currency-pair and check prices", func() {
+	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
+	s.Run("Add a currency-pair and check Prices", func() {
 		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
 			{
 				Base:  "BTC",
@@ -240,8 +254,8 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
 	})
 
-	// remove the currency-pair from state and check the prices for that currency-pair are no longer reported
-	s.Run("Remove a currency-pair and check prices", func() {
+	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
+	s.Run("Remove a currency-pair and check Prices", func() {
 		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.NewCurrencyPair("BTC", "USD").ToString()}...))
 
 		// check that the currency-pair is added to state
@@ -283,8 +297,16 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		cp,
 	}...))
 
+	cc, close, err := GetChainGRPC(s.chain)
+	s.Require().NoError(err)
+
+	defer close()
+
+	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), cp)
+	s.Require().NoError(err)
+
 	// configure failing providers for various sets of nodes
-	s.Run("all nodes report prices", func() {
+	s.Run("all nodes report Prices", func() {
 		// update all oracle configs
 		for _, node := range s.chain.Nodes() {
 			oracle := GetOracleSideCar(node)
@@ -313,23 +335,23 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -341,28 +363,28 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	})
 
 	s.Run("single oracle down, price updates", func() {
-		// stop single node's oracle process and check that all prices are reported
+		// stop single node's oracle process and check that all Prices are reported
 		node := s.chain.Nodes()[0]
 		StopOracle(node)
 
 		// expect the following vote-extensions
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -389,21 +411,21 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		// expect the following vote-extensions
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -430,17 +452,17 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		// expect the given oracle reports
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			{
-				Prices: map[string]string{},
+				Prices: map[uint64][]byte{},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -476,6 +498,22 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 	s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
 
+	cc, close, err := GetChainGRPC(s.chain)
+	s.Require().NoError(err)
+
+	defer close()
+
+	// get the currency pair ids
+	ctx := context.Background()
+	id1, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), cp1)
+	s.Require().NoError(err)
+
+	id2, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), cp2)
+	s.Require().NoError(err)
+
+	id3, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), cp3)
+	s.Require().NoError(err)
+
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
 		oracle := GetOracleSideCar(node)
@@ -507,31 +545,31 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	s.Run("all oracles running for multiple price feeds", func() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 		})
@@ -546,7 +584,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	})
 
 	s.Run("all oracles running for multiple price feeds, except for one", func() {
-		// stop first node's oracle, and update prices to report
+		// stop first node's oracle, and update Prices to report
 		node := s.chain.Nodes()[0]
 		StopOracle(node)
 
@@ -576,30 +614,30 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 			{
-				Prices: map[string]string{
-					"ETHEREUM/USDC": "0x474",
-					"ETHEREUM/USDT": "0x475",
-					"ETHEREUM/USD":  "0x476",
+				Prices: map[uint64][]byte{
+					id1: uint256.NewInt(1140).Bytes(),
+					id2: uint256.NewInt(1141).Bytes(),
+					id3: uint256.NewInt(1142).Bytes(),
 				},
 			},
 		})
@@ -612,4 +650,18 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			s.Require().Equal(int64(1140+i), resp.Price.Int64())
 		}
 	})
+}
+
+func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp oracletypes.CurrencyPair) (uint64, error) {
+	// query for the given currency pair
+	resp, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
+		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{
+			CurrencyPair: &cp,
+		},
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	return resp.Id, nil
 }

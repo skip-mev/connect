@@ -2,7 +2,6 @@ package testutils
 
 import (
 	"testing"
-	"time"
 
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
@@ -44,11 +43,9 @@ func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo) (cometabc
 // CreateExtendedVoteInfo creates an extended vote info with the given prices, timestamp and height.
 func CreateExtendedVoteInfo(
 	consAddr sdk.ConsAddress,
-	prices map[string]string,
-	timestamp time.Time,
-	height int64,
+	prices map[uint64][]byte,
 ) (cometabci.ExtendedVoteInfo, error) {
-	ve, err := CreateVoteExtensionBytes(prices, timestamp, height)
+	ve, err := CreateVoteExtensionBytes(prices)
 	if err != nil {
 		return cometabci.ExtendedVoteInfo{}, err
 	}
@@ -102,11 +99,9 @@ func CreateBaseSDKContext(t *testing.T) sdk.Context {
 
 // CreateVoteExtensionBytes creates a vote extension bytes with the given prices, timestamp and height.
 func CreateVoteExtensionBytes(
-	prices map[string]string,
-	timestamp time.Time,
-	height int64,
+	prices map[uint64][]byte,
 ) ([]byte, error) {
-	voteExtension := CreateVoteExtension(prices, timestamp, height)
+	voteExtension := CreateVoteExtension(prices)
 	voteExtensionBz, err := voteExtension.Marshal()
 	if err != nil {
 		return nil, err
@@ -117,13 +112,9 @@ func CreateVoteExtensionBytes(
 
 // CreateVoteExtension creates a vote extension with the given prices, timestamp and height.
 func CreateVoteExtension(
-	prices map[string]string,
-	timestamp time.Time,
-	height int64,
+	prices map[uint64][]byte,
 ) *types.OracleVoteExtension {
 	return &types.OracleVoteExtension{
-		Prices:    prices,
-		Timestamp: timestamp,
-		Height:    height,
+		Prices: prices,
 	}
 }

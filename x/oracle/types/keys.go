@@ -14,6 +14,8 @@ const (
 const (
 	keyPrefixCurrencyPairIdx = iota
 	keyPrefixCurrencyPairNonceIdx
+	keyPrefixCurrencyPairIDIdx
+	keyPrefixNextCurrencyPairIDIdx
 )
 
 var (
@@ -21,6 +23,10 @@ var (
 	KeyPrefixQuotePrice = []byte{keyPrefixCurrencyPairIdx}
 	// KeyPrefixNonce is the key prefix under which all CurrencyPairs + nonces are stored
 	KeyPrefixNonce = []byte{keyPrefixCurrencyPairNonceIdx}
+	// KeyPrefixCurrencyPairID is the key prefix under which all CurrencyPairs + IDs are stored
+	KeyPrefixCurrencyPairID = []byte{keyPrefixCurrencyPairIDIdx}
+	// KeyPrefixNextCurrencyPairID is the key prefix under which the next CurrencyPair ID is stored
+	KeyPrefixNextCurrencyPairID = []byte{keyPrefixNextCurrencyPairIDIdx}
 )
 
 // GetStoreKeyForQuotePrice gets the QuotePrice store-prefix for a CurrencyPair
@@ -33,6 +39,11 @@ func (cp CurrencyPair) GetStoreKeyForNonce() []byte {
 	return append(KeyPrefixNonce, []byte(cp.ToString())...)
 }
 
+// GetStoreKeyForID gets the store-prefix for IDs from the CurrencyPair
+func (cp CurrencyPair) GetStoreKeyForID() []byte {
+	return append(KeyPrefixCurrencyPairID, []byte(cp.ToString())...)
+}
+
 // GetCurrencyPairFromNonceKey gets a CurrencyPair from a CurrencyPair store-index. This method errors if the
 // CurrencyPair store-index is incorrectly formatted.
 func GetCurrencyPairFromNonceKey(bz []byte) (CurrencyPair, error) {
@@ -43,6 +54,12 @@ func GetCurrencyPairFromNonceKey(bz []byte) (CurrencyPair, error) {
 // CurrencyPair store-index is incorrectly formatted.
 func GetCurrencyPairFromPriceKey(bz []byte) (CurrencyPair, error) {
 	return getCurrencyPairFromKey(bz, KeyPrefixQuotePrice)
+}
+
+// GetCurrencyPairFromIDKey gets a CurrencyPair from a CurrencyPair ID Key. This method errors if the
+// CurrencyPair store-index is incorrectly formatted.
+func GetCurrencyPairFromIDKey(bz []byte) (CurrencyPair, error) {
+	return getCurrencyPairFromKey(bz, KeyPrefixCurrencyPairID)
 }
 
 func getCurrencyPairFromKey(bz []byte, prefix []byte) (CurrencyPair, error) {

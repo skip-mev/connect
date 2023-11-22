@@ -7,9 +7,12 @@ import (
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/holiman/uint256"
 
+	"github.com/skip-mev/slinky/abci/strategies"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/service"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // VoteExtensionHandler is a handler that extends a vote with the oracle's
@@ -27,14 +30,19 @@ type VoteExtensionHandler struct {
 	// timeout is the maximum amount of time to wait for the oracle to respond
 	// to a price request.
 	timeout time.Duration
+
+	// currencyPairIDStrategy is the strategy used to determine the currency pair ID
+	// for a given currency pair.
+	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
 }
 
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
-func NewVoteExtensionHandler(logger log.Logger, oracleClient service.OracleService, timeout time.Duration) *VoteExtensionHandler {
+func NewVoteExtensionHandler(logger log.Logger, oracleClient service.OracleService, timeout time.Duration, strategy strategies.CurrencyPairIDStrategy) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
-		logger:       logger,
-		oracleClient: oracleClient,
-		timeout:      timeout,
+		logger:                 logger,
+		oracleClient:           oracleClient,
+		timeout:                timeout,
+		currencyPairIDStrategy: strategy,
 	}
 }
 
@@ -85,10 +93,20 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 		}
 
+		// transform the response prices
+		prices, err := transformOracleServicePrices(ctx, h.currencyPairIDStrategy, oracleResp.Prices)
+		if err != nil {
+			h.logger.Error(
+				"failed to transform oracle prices for vote extension; returning empty vote extension",
+				"height", req.Height,
+				"err", err,
+			)
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+		}
+
 		voteExt := abcitypes.OracleVoteExtension{
-			Height:    req.Height,
-			Prices:    oracleResp.Prices,
-			Timestamp: oracleResp.Timestamp,
+			Prices: prices,
 		}
 
 		bz, err := voteExt.Marshal()
@@ -104,14 +122,48 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		h.logger.Info(
 			"extending vote with oracle prices",
-			"prices", oracleResp.Prices,
-			"vote_extension_height", voteExt.Height,
-			"vote_extension_timestamp", voteExt.Timestamp,
+			"prices", voteExt.Prices,
 			"req_height", req.Height,
 		)
 
 		return &cometabci.ResponseExtendVote{VoteExtension: bz}, nil
 	}
+}
+
+func transformOracleServicePrices(ctx sdk.Context, strategy strategies.CurrencyPairIDStrategy, prices map[string]string) (map[uint64][]byte, error) {
+	transformedPrices := make(map[uint64][]byte)
+
+	// iterate over the prices and transform them into the correct format
+	for currencyPairID, priceString := range prices {
+		// get the currency pair ID
+		cp, err := oracletypes.CurrencyPairFromString(currencyPairID)
+		if err != nil {
+			return nil, err
+		}
+
+		// get the currency pair ID bytes, if a failure, continue
+		cpID, err := strategy.ID(ctx, cp)
+		if err != nil {
+			ctx.Logger().Debug(
+				"failed to get currency pair ID",
+				"currency_pair", cp,
+				"err", err,
+			)
+
+			continue
+		}
+
+		// get the price bytes
+		price, err := uint256.FromHex(priceString)
+		if err != nil {
+			return nil, err
+		}
+
+		priceBytes := price.Bytes()
+		transformedPrices[cpID] = priceBytes
+	}
+
+	return transformedPrices, nil
 }
 
 // VerifyVoteExtensionHandler returns a handler that verifies the vote extension provided by
@@ -122,7 +174,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (*cometabci.ResponseVerifyVoteExtension, error) {
 		voteExtension := req.VoteExtension
 
-		if err := ValidateOracleVoteExtension(voteExtension, req.Height); err != nil {
+		if err := ValidateOracleVoteExtension(voteExtension); err != nil {
 			h.logger.Error(
 				"failed to validate vote extension",
 				"height", req.Height,

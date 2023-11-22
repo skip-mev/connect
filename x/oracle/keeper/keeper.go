@@ -32,6 +32,9 @@ func (k Keeper) RemoveCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
 
 	// remove nonce
 	k.removeNonceForCurrencyPair(ctx, cp)
+
+	// remove ID
+	k.removeIDForCurrencyPair(ctx, cp)
 }
 
 // removeQuotePriceForCurrencyPair removes the QuotePrice for a given CurrencyPair from the module's state.
@@ -48,6 +51,14 @@ func (k Keeper) removeNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPai
 
 	// remove entry for currency-pair from nonce store
 	store.Delete(cp.GetStoreKeyForNonce())
+}
+
+// removeIDForCurrencyPair removes the ID for a given CurrencyPair from the module's state.
+func (k Keeper) removeIDForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
+	store := ctx.KVStore(k.storeKey)
+
+	// remove entry for currency-pair from ID store
+	store.Delete(cp.GetStoreKeyForID())
 }
 
 // GetPriceWithNonceForCurrencyPair returns a QuotePriceWithNonce for a given CurrencyPair. The nonce for the QuotePrice represents
@@ -137,6 +148,66 @@ func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, 
 	return nil
 }
 
+// CreateCurrencyPair creates a CurrencyPair in state, and sets its ID to the next available ID. If the CurrencyPair already exists, return an error.
+// the nonce for the CurrencyPair is set to 0.
+func (k Keeper) CreateCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) error {
+	// check if the CurrencyPair already exists
+	_, err := k.GetNonceForCurrencyPair(ctx, cp)
+
+	// check that the error returned is because the CurrencyPair does not exist
+	if _, ok := err.(*types.CurrencyPairNotExistError); !ok {
+		if err == nil {
+			return fmt.Errorf("currency pair already exists: %s", cp.ToString())
+		}
+		return fmt.Errorf("error checking if currency pair exists: %v", err)
+	}
+
+	// set the nonce to 0
+	k.setNonceForCurrencyPair(ctx, cp, 0)
+
+	// set the ID for the CurrencyPair
+	k.setNextIDForCurrencyPair(ctx, cp)
+
+	return nil
+}
+
+// GetIDForCurrencyPair returns the ID for a given CurrencyPair. If the CurrencyPair does not exist, return 0, false, if
+// it does, return true and the ID.
+func (k Keeper) GetIDForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (uint64, bool) {
+	store := ctx.KVStore(k.storeKey)
+
+	// get the ID for the CurrencyPair
+	bz := store.Get(cp.GetStoreKeyForID())
+	if len(bz) == 0 {
+		return 0, false
+	}
+
+	// unmarshal the ID
+	return binary.BigEndian.Uint64(bz), true
+}
+
+// GetCurrencyPairFromID returns the CurrencyPair for a given ID. If the ID does not exist, return an error and an empty CurrencyPair.
+// Otherwise, return the currency pair and no error.
+func (k Keeper) GetCurrencyPairFromID(ctx sdk.Context, id uint64) (cp types.CurrencyPair, found bool) {
+	k.iteratorFuncWithBreak(ctx, types.KeyPrefixCurrencyPairID, func(i db.Iterator) (bool, error) {
+		var err error
+		// check if the id matches the id we are looking for
+		if binary.BigEndian.Uint64(i.Value()) == id {
+			found = true
+
+			// get the CurrencyPair from the key
+			cp, err = types.GetCurrencyPairFromIDKey(i.Key())
+			if err != nil {
+				return false, err
+			}
+		}
+
+		return !found, err
+	})
+
+	return cp, found
+}
+
 // Increment the nonce for a given currency pair. This should be called each time that a CurrencyPair
 // has a QuotePrice stored for it. This method should only be called when we set a new QuotePrice for a CurrencyPair (i.e SetPriceForCurrencyPair)
 func (k Keeper) incrementNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) error {
@@ -157,6 +228,45 @@ func (k Keeper) incrementNonceForCurrencyPair(ctx sdk.Context, cp types.Currency
 	return nil
 }
 
+// setIDForCurrencyPair sets the ID of a given currency-pair to the next available ID. This should only be called
+// on CurrencyPair creation
+func (k Keeper) setNextIDForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
+	id := k.getNextID(ctx)
+
+	k.setIDForCurrencyPair(ctx, cp, id)
+
+	// set the next available id
+	k.setNextID(ctx, id+1)
+}
+
+func (k Keeper) setIDForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, id uint64) {
+	store := ctx.KVStore(k.storeKey)
+
+	// set the id for the currency pair
+	idBz := make([]byte, binary.MaxVarintLen64)
+	binary.BigEndian.PutUint64(idBz, id)
+	store.Set(cp.GetStoreKeyForID(), idBz)
+}
+
+func (k Keeper) setNextID(ctx sdk.Context, nextID uint64) {
+	store := ctx.KVStore(k.storeKey)
+
+	nextIDBz := make([]byte, binary.MaxVarintLen64)
+	binary.BigEndian.PutUint64(nextIDBz, nextID)
+	store.Set(types.KeyPrefixNextCurrencyPairID, nextIDBz)
+}
+
+func (k Keeper) getNextID(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+
+	nextIDBz := store.Get(types.KeyPrefixNextCurrencyPairID)
+	if len(nextIDBz) == 0 {
+		return 0
+	}
+
+	return binary.BigEndian.Uint64(nextIDBz)
+}
+
 // Set the given nonce in state for the given currency pair
 func (k Keeper) setNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, nonce uint64) {
 	store := ctx.KVStore(k.storeKey)
@@ -173,7 +283,7 @@ func (k Keeper) GetAllCurrencyPairs(ctx sdk.Context) []types.CurrencyPair {
 	cps := make([]types.CurrencyPair, 0)
 
 	// aggregate CurrencyPairs stored under KeyPrefixNonce
-	k.IterateNonces(ctx, func(cp types.CurrencyPair) {
+	k.IterateNonces(ctx, func(cp types.CurrencyPair, _ uint64) {
 		cps = append(cps, cp)
 	})
 
@@ -207,7 +317,7 @@ func (k Keeper) IterateQuotePrices(ctx sdk.Context, cb func(cp types.CurrencyPai
 
 // IterateNonces iterates over all CurrencyPairs stored under the nonce-key in state, and executes a call-back taking a CurrencyPair as a parameter.
 // This method errors if there are any errors encountered in the process of unmarshalling CurrencyPairs
-func (k Keeper) IterateNonces(ctx sdk.Context, cb func(cp types.CurrencyPair)) error {
+func (k Keeper) IterateNonces(ctx sdk.Context, cb func(cp types.CurrencyPair, nonce uint64)) error {
 	// construct iterator func
 	f := func(it db.Iterator) error {
 		// unmarshal key into a CurrencyPair
@@ -217,7 +327,7 @@ func (k Keeper) IterateNonces(ctx sdk.Context, cb func(cp types.CurrencyPair)) e
 		}
 
 		// execute call-back
-		cb(cp)
+		cb(cp, binary.BigEndian.Uint64(it.Value()))
 
 		return nil
 	}
@@ -228,6 +338,14 @@ func (k Keeper) IterateNonces(ctx sdk.Context, cb func(cp types.CurrencyPair)) e
 
 // helper method for iterating over a store w/ a call-back
 func (k Keeper) iteratorFunc(ctx sdk.Context, prefix []byte, f func(db.Iterator) error) error {
+	return k.iteratorFuncWithBreak(ctx, prefix, func(it db.Iterator) (bool, error) {
+		// execute call-back, and return error if necessary
+		return true, f(it)
+	})
+}
+
+// helper method for iterating over a store w/ a call-back
+func (k Keeper) iteratorFuncWithBreak(ctx sdk.Context, prefix []byte, f func(db.Iterator) (bool, error)) error {
 	// get iterator for store w/ prefix
 	store := ctx.KVStore(k.storeKey)
 	it := storetypes.KVStorePrefixIterator(store, prefix)
@@ -236,8 +354,14 @@ func (k Keeper) iteratorFunc(ctx sdk.Context, prefix []byte, f func(db.Iterator)
 	defer it.Close()
 	for ; it.Valid(); it.Next() {
 		// execute call-back, and return error if necessary
-		if err := f(it); err != nil {
+		cont, err := f(it)
+		if err != nil {
 			return err
+		}
+
+		// if call-back returns false, break
+		if !cont {
+			break
 		}
 	}
 	return nil

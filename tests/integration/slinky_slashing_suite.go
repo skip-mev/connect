@@ -847,7 +847,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 
 	// check if the currency pair exists, if not, add it
 	oraclesClient := oracletypes.NewQueryClient(cc)
-	_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
+	ctx := context.Background()
+	_, err = oraclesClient.GetPrice(ctx, &oracletypes.GetPriceRequest{
 		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
 			CurrencyPairId: cp.ToString(),
 		},
@@ -856,6 +857,10 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		// add the currency-pair
 		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 	}
+
+	// get the id for the currency-pair
+	id, err := getIDForCurrencyPair(ctx, oraclesClient, cp)
+	s.Require().NoError(err)
 
 	s.Run("test Conclusion failures", func() {
 		s.Run("fails when alerts are disabled", func() {
@@ -1173,19 +1178,19 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	var honestPrice int64 = 150
 	s.Run("valid conclusion submissions", func() {
 		s.Run("update validator oracles", func() {
-			// update first validator's oracle to submit incorrect prices
+			// update first validator's oracle to submit incorrect Prices
 			nodes := s.chain.Nodes()
 
-			// update the first node to report incorrect prices (too high)
+			// update the first node to report incorrect Prices (too high)
 			s.Require().NoError(UpdateNodePrices(nodes[0], cp, 152))
 
-			// update the second node to report incorrect prices (too low)
+			// update the second node to report incorrect Prices (too low)
 			s.Require().NoError(UpdateNodePrices(nodes[1], cp, 148))
 
-			// update the third node to report correct prices
+			// update the third node to report correct Prices
 			s.Require().NoError(UpdateNodePrices(nodes[2], cp, honestPrice))
 
-			// update the fourth node to report correct prices
+			// update the fourth node to report correct Prices
 			s.Require().NoError(UpdateNodePrices(nodes[3], cp, honestPrice))
 		})
 
@@ -1197,23 +1202,23 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 
 		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[string]string{
-					cp.ToString(): "0x94", // 148
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(148).Bytes(), // 148
 				},
 			},
 			{
-				Prices: map[string]string{
-					cp.ToString(): "0x96", // 150
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(150).Bytes(), // 150
 				},
 			},
 			{
-				Prices: map[string]string{
-					cp.ToString(): "0x96", // 150
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(150).Bytes(), // 150
 				},
 			},
 			{
-				Prices: map[string]string{
-					cp.ToString(): "0x98", // 152
+				Prices: map[uint64][]byte{
+					id: uint256.NewInt(152).Bytes(), // 152
 				},
 			},
 		})
@@ -1236,15 +1241,15 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 				key := sdk.ConsAddress(vote.Validator.Address).String()
 
 				// get the price from the oracle data
-				price, ok := oracleData.Prices[cp.ToString()]
+				priceBz, ok := oracleData.Prices[id]
 				s.Require().True(ok)
 
 				// get the uint256 from string value
-				priceUint256, err := uint256.FromHex(price)
-				s.Require().NoError(err)
+				var price uint256.Int
+				price.SetBytes(priceBz)
 
 				// convert the uint256 to int64
-				valsToOracleReport[key] = int64(priceUint256.Uint64())
+				valsToOracleReport[key] = int64(price.Uint64())
 			}
 		})
 
@@ -1292,7 +1297,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 					High: "0x97",
 					Low:  "0x95",
 				},
-				Status: true,
+				Status:         true,
+				CurrencyPairID: id,
 			}
 
 			sigBytes, err := conclusion.SignBytes()
