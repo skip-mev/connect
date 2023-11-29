@@ -341,7 +341,14 @@ func NewSimApp(
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
 		ve.NewDefaultValidateVoteExtensionsFn(app.ChainID(), app.StakingKeeper),
-		strategies.NewDefaultVoteExtensionCodec(),
+		strategies.NewCompressionVoteExtensionCodec(
+			strategies.NewDefaultVoteExtensionCodec(),
+			strategies.NewZLibCompressor(),
+		),
+		strategies.NewCompressionExtendedCommitCodec(
+			strategies.NewDefaultExtendedCommitCodec(),
+			strategies.NewZStdCompressor(),
+		),
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
@@ -363,6 +370,14 @@ func NewSimApp(
 		consAddress,
 		metrics,
 		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
+		strategies.NewCompressionVoteExtensionCodec(
+			strategies.NewDefaultVoteExtensionCodec(),
+			strategies.NewZLibCompressor(),
+		),
+		strategies.NewCompressionExtendedCommitCodec(
+			strategies.NewDefaultExtendedCommitCodec(),
+			strategies.NewZStdCompressor(),
+		),
 	)
 
 	app.SetPreBlocker(oraclePreBlockHandler.PreBlocker())
@@ -374,7 +389,10 @@ func NewSimApp(
 		app.oracleService,
 		time.Second,
 		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
-		strategies.NewDefaultVoteExtensionCodec(),
+		strategies.NewCompressionVoteExtensionCodec(
+			strategies.NewDefaultVoteExtensionCodec(),
+			strategies.NewZLibCompressor(),
+		),
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())

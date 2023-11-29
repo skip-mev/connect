@@ -40,6 +40,15 @@ type PreBlockHandler struct { //golint:ignore
 	// currencyPairIDStrategy is the strategy used for generating / retrieving
 	// IDs for currency-pairs
 	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
+
+	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
+	// This is used to decode vote extensions included in transactions.
+	voteExtensionCodec strategies.VoteExtensionCodec
+
+	// extendedCommitCodec is the codec used for encoding / decoding extended
+	// commit messages. This is used to decode extended commit messages included
+	// in transactions.
+	extendedCommitCodec strategies.ExtendedCommitCodec
 }
 
 // NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
@@ -51,6 +60,8 @@ func NewOraclePreBlockHandler(
 	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
 	strategy strategies.CurrencyPairIDStrategy,
+	veCodec strategies.VoteExtensionCodec,
+	ecCodec strategies.ExtendedCommitCodec,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
 		logger:                 logger,
@@ -60,6 +71,8 @@ func NewOraclePreBlockHandler(
 		validatorAddress:       validatorConsAddress,
 		metrics:                metrics,
 		currencyPairIDStrategy: strategy,
+		voteExtensionCodec:     veCodec,
+		extendedCommitCodec:    ecCodec,
 	}
 }
 
@@ -85,7 +98,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 		// If vote extensions have been enabled, the extended commit info - which
 		// contains the vote extensions - must be included in the request.
-		votes, err := GetOracleVotes(req.Txs)
+		votes, err := GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
 		if err != nil {
 			h.logger.Error(
 				"failed to get extended commit info from proposal",

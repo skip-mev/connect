@@ -31,6 +31,8 @@ const (
 // call the validateVoteExtensionsFn. This function is responsible for verifying
 // that the vote extensions included in the proposal are valid and compose a
 // supermajority of signatures and vote extensions for the current block.
+// The given VoteExtensionCodec must be the same used by the VoteExtensionHandler,
+// the extended commit is decoded in accordance with the given ExtendedCommitCodec.
 type ProposalHandler struct {
 	logger log.Logger
 
@@ -45,6 +47,9 @@ type ProposalHandler struct {
 
 	// voteExtensionCodec is used to decode vote extensions.
 	voteExtensionCodec strategies.VoteExtensionCodec
+
+	// extendedCommitCodec is used to decode extended commit info.
+	extendedCommitCodec strategies.ExtendedCommitCodec
 }
 
 // NewProposalHandler returns a new ProposalHandler.
@@ -53,14 +58,16 @@ func NewProposalHandler(
 	prepareProposalHandler sdk.PrepareProposalHandler,
 	processProposalHandler sdk.ProcessProposalHandler,
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn,
-	codec strategies.VoteExtensionCodec,
+	voteExtensionCodec strategies.VoteExtensionCodec,
+	extendedCommitInfoCodec strategies.ExtendedCommitCodec,
 ) *ProposalHandler {
 	return &ProposalHandler{
 		logger:                   logger,
 		prepareProposalHandler:   prepareProposalHandler,
 		processProposalHandler:   processProposalHandler,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
-		voteExtensionCodec:       codec,
+		voteExtensionCodec:       voteExtensionCodec,
+		extendedCommitCodec:      extendedCommitInfoCodec,
 	}
 }
 
@@ -105,7 +112,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 			// Inject the vote extensions into the proposal. These contain the oracle data
 			// for the current block which will be committed to state in PreBlock.
-			extInfoBz, err = extInfo.Marshal()
+			extInfoBz, err = h.extendedCommitCodec.Encode(extInfo)
 			if err != nil {
 				h.logger.Error(
 					"failed to extended commit info",
@@ -166,8 +173,8 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			}
 
 			// Validate the vote extensions included in the proposal.
-			extInfo := cometabci.ExtendedCommitInfo{}
-			if err := extInfo.Unmarshal(req.Txs[OracleInfoIndex]); err != nil {
+			extInfo, err := h.extendedCommitCodec.Decode(req.Txs[OracleInfoIndex])
+			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err

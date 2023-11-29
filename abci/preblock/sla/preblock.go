@@ -25,6 +25,15 @@ type PreBlockHandler struct {
 	// currencyPairIDStrategy is the strategy used for generating / retrieving
 	// IDs for currency-pairs
 	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
+
+	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
+	// This is used to decode vote extensions included in transactions.
+	voteExtensionCodec strategies.VoteExtensionCodec
+
+	// extendedCommitCodec is the codec used for encoding / decoding extended
+	// commit messages. This is used to decode extended commit messages included
+	// in transactions.
+	extendedCommitCodec strategies.ExtendedCommitCodec
 }
 
 // NewSLAPreBlockerHandler returns a new PreBlockHandler.
@@ -33,12 +42,16 @@ func NewSLAPreBlockHandler(
 	stakingKeeper StakingKeeper,
 	slaKeeper Keeper,
 	strategy strategies.CurrencyPairIDStrategy,
+	voteExtCodec strategies.VoteExtensionCodec,
+	extendedCommitCodec strategies.ExtendedCommitCodec,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
 		oracleKeeper:           oracleKeeper,
 		stakingKeeper:          stakingKeeper,
 		slaKeeper:              slaKeeper,
 		currencyPairIDStrategy: strategy,
+		voteExtensionCodec:     voteExtCodec,
+		extendedCommitCodec:    extendedCommitCodec,
 	}
 }
 
@@ -66,7 +79,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 		// Retrieve all of the vote extensions that were included in the block. This
 		// returns a list of validators and the price updates that they made.
-		votes, err := oraclepreblock.GetOracleVotes(req.Txs)
+		votes, err := oraclepreblock.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
 		if err != nil {
 			ctx.Logger().Error(
 				"failed to get extended commit info from proposal",

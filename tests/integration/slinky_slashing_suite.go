@@ -22,18 +22,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// var cdc *codec.ProtoCodec
-
 const validatorStake = 5000000000000
-
-// func init() {
-// 	ir := codectypes.NewInterfaceRegistry()
-
-// 	// register alerttypes interfaces
-// 	alerttypes.RegisterInterfaces(ir)
-// 	cryptocodec.RegisterInterfaces(ir)
-// 	cdc = codec.NewProtoCodec(ir)
-// }
 
 type SlinkySlashingIntegrationSuite struct {
 	*SlinkyIntegrationSuite
@@ -1235,8 +1224,6 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			for _, vote := range extendedCommit.Votes {
 				oracleData, err := GetOracleDataFromVote(vote)
 				s.Require().NoError(err)
-
-				s.T().Log(oracleData)
 
 				key := sdk.ConsAddress(vote.Validator.Address).String()
 

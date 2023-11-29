@@ -28,12 +28,12 @@ func CreateTestOracleKeeperWithGenesis(ctx sdk.Context, key storetypes.StoreKey,
 }
 
 // CreateExtendedCommitInfo creates an extended commit info with the given commit info.
-func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo) (cometabci.ExtendedCommitInfo, []byte, error) {
+func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo, codec strategies.ExtendedCommitCodec) (cometabci.ExtendedCommitInfo, []byte, error) {
 	extendedCommitInfo := cometabci.ExtendedCommitInfo{
 		Votes: commitInfo,
 	}
 
-	bz, err := extendedCommitInfo.Marshal()
+	bz, err := codec.Encode(extendedCommitInfo)
 	if err != nil {
 		return cometabci.ExtendedCommitInfo{}, nil, err
 	}

@@ -13,6 +13,7 @@ import (
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
+	"github.com/skip-mev/slinky/abci/strategies"
 	strategymock "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
@@ -32,6 +33,8 @@ type PreBlockTestSuite struct {
 	oracleKeeper  keeper.Keeper
 	handler       *preblock.PreBlockHandler
 	cpID          *strategymock.CurrencyPairIDStrategy
+	veCodec       strategies.VoteExtensionCodec
+	commitCodec   strategies.ExtendedCommitCodec
 }
 
 func TestPreBlockTestSuite(t *testing.T) {
@@ -76,6 +79,16 @@ func (s *PreBlockTestSuite) SetupTest() {
 		CurrencyPairGenesis: genesisCPs,
 		NextId:              3,
 	}
+
+	s.veCodec = strategies.NewCompressionVoteExtensionCodec(
+		strategies.NewDefaultVoteExtensionCodec(),
+		strategies.NewZLibCompressor(),
+	)
+
+	s.commitCodec = strategies.NewCompressionExtendedCommitCodec(
+		strategies.NewDefaultExtendedCommitCodec(),
+		strategies.NewZLibCompressor(),
+	)
 }
 
 func (s *PreBlockTestSuite) SetupSubTest() {
@@ -106,6 +119,8 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 		s.myVal,
 		mockMetrics,
 		s.cpID,
+		s.veCodec,
+		s.commitCodec,
 	)
 }
 

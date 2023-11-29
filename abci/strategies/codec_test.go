@@ -5,6 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	cmtabci "github.com/cometbft/cometbft/abci/types"
+
 	"github.com/skip-mev/slinky/abci/strategies"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
@@ -77,5 +79,76 @@ func TestCompressionVoteExtensionCodec(t *testing.T) {
 		codec := strategies.NewCompressionVoteExtensionCodec(strategies.NewDefaultVoteExtensionCodec(), strategies.NewZLibCompressor())
 		_, err := codec.Decode([]byte{})
 		require.Nil(t, err)
+	})
+}
+
+func TestDefaultExtendedCommitCodec(t *testing.T) {
+	t.Run("test encoding / decoding", func(t *testing.T) {
+		// create a sample extended commit info
+		eci := cmtabci.ExtendedCommitInfo{
+			Round: 1,
+			Votes: []cmtabci.ExtendedVoteInfo{
+				{
+					Validator: cmtabci.Validator{
+						Address: []byte("1"),
+						Power:   10,
+					},
+					VoteExtension:      []byte("1"),
+					ExtensionSignature: []byte("1"),
+				},
+			},
+		}
+
+		// encode it
+		codec := strategies.NewDefaultExtendedCommitCodec()
+		bz, err := codec.Encode(eci)
+		require.NoError(t, err)
+
+		// decode it
+		decodedEci, err := codec.Decode(bz)
+		require.NoError(t, err)
+
+		// make sure it's the same
+		require.Equal(t, eci, decodedEci)
+	})
+
+	t.Run("test decoding empty byte array", func(t *testing.T) {
+		codec := strategies.NewDefaultExtendedCommitCodec()
+		_, err := codec.Decode([]byte{})
+		require.Nil(t, err)
+	})
+}
+
+func TestCompressionExtendedCommitCodec(t *testing.T) {
+	t.Run("test encoding / decoding", func(t *testing.T) {
+		// create a sample extended commit info
+		eci := cmtabci.ExtendedCommitInfo{
+			Round: 1,
+			Votes: []cmtabci.ExtendedVoteInfo{
+				{
+					Validator: cmtabci.Validator{
+						Address: []byte("1"),
+						Power:   10,
+					},
+					VoteExtension:      []byte("1"),
+					ExtensionSignature: []byte("1"),
+				},
+			},
+		}
+
+		// create a codec
+		defaultCodec := strategies.NewDefaultExtendedCommitCodec()
+		codec := strategies.NewCompressionExtendedCommitCodec(defaultCodec, strategies.NewZStdCompressor())
+
+		// encode it
+		bz, err := codec.Encode(eci)
+		require.NoError(t, err)
+
+		// decode it
+		decodedEci, err := codec.Decode(bz)
+		require.NoError(t, err)
+
+		// make sure it's the same
+		require.Equal(t, eci, decodedEci)
 	})
 }
