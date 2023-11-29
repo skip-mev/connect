@@ -2,6 +2,7 @@ package client_test
 
 import (
 	"context"
+	"math/big"
 	"testing"
 	"time"
 
@@ -9,8 +10,6 @@ import (
 
 	"github.com/skip-mev/slinky/service/client"
 	"github.com/skip-mev/slinky/service/types/mocks"
-
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/service"
 	servicetypes "github.com/skip-mev/slinky/service/types"
@@ -107,9 +106,9 @@ func (s *ClientTestSuite) TestClientReturnsValidPrices() {
 		Quote: "USD",
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*uint256.Int{
-		cp1: uint256.NewInt(100),
-		cp2: uint256.NewInt(200),
+	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
+		cp1: big.NewInt(100),
+		cp2: big.NewInt(200),
 	})
 
 	ts := time.Now()
@@ -120,6 +119,6 @@ func (s *ClientTestSuite) TestClientReturnsValidPrices() {
 	s.Require().NoError(err)
 
 	// check response
-	s.Require().Equal(resp.Prices[cp1.ToString()], uint256.NewInt(100).String())
-	s.Require().Equal(resp.Prices[cp2.ToString()], uint256.NewInt(200).String())
+	s.Require().Equal(resp.Prices[cp1.ToString()], big.NewInt(100).String())
+	s.Require().Equal(resp.Prices[cp2.ToString()], big.NewInt(200).String())
 }

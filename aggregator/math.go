@@ -1,10 +1,10 @@
 package aggregator
 
 import (
+	"math/big"
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -16,7 +16,7 @@ func ComputeMedianWithContext(_ sdk.Context) AggregateFn {
 // ComputeMedian inputs the aggregated prices from all providers and computes
 // the median price for each asset.
 func ComputeMedian() AggregateFn {
-	return func(providers AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
+	return func(providers AggregatedProviderPrices) map[types.CurrencyPair]*big.Int {
 		pricesByAsset := make(map[types.CurrencyPair][]QuotePrice)
 		for _, providerPrices := range providers {
 			for cp, ticker := range providerPrices {
@@ -34,7 +34,7 @@ func ComputeMedian() AggregateFn {
 			}
 		}
 
-		medianPrices := make(map[types.CurrencyPair]*uint256.Int)
+		medianPrices := make(map[types.CurrencyPair]*big.Int)
 
 		// Iterate through all assets and compute the median price
 		for cp, prices := range pricesByAsset {
@@ -43,7 +43,14 @@ func ComputeMedian() AggregateFn {
 			}
 
 			sort.SliceStable(prices, func(i, j int) bool {
-				return prices[i].Price.Lt(prices[j].Price)
+				switch prices[i].Price.Cmp(prices[j].Price) {
+				case -1:
+					return true
+				case 1:
+					return false
+				default:
+					return true
+				}
 			})
 
 			middle := len(prices) / 2
@@ -51,8 +58,8 @@ func ComputeMedian() AggregateFn {
 			// If the number of prices is even, compute the average of the two middle prices.
 			numPrices := len(prices)
 			if numPrices%2 == 0 {
-				medianPrice := new(uint256.Int).Add(prices[middle-1].Price, prices[middle].Price)
-				medianPrice = medianPrice.Div(medianPrice, new(uint256.Int).SetUint64(2))
+				medianPrice := new(big.Int).Add(prices[middle-1].Price, prices[middle].Price)
+				medianPrice = medianPrice.Div(medianPrice, new(big.Int).SetUint64(2))
 
 				medianPrices[cp] = medianPrice
 			} else {

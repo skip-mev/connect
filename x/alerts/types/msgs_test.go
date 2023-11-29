@@ -1,13 +1,13 @@
 package types_test
 
 import (
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -72,8 +72,8 @@ func TestMsgConclusion(t *testing.T) {
 			CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
 		},
 		PriceBound: types.PriceBound{
-			High: uint256.NewInt(1).String(),
-			Low:  uint256.NewInt(0).String(),
+			High: big.NewInt(1).String(),
+			Low:  big.NewInt(0).String(),
 		},
 		Signatures: []types.Signature{
 			{

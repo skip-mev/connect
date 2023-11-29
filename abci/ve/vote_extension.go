@@ -2,14 +2,15 @@ package ve
 
 import (
 	"context"
+	"math/big"
 	"time"
 
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/service"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -33,10 +34,10 @@ type VoteExtensionHandler struct {
 
 	// currencyPairIDStrategy is the strategy used to determine the currency pair ID
 	// for a given currency pair.
-	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
+	currencyPairIDStrategy currencypair.CurrencyPairStrategy
 
 	// voteExtensionCodec is an interface to handle the marshalling / unmarshalling of vote-extensions
-	voteExtensionCodec strategies.VoteExtensionCodec
+	voteExtensionCodec compression.VoteExtensionCodec
 }
 
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
@@ -44,8 +45,8 @@ func NewVoteExtensionHandler(
 	logger log.Logger,
 	oracleClient service.OracleService,
 	timeout time.Duration,
-	strategy strategies.CurrencyPairIDStrategy,
-	codec strategies.VoteExtensionCodec,
+	strategy currencypair.CurrencyPairStrategy,
+	codec compression.VoteExtensionCodec,
 ) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
 		logger:                 logger,
@@ -147,7 +148,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	}
 }
 
-func transformOracleServicePrices(ctx sdk.Context, strategy strategies.CurrencyPairIDStrategy, prices map[string]string) (map[uint64][]byte, error) {
+func transformOracleServicePrices(ctx sdk.Context, strategy currencypair.CurrencyPairStrategy, prices map[string]string) (map[uint64][]byte, error) {
 	transformedPrices := make(map[uint64][]byte)
 
 	// iterate over the prices and transform them into the correct format
@@ -170,9 +171,9 @@ func transformOracleServicePrices(ctx sdk.Context, strategy strategies.CurrencyP
 			continue
 		}
 
-		// get the price bytes
-		price, err := uint256.FromHex(priceString)
-		if err != nil {
+		// get the price as a big.Int
+		price, converted := new(big.Int).SetString(priceString, 10)
+		if !converted {
 			return nil, err
 		}
 

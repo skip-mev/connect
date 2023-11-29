@@ -2,10 +2,11 @@ package oracle
 
 import (
 	"fmt"
+	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
+	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -28,7 +29,7 @@ import (
 func (h *PreBlockHandler) AggregateOracleVotes(
 	ctx sdk.Context,
 	votes []Vote,
-) (map[oracletypes.CurrencyPair]*uint256.Int, error) {
+) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	// Reset the price aggregator and set the aggregationFn to use the latest application-state.
 	h.priceAggregator.SetAggregationFn(h.aggregateFnWithCtx(ctx))
 	h.priceAggregator.ResetProviderPrices()
@@ -79,10 +80,13 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 	// Format all of the prices into a map of currency pair -> price.
 	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 	for cpID, priceBz := range oracleData.Prices {
+		if len(priceBz) > ve.MaximumPriceSize {
+			return fmt.Errorf("price bytes are too long: %d", len(priceBz))
+		}
 
-		// Convert the price to a uint256.Int.
-		var price uint256.Int
-		if val := price.SetBytes(priceBz); val == nil || len(priceBz) > 32 {
+		// Convert the price to a big.Int.
+		var price big.Int
+		if val := price.SetBytes(priceBz); val == nil {
 			return fmt.Errorf("invalid price for currency pair %d", cpID)
 		}
 

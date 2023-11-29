@@ -2,13 +2,13 @@ package oracle
 
 import (
 	"fmt"
+	"math/big"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/abci/proposals"
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -23,7 +23,7 @@ type Vote struct {
 
 // WritePrices writes the oracle data to state. Note, this will only write prices
 // that are already present in state.
-func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.CurrencyPair]*uint256.Int) error {
+func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.CurrencyPair]*big.Int) error {
 	currencyPairs := h.keeper.GetAllCurrencyPairs(ctx)
 	for _, cp := range currencyPairs {
 		price, ok := prices[cp]
@@ -38,7 +38,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 
 		// Convert the price to a quote price and write it to state.
 		quotePrice := oracletypes.QuotePrice{
-			Price:          math.NewIntFromBigInt(price.ToBig()),
+			Price:          math.NewIntFromBigInt(price),
 			BlockTimestamp: ctx.BlockHeader().Time,
 			BlockHeight:    uint64(ctx.BlockHeight()),
 		}
@@ -90,8 +90,8 @@ func (h *PreBlockHandler) recordMetrics(validatorVotePresent bool) {
 // because the vote extensions were validated by the vote extension and proposal handlers.
 func GetOracleVotes(
 	proposal [][]byte,
-	veCodec strategies.VoteExtensionCodec,
-	extCommitCodec strategies.ExtendedCommitCodec,
+	veCodec compression.VoteExtensionCodec,
+	extCommitCodec compression.ExtendedCommitCodec,
 ) ([]Vote, error) {
 	if len(proposal) < proposals.NumInjectedTxs {
 		return nil, fmt.Errorf(

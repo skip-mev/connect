@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"math/big"
 	"path"
 	"sort"
 	"strconv"
@@ -17,7 +18,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/holiman/uint256"
 	"github.com/pelletier/go-toml"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
@@ -29,7 +29,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -44,14 +44,14 @@ const (
 )
 
 var (
-	extCommitCodec = strategies.NewCompressionExtendedCommitCodec(
-		strategies.NewDefaultExtendedCommitCodec(),
-		strategies.NewZStdCompressor(),
+	extCommitCodec = compression.NewCompressionExtendedCommitCodec(
+		compression.NewDefaultExtendedCommitCodec(),
+		compression.NewZStdCompressor(),
 	)
 
-	veCodec = strategies.NewCompressionVoteExtensionCodec(
-		strategies.NewDefaultVoteExtensionCodec(),
-		strategies.NewZLibCompressor(),
+	veCodec = compression.NewCompressionVoteExtensionCodec(
+		compression.NewDefaultVoteExtensionCodec(),
+		compression.NewZLibCompressor(),
 	)
 )
 
@@ -519,7 +519,7 @@ func (vv validatorVotes) Less(i, j int) bool {
 		iPrice = len(ve.Prices)
 
 		for _, priceBz := range ve.Prices {
-			var price uint256.Int
+			var price big.Int
 			iTotalPrice += int(price.SetBytes(priceBz).Uint64())
 		}
 	}
@@ -529,7 +529,7 @@ func (vv validatorVotes) Less(i, j int) bool {
 		jPrice = len(ve.Prices)
 
 		for _, priceBz := range ve.Prices {
-			var price uint256.Int
+			var price big.Int
 			jTotalPrice += int(price.SetBytes(priceBz).Uint64())
 		}
 	}

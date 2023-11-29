@@ -1,9 +1,10 @@
 package strategies
 
 import (
+	"math/big"
+
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -40,7 +41,7 @@ func DefaultHandleValidatorIncentive() ValidatorIncentiveHandler {
 			return nil, nil
 		}
 
-		var price uint256.Int
+		var price big.Int
 		price.SetBytes(priceBz)
 
 		// check bounds

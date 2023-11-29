@@ -18,32 +18,32 @@ func TestPriceBound(t *testing.T) {
 			{
 				"valid price-bound",
 				types.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 				true,
 			},
 			{
 				"invalid price-bound",
 				types.PriceBound{
-					High: "0x0",
-					Low:  "0x1",
+					High: "0",
+					Low:  "1",
 				},
 				false,
 			},
 			{
 				"invalid price-bound high == low",
 				types.PriceBound{
-					High: "0x1",
-					Low:  "0x1",
+					High: "1",
+					Low:  "1",
 				},
 				false,
 			},
 			{
 				"invalid price-bound invalid strings",
 				types.PriceBound{
-					High: "0x",
-					Low:  "0x",
+					High: "",
+					Low:  "",
 				},
 				false,
 			},
@@ -66,16 +66,16 @@ func TestPriceBound(t *testing.T) {
 	t.Run("test GetHighInt()", func(t *testing.T) {
 		// invalid high value fails
 		pb := types.PriceBound{
-			High: "0x",
-			Low:  "0x0",
+			High: "x",
+			Low:  "2",
 		}
 		_, err := pb.GetHighInt()
 		require.NotNil(t, err)
 
 		// valid high value succeeds
 		pb = types.PriceBound{
-			High: "0x1",
-			Low:  "0x0",
+			High: "1",
+			Low:  "0",
 		}
 
 		high, err := pb.GetHighInt()
@@ -86,16 +86,16 @@ func TestPriceBound(t *testing.T) {
 	t.Run("test GetLowInt()", func(t *testing.T) {
 		// invalid low value fails
 		pb := types.PriceBound{
-			High: "0x0",
-			Low:  "0x",
+			High: "1",
+			Low:  "x",
 		}
 		_, err := pb.GetLowInt()
 		require.NotNil(t, err)
 
 		// valid low value succeeds
 		pb = types.PriceBound{
-			High: "0x0",
-			Low:  "0x1",
+			High: "2",
+			Low:  "1",
 		}
 
 		low, err := pb.GetLowInt()

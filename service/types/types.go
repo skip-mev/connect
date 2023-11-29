@@ -2,9 +2,8 @@ package types
 
 import (
 	"context"
+	"math/big"
 	"time"
-
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -19,7 +18,7 @@ const (
 type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
-	GetPrices() map[types.CurrencyPair]*uint256.Int
+	GetPrices() map[types.CurrencyPair]*big.Int
 	Start(ctx context.Context) error
 	Stop()
 }

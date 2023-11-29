@@ -8,7 +8,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -46,10 +46,10 @@ type ProposalHandler struct {
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn
 
 	// voteExtensionCodec is used to decode vote extensions.
-	voteExtensionCodec strategies.VoteExtensionCodec
+	voteExtensionCodec compression.VoteExtensionCodec
 
 	// extendedCommitCodec is used to decode extended commit info.
-	extendedCommitCodec strategies.ExtendedCommitCodec
+	extendedCommitCodec compression.ExtendedCommitCodec
 }
 
 // NewProposalHandler returns a new ProposalHandler.
@@ -58,8 +58,8 @@ func NewProposalHandler(
 	prepareProposalHandler sdk.PrepareProposalHandler,
 	processProposalHandler sdk.ProcessProposalHandler,
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn,
-	voteExtensionCodec strategies.VoteExtensionCodec,
-	extendedCommitInfoCodec strategies.ExtendedCommitCodec,
+	voteExtensionCodec compression.VoteExtensionCodec,
+	extendedCommitInfoCodec compression.ExtendedCommitCodec,
 ) *ProposalHandler {
 	return &ProposalHandler{
 		logger:                   logger,

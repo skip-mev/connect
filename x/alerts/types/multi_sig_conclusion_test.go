@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"math/big"
 	"testing"
 
 	cmtabci "github.com/cometbft/cometbft/abci/types"
@@ -10,7 +11,6 @@ import (
 	secp256r1 "github.com/cosmos/cosmos-sdk/crypto/keys/secp256r1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -130,8 +130,8 @@ func (s *MultiSigConclusionTestSuite) TestParams() {
 }
 
 func (s *MultiSigConclusionTestSuite) TestConclusion() {
-	low, _ := uint256.FromHex("0x1")   // 1
-	high, _ := uint256.FromHex("0x10") // 2
+	low := big.NewInt(1)
+	high := big.NewInt(2)
 	invalidPriceBound := types.PriceBound{
 		High: low.String(),
 		Low:  high.String(),

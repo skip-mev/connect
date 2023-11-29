@@ -2,6 +2,7 @@ package strategies_test
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/log"
@@ -12,8 +13,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/holiman/uint256"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	testutil "github.com/skip-mev/slinky/x/alerts/testutil"
@@ -262,8 +261,8 @@ func TestDefaultHandler(t *testing.T) {
 				Prices: map[uint64][]byte{},
 			},
 			types.PriceBound{
-				High: "0x1",
-				Low:  "0x2",
+				High: "1",
+				Low:  "2",
 			},
 			types.Alert{
 				Signer: sdk.AccAddress("test").String(),
@@ -282,8 +281,8 @@ func TestDefaultHandler(t *testing.T) {
 				Prices: map[uint64][]byte{},
 			},
 			types.PriceBound{
-				High: "0x1",
-				Low:  "0x1",
+				High: "1",
+				Low:  "1",
 			},
 			types.Alert{
 				Signer: sdk.AccAddress("test").String(),
@@ -306,8 +305,8 @@ func TestDefaultHandler(t *testing.T) {
 				Prices: map[uint64][]byte{},
 			},
 			types.PriceBound{
-				High: "0x2",
-				Low:  "0x1",
+				High: "2",
+				Low:  "1",
 			},
 			types.Alert{
 				Signer: sdk.AccAddress("test").String(),
@@ -328,12 +327,12 @@ func TestDefaultHandler(t *testing.T) {
 			"if price is higher than high bound, incentive is non-nil",
 			slinkyabci.OracleVoteExtension{
 				Prices: map[uint64][]byte{
-					0: uint256.NewInt(3).Bytes(),
+					0: big.NewInt(3).Bytes(),
 				},
 			},
 			types.PriceBound{
-				High: "0x2",
-				Low:  "0x1",
+				High: "2",
+				Low:  "1",
 			},
 			types.Alert{
 				Signer: sdk.AccAddress("signer").String(),
@@ -360,12 +359,12 @@ func TestDefaultHandler(t *testing.T) {
 			"if price is lower than low bound, incentive is non-nil",
 			slinkyabci.OracleVoteExtension{
 				Prices: map[uint64][]byte{
-					0: uint256.NewInt(0).Bytes(),
+					0: big.NewInt(0).Bytes(),
 				},
 			},
 			types.PriceBound{
-				High: "0x2",
-				Low:  "0x1",
+				High: "2",
+				Low:  "1",
 			},
 			types.Alert{
 				Signer: sdk.AccAddress("signer").String(),
@@ -392,12 +391,12 @@ func TestDefaultHandler(t *testing.T) {
 			"if price is within bounds, incentive is nil",
 			slinkyabci.OracleVoteExtension{
 				Prices: map[uint64][]byte{
-					0: uint256.NewInt(1).Bytes(),
+					0: big.NewInt(1).Bytes(),
 				},
 			},
 			types.PriceBound{
-				High: "0x2",
-				Low:  "0x1",
+				High: "2",
+				Low:  "1",
 			},
 			types.Alert{
 				Signer: sdk.AccAddress("signer").String(),

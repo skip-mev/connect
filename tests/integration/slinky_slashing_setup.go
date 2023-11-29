@@ -2,8 +2,8 @@ package integration
 
 import (
 	"context"
+	"math/big"
 	"path"
-	"strconv"
 	"time"
 
 	"cosmossdk.io/math"
@@ -15,14 +15,13 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/holiman/uint256"
 	"github.com/pelletier/go-toml"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -177,13 +176,9 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 	oCfg.CurrencyPairs = append(oCfg.CurrencyPairs, ticker)
 
 	// Configure the default price on the static mock provider.
-	hexPrice, err := uint256.FromDecimal(strconv.FormatInt(price, 10))
-	if err != nil {
-		return err
-	}
 	staticMockProvider := mock.StaticMockProviderConfig{
 		TokenPrices: map[string]string{
-			ticker.ToString(): hexPrice.String(),
+			ticker.ToString(): big.NewInt(price).String(),
 		},
 	}
 
@@ -219,7 +214,7 @@ func GetExtendedCommit(chain *cosmos.CosmosChain, height int64) (cmtabci.Extende
 	}
 
 	// unmarshal votes
-	voteEncoder := strategies.NewDefaultVoteExtensionCodec()
+	voteEncoder := compression.NewDefaultVoteExtensionCodec()
 	for i, vote := range eci.Votes {
 		// unmarshal compressed ve
 		voteInfo, err := veCodec.Decode(vote.VoteExtension)

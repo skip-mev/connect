@@ -10,12 +10,18 @@ import (
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
 
+const (
+	// MaximumPriceSize defines the maximum size of a price in bytes. This allows
+	// up to 32 bytes for the price and 1 byte for the sign (positive/negative).
+	MaximumPriceSize = 33
+)
+
 // ValidateOracleVoteExtension validates the vote extension provided by a validator.
 func ValidateOracleVoteExtension(ve vetypes.OracleVoteExtension) error {
 	// Verify prices are valid.
 	for _, bz := range ve.Prices {
 		// validate the price bytes
-		if len(bz) > 32 {
+		if len(bz) > MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(bz))
 		}
 	}

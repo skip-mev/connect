@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
@@ -72,8 +71,7 @@ func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 		}
 
 		quotePrice, err := aggregator.NewQuotePrice(
-			providers.Float64ToUint256(respMap[base][quote], pair.Decimals()),
-			time.Now(),
+			providers.Float64ToBigInt(respMap[base][quote], pair.Decimals()),
 		)
 		if err != nil {
 			continue

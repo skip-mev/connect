@@ -6,8 +6,6 @@ import (
 	"math/big"
 	"net/http"
 	"strconv"
-
-	"github.com/holiman/uint256"
 )
 
 type (
@@ -18,22 +16,20 @@ type (
 	ReqFn func(*http.Request)
 )
 
-// Float64StringToUint256 converts a float64 string to a uint256.
-func Float64StringToUint256(s string, decimals int) (*uint256.Int, error) {
+// Float64StringToBigInt converts a float64 string to a big.Int.
+func Float64StringToBigInt(s string, decimals int) (*big.Int, error) {
 	floatNum, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		return nil, err
 	}
 
-	return Float64ToUint256(floatNum, decimals), nil
+	return Float64ToBigInt(floatNum, decimals), nil
 }
 
-// Float64ToBigInt converts a float64 to a uint256.
+// Float64ToBigInt converts a float64 to a big.Int.
 //
-// NOTE: MustFromBig will panic only if there is overflow when
-// converting the big.Int to a uint256.Int. This should never
-// happen since uint256 should be large enough to handle pricing data.
-func Float64ToUint256(val float64, decimals int) *uint256.Int {
+// TODO: Is there a better approach to this?
+func Float64ToBigInt(val float64, decimals int) *big.Int {
 	bigval := new(big.Float)
 	bigval.SetFloat64(val)
 
@@ -46,7 +42,7 @@ func Float64ToUint256(val float64, decimals int) *uint256.Int {
 	result := new(big.Int)
 	bigval.Int(result) // store converted number in result
 
-	return uint256.MustFromBig(result)
+	return result
 }
 
 // GetWithContext provides logic for making an http get request, whose duration is bounded / controlled by a given context.

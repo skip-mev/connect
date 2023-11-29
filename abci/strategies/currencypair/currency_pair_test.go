@@ -1,4 +1,4 @@
-package strategies_test
+package currencypair_test
 
 import (
 	"testing"
@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/abci/strategies"
-	mocks "github.com/skip-mev/slinky/abci/strategies/mocks"
+	strategies "github.com/skip-mev/slinky/abci/strategies/currencypair"
+	mocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -17,7 +17,7 @@ func TestOracleCurrencyPairIDStrategyID(t *testing.T) {
 
 	ctx := sdk.Context{}
 
-	strategy := strategies.NewOracleCurrencyPairIDStrategy(ok)
+	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
 
 	// test that the strategy returns IDs from the oracle module
 	t.Run("test getting ids with two currency-pairs in module-state", func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestOracleCurrencyPairIDStrategyFromID(t *testing.T) {
 
 	ctx := sdk.Context{}
 
-	strategy := strategies.NewOracleCurrencyPairIDStrategy(ok)
+	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
 
 	// test that the strategy returns IDs from the oracle module
 	t.Run("test getting ids with two currency-pairs in module-state", func(t *testing.T) {

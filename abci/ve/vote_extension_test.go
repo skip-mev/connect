@@ -2,18 +2,18 @@ package ve_test
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
 	"time"
 
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/abci/strategies"
-	mockstrategies "github.com/skip-mev/slinky/abci/strategies/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
+	mockstrategies "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/ve"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
@@ -25,16 +25,16 @@ import (
 var (
 	btcUSD     = oracletypes.NewCurrencyPair("BTC", "USD")
 	ethUSD     = oracletypes.NewCurrencyPair("ETH", "USD")
-	oneHundred = uint256.NewInt(100)
-	twoHundred = uint256.NewInt(200)
+	oneHundred = big.NewInt(100)
+	twoHundred = big.NewInt(200)
 
 	nilPrices   = map[string]string{}
 	singlePrice = map[string]string{
-		btcUSD.ToString(): oneHundred.Hex(),
+		btcUSD.ToString(): oneHundred.String(),
 	}
 	multiplePrices = map[string]string{
-		btcUSD.ToString(): oneHundred.Hex(),
-		ethUSD.ToString(): twoHundred.Hex(),
+		btcUSD.ToString(): oneHundred.String(),
+		ethUSD.ToString(): twoHundred.String(),
 	}
 )
 
@@ -55,7 +55,7 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 	cases := []struct {
 		name             string
 		oracleService    func() service.OracleService
-		currencyPairID   func() *mockstrategies.CurrencyPairIDStrategy
+		currencyPairID   func() *mockstrategies.CurrencyPairStrategy
 		expectedResponse *abcitypes.OracleVoteExtension
 	}{
 		{
@@ -72,8 +72,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				return mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
@@ -93,8 +93,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				cps := mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				cps := mockstrategies.NewCurrencyPairStrategy(s.T())
 
 				cps.On("ID", mock.Anything, btcUSD).Return(uint64(0), nil)
 
@@ -120,8 +120,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				cps := mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				cps := mockstrategies.NewCurrencyPairStrategy(s.T())
 
 				cps.On("ID", mock.Anything, btcUSD).Return(uint64(0), nil)
 				cps.On("ID", mock.Anything, ethUSD).Return(uint64(1), nil)
@@ -144,8 +144,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				return mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
@@ -163,8 +163,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				return mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
@@ -182,8 +182,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				return mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
@@ -203,8 +203,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 				return mockServer
 			},
-			currencyPairID: func() *mockstrategies.CurrencyPairIDStrategy {
-				cps := mockstrategies.NewCurrencyPairIDStrategy(s.T())
+			currencyPairID: func() *mockstrategies.CurrencyPairStrategy {
+				cps := mockstrategies.NewCurrencyPairStrategy(s.T())
 
 				cps.On("ID", mock.Anything, btcUSD).Return(uint64(0), fmt.Errorf("error"))
 				cps.On("ID", mock.Anything, ethUSD).Return(uint64(1), nil)
@@ -221,9 +221,9 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
-			codec := strategies.NewCompressionVoteExtensionCodec(
-				strategies.NewDefaultVoteExtensionCodec(),
-				strategies.NewZLibCompressor(),
+			codec := compression.NewCompressionVoteExtensionCodec(
+				compression.NewDefaultVoteExtensionCodec(),
+				compression.NewZLibCompressor(),
 			)
 
 			h := ve.NewVoteExtensionHandler(
@@ -247,9 +247,9 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 }
 
 func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
-	codec := strategies.NewCompressionVoteExtensionCodec(
-		strategies.NewDefaultVoteExtensionCodec(),
-		strategies.NewZLibCompressor(),
+	codec := compression.NewCompressionVoteExtensionCodec(
+		compression.NewDefaultVoteExtensionCodec(),
+		compression.NewZLibCompressor(),
 	)
 
 	cases := []struct {
@@ -329,7 +329,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 			name: "vote extension with malformed prices",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
 				prices := map[uint64][]byte{
-					0: make([]byte, 33),
+					0: make([]byte, 34),
 				}
 
 				ve, err := testutils.CreateVoteExtensionBytes(
@@ -350,7 +350,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 		},
 	}
 
-	cpID := mockstrategies.NewCurrencyPairIDStrategy(s.T())
+	cpID := mockstrategies.NewCurrencyPairStrategy(s.T())
 
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
