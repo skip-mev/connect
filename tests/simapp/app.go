@@ -341,6 +341,7 @@ func NewSimApp(
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
 		ve.NewDefaultValidateVoteExtensionsFn(app.ChainID(), app.StakingKeeper),
+		strategies.NewDefaultVoteExtensionCodec(),
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
@@ -373,6 +374,7 @@ func NewSimApp(
 		app.oracleService,
 		time.Second,
 		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
+		strategies.NewDefaultVoteExtensionCodec(),
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())

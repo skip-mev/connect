@@ -13,6 +13,7 @@ import (
 	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/abci/proposals"
+	"github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/ve"
 )
@@ -56,6 +57,7 @@ type ProposalsTestSuite struct {
 	proposalHandler        *proposals.ProposalHandler
 	prepareProposalHandler sdk.PrepareProposalHandler
 	processProposalHandler sdk.ProcessProposalHandler
+	codec                  strategies.VoteExtensionCodec
 }
 
 func TestABCITestSuite(t *testing.T) {
@@ -67,6 +69,11 @@ func (s *ProposalsTestSuite) SetupTest() {
 	s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 1)
 	s.ctx = s.ctx.WithBlockHeight(1)
 
+	s.codec = strategies.NewCompressionVoteExtensionCodec(
+		strategies.NewDefaultVoteExtensionCodec(),
+		strategies.NewZLibCompressor(),
+	)
+
 	// Use the default no-op prepare and process proposal handlers from the sdk.
 	s.prepareProposalHandler = baseapp.NoOpPrepareProposal()
 	s.processProposalHandler = baseapp.NoOpProcessProposal()
@@ -75,6 +82,7 @@ func (s *ProposalsTestSuite) SetupTest() {
 		s.prepareProposalHandler,
 		s.processProposalHandler,
 		ve.NoOpValidateVoteExtensions,
+		s.codec,
 	)
 }
 
@@ -120,7 +128,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 	s.Run("vote extensions enabled with no txs and a single vote extension", func() {
 		proposal := [][]byte{}
 
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
 		commitInfo, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
@@ -144,7 +152,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			[]byte("tx2"),
 		}
 
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
 		commitInfo, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
@@ -167,13 +175,13 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 	s.Run("vote extensions enabled with multiple vote extensions", func() {
 		proposal := [][]byte{}
 
-		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2)
+		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3)
+		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3, s.codec)
 		s.Require().NoError(err)
 
 		commitInfo, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo1, valVoteInfo2, valVoteInfo3})
@@ -194,13 +202,13 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 	s.Run("cannot build block with invalid a vote extension", func() {
 		proposal := [][]byte{}
 
-		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2)
+		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3)
+		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3, s.codec)
 		s.Require().NoError(err)
 
 		// Set the height of the third vote extension to 3, which is invalid.
@@ -222,7 +230,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 	s.Run("can reject a block with malformed prices", func() {
 		proposal := [][]byte{}
 
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices, s.codec)
 		s.Require().NoError(err)
 
 		commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
@@ -281,7 +289,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 	})
 
 	s.Run("can process a block with a single vote extension", func() {
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
 		_, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
@@ -300,13 +308,13 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 	})
 
 	s.Run("can process a block with multiple vote extensions", func() {
-		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2)
+		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3)
+		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3, s.codec)
 		s.Require().NoError(err)
 
 		_, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo1, valVoteInfo2, valVoteInfo3})
@@ -325,13 +333,13 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 	})
 
 	s.Run("rejects a block with an invalid vote extension", func() {
-		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1)
+		valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2)
+		valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2, s.codec)
 		s.Require().NoError(err)
 
-		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3)
+		valVoteInfo3, err := testutils.CreateExtendedVoteInfo(val3, prices3, s.codec)
 		s.Require().NoError(err)
 
 		// Set the height of the third vote extension to 3, which is invalid.
@@ -353,7 +361,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 	})
 
 	s.Run("rejects a block with malformed prices", func() {
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices, s.codec)
 		s.Require().NoError(err)
 
 		_, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})

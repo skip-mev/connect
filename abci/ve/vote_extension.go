@@ -34,15 +34,25 @@ type VoteExtensionHandler struct {
 	// currencyPairIDStrategy is the strategy used to determine the currency pair ID
 	// for a given currency pair.
 	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
+
+	// voteExtensionCodec is an interface to handle the marshalling / unmarshalling of vote-extensions
+	voteExtensionCodec strategies.VoteExtensionCodec
 }
 
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
-func NewVoteExtensionHandler(logger log.Logger, oracleClient service.OracleService, timeout time.Duration, strategy strategies.CurrencyPairIDStrategy) *VoteExtensionHandler {
+func NewVoteExtensionHandler(
+	logger log.Logger,
+	oracleClient service.OracleService,
+	timeout time.Duration,
+	strategy strategies.CurrencyPairIDStrategy,
+	codec strategies.VoteExtensionCodec,
+) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
 		logger:                 logger,
 		oracleClient:           oracleClient,
 		timeout:                timeout,
 		currencyPairIDStrategy: strategy,
+		voteExtensionCodec:     codec,
 	}
 }
 
@@ -109,7 +119,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			Prices: prices,
 		}
 
-		bz, err := voteExt.Marshal()
+		bz, err := h.voteExtensionCodec.Encode(voteExt)
 		if err != nil {
 			h.logger.Error(
 				"failed to marshal vote extension; returning empty vote extension",
@@ -172,7 +182,16 @@ func transformOracleServicePrices(ctx sdk.Context, strategy strategies.CurrencyP
 // We reject any vote extensions that are not empty and fail to unmarshal or contain invalid prices.
 func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (*cometabci.ResponseVerifyVoteExtension, error) {
-		voteExtension := req.VoteExtension
+		// decode the vote-extension bytes
+		voteExtension, err := h.voteExtensionCodec.Decode(req.VoteExtension)
+		if err != nil {
+			h.logger.Error(
+				"failed to decode vote extension",
+				"height", req.Height,
+				"err", err,
+			)
+			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
+		}
 
 		if err := ValidateOracleVoteExtension(voteExtension); err != nil {
 			h.logger.Error(

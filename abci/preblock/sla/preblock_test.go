@@ -22,6 +22,7 @@ import (
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/preblock/sla"
 	"github.com/skip-mev/slinky/abci/preblock/sla/mocks"
+	"github.com/skip-mev/slinky/abci/strategies"
 	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	oraclevetypes "github.com/skip-mev/slinky/abci/ve/types"
@@ -177,6 +178,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 			map[uint64][]byte{
 				0: oneHundred.Bytes(),
 			},
+			strategies.NewDefaultVoteExtensionCodec(),
 		)
 		s.Require().NoError(err)
 
@@ -265,6 +267,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
 			map[uint64][]byte{},
+			strategies.NewDefaultVoteExtensionCodec(),
 		)
 		s.Require().NoError(err)
 
@@ -328,6 +331,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 			map[uint64][]byte{
 				0: oneHundred.Bytes(),
 			},
+			strategies.NewDefaultVoteExtensionCodec(),
 		)
 		s.Require().NoError(err)
 
@@ -462,6 +466,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
 			map[uint64][]byte{},
+			strategies.NewDefaultVoteExtensionCodec(),
 		)
 		s.Require().NoError(err)
 

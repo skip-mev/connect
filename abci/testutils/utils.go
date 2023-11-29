@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -44,8 +45,9 @@ func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo) (cometabc
 func CreateExtendedVoteInfo(
 	consAddr sdk.ConsAddress,
 	prices map[uint64][]byte,
+	codec strategies.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
-	ve, err := CreateVoteExtensionBytes(prices)
+	ve, err := CreateVoteExtensionBytes(prices, codec)
 	if err != nil {
 		return cometabci.ExtendedVoteInfo{}, err
 	}
@@ -100,9 +102,10 @@ func CreateBaseSDKContext(t *testing.T) sdk.Context {
 // CreateVoteExtensionBytes creates a vote extension bytes with the given prices, timestamp and height.
 func CreateVoteExtensionBytes(
 	prices map[uint64][]byte,
+	codec strategies.VoteExtensionCodec,
 ) ([]byte, error) {
 	voteExtension := CreateVoteExtension(prices)
-	voteExtensionBz, err := voteExtension.Marshal()
+	voteExtensionBz, err := codec.Encode(voteExtension)
 	if err != nil {
 		return nil, err
 	}
@@ -113,8 +116,8 @@ func CreateVoteExtensionBytes(
 // CreateVoteExtension creates a vote extension with the given prices, timestamp and height.
 func CreateVoteExtension(
 	prices map[uint64][]byte,
-) *types.OracleVoteExtension {
-	return &types.OracleVoteExtension{
+) types.OracleVoteExtension {
+	return types.OracleVoteExtension{
 		Prices: prices,
 	}
 }
