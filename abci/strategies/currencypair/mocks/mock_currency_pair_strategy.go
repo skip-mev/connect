@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	big "math/big"
+
 	mock "github.com/stretchr/testify/mock"
 
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -39,6 +41,58 @@ func (_m *CurrencyPairStrategy) FromID(ctx types.Context, id uint64) (oracletype
 	return r0, r1
 }
 
+// GetDecodedPrice provides a mock function with given fields: ctx, cp, priceBytes
+func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp oracletypes.CurrencyPair, priceBytes []byte) (*big.Int, error) {
+	ret := _m.Called(ctx, cp, priceBytes)
+
+	var r0 *big.Int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, []byte) (*big.Int, error)); ok {
+		return rf(ctx, cp, priceBytes)
+	}
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, []byte) *big.Int); ok {
+		r0 = rf(ctx, cp, priceBytes)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*big.Int)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair, []byte) error); ok {
+		r1 = rf(ctx, cp, priceBytes)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetEncodedPrice provides a mock function with given fields: ctx, cp, price
+func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp oracletypes.CurrencyPair, price *big.Int) ([]byte, error) {
+	ret := _m.Called(ctx, cp, price)
+
+	var r0 []byte
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, *big.Int) ([]byte, error)); ok {
+		return rf(ctx, cp, price)
+	}
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, *big.Int) []byte); ok {
+		r0 = rf(ctx, cp, price)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]byte)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair, *big.Int) error); ok {
+		r1 = rf(ctx, cp, price)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ID provides a mock function with given fields: ctx, cp
 func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp oracletypes.CurrencyPair) (uint64, error) {
 	ret := _m.Called(ctx, cp)
@@ -68,8 +122,7 @@ func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp oracletypes.CurrencyPai
 func NewCurrencyPairStrategy(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *CurrencyPairStrategy {
+}) *CurrencyPairStrategy {
 	mock := &CurrencyPairStrategy{}
 	mock.Mock.Test(t)
 
