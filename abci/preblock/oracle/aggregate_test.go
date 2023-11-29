@@ -13,7 +13,6 @@ import (
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
-	"github.com/skip-mev/slinky/abci/strategies"
 	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
@@ -71,14 +70,16 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		s.myVal,
 		mockMetrics,
 		cpID,
+		s.veCodec,
+		s.commitCodec,
 	)
 
 	s.Run("no oracle data", func() {
-		_, commitBz, err := testutils.CreateExtendedCommitInfo(nil)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo(nil, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		mockMetrics.On("AddVoteIncludedInLastCommit", false).Once()
@@ -94,15 +95,15 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -135,15 +136,15 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			0: oneHundred.Bytes(),
 			1: twoHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -178,22 +179,22 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
 		otherValPrices := map[uint64][]byte{
 			0: twoHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, strategies.NewDefaultVoteExtensionCodec())
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -232,22 +233,22 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
 		otherValPrices := map[uint64][]byte{
 			0: twoHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, strategies.NewDefaultVoteExtensionCodec())
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -283,7 +284,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			0: oneHundred.Bytes(),
 			1: twoHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create a vote extension with multiple prices from another validator
@@ -291,15 +292,15 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			0: threeHundred.Bytes(),
 			1: fourHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, strategies.NewDefaultVoteExtensionCodec())
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -342,14 +343,14 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			1: twoHundred.Bytes(),
 			2: threeHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		val1Prices := map[uint64][]byte{
 			0: fourHundred.Bytes(),
 			2: sixHundred.Bytes(),
 		}
-		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices, strategies.NewDefaultVoteExtensionCodec())
+		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices, s.veCodec)
 		s.Require().NoError(err)
 
 		val2Prices := map[uint64][]byte{
@@ -357,15 +358,15 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			1: eightHundred.Bytes(),
 			2: nineHundred.Bytes(),
 		}
-		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices, strategies.NewDefaultVoteExtensionCodec())
+		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, val1VoteInfo, val2VoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, val1VoteInfo, val2VoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// The validator is included in the commit and the price should be included
@@ -418,15 +419,15 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: ongodhecappin,
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo})
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal)
+		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Aggregate oracle data

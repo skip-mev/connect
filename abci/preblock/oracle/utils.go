@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"cosmossdk.io/math"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/abci/proposals"
+	"github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -88,7 +88,11 @@ func (h *PreBlockHandler) recordMetrics(validatorVotePresent bool) {
 // GetOracleVotes returns all of the oracle vote extensions that were injected into
 // the block. Note that all of the vote extensions included are necessarily valid at this point
 // because the vote extensions were validated by the vote extension and proposal handlers.
-func GetOracleVotes(proposal [][]byte) ([]Vote, error) {
+func GetOracleVotes(
+	proposal [][]byte,
+	veCodec strategies.VoteExtensionCodec,
+	extCommitCodec strategies.ExtendedCommitCodec,
+) ([]Vote, error) {
 	if len(proposal) < proposals.NumInjectedTxs {
 		return nil, fmt.Errorf(
 			"block does not contain enough transactions. expected %d, got %d",
@@ -97,14 +101,14 @@ func GetOracleVotes(proposal [][]byte) ([]Vote, error) {
 		)
 	}
 
-	extendedCommitInfo := cometabci.ExtendedCommitInfo{}
-	if err := extendedCommitInfo.Unmarshal(proposal[proposals.OracleInfoIndex]); err != nil {
+	extendedCommitInfo, err := extCommitCodec.Decode(proposal[proposals.OracleInfoIndex])
+	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal extended commit info: %w", err)
 	}
 
 	votes := make([]Vote, len(extendedCommitInfo.Votes))
 	for i, voteInfo := range extendedCommitInfo.Votes {
-		voteExtension, err := getOracleVoteExtension(voteInfo.VoteExtension)
+		voteExtension, err := veCodec.Decode(voteInfo.VoteExtension)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get oracle data from vote extension: %w", err)
 		}
@@ -121,19 +125,4 @@ func GetOracleVotes(proposal [][]byte) ([]Vote, error) {
 	}
 
 	return votes, nil
-}
-
-// getOracleVoteExtension inputs the raw vote extension bytes and returns the
-// oracle data contained within. Note, that empty vote extensions are considered valid.
-func getOracleVoteExtension(voteExtension []byte) (types.OracleVoteExtension, error) {
-	if len(voteExtension) == 0 {
-		return types.OracleVoteExtension{}, nil
-	}
-
-	oracleData := types.OracleVoteExtension{}
-	if err := oracleData.Unmarshal(voteExtension); err != nil {
-		return types.OracleVoteExtension{}, fmt.Errorf("failed to unmarshal vote extension: %w", err)
-	}
-
-	return oracleData, nil
 }

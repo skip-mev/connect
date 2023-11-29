@@ -16,18 +16,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/holiman/uint256"
-	"github.com/pelletier/go-toml/v2"
+	"github.com/pelletier/go-toml"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/abci/proposals"
+	"github.com/skip-mev/slinky/abci/strategies"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/mock"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/mock"
 )
 
 const gasPrice = 100
@@ -212,9 +213,24 @@ func GetExtendedCommit(chain *cosmos.CosmosChain, height int64) (cmtabci.Extende
 	}
 
 	// get the extended commit
-	eci := cmtabci.ExtendedCommitInfo{}
-	if err := eci.Unmarshal(block.Block.Txs[proposals.OracleInfoIndex]); err != nil {
+	eci, err := extCommitCodec.Decode(block.Block.Txs[0])
+	if err != nil {
 		return cmtabci.ExtendedCommitInfo{}, err
+	}
+
+	// unmarshal votes
+	voteEncoder := strategies.NewDefaultVoteExtensionCodec()
+	for i, vote := range eci.Votes {
+		// unmarshal compressed ve
+		voteInfo, err := veCodec.Decode(vote.VoteExtension)
+		if err != nil {
+			return cmtabci.ExtendedCommitInfo{}, err
+		}
+
+		eci.Votes[i].VoteExtension, err = voteEncoder.Encode(voteInfo)
+		if err != nil {
+			return cmtabci.ExtendedCommitInfo{}, err
+		}
 	}
 
 	return eci, nil

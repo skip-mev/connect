@@ -136,6 +136,13 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			"req_height", req.Height,
 		)
 
+		origBz, _ := voteExt.Marshal()
+		h.logger.Info(
+			"original vote extension",
+			"orig_bz", len(origBz),
+			"compressed bz", len(bz),
+		)
+
 		return &cometabci.ResponseExtendVote{VoteExtension: bz}, nil
 	}
 }

@@ -29,6 +29,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/skip-mev/slinky/abci/strategies"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -40,6 +41,18 @@ const (
 	staticMockProviderConfigPath = "providers/static_mock_provider.toml"
 
 	appConfigPath = "config/app.toml"
+)
+
+var (
+	extCommitCodec = strategies.NewCompressionExtendedCommitCodec(
+		strategies.NewDefaultExtendedCommitCodec(),
+		strategies.NewZStdCompressor(),
+	)
+
+	veCodec = strategies.NewCompressionVoteExtensionCodec(
+		strategies.NewDefaultVoteExtensionCodec(),
+		strategies.NewZLibCompressor(),
+	)
 )
 
 // construct the network from a spec
@@ -451,8 +464,8 @@ func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves 
 		}
 
 		// attempt to unmarshal extended commit info
-		var extendedCommitInfo cmtabci.ExtendedCommitInfo
-		if err := extendedCommitInfo.Unmarshal(block.Block.Txs[0]); err != nil {
+		extendedCommitInfo, err := extCommitCodec.Decode(block.Block.Txs[0])
+		if err != nil {
 			return false, err
 		}
 
@@ -461,8 +474,8 @@ func ExpectVoteExtensions(chain *cosmos.CosmosChain, timeout time.Duration, ves 
 		// iterate through all votes (votes in the extended-commit are deterministically ordered by voting power -> address)
 		for i, vote := range extendedCommitInfo.Votes {
 			// get the oracle vote extension
-			var gotVe slinkyabci.OracleVoteExtension
-			if err := gotVe.Unmarshal(vote.VoteExtension); err != nil {
+			gotVe, err := veCodec.Decode(vote.VoteExtension)
+			if err != nil {
 				return false, err
 			}
 
@@ -500,8 +513,9 @@ func (vv validatorVotes) Less(i, j int) bool {
 	var (
 		iPrice, jPrice, iTotalPrice, jTotalPrice int
 	)
-	var ve slinkyabci.OracleVoteExtension
-	if err := ve.Unmarshal(vv[i].VoteExtension); err == nil {
+
+	ve, err := veCodec.Decode(vv[i].VoteExtension)
+	if err == nil {
 		iPrice = len(ve.Prices)
 
 		for _, priceBz := range ve.Prices {
@@ -509,7 +523,9 @@ func (vv validatorVotes) Less(i, j int) bool {
 			iTotalPrice += int(price.SetBytes(priceBz).Uint64())
 		}
 	}
-	if err := ve.Unmarshal(vv[j].VoteExtension); err == nil {
+
+	ve, err = veCodec.Decode(vv[j].VoteExtension)
+	if err == nil {
 		jPrice = len(ve.Prices)
 
 		for _, priceBz := range ve.Prices {
