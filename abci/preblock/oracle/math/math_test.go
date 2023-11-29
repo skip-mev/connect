@@ -2,6 +2,7 @@ package math_test
 
 import (
 	"crypto"
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/log"
@@ -9,7 +10,6 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
 	"github.com/stretchr/testify/suite"
 
@@ -51,14 +51,14 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 		providerPrices    aggregator.AggregatedProviderPrices
 		validators        []validator
 		totalBondedTokens sdkmath.Int
-		expectedPrices    map[types.CurrencyPair]*uint256.Int
+		expectedPrices    map[types.CurrencyPair]*big.Int
 	}{
 		{
 			name:              "no providers",
 			providerPrices:    aggregator.AggregatedProviderPrices{},
 			validators:        []validator{},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices:    map[types.CurrencyPair]*uint256.Int{},
+			expectedPrices:    map[types.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "single provider entire stake + single price",
@@ -68,7 +68,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 				},
 			},
@@ -79,11 +79,11 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[types.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
-				}: uint256.NewInt(100),
+				}: big.NewInt(100),
 			},
 		},
 		{
@@ -94,7 +94,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 				},
 			},
@@ -105,7 +105,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices:    map[types.CurrencyPair]*uint256.Int{},
+			expectedPrices:    map[types.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "single provider with just enough stake + multiple prices",
@@ -115,13 +115,13 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 					{
 						Base:  "ETH",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 			},
@@ -132,15 +132,15 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[types.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
-				}: uint256.NewInt(100),
+				}: big.NewInt(100),
 				{
 					Base:  "ETH",
 					Quote: "USD",
-				}: uint256.NewInt(200),
+				}: big.NewInt(200),
 			},
 		},
 		{
@@ -151,7 +151,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 				},
 				validator2.String(): map[types.CurrencyPair]aggregator.QuotePrice{
@@ -159,7 +159,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 			},
@@ -174,11 +174,11 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[types.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
-				}: uint256.NewInt(100),
+				}: big.NewInt(100),
 			},
 		},
 		{
@@ -189,7 +189,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 				},
 				validator2.String(): map[types.CurrencyPair]aggregator.QuotePrice{
@@ -197,7 +197,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 				validator3.String(): map[types.CurrencyPair]aggregator.QuotePrice{
@@ -205,7 +205,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(300),
+						Price: big.NewInt(300),
 					},
 				},
 			},
@@ -224,11 +224,11 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[types.CurrencyPair]*uint256.Int{
+			expectedPrices: map[types.CurrencyPair]*big.Int{
 				{
 					Base:  "BTC",
 					Quote: "USD",
-				}: uint256.NewInt(200),
+				}: big.NewInt(200),
 			},
 		},
 		{
@@ -239,13 +239,13 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 					{
 						Base:  "ETH",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 				validator2.String(): map[types.CurrencyPair]aggregator.QuotePrice{
@@ -253,13 +253,13 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(300),
+						Price: big.NewInt(300),
 					},
 					{
 						Base:  "ETH",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(400),
+						Price: big.NewInt(400),
 					},
 				},
 				validator3.String(): map[types.CurrencyPair]aggregator.QuotePrice{
@@ -267,7 +267,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 						Base:  "BTC",
 						Quote: "USD",
 					}: {
-						Price: uint256.NewInt(500),
+						Price: big.NewInt(500),
 					},
 				},
 			},
@@ -286,11 +286,11 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 				},
 			},
 			totalBondedTokens: sdkmath.NewInt(100),
-			expectedPrices: map[types.CurrencyPair]*uint256.Int{ // only btc/usd should be included
+			expectedPrices: map[types.CurrencyPair]*big.Int{ // only btc/usd should be included
 				{
 					Base:  "BTC",
 					Quote: "USD",
-				}: uint256.NewInt(300),
+				}: big.NewInt(300),
 			},
 		},
 	}
@@ -317,7 +317,7 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 	cases := []struct {
 		name      string
 		priceInfo preblockmath.VoteWeightedPriceInfo
-		expected  *uint256.Int
+		expected  *big.Int
 	}{
 		{
 			name: "single price",
@@ -325,12 +325,12 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
-						Price:      uint256.NewInt(100),
+						Price:      big.NewInt(100),
 					},
 				},
 				TotalWeight: sdkmath.NewInt(1),
 			},
-			expected: uint256.NewInt(100),
+			expected: big.NewInt(100),
 		},
 		{
 			name: "two prices that are equal",
@@ -338,16 +338,16 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
-						Price:      uint256.NewInt(100),
+						Price:      big.NewInt(100),
 					},
 					{
 						VoteWeight: sdkmath.NewInt(1),
-						Price:      uint256.NewInt(100),
+						Price:      big.NewInt(100),
 					},
 				},
 				TotalWeight: sdkmath.NewInt(2),
 			},
-			expected: uint256.NewInt(100),
+			expected: big.NewInt(100),
 		},
 		{
 			name: "two prices that are not equal",
@@ -355,16 +355,16 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
-						Price:      uint256.NewInt(100),
+						Price:      big.NewInt(100),
 					},
 					{
 						VoteWeight: sdkmath.NewInt(1),
-						Price:      uint256.NewInt(200),
+						Price:      big.NewInt(200),
 					},
 				},
 				TotalWeight: sdkmath.NewInt(2),
 			},
-			expected: uint256.NewInt(100),
+			expected: big.NewInt(100),
 		},
 		{
 			name: "two prices that are not equal with different weights",
@@ -372,16 +372,16 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(10),
-						Price:      uint256.NewInt(100),
+						Price:      big.NewInt(100),
 					},
 					{
 						VoteWeight: sdkmath.NewInt(20),
-						Price:      uint256.NewInt(200),
+						Price:      big.NewInt(200),
 					},
 				},
 				TotalWeight: sdkmath.NewInt(30),
 			},
-			expected: uint256.NewInt(200),
+			expected: big.NewInt(200),
 		},
 		{
 			name: "three prices that are not equal with different weights",
@@ -389,20 +389,20 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 				Prices: []preblockmath.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(10),
-						Price:      uint256.NewInt(100),
+						Price:      big.NewInt(100),
 					},
 					{
 						VoteWeight: sdkmath.NewInt(20),
-						Price:      uint256.NewInt(200),
+						Price:      big.NewInt(200),
 					},
 					{
 						VoteWeight: sdkmath.NewInt(30),
-						Price:      uint256.NewInt(300),
+						Price:      big.NewInt(300),
 					},
 				},
 				TotalWeight: sdkmath.NewInt(60),
 			},
-			expected: uint256.NewInt(200),
+			expected: big.NewInt(200),
 		},
 	}
 

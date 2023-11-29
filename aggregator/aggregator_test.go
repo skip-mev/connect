@@ -1,9 +1,8 @@
 package aggregator_test
 
 import (
+	"math/big"
 	"testing"
-
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -21,28 +20,28 @@ func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
 		providerPrices aggregator.AggregatedProviderPrices
-		expectedPrices map[oracletypes.CurrencyPair]*uint256.Int
+		expectedPrices map[oracletypes.CurrencyPair]*big.Int
 	}{
 		{
 			"empty provider prices",
 			aggregator.AggregatedProviderPrices{},
-			map[oracletypes.CurrencyPair]*uint256.Int{},
+			map[oracletypes.CurrencyPair]*big.Int{},
 		},
 		{
 			"single provider price",
 			aggregator.AggregatedProviderPrices{
 				"provider1": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 			},
-			map[oracletypes.CurrencyPair]*uint256.Int{
-				btcusd: uint256.NewInt(100),
-				ethusd: uint256.NewInt(200),
+			map[oracletypes.CurrencyPair]*big.Int{
+				btcusd: big.NewInt(100),
+				ethusd: big.NewInt(200),
 			},
 		},
 		{
@@ -50,24 +49,24 @@ func TestComputeMedian(t *testing.T) {
 			aggregator.AggregatedProviderPrices{
 				"provider1": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 				"provider2": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(300),
+						Price: big.NewInt(300),
 					},
 				},
 			},
-			map[oracletypes.CurrencyPair]*uint256.Int{
-				btcusd: uint256.NewInt(150),
-				ethusd: uint256.NewInt(250),
+			map[oracletypes.CurrencyPair]*big.Int{
+				btcusd: big.NewInt(150),
+				ethusd: big.NewInt(250),
 			},
 		},
 		{
@@ -75,27 +74,27 @@ func TestComputeMedian(t *testing.T) {
 			aggregator.AggregatedProviderPrices{
 				"provider1": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 				"provider2": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(300),
+						Price: big.NewInt(300),
 					},
 					usdtusd: aggregator.QuotePrice{
 						Price: nil, // should be ignored
 					},
 				},
 			},
-			map[oracletypes.CurrencyPair]*uint256.Int{
-				btcusd: uint256.NewInt(150),
-				ethusd: uint256.NewInt(250),
+			map[oracletypes.CurrencyPair]*big.Int{
+				btcusd: big.NewInt(150),
+				ethusd: big.NewInt(250),
 			},
 		},
 		{
@@ -103,32 +102,32 @@ func TestComputeMedian(t *testing.T) {
 			aggregator.AggregatedProviderPrices{
 				"provider1": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(100),
+						Price: big.NewInt(100),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 				},
 				"provider2": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(200),
+						Price: big.NewInt(200),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(300),
+						Price: big.NewInt(300),
 					},
 				},
 				"provider3": {
 					btcusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(300),
+						Price: big.NewInt(300),
 					},
 					ethusd: aggregator.QuotePrice{
-						Price: uint256.NewInt(400),
+						Price: big.NewInt(400),
 					},
 				},
 			},
-			map[oracletypes.CurrencyPair]*uint256.Int{
-				btcusd: uint256.NewInt(200),
-				ethusd: uint256.NewInt(300),
+			map[oracletypes.CurrencyPair]*big.Int{
+				btcusd: big.NewInt(200),
+				ethusd: big.NewInt(300),
 			},
 		},
 	}

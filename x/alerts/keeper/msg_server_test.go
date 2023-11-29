@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"bytes"
 	"fmt"
+	"math/big"
 	"time"
 
 	"cosmossdk.io/math"
@@ -12,7 +13,6 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	"github.com/holiman/uint256"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
@@ -297,8 +297,8 @@ func (s *KeeperTestSuite) TestConclusion() {
 		ExtendedCommitInfo: cmtabci.ExtendedCommitInfo{},
 		Alert:              alert,
 		PriceBound: types.PriceBound{
-			High: uint256.NewInt(1).String(),
-			Low:  uint256.NewInt(0).String(),
+			High: big.NewInt(1).String(),
+			Low:  big.NewInt(0).String(),
 		},
 		Signatures: make([]types.Signature, 0),
 		Status:     false,
@@ -514,8 +514,8 @@ func (s *KeeperTestSuite) TestConclusion() {
 		))
 
 		pb := types.PriceBound{
-			High: uint256.NewInt(100).String(),
-			Low:  uint256.NewInt(90).String(),
+			High: big.NewInt(100).String(),
+			Low:  big.NewInt(90).String(),
 		}
 
 		// create 3 validators
@@ -535,7 +535,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 		// val1 is not within the price-bound
 		val1VE := slinkyabci.OracleVoteExtension{
 			Prices: map[uint64][]byte{
-				0: uint256.NewInt(101).Bytes(),
+				0: big.NewInt(101).Bytes(),
 			},
 		}
 		val1VEbz, err := val1VE.Marshal()
@@ -544,7 +544,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 		// val2 is within the price-bound
 		val2VE := slinkyabci.OracleVoteExtension{
 			Prices: map[uint64][]byte{
-				0: uint256.NewInt(99).Bytes(),
+				0: big.NewInt(99).Bytes(),
 			},
 		}
 		val2VEbz, err := val2VE.Marshal()
@@ -553,7 +553,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 		// val3 is not within the price-bound
 		val3VE := slinkyabci.OracleVoteExtension{
 			Prices: map[uint64][]byte{
-				0: uint256.NewInt(89).Bytes(),
+				0: big.NewInt(89).Bytes(),
 			},
 		}
 		val3VEbz, err := val3VE.Marshal()

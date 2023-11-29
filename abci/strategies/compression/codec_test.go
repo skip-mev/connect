@@ -1,4 +1,4 @@
-package strategies_test
+package compression_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
 
@@ -21,7 +21,7 @@ func TestDefaultVoteExtensionCodec(t *testing.T) {
 			},
 		}
 		// encode it
-		codec := strategies.NewDefaultVoteExtensionCodec()
+		codec := compression.NewDefaultVoteExtensionCodec()
 		bz, err := codec.Encode(ve)
 		require.NoError(t, err)
 
@@ -34,7 +34,7 @@ func TestDefaultVoteExtensionCodec(t *testing.T) {
 	})
 
 	t.Run("test decoding empty byte array", func(t *testing.T) {
-		codec := strategies.NewDefaultVoteExtensionCodec()
+		codec := compression.NewDefaultVoteExtensionCodec()
 		_, err := codec.Decode([]byte{})
 		require.Nil(t, err)
 	})
@@ -54,8 +54,8 @@ func TestCompressionVoteExtensionCodec(t *testing.T) {
 		}
 
 		// create a codec
-		defaultCodec := strategies.NewDefaultVoteExtensionCodec()
-		codec := strategies.NewCompressionVoteExtensionCodec(defaultCodec, strategies.NewZLibCompressor())
+		defaultCodec := compression.NewDefaultVoteExtensionCodec()
+		codec := compression.NewCompressionVoteExtensionCodec(defaultCodec, compression.NewZLibCompressor())
 
 		// encode it
 		bz, err := codec.Encode(ve)
@@ -76,7 +76,7 @@ func TestCompressionVoteExtensionCodec(t *testing.T) {
 	})
 
 	t.Run("test decoding empty byte array", func(t *testing.T) {
-		codec := strategies.NewCompressionVoteExtensionCodec(strategies.NewDefaultVoteExtensionCodec(), strategies.NewZLibCompressor())
+		codec := compression.NewCompressionVoteExtensionCodec(compression.NewDefaultVoteExtensionCodec(), compression.NewZLibCompressor())
 		_, err := codec.Decode([]byte{})
 		require.Nil(t, err)
 	})
@@ -100,7 +100,7 @@ func TestDefaultExtendedCommitCodec(t *testing.T) {
 		}
 
 		// encode it
-		codec := strategies.NewDefaultExtendedCommitCodec()
+		codec := compression.NewDefaultExtendedCommitCodec()
 		bz, err := codec.Encode(eci)
 		require.NoError(t, err)
 
@@ -113,7 +113,7 @@ func TestDefaultExtendedCommitCodec(t *testing.T) {
 	})
 
 	t.Run("test decoding empty byte array", func(t *testing.T) {
-		codec := strategies.NewDefaultExtendedCommitCodec()
+		codec := compression.NewDefaultExtendedCommitCodec()
 		_, err := codec.Decode([]byte{})
 		require.Nil(t, err)
 	})
@@ -137,8 +137,8 @@ func TestCompressionExtendedCommitCodec(t *testing.T) {
 		}
 
 		// create a codec
-		defaultCodec := strategies.NewDefaultExtendedCommitCodec()
-		codec := strategies.NewCompressionExtendedCommitCodec(defaultCodec, strategies.NewZStdCompressor())
+		defaultCodec := compression.NewDefaultExtendedCommitCodec()
+		codec := compression.NewCompressionExtendedCommitCodec(defaultCodec, compression.NewZStdCompressor())
 
 		// encode it
 		bz, err := codec.Encode(eci)

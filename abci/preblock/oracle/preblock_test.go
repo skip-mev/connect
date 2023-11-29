@@ -1,20 +1,20 @@
 package oracle_test
 
 import (
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/suite"
 
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
-	"github.com/skip-mev/slinky/abci/strategies"
-	strategymock "github.com/skip-mev/slinky/abci/strategies/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
+	currencypairmock "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -32,9 +32,9 @@ type PreBlockTestSuite struct {
 	transientKey  *storetypes.TransientStoreKey
 	oracleKeeper  keeper.Keeper
 	handler       *preblock.PreBlockHandler
-	cpID          *strategymock.CurrencyPairIDStrategy
-	veCodec       strategies.VoteExtensionCodec
-	commitCodec   strategies.ExtendedCommitCodec
+	cpID          *currencypairmock.CurrencyPairStrategy
+	veCodec       compression.VoteExtensionCodec
+	commitCodec   compression.ExtendedCommitCodec
 }
 
 func TestPreBlockTestSuite(t *testing.T) {
@@ -80,14 +80,14 @@ func (s *PreBlockTestSuite) SetupTest() {
 		NextId:              3,
 	}
 
-	s.veCodec = strategies.NewCompressionVoteExtensionCodec(
-		strategies.NewDefaultVoteExtensionCodec(),
-		strategies.NewZLibCompressor(),
+	s.veCodec = compression.NewCompressionVoteExtensionCodec(
+		compression.NewDefaultVoteExtensionCodec(),
+		compression.NewZLibCompressor(),
 	)
 
-	s.commitCodec = strategies.NewCompressionExtendedCommitCodec(
-		strategies.NewDefaultExtendedCommitCodec(),
-		strategies.NewZLibCompressor(),
+	s.commitCodec = compression.NewCompressionExtendedCommitCodec(
+		compression.NewDefaultExtendedCommitCodec(),
+		compression.NewZLibCompressor(),
 	)
 }
 
@@ -110,7 +110,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	// Create the oracle keeper
 	s.oracleKeeper = testutils.CreateTestOracleKeeperWithGenesis(s.ctx, s.key, s.genesis)
 
-	s.cpID = strategymock.NewCurrencyPairIDStrategy(s.T())
+	s.cpID = currencypairmock.NewCurrencyPairStrategy(s.T())
 
 	s.handler = preblock.NewOraclePreBlockHandler(
 		log.NewTestLogger(s.T()),
@@ -133,8 +133,8 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 	})
 
 	s.Run("single price update", func() {
-		prices := map[oracletypes.CurrencyPair]*uint256.Int{
-			s.currencyPairs[0]: uint256.NewInt(1),
+		prices := map[oracletypes.CurrencyPair]*big.Int{
+			s.currencyPairs[0]: big.NewInt(1),
 		}
 
 		err := s.handler.WritePrices(s.ctx, prices)
@@ -143,14 +143,14 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		// Check that the price was written to state.
 		oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0])
 		s.Require().NoError(err)
-		s.Require().Equal(math.NewIntFromBigInt(prices[s.currencyPairs[0]].ToBig()), oraclePrice.Price)
+		s.Require().Equal(math.NewIntFromBigInt(prices[s.currencyPairs[0]]), oraclePrice.Price)
 	})
 
 	s.Run("multiple price updates", func() {
-		prices := map[oracletypes.CurrencyPair]*uint256.Int{
-			s.currencyPairs[0]: uint256.NewInt(1),
-			s.currencyPairs[1]: uint256.NewInt(2),
-			s.currencyPairs[2]: uint256.NewInt(3),
+		prices := map[oracletypes.CurrencyPair]*big.Int{
+			s.currencyPairs[0]: big.NewInt(1),
+			s.currencyPairs[1]: big.NewInt(2),
+			s.currencyPairs[2]: big.NewInt(3),
 		}
 
 		err := s.handler.WritePrices(s.ctx, prices)
@@ -160,12 +160,12 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		for _, cp := range s.currencyPairs {
 			oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cp)
 			s.Require().NoError(err)
-			s.Require().Equal(math.NewIntFromBigInt(prices[cp].ToBig()), oraclePrice.Price)
+			s.Require().Equal(math.NewIntFromBigInt(prices[cp]), oraclePrice.Price)
 		}
 	})
 
 	s.Run("single price update with a nil price", func() {
-		prices := map[oracletypes.CurrencyPair]*uint256.Int{
+		prices := map[oracletypes.CurrencyPair]*big.Int{
 			s.currencyPairs[0]: nil,
 		}
 
@@ -182,8 +182,8 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 			Base:  "cap",
 			Quote: "on-god",
 		}
-		prices := map[oracletypes.CurrencyPair]*uint256.Int{
-			unsupportedCP: uint256.NewInt(1),
+		prices := map[oracletypes.CurrencyPair]*big.Int{
+			unsupportedCP: big.NewInt(1),
 		}
 
 		err := s.handler.WritePrices(s.ctx, prices)

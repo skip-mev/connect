@@ -5,7 +5,8 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -39,16 +40,16 @@ type PreBlockHandler struct { //golint:ignore
 
 	// currencyPairIDStrategy is the strategy used for generating / retrieving
 	// IDs for currency-pairs
-	currencyPairIDStrategy strategies.CurrencyPairIDStrategy
+	currencyPairIDStrategy currencypair.CurrencyPairStrategy
 
 	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
 	// This is used to decode vote extensions included in transactions.
-	voteExtensionCodec strategies.VoteExtensionCodec
+	voteExtensionCodec compression.VoteExtensionCodec
 
 	// extendedCommitCodec is the codec used for encoding / decoding extended
 	// commit messages. This is used to decode extended commit messages included
 	// in transactions.
-	extendedCommitCodec strategies.ExtendedCommitCodec
+	extendedCommitCodec compression.ExtendedCommitCodec
 }
 
 // NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
@@ -59,9 +60,9 @@ func NewOraclePreBlockHandler(
 	oracleKeeper Keeper,
 	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
-	strategy strategies.CurrencyPairIDStrategy,
-	veCodec strategies.VoteExtensionCodec,
-	ecCodec strategies.ExtendedCommitCodec,
+	strategy currencypair.CurrencyPairStrategy,
+	veCodec compression.VoteExtensionCodec,
+	ecCodec compression.ExtendedCommitCodec,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
 		logger:                 logger,

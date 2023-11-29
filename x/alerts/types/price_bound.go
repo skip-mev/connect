@@ -2,21 +2,20 @@ package types
 
 import (
 	"fmt"
-
-	"github.com/holiman/uint256"
+	"math/big"
 )
 
 // ValidateBasic validates the PriceBound, specifically that the high price-bound is greater than the low price-bound, and
-// that the high / low price-bounds are valid uint256 values.
+// that the high / low price-bounds are valid big.Int values.
 func (pb PriceBound) ValidateBasic() error {
-	high, err := uint256.FromHex(pb.High)
-	if err != nil {
-		return err
+	high, converted := new(big.Int).SetString(pb.High, 10)
+	if !converted {
+		return fmt.Errorf("invalid high price-bound %s", pb.High)
 	}
 
-	low, err := uint256.FromHex(pb.Low)
-	if err != nil {
-		return err
+	low, converted := new(big.Int).SetString(pb.Low, 10)
+	if !converted {
+		return fmt.Errorf("invalid low price-bound %s", pb.Low)
 	}
 
 	if high.Cmp(low) <= 0 {
@@ -26,12 +25,22 @@ func (pb PriceBound) ValidateBasic() error {
 	return nil
 }
 
-// GetHighInt returns the high price-bound as a uint256.Int.
-func (pb PriceBound) GetHighInt() (*uint256.Int, error) {
-	return uint256.FromHex(pb.High)
+// GetHighInt returns the high price-bound as a big.Int.
+func (pb PriceBound) GetHighInt() (*big.Int, error) {
+	high, converted := new(big.Int).SetString(pb.High, 10)
+	if !converted {
+		return nil, fmt.Errorf("invalid high price-bound %s", pb.High)
+	}
+
+	return high, nil
 }
 
-// GetLowInt returns the low price-bound as a uint256.Int.
-func (pb PriceBound) GetLowInt() (*uint256.Int, error) {
-	return uint256.FromHex(pb.Low)
+// GetLowInt returns the low price-bound as a big.Int.
+func (pb PriceBound) GetLowInt() (*big.Int, error) {
+	low, converted := new(big.Int).SetString(pb.Low, 10)
+	if !converted {
+		return nil, fmt.Errorf("invalid low price-bound %s", pb.Low)
+	}
+
+	return low, nil
 }

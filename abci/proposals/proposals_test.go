@@ -1,6 +1,7 @@
 package proposals_test
 
 import (
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/log"
@@ -10,10 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/holiman/uint256"
-
 	"github.com/skip-mev/slinky/abci/proposals"
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/ve"
 )
@@ -21,12 +20,12 @@ import (
 var (
 	noRizz = append([]byte("no_rizz"), make([]byte, 31)...)
 
-	oneHundred   = uint256.MustFromHex("0x64")
-	twoHundred   = uint256.MustFromHex("0xc8")
-	threeHundred = uint256.MustFromHex("0x12c")
-	fourHundred  = uint256.MustFromHex("0x190")
-	fiveHundred  = uint256.MustFromHex("0x1f4")
-	sixHundred   = uint256.MustFromHex("0x258")
+	oneHundred   = big.NewInt(100)
+	twoHundred   = big.NewInt(200)
+	threeHundred = big.NewInt(300)
+	fourHundred  = big.NewInt(400)
+	fiveHundred  = big.NewInt(500)
+	sixHundred   = big.NewInt(600)
 
 	prices1 = map[uint64][]byte{
 		0: oneHundred.Bytes(),
@@ -57,8 +56,8 @@ type ProposalsTestSuite struct {
 	proposalHandler        *proposals.ProposalHandler
 	prepareProposalHandler sdk.PrepareProposalHandler
 	processProposalHandler sdk.ProcessProposalHandler
-	codec                  strategies.VoteExtensionCodec
-	extCommitCodec         strategies.ExtendedCommitCodec
+	codec                  compression.VoteExtensionCodec
+	extCommitCodec         compression.ExtendedCommitCodec
 }
 
 func TestABCITestSuite(t *testing.T) {
@@ -70,14 +69,14 @@ func (s *ProposalsTestSuite) SetupTest() {
 	s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 1)
 	s.ctx = s.ctx.WithBlockHeight(1)
 
-	s.codec = strategies.NewCompressionVoteExtensionCodec(
-		strategies.NewDefaultVoteExtensionCodec(),
-		strategies.NewZLibCompressor(),
+	s.codec = compression.NewCompressionVoteExtensionCodec(
+		compression.NewDefaultVoteExtensionCodec(),
+		compression.NewZLibCompressor(),
 	)
 
-	s.extCommitCodec = strategies.NewCompressionExtendedCommitCodec(
-		strategies.NewDefaultExtendedCommitCodec(),
-		strategies.NewZLibCompressor(),
+	s.extCommitCodec = compression.NewCompressionExtendedCommitCodec(
+		compression.NewDefaultExtendedCommitCodec(),
+		compression.NewZLibCompressor(),
 	)
 
 	// Use the default no-op prepare and process proposal handlers from the sdk.

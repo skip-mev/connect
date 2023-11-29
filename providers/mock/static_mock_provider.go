@@ -3,8 +3,8 @@ package mock
 import (
 	"context"
 	"fmt"
+	"math/big"
 
-	"github.com/holiman/uint256"
 	"github.com/spf13/viper"
 
 	"github.com/skip-mev/slinky/aggregator"
@@ -35,16 +35,16 @@ type (
 func NewStaticMockProvider() *StaticMockProvider {
 	return &StaticMockProvider{
 		exchangeRates: map[oracletypes.CurrencyPair]aggregator.QuotePrice{
-			oracletypes.NewCurrencyPair("COSMOS", "USDC"):   {Price: uint256.NewInt(1134)},
-			oracletypes.NewCurrencyPair("COSMOS", "USDT"):   {Price: uint256.NewInt(1135)},
-			oracletypes.NewCurrencyPair("COSMOS", "USD"):    {Price: uint256.NewInt(1136)},
-			oracletypes.NewCurrencyPair("OSMOSIS", "USDC"):  {Price: uint256.NewInt(1137)},
-			oracletypes.NewCurrencyPair("OSMOSIS", "USDT"):  {Price: uint256.NewInt(1138)},
-			oracletypes.NewCurrencyPair("OSMOSIS", "USD"):   {Price: uint256.NewInt(1139)},
-			oracletypes.NewCurrencyPair("ETHEREUM", "USDC"): {Price: uint256.NewInt(1140)},
-			oracletypes.NewCurrencyPair("ETHEREUM", "USDT"): {Price: uint256.NewInt(1141)},
-			oracletypes.NewCurrencyPair("ETHEREUM", "USD"):  {Price: uint256.NewInt(1142)},
-			oracletypes.NewCurrencyPair("BITCOIN", "USD"):   {Price: uint256.NewInt(1143)},
+			oracletypes.NewCurrencyPair("COSMOS", "USDC"):   {Price: big.NewInt(1134)},
+			oracletypes.NewCurrencyPair("COSMOS", "USDT"):   {Price: big.NewInt(1135)},
+			oracletypes.NewCurrencyPair("COSMOS", "USD"):    {Price: big.NewInt(1136)},
+			oracletypes.NewCurrencyPair("OSMOSIS", "USDC"):  {Price: big.NewInt(1137)},
+			oracletypes.NewCurrencyPair("OSMOSIS", "USDT"):  {Price: big.NewInt(1138)},
+			oracletypes.NewCurrencyPair("OSMOSIS", "USD"):   {Price: big.NewInt(1139)},
+			oracletypes.NewCurrencyPair("ETHEREUM", "USDC"): {Price: big.NewInt(1140)},
+			oracletypes.NewCurrencyPair("ETHEREUM", "USDT"): {Price: big.NewInt(1141)},
+			oracletypes.NewCurrencyPair("ETHEREUM", "USD"):  {Price: big.NewInt(1142)},
+			oracletypes.NewCurrencyPair("BITCOIN", "USD"):   {Price: big.NewInt(1143)},
 		},
 		currencyPairs: []oracletypes.CurrencyPair{
 			oracletypes.NewCurrencyPair("COSMOS", "USDC"),
@@ -63,7 +63,7 @@ func NewStaticMockProvider() *StaticMockProvider {
 
 // NewStaticMockProviderFromConfig constructs a new static mock provider from the config
 // Notice this method expects the TokenNameToSymbol map to be populated w/ entries of the form
-// CurrencyPair.ToString(): uint256.NewInt(price)
+// CurrencyPair.ToString(): big.NewInt(price)
 func NewStaticMockProviderFromConfig(providerConfig config.ProviderConfig) (*StaticMockProvider, error) {
 	if providerConfig.Name != "static-mock-provider" {
 		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", providerConfig.Name)
@@ -85,8 +85,8 @@ func NewStaticMockProviderFromConfig(providerConfig config.ProviderConfig) (*Sta
 			continue
 		}
 
-		price, err := uint256.FromHex(price)
-		if err != nil {
+		price, converted := big.NewInt(0).SetString(price, 10)
+		if !converted {
 			return nil, fmt.Errorf("failed to parse price %s for currency pair %s", price, cpString)
 		}
 

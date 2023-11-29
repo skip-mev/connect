@@ -1,19 +1,20 @@
 package oracle_test
 
 import (
+	"math/big"
+
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/mock"
 
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
-	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
+	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -33,14 +34,14 @@ var (
 		Quote: "BTC",
 	}
 
-	oneHundred   = uint256.NewInt(100)
-	twoHundred   = uint256.NewInt(200)
-	threeHundred = uint256.NewInt(300)
-	fourHundred  = uint256.NewInt(400)
-	sixHundred   = uint256.NewInt(600)
-	sevenHundred = uint256.NewInt(700)
-	eightHundred = uint256.NewInt(800)
-	nineHundred  = uint256.NewInt(900)
+	oneHundred   = big.NewInt(100)
+	twoHundred   = big.NewInt(200)
+	threeHundred = big.NewInt(300)
+	fourHundred  = big.NewInt(400)
+	sixHundred   = big.NewInt(600)
+	sevenHundred = big.NewInt(700)
+	eightHundred = big.NewInt(800)
+	nineHundred  = big.NewInt(900)
 
 	val1 = sdk.ConsAddress([]byte("val1"))
 	val2 = sdk.ConsAddress([]byte("val2"))
@@ -61,7 +62,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 	mockOracleKeeper := preblockmock.NewKeeper(s.T())
 	mockMetrics := metricmock.NewMetrics(s.T())
 
-	cpID := strategymocks.NewCurrencyPairIDStrategy(s.T())
+	cpID := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 	handler := preblock.NewOraclePreBlockHandler(
 		log.NewTestLogger(s.T()),

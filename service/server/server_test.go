@@ -3,11 +3,11 @@ package server_test
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"testing"
 	"time"
 
 	"cosmossdk.io/log"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/status"
@@ -117,9 +117,9 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 		Quote: "USD",
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*uint256.Int{
-		cp1: uint256.NewInt(100),
-		cp2: uint256.NewInt(200),
+	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
+		cp1: big.NewInt(100),
+		cp2: big.NewInt(200),
 	})
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
@@ -129,8 +129,8 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().NoError(err)
 
 	// check response
-	s.Require().Equal(resp.Prices[cp1.ToString()], uint256.NewInt(100).String())
-	s.Require().Equal(resp.Prices[cp2.ToString()], uint256.NewInt(200).String())
+	s.Require().Equal(resp.Prices[cp1.ToString()], big.NewInt(100).String())
+	s.Require().Equal(resp.Prices[cp2.ToString()], big.NewInt(200).String())
 	// check timestamp
 	s.Require().Equal(resp.Timestamp, ts.UTC())
 }

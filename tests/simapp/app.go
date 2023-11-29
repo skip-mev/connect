@@ -64,7 +64,8 @@ import (
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	oraclepreblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/proposals"
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -341,13 +342,13 @@ func NewSimApp(
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
 		ve.NewDefaultValidateVoteExtensionsFn(app.ChainID(), app.StakingKeeper),
-		strategies.NewCompressionVoteExtensionCodec(
-			strategies.NewDefaultVoteExtensionCodec(),
-			strategies.NewZLibCompressor(),
+		compression.NewCompressionVoteExtensionCodec(
+			compression.NewDefaultVoteExtensionCodec(),
+			compression.NewZLibCompressor(),
 		),
-		strategies.NewCompressionExtendedCommitCodec(
-			strategies.NewDefaultExtendedCommitCodec(),
-			strategies.NewZStdCompressor(),
+		compression.NewCompressionExtendedCommitCodec(
+			compression.NewDefaultExtendedCommitCodec(),
+			compression.NewZStdCompressor(),
 		),
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
@@ -369,14 +370,14 @@ func NewSimApp(
 		app.OracleKeeper,
 		consAddress,
 		metrics,
-		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
-		strategies.NewCompressionVoteExtensionCodec(
-			strategies.NewDefaultVoteExtensionCodec(),
-			strategies.NewZLibCompressor(),
+		currencypair.NewDefaultCurrencyPairStrategy(app.OracleKeeper),
+		compression.NewCompressionVoteExtensionCodec(
+			compression.NewDefaultVoteExtensionCodec(),
+			compression.NewZLibCompressor(),
 		),
-		strategies.NewCompressionExtendedCommitCodec(
-			strategies.NewDefaultExtendedCommitCodec(),
-			strategies.NewZStdCompressor(),
+		compression.NewCompressionExtendedCommitCodec(
+			compression.NewDefaultExtendedCommitCodec(),
+			compression.NewZStdCompressor(),
 		),
 	)
 
@@ -388,10 +389,10 @@ func NewSimApp(
 		app.Logger(),
 		app.oracleService,
 		time.Second,
-		strategies.NewOracleCurrencyPairIDStrategy(app.OracleKeeper),
-		strategies.NewCompressionVoteExtensionCodec(
-			strategies.NewDefaultVoteExtensionCodec(),
-			strategies.NewZLibCompressor(),
+		currencypair.NewDefaultCurrencyPairStrategy(app.OracleKeeper),
+		compression.NewCompressionVoteExtensionCodec(
+			compression.NewDefaultVoteExtensionCodec(),
+			compression.NewZLibCompressor(),
 		),
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())

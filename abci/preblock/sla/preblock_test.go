@@ -1,6 +1,7 @@
 package sla_test
 
 import (
+	"math/big"
 	"testing"
 
 	"cosmossdk.io/log"
@@ -17,13 +18,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/holiman/uint256"
-
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/preblock/sla"
 	"github.com/skip-mev/slinky/abci/preblock/sla/mocks"
-	"github.com/skip-mev/slinky/abci/strategies"
-	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
+	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	oraclevetypes "github.com/skip-mev/slinky/abci/ve/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -32,7 +31,7 @@ import (
 	slamocks "github.com/skip-mev/slinky/x/sla/types/mocks"
 )
 
-var oneHundred = uint256.NewInt(100)
+var oneHundred = big.NewInt(100)
 
 type SLAPreBlockerHandlerTestSuite struct {
 	suite.Suite
@@ -46,10 +45,10 @@ type SLAPreBlockerHandlerTestSuite struct {
 	oracleKeeper           *mocks.OracleKeeper
 	stakingKeeper          *mocks.StakingKeeper
 	slaKeeper              *slakeeper.Keeper
-	currencyPairIDStrategy *strategymocks.CurrencyPairIDStrategy
+	currencyPairIDStrategy *currencypairmocks.CurrencyPairStrategy
 
-	veCodec        strategies.VoteExtensionCodec
-	extCommitCodec strategies.ExtendedCommitCodec
+	veCodec        compression.VoteExtensionCodec
+	extCommitCodec compression.ExtendedCommitCodec
 
 	val1      stakingtypes.Validator
 	consAddr1 sdk.ConsAddress
@@ -100,16 +99,16 @@ func (s *SLAPreBlockerHandlerTestSuite) SetupTest() {
 	s.cp2 = oracletypes.NewCurrencyPair("eth", "usd")
 	s.cp3 = oracletypes.NewCurrencyPair("btc", "eth")
 
-	s.currencyPairIDStrategy = strategymocks.NewCurrencyPairIDStrategy(s.T())
+	s.currencyPairIDStrategy = currencypairmocks.NewCurrencyPairStrategy(s.T())
 
-	s.veCodec = strategies.NewCompressionVoteExtensionCodec(
-		strategies.NewDefaultVoteExtensionCodec(),
-		strategies.NewZLibCompressor(),
+	s.veCodec = compression.NewCompressionVoteExtensionCodec(
+		compression.NewDefaultVoteExtensionCodec(),
+		compression.NewZLibCompressor(),
 	)
 
-	s.extCommitCodec = strategies.NewCompressionExtendedCommitCodec(
-		strategies.NewDefaultExtendedCommitCodec(),
-		strategies.NewZLibCompressor(),
+	s.extCommitCodec = compression.NewCompressionExtendedCommitCodec(
+		compression.NewDefaultExtendedCommitCodec(),
+		compression.NewZLibCompressor(),
 	)
 
 	// Set a single sla in the store for subsequent testing.

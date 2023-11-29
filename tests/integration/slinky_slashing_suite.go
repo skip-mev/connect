@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"cosmossdk.io/math"
@@ -13,7 +14,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/holiman/uint256"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
 
@@ -697,8 +697,8 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 				ExtendedCommitInfo: cmtabci.ExtendedCommitInfo{},
 				Status:             false,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 				Signatures: make([]alerttypes.Signature, 0),
 			}
@@ -869,8 +869,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC")),
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 				Signatures: []alerttypes.Signature{
 					{
@@ -911,8 +911,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC")),
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 			}
 
@@ -965,8 +965,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 			}
 
@@ -1055,8 +1055,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 			}
 
@@ -1124,8 +1124,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x1",
-					Low:  "0x0",
+					High: "1",
+					Low:  "0",
 				},
 			}
 
@@ -1192,22 +1192,22 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(148).Bytes(), // 148
+					id: big.NewInt(148).Bytes(), // 148
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(150).Bytes(), // 150
+					id: big.NewInt(150).Bytes(), // 150
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(150).Bytes(), // 150
+					id: big.NewInt(150).Bytes(), // 150
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(152).Bytes(), // 152
+					id: big.NewInt(152).Bytes(), // 152
 				},
 			},
 		})
@@ -1231,11 +1231,11 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 				priceBz, ok := oracleData.Prices[id]
 				s.Require().True(ok)
 
-				// get the uint256 from string value
-				var price uint256.Int
+				// get the big from string value
+				var price big.Int
 				price.SetBytes(priceBz)
 
-				// convert the uint256 to int64
+				// convert the big to int64
 				valsToOracleReport[key] = int64(price.Uint64())
 			}
 		})
@@ -1281,8 +1281,8 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 				Alert:              alert,
 				ExtendedCommitInfo: extendedCommit,
 				PriceBound: alerttypes.PriceBound{
-					High: "0x97",
-					Low:  "0x95",
+					High: "151",
+					Low:  "149",
 				},
 				Status:         true,
 				CurrencyPairID: id,

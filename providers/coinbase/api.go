@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
@@ -56,14 +55,13 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 		return nil, fmt.Errorf("failed to parse response")
 	}
 
-	price, err := providers.Float64StringToUint256(amount, pair.Decimals())
+	price, err := providers.Float64StringToBigInt(amount, pair.Decimals())
 	if err != nil {
 		return nil, err
 	}
 
 	return &aggregator.QuotePrice{
-		Price:     price,
-		Timestamp: time.Now(),
+		Price: price,
 	}, nil
 }
 

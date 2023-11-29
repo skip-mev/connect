@@ -2,6 +2,14 @@
 
 ## Overview
 
+> **Definitions**
+>
+> * **Price**: The price of an asset at a given time.
+> * **Delta**: The difference between the current price and the previous price. This can be positive or negative.
+> * **Aggregation Strategy**: The method by which the deltas are aggregated across multiple oracle sources.
+> 
+> **Note**: The price aggregation strategy might vary based on the currency pair strategy utilized by the vote extension handler. For example, if the vote extension is implemented to submit a delta, the aggregation strategy must aggregate deltas. If the vote extension is implemented to submit a price, the aggregation strategy must aggregate prices. By default, the vote extension handler will submit deltas which are converted to real prices before being aggregated. This is the recommended approach.
+
 This module provides the default implementation for a price aggregation strategy across multiple oracle sources on-chain. It is designed to be used as the aggregation function for the `PreBlock` handler. This implementation can be used as a reference for other implementations. For a reference as to how these strategies can be implemented, please reference the [aggregator](../../../aggregator/README.md) module.
 
 ## Implementation

@@ -3,12 +3,10 @@ package erc4626sharepriceoracle
 import (
 	"fmt"
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers/evm"
@@ -42,18 +40,13 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.Qu
 	}
 
 	var _price *big.Int
-	var price *uint256.Int
 	if metadata.IsTWAP {
 		_price = latest.TimeWeightedAverageAnswer
 	} else {
 		_price = latest.Ans
 	}
-	price, ok = uint256.FromBig(_price)
-	if !ok {
-		return aggregator.QuotePrice{}, fmt.Errorf("failed to convert price %v to uint256 for pair %v", _price, pair)
-	}
 
-	quote, err := aggregator.NewQuotePrice(price, time.Now())
+	quote, err := aggregator.NewQuotePrice(_price)
 	if err != nil {
 		return aggregator.QuotePrice{}, err
 	}

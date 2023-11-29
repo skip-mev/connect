@@ -3,12 +3,12 @@ package oracle_test
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"math/rand"
 	"testing"
 	"time"
 
 	"cosmossdk.io/log"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
@@ -54,19 +54,19 @@ func (suite *OracleTestSuite) SetupTest() {
 func (suite *OracleTestSuite) TestProviders() {
 	cases := []struct {
 		name        string
-		fetchPrices func() map[oracletypes.CurrencyPair]*uint256.Int
+		fetchPrices func() map[oracletypes.CurrencyPair]*big.Int
 	}{
 		{
 			name: "no providers",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				suite.providers = []*mocks.Provider{}
 
-				return map[oracletypes.CurrencyPair]*uint256.Int{}
+				return map[oracletypes.CurrencyPair]*big.Int{}
 			},
 		},
 		{
 			name: "one provider with no prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				staticProvider := suite.createStaticProvider(
 					"static",
 					map[oracletypes.CurrencyPair]aggregator.QuotePrice{},
@@ -76,26 +76,23 @@ func (suite *OracleTestSuite) TestProviders() {
 					staticProvider,
 				}
 
-				return map[oracletypes.CurrencyPair]*uint256.Int{}
+				return map[oracletypes.CurrencyPair]*big.Int{}
 			},
 		},
 		{
 			name: "one provider with static prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				staticProvider := suite.createStaticProvider(
 					"static",
 					map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 						suite.currencyPairs[0]: {
-							Price:     uint256.NewInt(1),
-							Timestamp: time.Now(),
+							Price: big.NewInt(1),
 						},
 						suite.currencyPairs[1]: {
-							Price:     uint256.NewInt(2),
-							Timestamp: time.Now(),
+							Price: big.NewInt(2),
 						},
 						suite.currencyPairs[2]: {
-							Price:     uint256.NewInt(3),
-							Timestamp: time.Now(),
+							Price: big.NewInt(3),
 						},
 					},
 				)
@@ -104,30 +101,27 @@ func (suite *OracleTestSuite) TestProviders() {
 					staticProvider,
 				}
 
-				return map[oracletypes.CurrencyPair]*uint256.Int{
-					suite.currencyPairs[0]: uint256.NewInt(1),
-					suite.currencyPairs[1]: uint256.NewInt(2),
-					suite.currencyPairs[2]: uint256.NewInt(3),
+				return map[oracletypes.CurrencyPair]*big.Int{
+					suite.currencyPairs[0]: big.NewInt(1),
+					suite.currencyPairs[1]: big.NewInt(2),
+					suite.currencyPairs[2]: big.NewInt(3),
 				}
 			},
 		},
 		{
 			name: "two providers with static prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				staticProvider1 := suite.createStaticProvider(
 					"static1",
 					map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 						suite.currencyPairs[0]: {
-							Price:     uint256.NewInt(1),
-							Timestamp: time.Now(),
+							Price: big.NewInt(1),
 						},
 						suite.currencyPairs[1]: {
-							Price:     uint256.NewInt(2),
-							Timestamp: time.Now(),
+							Price: big.NewInt(2),
 						},
 						suite.currencyPairs[2]: {
-							Price:     uint256.NewInt(3),
-							Timestamp: time.Now(),
+							Price: big.NewInt(3),
 						},
 					},
 				)
@@ -136,16 +130,13 @@ func (suite *OracleTestSuite) TestProviders() {
 					"static2",
 					map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 						suite.currencyPairs[0]: {
-							Price:     uint256.NewInt(4),
-							Timestamp: time.Now(),
+							Price: big.NewInt(4),
 						},
 						suite.currencyPairs[1]: {
-							Price:     uint256.NewInt(5),
-							Timestamp: time.Now(),
+							Price: big.NewInt(5),
 						},
 						suite.currencyPairs[2]: {
-							Price:     uint256.NewInt(6),
-							Timestamp: time.Now(),
+							Price: big.NewInt(6),
 						},
 					},
 				)
@@ -155,16 +146,16 @@ func (suite *OracleTestSuite) TestProviders() {
 					staticProvider2,
 				}
 
-				return map[oracletypes.CurrencyPair]*uint256.Int{
-					suite.currencyPairs[0]: uint256.NewInt(2),
-					suite.currencyPairs[1]: uint256.NewInt(3),
-					suite.currencyPairs[2]: uint256.NewInt(4),
+				return map[oracletypes.CurrencyPair]*big.Int{
+					suite.currencyPairs[0]: big.NewInt(2),
+					suite.currencyPairs[1]: big.NewInt(3),
+					suite.currencyPairs[2]: big.NewInt(4),
 				}
 			},
 		},
 		{
 			name: "one provider with randomized prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				randomizedProvider := suite.createRandomizedProvider(
 					"randomized",
 					suite.currencyPairs,
@@ -179,7 +170,7 @@ func (suite *OracleTestSuite) TestProviders() {
 		},
 		{
 			name: "two providers with randomized prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				randomizedProvider1 := suite.createRandomizedProvider(
 					"randomized1",
 					suite.currencyPairs,
@@ -200,21 +191,18 @@ func (suite *OracleTestSuite) TestProviders() {
 		},
 		{
 			name: "one normal static provider and one panic provider",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				staticProvider := suite.createStaticProvider(
 					"static",
 					map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 						suite.currencyPairs[0]: {
-							Price:     uint256.NewInt(1),
-							Timestamp: time.Now(),
+							Price: big.NewInt(1),
 						},
 						suite.currencyPairs[1]: {
-							Price:     uint256.NewInt(2),
-							Timestamp: time.Now(),
+							Price: big.NewInt(2),
 						},
 						suite.currencyPairs[2]: {
-							Price:     uint256.NewInt(3),
-							Timestamp: time.Now(),
+							Price: big.NewInt(3),
 						},
 					},
 				)
@@ -228,30 +216,27 @@ func (suite *OracleTestSuite) TestProviders() {
 					panicProvider,
 				}
 
-				return map[oracletypes.CurrencyPair]*uint256.Int{
-					suite.currencyPairs[0]: uint256.NewInt(1),
-					suite.currencyPairs[1]: uint256.NewInt(2),
-					suite.currencyPairs[2]: uint256.NewInt(3),
+				return map[oracletypes.CurrencyPair]*big.Int{
+					suite.currencyPairs[0]: big.NewInt(1),
+					suite.currencyPairs[1]: big.NewInt(2),
+					suite.currencyPairs[2]: big.NewInt(3),
 				}
 			},
 		},
 		{
 			name: "one normal static provider and one timeout provider",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				staticProvider := suite.createStaticProvider(
 					"static",
 					map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 						suite.currencyPairs[0]: {
-							Price:     uint256.NewInt(1),
-							Timestamp: time.Now(),
+							Price: big.NewInt(1),
 						},
 						suite.currencyPairs[1]: {
-							Price:     uint256.NewInt(2),
-							Timestamp: time.Now(),
+							Price: big.NewInt(2),
 						},
 						suite.currencyPairs[2]: {
-							Price:     uint256.NewInt(3),
-							Timestamp: time.Now(),
+							Price: big.NewInt(3),
 						},
 					},
 				)
@@ -265,16 +250,16 @@ func (suite *OracleTestSuite) TestProviders() {
 					timeoutProvider,
 				}
 
-				return map[oracletypes.CurrencyPair]*uint256.Int{
-					suite.currencyPairs[0]: uint256.NewInt(1),
-					suite.currencyPairs[1]: uint256.NewInt(2),
-					suite.currencyPairs[2]: uint256.NewInt(3),
+				return map[oracletypes.CurrencyPair]*big.Int{
+					suite.currencyPairs[0]: big.NewInt(1),
+					suite.currencyPairs[1]: big.NewInt(2),
+					suite.currencyPairs[2]: big.NewInt(3),
 				}
 			},
 		},
 		{
 			name: "multiple random providers with one timeout and panic provider",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*uint256.Int {
+			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
 				randomizedProvider1 := suite.createRandomizedProvider(
 					"randomized1",
 					suite.currencyPairs,
@@ -490,8 +475,7 @@ func (suite *OracleTestSuite) TestShutDownProviderWithTimeout() {
 			suite.oracleTicker*40,
 			map[oracletypes.CurrencyPair]aggregator.QuotePrice{
 				suite.currencyPairs[0]: {
-					Price:     uint256.NewInt(1),
-					Timestamp: time.Now(),
+					Price: big.NewInt(1),
 				},
 			},
 		),
@@ -623,10 +607,9 @@ func (suite *OracleTestSuite) getRandomizedPrices(
 	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
 
 	for _, pair := range currencyPairs {
-		price := suite.random.Uint64()
+		price := suite.random.Int63()
 		prices[pair] = aggregator.QuotePrice{
-			Price:     uint256.NewInt(price),
-			Timestamp: time.Now(),
+			Price: big.NewInt(price),
 		}
 	}
 
@@ -635,7 +618,7 @@ func (suite *OracleTestSuite) getRandomizedPrices(
 
 func (suite *OracleTestSuite) aggregateProviderData(
 	providers []*mocks.Provider,
-) map[oracletypes.CurrencyPair]*uint256.Int {
+) map[oracletypes.CurrencyPair]*big.Int {
 	// Aggregate prices from all providers
 	priceAggregator := aggregator.NewPriceAggregator(suite.aggregationFn)
 

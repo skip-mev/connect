@@ -1,12 +1,12 @@
 package math
 
 import (
+	"math/big"
 	"sort"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -28,7 +28,7 @@ type (
 	// VoteWeightPrice defines a price update that includes the stake weight of the validator.
 	VoteWeightedPricePerValidator struct {
 		VoteWeight math.Int
-		Price      *uint256.Int
+		Price      *big.Int
 	}
 )
 
@@ -62,7 +62,7 @@ func VoteWeightedMedian(
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) aggregator.AggregateFn {
-	return func(providers aggregator.AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int {
+	return func(providers aggregator.AggregatedProviderPrices) map[types.CurrencyPair]*big.Int {
 		priceInfo := make(map[types.CurrencyPair]VoteWeightedPriceInfo)
 
 		// Iterate through all providers and store stake weight + price for each currency pair.
@@ -126,7 +126,7 @@ func VoteWeightedMedian(
 		}
 
 		// Iterate through all prices and compute the median price for each asset.
-		prices := make(map[types.CurrencyPair]*uint256.Int)
+		prices := make(map[types.CurrencyPair]*big.Int)
 		totalBondedTokens, err := validatorStore.TotalBondedTokens(ctx)
 		if err != nil {
 			// This should never error.
@@ -161,10 +161,17 @@ func VoteWeightedMedian(
 }
 
 // ComputeVoteWeightedMedian computes the stake-weighted median price for a given asset.
-func ComputeVoteWeightedMedian(priceInfo VoteWeightedPriceInfo) *uint256.Int {
+func ComputeVoteWeightedMedian(priceInfo VoteWeightedPriceInfo) *big.Int {
 	// Sort the prices by price.
 	sort.SliceStable(priceInfo.Prices, func(i, j int) bool {
-		return priceInfo.Prices[i].Price.Lt(priceInfo.Prices[j].Price)
+		switch priceInfo.Prices[i].Price.Cmp(priceInfo.Prices[j].Price) {
+		case -1:
+			return true
+		case 1:
+			return false
+		default:
+			return true
+		}
 	})
 
 	// Compute the median weight.

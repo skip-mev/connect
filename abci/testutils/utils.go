@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies"
+	"github.com/skip-mev/slinky/abci/strategies/compression"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -28,7 +28,7 @@ func CreateTestOracleKeeperWithGenesis(ctx sdk.Context, key storetypes.StoreKey,
 }
 
 // CreateExtendedCommitInfo creates an extended commit info with the given commit info.
-func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo, codec strategies.ExtendedCommitCodec) (cometabci.ExtendedCommitInfo, []byte, error) {
+func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo, codec compression.ExtendedCommitCodec) (cometabci.ExtendedCommitInfo, []byte, error) {
 	extendedCommitInfo := cometabci.ExtendedCommitInfo{
 		Votes: commitInfo,
 	}
@@ -45,7 +45,7 @@ func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo, codec str
 func CreateExtendedVoteInfo(
 	consAddr sdk.ConsAddress,
 	prices map[uint64][]byte,
-	codec strategies.VoteExtensionCodec,
+	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
 	ve, err := CreateVoteExtensionBytes(prices, codec)
 	if err != nil {
@@ -102,7 +102,7 @@ func CreateBaseSDKContext(t *testing.T) sdk.Context {
 // CreateVoteExtensionBytes creates a vote extension bytes with the given prices, timestamp and height.
 func CreateVoteExtensionBytes(
 	prices map[uint64][]byte,
-	codec strategies.VoteExtensionCodec,
+	codec compression.VoteExtensionCodec,
 ) ([]byte, error) {
 	voteExtension := CreateVoteExtension(prices)
 	voteExtensionBz, err := codec.Encode(voteExtension)

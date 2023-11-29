@@ -1,10 +1,10 @@
 package aggregator
 
 import (
+	"math/big"
 	"sync"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/holiman/uint256"
 	"golang.org/x/exp/maps"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -19,7 +19,7 @@ type (
 	// should be responsible for aggregating prices using TWAPs, TVWAPs, etc. The oracle
 	// will then compute the canonical price for a given currency pair by computing the
 	// median price across all providers.
-	AggregateFn func(providers AggregatedProviderPrices) map[types.CurrencyPair]*uint256.Int
+	AggregateFn func(providers AggregatedProviderPrices) map[types.CurrencyPair]*big.Int
 
 	// AggregateFnFromContext is a function that is used to parametrize an aggregateFn by an sdk.Context. This is used
 	// to allow the aggregateFn to access the latest state of an application. I.e computing a stake weighted median based
@@ -40,7 +40,7 @@ type PriceAggregator struct {
 	providerPrices AggregatedProviderPrices
 
 	// prices is the current set of prices aggregated across the providers.
-	prices map[types.CurrencyPair]*uint256.Int
+	prices map[types.CurrencyPair]*big.Int
 }
 
 // NewPriceAggregator returns a PriceAggregator. The PriceAggregator
@@ -57,7 +57,7 @@ func NewPriceAggregator(aggregateFn AggregateFn) *PriceAggregator {
 	return &PriceAggregator{
 		providerPrices: make(AggregatedProviderPrices),
 		aggregateFn:    aggregateFn,
-		prices:         make(map[types.CurrencyPair]*uint256.Int),
+		prices:         make(map[types.CurrencyPair]*big.Int),
 	}
 }
 
@@ -123,22 +123,22 @@ func (p *PriceAggregator) UpdatePrices() {
 		return
 	}
 
-	p.SetPrices(make(map[types.CurrencyPair]*uint256.Int))
+	p.SetPrices(make(map[types.CurrencyPair]*big.Int))
 }
 
 // GetPrices returns the aggregated prices based on the provided currency pairs.
-func (p *PriceAggregator) GetPrices() map[types.CurrencyPair]*uint256.Int {
+func (p *PriceAggregator) GetPrices() map[types.CurrencyPair]*big.Int {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	cpy := make(map[types.CurrencyPair]*uint256.Int)
+	cpy := make(map[types.CurrencyPair]*big.Int)
 	maps.Copy(cpy, p.prices)
 
 	return cpy
 }
 
 // SetPrices sets the current set of prices.
-func (p *PriceAggregator) SetPrices(prices map[types.CurrencyPair]*uint256.Int) {
+func (p *PriceAggregator) SetPrices(prices map[types.CurrencyPair]*big.Int) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 

@@ -3,12 +3,12 @@ package oracle
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"cosmossdk.io/log"
-	"github.com/holiman/uint256"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/aggregator"
@@ -304,6 +304,6 @@ func (o *Oracle) GetLastSyncTime() time.Time {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *Oracle) GetPrices() map[oracletypes.CurrencyPair]*uint256.Int {
+func (o *Oracle) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
 	return o.priceAggregator.GetPrices()
 }

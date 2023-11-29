@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"os"
 	"path"
 	"time"
@@ -10,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/holiman/uint256"
 	"github.com/pelletier/go-toml"
 	"github.com/strangelove-ventures/interchaintest/v7"
 	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
@@ -321,7 +321,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			// Write the static provider config to the node
 			staticConfig := mock.StaticMockProviderConfig{
 				TokenPrices: map[string]string{
-					cp.ToString(): "0x474",
+					cp.ToString(): "1140",
 				},
 			}
 
@@ -336,22 +336,22 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -374,17 +374,17 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -415,17 +415,17 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -462,7 +462,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: uint256.NewInt(1140).Bytes(),
+					id: big.NewInt(1140).Bytes(),
 				},
 			},
 		})
@@ -528,9 +528,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		// Write the static provider config to the node
 		staticConfig := mock.StaticMockProviderConfig{
 			TokenPrices: map[string]string{
-				cp1.ToString(): "0x474",
-				cp2.ToString(): "0x475",
-				cp3.ToString(): "0x476",
+				cp1.ToString(): "1140",
+				cp2.ToString(): "1141",
+				cp3.ToString(): "1142",
 			},
 		}
 
@@ -546,30 +546,30 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 		})
@@ -600,8 +600,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		// Write the static provider config to the node
 		staticConfig := mock.StaticMockProviderConfig{
 			TokenPrices: map[string]string{
-				cp1.ToString(): "0x474",
-				cp2.ToString(): "0x475",
+				cp1.ToString(): "1140",
+				cp2.ToString(): "1141",
 			},
 		}
 
@@ -615,29 +615,29 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: uint256.NewInt(1140).Bytes(),
-					id2: uint256.NewInt(1141).Bytes(),
-					id3: uint256.NewInt(1142).Bytes(),
+					id1: big.NewInt(1140).Bytes(),
+					id2: big.NewInt(1141).Bytes(),
+					id3: big.NewInt(1142).Bytes(),
 				},
 			},
 		})

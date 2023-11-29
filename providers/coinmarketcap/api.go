@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
@@ -70,8 +69,7 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 	}
 
 	return aggregator.QuotePrice{
-		Price:     providers.Float64ToUint256(price, pair.Decimals()),
-		Timestamp: time.Now(),
+		Price: providers.Float64ToBigInt(price, pair.Decimals()),
 	}, nil
 }
 
