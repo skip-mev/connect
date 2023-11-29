@@ -1,6 +1,7 @@
 package currencypair_test
 
 import (
+	"math/big"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,8 +12,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// test that OracleKeeperCurrencyPairIDStrategy.ID returns the correct ID for a given currency pair
-func TestOracleCurrencyPairIDStrategyID(t *testing.T) {
+func TestDefaultCurrencyPairStrategyID(t *testing.T) {
 	ok := mocks.NewOracleKeeper(t)
 
 	ctx := sdk.Context{}
@@ -43,7 +43,7 @@ func TestOracleCurrencyPairIDStrategyID(t *testing.T) {
 	})
 }
 
-func TestOracleCurrencyPairIDStrategyFromID(t *testing.T) {
+func TestDefaultCurrencyPairStrategyFromID(t *testing.T) {
 	ok := mocks.NewOracleKeeper(t)
 
 	ctx := sdk.Context{}
@@ -70,6 +70,46 @@ func TestOracleCurrencyPairIDStrategyFromID(t *testing.T) {
 		// expect an error when querying for a currency-pair not in module-state
 		ok.On("GetCurrencyPairFromID", ctx, uint64(2)).Return(oracletypes.CurrencyPair{}, false)
 		_, err := strategy.FromID(ctx, uint64(2))
+		require.Error(t, err)
+	})
+}
+
+func TestDefaultCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
+	ok := mocks.NewOracleKeeper(t)
+
+	ctx := sdk.Context{}
+
+	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
+
+	cp := oracletypes.NewCurrencyPair("BTC", "USD")
+	t.Run("can encode a positive price", func(t *testing.T) {
+		price := big.NewInt(100)
+		encodedPrice, err := strategy.GetEncodedPrice(ctx, cp, price)
+		require.NoError(t, err)
+
+		decodedPrice, err := strategy.GetDecodedPrice(ctx, cp, encodedPrice)
+		require.NoError(t, err)
+		require.Equal(t, price, decodedPrice)
+	})
+
+	t.Run("cannot encode a negative price", func(t *testing.T) {
+		price := big.NewInt(-100)
+		_, err := strategy.GetEncodedPrice(ctx, cp, price)
+		require.Error(t, err)
+
+		bz, err := price.GobEncode()
+		require.NoError(t, err)
+
+		_, err = strategy.GetDecodedPrice(ctx, cp, bz)
+		require.Error(t, err)
+	})
+
+	t.Run("errors when decoding a negative price", func(t *testing.T) {
+		price := big.NewInt(-100)
+		bz, err := price.GobEncode()
+		require.NoError(t, err)
+
+		_, err = strategy.GetDecodedPrice(ctx, cp, bz)
 		require.Error(t, err)
 	})
 }

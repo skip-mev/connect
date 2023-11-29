@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -79,13 +78,36 @@ func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp oracletypes.C
 	return r0, r1
 }
 
+// GetPriceForCurrencyPair provides a mock function with given fields: ctx, cp
+func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cp oracletypes.CurrencyPair) (oracletypes.QuotePrice, error) {
+	ret := _m.Called(ctx, cp)
+
+	var r0 oracletypes.QuotePrice
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) (oracletypes.QuotePrice, error)); ok {
+		return rf(ctx, cp)
+	}
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) oracletypes.QuotePrice); ok {
+		r0 = rf(ctx, cp)
+	} else {
+		r0 = ret.Get(0).(oracletypes.QuotePrice)
+	}
+
+	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair) error); ok {
+		r1 = rf(ctx, cp)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewOracleKeeper creates a new instance of OracleKeeper. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewOracleKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *OracleKeeper {
+}) *OracleKeeper {
 	mock := &OracleKeeper{}
 	mock.Mock.Test(t)
 

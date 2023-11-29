@@ -2,6 +2,7 @@ package currencypair
 
 import (
 	"fmt"
+	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -23,7 +24,7 @@ func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyP
 }
 
 // ID returns the ID of the given currency pair, by querying the x/oracle state for the ID of the given
-// currency pair. this method returns an error if the given currency pair is not found in the x/oracle state.
+// currency pair. This method returns an error if the given currency pair is not found in the x/oracle state.
 func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp oracletypes.CurrencyPair) (uint64, error) {
 	id, found := s.oracleKeeper.GetIDForCurrencyPair(ctx, cp)
 	if !found {
@@ -42,4 +43,37 @@ func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (oracle
 	}
 
 	return cp, nil
+}
+
+// GetEncodedPrice returns the encoded price for the given currency pair. The default implementation
+// returns the raw price, encoded into bytes.
+func (s *DefaultCurrencyPairStrategy) GetEncodedPrice(
+	_ sdk.Context,
+	_ oracletypes.CurrencyPair,
+	price *big.Int,
+) ([]byte, error) {
+	if price.Sign() < 0 {
+		return nil, fmt.Errorf("price cannot be negative: %s", price.String())
+	}
+
+	return price.GobEncode()
+}
+
+// GetDecodedPrice returns the decoded price for the given currency pair. The default implementation
+// returns the raw price, decoded from bytes.
+func (s *DefaultCurrencyPairStrategy) GetDecodedPrice(
+	_ sdk.Context,
+	_ oracletypes.CurrencyPair,
+	priceBytes []byte,
+) (*big.Int, error) {
+	var price big.Int
+	if err := price.GobDecode(priceBytes); err != nil {
+		return nil, err
+	}
+
+	if price.Sign() < 0 {
+		return nil, fmt.Errorf("price cannot be negative: %s", price.String())
+	}
+
+	return &price, nil
 }
