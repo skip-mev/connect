@@ -13,6 +13,7 @@ import (
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
+	"github.com/skip-mev/slinky/abci/strategies"
 	strategymocks "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
@@ -93,7 +94,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -134,7 +135,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			0: oneHundred.Bytes(),
 			1: twoHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -177,14 +178,14 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
 		otherValPrices := map[uint64][]byte{
 			0: twoHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices)
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -231,14 +232,14 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: oneHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
 		otherValPrices := map[uint64][]byte{
 			0: twoHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices)
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -282,7 +283,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			0: oneHundred.Bytes(),
 			1: twoHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create a vote extension with multiple prices from another validator
@@ -290,7 +291,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			0: threeHundred.Bytes(),
 			1: fourHundred.Bytes(),
 		}
-		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices)
+		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -341,14 +342,14 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			1: twoHundred.Bytes(),
 			2: threeHundred.Bytes(),
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		val1Prices := map[uint64][]byte{
 			0: fourHundred.Bytes(),
 			2: sixHundred.Bytes(),
 		}
-		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices)
+		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		val2Prices := map[uint64][]byte{
@@ -356,7 +357,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			1: eightHundred.Bytes(),
 			2: nineHundred.Bytes(),
 		}
-		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices)
+		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info
@@ -417,7 +418,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		myValPrices := map[uint64][]byte{
 			0: ongodhecappin,
 		}
-		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices)
+		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, strategies.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		// Create the extended commit info

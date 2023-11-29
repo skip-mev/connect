@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/skip-mev/slinky/abci/strategies"
 	mockstrategies "github.com/skip-mev/slinky/abci/strategies/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/ve"
@@ -46,7 +47,7 @@ func (s *VoteExtenstionTestSuite) SetupTest() {
 	s.ctx = testutils.CreateBaseSDKContext(s.T())
 }
 
-func TestVoteExtenstionTestSuite(t *testing.T) {
+func TestVoteExtensionTestSuite(t *testing.T) {
 	suite.Run(t, new(VoteExtenstionTestSuite))
 }
 
@@ -220,25 +221,37 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
+			codec := strategies.NewCompressionVoteExtensionCodec(
+				strategies.NewDefaultVoteExtensionCodec(),
+				strategies.NewZLibCompressor(),
+			)
+
 			h := ve.NewVoteExtensionHandler(
 				log.NewTestLogger(s.T()),
 				tc.oracleService(),
 				time.Second*1,
 				tc.currencyPairID(),
+				codec,
 			)
 
 			resp, err := h.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
 			s.Require().NoError(err)
 			s.Require().NotNil(resp)
 
-			ve := &abcitypes.OracleVoteExtension{}
-			s.Require().NoError(ve.Unmarshal(resp.VoteExtension))
+			ve, err := codec.Decode(resp.VoteExtension)
+			s.Require().NoError(err)
+
 			s.Require().Equal(tc.expectedResponse.Prices, ve.Prices)
 		})
 	}
 }
 
 func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
+	codec := strategies.NewCompressionVoteExtensionCodec(
+		strategies.NewDefaultVoteExtensionCodec(),
+		strategies.NewZLibCompressor(),
+	)
+
 	cases := []struct {
 		name             string
 		getReq           func() *cometabci.RequestVerifyVoteExtension
@@ -277,6 +290,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 
 				ve, err := testutils.CreateVoteExtensionBytes(
 					prices,
+					codec,
 				)
 				s.Require().NoError(err)
 
@@ -297,6 +311,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 
 				ve, err := testutils.CreateVoteExtensionBytes(
 					prices,
+					codec,
 				)
 				s.Require().NoError(err)
 
@@ -319,6 +334,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 
 				ve, err := testutils.CreateVoteExtensionBytes(
 					prices,
+					codec,
 				)
 				s.Require().NoError(err)
 
@@ -343,6 +359,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 				mocks.NewOracleService(s.T()),
 				time.Second*1,
 				cpID,
+				codec,
 			).VerifyVoteExtensionHandler()
 
 			resp, err := handler(s.ctx, tc.getReq())

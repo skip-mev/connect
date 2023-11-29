@@ -8,6 +8,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/skip-mev/slinky/abci/strategies"
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -41,6 +42,9 @@ type ProposalHandler struct {
 
 	// validateVoteExtensionsFn validates the vote extensions included in a proposal.
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn
+
+	// voteExtensionCodec is used to decode vote extensions.
+	voteExtensionCodec strategies.VoteExtensionCodec
 }
 
 // NewProposalHandler returns a new ProposalHandler.
@@ -49,12 +53,14 @@ func NewProposalHandler(
 	prepareProposalHandler sdk.PrepareProposalHandler,
 	processProposalHandler sdk.ProcessProposalHandler,
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn,
+	codec strategies.VoteExtensionCodec,
 ) *ProposalHandler {
 	return &ProposalHandler{
 		logger:                   logger,
 		prepareProposalHandler:   prepareProposalHandler,
 		processProposalHandler:   processProposalHandler,
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
+		voteExtensionCodec:       codec,
 	}
 }
 

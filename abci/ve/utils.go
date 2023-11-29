@@ -7,22 +7,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/ve/types"
+	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
 
 // ValidateOracleVoteExtension validates the vote extension provided by a validator.
-func ValidateOracleVoteExtension(voteExtension []byte) error {
-	if len(voteExtension) == 0 {
-		return nil
-	}
-
-	voteExt := types.OracleVoteExtension{}
-	if err := voteExt.Unmarshal(voteExtension); err != nil {
-		return fmt.Errorf("failed to unmarshal vote extension: %w", err)
-	}
-
+func ValidateOracleVoteExtension(ve vetypes.OracleVoteExtension) error {
 	// Verify prices are valid.
-	for _, bz := range voteExt.Prices {
+	for _, bz := range ve.Prices {
 		// validate the price bytes
 		if len(bz) > 32 {
 			return fmt.Errorf("price bytes are too long: %d", len(bz))
