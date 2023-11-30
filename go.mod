@@ -49,7 +49,7 @@ require (
 )
 
 require (
-	github.com/klauspost/compress v1.17.0
+	github.com/klauspost/compress v1.17.3
 	mvdan.cc/gofumpt v0.5.0
 )
 
