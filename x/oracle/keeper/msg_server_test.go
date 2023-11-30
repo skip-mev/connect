@@ -259,9 +259,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 				assert.Nil(s.T(), err)
 
 				// assert that currency-pair was removed
-				_, err = s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
-				_, ok := err.(*types.CurrencyPairNotExistError)
-				assert.True(s.T(), ok)
+				assert.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cp))
 			}
 		})
 	}

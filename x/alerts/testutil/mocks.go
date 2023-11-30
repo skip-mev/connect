@@ -119,19 +119,18 @@ func (m *MockOracleKeeper) EXPECT() *MockOracleKeeperMockRecorder {
 	return m.recorder
 }
 
-// GetNonceForCurrencyPair mocks base method.
-func (m *MockOracleKeeper) GetNonceForCurrencyPair(ctx types.Context, cp types2.CurrencyPair) (uint64, error) {
+// HasCurrencyPair mocks base method.
+func (m *MockOracleKeeper) HasCurrencyPair(ctx types.Context, cp types2.CurrencyPair) bool {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNonceForCurrencyPair", ctx, cp)
-	ret0, _ := ret[0].(uint64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "HasCurrencyPair", ctx, cp)
+	ret0, _ := ret[0].(bool)
+	return ret0
 }
 
-// GetNonceForCurrencyPair indicates an expected call of GetNonceForCurrencyPair.
-func (mr *MockOracleKeeperMockRecorder) GetNonceForCurrencyPair(ctx, cp interface{}) *gomock.Call {
+// HasCurrencyPair indicates an expected call of HasCurrencyPair.
+func (mr *MockOracleKeeperMockRecorder) HasCurrencyPair(ctx, cp interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNonceForCurrencyPair", reflect.TypeOf((*MockOracleKeeper)(nil).GetNonceForCurrencyPair), ctx, cp)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasCurrencyPair", reflect.TypeOf((*MockOracleKeeper)(nil).HasCurrencyPair), ctx, cp)
 }
 
 // MockStakingKeeper is a mock of StakingKeeper interface.

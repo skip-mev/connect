@@ -6,12 +6,12 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	mocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	mocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
@@ -26,7 +26,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 			"GetPriceForCurrencyPair",
 			mock.Anything,
 			cp,
-		).Return(oracletypes.QuotePrice{}, oraclekeeper.QuotePriceNotExistError{})
+		).Return(oracletypes.QuotePrice{}, oracletypes.QuotePriceNotExistError{})
 
 		price := big.NewInt(100)
 		encodedPrice, err := strategy.GetEncodedPrice(ctx, cp, price)
@@ -202,7 +202,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 			"GetPriceForCurrencyPair",
 			mock.Anything,
 			cp,
-		).Return(oracletypes.QuotePrice{}, oraclekeeper.QuotePriceNotExistError{})
+		).Return(oracletypes.QuotePrice{}, oracletypes.QuotePriceNotExistError{})
 
 		price := big.NewInt(100)
 		priceBytes, err := price.GobEncode()

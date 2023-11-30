@@ -13,13 +13,15 @@ import (
 // the unique ID for a given currency pair and utilizes raw prices stored in the x/oracle state as the price
 // representation for a given currency pair.
 type DefaultCurrencyPairStrategy struct {
-	oracleKeeper OracleKeeper
+	oracleKeeper     OracleKeeper
+	idToCurrencyPair map[uint64]oracletypes.CurrencyPair
 }
 
 // NewDefaultCurrencyPairStrategy returns a new DefaultCurrencyPairStrategy instance.
 func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyPairStrategy {
 	return &DefaultCurrencyPairStrategy{
-		oracleKeeper: oracleKeeper,
+		oracleKeeper:     oracleKeeper,
+		idToCurrencyPair: make(map[uint64]oracletypes.CurrencyPair),
 	}
 }
 
@@ -31,16 +33,27 @@ func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp oracletypes.Currenc
 		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.ToString())
 	}
 
+	// cache the currency pair for future lookups
+	s.idToCurrencyPair[id] = cp
+
 	return id, nil
 }
 
 // FromID returns the currency pair with the given ID, by querying the x/oracle state for the currency pair
 // with the given ID. this method returns an error if the given ID is not currently present for an existing currency-pair.
 func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (oracletypes.CurrencyPair, error) {
+	// check the cache first
+	if cp, found := s.idToCurrencyPair[id]; found {
+		return cp, nil
+	}
+
 	cp, found := s.oracleKeeper.GetCurrencyPairFromID(ctx, id)
 	if !found {
 		return oracletypes.CurrencyPair{}, fmt.Errorf("id %d out of bounds", id)
 	}
+
+	// cache the currency pair for future lookups
+	s.idToCurrencyPair[id] = cp
 
 	return cp, nil
 }

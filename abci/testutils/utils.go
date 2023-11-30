@@ -6,19 +6,25 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // CreateTestOracleKeeperWithGenesis creates a test oracle keeper with the given genesis state.
-func CreateTestOracleKeeperWithGenesis(ctx sdk.Context, key storetypes.StoreKey, genesis oracletypes.GenesisState) keeper.Keeper {
+func CreateTestOracleKeeperWithGenesis(ctx sdk.Context, key *storetypes.KVStoreKey, genesis oracletypes.GenesisState) keeper.Keeper {
+	ss := runtime.NewKVStoreService(key)
+	encCfg := moduletestutil.MakeTestEncodingConfig()
+
 	keeper := keeper.NewKeeper(
-		key,
+		ss,
+		encCfg.Codec,
 		sdk.AccAddress([]byte("authority")),
 	)
 

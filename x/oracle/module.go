@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
 
-	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -166,9 +166,10 @@ func init() {
 type Inputs struct {
 	depinject.In
 
-	Config *oraclemodulev1.Module
-	Cdc    codec.Codec
-	Key    *storetypes.KVStoreKey
+	// module-dependencies
+	Config       *oraclemodulev1.Module
+	Cdc          codec.Codec
+	StoreService store.KVStoreService
 }
 
 type Outputs struct {
@@ -186,7 +187,8 @@ func ProvideModule(in Inputs) Outputs {
 	}
 
 	oracleKeeper := keeper.NewKeeper(
-		in.Key,
+		in.StoreService,
+		in.Cdc,
 		authority,
 	)
 

@@ -21,7 +21,7 @@ type BankKeeper interface {
 
 // OracleKeeper defines the expected interface that the oracle-keeper dependency must implement.
 type OracleKeeper interface {
-	GetNonceForCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair) (uint64, error)
+	HasCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair) bool
 }
 
 // StakingKeeper defines the expected interface that the staking-keeper dependency must implement.
