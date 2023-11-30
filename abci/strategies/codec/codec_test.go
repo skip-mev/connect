@@ -1,4 +1,4 @@
-package compression_test
+package codec_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
 

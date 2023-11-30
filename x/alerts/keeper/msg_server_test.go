@@ -182,8 +182,8 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 					},
 				}))
 
-				// expect a failed response from the oracle keeper
-				s.ok.EXPECT().GetNonceForCurrencyPair(gomock.Any(), oracletypes.NewCurrencyPair("BTC", "USD")).Return(uint64(0), fmt.Errorf("oracle error"))
+				// expect a failed response from the oracle keeper (no currency pair)
+				s.ok.EXPECT().HasCurrencyPair(gomock.Any(), oracletypes.NewCurrencyPair("BTC", "USD")).Return(false)
 			},
 			msg: &types.MsgAlert{
 				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
@@ -203,7 +203,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.EXPECT().GetNonceForCurrencyPair(gomock.Any(), oracletypes.NewCurrencyPair("BTC", "USD")).Return(uint64(0), nil)
+				s.ok.EXPECT().HasCurrencyPair(gomock.Any(), oracletypes.NewCurrencyPair("BTC", "USD")).Return(true)
 
 				// expect a failed response from the bank keeper
 				s.bk.EXPECT().SendCoinsFromAccountToModule(
@@ -234,10 +234,10 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.EXPECT().GetNonceForCurrencyPair(
+				s.ok.EXPECT().HasCurrencyPair(
 					gomock.Any(),
 					oracletypes.NewCurrencyPair("BTC", "USD"),
-				).Return(uint64(0), nil)
+				).Return(true)
 
 				// expect a correct response from the bank keeper
 				s.bk.EXPECT().SendCoinsFromAccountToModule(

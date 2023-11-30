@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"

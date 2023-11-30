@@ -9,7 +9,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/service"

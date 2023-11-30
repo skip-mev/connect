@@ -21,7 +21,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	codec "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -214,7 +214,7 @@ func GetExtendedCommit(chain *cosmos.CosmosChain, height int64) (cmtabci.Extende
 	}
 
 	// unmarshal votes
-	voteEncoder := compression.NewDefaultVoteExtensionCodec()
+	voteEncoder := codec.NewDefaultVoteExtensionCodec()
 	for i, vote := range eci.Votes {
 		// unmarshal compressed ve
 		voteInfo, err := veCodec.Decode(vote.VoteExtension)

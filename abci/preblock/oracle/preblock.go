@@ -5,7 +5,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
@@ -44,12 +44,12 @@ type PreBlockHandler struct { //golint:ignore
 
 	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
 	// This is used to decode vote extensions included in transactions.
-	voteExtensionCodec compression.VoteExtensionCodec
+	voteExtensionCodec codec.VoteExtensionCodec
 
 	// extendedCommitCodec is the codec used for encoding / decoding extended
 	// commit messages. This is used to decode extended commit messages included
 	// in transactions.
-	extendedCommitCodec compression.ExtendedCommitCodec
+	extendedCommitCodec codec.ExtendedCommitCodec
 }
 
 // NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
@@ -61,8 +61,8 @@ func NewOraclePreBlockHandler(
 	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
 	strategy currencypair.CurrencyPairStrategy,
-	veCodec compression.VoteExtensionCodec,
-	ecCodec compression.ExtendedCommitCodec,
+	veCodec codec.VoteExtensionCodec,
+	ecCodec codec.ExtendedCommitCodec,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
 		logger:                 logger,

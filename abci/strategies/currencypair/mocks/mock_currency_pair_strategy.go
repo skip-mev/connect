@@ -122,7 +122,8 @@ func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp oracletypes.CurrencyPai
 func NewCurrencyPairStrategy(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *CurrencyPairStrategy {
+},
+) *CurrencyPairStrategy {
 	mock := &CurrencyPairStrategy{}
 	mock.Mock.Test(t)
 

@@ -21,7 +21,7 @@ import (
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/preblock/sla"
 	"github.com/skip-mev/slinky/abci/preblock/sla/mocks"
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	oraclevetypes "github.com/skip-mev/slinky/abci/ve/types"

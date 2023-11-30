@@ -1,14 +1,15 @@
 package keeper_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 
@@ -26,14 +27,15 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	oracleKeeper keeper.Keeper
-	key          storetypes.StoreKey
 	ctx          sdk.Context
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	s.key = storetypes.NewKVStoreKey(types.StoreKey)
-	s.oracleKeeper = keeper.NewKeeper(s.key, moduleAuthAddr)
-	s.ctx = testutil.DefaultContext(s.key, storetypes.NewTransientStoreKey("transient_key"))
+	key := storetypes.NewKVStoreKey(types.StoreKey)
+	ss := runtime.NewKVStoreService(key)
+	encCfg := moduletestutil.MakeTestEncodingConfig()
+	s.oracleKeeper = keeper.NewKeeper(ss, encCfg.Codec, moduleAuthAddr)
+	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -192,7 +194,7 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 
 	s.Run("creating a currency-pair twice fails", func() {
 		err := s.oracleKeeper.CreateCurrencyPair(s.ctx, cp)
-		assert.Equal(s.T(), err.Error(), fmt.Sprintf("currency pair already exists: %s", cp.ToString()))
+		assert.Equal(s.T(), err.Error(), types.NewCurrencyPairAlreadyExistsError(cp).Error())
 	})
 }
 

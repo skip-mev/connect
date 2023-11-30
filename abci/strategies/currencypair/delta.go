@@ -5,7 +5,7 @@ import (
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -93,7 +93,7 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp oraclety
 	var currentPrice *big.Int
 	quote, err := s.oracleKeeper.GetPriceForCurrencyPair(ctx, cp)
 	if err != nil {
-		_, noPriceErr := err.(oraclekeeper.QuotePriceNotExistError)
+		_, noPriceErr := err.(oracletypes.QuotePriceNotExistError)
 		if !noPriceErr {
 			return nil, fmt.Errorf(
 				"error getting price for currency pair (%s): %s",

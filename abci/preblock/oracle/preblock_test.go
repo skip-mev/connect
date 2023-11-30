@@ -13,7 +13,7 @@ import (
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
-	"github.com/skip-mev/slinky/abci/strategies/compression"
+	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	currencypairmock "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"

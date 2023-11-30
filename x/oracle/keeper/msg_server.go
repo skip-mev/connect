@@ -42,10 +42,8 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 	// finally, add all currency pairs in message to state
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	for _, cp := range req.CurrencyPairs {
-		// only set if there is no nonce for the CurrencyPair
-		_, err := m.k.GetNonceForCurrencyPair(ctx, cp)
-
-		if _, ok := err.(*types.CurrencyPairNotExistError); ok {
+		// only set the currency-pair if it does not already exist in state
+		if !m.k.HasCurrencyPair(ctx, cp) {
 			// set to state, initial nonce will be zero (no price updates have been made for this CurrencyPair)
 			m.k.CreateCurrencyPair(ctx, cp)
 		}

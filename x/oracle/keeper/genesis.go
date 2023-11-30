@@ -18,62 +18,42 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 
 	// initialize all CurrencyPairs + genesis prices
 	for _, cpg := range gs.CurrencyPairGenesis {
-		// Only set the CurrencyPair price to state if there is a non-empty price for the pair
-		if cpg.CurrencyPairPrice != nil {
-			qp := *cpg.CurrencyPairPrice
+		state := types.NewCurrencyPairState(cpg.Id, cpg.Nonce, cpg.CurrencyPairPrice)
 
-			// set to state, panic on errors
-			if err := k.SetPriceForCurrencyPair(ctx, cpg.CurrencyPair, qp); err != nil {
-				panic(err)
-			}
+		if err := k.currencyPairs.Set(ctx, cpg.CurrencyPair.ToString(), state); err != nil {
+			panic(fmt.Errorf("error in genesis: %v", err))
 		}
-
-		// set the nonce to state
-		k.setNonceForCurrencyPair(ctx, cpg.CurrencyPair, cpg.Nonce)
-
-		// set the ID to state
-		k.setIDForCurrencyPair(ctx, cpg.CurrencyPair, cpg.Id)
 	}
 
 	// set the next ID to state
-	k.setNextID(ctx, gs.NextId)
+	k.nextCurrencyPairID.Set(ctx, gs.NextId)
 }
 
 // ExportGenesis, retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.
 // This module panics on any errors encountered in execution.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
+	// get the current next ID
+	id, err := k.nextCurrencyPairID.Peek(ctx)
+	if err != nil {
+		panic(fmt.Errorf("error in genesis: %v", err))
+	}
+
 	// instantiate genesis-state w/ empty array
 	gs := &types.GenesisState{
 		CurrencyPairGenesis: make([]types.CurrencyPairGenesis, 0),
-		NextId:              k.getNextID(ctx),
+		NextId:              id,
 	}
 
 	// next, iterate over NonceKey to retrieve any CurrencyPairs that have not yet been traversed (CurrencyPairs w/ no Price info)
-	if err := k.IterateNonces(ctx, func(cp types.CurrencyPair, nonce uint64) {
-		// get the id for the currency-pair
-		id, ok := k.GetIDForCurrencyPair(ctx, cp)
-		if !ok {
-			panic(fmt.Errorf("currency pair %s has no id", cp.ToString()))
-		}
-
-		cpg := types.CurrencyPairGenesis{
-			CurrencyPair: cp,
-			Id:           id,
-			Nonce:        nonce,
-		}
-
-		// get the price for the currency-pair
-		qp, err := k.GetPriceForCurrencyPair(ctx, cp)
-		if err == nil {
-			// if there is a price, set the price to the genesis
-			cpg.CurrencyPairPrice = &qp
-		}
-
-		// otherwise, aggregate the CurrencyPair and set the Price as nil + nonce as 0
-		gs.CurrencyPairGenesis = append(gs.CurrencyPairGenesis, cpg)
-	}); err != nil {
-		panic(err)
-	}
+	k.IterateCurrencyPairs(ctx, func(cp types.CurrencyPair, cps types.CurrencyPairState) {
+		// append the currency pair + state to the genesis state
+		gs.CurrencyPairGenesis = append(gs.CurrencyPairGenesis, types.CurrencyPairGenesis{
+			CurrencyPair:      cp,
+			Id:                cps.Id,
+			Nonce:             cps.Nonce,
+			CurrencyPairPrice: cps.Price,
+		})
+	})
 
 	return gs
 }
