@@ -1189,25 +1189,38 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		cdc := s.chain.Config().EncodingConfig.Codec
 		validatorPreSlashMap := mapValidators(validatorsPreSlash, cdc)
 
+		zero := big.NewInt(0)
+		two := big.NewInt(2)
+		negativeTwo := big.NewInt(-2)
+
+		zeroBz, err := zero.GobEncode()
+		s.Require().NoError(err)
+
+		twoBz, err := two.GobEncode()
+		s.Require().NoError(err)
+
+		negativeTwoBz, err := negativeTwo.GobEncode()
+		s.Require().NoError(err)
+
 		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(148).Bytes(), // 148
+					id: negativeTwoBz, // 148
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(150).Bytes(), // 150
+					id: zeroBz, // 150
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(150).Bytes(), // 150
+					id: zeroBz, // 150
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(152).Bytes(), // 152
+					id: twoBz, // 152
 				},
 			},
 		})

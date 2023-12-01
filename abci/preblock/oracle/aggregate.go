@@ -58,7 +58,9 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 	prices := h.priceAggregator.GetPrices()
 
 	// Record metrics for this validator.
-	h.recordMetrics(isVotePresentInCommit)
+	if ctx.ExecMode() == sdk.ExecModeFinalize {
+		h.recordMetrics(isVotePresentInCommit)
+	}
 
 	h.logger.Info(
 		"aggregated oracle data",
@@ -84,14 +86,8 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 			return fmt.Errorf("price bytes are too long: %d", len(priceBz))
 		}
 
-		// Convert the price to a big.Int.
-		var price big.Int
-		if val := price.SetBytes(priceBz); val == nil {
-			return fmt.Errorf("invalid price for currency pair %d", cpID)
-		}
-
 		// Convert the asset into a currency pair.
-		currencyPair, err := h.currencyPairIDStrategy.FromID(ctx, cpID)
+		cp, err := h.currencyPairStrategy.FromID(ctx, cpID)
 		if err != nil {
 			h.logger.Debug(
 				"failed to convert currency pair id to currency pair",
@@ -100,11 +96,27 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 			)
 
 			// If the currency pair is not supported, continue.
+			//
+			// TODO: Should we return an error here instead?
 			continue
 		}
 
-		prices[currencyPair] = aggregator.QuotePrice{
-			Price: &price,
+		price, err := h.currencyPairStrategy.GetDecodedPrice(ctx, cp, priceBz)
+		if err != nil {
+			h.logger.Debug(
+				"failed to decode price",
+				"currency_pair_id", cpID,
+				"err", err,
+			)
+
+			// If the price cannot be decoded, continue.
+			//
+			// TODO: Should we return an error here instead?
+			continue
+		}
+
+		prices[cp] = aggregator.QuotePrice{
+			Price: price,
 		}
 	}
 

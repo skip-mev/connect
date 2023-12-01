@@ -49,7 +49,7 @@ var (
 	ongodhecappin = append([]byte("ongodhecappin"), make([]byte, 32)...)
 )
 
-func (s *PreBlockTestSuite) TestAggregateOracleData() {
+func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 	// Use the default aggregation function for testing
 	mockValidatorStore := mocks.NewValidatorStore(s.T())
 	aggregationFn := preblockmath.VoteWeightedMedianFromContext(
@@ -112,6 +112,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
 
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
 
 		// Assume the validator takes up all of the voting power
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -163,7 +164,10 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		).Once()
 
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
+
 		cpID.On("FromID", s.ctx, uint64(1)).Return(ethUSD, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, ethUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -219,6 +223,8 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 		).Once()
 
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -271,7 +277,10 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			},
 			nil,
 		).Once()
+
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -327,6 +336,12 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
 		cpID.On("FromID", s.ctx, uint64(1)).Return(ethUSD, nil).Twice()
+
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, threeHundred.Bytes()).Return(threeHundred, nil).Once()
+
+		cpID.On("GetDecodedPrice", s.ctx, ethUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, ethUSD, fourHundred.Bytes()).Return(fourHundred, nil).Once()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -399,11 +414,20 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 			nil,
 		).Once()
 
-		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Twice()
-		cpID.On("FromID", s.ctx, uint64(0)).Return(ethBTC, nil).Once()
-		cpID.On("FromID", s.ctx, uint64(1)).Return(ethBTC, nil).Twice()
-		cpID.On("FromID", s.ctx, uint64(2)).Return(ethUSD, nil).Twice()
-		cpID.On("FromID", s.ctx, uint64(2)).Return(ethBTC, nil).Once()
+		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Times(3)
+		cpID.On("FromID", s.ctx, uint64(1)).Return(ethUSD, nil).Twice()
+		cpID.On("FromID", s.ctx, uint64(2)).Return(ethBTC, nil).Times(3)
+
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, fourHundred.Bytes()).Return(fourHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, btcUSD, sevenHundred.Bytes()).Return(sevenHundred, nil).Once()
+
+		cpID.On("GetDecodedPrice", s.ctx, ethUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, ethUSD, eightHundred.Bytes()).Return(eightHundred, nil).Once()
+
+		cpID.On("GetDecodedPrice", s.ctx, ethBTC, threeHundred.Bytes()).Return(threeHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, ethBTC, sixHundred.Bytes()).Return(sixHundred, nil).Once()
+		cpID.On("GetDecodedPrice", s.ctx, ethBTC, nineHundred.Bytes()).Return(nineHundred, nil).Once()
 
 		// Aggregate oracle data
 		prices, err := handler.AggregateOracleVotes(s.ctx, votes)
@@ -412,7 +436,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleData() {
 
 		// Check that the prices are correct
 		s.Require().Equal(fourHundred.String(), prices[btcUSD].String())
-		s.Require().Equal(sixHundred.String(), prices[ethUSD].String())
+		s.Require().Equal(sixHundred.String(), prices[ethBTC].String())
 	})
 
 	s.Run("errors when the validator's prices are malformed", func() {

@@ -305,6 +305,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), cp)
 	s.Require().NoError(err)
 
+	zero := big.NewInt(0)
+	zeroBz, err := zero.GobEncode()
+	s.Require().NoError(err)
+
 	// configure failing providers for various sets of nodes
 	s.Run("all nodes report Prices", func() {
 		// update all oracle configs
@@ -336,22 +340,22 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 		})
@@ -374,17 +378,17 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 		})
@@ -415,17 +419,17 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 		})
@@ -462,7 +466,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			},
 			{
 				Prices: map[uint64][]byte{
-					id: big.NewInt(1140).Bytes(),
+					id: zeroBz,
 				},
 			},
 		})
@@ -514,6 +518,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	id3, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), cp3)
 	s.Require().NoError(err)
 
+	zero := big.NewInt(0)
+	zeroBz, err := zero.GobEncode()
+	s.Require().NoError(err)
+
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
 		oracle := GetOracleSideCar(node)
@@ -546,30 +554,30 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 		})
@@ -615,29 +623,29 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 			{
 				Prices: map[uint64][]byte{
-					id1: big.NewInt(1140).Bytes(),
-					id2: big.NewInt(1141).Bytes(),
-					id3: big.NewInt(1142).Bytes(),
+					id1: zeroBz,
+					id2: zeroBz,
+					id3: zeroBz,
 				},
 			},
 		})

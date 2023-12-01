@@ -110,8 +110,8 @@ var (
 
 func TestSlinkyOracleIntegration(t *testing.T) {
 	baseSuite := integration.NewSlinkyIntegrationSuite(
-		spec,
-		oracleImage,
+	spec,
+	oracleImage,
 	)
 
 	suite.Run(t, integration.NewSlinkyOracleIntegrationSuite(baseSuite))

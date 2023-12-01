@@ -5,13 +5,12 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	mocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
+	"github.com/skip-mev/slinky/abci/testutils"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
@@ -19,7 +18,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("price does not exist in state, delta is final price", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		ok.On(
@@ -41,7 +40,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("price exists in state, inputted price is smaller so delta should be negative", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		onChainPrice := math.NewInt(100)
@@ -64,7 +63,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("price exists in state, inputted price is larger so delta should be positive", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		onChainPrice := math.NewInt(100)
@@ -87,7 +86,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("price exists in state, inputted price is equal so delta should be zero", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		onChainPrice := math.NewInt(100)
@@ -110,7 +109,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("price cache works for several calls to the same height", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		onChainPrice := math.NewInt(100)
@@ -140,7 +139,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("price cache is cleared when height changes", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		onChainPrice := math.NewInt(100)
@@ -181,7 +180,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 
 	t.Run("error when the price is negative", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		price := big.NewInt(-120)
@@ -193,7 +192,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 	t.Run("price does not exist in state, delta is final price", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
@@ -215,7 +214,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 
 	t.Run("price exists in state, negative delta with increase price returned", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
@@ -240,7 +239,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 
 	t.Run("price exists in state, positive delta with increase price returned", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
@@ -265,7 +264,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 
 	t.Run("price exists in state, zero delta with no increase price returned", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
@@ -290,7 +289,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 
 	t.Run("negative delta with negative price returns error", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
@@ -312,7 +311,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 
 	t.Run("price cache works for several calls to the same height", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
 
@@ -341,7 +340,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 
 	t.Run("price cache is cleared when height changes", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
-		ctx := sdk.Context{}
+		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 		cp := oracletypes.NewCurrencyPair("BTC", "USD")
 
