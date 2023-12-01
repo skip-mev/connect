@@ -8,7 +8,8 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	compression "github.com/skip-mev/slinky/abci/strategies/codec"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -46,10 +47,14 @@ type ProposalHandler struct {
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn
 
 	// voteExtensionCodec is used to decode vote extensions.
-	voteExtensionCodec compression.VoteExtensionCodec
+	voteExtensionCodec codec.VoteExtensionCodec
 
 	// extendedCommitCodec is used to decode extended commit info.
-	extendedCommitCodec compression.ExtendedCommitCodec
+	extendedCommitCodec codec.ExtendedCommitCodec
+
+	// currencyPairStrategy is the strategy used to determine the price information
+	// from a given oracle vote extension.
+	currencyPairStrategy currencypair.CurrencyPairStrategy
 }
 
 // NewProposalHandler returns a new ProposalHandler.
@@ -58,8 +63,9 @@ func NewProposalHandler(
 	prepareProposalHandler sdk.PrepareProposalHandler,
 	processProposalHandler sdk.ProcessProposalHandler,
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn,
-	voteExtensionCodec compression.VoteExtensionCodec,
-	extendedCommitInfoCodec compression.ExtendedCommitCodec,
+	voteExtensionCodec codec.VoteExtensionCodec,
+	extendedCommitInfoCodec codec.ExtendedCommitCodec,
+	currencyPairStrategy currencypair.CurrencyPairStrategy,
 ) *ProposalHandler {
 	return &ProposalHandler{
 		logger:                   logger,
@@ -68,6 +74,7 @@ func NewProposalHandler(
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
 		voteExtensionCodec:       voteExtensionCodec,
 		extendedCommitCodec:      extendedCommitInfoCodec,
+		currencyPairStrategy:     currencyPairStrategy,
 	}
 }
 

@@ -350,6 +350,7 @@ func NewSimApp(
 			compression.NewDefaultExtendedCommitCodec(),
 			compression.NewZStdCompressor(),
 		),
+		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
@@ -370,7 +371,7 @@ func NewSimApp(
 		app.OracleKeeper,
 		consAddress,
 		metrics,
-		currencypair.NewDefaultCurrencyPairStrategy(app.OracleKeeper),
+		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 		compression.NewCompressionVoteExtensionCodec(
 			compression.NewDefaultVoteExtensionCodec(),
 			compression.NewZLibCompressor(),
@@ -389,11 +390,12 @@ func NewSimApp(
 		app.Logger(),
 		app.oracleService,
 		time.Second,
-		currencypair.NewDefaultCurrencyPairStrategy(app.OracleKeeper),
+		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 		compression.NewCompressionVoteExtensionCodec(
 			compression.NewDefaultVoteExtensionCodec(),
 			compression.NewZLibCompressor(),
 		),
+		oraclePreBlockHandler.PreBlocker(),
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())

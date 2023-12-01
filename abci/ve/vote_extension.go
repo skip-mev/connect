@@ -2,6 +2,7 @@ package ve
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
+	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/service"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -32,12 +33,15 @@ type VoteExtensionHandler struct {
 	// to a price request.
 	timeout time.Duration
 
-	// currencyPairIDStrategy is the strategy used to determine the currency pair ID
-	// for a given currency pair.
-	currencyPairIDStrategy currencypair.CurrencyPairStrategy
+	// currencyPairStrategy is the strategy used to determine the price information
+	// to include in the vote extension.
+	currencyPairStrategy currencypair.CurrencyPairStrategy
 
 	// voteExtensionCodec is an interface to handle the marshalling / unmarshalling of vote-extensions
 	voteExtensionCodec compression.VoteExtensionCodec
+
+	// preBlocker is utilzed to update and retrieve the latest on-chain price information.
+	preBlocker sdk.PreBlocker
 }
 
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
@@ -47,13 +51,15 @@ func NewVoteExtensionHandler(
 	timeout time.Duration,
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
+	preBlocker sdk.PreBlocker,
 ) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
-		logger:                 logger,
-		oracleClient:           oracleClient,
-		timeout:                timeout,
-		currencyPairIDStrategy: strategy,
-		voteExtensionCodec:     codec,
+		logger:               logger,
+		oracleClient:         oracleClient,
+		timeout:              timeout,
+		currencyPairStrategy: strategy,
+		voteExtensionCodec:   codec,
+		preBlocker:           preBlocker,
 	}
 }
 
@@ -74,6 +80,22 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 			}
 		}()
+
+		// Update the latest on-chain prices with the vote extensions included in the current
+		// block proposal.
+		reqFinalizeBlock := &cometabci.RequestFinalizeBlock{
+			Txs:    req.Txs,
+			Height: req.Height,
+		}
+		if _, err := h.preBlocker(ctx, reqFinalizeBlock); err != nil {
+			h.logger.Error(
+				"failed to aggregate oracle votes",
+				"height", req.Height,
+				"err", err,
+			)
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+		}
 
 		// Create a context with a timeout to ensure we do not wait forever for the oracle
 		// to respond.
@@ -104,8 +126,8 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
 		}
 
-		// transform the response prices
-		prices, err := transformOracleServicePrices(ctx, h.currencyPairIDStrategy, oracleResp.Prices)
+		// Transform the response prices into a vote extension.
+		voteExt, err := h.transformOracleServicePrices(ctx, oracleResp.Prices)
 		if err != nil {
 			h.logger.Error(
 				"failed to transform oracle prices for vote extension; returning empty vote extension",
@@ -114,10 +136,6 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			)
 
 			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
-		}
-
-		voteExt := abcitypes.OracleVoteExtension{
-			Prices: prices,
 		}
 
 		bz, err := h.voteExtensionCodec.Encode(voteExt)
@@ -133,55 +151,18 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		h.logger.Info(
 			"extending vote with oracle prices",
-			"prices", voteExt.Prices,
 			"req_height", req.Height,
 		)
 
 		origBz, _ := voteExt.Marshal()
 		h.logger.Info(
 			"original vote extension",
-			"orig_bz", len(origBz),
-			"compressed bz", len(bz),
+			"orig_bz_size", len(origBz),
+			"compressed_bz_size", len(bz),
 		)
 
 		return &cometabci.ResponseExtendVote{VoteExtension: bz}, nil
 	}
-}
-
-func transformOracleServicePrices(ctx sdk.Context, strategy currencypair.CurrencyPairStrategy, prices map[string]string) (map[uint64][]byte, error) {
-	transformedPrices := make(map[uint64][]byte)
-
-	// iterate over the prices and transform them into the correct format
-	for currencyPairID, priceString := range prices {
-		// get the currency pair ID
-		cp, err := oracletypes.CurrencyPairFromString(currencyPairID)
-		if err != nil {
-			return nil, err
-		}
-
-		// get the currency pair ID bytes, if a failure, continue
-		cpID, err := strategy.ID(ctx, cp)
-		if err != nil {
-			ctx.Logger().Debug(
-				"failed to get currency pair ID",
-				"currency_pair", cp,
-				"err", err,
-			)
-
-			continue
-		}
-
-		// get the price as a big.Int
-		price, converted := new(big.Int).SetString(priceString, 10)
-		if !converted {
-			return nil, err
-		}
-
-		priceBytes := price.Bytes()
-		transformedPrices[cpID] = priceBytes
-	}
-
-	return transformedPrices, nil
 }
 
 // VerifyVoteExtensionHandler returns a handler that verifies the vote extension provided by
@@ -201,7 +182,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
 		}
 
-		if err := ValidateOracleVoteExtension(voteExtension); err != nil {
+		if err := ValidateOracleVoteExtension(ctx, voteExtension, h.currencyPairStrategy); err != nil {
 			h.logger.Error(
 				"failed to validate vote extension",
 				"height", req.Height,
@@ -218,4 +199,62 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 
 		return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}
+}
+
+// transformOracleServicePrices transforms the oracle service prices into a vote extension. It
+// does this by iterating over the the prices submitted by the oracle service and determining the
+// correct decoded price / ID based on the currency pair strategy.
+func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, prices map[string]string) (types.OracleVoteExtension, error) {
+	strategyPrices := make(map[uint64][]byte)
+
+	// Iterate over the prices and transform them into the correct format.
+	for currencyPairID, priceString := range prices {
+		cp, err := oracletypes.CurrencyPairFromString(currencyPairID)
+		if err != nil {
+			return types.OracleVoteExtension{}, err
+		}
+
+		rawPrice, converted := new(big.Int).SetString(priceString, 10)
+		if !converted {
+			return types.OracleVoteExtension{}, fmt.Errorf("failed to convert price string to big.Int: %s", priceString)
+		}
+
+		// Determine if the currency pair is supported by the network.
+		cpID, err := h.currencyPairStrategy.ID(ctx, cp)
+		if err != nil {
+			h.logger.Debug(
+				"failed to get currency pair ID",
+				"currency_pair", cp,
+				"err", err,
+			)
+
+			continue
+		}
+
+		// Determine the encoded price for the currency pair based on the strategy.
+		encodedPrice, err := h.currencyPairStrategy.GetEncodedPrice(ctx, cp, rawPrice)
+		if err != nil {
+			h.logger.Debug(
+				"failed to get current price for currency pair",
+				"currency_pair", cp,
+				"err", err,
+			)
+
+			continue
+		}
+
+		h.logger.Info(
+			"transformed oracle price",
+			"currency_pair", cp,
+			"height", ctx.BlockHeight(),
+		)
+
+		strategyPrices[cpID] = encodedPrice
+	}
+
+	h.logger.Info("transformed oracle prices", "prices", len(strategyPrices))
+
+	return types.OracleVoteExtension{
+		Prices: strategyPrices,
+	}, nil
 }

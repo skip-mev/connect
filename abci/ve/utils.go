@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
 
@@ -17,19 +18,37 @@ const (
 )
 
 // ValidateOracleVoteExtension validates the vote extension provided by a validator.
-func ValidateOracleVoteExtension(ve vetypes.OracleVoteExtension) error {
+func ValidateOracleVoteExtension(
+	ctx sdk.Context,
+	ve vetypes.OracleVoteExtension,
+	strategy currencypair.CurrencyPairStrategy,
+) error {
 	// Verify prices are valid.
-	for _, bz := range ve.Prices {
-		// validate the price bytes
+	for id, bz := range ve.Prices {
+		// Ensure that the price bytes are not too long.
 		if len(bz) > MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(bz))
+		}
+
+		// Ensure that the currency pair ID is valid.
+		cp, err := strategy.FromID(ctx, id)
+		if err != nil {
+			return fmt.Errorf("invalid currency pair ID: %d", id)
+		}
+
+		// Ensure that the price bytes are valid.
+		if _, err := strategy.GetDecodedPrice(ctx, cp, bz); err != nil {
+			return fmt.Errorf("invalid price bytes: %s", err)
 		}
 	}
 
 	return nil
 }
 
-// VoteExtensionsEnabled determines if vote extensions are enabled for the current block.
+// VoteExtensionsEnabled determines if vote extensions are enabled for the current block. If
+// vote extensions are enabled at height h, then a proposer will receive vote extensions
+// in height h+1. This is primarily utilized by any module that needs to make state changes
+// based on whether or not they were included in a proposal.
 func VoteExtensionsEnabled(ctx sdk.Context) bool {
 	cp := ctx.ConsensusParams()
 	if cp.Abci == nil || cp.Abci.VoteExtensionsEnableHeight == 0 {
@@ -44,23 +63,19 @@ func VoteExtensionsEnabled(ctx sdk.Context) bool {
 		return false
 	}
 
-	// We do a +1 here because the vote extensions are enabled at height h
-	// but a proposer will only receive vote extensions in height h+1.
-	return cp.Abci.VoteExtensionsEnableHeight+1 < ctx.BlockHeight()
+	return cp.Abci.VoteExtensionsEnableHeight < ctx.BlockHeight()
 }
 
-type (
-	// ValidateVoteExtensionsFn defines the function for validating vote extensions. This
-	// function is not explicitly used to validate the oracle data but rather that
-	// the signed vote extensions included in the proposal are valid and provide
-	// a supermajority of vote extensions for the current block. This method is
-	// expected to be used in PrepareProposal and ProcessProposal.
-	ValidateVoteExtensionsFn func(
-		ctx sdk.Context,
-		height int64,
-		extInfo cometabci.ExtendedCommitInfo,
-	) error
-)
+// ValidateVoteExtensionsFn defines the function for validating vote extensions. This
+// function is not explicitly used to validate the oracle data but rather that
+// the signed vote extensions included in the proposal are valid and provide
+// a supermajority of vote extensions for the current block. This method is
+// expected to be used in PrepareProposal and ProcessProposal.
+type ValidateVoteExtensionsFn func(
+	ctx sdk.Context,
+	height int64,
+	extInfo cometabci.ExtendedCommitInfo,
+) error
 
 // NewDefaultValidateVoteExtensionsFn returns a new DefaultValidateVoteExtensionsFn.
 func NewDefaultValidateVoteExtensionsFn(chainID string, validatorStore baseapp.ValidatorStore) ValidateVoteExtensionsFn {

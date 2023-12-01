@@ -520,7 +520,11 @@ func (vv validatorVotes) Less(i, j int) bool {
 
 		for _, priceBz := range ve.Prices {
 			var price big.Int
-			iTotalPrice += int(price.SetBytes(priceBz).Uint64())
+			if err := price.GobDecode(priceBz); err != nil {
+				panic(err)
+			}
+
+			iTotalPrice += int(price.Int64())
 		}
 	}
 
@@ -530,7 +534,11 @@ func (vv validatorVotes) Less(i, j int) bool {
 
 		for _, priceBz := range ve.Prices {
 			var price big.Int
-			jTotalPrice += int(price.SetBytes(priceBz).Uint64())
+			if err := price.GobDecode(priceBz); err != nil {
+				panic(err)
+			}
+
+			jTotalPrice += int(price.Int64())
 		}
 	}
 

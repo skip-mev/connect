@@ -38,9 +38,9 @@ type PreBlockHandler struct { //golint:ignore
 	// oracle data to state.
 	keeper Keeper
 
-	// currencyPairIDStrategy is the strategy used for generating / retrieving
-	// IDs for currency-pairs
-	currencyPairIDStrategy currencypair.CurrencyPairStrategy
+	// currencyPairStrategy is the strategy used for generating / retrieving
+	// price information for currency pairs.
+	currencyPairStrategy currencypair.CurrencyPairStrategy
 
 	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
 	// This is used to decode vote extensions included in transactions.
@@ -65,15 +65,15 @@ func NewOraclePreBlockHandler(
 	ecCodec codec.ExtendedCommitCodec,
 ) *PreBlockHandler {
 	return &PreBlockHandler{
-		logger:                 logger,
-		priceAggregator:        aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
-		aggregateFnWithCtx:     aggregateFn,
-		keeper:                 oracleKeeper,
-		validatorAddress:       validatorConsAddress,
-		metrics:                metrics,
-		currencyPairIDStrategy: strategy,
-		voteExtensionCodec:     veCodec,
-		extendedCommitCodec:    ecCodec,
+		logger:               logger,
+		priceAggregator:      aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		aggregateFnWithCtx:   aggregateFn,
+		keeper:               oracleKeeper,
+		validatorAddress:     validatorConsAddress,
+		metrics:              metrics,
+		currencyPairStrategy: strategy,
+		voteExtensionCodec:   veCodec,
+		extendedCommitCodec:  ecCodec,
 	}
 }
 

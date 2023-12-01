@@ -94,7 +94,7 @@ func (s *PreBlockTestSuite) SetupTest() {
 func (s *PreBlockTestSuite) SetupSubTest() {
 	s.key = storetypes.NewKVStoreKey(oracletypes.StoreKey)
 	s.transientKey = storetypes.NewTransientStoreKey("transient_test")
-	s.ctx = testutils.CreateBaseSDKContextWithKeys(s.T(), s.key, s.transientKey)
+	s.ctx = testutils.CreateBaseSDKContextWithKeys(s.T(), s.key, s.transientKey).WithExecMode(sdk.ExecModeFinalize)
 
 	// Use the default aggregation function for testing
 	mockValidatorStore := mocks.NewValidatorStore(s.T())

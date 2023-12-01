@@ -11,7 +11,6 @@ vote extensions which may lead to in-deterministics results.
 into their block proposal.
 
 
-
 ## Prepare Proposal
 
 When vote extensions are enabled, the proposer will then inject the vote extensions into their block proposal. The reason why this is done is to ensure that the vote extensions can be aggregated and written to state in `PreBlock`. `PreBlock` does not have access to the vote extensions used to create the block proposal, so the vote extensions must be injected into the block proposal. Additionally, this allows the network to have a cannonical set of vote extensions for a given height.
