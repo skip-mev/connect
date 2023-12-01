@@ -135,7 +135,7 @@ test-integration: docker-build
 	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race -timeout 30m
 
 test: tidy
-	@go test -v -race $(shell go list ./... | grep -v tests/)
+	@go test -v -race -coverprofile=cover.out $(shell go list ./... | grep -v tests/)
 
 .PHONY: test test-e2e
 
