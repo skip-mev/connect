@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/cometbft/cometbft/types"
+
 	"cosmossdk.io/log"
 
 	cometabci "github.com/cometbft/cometbft/abci/types"
@@ -57,6 +59,13 @@ var (
 	val1 = sdk.ConsAddress("val1")
 	val2 = sdk.ConsAddress("val2")
 	val3 = sdk.ConsAddress("val3")
+
+	removeFirstTxn = sdk.PrepareProposalHandler(func(_ sdk.Context, proposal *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+		if len(proposal.Txs) > 0 {
+			return &cometabci.ResponsePrepareProposal{Txs: proposal.Txs[1:]}, nil
+		}
+		return &cometabci.ResponsePrepareProposal{Txs: proposal.Txs}, nil
+	})
 )
 
 type ProposalsTestSuite struct {
@@ -93,11 +102,13 @@ func (s *ProposalsTestSuite) SetupTest() {
 
 func (s *ProposalsTestSuite) TestPrepareProposal() {
 	testCases := []struct {
-		name                 string
-		request              func() *cometabci.RequestPrepareProposal
-		veEnabled            bool
-		currencyPairStrategy func() currencypair.CurrencyPairStrategy
-		expectedError        bool
+		name                   string
+		request                func() *cometabci.RequestPrepareProposal
+		veEnabled              bool
+		currencyPairStrategy   func() currencypair.CurrencyPairStrategy
+		expectedProposalTxns   int
+		expectedError          bool
+		prepareProposalHandler *sdk.PrepareProposalHandler
 	}{
 		{
 			name: "vote extensions not enabled",
@@ -112,7 +123,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
 				return currencypairmocks.NewCurrencyPairStrategy(s.T())
 			},
-			expectedError: false,
+			expectedProposalTxns: 0,
+			expectedError:        false,
 		},
 		{
 			name: "vote extensions disabled with multiple txs",
@@ -132,7 +144,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
 				return currencypairmocks.NewCurrencyPairStrategy(s.T())
 			},
-			expectedError: false,
+			expectedProposalTxns: 2,
+			expectedError:        false,
 		},
 		{
 			name: "vote extensions enabled with no txs and a single vote extension",
@@ -160,7 +173,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				return cpStrategy
 			},
-			expectedError: false,
+			expectedProposalTxns: 1,
+			expectedError:        false,
 		},
 		{
 			name: "vote extensions enabled with multiple txs and a single vote extension",
@@ -191,7 +205,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				return cpStrategy
 			},
-			expectedError: false,
+			expectedProposalTxns: 3,
+			expectedError:        false,
 		},
 		{
 			name: "vote extensions enabled with multiple vote extensions",
@@ -237,7 +252,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				return cpStrategy
 			},
-			expectedError: false,
+			expectedProposalTxns: 1,
+			expectedError:        false,
 		},
 		{
 			name: "cannot build block with invalid a vote extension",
@@ -266,7 +282,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
 				return currencypairmocks.NewCurrencyPairStrategy(s.T())
 			},
-			expectedError: true,
+			expectedProposalTxns: 0,
+			expectedError:        true,
 		},
 		{
 			name: "can reject a block with malformed prices",
@@ -289,7 +306,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
 				return currencypairmocks.NewCurrencyPairStrategy(s.T())
 			},
-			expectedError: true,
+			expectedProposalTxns: 1,
+			expectedError:        true,
 		},
 		{
 			name: "can reject a request with ve that contains invalid currency pair id",
@@ -316,7 +334,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				return cpStrategy
 			},
-			expectedError: true,
+			expectedProposalTxns: 1,
+			expectedError:        true,
 		},
 		{
 			name: "can reject a request with ve that contains invalid price bytes",
@@ -344,13 +363,118 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				return cpStrategy
 			},
-			expectedError: true,
+			expectedProposalTxns: 1,
+			expectedError:        true,
+		},
+		{
+			name: "can limit tx inclusion based on MaxTxBytes",
+			request: func() *cometabci.RequestPrepareProposal {
+				proposal := [][]byte{
+					[]byte("tx1"),
+					[]byte("tx2"),
+					make([]byte, 500),
+				}
+
+				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
+				s.Require().NoError(err)
+
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
+				s.Require().NoError(err)
+
+				prop := s.createRequestPrepareProposal(
+					commitInfo,
+					proposal,
+					3,
+				)
+				prop.MaxTxBytes = 500
+				return prop
+			},
+			veEnabled: true,
+			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
+				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
+
+				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
+				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
+
+				return cpStrategy
+			},
+			expectedProposalTxns: 3,
+			expectedError:        false,
+		},
+		{
+			name: "can re-inject removed VE Txn",
+			request: func() *cometabci.RequestPrepareProposal {
+				proposal := [][]byte{}
+
+				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
+				s.Require().NoError(err)
+
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
+				s.Require().NoError(err)
+
+				prop := s.createRequestPrepareProposal(
+					commitInfo,
+					proposal,
+					3,
+				)
+				prop.MaxTxBytes = 500
+				return prop
+			},
+			veEnabled: true,
+			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
+				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
+
+				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
+				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
+
+				return cpStrategy
+			},
+			expectedProposalTxns:   1,
+			expectedError:          false,
+			prepareProposalHandler: &removeFirstTxn,
+		},
+		{
+			name: "can exclude VE Txn when it's too large",
+			request: func() *cometabci.RequestPrepareProposal {
+				proposal := [][]byte{
+					[]byte("one"),
+					[]byte("two"),
+				}
+
+				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
+				s.Require().NoError(err)
+
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
+				s.Require().NoError(err)
+
+				prop := s.createRequestPrepareProposal(
+					commitInfo,
+					proposal,
+					3,
+				)
+				prop.MaxTxBytes = 40
+				return prop
+			},
+			veEnabled: true,
+			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
+				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
+
+				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
+				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
+
+				return cpStrategy
+			},
+			expectedProposalTxns: 2,
+			expectedError:        false,
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			s.prepareProposalHandler = baseapp.NoOpPrepareProposal()
+			if tc.prepareProposalHandler != nil {
+				s.prepareProposalHandler = *tc.prepareProposalHandler
+			}
 			s.processProposalHandler = baseapp.NoOpProcessProposal()
 			s.proposalHandler = proposals.NewProposalHandler(
 				log.NewTestLogger(s.T()),
@@ -375,10 +499,14 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 			s.Require().NoError(err)
 
+			s.Require().Equal(len(response.Txs), tc.expectedProposalTxns)
+
 			if tc.veEnabled {
 				bz, err := s.extCommitCodec.Encode(req.LocalLastCommit)
 				s.Require().NoError(err)
-				s.Require().Equal(response.Txs[0], bz)
+				if int64(len(bz)) < req.MaxTxBytes {
+					s.Require().Equal(response.Txs[0], bz)
+				}
 			}
 		})
 	}
@@ -711,6 +839,8 @@ func (s *ProposalsTestSuite) createRequestPrepareProposal(
 		Txs:             txs,
 		LocalLastCommit: extendedCommitInfo,
 		Height:          height,
+		// Use the same default MaxTxBytes that comet does
+		MaxTxBytes: types.DefaultBlockParams().MaxBytes,
 	}
 }
 
