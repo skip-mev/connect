@@ -24,6 +24,10 @@ func NewOracleService(
 		metrics       = oraclemetrics.NewNopMetrics()
 	)
 
+	if !oracleCfg.Enabled {
+		return service.NewNoopOracleService(), nil
+	}
+
 	if oracleCfg.InProcess {
 		if metricsCfg.OracleMetrics.Enabled {
 			metrics = oraclemetrics.NewMetrics()

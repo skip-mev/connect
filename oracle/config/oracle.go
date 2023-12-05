@@ -14,6 +14,9 @@ import (
 // local client oracle is instantiated. Note, that you can only have one oracle
 // running at a time.
 type OracleConfig struct {
+	// Enabled specifies whether the side-car oracle needs to be run.
+	Enabled bool `mapstructure:"enabled" toml:"enabled"`
+
 	// InProcess specifies whether the oracle configured, is currently running as a remote grpc-server, or will be run in process
 	InProcess bool `mapstructure:"in_process" toml:"in_process"`
 

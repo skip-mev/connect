@@ -66,6 +66,7 @@ func DefaultOracleConfig(node *cosmos.ChainNode) (
 		InProcess:      false,
 		RemoteAddress:  fmt.Sprintf("%s:%s", oracle.HostName(), "8080"),
 		Timeout:        500 * time.Millisecond,
+		Enabled:        true,
 	}
 
 	// get the consensus address of the node
