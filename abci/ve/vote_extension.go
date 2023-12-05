@@ -69,6 +69,10 @@ func NewVoteExtensionHandler(
 // ensure liveliness.
 func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestExtendVote) (resp *cometabci.ResponseExtendVote, err error) {
+		if req == nil {
+			h.logger.Error("extend vote handler received a nil request")
+			return nil, fmt.Errorf("ExtendVoteHandler received a nil request")
+		}
 		// Catch any panic that occurs in the oracle request.
 		defer func() {
 			if r := recover(); r != nil {
@@ -171,6 +175,10 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 // We reject any vote extensions that are not empty and fail to unmarshal or contain invalid prices.
 func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (*cometabci.ResponseVerifyVoteExtension, error) {
+		if req == nil {
+			h.logger.Error("VerifyVoteExtensionHandler received a nil request")
+			return nil, fmt.Errorf("VerifyVoteExtensionHandler received a nil request")
+		}
 		// decode the vote-extension bytes
 		voteExtension, err := h.voteExtensionCodec.Decode(req.VoteExtension)
 		if err != nil {

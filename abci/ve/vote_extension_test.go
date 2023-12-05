@@ -58,7 +58,20 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		oracleService        func() service.OracleService
 		currencyPairStrategy func() *mockstrategies.CurrencyPairStrategy
 		expectedResponse     *abcitypes.OracleVoteExtension
+		extendVoteRequest    func() *cometabci.RequestExtendVote
+		expectedError        bool
 	}{
+		{
+			name: "nil request returns an error",
+			oracleService: func() service.OracleService {
+				return mocks.NewOracleService(s.T())
+			},
+			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
+			},
+			extendVoteRequest: func() *cometabci.RequestExtendVote { return nil },
+			expectedError:     true,
+		},
 		{
 			name: "oracle service returns no prices",
 			oracleService: func() service.OracleService {
@@ -272,14 +285,21 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 				preblock.NoOpPreBlocker(),
 			)
 
-			resp, err := h.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
-			s.Require().NoError(err)
-			s.Require().NotNil(resp)
+			req := &cometabci.RequestExtendVote{}
+			if tc.extendVoteRequest != nil {
+				req = tc.extendVoteRequest()
+			}
+			resp, err := h.ExtendVoteHandler()(s.ctx, req)
+			if !tc.expectedError {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				ve, err := codec.Decode(resp.VoteExtension)
+				s.Require().NoError(err)
+				s.Require().Equal(tc.expectedResponse.Prices, ve.Prices)
+			} else {
+				s.Require().Error(err)
+			}
 
-			ve, err := codec.Decode(resp.VoteExtension)
-			s.Require().NoError(err)
-
-			s.Require().Equal(tc.expectedResponse.Prices, ve.Prices)
 		})
 	}
 }
@@ -297,6 +317,17 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 		expectedResponse     *cometabci.ResponseVerifyVoteExtension
 		expectedError        bool
 	}{
+		{
+			name: "nil request returns error",
+			getReq: func() *cometabci.RequestVerifyVoteExtension {
+				return nil
+			},
+			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
+			},
+			expectedResponse: nil,
+			expectedError:    true,
+		},
 		{
 			name: "empty vote extension",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
