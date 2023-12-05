@@ -117,8 +117,8 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
 
-			// Inject the vote extensions into the proposal. These contain the oracle data
-			// for the current block which will be committed to state in PreBlock.
+			// Create the vote extension injection data which will be injected into the proposal. These contain the
+			// oracle data for the current block which will be committed to state in PreBlock.
 			extInfoBz, err = h.extendedCommitCodec.Encode(extInfo)
 			if err != nil {
 				h.logger.Error(
@@ -129,8 +129,19 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
-
-			req.Txs = append([][]byte{extInfoBz}, req.Txs...)
+			// Inject our VE Tx to the req Txs, we want to do this before h.prepareProposalHandler(ctx, req) so that
+			// the wrapped application can have access to the injected VE tx.
+			extInfoBzSize := int64(len(extInfoBz))
+			if extInfoBzSize < req.MaxTxBytes {
+				req.Txs = append([][]byte{extInfoBz}, req.Txs...)
+				// Reserve bytes for our VE Tx
+				req.MaxTxBytes -= extInfoBzSize
+			} else {
+				h.logger.Error("omitting VE because size consumes entire block",
+					"extInfoBzSize", extInfoBzSize,
+					"MaxTxBytes", req.MaxTxBytes)
+				extInfoBz = []byte{}
+			}
 		}
 
 		// Build the proposal.
@@ -139,12 +150,10 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			h.logger.Error("failed to prepare proposal", "err", err)
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
+		h.logger.Info("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
 
-		// If the embedded prepare proposal handler threw out the injected data.
-		// Re-inject it.
-		if voteExtensionsEnabled && (len(resp.Txs) < 1 || !bytes.Equal(resp.Txs[0], extInfoBz)) {
-			resp.Txs = append([][]byte{extInfoBz}, resp.Txs...)
-		}
+		// Inject our VE Tx ( if extInfoBz is non-empty), and resize our response Txs to respect req.MaxTxBytes
+		resp.Txs = h.injectAndResize(resp.Txs, extInfoBz, req.MaxTxBytes+int64(len(extInfoBz)))
 
 		h.logger.Info(
 			"prepared proposal",
@@ -154,6 +163,35 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 		return resp, nil
 	}
+}
+
+// injectAndResize returns a tx array containing the injectTx at the beginning followed by appTxs.
+// The returned transaction array is bounded by maxSizeBytes, and the function is idempotent meaning the
+// injectTx will only appear once regardless of how many times you attempt to inject it.
+// If injectTx is large enough, all originalTxs may end up being excluded from the returned tx array.
+func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxSizeBytes int64) [][]byte {
+	var returnedTxs [][]byte
+	var consumedBytes int64
+	// If VEs are enabled and our VE Tx isn't already in the appTxs, inject it here
+	if len(injectTx) != 0 && (len(appTxs) < 1 || !bytes.Equal(appTxs[0], injectTx)) {
+		injectBytes := int64(len(injectTx))
+		// Ensure the VE Tx is in the response if we have room.
+		// We may want to be more aggressive in the future about dedicating block space for application-specific Txs.
+		// However, the VE Tx size should be relatively stable so MaxTxBytes should be set w/ plenty of headroom.
+		if injectBytes <= maxSizeBytes {
+			consumedBytes += injectBytes
+			returnedTxs = append(returnedTxs, injectTx)
+		}
+	}
+	// Add as many appTxs to the returned proposal as possible given our maxSizeBytes constraint
+	for _, tx := range appTxs {
+		consumedBytes += int64(len(tx))
+		if consumedBytes > maxSizeBytes {
+			return returnedTxs
+		}
+		returnedTxs = append(returnedTxs, tx)
+	}
+	return returnedTxs
 }
 
 // ProcessProposalHandler returns a ProcessProposalHandler that will be called
