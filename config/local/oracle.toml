@@ -3,6 +3,9 @@
 ###############################################################################
 # OracleConfig TOML Configuration
 
+# Enabled specifies whether the side-car oracle needs to be run.
+enabled = true
+
 # InProcess specifies whether the oracle is currently running in-process (true) or out-of-process (false).
 in_process = true
 

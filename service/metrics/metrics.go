@@ -26,12 +26,20 @@ type Config struct {
 
 // ValidateBasic performs basic validation of the config
 func (c Config) ValidateBasic() error {
-	_, err := sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
-	return err
+	if c.Enabled {
+		_, err := sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
+		return err
+	}
+
+	return nil
 }
 
 func (c Config) ConsAddress() (sdk.ConsAddress, error) {
-	return sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
+	if c.Enabled {
+		return sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
+	}
+
+	return nil, nil
 }
 
 //go:generate mockery --name Metrics --filename mock_metrics.go

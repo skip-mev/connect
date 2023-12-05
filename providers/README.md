@@ -160,7 +160,7 @@ Now your provider can be resolved by the application!
 Now that the provider is registered with the application, you must configure your provider within your oracle configuration file that is consumed by the application. The oracle configuration file has two parts:
 
 1. The basic oracle configuration paths itself that is consumed by the application - `app.toml`.
-2. the oracle configuration file that is consumed by the oracle service - `oracle.toml`.
+2. the oracle configuration file that is consumed by the oracle service - `oracle.toml` \ `metrics.toml`.
 
 #### `app.toml`
 
@@ -205,6 +205,9 @@ The `oracle.toml` file is the configuration file that is consumed by the oracle 
 ###                               Oracle                                    ###
 ###############################################################################
 # OracleConfig TOML Configuration
+
+# Enabled specifies whether the oracle side-car needs to be run.
+enabled = true
 
 # InProcess specifies whether the oracle is currently running in-process (true) or out-of-process (false).
 in_process = true
