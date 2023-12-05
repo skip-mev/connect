@@ -90,8 +90,8 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		)
 
 		if req == nil {
-			h.logger.Error("prepare proposal received a nil request")
-			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, fmt.Errorf("received a nil request")
+			h.logger.Error("PrepareProposalHandler received a nil request")
+			return nil, fmt.Errorf("PrepareProposalHandler received a nil request")
 		}
 
 		// If vote extensions are enabled, the current proposer must inject the extended commit
@@ -200,6 +200,10 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 // a supermajority of signatures and vote extensions for the current block.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+		if req == nil {
+			h.logger.Error("ProcessProposalHandler received a nil request")
+			return nil, fmt.Errorf("received a nil request")
+		}
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(

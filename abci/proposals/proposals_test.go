@@ -111,6 +111,16 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 		prepareProposalHandler *sdk.PrepareProposalHandler
 	}{
 		{
+			name: "nil request returns an error",
+			request: func() *cometabci.RequestPrepareProposal {
+				return nil
+			},
+			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
+				return currencypairmocks.NewCurrencyPairStrategy(s.T())
+			},
+			expectedError: true,
+		},
+		{
 			name: "vote extensions not enabled",
 			request: func() *cometabci.RequestPrepareProposal {
 				return s.createRequestPrepareProposal(
@@ -521,6 +531,16 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 		expectedError        bool
 		expectedResp         *cometabci.ResponseProcessProposal
 	}{
+		{
+			name: "returns an error on nil request",
+			request: func() *cometabci.RequestProcessProposal {
+				return nil
+			},
+			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
+				return currencypairmocks.NewCurrencyPairStrategy(s.T())
+			},
+			expectedError: true,
+		},
 		{
 			name: "can process any empty block when vote extensions are disabled",
 			request: func() *cometabci.RequestProcessProposal {
