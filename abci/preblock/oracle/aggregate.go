@@ -37,15 +37,17 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 	// Iterate through all vote extensions and consolidate all price info before
 	// aggregating.
 	isVotePresentInCommit := false
+	valAddrStr := h.validatorAddress.String()
 	for _, vote := range votes {
-		if vote.ConsAddress.String() == h.validatorAddress.String() {
+		consAddrStr := vote.ConsAddress.String()
+		if consAddrStr == valAddrStr {
 			isVotePresentInCommit = true
 		}
 
-		if err := h.addVoteToAggregator(ctx, vote.ConsAddress.String(), vote.OracleVoteExtension); err != nil {
+		if err := h.addVoteToAggregator(ctx, consAddrStr, vote.OracleVoteExtension); err != nil {
 			h.logger.Error(
 				"failed to add vote to aggregator",
-				"validator_address", vote.ConsAddress.String(),
+				"validator_address", consAddrStr,
 				"err", err,
 			)
 
@@ -80,7 +82,7 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
-	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice, len(oracleData.Prices))
 	for cpID, priceBz := range oracleData.Prices {
 		if len(priceBz) > ve.MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(priceBz))

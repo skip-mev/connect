@@ -30,20 +30,6 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			false,
 		},
 		{
-			"if the message is incorrectly formatted (CurrencyPairs) - fail",
-			&types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
-				CurrencyPairs: []types.CurrencyPair{
-					// incorrectly formatted currency-pair
-					{
-						Base:  "A",
-						Quote: "b",
-					},
-				},
-			},
-			false,
-		},
-		{
 			"if the authority is not the authority of the module - fail",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress([]byte("not-authority")).String(),
@@ -212,17 +198,6 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			"if the message is incorrectly formatted (authority) - fail",
 			&types.MsgRemoveCurrencyPairs{
 				Authority: "abc",
-			},
-			false,
-		},
-		{
-			"if the message is incorrectly formatted (CurrencyPairIDs) - fail",
-			&types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
-				CurrencyPairIds: []string{
-					// incorrectly formatted currency-pair
-					"abc", "AA/BB",
-				},
 			},
 			false,
 		},

@@ -30,10 +30,6 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 		return nil, fmt.Errorf("message cannot be empty")
 	}
 
-	if err := req.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("message validation failed: %v", err)
-	}
-
 	// check that the authority of the message is the authority of the module
 	if req.Authority != m.k.authority.String() {
 		return nil, fmt.Errorf("message validation failed: authority %s is not module authority %s", req.Authority, m.k.authority)
@@ -59,11 +55,6 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 	// check validity of message
 	if req == nil {
 		return nil, fmt.Errorf("message cannot be empty")
-	}
-
-	// perform state-less validation on message
-	if err := req.ValidateBasic(); err != nil {
-		return nil, err
 	}
 
 	// check that the authority of the message is the authority of the module
