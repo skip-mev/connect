@@ -3,11 +3,11 @@ package coinmarketcap
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"sync"
 
 	"cosmossdk.io/log"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -56,14 +56,14 @@ func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, providerCo
 // GetPrices returns the current set of prices for each of the currency pairs. This method starts all
 // price requests concurrently, and waits for them all to finish, or for the context to be cancelled,
 // at which point it aggregates the responses and returns.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	type priceData struct {
-		aggregator.QuotePrice
-		oracletypes.CurrencyPair
+		price *big.Int
+		cp    oracletypes.CurrencyPair
 	}
 
 	// create response channel
-	resp := make(chan priceData, len(p.pairs))
+	responses := make(chan priceData, len(p.pairs))
 
 	wg := sync.WaitGroup{}
 	wg.Add(len(p.pairs))
@@ -81,7 +81,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 				p.logger.Info("Fetched price for pair", "pair", pair, "provider", p.Name())
 
 				// send price to response channel
-				resp <- priceData{
+				responses <- priceData{
 					qp,
 					pair,
 				}
@@ -91,7 +91,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 
 	// close response channel when all requests have been processed, or if context is cancelled
 	go func() {
-		defer close(resp)
+		defer close(responses)
 
 		select {
 		case <-ctx.Done():
@@ -102,9 +102,9 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 	}()
 
 	// fan-in
-	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
-	for price := range resp {
-		prices[price.CurrencyPair] = price.QuotePrice
+	prices := make(map[oracletypes.CurrencyPair]*big.Int)
+	for resp := range responses {
+		prices[resp.cp] = resp.price
 	}
 
 	return prices, nil

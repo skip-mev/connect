@@ -8,7 +8,6 @@ import (
 
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/abci/ve/types"
-	"github.com/skip-mev/slinky/aggregator"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -31,8 +30,7 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 	votes []Vote,
 ) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	// Reset the price aggregator and set the aggregationFn to use the latest application-state.
-	h.priceAggregator.SetAggregationFn(h.aggregateFnWithCtx(ctx))
-	h.priceAggregator.ResetProviderPrices()
+	h.priceAggregator.ResetProviderData()
 
 	// Iterate through all vote extensions and consolidate all price info before
 	// aggregating.
@@ -56,8 +54,8 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 	}
 
 	// Compute the final prices for each currency pair.
-	h.priceAggregator.UpdatePrices()
-	prices := h.priceAggregator.GetPrices()
+	h.priceAggregator.AggregateDataFromContext(ctx)
+	prices := h.priceAggregator.GetAggregatedData()
 
 	// Record metrics for this validator.
 	if ctx.ExecMode() == sdk.ExecModeFinalize {
@@ -82,7 +80,7 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
-	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice, len(oracleData.Prices))
+	prices := make(map[oracletypes.CurrencyPair]*big.Int, len(oracleData.Prices))
 	for cpID, priceBz := range oracleData.Prices {
 		if len(priceBz) > ve.MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(priceBz))
@@ -117,9 +115,7 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 			continue
 		}
 
-		prices[cp] = aggregator.QuotePrice{
-			Price: price,
-		}
+		prices[cp] = price
 	}
 
 	h.logger.Debug(
@@ -128,7 +124,7 @@ func (h *PreBlockHandler) addVoteToAggregator(ctx sdk.Context, address string, o
 		"validator_address", address,
 	)
 
-	h.priceAggregator.SetProviderPrices(address, prices)
+	h.priceAggregator.SetProviderData(address, prices)
 
 	return nil
 }

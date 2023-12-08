@@ -4,8 +4,7 @@ package mocks
 
 import (
 	context "context"
-
-	aggregator "github.com/skip-mev/slinky/aggregator"
+	big "math/big"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -34,19 +33,19 @@ func (_m *Provider) GetPairs() []types.CurrencyPair {
 }
 
 // GetPrices provides a mock function with given fields: _a0
-func (_m *Provider) GetPrices(_a0 context.Context) (map[types.CurrencyPair]aggregator.QuotePrice, error) {
+func (_m *Provider) GetPrices(_a0 context.Context) (map[types.CurrencyPair]*big.Int, error) {
 	ret := _m.Called(_a0)
 
-	var r0 map[types.CurrencyPair]aggregator.QuotePrice
+	var r0 map[types.CurrencyPair]*big.Int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) (map[types.CurrencyPair]aggregator.QuotePrice, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) (map[types.CurrencyPair]*big.Int, error)); ok {
 		return rf(_a0)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) map[types.CurrencyPair]aggregator.QuotePrice); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) map[types.CurrencyPair]*big.Int); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[types.CurrencyPair]aggregator.QuotePrice)
+			r0 = ret.Get(0).(map[types.CurrencyPair]*big.Int)
 		}
 	}
 
@@ -89,8 +88,7 @@ func (_m *Provider) SetPairs(_a0 ...types.CurrencyPair) {
 func NewProvider(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *Provider {
+}) *Provider {
 	mock := &Provider{}
 	mock.Mock.Test(t)
 

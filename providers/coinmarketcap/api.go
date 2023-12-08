@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"strings"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -38,7 +38,7 @@ const (
 //		  ]
 //		}
 //	  }
-func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (aggregator.QuotePrice, error) {
+func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*big.Int, error) {
 	p.logger.Info("Fetching price for pair", "pair", pair)
 
 	// make request to coinmarketcap api w/ X-CMC_PRO_API_KEY header set to api-key
@@ -59,18 +59,16 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 			req.Header.Add(headerFieldKey, p.config.APIKey)
 		},
 	); err != nil {
-		return aggregator.QuotePrice{}, err
+		return nil, err
 	}
 
 	// unmarshal request body to get price
 	price, err := unmarshalRequest(resp, pair.Base, pair.Quote)
 	if err != nil {
-		return aggregator.QuotePrice{}, err
+		return nil, err
 	}
 
-	return aggregator.QuotePrice{
-		Price: providers.Float64ToBigInt(price, pair.Decimals()),
-	}, nil
+	return providers.Float64ToBigInt(price, pair.Decimals()), nil
 }
 
 // getPriceEndpoint returns the endpoint to fetch prices from.

@@ -19,24 +19,20 @@ var (
 func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
-		providerPrices aggregator.AggregatedProviderPrices
+		providerPrices aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]
 		expectedPrices map[oracletypes.CurrencyPair]*big.Int
 	}{
 		{
 			"empty provider prices",
-			aggregator.AggregatedProviderPrices{},
+			aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]{},
 			map[oracletypes.CurrencyPair]*big.Int{},
 		},
 		{
 			"single provider price",
-			aggregator.AggregatedProviderPrices{
+			aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]{
 				"provider1": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(100),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
+					btcusd: big.NewInt(100),
+					ethusd: big.NewInt(200),
 				},
 			},
 			map[oracletypes.CurrencyPair]*big.Int{
@@ -46,22 +42,14 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"multiple provider prices",
-			aggregator.AggregatedProviderPrices{
+			aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]{
 				"provider1": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(100),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
+					btcusd: big.NewInt(100),
+					ethusd: big.NewInt(200),
 				},
 				"provider2": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(300),
-					},
+					btcusd: big.NewInt(200),
+					ethusd: big.NewInt(300),
 				},
 			},
 			map[oracletypes.CurrencyPair]*big.Int{
@@ -71,25 +59,15 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"multiple provider prices with different assets",
-			aggregator.AggregatedProviderPrices{
+			aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]{
 				"provider1": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(100),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
+					btcusd: big.NewInt(100),
+					ethusd: big.NewInt(200),
 				},
 				"provider2": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(300),
-					},
-					usdtusd: aggregator.QuotePrice{
-						Price: nil, // should be ignored
-					},
+					btcusd:  big.NewInt(200),
+					ethusd:  big.NewInt(300),
+					usdtusd: nil, // should be ignored
 				},
 			},
 			map[oracletypes.CurrencyPair]*big.Int{
@@ -99,30 +77,18 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"odd number of provider prices",
-			aggregator.AggregatedProviderPrices{
+			aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]{
 				"provider1": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(100),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
+					btcusd: big.NewInt(100),
+					ethusd: big.NewInt(200),
 				},
 				"provider2": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(200),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(300),
-					},
+					btcusd: big.NewInt(200),
+					ethusd: big.NewInt(300),
 				},
 				"provider3": {
-					btcusd: aggregator.QuotePrice{
-						Price: big.NewInt(300),
-					},
-					ethusd: aggregator.QuotePrice{
-						Price: big.NewInt(400),
-					},
+					btcusd: big.NewInt(300),
+					ethusd: big.NewInt(400),
 				},
 			},
 			map[oracletypes.CurrencyPair]*big.Int{

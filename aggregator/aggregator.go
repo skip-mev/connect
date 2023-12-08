@@ -1,146 +1,147 @@
 package aggregator
 
 import (
-	"math/big"
 	"sync"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"golang.org/x/exp/maps"
-
-	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type (
-	// AggregatedProviderPrices defines a type alias for a map
-	// of provider -> asset -> QuotePrice
-	AggregatedProviderPrices map[string]map[types.CurrencyPair]QuotePrice
+	// AggregatedProviderData defines a type alias for a map
+	// of provider -> data (i.e. a set of prices).
+	AggregatedProviderData[K comparable, V any] map[K]V
 
-	// AggregateFn is the function used to aggregate prices from each provider. Providers
-	// should be responsible for aggregating prices using TWAPs, TVWAPs, etc. The oracle
-	// will then compute the canonical price for a given currency pair by computing the
-	// median price across all providers.
-	AggregateFn func(providers AggregatedProviderPrices) map[types.CurrencyPair]*big.Int
+	// AggregateFn is the function used to aggregate data from each provider. Given a
+	// map of provider -> values, the aggregate function should return a final
+	// value.
+	AggregateFn[K comparable, V any] func(providers AggregatedProviderData[K, V]) V
 
-	// AggregateFnFromContext is a function that is used to parametrize an aggregateFn by an sdk.Context. This is used
-	// to allow the aggregateFn to access the latest state of an application. I.e computing a stake weighted median based
-	// on the latest validator set.
-	AggregateFnFromContext func(ctx sdk.Context) AggregateFn
+	// AggregateFnFromContext is a function that is used to parametrize an aggregateFn
+	// by an sdk.Context. This is used to allow the aggregateFn to access the latest state
+	// of an application i.e computing a stake weighted median based on the latest validator set.
+	AggregateFnFromContext[K comparable, V any] func(ctx sdk.Context) AggregateFn[K, V]
 )
 
-// PriceAggregator is a simple aggregator for provider prices.
-// It is thread-safe since it is assumed to be called concurrently in price
-// fetching goroutines.
-type PriceAggregator struct {
+// DataAggregator is a simple aggregator for provider data. It is thread-safe since
+// it is assumed to be called concurrently in data fetching goroutines. The DataAggregator
+// requires one of either an aggregateFn or aggregateFnFromContext to be set.
+type DataAggregator[K comparable, V any] struct {
 	mtx sync.RWMutex
 
-	// aggregateFn is the function used to aggregate prices from each provider.
-	aggregateFn AggregateFn
+	// aggregateFn is the function used to aggregate data from each provider.
+	aggregateFn AggregateFn[K, V]
 
-	// providerPrices is a map of provider -> asset -> QuotePrice
-	providerPrices AggregatedProviderPrices
+	// aggregateFnFromContext is a function that is used to parametrize an aggregateFn
+	// by an sdk.Context.
+	aggregateFnFromContext AggregateFnFromContext[K, V]
 
-	// prices is the current set of prices aggregated across the providers.
-	prices map[types.CurrencyPair]*big.Int
+	// providerData is a map of provider -> value (i.e. prices).
+	providerData AggregatedProviderData[K, V]
+
+	// aggregatedData is the current set of aggregated data across the providers.
+	aggregatedData V
 }
 
-// NewPriceAggregator returns a PriceAggregator. The PriceAggregator
-// is responsible for aggregating prices from each provider and computing
-// the final oracle price for each asset. The PriceAggregator also tracks
-// the current set of prices from each provider. The PricesAggregator is
+// NewDataAggregator returns a DataAggregator. The DataAggregator
+// is responsible for aggregating data (such as prices) from each provider
+// and computing the final aggregated data (final price). The DataAggregator is
 // thread-safe since it is assumed to be called concurrently in price
 // fetching goroutines.
-func NewPriceAggregator(aggregateFn AggregateFn) *PriceAggregator {
-	if aggregateFn == nil {
-		panic("Aggregate function cannot be nil")
+func NewDataAggregator[K comparable, V any](opts ...DataAggregatorOption[K, V]) *DataAggregator[K, V] {
+	agg := &DataAggregator[K, V]{
+		providerData:   make(AggregatedProviderData[K, V]),
+		aggregatedData: *new(V),
 	}
 
-	return &PriceAggregator{
-		providerPrices: make(AggregatedProviderPrices),
-		aggregateFn:    aggregateFn,
-		prices:         make(map[types.CurrencyPair]*big.Int),
+	for _, opt := range opts {
+		opt(agg)
 	}
+
+	if agg.aggregateFn == nil && agg.aggregateFnFromContext == nil {
+		panic("aggregateFn and aggregateFnFromContext cannot both be nil")
+	}
+
+	if agg.aggregateFn != nil && agg.aggregateFnFromContext != nil {
+		panic("aggregateFn and aggregateFnFromContext cannot both be set")
+	}
+
+	return agg
 }
 
-// GetProviderPrices returns a copy of the aggregated provider prices.
-func (p *PriceAggregator) GetProviderPrices() AggregatedProviderPrices {
+// GetProviderData returns a copy of the aggregated provider data.
+func (p *DataAggregator[K, V]) GetProviderData() AggregatedProviderData[K, V] {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	cpy := make(AggregatedProviderPrices)
-	maps.Copy(cpy, p.providerPrices)
+	cpy := make(AggregatedProviderData[K, V])
+	maps.Copy(cpy, p.providerData)
 
 	return cpy
 }
 
-// GetPricesByProvider returns the prices for a given provider.
-func (p *PriceAggregator) GetPricesByProvider(provider string) map[types.CurrencyPair]QuotePrice {
+// GetDataByProvider returns the data currently stored for a given provider.
+func (p *DataAggregator[K, V]) GetDataByProvider(provider K) V {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	cpy := make(map[types.CurrencyPair]QuotePrice)
-	maps.Copy(cpy, p.providerPrices[provider])
+	cpy := make(AggregatedProviderData[K, V])
+	maps.Copy(cpy, p.providerData)
 
-	return cpy
+	return cpy[provider]
 }
 
-// SetQuotePrices updates the price aggregator with the latest ticker prices
-// from the given provider.
-func (p *PriceAggregator) SetProviderPrices(provider string, prices map[types.CurrencyPair]QuotePrice) {
+// SetProviderData updates the data aggregator with the given provider
+// and data.
+func (p *DataAggregator[K, V]) SetProviderData(provider K, data V) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
-	if len(prices) == 0 {
-		p.providerPrices[provider] = make(map[types.CurrencyPair]QuotePrice)
-		return
+	p.providerData[provider] = data
+}
+
+// ResetProviderData resets the data aggregator for all providers.
+func (p *DataAggregator[K, V]) ResetProviderData() {
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
+
+	p.providerData = make(AggregatedProviderData[K, V])
+}
+
+// AggregateData aggregates the current set of data by using the aggregate function.
+func (p *DataAggregator[K, V]) AggregateData() {
+	if p.aggregateFn == nil {
+		panic("aggregateFn cannot be nil")
 	}
 
-	p.providerPrices[provider] = prices
+	providerData := p.GetProviderData()
+	p.SetAggregatedData(p.aggregateFn(providerData))
 }
 
-// ResetProviderPrices resets the price aggregator for all providers.
-func (p *PriceAggregator) ResetProviderPrices() {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
-
-	p.providerPrices = make(AggregatedProviderPrices)
-}
-
-// SetAggregationFn sets the aggregate function used to aggregate prices from each provider.
-func (p *PriceAggregator) SetAggregationFn(fn AggregateFn) {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
-
-	p.aggregateFn = fn
-}
-
-// UpdatePrices updates the current set of prices by using the aggregate function.
-func (p *PriceAggregator) UpdatePrices() {
-	providerPrices := p.GetProviderPrices()
-
-	// Ensure nil prices are not set
-	if prices := p.aggregateFn(providerPrices); prices != nil {
-		p.SetPrices(prices)
-		return
+// AggregateDataFromContext aggregates the current set of data by using the aggregate function
+// parametrized by the given context.
+func (p *DataAggregator[K, V]) AggregateDataFromContext(ctx sdk.Context) {
+	if p.aggregateFnFromContext == nil {
+		panic("aggregateFnFromContext cannot be nil")
 	}
 
-	p.SetPrices(make(map[types.CurrencyPair]*big.Int))
+	aggregateFn := p.aggregateFnFromContext(ctx)
+	providerData := p.GetProviderData()
+	p.SetAggregatedData(aggregateFn(providerData))
 }
 
-// GetPrices returns the aggregated prices based on the provided currency pairs.
-func (p *PriceAggregator) GetPrices() map[types.CurrencyPair]*big.Int {
+// GetAggregatedData returns the aggregated data based on the provided data.
+func (p *DataAggregator[K, V]) GetAggregatedData() V {
 	p.mtx.RLock()
 	defer p.mtx.RUnlock()
 
-	cpy := make(map[types.CurrencyPair]*big.Int)
-	maps.Copy(cpy, p.prices)
-
-	return cpy
+	return p.aggregatedData
 }
 
-// SetPrices sets the current set of prices.
-func (p *PriceAggregator) SetPrices(prices map[types.CurrencyPair]*big.Int) {
+// SetAggregatedData sets the current set of aggregated data.
+func (p *DataAggregator[K, V]) SetAggregatedData(aggregatedData V) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
 
-	p.prices = prices
+	p.aggregatedData = aggregatedData
 }

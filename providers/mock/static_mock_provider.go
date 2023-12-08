@@ -7,7 +7,6 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -19,7 +18,7 @@ type (
 	// StaticMockProvider defines a mocked exchange rate provider using fixed exchange
 	// rates.
 	StaticMockProvider struct {
-		exchangeRates map[oracletypes.CurrencyPair]aggregator.QuotePrice
+		exchangeRates map[oracletypes.CurrencyPair]*big.Int
 		currencyPairs []oracletypes.CurrencyPair
 	}
 
@@ -34,17 +33,17 @@ type (
 // will always return the same static data. Meant to be used for testing.
 func NewStaticMockProvider() *StaticMockProvider {
 	return &StaticMockProvider{
-		exchangeRates: map[oracletypes.CurrencyPair]aggregator.QuotePrice{
-			oracletypes.NewCurrencyPair("COSMOS", "USDC"):   {Price: big.NewInt(1134)},
-			oracletypes.NewCurrencyPair("COSMOS", "USDT"):   {Price: big.NewInt(1135)},
-			oracletypes.NewCurrencyPair("COSMOS", "USD"):    {Price: big.NewInt(1136)},
-			oracletypes.NewCurrencyPair("OSMOSIS", "USDC"):  {Price: big.NewInt(1137)},
-			oracletypes.NewCurrencyPair("OSMOSIS", "USDT"):  {Price: big.NewInt(1138)},
-			oracletypes.NewCurrencyPair("OSMOSIS", "USD"):   {Price: big.NewInt(1139)},
-			oracletypes.NewCurrencyPair("ETHEREUM", "USDC"): {Price: big.NewInt(1140)},
-			oracletypes.NewCurrencyPair("ETHEREUM", "USDT"): {Price: big.NewInt(1141)},
-			oracletypes.NewCurrencyPair("ETHEREUM", "USD"):  {Price: big.NewInt(1142)},
-			oracletypes.NewCurrencyPair("BITCOIN", "USD"):   {Price: big.NewInt(1143)},
+		exchangeRates: map[oracletypes.CurrencyPair]*big.Int{
+			oracletypes.NewCurrencyPair("COSMOS", "USDC"):   big.NewInt(1134),
+			oracletypes.NewCurrencyPair("COSMOS", "USDT"):   big.NewInt(1135),
+			oracletypes.NewCurrencyPair("COSMOS", "USD"):    big.NewInt(1136),
+			oracletypes.NewCurrencyPair("OSMOSIS", "USDC"):  big.NewInt(1137),
+			oracletypes.NewCurrencyPair("OSMOSIS", "USDT"):  big.NewInt(1138),
+			oracletypes.NewCurrencyPair("OSMOSIS", "USD"):   big.NewInt(1139),
+			oracletypes.NewCurrencyPair("ETHEREUM", "USDC"): big.NewInt(1140),
+			oracletypes.NewCurrencyPair("ETHEREUM", "USDT"): big.NewInt(1141),
+			oracletypes.NewCurrencyPair("ETHEREUM", "USD"):  big.NewInt(1142),
+			oracletypes.NewCurrencyPair("BITCOIN", "USD"):   big.NewInt(1143),
 		},
 		currencyPairs: []oracletypes.CurrencyPair{
 			oracletypes.NewCurrencyPair("COSMOS", "USDC"),
@@ -75,7 +74,7 @@ func NewStaticMockProviderFromConfig(providerConfig config.ProviderConfig) (*Sta
 	}
 
 	s := StaticMockProvider{
-		exchangeRates: make(map[oracletypes.CurrencyPair]aggregator.QuotePrice),
+		exchangeRates: make(map[oracletypes.CurrencyPair]*big.Int),
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
 
@@ -90,7 +89,7 @@ func NewStaticMockProviderFromConfig(providerConfig config.ProviderConfig) (*Sta
 			return nil, fmt.Errorf("failed to parse price %s for currency pair %s", price, cpString)
 		}
 
-		s.exchangeRates[cp] = aggregator.QuotePrice{Price: price}
+		s.exchangeRates[cp] = price
 		s.currencyPairs = append(s.currencyPairs, cp)
 	}
 
@@ -103,7 +102,7 @@ func (p StaticMockProvider) Name() string {
 }
 
 // GetPrices returns the mocked exchange rates.
-func (p StaticMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
+func (p StaticMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	return p.exchangeRates, nil
 }
 

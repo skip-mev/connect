@@ -1,6 +1,8 @@
 package client
 
 import (
+	"math/big"
+
 	"cosmossdk.io/log"
 
 	"github.com/skip-mev/slinky/aggregator"
@@ -8,6 +10,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/service"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // NewOracleService reads a config and instantiates either a grpc-client / local-client from a config
@@ -17,7 +20,7 @@ func NewOracleService(
 	oracleCfg config.OracleConfig,
 	metricsCfg config.MetricsConfig,
 	factory oracle.ProviderFactory,
-	aggregateFn aggregator.AggregateFn,
+	aggregateFn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int],
 ) (service.OracleService, error) {
 	var (
 		oracleService service.OracleService

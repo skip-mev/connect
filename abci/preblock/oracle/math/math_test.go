@@ -48,28 +48,26 @@ func TestMathTestSuite(t *testing.T) {
 func (s *MathTestSuite) TestVoteWeightedMedian() {
 	cases := []struct {
 		name              string
-		providerPrices    aggregator.AggregatedProviderPrices
+		providerPrices    aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]
 		validators        []validator
 		totalBondedTokens sdkmath.Int
 		expectedPrices    map[types.CurrencyPair]*big.Int
 	}{
 		{
 			name:              "no providers",
-			providerPrices:    aggregator.AggregatedProviderPrices{},
+			providerPrices:    aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{},
 			validators:        []validator{},
 			totalBondedTokens: sdkmath.NewInt(100),
 			expectedPrices:    map[types.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "single provider entire stake + single price",
-			providerPrices: aggregator.AggregatedProviderPrices{
-				validator1.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+			providerPrices: aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{
+				validator1.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(100),
-					},
+					}: big.NewInt(100),
 				},
 			},
 			validators: []validator{
@@ -88,14 +86,12 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 		},
 		{
 			name: "single provider with not enough stake + single price",
-			providerPrices: aggregator.AggregatedProviderPrices{
-				validator1.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+			providerPrices: aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{
+				validator1.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(100),
-					},
+					}: big.NewInt(100),
 				},
 			},
 			validators: []validator{
@@ -109,20 +105,16 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 		},
 		{
 			name: "single provider with just enough stake + multiple prices",
-			providerPrices: aggregator.AggregatedProviderPrices{
-				validator1.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+			providerPrices: aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{
+				validator1.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(100),
-					},
+					}: big.NewInt(100),
 					{
 						Base:  "ETH",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(200),
-					},
+					}: big.NewInt(200),
 				},
 			},
 			validators: []validator{
@@ -145,22 +137,18 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 		},
 		{
 			name: "2 providers with equal stake + single asset",
-			providerPrices: aggregator.AggregatedProviderPrices{
-				validator1.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+			providerPrices: aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{
+				validator1.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(100),
-					},
+					}: big.NewInt(100),
 				},
-				validator2.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+				validator2.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(200),
-					},
+					}: big.NewInt(200),
 				},
 			},
 			validators: []validator{
@@ -183,30 +171,24 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 		},
 		{
 			name: "3 providers with equal stake + single asset",
-			providerPrices: aggregator.AggregatedProviderPrices{
-				validator1.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+			providerPrices: aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{
+				validator1.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(100),
-					},
+					}: big.NewInt(100),
 				},
-				validator2.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+				validator2.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(200),
-					},
+					}: big.NewInt(200),
 				},
-				validator3.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+				validator3.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(300),
-					},
+					}: big.NewInt(300),
 				},
 			},
 			validators: []validator{
@@ -233,42 +215,32 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 		},
 		{
 			name: "3 providers with equal stake + multiple assets",
-			providerPrices: aggregator.AggregatedProviderPrices{
-				validator1.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+			providerPrices: aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]{
+				validator1.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(100),
-					},
+					}: big.NewInt(100),
 					{
 						Base:  "ETH",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(200),
-					},
+					}: big.NewInt(200),
 				},
-				validator2.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+				validator2.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(300),
-					},
+					}: big.NewInt(300),
 					{
 						Base:  "ETH",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(400),
-					},
+					}: big.NewInt(400),
 				},
-				validator3.String(): map[types.CurrencyPair]aggregator.QuotePrice{
+				validator3.String(): map[types.CurrencyPair]*big.Int{
 					{
 						Base:  "BTC",
 						Quote: "USD",
-					}: {
-						Price: big.NewInt(500),
-					},
+					}: big.NewInt(500),
 				},
 			},
 			validators: []validator{

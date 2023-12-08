@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"strings"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -36,7 +36,7 @@ const (
 //	    "usd": 10000
 //	  }
 //	}
-func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
+func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	url := p.getPriceEndpoint(p.bases, p.quotes)
 
 	// make the request to url and unmarshal the response into respMap
@@ -56,7 +56,7 @@ func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 		return nil, err
 	}
 
-	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
+	prices := make(map[oracletypes.CurrencyPair]*big.Int)
 
 	for _, pair := range p.pairs {
 		base := strings.ToLower(pair.Base)
@@ -70,14 +70,7 @@ func (p *Provider) getPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 			continue
 		}
 
-		quotePrice, err := aggregator.NewQuotePrice(
-			providers.Float64ToBigInt(respMap[base][quote], pair.Decimals()),
-		)
-		if err != nil {
-			continue
-		}
-
-		prices[pair] = quotePrice
+		prices[pair] = providers.Float64ToBigInt(respMap[base][quote], pair.Decimals())
 	}
 
 	return prices, nil

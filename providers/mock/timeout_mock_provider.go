@@ -2,9 +2,9 @@ package mock
 
 import (
 	"context"
+	"math/big"
 	"time"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -34,7 +34,7 @@ func (p TimeoutMockProvider) Name() string {
 }
 
 // GetPrices always times out for the timeout mock provider.
-func (p TimeoutMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
+func (p TimeoutMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	time.Sleep(1*time.Second + p.timeout)
 
 	panic("mock provider should always times out")

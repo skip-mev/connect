@@ -38,8 +38,8 @@ func VoteWeightedMedianFromContext(
 	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
-) aggregator.AggregateFnFromContext {
-	return func(ctx sdk.Context) aggregator.AggregateFn {
+) aggregator.AggregateFnFromContext[string, map[types.CurrencyPair]*big.Int] {
+	return func(ctx sdk.Context) aggregator.AggregateFn[string, map[types.CurrencyPair]*big.Int] {
 		return VoteWeightedMedian(ctx, logger, validatorStore, threshold)
 	}
 }
@@ -61,8 +61,8 @@ func VoteWeightedMedian(
 	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
-) aggregator.AggregateFn {
-	return func(providers aggregator.AggregatedProviderPrices) map[types.CurrencyPair]*big.Int {
+) aggregator.AggregateFn[string, map[types.CurrencyPair]*big.Int] {
+	return func(providers aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]) map[types.CurrencyPair]*big.Int {
 		priceInfo := make(map[types.CurrencyPair]VoteWeightedPriceInfo)
 
 		// Iterate through all providers and store stake weight + price for each currency pair.
@@ -93,9 +93,9 @@ func VoteWeightedMedian(
 			voteWeight := validator.GetBondedTokens()
 
 			// Iterate through all prices and store the price + vote weight for each currency pair.
-			for currencyPair, quotePrice := range validatorPrices {
+			for currencyPair, price := range validatorPrices {
 				// Only include prices that are not nil.
-				if quotePrice.Price == nil {
+				if price == nil {
 					logger.Info(
 						"price is nil",
 						"currency_pair", currencyPair.ToString(),
@@ -118,7 +118,7 @@ func VoteWeightedMedian(
 				priceInfo[currencyPair] = VoteWeightedPriceInfo{
 					Prices: append(cpInfo.Prices, VoteWeightedPricePerValidator{
 						VoteWeight: voteWeight,
-						Price:      quotePrice.Price,
+						Price:      price,
 					}),
 					TotalWeight: cpInfo.TotalWeight.Add(voteWeight),
 				}

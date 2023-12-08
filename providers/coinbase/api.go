@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"strings"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -23,7 +23,7 @@ import (
 //	    "currency": "USD"
 //	  }
 //	}
-func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*aggregator.QuotePrice, error) {
+func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*big.Int, error) {
 	baseSymbol, ok := p.config.NameToSymbol[strings.ToLower(pair.Base)]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
@@ -60,9 +60,7 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 		return nil, err
 	}
 
-	return &aggregator.QuotePrice{
-		Price: price,
-	}, nil
+	return price, nil
 }
 
 // getSpotPriceEndpoint is the Coinbase endpoint for getting the spot price of a

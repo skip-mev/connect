@@ -299,7 +299,6 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 			} else {
 				s.Require().Error(err)
 			}
-
 		})
 	}
 }
