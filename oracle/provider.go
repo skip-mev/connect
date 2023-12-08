@@ -1,10 +1,11 @@
 package oracle
 
 import (
+	"math/big"
+
 	"cosmossdk.io/log"
 	"golang.org/x/net/context"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -17,7 +18,7 @@ type Provider interface {
 	Name() string
 
 	// GetPrices returns the aggregated prices based on the provided currency pairs.
-	GetPrices(context.Context) (map[types.CurrencyPair]aggregator.QuotePrice, error)
+	GetPrices(context.Context) (map[types.CurrencyPair]*big.Int, error)
 
 	// SetPairs sets the pairs that the provider should fetch prices for.
 	SetPairs(...types.CurrencyPair)

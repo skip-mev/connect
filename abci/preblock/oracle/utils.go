@@ -68,7 +68,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 // the number of tickers for which the validator reported a price.
 func (h *PreBlockHandler) recordMetrics(validatorVotePresent bool) {
 	// determine which tickers this validator reported prices for
-	validatorPrices := h.priceAggregator.GetPricesByProvider(h.validatorAddress.String())
+	validatorPrices := h.priceAggregator.GetDataByProvider(h.validatorAddress.String())
 
 	h.logger.Info(
 		"recording metrics for validator",

@@ -3,12 +3,12 @@ package erc4626sharepriceoracle
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"sync"
 
 	"cosmossdk.io/log"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/evm"
@@ -82,14 +82,14 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the prices of the given pairs.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	type priceData struct {
-		aggregator.QuotePrice
-		oracletypes.CurrencyPair
+		price *big.Int
+		cp    oracletypes.CurrencyPair
 	}
 
 	// create response channel
-	resp := make(chan priceData, len(p.pairs))
+	responses := make(chan priceData, len(p.pairs))
 
 	wg := sync.WaitGroup{}
 	wg.Add(len(p.pairs))
@@ -107,7 +107,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 				p.logger.Info("fetched price for pair", "pair", pair, "provider", p.Name())
 
 				// send price to response channel
-				resp <- priceData{
+				responses <- priceData{
 					qp,
 					pair,
 				}
@@ -117,7 +117,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 
 	// close response channel when all requests have been processed, or if context is cancelled
 	go func() {
-		defer close(resp)
+		defer close(responses)
 
 		select {
 		case <-ctx.Done():
@@ -128,9 +128,9 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 	}()
 
 	// fan-in
-	prices := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
-	for price := range resp {
-		prices[price.CurrencyPair] = price.QuotePrice
+	prices := make(map[oracletypes.CurrencyPair]*big.Int)
+	for resp := range responses {
+		prices[resp.cp] = resp.price
 	}
 
 	return prices, nil

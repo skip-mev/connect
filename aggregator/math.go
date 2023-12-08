@@ -9,28 +9,29 @@ import (
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
-func ComputeMedianWithContext(_ sdk.Context) AggregateFn {
+func ComputeMedianWithContext(_ sdk.Context) AggregateFn[string, map[types.CurrencyPair]*big.Int] {
 	return ComputeMedian()
 }
 
 // ComputeMedian inputs the aggregated prices from all providers and computes
 // the median price for each asset.
-func ComputeMedian() AggregateFn {
-	return func(providers AggregatedProviderPrices) map[types.CurrencyPair]*big.Int {
-		pricesByAsset := make(map[types.CurrencyPair][]QuotePrice)
+func ComputeMedian() AggregateFn[string, map[types.CurrencyPair]*big.Int] {
+	return func(providers AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]) map[types.CurrencyPair]*big.Int {
+		// Aggregate prices across all providers for each asset.
+		pricesByAsset := make(map[types.CurrencyPair][]*big.Int)
 		for _, providerPrices := range providers {
-			for cp, ticker := range providerPrices {
+			for cp, price := range providerPrices {
 				// Only include prices that are not nil
-				if ticker.Price == nil {
+				if price == nil {
 					continue
 				}
 
 				// Initialize the asset array if it doesn't exist
 				if _, ok := pricesByAsset[cp]; !ok {
-					pricesByAsset[cp] = make([]QuotePrice, 0)
+					pricesByAsset[cp] = make([]*big.Int, 0)
 				}
 
-				pricesByAsset[cp] = append(pricesByAsset[cp], ticker)
+				pricesByAsset[cp] = append(pricesByAsset[cp], price)
 			}
 		}
 
@@ -43,7 +44,7 @@ func ComputeMedian() AggregateFn {
 			}
 
 			sort.SliceStable(prices, func(i, j int) bool {
-				switch prices[i].Price.Cmp(prices[j].Price) {
+				switch prices[i].Cmp(prices[j]) {
 				case -1:
 					return true
 				case 1:
@@ -58,12 +59,12 @@ func ComputeMedian() AggregateFn {
 			// If the number of prices is even, compute the average of the two middle prices.
 			numPrices := len(prices)
 			if numPrices%2 == 0 {
-				medianPrice := new(big.Int).Add(prices[middle-1].Price, prices[middle].Price)
+				medianPrice := new(big.Int).Add(prices[middle-1], prices[middle])
 				medianPrice = medianPrice.Div(medianPrice, new(big.Int).SetUint64(2))
 
 				medianPrices[cp] = medianPrice
 			} else {
-				medianPrices[cp] = prices[middle].Price
+				medianPrices[cp] = prices[middle]
 			}
 		}
 

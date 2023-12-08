@@ -3,10 +3,10 @@ package coinbase
 import (
 	"context"
 	"fmt"
+	"math/big"
 
 	"cosmossdk.io/log"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -61,8 +61,8 @@ func (p *Provider) Name() string {
 }
 
 // GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
-	resp := make(map[oracletypes.CurrencyPair]aggregator.QuotePrice)
+func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
+	resp := make(map[oracletypes.CurrencyPair]*big.Int)
 
 	for _, currencyPair := range p.pairs {
 		p.logger.Info("fetching price for pair", currencyPair.ToString())
@@ -77,7 +77,7 @@ func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]
 			continue
 		}
 
-		resp[currencyPair] = *spotPrice
+		resp[currencyPair] = spotPrice
 	}
 
 	return resp, nil

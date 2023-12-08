@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"math/big"
+
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,6 +12,7 @@ import (
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // PreBlockHandler is responsible for aggregating oracle data from each
@@ -20,11 +23,11 @@ type PreBlockHandler struct { //golint:ignore
 
 	// priceAggregator is responsible for aggregating prices from each validator
 	// and computing the final oracle price for each asset.
-	priceAggregator *aggregator.PriceAggregator
+	priceAggregator *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]
 
 	// aggregateFnWithCtx is the aggregate function parametrized by the latest
 	// state of the application.
-	aggregateFnWithCtx aggregator.AggregateFnFromContext
+	aggregateFnWithCtx aggregator.AggregateFnFromContext[string, map[oracletypes.CurrencyPair]*big.Int]
 
 	// metrics is responsible for reporting / aggregating consensus-specific
 	// metrics for this validator.
@@ -56,7 +59,7 @@ type PreBlockHandler struct { //golint:ignore
 // is responsible for writing oracle data included in vote extensions to state.
 func NewOraclePreBlockHandler(
 	logger log.Logger,
-	aggregateFn aggregator.AggregateFnFromContext,
+	aggregateFn aggregator.AggregateFnFromContext[string, map[oracletypes.CurrencyPair]*big.Int],
 	oracleKeeper Keeper,
 	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
@@ -64,9 +67,13 @@ func NewOraclePreBlockHandler(
 	veCodec codec.VoteExtensionCodec,
 	ecCodec codec.ExtendedCommitCodec,
 ) *PreBlockHandler {
+	priceAggregator := aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
+		aggregator.WithAggregateFnFromContext(aggregateFn),
+	)
+
 	return &PreBlockHandler{
 		logger:               logger,
-		priceAggregator:      aggregator.NewPriceAggregator(aggregateFn(sdk.Context{})),
+		priceAggregator:      priceAggregator,
 		aggregateFnWithCtx:   aggregateFn,
 		keeper:               oracleKeeper,
 		validatorAddress:     validatorConsAddress,

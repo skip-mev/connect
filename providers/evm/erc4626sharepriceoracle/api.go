@@ -8,35 +8,34 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers/evm"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.QuotePrice, error) {
+func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, error) {
 	metadata, ok := p.config.TokenNameToMetadata[pair.Quote]
 	if !ok {
-		return aggregator.QuotePrice{}, fmt.Errorf("token %s metadata not found", pair.Quote)
+		return nil, fmt.Errorf("token %s metadata not found", pair.Quote)
 	}
 
 	client, err := ethclient.Dial(p.rpcEndpoint)
 	if err != nil {
-		return aggregator.QuotePrice{}, err
+		return nil, err
 	}
 
 	contractAddress, found := p.getPairContractAddress(pair)
 	if !found {
-		return aggregator.QuotePrice{}, fmt.Errorf("contract address for pair %v not found", pair)
+		return nil, fmt.Errorf("contract address for pair %v not found", pair)
 	}
 
 	contract, err := NewERC4626SharePriceOracle(common.HexToAddress(contractAddress), client)
 	if err != nil {
-		return aggregator.QuotePrice{}, err
+		return nil, err
 	}
 
 	latest, err := contract.GetLatest(&bind.CallOpts{})
 	if err != nil || latest.NotSafeToUse {
-		return aggregator.QuotePrice{}, err
+		return nil, err
 	}
 
 	var _price *big.Int
@@ -46,12 +45,7 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (aggregator.Qu
 		_price = latest.Ans
 	}
 
-	quote, err := aggregator.NewQuotePrice(_price)
-	if err != nil {
-		return aggregator.QuotePrice{}, err
-	}
-
-	return quote, nil
+	return _price, nil
 }
 
 // getRPCEndpoint returns the endpoint to fetch prices from.

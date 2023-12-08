@@ -49,7 +49,7 @@ type Oracle struct {
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *aggregator.PriceAggregator
+	priceAggregator *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
@@ -67,7 +67,7 @@ func New(
 	logger log.Logger,
 	config config.OracleConfig,
 	providerFactory ProviderFactory,
-	aggregateFn aggregator.AggregateFn,
+	aggregateFn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int],
 	m metrics.Metrics,
 ) (*Oracle, error) {
 	if logger == nil {
@@ -86,12 +86,16 @@ func New(
 	logger = logger.With("server", "oracle")
 	logger.Info("creating oracle", "update_interval", config.UpdateInterval, "num_providers", len(providers))
 
+	priceAggregator := aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
+		aggregator.WithAggregateFn(aggregateFn),
+	)
+
 	return &Oracle{
 		logger:          logger,
 		closer:          ssync.NewCloser(),
 		oracleTicker:    config.UpdateInterval,
 		providers:       providers,
-		priceAggregator: aggregator.NewPriceAggregator(aggregateFn),
+		priceAggregator: priceAggregator,
 		metrics:         m,
 	}, nil
 }
@@ -183,7 +187,7 @@ func (o *Oracle) tick(ctx context.Context) {
 	}()
 
 	// Reset all of the provider prices before fetching new prices.
-	o.priceAggregator.ResetProviderPrices()
+	o.priceAggregator.ResetProviderData()
 
 	// Fetch prices from each provider concurrently. Each provider is responsible
 	// for fetching prices for the given set of (base, quote) currency pairs.
@@ -205,7 +209,7 @@ func (o *Oracle) tick(ctx context.Context) {
 	o.logger.Info("oracle fetched prices from providers")
 
 	// Compute aggregated prices and update the oracle.
-	o.priceAggregator.UpdatePrices()
+	o.priceAggregator.AggregateData()
 	o.SetLastSyncTime(time.Now().UTC())
 
 	// update the last sync time
@@ -223,7 +227,7 @@ func (o *Oracle) fetchPricesFn(ctx context.Context, provider Provider) func() er
 	return func() error {
 		o.logger.Info("fetching prices", "provider", provider.Name())
 
-		pricesCh := make(chan map[oracletypes.CurrencyPair]aggregator.QuotePrice)
+		pricesCh := make(chan map[oracletypes.CurrencyPair]*big.Int)
 		errCh := make(chan error)
 
 		// start timer
@@ -269,13 +273,13 @@ func (o *Oracle) fetchPricesFn(ctx context.Context, provider Provider) func() er
 		case <-ctx.Done():
 			err = ctx.Err()
 			o.logger.Info("context ended before receiving response", "provider", provider.Name(), "err", err)
-			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
+			o.priceAggregator.SetProviderData(provider.Name(), nil)
 		case prices := <-pricesCh:
 			o.logger.Info("fetching prices finished", "provider", provider.Name(), "num_prices", len(prices))
-			o.priceAggregator.SetProviderPrices(provider.Name(), prices)
+			o.priceAggregator.SetProviderData(provider.Name(), prices)
 		case err = <-errCh:
 			o.logger.Error("fetching prices failed", "provider", provider.Name(), "err", err)
-			o.priceAggregator.SetProviderPrices(provider.Name(), nil)
+			o.priceAggregator.SetProviderData(provider.Name(), nil)
 		}
 
 		// update the provider status
@@ -305,5 +309,5 @@ func (o *Oracle) GetLastSyncTime() time.Time {
 
 // GetPrices returns the aggregate prices from the oracle.
 func (o *Oracle) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
-	return o.priceAggregator.GetPrices()
+	return o.priceAggregator.GetAggregatedData()
 }

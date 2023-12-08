@@ -2,8 +2,8 @@ package mock
 
 import (
 	"context"
+	"math/big"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -31,6 +31,6 @@ func (p FailingMockProvider) Name() string {
 }
 
 // GetPrices always fails for the failing mock provider.
-func (p FailingMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]aggregator.QuotePrice, error) {
+func (p FailingMockProvider) GetPrices(_ context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
 	panic("mock provider always fails")
 }
