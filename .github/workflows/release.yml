@@ -5,7 +5,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v0.**" # Push events to matching v0.*, i.e. v0.0.0, v0.0.0-alpha.0, etc.
 
 permissions:
   contents: read
@@ -26,6 +26,6 @@ jobs:
       - name: Create release
         uses: goreleaser/goreleaser-action@v5
         with:
-          args: release --rm-dist --release-notes ./RELEASE_NOTES.md
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

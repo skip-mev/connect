@@ -5,10 +5,10 @@ release:
   github:
     owner: skip-mev
     name: slinky
+  prerelease: true
 
 builds:
-  - skip: true
-
+  - main: 'cmd/oracle/main.go'
 archives:
   - format: tar.gz
     wrap_in_directory: true
@@ -24,3 +24,7 @@ snapshot:
 
 changelog:
   skip: false
+  use: 'github'
+
+checksum:
+  disable: false
