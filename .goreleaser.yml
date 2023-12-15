@@ -9,6 +9,9 @@ release:
 
 builds:
   - main: 'cmd/oracle/main.go'
+    goos:
+    - 'linux'
+    - 'darwin'
 archives:
   - format: tar.gz
     wrap_in_directory: true
