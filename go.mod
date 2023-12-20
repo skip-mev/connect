@@ -16,6 +16,7 @@ require (
 	cosmossdk.io/x/circuit v0.0.0-20230726190121-58855c685902
 	cosmossdk.io/x/tx v0.12.0
 	cosmossdk.io/x/upgrade v0.0.0-20230704191127-8d80df8e3c5a
+	github.com/alecthomas/assert/v2 v2.2.2
 	github.com/bits-and-blooms/bitset v1.11.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.0
@@ -32,6 +33,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/holiman/uint256 v1.2.4 // indirect
+	github.com/klauspost/compress v1.17.4
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/prometheus/client_golang v1.17.0
 	github.com/spf13/cast v1.6.0
@@ -46,11 +48,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
-)
-
-require (
-	github.com/alecthomas/assert/v2 v2.2.2
-	github.com/klauspost/compress v1.17.3
 	mvdan.cc/gofumpt v0.5.0
 )
 
