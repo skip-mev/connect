@@ -49,6 +49,7 @@ require (
 )
 
 require (
+	github.com/alecthomas/assert/v2 v2.2.2
 	github.com/klauspost/compress v1.17.3
 	mvdan.cc/gofumpt v0.5.0
 )
@@ -78,6 +79,7 @@ require (
 	github.com/OpenPeeDeeP/depguard/v2 v2.1.0 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/alecthomas/go-check-sumtype v0.1.3 // indirect
+	github.com/alecthomas/repr v0.2.0 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.2 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect

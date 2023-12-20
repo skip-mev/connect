@@ -199,9 +199,6 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
 		oCfg, mCfg := DefaultOracleConfig(node)
-		oCfg.Providers = append(oCfg.Providers, oracleconfig.ProviderConfig{
-			Name: "static-mock-provider",
-		})
 
 		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg, mCfg)
 		RestartOracle(node)
@@ -318,8 +315,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 			oracleConfig, metricsConfig := DefaultOracleConfig(node)
 			oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
-				Name: "static-mock-provider",
-				Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+				Name:     "static-mock-provider",
+				Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+				Timeout:  10 * time.Second,
+				Interval: 10 * time.Second,
 			})
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
@@ -529,8 +528,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
-			Name: "static-mock-provider",
-			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			Name:     "static-mock-provider",
+			Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			Timeout:  10 * time.Second,
+			Interval: 10 * time.Second,
 		})
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 
@@ -602,8 +603,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 		oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
-			Name: "static-mock-provider",
-			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			Name:     "static-mock-provider",
+			Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			Timeout:  10 * time.Second,
+			Interval: 10 * time.Second,
 		})
 
 		// Write the static provider config to the node
