@@ -14,8 +14,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
@@ -44,7 +44,7 @@ func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
 	s.SlinkyIntegrationSuite.SetupSuite()
 
 	// initialize multiSigUsers
-	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), genesisAmount, s.chain, s.chain)
+	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), math.NewInt(genesisAmount), s.chain, s.chain)
 	s.multiSigUser1 = users[0]
 	s.multiSigUser2 = users[1]
 

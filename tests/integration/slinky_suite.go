@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"cosmossdk.io/math"
 	"fmt"
 	"math/big"
 	"os"
@@ -12,9 +13,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/pelletier/go-toml"
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
@@ -172,7 +173,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 
 	// start the chain
 	BuildPOBInterchain(s.T(), context.Background(), s.chain)
-	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), genesisAmount, s.chain)
+	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), math.NewInt(genesisAmount), s.chain)
 	s.user = users[0]
 }
 

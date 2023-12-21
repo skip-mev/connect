@@ -19,10 +19,10 @@ import (
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/pelletier/go-toml"
-	interchaintest "github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
-	"github.com/strangelove-ventures/interchaintest/v7/testutil"
+	interchaintest "github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 	"google.golang.org/grpc"
@@ -324,7 +324,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
 	rand := rand.Str(10)
-	prop, err := chain.BuildProposal(msgs, rand, rand, rand, deposit.String())
+	prop, err := chain.BuildProposal(msgs, rand, rand, rand, deposit.String(), submitter, false)
 	if err != nil {
 		return "", err
 	}

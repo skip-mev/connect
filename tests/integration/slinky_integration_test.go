@@ -2,15 +2,15 @@ package integration_test
 
 import (
 	"fmt"
+	"github.com/strangelove-ventures/interchaintest/v8"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/slinky/tests/integration"
@@ -85,25 +85,23 @@ var (
 		NumFullNodes:  &numFullNodes,
 		Version:       "latest",
 		NoHostMount:   &noHostMount,
-		GasAdjustment: &gasAdjustment,
 		ChainConfig: ibc.ChainConfig{
 			EncodingConfig: &encodingConfig,
 			Images: []ibc.DockerImage{
 				image,
 			},
-			Type:                   "cosmos",
-			Name:                   "slinky",
-			Denom:                  denom,
-			ChainID:                "chain-id-0",
-			Bin:                    "slinkyd",
-			Bech32Prefix:           "cosmos",
-			CoinType:               "118",
-			GasAdjustment:          gasAdjustment,
-			GasPrices:              fmt.Sprintf("0%s", denom),
-			TrustingPeriod:         "48h",
-			NoHostMount:            noHostMount,
-			UsingNewGenesisCommand: true,
-			ModifyGenesis:          cosmos.ModifyGenesis(defaultGenesisKV),
+			Type:           "cosmos",
+			Name:           "slinky",
+			Denom:          denom,
+			ChainID:        "chain-id-0",
+			Bin:            "slinkyd",
+			Bech32Prefix:   "cosmos",
+			CoinType:       "118",
+			GasAdjustment:  gasAdjustment,
+			GasPrices:      fmt.Sprintf("0%s", denom),
+			TrustingPeriod: "48h",
+			NoHostMount:    noHostMount,
+			ModifyGenesis:  cosmos.ModifyGenesis(defaultGenesisKV),
 		},
 	}
 )

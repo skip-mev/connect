@@ -16,8 +16,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pelletier/go-toml"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	testutil "github.com/strangelove-ventures/interchaintest/v7/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	testutil "github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
