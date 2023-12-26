@@ -7,8 +7,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/evm/erc4626"
-	"github.com/skip-mev/slinky/providers/evm/erc4626sharepriceoracle"
 	"github.com/skip-mev/slinky/providers/mock"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -42,10 +40,10 @@ func providerFromProviderConfig(logger log.Logger, cps []types.CurrencyPair, cfg
 	// TODO: Uncomment this when the coinmarketcap API is fixed.
 	// case "coinmarketcap":
 	// 	return coinmarketcap.NewProvider(logger, cps, cfg)
-	case "erc4626":
-		return erc4626.NewProvider(logger, cps, cfg)
-	case "erc4626-share-price-oracle":
-		return erc4626sharepriceoracle.NewProvider(logger, cps, cfg)
+	// case "erc4626":
+	// 	return erc4626.NewProvider(logger, cps, cfg)
+	// case "erc4626-share-price-oracle":
+	// 	return erc4626sharepriceoracle.NewProvider(logger, cps, cfg)
 	case "failing-mock-provider":
 		// This will always panic whenever GetPrices is called
 		return mock.NewFailingMockProvider(), nil

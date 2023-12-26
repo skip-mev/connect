@@ -12,13 +12,13 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, error) {
-	client, err := ethclient.Dial(p.rpcEndpoint)
+func (h *ERC4626APIHandler) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, error) {
+	client, err := ethclient.Dial(h.rpcEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	contractAddress, found := p.getPairContractAddress(pair)
+	contractAddress, found := h.getPairContractAddress(pair)
 	if !found {
 		return nil, fmt.Errorf("contract address for pair %v not found", pair)
 	}
@@ -29,7 +29,7 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, err
 	}
 
 	// we've already confirmed the entry exists in the map so we can skip the check
-	decimals, _ := p.getQuoteTokenDecimals(pair)
+	decimals, _ := h.getQuoteTokenDecimals(pair)
 	one := getUnitValueFromDecimals(decimals)
 	_price, err := contract.PreviewRedeem(&bind.CallOpts{}, one)
 	if err != nil {
@@ -37,6 +37,26 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, err
 	}
 
 	return _price, nil
+}
+
+// getPairContractAddress gets the contract address for the pair.
+func (h *ERC4626APIHandler) getPairContractAddress(pair oracletypes.CurrencyPair) (string, bool) {
+	metadata, found := h.config.TokenNameToMetadata[pair.Quote]
+	if found {
+		return metadata.Symbol, found
+	}
+
+	return "", found
+}
+
+// getQuoteTokenDecimals gets the decimals of the quote token.
+func (h *ERC4626APIHandler) getQuoteTokenDecimals(pair oracletypes.CurrencyPair) (uint64, bool) {
+	metadata, found := h.config.TokenNameToMetadata[pair.Quote]
+	if found {
+		return metadata.Decimals, found
+	}
+
+	return 0, found
 }
 
 // getRPCEndpoint returns the endpoint to fetch prices from.

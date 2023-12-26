@@ -12,18 +12,18 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, error) {
-	metadata, ok := p.config.TokenNameToMetadata[pair.Quote]
+func (h *ERC4626SharePriceAPIHandler) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, error) {
+	metadata, ok := h.config.TokenNameToMetadata[pair.Quote]
 	if !ok {
 		return nil, fmt.Errorf("token %s metadata not found", pair.Quote)
 	}
 
-	client, err := ethclient.Dial(p.rpcEndpoint)
+	client, err := ethclient.Dial(h.rpcEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	contractAddress, found := p.getPairContractAddress(pair)
+	contractAddress, found := h.getPairContractAddress(pair)
 	if !found {
 		return nil, fmt.Errorf("contract address for pair %v not found", pair)
 	}
@@ -46,6 +46,16 @@ func (p *Provider) getPriceForPair(pair oracletypes.CurrencyPair) (*big.Int, err
 	}
 
 	return _price, nil
+}
+
+// getPairContractAddress gets the contract address for the pair.
+func (h *ERC4626SharePriceAPIHandler) getPairContractAddress(pair oracletypes.CurrencyPair) (string, bool) {
+	metadata, found := h.config.TokenNameToMetadata[pair.Quote]
+	if found {
+		return metadata.Symbol, found
+	}
+
+	return "", found
 }
 
 // getRPCEndpoint returns the endpoint to fetch prices from.
