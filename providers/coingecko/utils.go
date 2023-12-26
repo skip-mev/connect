@@ -8,7 +8,7 @@ import (
 
 // getUniqueBaseAndQuoteDenoms returns a list of unique base and quote denoms
 // from a list of currency pairs.
-func getUniqueBaseAndQuoteDenoms(pairs []types.CurrencyPair) ([]string, []string) {
+func getUniqueBaseAndQuoteDenoms(pairs []types.CurrencyPair) (string, string) {
 	seenQuotes := make(map[string]struct{})
 	quotes := make([]string, 0)
 
@@ -27,5 +27,5 @@ func getUniqueBaseAndQuoteDenoms(pairs []types.CurrencyPair) ([]string, []string
 		}
 	}
 
-	return bases, quotes
+	return strings.Join(bases, ","), strings.Join(quotes, ",")
 }

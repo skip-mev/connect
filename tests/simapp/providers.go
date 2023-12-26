@@ -7,7 +7,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/coingecko"
 	"github.com/skip-mev/slinky/providers/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/evm/erc4626"
 	"github.com/skip-mev/slinky/providers/evm/erc4626sharepriceoracle"
@@ -35,8 +34,9 @@ func DefaultProviderFactory() oracle.ProviderFactory {
 // NOT production ready and are only meant for testing purposes.
 func providerFromProviderConfig(logger log.Logger, cps []types.CurrencyPair, cfg config.ProviderConfig) (oracle.Provider, error) {
 	switch cfg.Name {
-	case "coingecko":
-		return coingecko.NewProvider(logger, cps, cfg)
+	// TODO: Uncomment this when the coingecko API is fixed.
+	// case "coingecko":
+	// 	return coingecko.NewProvider(logger, cps, cfg)
 	// TODO: Uncomment this when the coinbase API is fixed.
 	// case "coinbase":
 	// 	return coinbase.NewProvider(logger, cps, cfg)
