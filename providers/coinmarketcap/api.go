@@ -16,7 +16,9 @@ const (
 	headerFieldKey = "X-CMC_PRO_API_KEY"
 )
 
-// getPriceForPair gets the the price of base in terms of quote, and returns the response scaled by cp.Decimals
+// getPriceForPair gets the the price of base in terms of quote, and returns the
+// response scaled by cp.Decimals.
+//
 // Response format:
 //
 //	{
@@ -38,12 +40,9 @@ const (
 //		  ]
 //		}
 //	  }
-func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*big.Int, error) {
-	p.logger.Info("Fetching price for pair", "pair", pair)
-
+func (h *CoinMarketCapAPIHandler) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*big.Int, error) {
 	// make request to coinmarketcap api w/ X-CMC_PRO_API_KEY header set to api-key
-	base, quote := p.getSymbolForTokenName(pair.Base), p.getSymbolForTokenName(pair.Quote)
-	p.logger.Info("Fetching price for pair", "base", base, "quote", quote, "apikey", p.config.APIKey)
+	base, quote := h.getSymbolForTokenName(pair.Base), h.getSymbolForTokenName(pair.Quote)
 
 	// make request to coinmarketcap api w/ X-CMC_PRO_API_KEY header set to api-key
 	var resp map[string]interface{}
@@ -56,7 +55,7 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 		},
 
 		func(req *http.Request) {
-			req.Header.Add(headerFieldKey, p.config.APIKey)
+			req.Header.Add(headerFieldKey, h.config.APIKey)
 		},
 	); err != nil {
 		return nil, err
@@ -69,6 +68,15 @@ func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.Currenc
 	}
 
 	return providers.Float64ToBigInt(price, pair.Decimals()), nil
+}
+
+// getSymbolForPair returns the symbol for a currency pair.
+func (h *CoinMarketCapAPIHandler) getSymbolForTokenName(tokenName string) string {
+	if symbol, ok := h.config.TokenNameToSymbol[tokenName]; ok {
+		return symbol
+	}
+
+	return tokenName
 }
 
 // getPriceEndpoint returns the endpoint to fetch prices from.

@@ -1,126 +1,41 @@
 package coinmarketcap
 
 import (
-	"context"
 	"fmt"
 	"math/big"
-	"sync"
 
-	"cosmossdk.io/log"
-
-	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"go.uber.org/zap"
 )
 
-const (
-	// Name is the name of this provider
-	Name = "coinmarketcap"
-)
+var _ providertypes.Provider[oracletypes.CurrencyPair, *big.Int] = (*CoinMarketCapProvider)(nil)
 
-var _ oracle.Provider = (*Provider)(nil)
-
-// Provider is the implementation of the oracle's Provider interface for coinmarketcap.
-type Provider struct {
-	logger log.Logger
-
-	// pairs is a list of currency pairs that the provider should fetch
-	// prices for.
-	pairs []oracletypes.CurrencyPair
-
-	// config is the coinmarketcap config.
-	config Config
+// CoinMarketCapProvider implements a provider that fetches data from the CoinMarketCap API.
+type CoinMarketCapProvider struct { //nolint
+	*base.BaseProvider[oracletypes.CurrencyPair, *big.Int]
 }
 
-// NewProvider returns a new coinmarketcap provider. It uses the provided API-key in the header of outgoing requests to coinmarketcap's API.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, providerConfig config.ProviderConfig) (*Provider, error) {
-	if providerConfig.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerConfig.Name)
-	}
-
-	config, err := ReadCoinMarketCapConfigFromFile(providerConfig.Path)
+// NewProvider returns a new CoinMarketCap provider. It uses the provided API-key in the
+// header of outgoing requests to CoinMarketCap's API.
+func NewProvider(
+	logger *zap.Logger,
+	pairs []oracletypes.CurrencyPair,
+	providerConfig config.ProviderConfig,
+) (*CoinMarketCapProvider, error) {
+	handler, err := NewCoinMarketCapAPIHandler(logger, pairs, providerConfig)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create coinmarketcap api handler: %w", err)
 	}
 
-	logger = logger.With("provider", Name)
-	logger.Info("creating new coinmarketcap provider", "pairs", pairs, "config", config)
+	provider, err := base.NewProvider(logger, providerConfig, handler)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create base provider: %w", err)
+	}
 
-	return &Provider{
-		pairs:  pairs,
-		logger: logger,
-		config: config,
+	return &CoinMarketCapProvider{
+		BaseProvider: provider,
 	}, nil
-}
-
-// GetPrices returns the current set of prices for each of the currency pairs. This method starts all
-// price requests concurrently, and waits for them all to finish, or for the context to be cancelled,
-// at which point it aggregates the responses and returns.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
-	type priceData struct {
-		price *big.Int
-		cp    oracletypes.CurrencyPair
-	}
-
-	// create response channel
-	responses := make(chan priceData, len(p.pairs))
-
-	wg := sync.WaitGroup{}
-	wg.Add(len(p.pairs))
-
-	// fan-out requests to coinmarketcap api
-	for _, currencyPair := range p.pairs {
-		go func(pair oracletypes.CurrencyPair) {
-			defer wg.Done()
-
-			// get price
-			qp, err := p.getPriceForPair(ctx, pair)
-			if err != nil {
-				p.logger.Error("failed to get price for pair", "provider", p.Name(), "pair", pair, "err", err)
-			} else {
-				p.logger.Info("Fetched price for pair", "pair", pair, "provider", p.Name())
-
-				// send price to response channel
-				responses <- priceData{
-					qp,
-					pair,
-				}
-			}
-		}(currencyPair)
-	}
-
-	// close response channel when all requests have been processed, or if context is cancelled
-	go func() {
-		defer close(responses)
-
-		select {
-		case <-ctx.Done():
-			return
-		case <-finish(&wg):
-			return
-		}
-	}()
-
-	// fan-in
-	prices := make(map[oracletypes.CurrencyPair]*big.Int)
-	for resp := range responses {
-		prices[resp.cp] = resp.price
-	}
-
-	return prices, nil
-}
-
-// Name returns the name of the provider.
-func (p *Provider) Name() string {
-	return Name
-}
-
-// SetPairs sets the currency pairs that the provider will fetch prices for.
-func (p *Provider) SetPairs(pairs ...oracletypes.CurrencyPair) {
-	p.pairs = pairs
-}
-
-// GetPairs returns the currency pairs that the provider is fetching prices for.
-func (p *Provider) GetPairs() []oracletypes.CurrencyPair {
-	return p.pairs
 }

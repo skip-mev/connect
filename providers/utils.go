@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 type (
@@ -74,4 +75,17 @@ func GetWithContextAndHeader(ctx context.Context, url string, reader ReadFn, req
 	}
 
 	return reader(body)
+}
+
+// Finish takes a wait-group, and returns a channel that is sent on when the
+// Waitgroup is finished.
+func Finish(wg *sync.WaitGroup) <-chan struct{} {
+	ch := make(chan struct{})
+
+	// non-blocking wait for waitgroup to finish, and return channel
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+	return ch
 }
