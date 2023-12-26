@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"cosmossdk.io/log"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
 )
@@ -15,7 +15,7 @@ import (
 // BaseProvider implements a base provider that can be used to build other providers.
 type BaseProvider[K comparable, V any] struct { //nolint
 	mu     sync.Mutex
-	logger log.Logger
+	logger *zap.Logger
 
 	// APIDataHandler is the handler for the API data. Developer's implement this interface
 	// to extend the provider's functionality. For example, this could be used to fetch
@@ -38,7 +38,7 @@ type BaseProvider[K comparable, V any] struct { //nolint
 
 // NewProvider returns a new Base provider.
 func NewProvider[K comparable, V any](
-	logger log.Logger,
+	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	handler APIDataHandler[K, V],
 ) (*BaseProvider[K, V], error) {
@@ -47,7 +47,7 @@ func NewProvider[K comparable, V any](
 	}
 
 	return &BaseProvider[K, V]{
-		logger:  logger,
+		logger:  logger.With(zap.String("provider", cfg.Name)),
 		cfg:     cfg,
 		handler: handler,
 		data:    make(map[K]V),

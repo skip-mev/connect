@@ -7,17 +7,17 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base"
 	"github.com/skip-mev/slinky/providers/base/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 )
 
 var (
-	logger = log.NewNopLogger()
+	logger = zap.NewNop()
 	cfg    = config.ProviderConfig{
 		Name:     "test",
 		Path:     "test",

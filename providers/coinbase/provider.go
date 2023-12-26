@@ -1,94 +1,42 @@
 package coinbase
 
 import (
-	"context"
 	"fmt"
 	"math/big"
 
-	"cosmossdk.io/log"
-
-	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"go.uber.org/zap"
 )
 
-const (
-	// Name is the name of the provider.
-	Name = "coinbase"
-)
+var _ providertypes.Provider[oracletypes.CurrencyPair, *big.Int] = (*CoinBaseProvider)(nil)
 
-var _ oracle.Provider = (*Provider)(nil)
-
-// Provider implements the Provider interface for Coinbase. This provider
-// is a very simple implementation that fetches spot prices from the Coinbase API.
-type Provider struct {
-	logger log.Logger
-
-	// pairs is a list of currency pairs that the provider should fetch
-	// prices for.
-	pairs []oracletypes.CurrencyPair
-
-	// config is the Coinbase config.
-	config Config
+// CoinBaseProvider implements a provider that fetches data from the Coinbase API.
+type CoinBaseProvider struct { //nolint
+	*base.BaseProvider[oracletypes.CurrencyPair, *big.Int]
 }
 
 // NewProvider returns a new Coinbase provider.
 //
 // THIS PROVIDER SHOULD NOT BE USED IN PRODUCTION. IT IS ONLY MEANT FOR TESTING.
-func NewProvider(logger log.Logger, pairs []oracletypes.CurrencyPair, providerConfig config.ProviderConfig) (*Provider, error) {
-	if providerConfig.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerConfig.Name)
-	}
-
-	config, err := ReadCoinbaseConfigFromFile(providerConfig.Path)
+func NewProvider(
+	logger *zap.Logger,
+	pairs []oracletypes.CurrencyPair,
+	providerConfig config.ProviderConfig,
+) (*CoinBaseProvider, error) {
+	handler, err := NewCoinBaseAPIHandler(logger, pairs, providerConfig)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create coinbase api handler: %w", err)
 	}
 
-	logger = logger.With("provider", Name)
-	logger.Info("creating new coinbase provider", "pairs", pairs, "config", config)
+	provider, err := base.NewProvider(logger, providerConfig, handler)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create base provider: %w", err)
+	}
 
-	return &Provider{
-		pairs:  pairs,
-		logger: logger,
-		config: config,
+	return &CoinBaseProvider{
+		BaseProvider: provider,
 	}, nil
-}
-
-// Name returns the name of the provider.
-func (p *Provider) Name() string {
-	return Name
-}
-
-// GetPrices returns the current set of prices for each of the currency pairs.
-func (p *Provider) GetPrices(ctx context.Context) (map[oracletypes.CurrencyPair]*big.Int, error) {
-	resp := make(map[oracletypes.CurrencyPair]*big.Int)
-
-	for _, currencyPair := range p.pairs {
-		p.logger.Info("fetching price for pair", currencyPair.ToString())
-
-		spotPrice, err := p.getPriceForPair(ctx, currencyPair)
-		if err != nil {
-			p.logger.Error(
-				p.Name(),
-				"failed to get price for pair", currencyPair,
-				"err", err,
-			)
-			continue
-		}
-
-		resp[currencyPair] = spotPrice
-	}
-
-	return resp, nil
-}
-
-// SetPairs sets the currency pairs that the provider will fetch prices for.
-func (p *Provider) SetPairs(pairs ...oracletypes.CurrencyPair) {
-	p.pairs = pairs
-}
-
-// GetPairs returns the currency pairs that the provider is fetching prices for.
-func (p *Provider) GetPairs() []oracletypes.CurrencyPair {
-	return p.pairs
 }

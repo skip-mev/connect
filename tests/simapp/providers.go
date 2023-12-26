@@ -7,7 +7,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/coinbase"
 	"github.com/skip-mev/slinky/providers/coingecko"
 	"github.com/skip-mev/slinky/providers/coinmarketcap"
 	"github.com/skip-mev/slinky/providers/evm/erc4626"
@@ -38,8 +37,9 @@ func providerFromProviderConfig(logger log.Logger, cps []types.CurrencyPair, cfg
 	switch cfg.Name {
 	case "coingecko":
 		return coingecko.NewProvider(logger, cps, cfg)
-	case "coinbase":
-		return coinbase.NewProvider(logger, cps, cfg)
+	// TODO: Uncomment this when the coinbase API is fixed.
+	// case "coinbase":
+	// 	return coinbase.NewProvider(logger, cps, cfg)
 	case "coinmarketcap":
 		return coinmarketcap.NewProvider(logger, cps, cfg)
 	case "erc4626":

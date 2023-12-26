@@ -23,13 +23,13 @@ import (
 //	    "currency": "USD"
 //	  }
 //	}
-func (p *Provider) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*big.Int, error) {
-	baseSymbol, ok := p.config.NameToSymbol[strings.ToLower(pair.Base)]
+func (h *CoinBaseAPIHandler) getPriceForPair(ctx context.Context, pair oracletypes.CurrencyPair) (*big.Int, error) {
+	baseSymbol, ok := h.config.NameToSymbol[strings.ToLower(pair.Base)]
 	if !ok {
 		return nil, fmt.Errorf("invalid base currency %s", pair.Base)
 	}
 
-	quoteSymbol, ok := p.config.NameToSymbol[strings.ToLower(pair.Quote)]
+	quoteSymbol, ok := h.config.NameToSymbol[strings.ToLower(pair.Quote)]
 	if !ok {
 		return nil, fmt.Errorf("invalid quote currency %s", pair.Quote)
 	}

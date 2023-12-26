@@ -3,6 +3,8 @@ package base
 import (
 	"context"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 // loop is the main loop for the provider. It continuously attempts to request data
@@ -21,7 +23,7 @@ func (p *BaseProvider[K, V]) loop(ctx context.Context) error {
 			return ctx.Err()
 
 		case <-ticker.C:
-			p.logger.Info("attempting to fetch new data")
+			p.logger.Debug("attempting to fetch new data")
 			p.attemptDataUpdate(ctx)
 		}
 	}
@@ -36,19 +38,19 @@ func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context) {
 	// Retrieve API Data.
 	data, err := p.handler.Get(fetchCtx)
 	if err != nil {
-		p.logger.Error("failed to fetch data from API", err.Error())
+		p.logger.Debug("failed to fetch data from API", zap.Error(err))
 		return
 	}
 
 	if len(data) == 0 {
-		p.logger.Error("no data returned from API")
+		p.logger.Debug("no data returned from API")
 		return
 	}
 
 	// Update the data.
 	p.setData(data)
-	p.setLastUpdate(time.Now())
-	p.logger.Info("data updated successfully", "key_updates", len(data))
+	p.setLastUpdate(time.Now().UTC())
+	p.logger.Debug("data updated successfully", zap.Int("num_data_points", len(data)))
 }
 
 // setData sets the latest data for the provider.
