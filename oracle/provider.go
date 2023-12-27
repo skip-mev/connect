@@ -1,32 +1,59 @@
 package oracle
 
 import (
+	"context"
+	"fmt"
 	"math/big"
 
-	"cosmossdk.io/log"
-	"golang.org/x/net/context"
-
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/x/oracle/types"
+	providertypes "github.com/skip-mev/slinky/providers/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 )
 
-// Provider defines an interface an exchange price provider must implement.
-//
-//go:generate mockery --name Provider --filename mock_provider.go
-type Provider interface {
-	// Name returns the name of the provider.
-	Name() string
-
-	// GetPrices returns the aggregated prices based on the provided currency pairs.
-	GetPrices(context.Context) (map[types.CurrencyPair]*big.Int, error)
-
-	// SetPairs sets the pairs that the provider should fetch prices for.
-	SetPairs(...types.CurrencyPair)
-
-	// GetPairs returns the pairs that the provider is fetching prices for.
-	GetPairs() []types.CurrencyPair
+var CtxErrors = map[error]struct{}{
+	context.Canceled:         {},
+	context.DeadlineExceeded: {},
 }
 
-// ProviderFactory inputs the oracle configuration and returns a set of providers. Developers
-// can implement their own provider factory to create their own providers.
-type ProviderFactory func(log.Logger, config.OracleConfig) ([]Provider, error)
+// StartProviders starts all providers.
+func (o *Oracle) StartProviders(ctx context.Context) {
+	providerGroup, ctx := errgroup.WithContext(ctx)
+	providerGroup.SetLimit(len(o.providers))
+
+	for _, p := range o.providers {
+		providerGroup.Go(o.execProviderFn(ctx, p))
+	}
+
+	o.providerCh <- providerGroup.Wait()
+	close(o.providerCh)
+}
+
+// execProvider executes a given provider. The provider continues
+// to concurrently run until the context is canceled.
+func (o *Oracle) execProviderFn(
+	ctx context.Context,
+	p providertypes.Provider[oracletypes.CurrencyPair, *big.Int],
+) func() error {
+	return func() error {
+		defer func() {
+			if r := recover(); r != nil {
+				o.logger.Error("recovered from panic", zap.Error(fmt.Errorf("%v", r)))
+			}
+		}()
+
+		o.logger.Info("starting provider routine", zap.String("name", p.Name()))
+		err := p.Start(ctx)
+		o.logger.Info("provider exiting", zap.String("name", p.Name()), zap.Error(err))
+
+		// If the context is canceled, or the deadline is exceeded,
+		// we want to exit the provider and trigger the error group
+		// to exit for all providers.
+		if _, ok := CtxErrors[err]; ok {
+			return err
+		}
+
+		// Otherwise, we gracefully exit the go routine.
+		return nil
+	}
+}

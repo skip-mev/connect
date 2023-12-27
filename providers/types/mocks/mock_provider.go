@@ -14,30 +14,20 @@ type Provider[K comparable, V interface{}] struct {
 	mock.Mock
 }
 
-// GetData provides a mock function with given fields: _a0
-func (_m *Provider[K, V]) GetData(_a0 context.Context) (map[K]V, error) {
-	ret := _m.Called(_a0)
+// GetData provides a mock function with given fields:
+func (_m *Provider[K, V]) GetData() map[K]V {
+	ret := _m.Called()
 
 	var r0 map[K]V
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) (map[K]V, error)); ok {
-		return rf(_a0)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context) map[K]V); ok {
-		r0 = rf(_a0)
+	if rf, ok := ret.Get(0).(func() map[K]V); ok {
+		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[K]V)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(_a0)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // LastUpdate provides a mock function with given fields:

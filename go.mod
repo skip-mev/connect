@@ -16,8 +16,8 @@ require (
 	cosmossdk.io/x/circuit v0.0.0-20230726190121-58855c685902
 	cosmossdk.io/x/tx v0.12.0
 	cosmossdk.io/x/upgrade v0.0.0-20230704191127-8d80df8e3c5a
-	github.com/bits-and-blooms/bitset v1.12.0
 	github.com/alecthomas/assert/v2 v2.4.1
+	github.com/bits-and-blooms/bitset v1.12.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.2
 	github.com/cosmos/cosmos-db v1.0.0
@@ -42,6 +42,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 	github.com/vektra/mockery/v2 v2.39.0
+	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/net v0.19.0
 	golang.org/x/sync v0.5.0
@@ -330,7 +331,6 @@ require (
 	go.tmz.dev/musttag v0.7.2 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20230307190834-24139beb5833 // indirect
 	golang.org/x/mod v0.14.0 // indirect

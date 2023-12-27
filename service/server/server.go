@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	"cosmossdk.io/log"
+	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
@@ -29,23 +29,22 @@ type OracleServer struct {
 	*sync.Closer
 
 	// logger to log incoming requests
-	logger log.Logger
+	logger *zap.Logger
 }
 
 // NewOracleServer returns a new instance of the OracleServer, given an implementation of the Oracle interface.
-func NewOracleServer(o servicetypes.Oracle, l log.Logger) *OracleServer {
+func NewOracleServer(o servicetypes.Oracle, logger *zap.Logger) *OracleServer {
+	logger = logger.With(zap.String("server", "oracle"))
+
 	os := &OracleServer{
 		o:      o,
-		logger: l,
+		logger: logger,
 	}
 	os.Closer = sync.NewCloser().WithCallback(func() {
 		// if the server has been started, close it
 		if os.srv != nil {
 			os.srv.GracefulStop()
 		}
-
-		// stop the oracle
-		os.o.Stop()
 	})
 
 	return os
@@ -89,7 +88,12 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 	// start the server
 	eg.Go(func() error {
 		// serve, and return any errors
-		os.logger.Info("starting grpc server", "host", host, "port", port)
+		os.logger.Info(
+			"starting grpc server",
+			zap.String("host", host),
+			zap.String("port", port),
+		)
+
 		err := os.srv.Serve(listener)
 		if err != nil {
 			return fmt.Errorf("[grpc server]: error serving: %v", err)

@@ -6,7 +6,6 @@ import (
 
 	"cosmossdk.io/log"
 
-	oracle_metrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/metrics"
 )
@@ -36,7 +35,7 @@ func (m *MetricsClient) Prices(ctx context.Context, req *service.QueryPricesRequ
 		// observe the duration of call
 		m.metrics.ObserveOracleResponseLatency(time.Since(start))
 		// observe error
-		m.metrics.AddOracleResponse(oracle_metrics.StatusFromError(err))
+		m.metrics.AddOracleResponse(metrics.StatusFromError(err))
 	}()
 
 	// call the underlying client

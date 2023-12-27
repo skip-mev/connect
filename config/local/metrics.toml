@@ -10,12 +10,12 @@ prometheus_server_address = "localhost:8000"
 [oracle_metrics]
 
 # Enabled indicates whether metrics should be enabled
-enabled = true
+enabled = false
 
 # AppMetrics is the config for the app metrics
 [app_metrics]
 # Enabled indicates whether metrics should be enabled
-enabled = true
+enabled = false
 
 # ValidatorConsAddress is the validator's consensus address
 validator_cons_address = ""

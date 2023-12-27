@@ -23,14 +23,20 @@ update_interval = "2s"  # Replace "2s" with your desired update interval duratio
 [[providers]]
 name = "coinbase"
 path = "config/local/providers/coinbase.toml"
+timeout = "2s"  # Replace "2s" with your desired timeout duration.
+interval = "1s"  # Replace "1s" with your desired update interval duration.
 
 [[providers]]
 name = "coingecko"
 path = "config/local/providers/coingecko.toml"
+timeout = "2s"
+interval = "1s"
 
 [[providers]]
 name = "coinmarketcap"
 path = "config/local/providers/coinmarketcap.toml"
+timeout = "2s"
+interval = "1s"
 
 # Currency Pairs
 

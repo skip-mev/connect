@@ -27,7 +27,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/mock"
+	"github.com/skip-mev/slinky/providers/static"
 )
 
 const gasPrice = 100
@@ -172,13 +172,13 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 	oCfg.Providers = append(oCfg.Providers, config.ProviderConfig{
 		Name:     "static-mock-provider",
 		Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-		Timeout:  10 * time.Second,
-		Interval: 10 * time.Second,
+		Timeout:  250 * time.Millisecond,
+		Interval: 250 * time.Millisecond,
 	})
 	oCfg.CurrencyPairs = append(oCfg.CurrencyPairs, ticker)
 
 	// Configure the default price on the static mock provider.
-	staticMockProvider := mock.StaticMockProviderConfig{
+	staticMockProvider := static.StaticMockProviderConfig{
 		TokenPrices: map[string]string{
 			ticker.ToString(): big.NewInt(price).String(),
 		},

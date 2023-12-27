@@ -9,6 +9,7 @@ import (
 
 	"cosmossdk.io/log"
 	dbm "github.com/cosmos/cosmos-db"
+	"go.uber.org/zap"
 
 	"cosmossdk.io/depinject"
 	storetypes "cosmossdk.io/store/types"
@@ -294,9 +295,14 @@ func NewSimApp(
 		panic(err)
 	}
 
+	zapLogger, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+
 	// Create the oracle service.
 	app.oracleService, err = serviceclient.NewOracleService(
-		app.Logger(),
+		zapLogger,
 		oracleCfg,
 		metricsCfg,
 		DefaultProviderFactory(),
@@ -402,7 +408,7 @@ func NewSimApp(
 
 	// start the prometheus server if required
 	if metricsCfg.AppMetrics.Enabled || metricsCfg.OracleMetrics.Enabled {
-		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, app.Logger())
+		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, zapLogger)
 		if err != nil {
 			panic(err)
 		}

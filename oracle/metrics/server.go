@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"cosmossdk.io/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/sync"
 )
@@ -26,12 +26,12 @@ type PrometheusServer struct {
 	srv  *http.Server
 	done chan struct{}
 	*sync.Closer
-	logger log.Logger
+	logger *zap.Logger
 }
 
 // StartPrometheusServer creates a prometheus server if the metrics are enabled and
 // address is set, and valid. Notice, this method does not start the server.
-func NewPrometheusServer(prometheusAddress string, log log.Logger) (*PrometheusServer, error) {
+func NewPrometheusServer(prometheusAddress string, logger *zap.Logger) (*PrometheusServer, error) {
 	// get the prometheus server address
 	if prometheusAddress == "" || !isValidAddress(prometheusAddress) {
 		return nil, fmt.Errorf("invalid prometheus server address: %s", prometheusAddress)
@@ -47,16 +47,17 @@ func NewPrometheusServer(prometheusAddress string, log log.Logger) (*PrometheusS
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
 
+	logger = logger.With(zap.String("server", "prometheus"))
 	ps := &PrometheusServer{
 		srv:    srv,
 		done:   make(chan struct{}),
-		logger: log,
+		logger: logger,
 	}
 
 	ps.Closer = sync.NewCloser().WithCallback(func() {
 		// close the server
 		if err := ps.srv.Close(); err != nil {
-			ps.logger.Info("prometheus server close error", "err", err)
+			ps.logger.Info("prometheus server close error", zap.Error(err))
 		}
 		// wait for the server to close
 		<-ps.done
@@ -69,7 +70,7 @@ func NewPrometheusServer(prometheusAddress string, log log.Logger) (*PrometheusS
 // and serves the metrics registered in the DefaultRegisterer.
 func (ps *PrometheusServer) Start() {
 	if err := ps.srv.ListenAndServe(); err != http.ErrServerClosed {
-		ps.logger.Info("prometheus server error", "err", err)
+		ps.logger.Info("prometheus server error", zap.Error(err))
 	} else {
 		ps.logger.Info("prometheus server closed")
 	}

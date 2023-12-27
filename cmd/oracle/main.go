@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"cosmossdk.io/log"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
@@ -39,17 +39,21 @@ func main() {
 	// parse flags
 	flag.Parse()
 
-	logger := log.NewLogger(os.Stderr)
+	logger, err := zap.NewProduction()
+	if err != nil {
+		logger.Error("failed to create logger", zap.Error(err))
+		return
+	}
 
 	oracleCfg, err := config.ReadOracleConfigFromFile(*oracleCfgPath)
 	if err != nil {
-		logger.Error("failed to read oracle config file", "err", err)
+		logger.Error("failed to read oracle config file", zap.Error(err))
 		return
 	}
 
 	metricsCfg, err := config.ReadMetricsConfigFromFile(*metricsCfgPath)
 	if err != nil {
-		logger.Error("failed to read metrics config file", "err", err)
+		logger.Error("failed to read metrics config file", zap.Error(err))
 		return
 	}
 
@@ -67,7 +71,7 @@ func main() {
 		metrics,
 	)
 	if err != nil {
-		logger.Error("failed to create oracle", "err", err)
+		logger.Error("failed to create oracle", zap.Error(err))
 		return
 	}
 
@@ -85,11 +89,11 @@ func main() {
 	}()
 
 	// start prometheus metrics
-	logger.Info("starting prometheus metrics")
 	if metricsCfg.OracleMetrics.Enabled {
+		logger.Info("starting prometheus metrics")
 		ps, err := oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, logger)
 		if err != nil {
-			logger.Error("failed to start prometheus metrics", "err", err)
+			logger.Error("failed to start prometheus metrics", zap.Error(err))
 			return
 		}
 
@@ -105,6 +109,6 @@ func main() {
 
 	// start oracle + server, and wait for either to finish
 	if err := srv.StartServer(ctx, *host, *port); err != nil {
-		logger.Error("stopping server", "err", err)
+		logger.Error("stopping server", zap.Error(err))
 	}
 }

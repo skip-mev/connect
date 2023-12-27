@@ -2,8 +2,9 @@ package integration_test
 
 import (
 	"fmt"
-	"github.com/strangelove-ventures/interchaintest/v8"
 	"testing"
+
+	"github.com/strangelove-ventures/interchaintest/v8"
 
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/cosmos/cosmos-sdk/x/auth"

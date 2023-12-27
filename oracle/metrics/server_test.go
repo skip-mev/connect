@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/metrics"
 )
@@ -24,7 +24,7 @@ func TestStart(t *testing.T) {
 	t.Run("Start succeeds with correct address", func(t *testing.T) {
 		address := "0.0.0.0:8080"
 
-		ps, err := metrics.NewPrometheusServer(address, log.NewTestLogger(t))
+		ps, err := metrics.NewPrometheusServer(address, zap.NewNop())
 		require.NotNil(t, ps)
 		require.NoError(t, err)
 

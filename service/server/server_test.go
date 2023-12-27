@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
 
 	"github.com/skip-mev/slinky/service"
@@ -44,7 +44,7 @@ func TestServerTestSuite(t *testing.T) {
 
 func (s *ServerTestSuite) SetupTest() {
 	// mock logger
-	logger := log.NewNopLogger()
+	logger := zap.NewNop()
 
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
@@ -63,9 +63,6 @@ func (s *ServerTestSuite) SetupTest() {
 
 // teardown test suite
 func (s *ServerTestSuite) TearDownTest() {
-	// expect oracle to stop
-	s.mockOracle.On("Stop").Return()
-
 	// close server
 	s.srv.Close()
 	defer s.cancel()
@@ -137,8 +134,6 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 
 // test that the oracle server closes when expected
 func (s *ServerTestSuite) TestOracleServerClose() {
-	s.mockOracle.On("Stop").Return()
-
 	// close the server, and check that no requests are received
 	s.cancel()
 
@@ -160,10 +155,9 @@ func TestOracleFailureStopsServer(t *testing.T) {
 	// create mock oracle
 	mockOracle := mocks.NewOracle(t)
 	mockOracle.On("Start", mock.Anything).Return(fmt.Errorf("failed to start oracle"))
-	mockOracle.On("Stop").Return()
 
 	// create server
-	srv := server.NewOracleServer(mockOracle, log.NewNopLogger())
+	srv := server.NewOracleServer(mockOracle, zap.NewNop())
 
 	// start the server, and expect immediate closure
 	go srv.StartServer(context.Background(), localhost, port)

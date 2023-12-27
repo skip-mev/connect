@@ -184,11 +184,10 @@ func initAppConfig() (string, interface{}) {
 
 	// Sample config to run this locally
 	//
-	// oracleConfig := oracleconfig.Config{
-	// 	OraclePath:  "config/local/oracle.toml",
-	// 	MetricsPath: "config/local/metrics.toml",
-	// }
-	oracleConfig := oracleconfig.Config{}
+	oracleConfig := oracleconfig.Config{
+		OraclePath:  "config/local/oracle.toml",
+		MetricsPath: "config/local/metrics.toml",
+	}
 
 	customAppConfig := CustomAppConfig{
 		Config: *srvCfg,

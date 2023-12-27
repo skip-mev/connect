@@ -179,8 +179,7 @@ func TestGetData(t *testing.T) {
 			// Sleep to allow the goroutine to close.
 			time.Sleep(experimentTime * 2)
 
-			prices, err := provider.GetData(ctx)
-			require.NoError(t, err)
+			prices := provider.GetData()
 			require.Equal(t, tc.expectedPrices, prices)
 
 			latestUpdate := provider.LastUpdate()

@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/client"
+	"github.com/skip-mev/slinky/service/metrics"
 	metrics_mock "github.com/skip-mev/slinky/service/metrics/mocks"
 	service_mock "github.com/skip-mev/slinky/service/mocks"
 )
@@ -31,7 +31,7 @@ func TestMetricsClientTestSuite(t *testing.T) {
 func (s *MetricsClientTestSuite) SetupSubTest() {
 	s.m = metrics_mock.NewMetrics(s.T())
 	s.mockClient = service_mock.NewOracleService(s.T())
-	s.client = client.NewMetricsClient(log.NewTestLogger(s.T()), s.mockClient, s.m)
+	s.client = client.NewMetricsClient(log.NewNopLogger(), s.mockClient, s.m)
 }
 
 // test that responses are updated correctly

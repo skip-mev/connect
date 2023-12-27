@@ -71,7 +71,7 @@ func (p *BaseProvider[K, V]) Name() string {
 // GetData returns the latest data recorded by the provider. The data is constantly
 // updated by the provider's main loop and provides access to the latest data - prices
 // in constant time.
-func (p *BaseProvider[K, V]) GetData(_ context.Context) (map[K]V, error) {
+func (p *BaseProvider[K, V]) GetData() map[K]V {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -79,7 +79,7 @@ func (p *BaseProvider[K, V]) GetData(_ context.Context) (map[K]V, error) {
 	cpy := make(map[K]V)
 	maps.Copy(cpy, p.data)
 
-	return cpy, nil
+	return cpy
 }
 
 // LastUpdate returns the time at which the prices were last updated.

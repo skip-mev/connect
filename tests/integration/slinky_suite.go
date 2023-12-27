@@ -2,12 +2,13 @@ package integration
 
 import (
 	"context"
-	"cosmossdk.io/math"
 	"fmt"
 	"math/big"
 	"os"
 	"path"
 	"time"
+
+	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -22,9 +23,8 @@ import (
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
-	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/providers/mock"
+	"github.com/skip-mev/slinky/providers/static"
 	service_metrics "github.com/skip-mev/slinky/service/metrics"
 )
 
@@ -315,16 +315,16 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			oracle := GetOracleSideCar(node)
 
 			oracleConfig, metricsConfig := DefaultOracleConfig(node)
-			oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
+			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 				Name:     "static-mock-provider",
 				Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-				Timeout:  10 * time.Second,
-				Interval: 10 * time.Second,
+				Timeout:  250 * time.Millisecond,
+				Interval: 250 * time.Millisecond,
 			})
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
 			// Write the static provider config to the node
-			staticConfig := mock.StaticMockProviderConfig{
+			staticConfig := static.StaticMockProviderConfig{
 				TokenPrices: map[string]string{
 					cp.ToString(): "1140",
 				},
@@ -528,16 +528,16 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracle := GetOracleSideCar(node)
 
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
-		oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
+		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name:     "static-mock-provider",
 			Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-			Timeout:  10 * time.Second,
-			Interval: 10 * time.Second,
+			Timeout:  250 * time.Millisecond,
+			Interval: 250 * time.Millisecond,
 		})
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 
 		// Write the static provider config to the node
-		staticConfig := mock.StaticMockProviderConfig{
+		staticConfig := static.StaticMockProviderConfig{
 			TokenPrices: map[string]string{
 				cp1.ToString(): "1140",
 				cp2.ToString(): "1141",
@@ -603,15 +603,15 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
-		oracleConfig.Providers = append(oracleConfig.Providers, config.ProviderConfig{
+		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name:     "static-mock-provider",
 			Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-			Timeout:  10 * time.Second,
-			Interval: 10 * time.Second,
+			Timeout:  250 * time.Millisecond,
+			Interval: 250 * time.Millisecond,
 		})
 
 		// Write the static provider config to the node
-		staticConfig := mock.StaticMockProviderConfig{
+		staticConfig := static.StaticMockProviderConfig{
 			TokenPrices: map[string]string{
 				cp1.ToString(): "1140",
 				cp2.ToString(): "1141",

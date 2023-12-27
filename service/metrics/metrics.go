@@ -6,15 +6,40 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/prometheus/client_golang/prometheus"
-
-	"github.com/skip-mev/slinky/oracle/metrics"
 )
 
 const (
 	TickerLabel    = "ticker"
 	InclusionLabel = "included"
 	AppNamespace   = "app"
+	ProviderLabel  = "provider"
+	StatusLabel    = "status"
 )
+
+type Status int
+
+const (
+	StatusFailure Status = iota
+	StatusSuccess
+)
+
+func (s Status) String() string {
+	switch s {
+	case StatusFailure:
+		return "failure"
+	case StatusSuccess:
+		return "success"
+	default:
+		return "unknown"
+	}
+}
+
+func StatusFromError(err error) Status {
+	if err == nil {
+		return StatusSuccess
+	}
+	return StatusFailure
+}
 
 type Config struct {
 	// Enabled indicates whether metrics should be enabled
@@ -48,7 +73,7 @@ type Metrics interface {
 	ObserveOracleResponseLatency(duration time.Duration)
 
 	// AddOracleResponse increments the number of oracle responses, this can represent a liveness counter. This metric is paginated by status.
-	AddOracleResponse(status metrics.Status)
+	AddOracleResponse(status Status)
 
 	// AddVoteIncludedInLastCommit increments the number of votes included in the last commit
 	AddVoteIncludedInLastCommit(included bool)
@@ -65,7 +90,7 @@ func NewNopMetrics() Metrics {
 }
 
 func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
-func (m *nopMetricsImpl) AddOracleResponse(_ metrics.Status)           {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
 func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)           {}
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)    {}
 
@@ -81,7 +106,7 @@ func NewMetrics() Metrics {
 			Namespace: AppNamespace,
 			Name:      "oracle_responses",
 			Help:      "The number of oracle responses",
-		}, []string{metrics.StatusLabel}),
+		}, []string{StatusLabel}),
 		voteIncludedInLastCommit: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: AppNamespace,
 			Name:      "vote_included_in_last_commit",
@@ -114,9 +139,9 @@ func (m *metricsImpl) ObserveOracleResponseLatency(duration time.Duration) {
 	m.oracleResponseLatency.Observe(float64(duration.Milliseconds()))
 }
 
-func (m *metricsImpl) AddOracleResponse(status metrics.Status) {
+func (m *metricsImpl) AddOracleResponse(status Status) {
 	m.oracleResponseCounter.With(prometheus.Labels{
-		metrics.StatusLabel: status.String(),
+		StatusLabel: status.String(),
 	}).Inc()
 }
 

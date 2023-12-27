@@ -2,20 +2,22 @@ package oracle_test
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/mocks"
+	"github.com/skip-mev/slinky/oracle/metrics"
+	"github.com/skip-mev/slinky/providers/base"
+	"github.com/skip-mev/slinky/providers/base/mocks"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -23,579 +25,357 @@ type OracleTestSuite struct {
 	suite.Suite
 	random *rand.Rand
 
+	logger *zap.Logger
+
 	// Oracle config
-	oracle        *oracle.Oracle
-	oracleTicker  time.Duration
-	providers     []*mocks.Provider
 	currencyPairs []oracletypes.CurrencyPair
 	aggregationFn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int]
-	ctx           context.Context
 }
 
 func TestOracleSuite(t *testing.T) {
 	suite.Run(t, new(OracleTestSuite))
 }
 
-func (suite *OracleTestSuite) SetupTest() {
-	suite.random = rand.New(rand.NewSource(time.Now().UnixNano()))
+func (s *OracleTestSuite) SetupTest() {
+	s.random = rand.New(rand.NewSource(time.Now().UnixNano()))
+	s.logger = zap.NewExample()
 
-	// Oracle set up
-	suite.oracleTicker = 1 * time.Second
-	suite.currencyPairs = []oracletypes.CurrencyPair{
+	s.currencyPairs = []oracletypes.CurrencyPair{
 		oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 		oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 		oracletypes.NewCurrencyPair("COSMOS", "USD"),
 	}
-	suite.aggregationFn = aggregator.ComputeMedian()
-
-	suite.ctx = context.TODO()
+	s.aggregationFn = aggregator.ComputeMedian()
 }
 
-func (suite *OracleTestSuite) TestProviders() {
-	cases := []struct {
-		name        string
-		fetchPrices func() map[oracletypes.CurrencyPair]*big.Int
+func (s *OracleTestSuite) TestStopWithContextCancel() {
+	testCases := []struct {
+		name    string
+		factory providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int]
 	}{
 		{
 			name: "no providers",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				suite.providers = []*mocks.Provider{}
-
-				return map[oracletypes.CurrencyPair]*big.Int{}
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				return nil, nil
 			},
 		},
 		{
-			name: "one provider with no prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				staticProvider := suite.createStaticProvider(
-					"static",
-					map[oracletypes.CurrencyPair]*big.Int{},
-				)
-
-				suite.providers = []*mocks.Provider{
-					staticProvider,
+			name: "1 provider",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				// Create the provider.
+				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
+				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
+				providerCfg := config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider1",
 				}
+				provider, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
 
-				return map[oracletypes.CurrencyPair]*big.Int{}
+				// Create the provider factory.
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				return providers, nil
 			},
 		},
 		{
-			name: "one provider with static prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				staticProvider := suite.createStaticProvider(
-					"static",
-					map[oracletypes.CurrencyPair]*big.Int{
-						suite.currencyPairs[0]: big.NewInt(1),
-						suite.currencyPairs[1]: big.NewInt(2),
-						suite.currencyPairs[2]: big.NewInt(3),
-					},
-				)
+			name: "multiple providers",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				// Create the provider.
+				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
+				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
 
-				suite.providers = []*mocks.Provider{
-					staticProvider,
+				providerCfg := config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider1",
 				}
+				provider1, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
 
-				return map[oracletypes.CurrencyPair]*big.Int{
-					suite.currencyPairs[0]: big.NewInt(1),
-					suite.currencyPairs[1]: big.NewInt(2),
-					suite.currencyPairs[2]: big.NewInt(3),
+				providerCfg = config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider2",
 				}
-			},
-		},
-		{
-			name: "two providers with static prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				staticProvider1 := suite.createStaticProvider(
-					"static1",
-					map[oracletypes.CurrencyPair]*big.Int{
-						suite.currencyPairs[0]: big.NewInt(1),
-						suite.currencyPairs[1]: big.NewInt(2),
-						suite.currencyPairs[2]: big.NewInt(3),
-					},
+				provider2, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
 				)
+				s.Require().NoError(err)
 
-				staticProvider2 := suite.createStaticProvider(
-					"static2",
-					map[oracletypes.CurrencyPair]*big.Int{
-						suite.currencyPairs[0]: big.NewInt(4),
-						suite.currencyPairs[1]: big.NewInt(5),
-						suite.currencyPairs[2]: big.NewInt(6),
-					},
-				)
-
-				suite.providers = []*mocks.Provider{
-					staticProvider1,
-					staticProvider2,
-				}
-
-				return map[oracletypes.CurrencyPair]*big.Int{
-					suite.currencyPairs[0]: big.NewInt(2),
-					suite.currencyPairs[1]: big.NewInt(3),
-					suite.currencyPairs[2]: big.NewInt(4),
-				}
-			},
-		},
-		{
-			name: "one provider with randomized prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				randomizedProvider := suite.createRandomizedProvider(
-					"randomized",
-					suite.currencyPairs,
-				)
-
-				suite.providers = []*mocks.Provider{
-					randomizedProvider,
-				}
-
-				return suite.aggregateProviderData(suite.providers)
-			},
-		},
-		{
-			name: "two providers with randomized prices",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				randomizedProvider1 := suite.createRandomizedProvider(
-					"randomized1",
-					suite.currencyPairs,
-				)
-
-				randomizedProvider2 := suite.createRandomizedProvider(
-					"randomized2",
-					suite.currencyPairs,
-				)
-
-				suite.providers = []*mocks.Provider{
-					randomizedProvider1,
-					randomizedProvider2,
-				}
-
-				return suite.aggregateProviderData(suite.providers)
-			},
-		},
-		{
-			name: "one normal static provider and one panic provider",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				staticProvider := suite.createStaticProvider(
-					"static",
-					map[oracletypes.CurrencyPair]*big.Int{
-						suite.currencyPairs[0]: big.NewInt(1),
-						suite.currencyPairs[1]: big.NewInt(2),
-						suite.currencyPairs[2]: big.NewInt(3),
-					},
-				)
-
-				panicProvider := suite.createPanicProvider(
-					"panic",
-				)
-
-				suite.providers = []*mocks.Provider{
-					staticProvider,
-					panicProvider,
-				}
-
-				return map[oracletypes.CurrencyPair]*big.Int{
-					suite.currencyPairs[0]: big.NewInt(1),
-					suite.currencyPairs[1]: big.NewInt(2),
-					suite.currencyPairs[2]: big.NewInt(3),
-				}
-			},
-		},
-		{
-			name: "one normal static provider and one timeout provider",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				staticProvider := suite.createStaticProvider(
-					"static",
-					map[oracletypes.CurrencyPair]*big.Int{
-						suite.currencyPairs[0]: big.NewInt(1),
-						suite.currencyPairs[1]: big.NewInt(2),
-						suite.currencyPairs[2]: big.NewInt(3),
-					},
-				)
-
-				timeoutProvider := suite.createTimeoutProvider(
-					"timeout",
-				)
-
-				suite.providers = []*mocks.Provider{
-					staticProvider,
-					timeoutProvider,
-				}
-
-				return map[oracletypes.CurrencyPair]*big.Int{
-					suite.currencyPairs[0]: big.NewInt(1),
-					suite.currencyPairs[1]: big.NewInt(2),
-					suite.currencyPairs[2]: big.NewInt(3),
-				}
-			},
-		},
-		{
-			name: "multiple random providers with one timeout and panic provider",
-			fetchPrices: func() map[oracletypes.CurrencyPair]*big.Int {
-				randomizedProvider1 := suite.createRandomizedProvider(
-					"randomized1",
-					suite.currencyPairs,
-				)
-
-				randomizedProvider2 := suite.createRandomizedProvider(
-					"randomized2",
-					suite.currencyPairs,
-				)
-
-				timeoutProvider := suite.createTimeoutProvider(
-					"timeout",
-				)
-
-				panicProvider := suite.createPanicProvider(
-					"panic",
-				)
-
-				suite.providers = []*mocks.Provider{
-					randomizedProvider1,
-					randomizedProvider2,
-					timeoutProvider,
-					panicProvider,
-				}
-
-				return suite.aggregateProviderData(
-					[]*mocks.Provider{
-						randomizedProvider1,
-						randomizedProvider2,
-					},
-				)
+				// Create the provider factory.
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}
+				return providers, nil
 			},
 		},
 	}
 
-	for _, tc := range cases {
-		suite.Run(tc.name, func() {
-			// Reset oracle
-			suite.SetupTest()
-
-			expectedPrices := tc.fetchPrices()
-
-			oracleConfig := config.OracleConfig{
-				InProcess:      true,
-				RemoteAddress:  "",
-				UpdateInterval: suite.oracleTicker,
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cfg := config.OracleConfig{
+				UpdateInterval: 1 * time.Second,
 			}
-
-			tempProviders := make([]oracle.Provider, len(suite.providers))
-			for i, provider := range suite.providers {
-				tempProviders[i] = provider
-			}
-			factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
-				return tempProviders, nil
-			}
-
-			// Initialize oracle
-			var err error
-			suite.oracle, err = oracle.New(
-				log.NewTestLogger(suite.T()),
-				oracleConfig,
-				factory,
-				suite.aggregationFn,
-				nil,
+			oracle, err := oracle.New(
+				s.logger,
+				cfg,
+				tc.factory,
+				s.aggregationFn,
+				metrics.NewNopMetrics(),
 			)
-			suite.Require().NoError(err)
+			s.Require().NoError(err)
 
-			// Start oracle
+			ctx, cancel := context.WithCancel(context.Background())
+
+			// Start the oracle. This should automatically stop.
 			go func() {
-				suite.oracle.Start(suite.ctx)
+				err = oracle.Start(ctx)
+				s.Require().Equal(err, context.Canceled)
 			}()
 
-			// Wait for oracle to update prices
-			time.Sleep(suite.oracleTicker * 2)
-			suite.oracle.Stop()
-			time.Sleep(suite.oracleTicker * 2)
+			// Wait for the experiment to run.
+			time.Sleep(2 * time.Second)
+			cancel()
 
-			// Check prices
-			prices := suite.oracle.GetPrices()
-			for pair, price := range expectedPrices {
-				suite.Require().Contains(prices, pair)
-
-				suite.Require().Equal(
-					price,
-					prices[pair],
-				)
-			}
-
-			// Check oracle status
-			suite.Require().Eventually(
-				func() bool {
-					return !suite.oracle.IsRunning()
-				},
-				5*suite.oracleTicker,
-				suite.oracleTicker/3,
-			)
+			// Ensure that the oracle is not running.
+			s.Eventually(checkFn(oracle), 3*time.Second, 100*time.Millisecond)
 		})
 	}
 }
 
-func (suite *OracleTestSuite) TestShutDownWithContextCancel() {
-	suite.SetupTest()
-
-	oracleConfig := config.OracleConfig{
-		InProcess:      true,
-		RemoteAddress:  "",
-		UpdateInterval: suite.oracleTicker,
-	}
-	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
-		return []oracle.Provider{
-			suite.createStaticProvider(
-				"static",
-				map[oracletypes.CurrencyPair]*big.Int{},
-			),
-		}, nil
-	}
-
-	// Initialize oracle
-	var err error
-	suite.oracle, err = oracle.New(
-		log.NewTestLogger(suite.T()),
-		oracleConfig,
-		factory,
-		suite.aggregationFn,
-		nil,
-	)
-	suite.Require().NoError(err)
-
-	ctx, cancel := context.WithCancel(suite.ctx)
-
-	// Start oracle
-	go func() {
-		suite.oracle.Start(ctx)
-	}()
-
-	// Wait for oracle to update prices
-	time.Sleep(suite.oracleTicker * 2)
-	cancel()
-	time.Sleep(suite.oracleTicker * 2)
-
-	// Check prices
-	prices := suite.oracle.GetPrices()
-	suite.Require().Empty(prices)
-
-	// Check oracle status
-	suite.Require().Eventually(
-		func() bool {
-			return !suite.oracle.IsRunning()
-		},
-		5*suite.oracleTicker,
-		suite.oracleTicker/3,
-	)
-}
-
-func (suite *OracleTestSuite) TestShutDownWithStop() {
-	suite.SetupTest()
-
-	oracleConfig := config.OracleConfig{
-		InProcess:      true,
-		RemoteAddress:  "",
-		UpdateInterval: suite.oracleTicker,
-	}
-	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
-		return []oracle.Provider{
-			suite.createStaticProvider(
-				"static",
-				map[oracletypes.CurrencyPair]*big.Int{},
-			),
-		}, nil
-	}
-
-	// Initialize oracle
-	var err error
-	suite.oracle, err = oracle.New(
-		log.NewTestLogger(suite.T()),
-		oracleConfig,
-		factory,
-		suite.aggregationFn,
-		nil,
-	)
-	suite.Require().NoError(err)
-
-	// Start oracle
-	go func() {
-		suite.oracle.Start(suite.ctx)
-	}()
-
-	// Wait for oracle to update prices
-	time.Sleep(suite.oracleTicker * 2)
-	suite.oracle.Stop()
-	time.Sleep(suite.oracleTicker * 2)
-
-	// Check prices
-	prices := suite.oracle.GetPrices()
-	suite.Require().Empty(prices)
-
-	// Check oracle status
-	suite.Require().Eventually(
-		func() bool {
-			return !suite.oracle.IsRunning()
-		},
-		5*suite.oracleTicker,
-		suite.oracleTicker/3,
-	)
-}
-
-func (suite *OracleTestSuite) TestShutDownProviderWithTimeout() {
-	suite.SetupTest()
-
-	tempProviders := []oracle.Provider{
-		suite.createTimeoutProviderWithTimeout(
-			"timeout",
-			suite.oracleTicker*40,
-			map[oracletypes.CurrencyPair]*big.Int{
-				suite.currencyPairs[0]: big.NewInt(1),
+func (s *OracleTestSuite) TestStopWithContextDeadline() {
+	testCases := []struct {
+		name     string
+		factory  providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int]
+		duration time.Duration
+	}{
+		{
+			name: "no providers",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				return nil, nil
 			},
-		),
-	}
-
-	oracleConfig := config.OracleConfig{
-		InProcess:      true,
-		RemoteAddress:  "",
-		UpdateInterval: suite.oracleTicker,
-	}
-	factory := func(log.Logger, config.OracleConfig) ([]oracle.Provider, error) {
-		return tempProviders, nil
-	}
-
-	// Initialize oracle
-	var err error
-	suite.oracle, err = oracle.New(
-		log.NewTestLogger(suite.T()),
-		oracleConfig,
-		factory,
-		suite.aggregationFn,
-		nil,
-	)
-	suite.Require().NoError(err)
-
-	// Start oracle
-	go func() {
-		suite.oracle.Start(suite.ctx)
-	}()
-
-	// Wait for oracle to update prices
-	time.Sleep(suite.oracleTicker * 2)
-	suite.oracle.Stop()
-	time.Sleep(suite.oracleTicker * 3)
-
-	// Check prices
-	prices := suite.oracle.GetPrices()
-	suite.Require().Empty(prices)
-
-	// Check oracle status
-	suite.Require().Eventually(
-		func() bool {
-			return !suite.oracle.IsRunning()
+			duration: 1 * time.Second,
 		},
-		5*suite.oracleTicker,
-		suite.oracleTicker/3,
-	)
-}
+		{
+			name: "1 provider",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				// Create the provider.
+				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
+				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
 
-func (suite *OracleTestSuite) createTimeoutProviderWithTimeout(
-	name string,
-	timeout time.Duration,
-	prices map[oracletypes.CurrencyPair]*big.Int,
-) *mocks.Provider {
-	provider := mocks.NewProvider(suite.T())
-	provider.On("Name").Return(name)
+				providerCfg := config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider1",
+				}
+				provider, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
 
-	// GetPrices returns a timeout error
-	provider.On("GetPrices", mock.Anything).Return(
-		prices,
-		nil,
-	).After(timeout)
+				// Create the provider factory.
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				return providers, nil
+			},
+			duration: 1 * time.Second,
+		},
+		{
+			name: "multiple providers",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				// Create the provider.
+				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
+				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
 
-	return provider
-}
+				providerCfg := config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider1",
+				}
+				provider1, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
 
-func (suite *OracleTestSuite) createTimeoutProvider(
-	name string,
-) *mocks.Provider {
-	provider := mocks.NewProvider(suite.T())
-	provider.On("Name").Return(name)
+				providerCfg = config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider2",
+				}
+				provider2, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
 
-	// GetPrices returns a timeout error
-	provider.On("GetPrices", mock.Anything).Return(
-		nil,
-		fmt.Errorf("timeout error"),
-	).After(suite.oracleTicker)
-
-	return provider
-}
-
-func (suite *OracleTestSuite) createPanicProvider(
-	name string,
-) *mocks.Provider {
-	provider := mocks.NewProvider(suite.T())
-	provider.On("Name").Return(name)
-
-	// GetPrices returns a timeout error
-	provider.On("GetPrices", mock.Anything).Panic("not implemented")
-
-	return provider
-}
-
-func (suite *OracleTestSuite) createStaticProvider(
-	name string,
-	prices map[oracletypes.CurrencyPair]*big.Int,
-) *mocks.Provider {
-	provider := mocks.NewProvider(suite.T())
-	provider.On("Name").Return(name)
-
-	// GetPrices returns static prices
-	provider.On("GetPrices", mock.Anything).Return(
-		prices,
-		nil,
-	)
-
-	return provider
-}
-
-func (suite *OracleTestSuite) createRandomizedProvider(
-	name string,
-	currencyPairs []oracletypes.CurrencyPair,
-) *mocks.Provider {
-	provider := mocks.NewProvider(suite.T())
-	provider.On("Name").Return(name)
-
-	// GetPrices returns randomized prices
-	provider.On("GetPrices", mock.Anything).Return(
-		suite.getRandomizedPrices(currencyPairs),
-		nil,
-	)
-
-	return provider
-}
-
-func (suite *OracleTestSuite) getRandomizedPrices(
-	currencyPairs []oracletypes.CurrencyPair,
-) map[oracletypes.CurrencyPair]*big.Int {
-	prices := make(map[oracletypes.CurrencyPair]*big.Int)
-
-	for _, pair := range currencyPairs {
-		price := suite.random.Int63()
-		prices[pair] = big.NewInt(price)
+				// Create the provider factory.
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}
+				return providers, nil
+			},
+			duration: 1 * time.Second,
+		},
 	}
 
-	return prices
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cfg := config.OracleConfig{
+				UpdateInterval: 1 * time.Second,
+			}
+			oracle, err := oracle.New(
+				s.logger,
+				cfg,
+				tc.factory,
+				s.aggregationFn,
+				metrics.NewNopMetrics(),
+			)
+			s.Require().NoError(err)
+
+			ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(tc.duration))
+			defer cancel()
+
+			// Start the oracle. This should automatically stop.
+			go func() {
+				err = oracle.Start(ctx)
+				s.Require().Equal(err, context.DeadlineExceeded)
+			}()
+
+			// Ensure that the oracle is not running.
+			s.Eventually(checkFn(oracle), 2*tc.duration, 100*time.Millisecond)
+		})
+	}
 }
 
-func (suite *OracleTestSuite) aggregateProviderData(
-	providers []*mocks.Provider,
-) map[oracletypes.CurrencyPair]*big.Int {
-	// Aggregate prices from all providers
-	priceAggregator := aggregator.NewDataAggregator(
-		aggregator.WithAggregateFn(suite.aggregationFn),
-	)
+func (s *OracleTestSuite) TestStop() {
+	testCases := []struct {
+		name     string
+		factory  providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int]
+		duration time.Duration
+	}{
+		{
+			name: "1 provider",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				// Create the provider.
+				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
+				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
 
-	for _, provider := range providers {
-		prices, err := provider.GetPrices(context.Background())
-		suite.Require().NoError(err)
+				providerCfg := config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider1",
+				}
+				provider, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
 
-		priceAggregator.SetProviderData(provider.Name(), prices)
+				// Create the provider factory.
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				return providers, nil
+			},
+			duration: 1 * time.Second,
+		},
+		{
+			name: "multiple providers",
+			factory: func(
+				*zap.Logger,
+				config.OracleConfig,
+			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+				// Create the provider.
+				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
+				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
+
+				providerCfg := config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider1",
+				}
+				provider1, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
+
+				providerCfg = config.ProviderConfig{
+					Interval: 1 * time.Second,
+					Name:     "provider2",
+				}
+				provider2, err := base.NewProvider(
+					s.logger,
+					providerCfg,
+					handler,
+				)
+				s.Require().NoError(err)
+
+				// Create the provider factory.
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}
+				return providers, nil
+			},
+			duration: 1 * time.Second,
+		},
 	}
 
-	return priceAggregator.GetAggregatedData()
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cfg := config.OracleConfig{
+				UpdateInterval: 1 * time.Second,
+			}
+			oracle, err := oracle.New(
+				s.logger,
+				cfg,
+				tc.factory,
+				s.aggregationFn,
+				metrics.NewNopMetrics(),
+			)
+			s.Require().NoError(err)
+
+			// Start the oracle. This should automatically stop.
+			go func() {
+				oracle.Start(context.Background())
+			}()
+
+			// Wait for the experiment to run.
+			time.Sleep(tc.duration)
+
+			// Ensure that the oracle is not running.
+			oracle.Stop()
+
+			// Ensure that the oracle is not running.
+			s.Eventually(checkFn(oracle), 2*tc.duration, 100*time.Millisecond)
+		})
+	}
+}
+
+func checkFn(o *oracle.Oracle) func() bool {
+	return func() bool {
+		return !o.IsRunning()
+	}
 }
