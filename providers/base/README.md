@@ -7,7 +7,7 @@ The Base Provider is a special provider that is used to provide the base functio
 The base provider is responsible for the following:
 
 * Implementing the oracle `Provider` interface directly just by inheriting the base provider.
-* Having the provider data avaiable in constant time when the oracle requests it.
+* Having the provider data available in constant time when the oracle requests it.
 
 Each base provider implementation will be run in a separate goroutine by the main oracle process. This allows the provider to fetch data from the underlying data source asynchronusly. The base provider will then store the data in a thread safe map. The main oracle service utilizing this provider can determine if the data is stale or not based on the last time the data was fetched.
 
