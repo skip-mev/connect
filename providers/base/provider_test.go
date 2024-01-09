@@ -2,14 +2,17 @@ package base_test
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"testing"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base"
-	"github.com/skip-mev/slinky/providers/base/mocks"
+	"github.com/skip-mev/slinky/providers/base/errors"
+	"github.com/skip-mev/slinky/providers/base/handlers"
+	handlermocks "github.com/skip-mev/slinky/providers/base/handlers/mocks"
+	"github.com/skip-mev/slinky/providers/base/testutils"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -17,12 +20,13 @@ import (
 )
 
 var (
-	logger = zap.NewNop()
-	cfg    = config.ProviderConfig{
-		Name:     "test",
-		Path:     "test",
-		Timeout:  time.Millisecond * 50,
-		Interval: time.Millisecond * 100,
+	logger, _ = zap.NewDevelopment()
+	cfg       = config.ProviderConfig{
+		Name:       "test",
+		Path:       "test",
+		Timeout:    time.Millisecond * 250,
+		Interval:   time.Millisecond * 500,
+		MaxQueries: 1,
 	}
 	pairs = []oracletypes.CurrencyPair{
 		{
@@ -34,15 +38,17 @@ var (
 			Quote: "USD",
 		},
 	}
+
+	respTime = time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC)
 )
 
 func TestStart(t *testing.T) {
 	t.Parallel()
 
 	t.Run("closes on cancel", func(t *testing.T) {
-		handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+		handler := handlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-		provider, err := base.NewProvider(logger, cfg, handler)
+		provider, err := base.NewProvider(logger, cfg, handler, pairs)
 		require.NoError(t, err)
 
 		ctx, cancel := context.WithCancel(context.Background())
@@ -53,10 +59,10 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes with deadline", func(t *testing.T) {
-		handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
-		handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
+		handler := handlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return()
 
-		provider, err := base.NewProvider(logger, cfg, handler)
+		provider, err := base.NewProvider(logger, cfg, handler, pairs)
 		require.NoError(t, err)
 
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Interval*2)
@@ -67,171 +73,199 @@ func TestStart(t *testing.T) {
 	})
 }
 
-func TestGetData(t *testing.T) {
-	t.Parallel()
-
+func TestProviderLoop(t *testing.T) {
 	testCases := []struct {
 		name           string
-		provider       func() *base.BaseProvider[oracletypes.CurrencyPair, *big.Int]
+		handler        func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int]
+		pairs          []oracletypes.CurrencyPair
 		expectedPrices map[oracletypes.CurrencyPair]*big.Int
-		expectedUpdate bool
 	}{
 		{
-			"no price",
-			func() *base.BaseProvider[oracletypes.CurrencyPair, *big.Int] {
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
-
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{},
+			name: "no prices to fetch",
+			handler: func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				return testutils.CreateQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					logger,
 					nil,
-				).Maybe()
-
-				provider, err := base.NewProvider(logger, cfg, handler)
-				require.NoError(t, err)
-
-				return provider
+				)
 			},
-			map[oracletypes.CurrencyPair]*big.Int{},
-			false,
+			pairs:          []oracletypes.CurrencyPair{},
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
 		{
-			"1 price",
-			func() *base.BaseProvider[oracletypes.CurrencyPair, *big.Int] {
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
-
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						pairs[0]: big.NewInt(100),
+			name: "can fetch a single price",
+			handler: func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: respTime,
 					},
-					nil,
-				).Maybe()
+				}
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse(resolved, nil),
+				}
 
-				provider, err := base.NewProvider(logger, cfg, handler)
-				require.NoError(t, err)
-
-				return provider
+				return testutils.CreateQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					logger,
+					responses,
+				)
 			},
-			map[oracletypes.CurrencyPair]*big.Int{
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
-			true,
 		},
 		{
-			"multiple prices",
-			func() *base.BaseProvider[oracletypes.CurrencyPair, *big.Int] {
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+			name: "can fetch prices and only updates if the timestamp is greater than the current data",
+			handler: func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				fn := func(responseCh chan<- providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]) {
+					resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+						pairs[0]: {
+							Value:     big.NewInt(100),
+							Timestamp: respTime,
+						},
+					}
+					resp := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						pairs[0]: big.NewInt(100),
-						pairs[1]: big.NewInt(200),
-					},
-					nil,
-				).Maybe()
+					logger.Debug("sending response", zap.String("response", resp.String()))
+					responseCh <- resp
 
-				provider, err := base.NewProvider(logger, cfg, handler)
-				require.NoError(t, err)
+					resolved = map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+						pairs[0]: {
+							Value:     big.NewInt(200),
+							Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+						},
+					}
+					resp = providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 
-				return provider
+					logger.Debug("sending response", zap.String("response", resp.String()))
+					responseCh <- resp
+				}
+
+				return testutils.CreateQueryHandlerWithResponseFn[oracletypes.CurrencyPair, *big.Int](
+					t,
+					fn,
+				)
 			},
-			map[oracletypes.CurrencyPair]*big.Int{
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+				pairs[0]: big.NewInt(100),
+			},
+		},
+		{
+			name: "can fetch multiple prices",
+			handler: func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: respTime,
+					},
+					pairs[1]: {
+						Value:     big.NewInt(200),
+						Timestamp: respTime,
+					},
+				}
+
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse(resolved, nil),
+				}
+
+				return testutils.CreateQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					logger,
+					responses,
+				)
+			},
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+				pairs[1],
+			},
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 				pairs[1]: big.NewInt(200),
 			},
-			true,
 		},
 		{
-			"continues updating even with error",
-			func() *base.BaseProvider[oracletypes.CurrencyPair, *big.Int] {
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+			name: "does not update if the response included an error",
+			handler: func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				unResolved := map[oracletypes.CurrencyPair]error{
+					pairs[0]: errors.ErrRateLimit,
+				}
 
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{},
-					fmt.Errorf("big oopsie"),
-				).Maybe()
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, unResolved),
+				}
 
-				provider, err := base.NewProvider(logger, cfg, handler)
-				require.NoError(t, err)
-
-				return provider
+				return testutils.CreateQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					logger,
+					responses,
+				)
 			},
-			map[oracletypes.CurrencyPair]*big.Int{},
-			false,
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			provider := tc.provider()
-			now := time.Now()
-
-			// Start the provider with a timeout of 2x the interval. This should allow it to
-			// update at least once.
-			experimentTime := cfg.Interval * 2
-			ctx, cancel := context.WithTimeout(context.Background(), experimentTime)
-			defer cancel()
-
-			go func() {
-				err := provider.Start(ctx)
-				require.Equal(t, context.DeadlineExceeded, err)
-			}()
-
-			// Sleep to allow the goroutine to close.
-			time.Sleep(experimentTime * 2)
-
-			prices := provider.GetData()
-			require.Equal(t, tc.expectedPrices, prices)
-
-			latestUpdate := provider.LastUpdate()
-			if tc.expectedUpdate {
-				require.True(t, latestUpdate.After(now))
-			} else {
-				require.False(t, latestUpdate.After(now))
-			}
-		})
-	}
-}
-
-func TestNewProvider(t *testing.T) {
-	t.Parallel()
-
-	testCases := []struct {
-		name    string
-		cfg     config.ProviderConfig
-		pairs   []oracletypes.CurrencyPair
-		handler func() base.APIDataHandler[oracletypes.CurrencyPair, *big.Int]
-		expErr  bool
-	}{
 		{
-			"valid",
-			cfg,
-			pairs,
-			func() base.APIDataHandler[oracletypes.CurrencyPair, *big.Int] {
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+			name: "continues updating even with timeouts on the query handler",
+			handler: func() handlers.QueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				handler := handlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+				handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
+					responseCh := args.Get(2).(chan<- providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int])
+
+					resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+						pairs[0]: {
+							Value:     big.NewInt(100),
+							Timestamp: respTime,
+						},
+					}
+					resp := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+
+					logger.Debug("sending response", zap.String("response", resp.String()))
+					responseCh <- resp
+				}).After(cfg.Interval * 2)
+
 				return handler
 			},
-			false,
-		},
-		{
-			"no handler",
-			cfg,
-			pairs,
-			func() base.APIDataHandler[oracletypes.CurrencyPair, *big.Int] {
-				return nil
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
 			},
-			true,
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+				pairs[0]: big.NewInt(100),
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler := tc.handler()
-			provider, err := base.NewProvider(logger, tc.cfg, handler)
-			if tc.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tc.cfg.Name, provider.Name())
+			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
+				logger,
+				cfg,
+				tc.handler(),
+				tc.pairs,
+			)
+			require.NoError(t, err)
+
+			now := time.Now()
+			ctx, cancel := context.WithTimeout(context.Background(), cfg.Interval*5)
+			defer cancel()
+
+			err = provider.Start(ctx)
+			require.Equal(t, context.DeadlineExceeded, err)
+
+			data := provider.GetData()
+			for cp, price := range tc.expectedPrices {
+				require.Contains(t, data, cp)
+				result := data[cp]
+				require.Equal(t, price, result.Value)
+				require.True(t, result.Timestamp.After(now))
 			}
 		})
 	}

@@ -4,35 +4,37 @@
 
 > **NOTE:** This specific provider should not be used in any production setting as it may be rate limited by Coinbase.
 
-The Coinbase provider is used to fetch the spot price for cryptocurrencies from the [Coinbase API](https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-currencies). 
+The Coinbase provider is used to fetch the spot price for cryptocurrencies from the [Coinbase API](https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-prices#get-spot-price). 
 
 ## Configuration
 
 The configuration structure for this provider looks like the following:
 
 ```golang
-// CoinbaseConfig is the configuration for the Coinbase provider.
-type CoinbaseConfig struct {
-	// NameToSymbol is a map of currency names to their symbols.
-	NameToSymbol map[string]string `mapstructure:"name_to_symbol" toml:"name_to_symbol"`
+// Config is the configuration for the Coinbase provider.
+type Config struct {
+	// SymbolMap maps the oracle's equivalent of an asset to the expected coinbase
+	// representation of the asset.
+	SymbolMap map[string]string `json:"symbolMap" validate:"required"`
 }
 ```
 
 
-Sample `coinbase.toml`:
+Sample `coinbase.json`:
     
-```toml
-###############################################################################
-###                                Coinbase                                 ###
-###############################################################################
-# This section contains the configuration for the Coinbase API. This meant to be
-# used in a testing environment as this API is not production ready.
+```json
+{
+  "symbolMap": {
+      "BITCOIN": "BTC",
+      "USD": "USD",
+      "ETHEREUM": "ETH",
+      "ATOM": "ATOM",
+      "SOLANA": "SOL",
+      "POLKADOT": "DOT",
+      "DYDX": "DYDX"
+  }
+}
 
-# NameToSymbol is a map of currency names to their symbols.
-[name_to_symbol]
-  "BITCOIN" = "BTC"
-  "USD" = "USD"
-  # Add more currency mappings as needed
 
 ```
 

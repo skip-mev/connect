@@ -1,0 +1,189 @@
+package handlers
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
+	"golang.org/x/sync/errgroup"
+
+	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/providers/base/errors"
+	"github.com/skip-mev/slinky/providers/base/metrics"
+	providertypes "github.com/skip-mev/slinky/providers/types"
+)
+
+// APIQueryHandler is the default API implementation of the QueryHandler interface.
+// This is used to query using http requests. It manages querying the data provider
+// by using the APIDataHandler and RequestHandler. All responses are sent to the
+// response channel. In the case where the APIQueryHandler is atomic, the handler
+// will make a single request for all of the IDs. If the APIQueryHandler is not
+// atomic, the handler will make a request for each ID in a separate go routine.
+type APIQueryHandler[K comparable, V any] struct {
+	logger  *zap.Logger
+	metrics metrics.APIMetrics
+
+	// The request handler is responsible for making outgoing HTTP requests with
+	// a given URL. This can be the default client or a custom client.
+	requestHandler RequestHandler
+
+	// The API data handler is responsible for creating the URL to be sent to the
+	// request handler and parsing the response from the request handler.
+	apiHandler APIDataHandler[K, V]
+}
+
+// NewAPIQueryHandler creates a new APIQueryHandler. It manages querying the data
+// provider by using the APIDataHandler and RequestHandler.
+func NewAPIQueryHandler[K comparable, V any](
+	logger *zap.Logger,
+	requestHandler RequestHandler,
+	apiHandler APIDataHandler[K, V],
+	metrics metrics.APIMetrics,
+) (*APIQueryHandler[K, V], error) {
+	if logger == nil {
+		return nil, fmt.Errorf("no logger specified for api query handler")
+	}
+
+	if requestHandler == nil {
+		return nil, fmt.Errorf("no request handler specified for api query handler")
+	}
+
+	if apiHandler == nil {
+		return nil, fmt.Errorf("no api data handler specified for api query handler")
+	}
+
+	if metrics == nil {
+		return nil, fmt.Errorf("no metrics specified for api query handler")
+	}
+
+	return &APIQueryHandler[K, V]{
+		logger:         logger.With(zap.String("api_data_handler", apiHandler.Name())),
+		requestHandler: requestHandler,
+		apiHandler:     apiHandler,
+		metrics:        metrics,
+	}, nil
+}
+
+// Query is used to query the API data provider for the given IDs. This method blocks
+// until all of the responses have been sent to the response channel. Query will only
+// make N concurrent requests at a time, where N is the capacity of the response channel.
+func (h *APIQueryHandler[K, V]) Query(
+	ctx context.Context,
+	ids []K,
+	responseCh chan<- providertypes.GetResponse[K, V],
+) {
+	if len(ids) == 0 {
+		h.logger.Debug("no ids to query")
+		return
+	}
+
+	// Observe the total amount of time it takes to fulfill the request(s).
+	h.logger.Debug("starting api query handler")
+	start := time.Now().UTC()
+	defer func() {
+		if r := recover(); r != nil {
+			h.logger.Error("panic in api query handler", zap.Any("panic", r))
+		}
+
+		h.metrics.ObserveProviderResponseLatency(h.apiHandler.Name(), time.Since(start))
+		h.logger.Debug("finished api query handler")
+	}()
+
+	// Set the concurrency limit based on the capacity of the channel. This is done
+	// to ensure the query handler does not exceed the rate limit parameters of the
+	// data provider.
+	wg := errgroup.Group{}
+	wg.SetLimit(cap(responseCh))
+	h.logger.Debug("setting concurrency limit", zap.Int("limit", cap(responseCh)))
+
+	// If our task is atomic, we can make a single request for all of the IDs. Otherwise,
+	// we need to make a request for each ID.
+	tasks := []func() error{}
+	if h.apiHandler.Atomic() {
+		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
+	} else {
+		for i := 0; i < len(ids); i++ {
+			id := ids[i]
+			tasks = append(tasks, h.subTask(ctx, []K{id}, responseCh))
+		}
+	}
+
+	// Block each task until the wait group has capacity to accept a new response.
+	for _, task := range tasks {
+		wg.Go(task)
+	}
+
+	// Wait for all of the tasks to complete.
+	if err := wg.Wait(); err != nil {
+		h.logger.Error("error querying ids", zap.Error(err))
+	}
+}
+
+// subTask is the subtask that is used to query the data provider for the given IDs,
+// parse the response, and write the response to the response channel.
+func (h *APIQueryHandler[K, V]) subTask(
+	ctx context.Context,
+	ids []K,
+	responseCh chan<- providertypes.GetResponse[K, V],
+) func() error {
+	return func() error {
+		defer func() {
+			// Recover from any panics that occur.
+			if r := recover(); r != nil {
+				h.logger.Error("panic occurred in subtask", zap.Any("panic", r), zap.Any("ids", ids))
+			}
+
+			h.logger.Info("finished subtask", zap.Any("ids", ids))
+		}()
+
+		h.logger.Debug("starting subtask", zap.Any("ids", ids))
+
+		// Create the URL for the request.
+		url, err := h.apiHandler.CreateURL(ids)
+		if err != nil {
+			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrCreateURLWithErr(err)))
+			return nil
+		}
+
+		// Make the request.
+		resp, err := h.requestHandler.Do(ctx, url)
+		if err != nil {
+			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))
+			return nil
+		}
+
+		// TODO: add more error handling here.
+		var response providertypes.GetResponse[K, V]
+		switch {
+		case resp.StatusCode == http.StatusTooManyRequests:
+			response = providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrRateLimit)
+		case resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices:
+			response = providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode))
+		default:
+			response = h.apiHandler.ParseResponse(ids, resp)
+		}
+
+		h.writeResponse(responseCh, response)
+		return nil
+	}
+}
+
+// writeResponse is used to write the response to the response channel.
+func (h *APIQueryHandler[K, V]) writeResponse(
+	responseCh chan<- providertypes.GetResponse[K, V],
+	response providertypes.GetResponse[K, V],
+) {
+	responseCh <- response
+	h.logger.Debug("wrote response", zap.String("response", response.String()))
+
+	// Update the metrics.
+	for id := range response.Resolved {
+		h.metrics.AddProviderResponse(h.apiHandler.Name(), strings.ToLower(fmt.Sprint(id)), metrics.Success)
+	}
+	for id, err := range response.UnResolved {
+		h.metrics.AddProviderResponse(h.apiHandler.Name(), strings.ToLower(fmt.Sprint(id)), metrics.StatusFromError(err))
+	}
+}

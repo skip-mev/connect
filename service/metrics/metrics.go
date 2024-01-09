@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/skip-mev/slinky/oracle/config"
 )
 
 const (
@@ -39,32 +40,6 @@ func StatusFromError(err error) Status {
 		return StatusSuccess
 	}
 	return StatusFailure
-}
-
-type Config struct {
-	// Enabled indicates whether metrics should be enabled
-	Enabled bool `mapstructure:"enabled" toml:"enabled"`
-
-	// ValidatorConsAddress is the validator's consensus address
-	ValidatorConsAddress string `mapstructure:"validator_cons_address" toml:"validator_cons_address"`
-}
-
-// ValidateBasic performs basic validation of the config
-func (c Config) ValidateBasic() error {
-	if c.Enabled {
-		_, err := sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
-		return err
-	}
-
-	return nil
-}
-
-func (c Config) ConsAddress() (sdk.ConsAddress, error) {
-	if c.Enabled {
-		return sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
-	}
-
-	return nil, nil
 }
 
 //go:generate mockery --name Metrics --filename mock_metrics.go
@@ -161,7 +136,7 @@ func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
 // NewServiceMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
 // returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
 // If the metrics are not enabled, a nop implementation is returned.
-func NewServiceMetricsFromConfig(cfg Config) (Metrics, sdk.ConsAddress, error) {
+func NewServiceMetricsFromConfig(cfg config.AppMetricsConfig) (Metrics, sdk.ConsAddress, error) {
 	if !cfg.Enabled {
 		return NewNopMetrics(), nil, nil
 	}

@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
@@ -38,23 +40,48 @@ type Config struct {
 	MetricsPath string `mapstructure:"metrics_path" toml:"metrics_path"`
 }
 
+// ValidateBasic performs basic validation of the config.
+func (c *Config) ValidateBasic() error {
+	if len(c.OraclePath) == 0 {
+		return fmt.Errorf("oracle path cannot be empty")
+	}
+
+	if len(c.MetricsPath) == 0 {
+		return fmt.Errorf("metrics path cannot be empty")
+	}
+
+	return nil
+}
+
 // ReadConfigFromFile reads a config from a file and returns the config.
-func ReadConfigFromFile(path string) (*Config, error) {
+func ReadConfigFromFile(path string) (Config, error) {
 	// read in config file
 	viper.SetConfigFile(path)
 	viper.SetConfigType("toml")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
+		return Config{}, err
+	}
+
+	// Check required fields
+	requiredFields := []string{"oracle_path", "metrics_path"}
+	for _, field := range requiredFields {
+		if !viper.IsSet(field) {
+			return Config{}, fmt.Errorf("required field %s is missing in config", field)
+		}
 	}
 
 	// unmarshal config
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
-	return &config, nil
+	if err := config.ValidateBasic(); err != nil {
+		return Config{}, err
+	}
+
+	return config, nil
 }
 
 // ReadConfigFromAppOpts reads the config parameters from the AppOptions and returns the config.
@@ -76,6 +103,10 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (Config, error) {
 		if cfg.MetricsPath, err = cast.ToStringE(v); err != nil {
 			return Config{}, err
 		}
+	}
+
+	if err := cfg.ValidateBasic(); err != nil {
+		return Config{}, err
 	}
 
 	return cfg, err

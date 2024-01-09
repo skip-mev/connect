@@ -6,7 +6,6 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -22,34 +21,31 @@ func NewOracleService(
 	factory providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int],
 	aggregateFn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int],
 ) (service.OracleService, error) {
-	var (
-		oracleService service.OracleService
-		metrics       = oraclemetrics.NewNopMetrics()
-	)
-
 	if !oracleCfg.Enabled {
 		return service.NewNoopOracleService(), nil
 	}
 
+	var oracleService service.OracleService
 	if oracleCfg.InProcess {
-		if metricsCfg.OracleMetrics.Enabled {
-			metrics = oraclemetrics.NewMetrics()
+		providers, err := factory(logger, oracleCfg, metricsCfg.OracleMetrics)
+		if err != nil {
+			return nil, err
 		}
 
 		oracle, err := oracle.New(
-			logger,
 			oracleCfg,
-			factory,
-			aggregateFn,
-			metrics,
+			oracle.WithLogger(logger),
+			oracle.WithMetricsConfig(metricsCfg.OracleMetrics),
+			oracle.WithProviders(providers),
+			oracle.WithAggregateFunction(aggregateFn),
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		oracleService = NewLocalClient(oracle, oracleCfg.Timeout)
+		oracleService = NewLocalClient(oracle, oracleCfg.ClientTimeout)
 	} else {
-		oracleService = NewGRPCClient(oracleCfg.RemoteAddress, oracleCfg.Timeout)
+		oracleService = NewGRPCClient(oracleCfg.RemoteAddress, oracleCfg.ClientTimeout)
 	}
 
 	return oracleService, nil

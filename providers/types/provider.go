@@ -1,8 +1,6 @@
 package types
 
 import (
-	"time"
-
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
@@ -20,15 +18,16 @@ type Provider[K comparable, V any] interface {
 	// For example, if the provider is fetching prices for a set of currency
 	// pairs, the data returned by this function would be the latest prices
 	// for those currency pairs.
-	GetData() map[K]V
+	GetData() map[K]Result[V]
 
 	// Start starts the provider.
 	Start(context.Context) error
-
-	// LastUpdated returns the time at which the data was last updated/fetched.
-	LastUpdate() time.Time
 }
 
 // ProviderFactory inputs the oracle configuration and returns a set of providers. Developers
 // can implement their own provider factory to create their own providers.
-type ProviderFactory[K comparable, V any] func(*zap.Logger, config.OracleConfig) ([]Provider[K, V], error)
+type ProviderFactory[K comparable, V any] func(
+	*zap.Logger,
+	config.OracleConfig,
+	config.OracleMetricsConfig,
+) ([]Provider[K, V], error)

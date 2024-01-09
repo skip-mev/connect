@@ -10,9 +10,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/providers/base"
-	basemocks "github.com/skip-mev/slinky/providers/base/mocks"
+	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -33,6 +31,7 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
 			},
@@ -43,23 +42,18 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := basemocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 250 * time.Millisecond,
-					Name:     "provider1",
-				}
-				provider, err := base.NewProvider(
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
-				return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}, nil
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				return providers, nil
 			},
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
@@ -68,28 +62,26 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := basemocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						s.currencyPairs[0]: big.NewInt(100),
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					s.currencyPairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
-					nil,
-				).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 250 * time.Millisecond,
-					Name:     "provider1",
 				}
-				provider, err := base.NewProvider(
+				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					responses,
 				)
-				s.Require().NoError(err)
 
-				return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}, nil
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				return providers, nil
 			},
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				s.currencyPairs[0]: big.NewInt(100),
@@ -100,48 +92,42 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := basemocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						s.currencyPairs[0]: big.NewInt(100),
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					s.currencyPairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
-					nil,
-				).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 250 * time.Millisecond,
-					Name:     "provider1",
 				}
-				provider1, err := base.NewProvider(
+				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					responses,
 				)
-				s.Require().NoError(err)
 
-				// Create the provider.
-				handler = basemocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						s.currencyPairs[0]: big.NewInt(200),
+				resolved2 := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					s.currencyPairs[0]: {
+						Value:     big.NewInt(200),
+						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
-					nil,
-				).Maybe()
-
-				providerCfg = config.ProviderConfig{
-					Interval: 250 * time.Millisecond,
-					Name:     "provider2",
 				}
-				provider2, err := base.NewProvider(
+				response2 := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved2, nil)
+				responses2 := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response2}
+				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg2,
+					s.currencyPairs,
+					responses2,
 				)
-				s.Require().NoError(err)
 
-				return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}, nil
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider, provider2}
+				return providers, nil
 			},
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				s.currencyPairs[0]: big.NewInt(150),
@@ -152,30 +138,26 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := basemocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						s.currencyPairs[0]: big.NewInt(100),
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					s.currencyPairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
-					nil,
-				).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 250 * time.Millisecond,
-					Name:     "provider1",
 				}
-				provider1, err := base.NewProvider(
+				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					responses,
 				)
-				s.Require().NoError(err)
 
-				return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{
-					provider1, s.noStartProvider("provider2"),
-				}, nil
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider, s.noStartProvider("provider2")}
+				return providers, nil
 			},
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				s.currencyPairs[0]: big.NewInt(100),
@@ -186,39 +168,26 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := basemocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(
-					map[oracletypes.CurrencyPair]*big.Int{
-						s.currencyPairs[0]: big.NewInt(100),
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					s.currencyPairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: time.Date(1738, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
-					nil,
-				).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 10 * time.Second, // 10 seconds is greater than the max price age.
-					Name:     "provider1",
 				}
-				provider, err := base.NewProvider(
+				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					responses,
 				)
-				s.Require().NoError(err)
 
-				return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}, nil
-			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
-		},
-		{
-			name: "1 provider that panics on get prices",
-			factory: func(
-				*zap.Logger,
-				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider := s.panicProvider("provider1")
-				return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}, nil
+				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				return providers, nil
 			},
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
@@ -228,13 +197,20 @@ func (s *OracleTestSuite) TestProviders() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
+				InProcess:      true,
+				ClientTimeout:  1 * time.Second,
 			}
+			metricsCfg := config.OracleMetricsConfig{
+				Enabled: false,
+			}
+
+			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			s.Require().NoError(err)
+
 			oracle, err := oracle.New(
-				s.logger,
 				cfg,
-				tc.factory,
-				s.aggregationFn,
-				metrics.NewNopMetrics(),
+				oracle.WithLogger(s.logger),
+				oracle.WithProviders(providers),
 			)
 			s.Require().NoError(err)
 
@@ -252,8 +228,6 @@ func (s *OracleTestSuite) TestProviders() {
 			// Stop the oracle.
 			oracle.Stop()
 
-			time.Sleep(2 * time.Second)
-
 			// Ensure that the oracle is not running.
 			checkFn := func() bool {
 				return !oracle.IsRunning()
@@ -268,19 +242,7 @@ func (s *OracleTestSuite) noStartProvider(name string) providertypes.Provider[or
 
 	provider.On("Name").Return(name).Maybe()
 	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz error")).Maybe()
-	provider.On("LastUpdate").Return(time.Now()).Maybe()
-	provider.On("GetData").Return(nil, nil).Maybe()
-
-	return provider
-}
-
-func (s *OracleTestSuite) panicProvider(name string) providertypes.Provider[oracletypes.CurrencyPair, *big.Int] {
-	provider := providermocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
-
-	provider.On("Name").Return(name).Maybe()
-	provider.On("GetData").Panic("no rizz panic").Maybe()
-	provider.On("Start", mock.Anything).Return(nil).Maybe()
-	provider.On("LastUpdate").Return(time.Now().Add(1 * time.Hour)).Maybe()
+	provider.On("GetData").Return(nil).Maybe()
 
 	return provider
 }

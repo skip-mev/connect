@@ -10,7 +10,7 @@ prometheus_server_address = "localhost:8000"
 [oracle_metrics]
 
 # Enabled indicates whether metrics should be enabled
-enabled = false
+enabled = true
 
 # AppMetrics is the config for the app metrics
 [app_metrics]

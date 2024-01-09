@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"os"
@@ -13,7 +14,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/pelletier/go-toml"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -23,9 +23,7 @@ import (
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
-	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/providers/static"
-	service_metrics "github.com/skip-mev/slinky/service/metrics"
 )
 
 const (
@@ -66,7 +64,7 @@ func DefaultOracleConfig(node *cosmos.ChainNode) (
 		UpdateInterval: 500 * time.Millisecond,
 		InProcess:      false,
 		RemoteAddress:  fmt.Sprintf("%s:%s", oracle.HostName(), "8080"),
-		Timeout:        500 * time.Millisecond,
+		ClientTimeout:  500 * time.Millisecond,
 		Enabled:        true,
 	}
 
@@ -80,10 +78,10 @@ func DefaultOracleConfig(node *cosmos.ChainNode) (
 	// Create the metrics config
 	metricsConfig := oracleconfig.MetricsConfig{
 		PrometheusServerAddress: fmt.Sprintf("%s:%s", oracle.HostName(), "8081"),
-		OracleMetrics: metrics.Config{
+		OracleMetrics: oracleconfig.OracleMetricsConfig{
 			Enabled: true,
 		},
-		AppMetrics: service_metrics.Config{
+		AppMetrics: oracleconfig.AppMetricsConfig{
 			Enabled:              true,
 			ValidatorConsAddress: consAddress.String(),
 		},
@@ -316,10 +314,11 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 			oracleConfig, metricsConfig := DefaultOracleConfig(node)
 			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-				Name:     "static-mock-provider",
-				Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-				Timeout:  250 * time.Millisecond,
-				Interval: 250 * time.Millisecond,
+				Name:       "static-mock-provider",
+				Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+				Timeout:    250 * time.Millisecond,
+				Interval:   250 * time.Millisecond,
+				MaxQueries: 1,
 			})
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
@@ -330,7 +329,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 				},
 			}
 
-			bz, err := toml.Marshal(staticConfig)
+			bz, err := json.Marshal(staticConfig)
 			s.Require().NoError(err)
 			s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
 
@@ -529,10 +528,11 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-			Name:     "static-mock-provider",
-			Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-			Timeout:  250 * time.Millisecond,
-			Interval: 250 * time.Millisecond,
+			Name:       "static-mock-provider",
+			Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			Timeout:    250 * time.Millisecond,
+			Interval:   250 * time.Millisecond,
+			MaxQueries: 1,
 		})
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 
@@ -545,7 +545,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			},
 		}
 
-		bz, err := toml.Marshal(staticConfig)
+		bz, err := json.Marshal(staticConfig)
 		s.Require().NoError(err)
 		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
 
@@ -604,10 +604,11 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-			Name:     "static-mock-provider",
-			Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-			Timeout:  250 * time.Millisecond,
-			Interval: 250 * time.Millisecond,
+			Name:       "static-mock-provider",
+			Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			Timeout:    250 * time.Millisecond,
+			Interval:   250 * time.Millisecond,
+			MaxQueries: 1,
 		})
 
 		// Write the static provider config to the node
@@ -618,7 +619,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			},
 		}
 
-		bz, err := toml.Marshal(staticConfig)
+		bz, err := json.Marshal(staticConfig)
 		s.Require().NoError(err)
 		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
 

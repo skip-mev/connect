@@ -7,18 +7,32 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/providers/base"
-	"github.com/skip-mev/slinky/providers/base/mocks"
+	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+)
+
+var (
+	providerCfg1 = config.ProviderConfig{
+		Interval:   500 * time.Millisecond,
+		Timeout:    250 * time.Millisecond,
+		Path:       "testpath",
+		Name:       "provider1",
+		MaxQueries: 10,
+	}
+	providerCfg2 = config.ProviderConfig{
+		Interval:   500 * time.Millisecond,
+		Timeout:    250 * time.Millisecond,
+		Path:       "testpath2",
+		Name:       "provider2",
+		MaxQueries: 10,
+	}
 )
 
 type OracleTestSuite struct {
@@ -58,6 +72,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
 			},
@@ -67,20 +82,15 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-				providerCfg := config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider1",
-				}
-				provider, err := base.NewProvider(
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
 				// Create the provider factory.
 				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
@@ -92,32 +102,23 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider1",
-				}
-				provider1, err := base.NewProvider(
+				provider1 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
-				providerCfg = config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider2",
-				}
-				provider2, err := base.NewProvider(
+				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg2,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
 				// Create the provider factory.
 				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}
@@ -130,13 +131,20 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
+				ClientTimeout:  1 * time.Second,
+				InProcess:      true,
 			}
+			metricsCfg := config.OracleMetricsConfig{
+				Enabled: false,
+			}
+
+			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			s.Require().NoError(err)
+
 			oracle, err := oracle.New(
-				s.logger,
 				cfg,
-				tc.factory,
-				s.aggregationFn,
-				metrics.NewNopMetrics(),
+				oracle.WithLogger(s.logger),
+				oracle.WithProviders(providers),
 			)
 			s.Require().NoError(err)
 
@@ -169,6 +177,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
 			},
@@ -179,21 +188,15 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider1",
-				}
-				provider, err := base.NewProvider(
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
 				// Create the provider factory.
 				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
@@ -206,32 +209,23 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider1",
-				}
-				provider1, err := base.NewProvider(
+				provider1 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
-				providerCfg = config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider2",
-				}
-				provider2, err := base.NewProvider(
+				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg2,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
 				// Create the provider factory.
 				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}
@@ -245,13 +239,20 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
+				ClientTimeout:  1 * time.Second,
+				InProcess:      true,
 			}
+			metricsCfg := config.OracleMetricsConfig{
+				Enabled: false,
+			}
+
+			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			s.Require().NoError(err)
+
 			oracle, err := oracle.New(
-				s.logger,
 				cfg,
-				tc.factory,
-				s.aggregationFn,
-				metrics.NewNopMetrics(),
+				oracle.WithLogger(s.logger),
+				oracle.WithProviders(providers),
 			)
 			s.Require().NoError(err)
 
@@ -281,21 +282,15 @@ func (s *OracleTestSuite) TestStop() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider1",
-				}
-				provider, err := base.NewProvider(
+				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
 				// Create the provider factory.
 				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
@@ -308,32 +303,23 @@ func (s *OracleTestSuite) TestStop() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
+				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				// Create the provider.
-				handler := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](s.T())
-				handler.On("Get", mock.Anything).Return(nil, nil).Maybe()
-
-				providerCfg := config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider1",
-				}
-				provider1, err := base.NewProvider(
+				provider1 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg1,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
-				providerCfg = config.ProviderConfig{
-					Interval: 1 * time.Second,
-					Name:     "provider2",
-				}
-				provider2, err := base.NewProvider(
+				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					s.T(),
 					s.logger,
-					providerCfg,
-					handler,
+					providerCfg2,
+					s.currencyPairs,
+					nil,
 				)
-				s.Require().NoError(err)
 
 				// Create the provider factory.
 				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider1, provider2}
@@ -347,13 +333,20 @@ func (s *OracleTestSuite) TestStop() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
+				ClientTimeout:  1 * time.Second,
+				InProcess:      true,
 			}
+			metricsCfg := config.OracleMetricsConfig{
+				Enabled: false,
+			}
+
+			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			s.Require().NoError(err)
+
 			oracle, err := oracle.New(
-				s.logger,
 				cfg,
-				tc.factory,
-				s.aggregationFn,
-				metrics.NewNopMetrics(),
+				oracle.WithLogger(s.logger),
+				oracle.WithProviders(providers),
 			)
 			s.Require().NoError(err)
 

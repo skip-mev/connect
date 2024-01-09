@@ -67,43 +67,30 @@ type Oracle struct {
 // to compute the final price for each currency pair. By default, the oracle will compute the median
 // price across all providers.
 func New(
-	logger *zap.Logger,
-	config config.OracleConfig,
-	providerFactory providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int],
-	aggregateFn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int],
-	m metrics.Metrics,
+	cfg config.OracleConfig,
+	opts ...OracleOption,
 ) (*Oracle, error) {
-	if logger == nil {
-		return nil, fmt.Errorf("logger cannot be nil")
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid oracle config: %w", err)
 	}
 
-	providers, err := providerFactory(logger, config)
-	if err != nil {
-		return nil, err
+	o := &Oracle{
+		closer:  ssync.NewCloser(),
+		cfg:     cfg,
+		logger:  zap.NewNop(),
+		metrics: metrics.NewNopMetrics(),
+		priceAggregator: aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
+			aggregator.WithAggregateFn(aggregator.ComputeMedian()),
+		),
 	}
 
-	if m == nil {
-		m = metrics.NewNopMetrics()
+	for _, opt := range opts {
+		opt(o)
 	}
 
-	logger = logger.With(zap.String("process", "oracle"))
-	logger.Info(
-		"creating oracle",
-		zap.Int("num_providers", len(providers)),
-	)
+	o.logger.Info("creating oracle", zap.Int("num_providers", len(o.providers)))
 
-	priceAggregator := aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
-		aggregator.WithAggregateFn(aggregateFn),
-	)
-
-	return &Oracle{
-		logger:          logger,
-		closer:          ssync.NewCloser(),
-		providers:       providers,
-		priceAggregator: priceAggregator,
-		metrics:         m,
-		cfg:             config,
-	}, nil
+	return o, nil
 }
 
 // IsRunning returns true if the oracle is running.
@@ -186,7 +173,7 @@ func (o *Oracle) tick() {
 	// update the last sync time
 	o.metrics.AddTick()
 
-	o.logger.Info("oracle updated prices")
+	o.logger.Info("oracle updated prices", zap.Time("last_sync", o.GetLastSyncTime()), zap.Int("num_prices", len(o.GetPrices())))
 }
 
 // fetchPrices retrieves the latest prices from a given provider and updates the aggregator
@@ -200,22 +187,37 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 
 	o.logger.Info("retrieving prices", zap.String("provider", provider.Name()))
 
-	// Check if the price age exceeds the max price age.
-	priceAge := time.Now().UTC().Sub(provider.LastUpdate())
-	if priceAge > o.cfg.UpdateInterval {
-		o.logger.Debug("provider price age exceeds max price age", zap.String("provider", provider.Name()), zap.Duration("price_age", priceAge))
-		return
-	}
-
 	// Fetch and set prices from the provider.
 	prices := provider.GetData()
 	if prices == nil {
-		o.logger.Debug("provider returned nil prices", zap.String("provider", provider.Name()))
+		o.logger.Info("provider returned nil prices", zap.String("provider", provider.Name()))
 		return
 	}
 
+	timeFilteredPrices := make(map[oracletypes.CurrencyPair]*big.Int)
+	for pair, result := range prices {
+		// If the price is older than the update interval, skip it.
+		if diff := time.Since(result.Timestamp); diff > o.cfg.UpdateInterval {
+			o.logger.Debug(
+				"skipping price",
+				zap.String("provider", provider.Name()),
+				zap.String("pair", pair.String()),
+				zap.Duration("diff", diff),
+			)
+			continue
+		}
+
+		o.logger.Debug(
+			"adding price",
+			zap.String("provider", provider.Name()),
+			zap.String("pair", pair.String()),
+			zap.String("price", result.Value.String()),
+		)
+		timeFilteredPrices[pair] = result.Value
+	}
+
 	o.logger.Info("provider returned prices", zap.String("provider", provider.Name()), zap.Int("prices", len(prices)))
-	o.priceAggregator.SetProviderData(provider.Name(), prices)
+	o.priceAggregator.SetProviderData(provider.Name(), timeFilteredPrices)
 }
 
 // GetLastSyncTime returns the last time the oracle successfully updated prices.

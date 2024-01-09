@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"math/big"
 	"path"
 	"time"
@@ -15,7 +16,6 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/pelletier/go-toml"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	testutil "github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"google.golang.org/grpc"
@@ -170,10 +170,11 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 
 	oCfg, mCfg := DefaultOracleConfig(node)
 	oCfg.Providers = append(oCfg.Providers, config.ProviderConfig{
-		Name:     "static-mock-provider",
-		Path:     path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-		Timeout:  250 * time.Millisecond,
-		Interval: 250 * time.Millisecond,
+		Name:       "static-mock-provider",
+		Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+		Timeout:    250 * time.Millisecond,
+		Interval:   250 * time.Millisecond,
+		MaxQueries: 1,
 	})
 	oCfg.CurrencyPairs = append(oCfg.CurrencyPairs, ticker)
 
@@ -185,7 +186,7 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 	}
 
 	// Write the config to the file.
-	bz, err := toml.Marshal(staticMockProvider)
+	bz, err := json.Marshal(staticMockProvider)
 	if err != nil {
 		return err
 	}

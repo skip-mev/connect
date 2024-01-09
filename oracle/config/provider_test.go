@@ -12,8 +12,9 @@ var (
 	goodConfigContent = `
 name = "testname"
 path = "testpath"
-timeout = "10s"
-interval = "6s"
+timeout = "5s"
+interval = "10s"
+max_queries = 10
 `
 
 	badConfigContent = `
@@ -21,12 +22,28 @@ name = "testname"
 path = "testpath"
 timeout = "10"
 interval = "60"
+max_queries = 10
 `
 
 	missingFieldConfigContent = `
 name = "testname"
 path = "testpath"
 timeout = "10s"
+`
+
+	invalidIntervalConfigContent = `
+name = "testname"
+path = "testpath"
+timeout = "10s"
+interval = "5s"
+`
+
+	invalidMaxQueriesConfigContent = `
+name = "testname"
+path = "testpath"
+timeout = "10s"
+interval = "60s"
+max_queries = -1
 `
 )
 
@@ -49,6 +66,16 @@ func TestReadProviderConfigFromFile(t *testing.T) {
 		{
 			name:        "missing field config",
 			config:      missingFieldConfigContent,
+			expectedErr: true,
+		},
+		{
+			name:        "invalid interval config",
+			config:      invalidIntervalConfigContent,
+			expectedErr: true,
+		},
+		{
+			name:        "invalid max queries config",
+			config:      invalidMaxQueriesConfigContent,
 			expectedErr: true,
 		},
 	}

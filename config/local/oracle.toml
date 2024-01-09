@@ -9,8 +9,8 @@ enabled = true
 # InProcess specifies whether the oracle is currently running in-process (true) or out-of-process (false).
 in_process = true
 
-# Timeout is the time that the client is willing to wait for responses from the oracle.
-timeout = "2s"  # Replace "2s" with your desired timeout duration.
+# ClientTimeout is the time that the client is willing to wait for responses from the oracle.
+client_timeout = "2s"  # Replace "2s" with your desired timeout duration.
 
 # RemoteAddress is the address of the remote oracle server (if it is running out-of-process).
 remote_address = ""
@@ -18,28 +18,51 @@ remote_address = ""
 # UpdateInterval is the interval at which the oracle will fetch prices from providers.
 update_interval = "2s"  # Replace "2s" with your desired update interval duration.
 
+# Production is the flag that determines whether the oracle is running in production mode.
+production = false
+
 # Providers is the list of providers that the oracle will fetch prices from.
 
 [[providers]]
 name = "coinbase"
-path = "config/local/providers/coinbase.toml"
-timeout = "2s"  # Replace "2s" with your desired timeout duration.
+path = "config/local/providers/coinbase.json"
+timeout = "500ms"  # Replace "500ms" with your desired timeout duration.
 interval = "1s"  # Replace "1s" with your desired update interval duration.
+max_queries = 5  # Replace "5" with your desired maximum number of queries per update interval.
 
 [[providers]]
 name = "coingecko"
-path = "config/local/providers/coingecko.toml"
-timeout = "2s"
+path = "config/local/providers/coingecko.json"
+timeout = "500ms"
 interval = "1s"
-
-[[providers]]
-name = "coinmarketcap"
-path = "config/local/providers/coinmarketcap.toml"
-timeout = "2s"
-interval = "1s"
+max_queries = 1 # CoinGecko is atomic so it can fetch all prices in a single request.
 
 # Currency Pairs
 
 [[currency_pairs]]
 base = "BITCOIN"
 quote = "USD"
+
+[[currency_pairs]]
+base = "ETHEREUM"
+quote = "USD"
+
+[[currency_pairs]]
+base = "ATOM"
+quote = "USD"
+
+[[currency_pairs]]
+base = "SOLANA"
+quote = "USD"
+
+[[currency_pairs]]
+base = "POLKADOT"
+quote = "USD"
+
+[[currency_pairs]]
+base = "DYDX"
+quote = "USD"
+
+[[currency_pairs]]
+base = "BITCOIN"
+quote = "ETHEREUM"

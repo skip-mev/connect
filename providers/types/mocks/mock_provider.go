@@ -4,8 +4,8 @@ package mocks
 
 import (
 	context "context"
-	time "time"
 
+	types "github.com/skip-mev/slinky/providers/types"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -15,30 +15,16 @@ type Provider[K comparable, V interface{}] struct {
 }
 
 // GetData provides a mock function with given fields:
-func (_m *Provider[K, V]) GetData() map[K]V {
+func (_m *Provider[K, V]) GetData() map[K]types.Result[V] {
 	ret := _m.Called()
 
-	var r0 map[K]V
-	if rf, ok := ret.Get(0).(func() map[K]V); ok {
+	var r0 map[K]types.Result[V]
+	if rf, ok := ret.Get(0).(func() map[K]types.Result[V]); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[K]V)
+			r0 = ret.Get(0).(map[K]types.Result[V])
 		}
-	}
-
-	return r0
-}
-
-// LastUpdate provides a mock function with given fields:
-func (_m *Provider[K, V]) LastUpdate() time.Time {
-	ret := _m.Called()
-
-	var r0 time.Time
-	if rf, ok := ret.Get(0).(func() time.Time); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(time.Time)
 	}
 
 	return r0

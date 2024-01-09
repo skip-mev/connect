@@ -22,30 +22,59 @@ type ProviderConfig struct {
 
 	// Interval is the interval at which the provider should update the prices.
 	Interval time.Duration `mapstructure:"interval" toml:"interval"`
+
+	// MaxQueries is the maximum number of queries that the provider will make
+	// within the interval. If the provider makes more queries than this, it will
+	// stop making queries until the next interval.
+	MaxQueries int `mapstructure:"max_queries" toml:"max_queries"`
 }
 
-func ReadProviderConfigFromFile(path string) (*ProviderConfig, error) {
+func (c *ProviderConfig) ValidateBasic() error {
+	if len(c.Name) == 0 || len(c.Path) == 0 {
+		return fmt.Errorf("name & path cannot be empty")
+	}
+
+	if c.Interval <= 0 || c.Timeout <= 0 {
+		return fmt.Errorf("provider interval and timeout must be strictly positive")
+	}
+
+	if c.Interval < c.Timeout {
+		return fmt.Errorf("provider timeout must be greater than 0 and less than the interval")
+	}
+
+	if c.MaxQueries < 1 {
+		return fmt.Errorf("provider max queries must be greater than 0")
+	}
+
+	return nil
+}
+
+func ReadProviderConfigFromFile(path string) (ProviderConfig, error) {
 	// Read in config file
 	viper.SetConfigFile(path)
 	viper.SetConfigType("toml")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
+		return ProviderConfig{}, err
 	}
 
 	// Check required fields
-	requiredFields := []string{"name", "path", "timeout", "interval"}
+	requiredFields := []string{"name", "path", "timeout", "interval", "max_queries"}
 	for _, field := range requiredFields {
 		if !viper.IsSet(field) {
-			return nil, fmt.Errorf("required field %s is missing in config", field)
+			return ProviderConfig{}, fmt.Errorf("required field %s is missing in config", field)
 		}
 	}
 
 	// Unmarshal config
 	var config ProviderConfig
 	if err := viper.Unmarshal(&config); err != nil {
-		return nil, err
+		return ProviderConfig{}, err
 	}
 
-	return &config, nil
+	if err := config.ValidateBasic(); err != nil {
+		return ProviderConfig{}, err
+	}
+
+	return config, nil
 }

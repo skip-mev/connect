@@ -1,7 +1,12 @@
 package metrics
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
+	"github.com/go-kit/kit/metrics"
+	"github.com/go-kit/kit/metrics/discard"
+	"github.com/go-kit/kit/metrics/prometheus"
+	stdprom "github.com/prometheus/client_golang/prometheus"
+
+	"github.com/skip-mev/slinky/oracle/config"
 )
 
 const (
@@ -10,46 +15,52 @@ const (
 	OracleSubsystem = "oracle"
 )
 
-type Config struct {
-	// Enabled indicates whether metrics should be enabled
-	Enabled bool `mapstructure:"enabled" toml:"enabled"`
-}
-
+// OracleMetrics is an interface that defines the API for oracle metrics.
+//
 //go:generate mockery --name Metrics --filename mock_metrics.go
 type Metrics interface {
-	// AddTick increments the number of ticks, this can represent a liveness counter. This metric is paginated by status.
+	// AddTick increments the number of ticks, this can represent a liveness counter. This
+	// is incremented once every interval (which is defined by the oracle config).
 	AddTick()
+	//
+	// TODO: Add more metrics here in later PRs.
 }
 
-type nopMetricsImpl struct{}
-
-func NewNopMetrics() Metrics {
-	return &nopMetricsImpl{}
+// OracleMetricsImpl is a Metrics implementation that does nothing.
+type OracleMetricsImpl struct {
+	ticks metrics.Counter
 }
 
-func (m *nopMetricsImpl) AddTick() {}
+// NewMetricsFromConfig returns a oracle Metrics implementation based on the provided
+// config.
+func NewMetricsFromConfig(config config.OracleMetricsConfig) Metrics {
+	if config.Enabled {
+		return NewMetrics()
+	}
+	return NewNopMetrics()
+}
 
+// NewMetrics returns a Metrics implementation that exposes metrics to Prometheus.
 func NewMetrics() Metrics {
-	m := &metricsImpl{
-		ticks: prometheus.NewCounter(prometheus.CounterOpts{
+	m := &OracleMetricsImpl{
+		ticks: prometheus.NewCounterFrom(stdprom.CounterOpts{
 			Namespace: OracleSubsystem,
 			Name:      "ticks",
-			Help:      "Number of ticks with a fully successful Oracle update (all providers returned).",
-		}),
+			Help:      "Number of ticks with a successful oracle update.",
+		}, []string{}),
 	}
-
-	// register the metrics
-	prometheus.MustRegister(m.ticks)
 
 	return m
 }
 
-// Metrics contains metrics exposed by this package.
-type metricsImpl struct {
-	// Number of ticks with a fully successful Oracle update (all providers returned).
-	ticks prometheus.Counter
+// NewNopMetrics returns a Metrics implementation that does nothing.
+func NewNopMetrics() Metrics {
+	return &OracleMetricsImpl{
+		ticks: discard.NewCounter(),
+	}
 }
 
-func (m *metricsImpl) AddTick() {
+// AddTick increments the total number of ticks that have been processed by the oracle.
+func (m *OracleMetricsImpl) AddTick() {
 	m.ticks.Add(1)
 }

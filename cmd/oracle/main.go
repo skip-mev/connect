@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -39,16 +40,30 @@ func main() {
 	// parse flags
 	flag.Parse()
 
-	logger, err := zap.NewProduction()
+	oracleCfg, err := config.ReadOracleConfigFromFile(*oracleCfgPath)
 	if err != nil {
-		logger.Error("failed to create logger", zap.Error(err))
+		fmt.Fprintf(os.Stderr, "failed to read oracle config file: %s\n", err.Error())
 		return
 	}
 
-	oracleCfg, err := config.ReadOracleConfigFromFile(*oracleCfgPath)
-	if err != nil {
-		logger.Error("failed to read oracle config file", zap.Error(err))
+	if !oracleCfg.Enabled {
+		fmt.Fprintf(os.Stderr, "oracle is not enabled\n")
 		return
+	}
+
+	var logger *zap.Logger
+	if !oracleCfg.Production {
+		logger, err = zap.NewDevelopment()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to create logger: %s\n", err.Error())
+			return
+		}
+	} else {
+		logger, err = zap.NewProduction()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to create logger: %s\n", err.Error())
+			return
+		}
 	}
 
 	metricsCfg, err := config.ReadMetricsConfigFromFile(*metricsCfgPath)
@@ -57,18 +72,20 @@ func main() {
 		return
 	}
 
-	metrics := oraclemetrics.NewNopMetrics()
-	if metricsCfg.OracleMetrics.Enabled {
-		metrics = oraclemetrics.NewMetrics()
+	// This can be replaced with a custom provider factory.
+	providers, err := simapp.DefaultAPIProviderFactory()(logger, oracleCfg, metricsCfg.OracleMetrics)
+	if err != nil {
+		logger.Error("failed to create providers using the factory", zap.Error(err))
+		return
 	}
 
 	// Create the oracle.
 	oracle, err := oracle.New(
-		logger,
 		oracleCfg,
-		simapp.DefaultProviderFactory(), // Replace with custom provider factory
-		aggregator.ComputeMedian(),      // Replace with custom aggregator
-		metrics,
+		oracle.WithProviders(providers), // Replace with custom providers.
+		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
+		oracle.WithMetricsConfig(metricsCfg.OracleMetrics),
+		oracle.WithLogger(logger),
 	)
 	if err != nil {
 		logger.Error("failed to create oracle", zap.Error(err))
@@ -90,7 +107,7 @@ func main() {
 
 	// start prometheus metrics
 	if metricsCfg.OracleMetrics.Enabled {
-		logger.Info("starting prometheus metrics")
+		logger.Info("starting prometheus metrics", zap.String("address", metricsCfg.PrometheusServerAddress))
 		ps, err := oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, logger)
 		if err != nil {
 			logger.Error("failed to start prometheus metrics", zap.Error(err))

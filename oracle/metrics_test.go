@@ -8,9 +8,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	metric_mocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
@@ -57,18 +55,19 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 		InProcess:      true,
 		RemoteAddress:  "",
 		UpdateInterval: oracleTicker,
-	}
-	factory := func(*zap.Logger, config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-		return []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{s.mockProvider1, s.mockProvider2}, nil
+		ClientTimeout:  5 * time.Second,
 	}
 
 	var err error
 	s.o, err = oracle.New(
-		zap.NewNop(),
 		oracleConfig,
-		factory,
-		aggregator.ComputeMedian(),
-		s.mockMetrics,
+		oracle.WithProviders(
+			[]providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{
+				s.mockProvider1,
+				s.mockProvider2,
+			},
+		),
+		oracle.WithMetrics(s.mockMetrics),
 	)
 	s.Require().NoError(err)
 }
@@ -88,13 +87,11 @@ func (s *OracleMetricsTestSuite) TestTickMetric() {
 
 	s.mockProvider1.On("Name").Return("provider1")
 	s.mockProvider1.On("Start", mock.Anything).Return(nil)
-	s.mockProvider1.On("LastUpdate").Return(time.Now().Add(time.Hour))
-	s.mockProvider1.On("GetData", mock.Anything).Return(nil, nil)
+	s.mockProvider1.On("GetData").Return(nil)
 
 	s.mockProvider2.On("Name").Return("provider2")
 	s.mockProvider2.On("Start", mock.Anything).Return(nil)
-	s.mockProvider2.On("LastUpdate").Return(time.Now().Add(time.Hour))
-	s.mockProvider2.On("GetData", mock.Anything).Return(nil, nil)
+	s.mockProvider2.On("GetData").Return(nil, nil)
 
 	// wait for a tick on the oracle
 	go func() {
