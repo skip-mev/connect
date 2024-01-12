@@ -50,7 +50,7 @@ func GetPriceCmd() *cobra.Command {
 			qc := types.NewQueryClient(clientCtx)
 
 			// query for prices
-			res, err := qc.GetPrice(clientCtx.CmdContext, &types.GetPriceRequest{
+			res, err := qc.GetPrice(cmd.Context(), &types.GetPriceRequest{
 				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &cp},
 			})
 			if err != nil {
@@ -80,7 +80,7 @@ func GetAllCurrencyPairsCmd() *cobra.Command {
 			qc := types.NewQueryClient(clientCtx)
 
 			// query for all CurrencyPairs
-			res, err := qc.GetAllCurrencyPairs(clientCtx.CmdContext, &types.GetAllCurrencyPairsRequest{})
+			res, err := qc.GetAllCurrencyPairs(cmd.Context(), &types.GetAllCurrencyPairsRequest{})
 			if err != nil {
 				return err
 			}
