@@ -10,8 +10,8 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base"
-	"github.com/skip-mev/slinky/providers/base/handlers"
-	"github.com/skip-mev/slinky/providers/base/metrics"
+	"github.com/skip-mev/slinky/providers/base/api/handlers"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/coinbase"
 	"github.com/skip-mev/slinky/providers/coingecko"
 	"github.com/skip-mev/slinky/providers/static"
@@ -61,10 +61,10 @@ func providerFromProviderConfig(
 	// Create the underlying client that will be used to fetch data from the API. This client
 	// will limit the number of concurrent connections and uses the configured timeout to
 	// ensure requests do not hang.
-	maxCons := math.Min(len(cps), cfg.MaxQueries)
+	maxCons := math.Min(len(cps), cfg.API.MaxQueries)
 	client := &http.Client{
 		Transport: &http.Transport{MaxConnsPerHost: maxCons},
-		Timeout:   cfg.Timeout,
+		Timeout:   cfg.API.Timeout,
 	}
 
 	var (
@@ -113,9 +113,9 @@ func providerFromProviderConfig(
 
 	// Create the provider.
 	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		logger,
 		cfg,
-		apiQueryHandler,
-		cps,
+		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+		base.WithAPIQueryHandler(apiQueryHandler),
+		base.WithIDs[oracletypes.CurrencyPair, *big.Int](cps),
 	)
 }

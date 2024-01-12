@@ -11,11 +11,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/providers/base/errors"
-	"github.com/skip-mev/slinky/providers/base/handlers"
-	"github.com/skip-mev/slinky/providers/base/handlers/mocks"
-	"github.com/skip-mev/slinky/providers/base/metrics"
-	mockmetrics "github.com/skip-mev/slinky/providers/base/metrics/mocks"
+	"github.com/skip-mev/slinky/providers/base/api/errors"
+	"github.com/skip-mev/slinky/providers/base/api/handlers"
+	"github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
+	mockmetrics "github.com/skip-mev/slinky/providers/base/api/metrics/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/mock"

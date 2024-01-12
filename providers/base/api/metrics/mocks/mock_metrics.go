@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	metrics "github.com/skip-mev/slinky/providers/base/metrics"
+	metrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	mock "github.com/stretchr/testify/mock"
 
 	time "time"

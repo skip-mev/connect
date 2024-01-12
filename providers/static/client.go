@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/skip-mev/slinky/providers/base/handlers"
+	"github.com/skip-mev/slinky/providers/base/api/handlers"
 )
 
 var _ handlers.RequestHandler = (*StaticMockClient)(nil)

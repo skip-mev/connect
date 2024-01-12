@@ -12,6 +12,9 @@ var (
 	goodConfigContent = `
 name = "testname"
 path = "testpath"
+
+[api]
+enabled = true
 timeout = "5s"
 interval = "10s"
 max_queries = 10
@@ -20,6 +23,9 @@ max_queries = 10
 	badConfigContent = `
 name = "testname"
 path = "testpath"
+
+[api]
+enabled = true
 timeout = "10"
 interval = "60"
 max_queries = 10
@@ -28,12 +34,18 @@ max_queries = 10
 	missingFieldConfigContent = `
 name = "testname"
 path = "testpath"
+
+[api]
+enabled = true
 timeout = "10s"
 `
 
 	invalidIntervalConfigContent = `
 name = "testname"
 path = "testpath"
+
+[api]
+enabled = true
 timeout = "10s"
 interval = "5s"
 `
@@ -41,9 +53,50 @@ interval = "5s"
 	invalidMaxQueriesConfigContent = `
 name = "testname"
 path = "testpath"
+
+[api]
+enabled = true
 timeout = "10s"
 interval = "60s"
 max_queries = -1
+`
+
+	validWebSocketConfigContent = `
+name = "testname"
+path = "testpath"
+
+[web_socket]
+enabled = true
+max_buffer_size = 100
+`
+
+	invalidWebSocketConfigContent = `
+name = "testname"
+path = "testpath"
+
+[web_socket]
+enabled = true
+max_buffer_size = -1
+`
+
+	noHandlerSpecificationConfigContent = `
+name = "testname"
+path = "testpath"
+`
+
+	duplicateHandlerConfigContent = `
+name = "testname"
+path = "testpath"
+
+[api]
+enabled = true
+timeout = "5s"
+interval = "10s"
+max_queries = 10
+
+[web_socket]
+enabled = true
+max_buffer_size = 100
 `
 )
 
@@ -76,6 +129,26 @@ func TestReadProviderConfigFromFile(t *testing.T) {
 		{
 			name:        "invalid max queries config",
 			config:      invalidMaxQueriesConfigContent,
+			expectedErr: true,
+		},
+		{
+			name:        "valid web socket config",
+			config:      validWebSocketConfigContent,
+			expectedErr: false,
+		},
+		{
+			name:        "invalid web socket config",
+			config:      invalidWebSocketConfigContent,
+			expectedErr: true,
+		},
+		{
+			name:        "no handler specification config",
+			config:      noHandlerSpecificationConfigContent,
+			expectedErr: true,
+		},
+		{
+			name:        "duplicate handler config",
+			config:      duplicateHandlerConfigContent,
 			expectedErr: true,
 		},
 	}

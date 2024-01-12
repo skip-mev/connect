@@ -170,11 +170,14 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 
 	oCfg, mCfg := DefaultOracleConfig(node)
 	oCfg.Providers = append(oCfg.Providers, config.ProviderConfig{
-		Name:       "static-mock-provider",
-		Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-		Timeout:    250 * time.Millisecond,
-		Interval:   250 * time.Millisecond,
-		MaxQueries: 1,
+		Name: "static-mock-provider",
+		Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+		API: config.APIConfig{
+			Enabled:    true,
+			Timeout:    250 * time.Millisecond,
+			Interval:   250 * time.Millisecond,
+			MaxQueries: 1,
+		},
 	})
 	oCfg.CurrencyPairs = append(oCfg.CurrencyPairs, ticker)
 

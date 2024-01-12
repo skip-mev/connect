@@ -44,7 +44,7 @@ func (s *OracleTestSuite) TestProviders() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -72,7 +72,7 @@ func (s *OracleTestSuite) TestProviders() {
 				}
 				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -102,7 +102,7 @@ func (s *OracleTestSuite) TestProviders() {
 				}
 				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -118,11 +118,11 @@ func (s *OracleTestSuite) TestProviders() {
 				}
 				response2 := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved2, nil)
 				responses2 := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response2}
-				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
-					s.logger,
+					time.Second*2,
 					providerCfg2,
-					s.currencyPairs,
+					s.logger,
 					responses2,
 				)
 
@@ -148,7 +148,7 @@ func (s *OracleTestSuite) TestProviders() {
 				}
 				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -178,7 +178,7 @@ func (s *OracleTestSuite) TestProviders() {
 				}
 				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,

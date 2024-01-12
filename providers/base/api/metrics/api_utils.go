@@ -3,7 +3,7 @@ package metrics
 import (
 	"errors"
 
-	providererrors "github.com/skip-mev/slinky/providers/base/errors"
+	providererrors "github.com/skip-mev/slinky/providers/base/api/errors"
 )
 
 const (

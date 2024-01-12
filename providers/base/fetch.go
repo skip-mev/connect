@@ -11,23 +11,48 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// loop is the main loop for the provider. It continuously attempts to request data
-// from the APIDataHandler until the context is cancelled.
-func (p *BaseProvider[K, V]) loop(ctx context.Context) error {
+// fetch is the main blocker for the provider. It is responsible for fetching data from the
+// data provider and updating the data.
+func (p *BaseProvider[K, V]) fetch(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	ticker := time.NewTicker(p.cfg.Interval)
-	defer ticker.Stop()
-
-	// responseCh is used to receive the response(s) from the query handler. The buffer size is set
-	// to the minimum of the number of IDs and the max number of queries. This is to ensure that
-	// the response channel does not block the query handler and that the query handler does not
-	// exceed the rate limit parameters of the provider.
-	responseCh := make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), p.cfg.MaxQueries))
+	// responseCh is used to receive the response(s) from the query handler.
+	var responseCh chan providertypes.GetResponse[K, V]
+	switch {
+	case p.api != nil:
+		// The buffer size is set to the minimum of the number of IDs and the max number of queries.
+		// This is to ensure that the response channel does not block the query handler and that the
+		// query handler does not exceed the rate limit parameters of the provider.
+		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), p.cfg.API.MaxQueries))
+	case p.ws != nil:
+		// Otherwise, the buffer size is set to the max buffer size configured for the web socket.
+		responseCh = make(chan providertypes.GetResponse[K, V], p.cfg.WebSocket.MaxBufferSize)
+	default:
+		return fmt.Errorf("no api or web socket configured")
+	}
 
 	// Start the receive loop.
 	go p.recv(ctx, responseCh)
+
+	// Determine which loop to use based on whether the provider is an API or WebSocket provider.
+	switch {
+	case p.api != nil:
+		return p.startAPI(ctx, responseCh)
+	case p.ws != nil:
+		return p.startWebSocket(ctx, responseCh)
+	default:
+		return fmt.Errorf("no api or web socket configured")
+	}
+}
+
+// startAPI is the main loop for the provider. It is responsible for fetching data from the API
+// and updating the data.
+func (p *BaseProvider[K, V]) startAPI(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
+	p.logger.Info("starting api query handler")
+
+	ticker := time.NewTicker(p.cfg.API.Interval)
+	defer ticker.Stop()
 
 	// Start the data update loop.
 	for {
@@ -56,7 +81,7 @@ func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context, responseCh c
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, p.cfg.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, p.cfg.API.Timeout)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -68,8 +93,21 @@ func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context, responseCh c
 
 		// Start the query handler. The handler must respect the context timeout.
 		p.logger.Debug("starting query handler")
-		p.handler.Query(ctx, p.ids, responseCh)
+		p.api.Query(ctx, p.ids, responseCh)
 	}()
+}
+
+// startWebSocket starts a connection to the web socket and handles the incoming messages.
+func (p *BaseProvider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
+	p.logger.Debug("starting web socket query handler")
+
+	if err := p.ws.Start(ctx, p.ids, responseCh); err != nil {
+		p.logger.Error("web socket query handler returned error", zap.Error(err))
+		return err
+	}
+
+	p.logger.Debug("web socket query handler finished")
+	return nil
 }
 
 // recv receives responses from the response channel and updates the data.

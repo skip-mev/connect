@@ -11,18 +11,32 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/providers/base/errors"
-	"github.com/skip-mev/slinky/providers/base/metrics"
+	"github.com/skip-mev/slinky/providers/base/api/errors"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// APIQueryHandler is the default API implementation of the QueryHandler interface.
+// APIQueryHandler is an interface that encapsulates querying a data provider for info.
+// The handler must respect the context timeout and cancel the request if the context
+// is cancelled. All responses must be sent to the response channel. These are processed
+// asynchronously by the provider.
+//
+//go:generate mockery --name APIQueryHandler --output ./mocks/ --case underscore
+type APIQueryHandler[K comparable, V any] interface {
+	Query(
+		ctx context.Context,
+		ids []K,
+		responseCh chan<- providertypes.GetResponse[K, V],
+	)
+}
+
+// APIQueryHandlerImpl is the default API implementation of the QueryHandler interface.
 // This is used to query using http requests. It manages querying the data provider
 // by using the APIDataHandler and RequestHandler. All responses are sent to the
 // response channel. In the case where the APIQueryHandler is atomic, the handler
 // will make a single request for all of the IDs. If the APIQueryHandler is not
 // atomic, the handler will make a request for each ID in a separate go routine.
-type APIQueryHandler[K comparable, V any] struct {
+type APIQueryHandlerImpl[K comparable, V any] struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 
@@ -42,7 +56,7 @@ func NewAPIQueryHandler[K comparable, V any](
 	requestHandler RequestHandler,
 	apiHandler APIDataHandler[K, V],
 	metrics metrics.APIMetrics,
-) (*APIQueryHandler[K, V], error) {
+) (APIQueryHandler[K, V], error) {
 	if logger == nil {
 		return nil, fmt.Errorf("no logger specified for api query handler")
 	}
@@ -59,7 +73,7 @@ func NewAPIQueryHandler[K comparable, V any](
 		return nil, fmt.Errorf("no metrics specified for api query handler")
 	}
 
-	return &APIQueryHandler[K, V]{
+	return &APIQueryHandlerImpl[K, V]{
 		logger:         logger.With(zap.String("api_data_handler", apiHandler.Name())),
 		requestHandler: requestHandler,
 		apiHandler:     apiHandler,
@@ -70,7 +84,7 @@ func NewAPIQueryHandler[K comparable, V any](
 // Query is used to query the API data provider for the given IDs. This method blocks
 // until all of the responses have been sent to the response channel. Query will only
 // make N concurrent requests at a time, where N is the capacity of the response channel.
-func (h *APIQueryHandler[K, V]) Query(
+func (h *APIQueryHandlerImpl[K, V]) Query(
 	ctx context.Context,
 	ids []K,
 	responseCh chan<- providertypes.GetResponse[K, V],
@@ -124,7 +138,7 @@ func (h *APIQueryHandler[K, V]) Query(
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
 // parse the response, and write the response to the response channel.
-func (h *APIQueryHandler[K, V]) subTask(
+func (h *APIQueryHandlerImpl[K, V]) subTask(
 	ctx context.Context,
 	ids []K,
 	responseCh chan<- providertypes.GetResponse[K, V],
@@ -172,7 +186,7 @@ func (h *APIQueryHandler[K, V]) subTask(
 }
 
 // writeResponse is used to write the response to the response channel.
-func (h *APIQueryHandler[K, V]) writeResponse(
+func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 	responseCh chan<- providertypes.GetResponse[K, V],
 	response providertypes.GetResponse[K, V],
 ) {

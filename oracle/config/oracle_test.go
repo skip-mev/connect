@@ -20,9 +20,10 @@ production = true
 [[providers]]
 name = "testname"
 path = "testpath"
-timeout = "5s"
-interval = "10s"
-max_queries = 10
+api.enabled = true
+api.timeout = "5s"
+api.interval = "10s"
+api.max_queries = 10
 
 [[currency_pairs]]
 base = "TESTBASE"
@@ -40,9 +41,10 @@ production = true
 [[providers]]
 name = "testname"
 path = "testpath"
-timeout = "5s"
-interval = "10s"
-max_queries = 10
+api.enabled = true
+api.timeout = "5s"
+api.interval = "10s"
+api.max_queries = 10
 
 [[currency_pairs]]
 base = "TESTBASE"
@@ -60,9 +62,10 @@ production = true
 [[providers]]
 name = "testname"
 path = "testpath"
-timeout = "5s"
-interval = "10s"
-max_queries = 10
+api.enabled = true
+api.timeout = "5s"
+api.interval = "10s"
+api.max_queries = 10
 
 [[currency_pairs]]
 base = "TESTBASE"
@@ -97,9 +100,10 @@ production = true
 [[providers]]
 name = "testname"
 path = "testpath"
-timeout = "5s"
-interval = "10s"
-max_queries = 10
+api.enabled = true
+api.timeout = "5s"
+api.interval = "10s"
+api.max_queries = 10
 
 [[currency_pairs]]
 base = ""
@@ -117,9 +121,10 @@ production = true
 [[providers]]
 name = "testname"
 path = "testpath"
-timeout = "5s"
-interval = "10s"
-max_queries = 10
+api.enabled = true
+api.timeout = "5s"
+api.interval = "10s"
+api.max_queries = 10
 
 [[currency_pairs]]
 base = "TESTBASE"

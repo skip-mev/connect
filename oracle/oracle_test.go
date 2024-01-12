@@ -20,18 +20,22 @@ import (
 
 var (
 	providerCfg1 = config.ProviderConfig{
-		Interval:   500 * time.Millisecond,
-		Timeout:    250 * time.Millisecond,
-		Path:       "testpath",
-		Name:       "provider1",
-		MaxQueries: 10,
+		Path: "testpath",
+		Name: "api1",
+		API: config.APIConfig{
+			Interval:   500 * time.Millisecond,
+			Timeout:    250 * time.Millisecond,
+			MaxQueries: 10,
+			Enabled:    true,
+		},
 	}
 	providerCfg2 = config.ProviderConfig{
-		Interval:   500 * time.Millisecond,
-		Timeout:    250 * time.Millisecond,
-		Path:       "testpath2",
-		Name:       "provider2",
-		MaxQueries: 10,
+		Path: "testpath2",
+		Name: "websocket1",
+		WebSocket: config.WebSocketConfig{
+			MaxBufferSize: 10,
+			Enabled:       true,
+		},
 	}
 )
 
@@ -84,7 +88,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -104,7 +108,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider1 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider1 := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -112,11 +116,11 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 					nil,
 				)
 
-				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
-					s.logger,
+					time.Second,
 					providerCfg2,
-					s.currencyPairs,
+					s.logger,
 					nil,
 				)
 
@@ -190,7 +194,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -211,7 +215,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider1 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider1 := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -219,11 +223,11 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 					nil,
 				)
 
-				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
-					s.logger,
+					time.Second,
 					providerCfg2,
-					s.currencyPairs,
+					s.logger,
 					nil,
 				)
 
@@ -284,7 +288,7 @@ func (s *OracleTestSuite) TestStop() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -305,7 +309,7 @@ func (s *OracleTestSuite) TestStop() {
 				config.OracleConfig,
 				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider1 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider1 := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -313,11 +317,11 @@ func (s *OracleTestSuite) TestStop() {
 					nil,
 				)
 
-				provider2 := testutils.CreateProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
-					s.logger,
+					time.Second,
 					providerCfg2,
-					s.currencyPairs,
+					s.logger,
 					nil,
 				)
 

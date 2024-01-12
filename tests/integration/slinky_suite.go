@@ -314,11 +314,14 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 			oracleConfig, metricsConfig := DefaultOracleConfig(node)
 			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-				Name:       "static-mock-provider",
-				Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-				Timeout:    250 * time.Millisecond,
-				Interval:   250 * time.Millisecond,
-				MaxQueries: 1,
+				Name: "static-mock-provider",
+				Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+				API: oracleconfig.APIConfig{
+					Enabled:    true,
+					Timeout:    250 * time.Millisecond,
+					Interval:   250 * time.Millisecond,
+					MaxQueries: 1,
+				},
 			})
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
@@ -528,11 +531,14 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-			Name:       "static-mock-provider",
-			Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-			Timeout:    250 * time.Millisecond,
-			Interval:   250 * time.Millisecond,
-			MaxQueries: 1,
+			Name: "static-mock-provider",
+			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			API: oracleconfig.APIConfig{
+				Enabled:    true,
+				Timeout:    250 * time.Millisecond,
+				Interval:   250 * time.Millisecond,
+				MaxQueries: 1,
+			},
 		})
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 
@@ -604,11 +610,14 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig, metricsConfig := DefaultOracleConfig(node)
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-			Name:       "static-mock-provider",
-			Path:       path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-			Timeout:    250 * time.Millisecond,
-			Interval:   250 * time.Millisecond,
-			MaxQueries: 1,
+			Name: "static-mock-provider",
+			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
+			API: oracleconfig.APIConfig{
+				Enabled:    true,
+				Timeout:    250 * time.Millisecond,
+				Interval:   250 * time.Millisecond,
+				MaxQueries: 1,
+			},
 		})
 
 		// Write the static provider config to the node

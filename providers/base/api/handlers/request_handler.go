@@ -21,7 +21,7 @@ type RequestHandlerImpl struct {
 }
 
 // NewRequestHandlerImpl creates a new RequestHandlerImpl. It manages making HTTP requests.
-func NewRequestHandlerImpl(client *http.Client) *RequestHandlerImpl {
+func NewRequestHandlerImpl(client *http.Client) RequestHandler {
 	return &RequestHandlerImpl{
 		client: client,
 	}
