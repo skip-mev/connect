@@ -55,6 +55,12 @@ type Metrics interface {
 
 	// AddTickerInclusionStatus increments the counter representing the number of times a ticker was included (or not included) in the last commit.
 	AddTickerInclusionStatus(ticker string, included bool)
+
+	// ObserveProcessProposalTime records the time it took for the oracle-specific parts of process proposal
+	ObserveProcessProposalTime(duration time.Duration)
+
+	// ObservePrepareProposalTime records the time it took for the oracle-specific parts of prepare proposal
+	ObservePrepareProposalTime(duration time.Duration)
 }
 
 type nopMetricsImpl struct{}
@@ -68,6 +74,8 @@ func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
 func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
 func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)           {}
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)    {}
+func (m *nopMetricsImpl) ObservePrepareProposalTime(_ time.Duration)   {}
+func (m *nopMetricsImpl) ObserveProcessProposalTime(_ time.Duration)   {}
 
 func NewMetrics() Metrics {
 	m := &metricsImpl{
@@ -92,6 +100,18 @@ func NewMetrics() Metrics {
 			Name:      "ticker_inclusion_status",
 			Help:      "The number of times a ticker was included (or not included) in this validator's vote",
 		}, []string{TickerLabel, InclusionLabel}),
+		prepareProposalTime: prometheus.NewHistogram(prometheus.HistogramOpts{
+			Namespace: AppNamespace,
+			Name:      "oracle_prepare_proposal_time",
+			Help:      "The time it took for the oracle-specific parts of prepare proposal",
+			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
+		}),
+		processProposalTime: prometheus.NewHistogram(prometheus.HistogramOpts{
+			Namespace: AppNamespace,
+			Name:      "oracle_process_proposal_time",
+			Help:      "The time it took for the oracle-specific parts of process proposal",
+			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
+		}),
 	}
 
 	// register the above metrics
@@ -99,6 +119,8 @@ func NewMetrics() Metrics {
 	prometheus.MustRegister(m.oracleResponseCounter)
 	prometheus.MustRegister(m.voteIncludedInLastCommit)
 	prometheus.MustRegister(m.tickerInclusionStatus)
+	prometheus.MustRegister(m.prepareProposalTime)
+	prometheus.MustRegister(m.processProposalTime)
 
 	return m
 }
@@ -108,6 +130,16 @@ type metricsImpl struct {
 	oracleResponseCounter    *prometheus.CounterVec
 	voteIncludedInLastCommit *prometheus.CounterVec
 	tickerInclusionStatus    *prometheus.CounterVec
+	prepareProposalTime      prometheus.Histogram
+	processProposalTime      prometheus.Histogram
+}
+
+func (m *metricsImpl) ObserveProcessProposalTime(duration time.Duration) {
+	m.processProposalTime.Observe(float64(duration.Milliseconds()))
+}
+
+func (m *metricsImpl) ObservePrepareProposalTime(duration time.Duration) {
+	m.prepareProposalTime.Observe(float64(duration.Milliseconds()))
 }
 
 func (m *metricsImpl) ObserveOracleResponseLatency(duration time.Duration) {

@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	metrics "github.com/skip-mev/slinky/service/metrics"
 	mock "github.com/stretchr/testify/mock"
+
+	metrics "github.com/skip-mev/slinky/service/metrics"
 
 	time "time"
 )
@@ -34,12 +35,21 @@ func (_m *Metrics) ObserveOracleResponseLatency(duration time.Duration) {
 	_m.Called(duration)
 }
 
+func (_m *Metrics) ObservePrepareProposalTime(duration time.Duration) {
+	_m.Called(duration)
+}
+
+func (_m *Metrics) ObserveProcessProposalTime(duration time.Duration) {
+	_m.Called(duration)
+}
+
 // NewMetrics creates a new instance of Metrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Metrics {
+},
+) *Metrics {
 	mock := &Metrics{}
 	mock.Mock.Test(t)
 

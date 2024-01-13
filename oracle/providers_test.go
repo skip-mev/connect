@@ -8,13 +8,14 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/mock"
 )
 
 func (s *OracleTestSuite) TestProviders() {

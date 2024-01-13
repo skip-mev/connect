@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/cometbft/cometbft/types/time"
+
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -55,6 +59,9 @@ type ProposalHandler struct {
 	// currencyPairStrategy is the strategy used to determine the price information
 	// from a given oracle vote extension.
 	currencyPairStrategy currencypair.CurrencyPairStrategy
+	// metrics is responsible for reporting / aggregating consensus-specific
+	// metrics for this validator.
+	metrics servicemetrics.Metrics
 }
 
 // NewProposalHandler returns a new ProposalHandler.
@@ -66,6 +73,7 @@ func NewProposalHandler(
 	voteExtensionCodec codec.VoteExtensionCodec,
 	extendedCommitInfoCodec codec.ExtendedCommitCodec,
 	currencyPairStrategy currencypair.CurrencyPairStrategy,
+	metrics servicemetrics.Metrics,
 ) *ProposalHandler {
 	return &ProposalHandler{
 		logger:                   logger,
@@ -75,6 +83,7 @@ func NewProposalHandler(
 		voteExtensionCodec:       voteExtensionCodec,
 		extendedCommitCodec:      extendedCommitInfoCodec,
 		currencyPairStrategy:     currencyPairStrategy,
+		metrics:                  metrics,
 	}
 }
 
@@ -84,6 +93,7 @@ func NewProposalHandler(
 // enabled, the handler will inject the extended commit info into the proposal.
 func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+		startTime := time.Now()
 		var (
 			extInfoBz []byte
 			err       error
@@ -144,17 +154,29 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			}
 		}
 
+		prepareBlockStart := time.Now()
 		// Build the proposal.
 		resp, err := h.prepareProposalHandler(ctx, req)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
+		prepareBlockEnd := time.Now()
 		h.logger.Info("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
 
 		// Inject our VE Tx ( if extInfoBz is non-empty), and resize our response Txs to respect req.MaxTxBytes
 		resp.Txs = h.injectAndResize(resp.Txs, extInfoBz, req.MaxTxBytes+int64(len(extInfoBz)))
 
+		// Record total time--not including h.prepareProposalHandler
+		preHandleTime := prepareBlockStart.Sub(startTime)
+		postHandleTime := time.Now().Sub(prepareBlockEnd)
+		h.logger.Info(
+			"recording handle time metrics",
+			"pre_handle_time", preHandleTime,
+			"post_handle_time", postHandleTime,
+			"total_time", preHandleTime+postHandleTime,
+		)
+		h.metrics.ObservePrepareProposalTime(preHandleTime + postHandleTime)
 		h.logger.Info(
 			"prepared proposal",
 			"txs", len(resp.Txs),
@@ -200,10 +222,19 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 // a supermajority of signatures and vote extensions for the current block.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+		start := time.Now()
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
 			return nil, fmt.Errorf("received a nil request")
 		}
+		defer func() {
+			processDuration := time.Now().Sub(start)
+			h.logger.Info(
+				"recording process proposal time",
+				"duration", processDuration,
+			)
+			h.metrics.ObserveProcessProposalTime(processDuration)
+		}()
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(

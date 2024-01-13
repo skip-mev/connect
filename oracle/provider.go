@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"math/big"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var CtxErrors = map[error]struct{}{

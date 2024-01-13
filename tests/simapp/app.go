@@ -357,6 +357,7 @@ func NewSimApp(
 			compression.NewZStdCompressor(),
 		),
 		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
+		metrics,
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())

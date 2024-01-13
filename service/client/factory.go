@@ -3,13 +3,14 @@ package client
 import (
 	"math/big"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 // NewOracleService reads a config and instantiates either a grpc-client / local-client from a config

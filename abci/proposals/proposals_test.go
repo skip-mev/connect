@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"testing"
 
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+
 	"github.com/cometbft/cometbft/types"
 
 	"cosmossdk.io/log"
@@ -494,6 +496,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				s.codec,
 				s.extCommitCodec,
 				tc.currencyPairStrategy(),
+				servicemetrics.NewNopMetrics(),
 			)
 
 			if tc.veEnabled {
@@ -831,6 +834,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 				s.codec,
 				s.extCommitCodec,
 				tc.currencyPairStrategy(),
+				servicemetrics.NewNopMetrics(),
 			)
 
 			if tc.veEnabled {

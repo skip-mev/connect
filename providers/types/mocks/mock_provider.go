@@ -63,7 +63,8 @@ func (_m *Provider[K, V]) Start(_a0 context.Context) error {
 func NewProvider[K comparable, V interface{}](t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Provider[K, V] {
+},
+) *Provider[K, V] {
 	mock := &Provider[K, V]{}
 	mock.Mock.Test(t)
 

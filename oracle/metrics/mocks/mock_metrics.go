@@ -19,7 +19,8 @@ func (_m *Metrics) AddTick() {
 func NewMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Metrics {
+},
+) *Metrics {
 	mock := &Metrics{}
 	mock.Mock.Test(t)
 
