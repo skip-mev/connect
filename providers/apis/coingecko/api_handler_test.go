@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	"github.com/skip-mev/slinky/providers/coingecko"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/require"

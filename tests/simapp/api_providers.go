@@ -9,11 +9,11 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	"github.com/skip-mev/slinky/providers/coinbase"
-	"github.com/skip-mev/slinky/providers/coingecko"
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -30,23 +30,28 @@ func DefaultAPIProviderFactory() providertypes.ProviderFactory[oracletypes.Curre
 		m := metrics.NewAPIMetricsFromConfig(metricsCfg)
 		cps := oracleCfg.CurrencyPairs
 
-		var (
-			err       error
-			providers = make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], len(oracleCfg.Providers))
-		)
-		for i, p := range oracleCfg.Providers {
-			if providers[i], err = providerFromProviderConfig(logger, p, cps, m); err != nil {
+		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], 0)
+		for _, p := range oracleCfg.Providers {
+			// Skip providers that are not API based.
+			if !p.API.Enabled {
+				continue
+			}
+
+			provider, err := apiProviderFromProviderConfig(logger, p, cps, m)
+			if err != nil {
 				return nil, err
 			}
+
+			providers = append(providers, provider)
 		}
 
 		return providers, nil
 	}
 }
 
-// providerFromProviderConfig returns a provider from a provider config. These providers are
+// apiProviderFromProviderConfig returns a provider from a provider config. These providers are
 // NOT production ready and are only meant for testing purposes.
-func providerFromProviderConfig(
+func apiProviderFromProviderConfig(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	cps []oracletypes.CurrencyPair,
@@ -73,11 +78,11 @@ func providerFromProviderConfig(
 	)
 
 	switch cfg.Name {
-	case "coingecko":
+	case coingecko.Name:
 		apiDataHandler, err = coingecko.NewCoinGeckoAPIHandler(cfg)
-	case "coinbase":
+	case coinbase.Name:
 		apiDataHandler, err = coinbase.NewCoinBaseAPIHandler(cfg)
-	case "static-mock-provider":
+	case static.Name:
 		apiDataHandler, err = static.NewStaticMockAPIHandler(cfg)
 		if err != nil {
 			return nil, err
@@ -89,10 +94,6 @@ func providerFromProviderConfig(
 	}
 	if err != nil {
 		return nil, err
-	}
-
-	if apiDataHandler == nil {
-		return nil, fmt.Errorf("failed to create api data handler for provider %s", cfg.Name)
 	}
 
 	// If a custom request handler is not provided, create a new default one.

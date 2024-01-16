@@ -72,8 +72,17 @@ func main() {
 		return
 	}
 
-	// This can be replaced with a custom provider factory.
-	providers, err := simapp.DefaultAPIProviderFactory()(logger, oracleCfg, metricsCfg.OracleMetrics)
+	// This can be replaced with a custom provider factory. See the simapp package for an example.
+	// Construct all of the web socket providers.
+	wsProviders, err := simapp.DefaultWebSocketProviderFactory()(logger, oracleCfg, metricsCfg.OracleMetrics)
+	if err != nil {
+		logger.Error("failed to create providers using the factory", zap.Error(err))
+		return
+	}
+
+	// This can be replaced with a custom provider factory. See the simapp package for an example.
+	// Construct all of the API providers.
+	apiProviders, err := simapp.DefaultAPIProviderFactory()(logger, oracleCfg, metricsCfg.OracleMetrics)
 	if err != nil {
 		logger.Error("failed to create providers using the factory", zap.Error(err))
 		return
@@ -82,8 +91,8 @@ func main() {
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracleCfg,
-		oracle.WithProviders(providers), // Replace with custom providers.
-		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
+		oracle.WithProviders(append(wsProviders, apiProviders...)), // Replace with custom providers.
+		oracle.WithAggregateFunction(aggregator.ComputeMedian()),   // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(metricsCfg.OracleMetrics),
 		oracle.WithLogger(logger),
 	)

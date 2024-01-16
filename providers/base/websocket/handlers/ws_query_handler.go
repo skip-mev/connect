@@ -205,7 +205,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			response, updateMessage, err := h.dataHandler.HandleMessage(message)
 			if err != nil {
 				h.logger.Error(
-					"failed to handle web socket handler message",
+					"failed to handle web socket message",
 					zap.Error(err),
 				)
 

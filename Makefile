@@ -26,6 +26,9 @@ build:
 run-oracle-server: build
 	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --metrics-config-path ${METRICS_CONFIG_FILE}
 
+run-oracle-client: build
+	./build/client --host localhost --port 8080
+
 .PHONY: build run-oracle-server
 
 ###############################################################################

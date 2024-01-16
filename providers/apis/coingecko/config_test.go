@@ -6,7 +6,7 @@ import (
 
 	"github.com/alecthomas/assert/v2"
 
-	"github.com/skip-mev/slinky/providers/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/coingecko"
 )
 
 var (
