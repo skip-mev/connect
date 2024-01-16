@@ -1,12 +1,12 @@
-# Base Provider Metrics
+# API Metrics
 
 ## Overview
 
-The Base Provider Metrics package provides a set of metrics that will be implemented by default for all providers that inherit from the Base Provider. These metrics are intended to be used by the provider to track the usage of the provider and the resources it manages.
+The API Metrics package provides a set of metrics that will be implemented by default for all providers that inherit from the Base Provider and implement an API-based provider. These metrics are intended to be used by the provider to track the usage of the provider's APIs and the resources it manages.
 
 ## API Metrics
 
-The following metrics are provided by the Base Provider Metrics package for implementations that use the API Query Handler:
+The following metrics are provided by the API Metrics package for implementations that use the API Query Handler:
 
 ```golang
 // APIMetrics is an interface that defines the API for metrics collection for providers

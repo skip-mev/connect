@@ -10,8 +10,8 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
-
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -44,6 +44,9 @@ type BaseProvider[K comparable, V any] struct { //nolint
 
 	// ids is the set of IDs that the provider will fetch data for.
 	ids []K
+
+	// metrics is the metrics implementation for the provider.
+	metrics providermetrics.ProviderMetrics
 }
 
 // NewProvider returns a new Base provider.
@@ -72,6 +75,10 @@ func NewProvider[K comparable, V any](
 
 	if p.api != nil && p.ws != nil {
 		return nil, fmt.Errorf("cannot specify both an api and web socket query handler for provider %s", cfg.Name)
+	}
+
+	if p.metrics == nil {
+		p.metrics = providermetrics.NewNopProviderMetrics()
 	}
 
 	return p, nil

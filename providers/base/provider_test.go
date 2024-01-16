@@ -2,7 +2,9 @@ package base_test
 
 import (
 	"context"
+	"fmt"
 	"math/big"
+	"strings"
 	"testing"
 	"time"
 
@@ -15,6 +17,8 @@ import (
 	apierrors "github.com/skip-mev/slinky/providers/base/api/errors"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apihandlermocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
+	metricmocks "github.com/skip-mev/slinky/providers/base/metrics/mocks"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	wserrors "github.com/skip-mev/slinky/providers/base/websocket/errors"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -510,6 +514,99 @@ func TestAPIProviderLoop(t *testing.T) {
 				require.Equal(t, price, result.Value)
 				require.True(t, result.Timestamp.After(now))
 			}
+		})
+	}
+}
+
+func TestMetrics(t *testing.T) {
+	testCases := []struct {
+		name    string
+		handler func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int]
+		metrics func() providermetrics.ProviderMetrics
+		pairs   []oracletypes.CurrencyPair
+	}{
+		{
+			name: "can fetch a single price",
+			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: respTime,
+					},
+				}
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse(resolved, nil),
+				}
+
+				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					logger,
+					responses,
+				)
+			},
+			metrics: func() providermetrics.ProviderMetrics {
+				m := metricmocks.NewProviderMetrics(t)
+				p1 := strings.ToLower(fmt.Sprint(pairs[0]))
+
+				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Success).Maybe()
+				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Success).Maybe()
+				m.On("LastUpdated", apiCfg.Name, p1).Maybe()
+
+				return m
+			},
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+		},
+		{
+			name: "updates correctly with bad responses",
+			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				unResolved := map[oracletypes.CurrencyPair]error{
+					pairs[0]: apierrors.ErrRateLimit,
+				}
+
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, unResolved),
+				}
+
+				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					logger,
+					responses,
+				)
+			},
+			metrics: func() providermetrics.ProviderMetrics {
+				m := metricmocks.NewProviderMetrics(t)
+				p1 := strings.ToLower(fmt.Sprint(pairs[0]))
+
+				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Failure).Maybe()
+				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Failure).Maybe()
+				m.On("LastUpdated", apiCfg.Name, p1).Maybe()
+
+				return m
+			},
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
+				apiCfg,
+				base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
+				base.WithMetrics[oracletypes.CurrencyPair, *big.Int](tc.metrics()),
+			)
+			require.NoError(t, err)
+
+			ctx, cancel := context.WithTimeout(context.Background(), apiCfg.API.Interval*5)
+			defer cancel()
+
+			err = provider.Start(ctx)
+			require.Equal(t, context.DeadlineExceeded, err)
 		})
 	}
 }

@@ -7,17 +7,15 @@ import (
 	"github.com/go-kit/kit/metrics/discard"
 	"github.com/go-kit/kit/metrics/prometheus"
 	stdprom "github.com/prometheus/client_golang/prometheus"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 )
 
 const (
-	// ProviderLabel is a label for the provider name.
-	ProviderLabel = "provider"
-	// StatusLabel is a label for the status of a provider response.
+	// StatusLabel is a label for the status of a provider API response.
 	StatusLabel = "status"
-	// IDLabel is a label for the ID of a provider response.
-	IDLabel = "id"
 )
 
 // APIMetrics is an interface that defines the API for metrics collection for providers
@@ -57,15 +55,15 @@ func NewAPIMetrics() APIMetrics {
 	m := &APIMetricsImpl{
 		responseStatusPerProvider: prometheus.NewCounterFrom(stdprom.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "response_status_per_provider",
-			Help:      "Number of provider successes.",
-		}, []string{ProviderLabel, IDLabel, StatusLabel}),
+			Name:      "api_response_status_per_provider",
+			Help:      "Number of API provider successes.",
+		}, []string{providermetrics.ProviderLabel, providermetrics.IDLabel, StatusLabel}),
 		responseTimePerProvider: prometheus.NewHistogramFrom(stdprom.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "response_time_per_provider",
-			Help:      "Response time per provider.",
+			Name:      "api_response_time_per_provider",
+			Help:      "Response time per API provider.",
 			Buckets:   []float64{50, 100, 250, 500, 1000},
-		}, []string{ProviderLabel}),
+		}, []string{providermetrics.ProviderLabel}),
 	}
 
 	return m
@@ -81,10 +79,10 @@ func NewNopAPIMetrics() APIMetrics {
 
 // AddProviderResponse increments the number of requests by provider and status.
 func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, status Status) {
-	m.responseStatusPerProvider.With(ProviderLabel, providerName, IDLabel, id, StatusLabel, status.String()).Add(1)
+	m.responseStatusPerProvider.With(providermetrics.ProviderLabel, providerName, providermetrics.IDLabel, id, StatusLabel, status.String()).Add(1)
 }
 
 // ObserveProviderResponseTime records the time it took for a provider to respond.
 func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
-	m.responseTimePerProvider.With(ProviderLabel, providerName).Observe(float64(duration.Milliseconds()))
+	m.responseTimePerProvider.With(providermetrics.ProviderLabel, providerName).Observe(float64(duration.Milliseconds()))
 }

@@ -3,8 +3,10 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/skip-mev/slinky/providers/base/websocket/errors"
+	"github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"go.uber.org/zap"
 )
@@ -27,7 +29,8 @@ type WebSocketQueryHandler[K comparable, V any] interface {
 // provider and subscribe to events for a given set of IDs. It runs in a separate go
 // routine and will send all responses to the response channel as they are received.
 type WebSocketQueryHandlerImpl[K comparable, V any] struct {
-	logger *zap.Logger
+	logger  *zap.Logger
+	metrics metrics.WebSocketMetrics
 
 	// The connection handler is used to manage the connection to the data provider. This
 	// establishes the connection and sends/receives messages to/from the data provider.
@@ -46,23 +49,29 @@ func NewWebSocketQueryHandler[K comparable, V any](
 	logger *zap.Logger,
 	dataHandler WebSocketDataHandler[K, V],
 	connHandler WebSocketConnHandler,
+	m metrics.WebSocketMetrics,
 ) (WebSocketQueryHandler[K, V], error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger is nil")
 	}
 
 	if dataHandler == nil {
-		return nil, fmt.Errorf("data handler is nil")
+		return nil, fmt.Errorf("web socket data handler is nil")
 	}
 
 	if connHandler == nil {
-		return nil, fmt.Errorf("connection is nil")
+		return nil, fmt.Errorf("connection handler is nil")
+	}
+
+	if m == nil {
+		return nil, fmt.Errorf("web socket metrics is nil")
 	}
 
 	return &WebSocketQueryHandlerImpl[K, V]{
 		logger:      logger.With(zap.String("web_socket_data_handler", dataHandler.Name())),
 		dataHandler: dataHandler,
 		connHandler: connHandler,
+		metrics:     m,
 	}, nil
 }
 
@@ -84,6 +93,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		if err := recover(); err != nil {
 			h.logger.Error("panic occurred", zap.Any("err", err))
 		}
+		h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.Unhealthy)
 	}()
 
 	if responseCh == nil {
@@ -105,54 +115,43 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 	}
 
 	// Start receiving messages from the data provider.
+	h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.Healthy)
 	return h.recv(ctx, responseCh)
 }
 
 // start is used to start the connection to the data provider.
 func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	url := h.dataHandler.URL()
-	h.logger.Debug(
-		"creating connection to data provider",
-		zap.String("url", url),
-	)
 
 	// Start the connection.
+	h.logger.Debug("creating connection to data provider", zap.String("url", url))
 	if err := h.connHandler.Dial(url); err != nil {
-		h.logger.Error(
-			"failed to create connection with data provider",
-			zap.Error(err),
-		)
-
+		h.logger.Error("failed to create connection with data provider", zap.Error(err))
+		h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.DialErr)
 		return errors.ErrDialWithErr(err)
 	}
 
 	// Create the initial set of events that the channel will subscribe to.
+	h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.DialSuccess)
 	message, err := h.dataHandler.CreateMessage(h.ids)
 	if err != nil {
-		h.logger.Error(
-			"failed to create subscription messages",
-			zap.Error(err),
-		)
-
+		h.logger.Error("failed to create subscription messages", zap.Error(err))
+		h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.CreateMessageErr)
 		return errors.ErrCreateMessageWithErr(err)
 	}
 
-	h.logger.Debug(
-		"connection created; sending initial payload",
-		zap.Binary("payload", message),
-	)
+	h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
+	h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.CreateMessageSuccess)
 
 	// Send the initial payload to the data provider.
 	if err := h.connHandler.Write(message); err != nil {
-		h.logger.Error(
-			"failed to write message to web socket connection handler",
-			zap.Error(err),
-		)
-
+		h.logger.Error("failed to write message to web socket connection handler", zap.Error(err))
+		h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteErr)
 		return errors.ErrWriteWithErr(err)
 	}
 
 	h.logger.Debug("initial payload sent; web socket connection successfully started")
+	h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteSuccess)
 	return nil
 }
 
@@ -164,79 +163,69 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		}
 	}()
 
-	h.logger.Debug(
-		"starting recv",
-		zap.Int("buffer_size", cap(responseCh)),
-	)
+	h.logger.Debug("starting recv", zap.Int("buffer_size", cap(responseCh)))
 
 	for {
+		// Track the time it takes to receive a message from the data provider.
+		now := time.Now().UTC()
+
+		// Case 1: The context is cancelled. Close the connection and return.
+		// Case 2: The context is not cancelled. Wait for a message from the data provider.
 		select {
 		case <-ctx.Done():
 			h.logger.Debug("context finished; closing connection to web socket handler")
 			if err := h.connHandler.Close(); err != nil {
-				h.logger.Error(
-					"failed to close connection",
-					zap.Error(err),
-				)
-
+				h.logger.Error("failed to close connection", zap.Error(err))
+				h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.CloseErr)
 				return errors.ErrCloseWithErr(err)
 			}
 
 			h.logger.Debug("connection closed")
+			h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.CloseSuccess)
 			return ctx.Err()
 		default:
 			// Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
-				h.logger.Error(
-					"failed to read message from web socket handler",
-					zap.Error(err),
-				)
-
+				h.logger.Error("failed to read message from web socket handler", zap.Error(err))
+				h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.ReadErr)
 				continue
 			}
 
-			h.logger.Debug(
-				"message received; attempting to handle message",
-				zap.Binary("message", message),
-			)
+			h.logger.Debug("message received; attempting to handle message", zap.Binary("message", message))
+			h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.ReadSuccess)
 
 			// Handle the message.
 			response, updateMessage, err := h.dataHandler.HandleMessage(message)
 			if err != nil {
-				h.logger.Error(
-					"failed to handle web socket message",
-					zap.Error(err),
-				)
-
+				h.logger.Error("failed to handle web socket message", zap.Error(err))
+				h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.HandleMessageErr)
 				continue
 			}
 
 			// Immediately send the response to the response channel. Even if this is
 			// empty, it will be handled by the provider.
 			responseCh <- response
-			h.logger.Debug(
-				"handled message successfully; sent response to response channel",
-				zap.String("response", response.String()),
-			)
+			h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+			h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.HandleMessageSuccess)
 
 			// If the update message is not nil, send it to the data provider.
 			if len(updateMessage) != 0 {
-				h.logger.Debug(
-					"sending update message to data provider",
-					zap.Binary("update_message", updateMessage),
-				)
+				h.logger.Debug("sending update message to data provider", zap.Binary("update_message", updateMessage))
+				h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.CreateMessageSuccess)
 
 				if err := h.connHandler.Write(updateMessage); err != nil {
-					h.logger.Error(
-						"failed to write update message",
-						zap.Error(err),
-					)
+					h.logger.Error("failed to write update message", zap.Error(err))
+					h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteErr)
 				} else {
 					h.logger.Debug("update message sent")
+					h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteSuccess)
 				}
 
 			}
 		}
+
+		// Record the time it took to receive the message.
+		h.metrics.ObserveWebSocketLatency(h.dataHandler.Name(), time.Since(now))
 	}
 }

@@ -10,6 +10,7 @@
   },
   "supportedQuotes": {
     "USD": "usd",
-    "ETHEREUM": "eth"
+    "ETHEREUM": "eth",
+    "BITCOIN": "btc"
   }
 }

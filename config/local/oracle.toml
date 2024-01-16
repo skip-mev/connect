@@ -72,5 +72,5 @@ base = "DYDX"
 quote = "USD"
 
 [[currency_pairs]]
-base = "BITCOIN"
-quote = "ETHEREUM"
+base = "ETHEREUM"
+quote = "BITCOIN"

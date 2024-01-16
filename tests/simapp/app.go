@@ -305,7 +305,7 @@ func NewSimApp(
 		zapLogger,
 		oracleCfg,
 		metricsCfg,
-		DefaultAPIProviderFactory(),
+		DefaultProviderFactory(),
 		aggregator.ComputeMedian(),
 	)
 	if err != nil {

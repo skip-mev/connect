@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	// CreateURL indicates that the provider count not construct a valid url to query.
+	// CreateURL indicates that the provider could not construct a valid url to query.
 	CreateURL Status = iota
 	// DoRequest indicates that the request handler could not make the request.
 	DoRequest

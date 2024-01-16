@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -61,5 +62,16 @@ func WithIDs[K comparable, V any](ids []K) ProviderOption[K, V] {
 		}
 
 		p.ids = ids
+	}
+}
+
+// WithMetrics sets the metrics implementation for the provider.
+func WithMetrics[K comparable, V any](metrics providermetrics.ProviderMetrics) ProviderOption[K, V] {
+	return func(p *BaseProvider[K, V]) {
+		if metrics == nil {
+			panic("cannot set nil metrics")
+		}
+
+		p.metrics = metrics
 	}
 }

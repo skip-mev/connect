@@ -29,6 +29,12 @@ run-oracle-server: build
 run-oracle-client: build
 	./build/client --host localhost --port 8080
 
+run-prom-client: 
+	@$(DOCKER) run \
+		-p 9090:9090 \
+		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+		prom/prometheus
+
 .PHONY: build run-oracle-server
 
 ###############################################################################

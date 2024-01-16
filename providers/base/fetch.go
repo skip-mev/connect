@@ -3,11 +3,13 @@ package base
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -130,15 +132,26 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 				)
 
 				p.updateData(id, result)
+
+				// Update the metrics.
+				strID := strings.ToLower(fmt.Sprint(id))
+				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Success)
+				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Success)
+				p.metrics.LastUpdated(p.cfg.Name, strID)
 			}
 
-			// Log all of the unresolved data.
+			// Log and record all of the unresolved data.
 			for id, err := range unResolved {
 				p.logger.Debug(
 					"failed to fetch data",
 					zap.Any("id", id),
 					zap.Error(err),
 				)
+
+				// Update the metrics.
+				strID := strings.ToLower(fmt.Sprint(id))
+				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Failure)
+				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Failure)
 			}
 		}
 	}

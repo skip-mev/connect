@@ -11,6 +11,8 @@ import (
 	wserrors "github.com/skip-mev/slinky/providers/base/websocket/errors"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	handlermocks "github.com/skip-mev/slinky/providers/base/websocket/handlers/mocks"
+	"github.com/skip-mev/slinky/providers/base/websocket/metrics"
+	mockmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/mock"
@@ -33,6 +35,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		name        string
 		connHandler func() handlers.WebSocketConnHandler
 		dataHandler func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
+		metrics     func() metrics.WebSocketMetrics
 		ids         []oracletypes.CurrencyPair
 		responses   providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
 	}{
@@ -48,10 +51,18 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialErr).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids: []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
@@ -72,11 +83,20 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return(nil, fmt.Errorf("no rizz alert")).Once()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageErr).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids: []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
@@ -98,11 +118,21 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteErr).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids: []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
@@ -126,13 +156,28 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 
 				return dataHandler
 			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
 
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadErr).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
 			ids:       []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
 		},
@@ -151,7 +196,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
@@ -162,7 +207,23 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return dataHandler
 			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
 
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageErr).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
 			ids:       []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
 		},
@@ -181,7 +242,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
@@ -192,7 +253,25 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return dataHandler
 			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
 
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
 			ids:       []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
 		},
@@ -212,7 +291,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
@@ -222,6 +301,26 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				).Maybe()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteErr).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids:       []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
@@ -241,7 +340,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
@@ -251,6 +350,25 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				).Maybe()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseErr).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids:       []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
@@ -270,7 +388,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 
@@ -287,6 +405,23 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				).Maybe()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids: []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
@@ -311,7 +446,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 
@@ -328,6 +463,25 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				).Maybe()
 
 				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
 			},
 			ids: []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
@@ -353,7 +507,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Once()
+				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
 				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
 
@@ -394,6 +548,23 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				return dataHandler
 			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
 			ids: []oracletypes.CurrencyPair{btcusd, ethusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -417,16 +588,16 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				logger,
 				tc.dataHandler(),
 				tc.connHandler(),
+				tc.metrics(),
 			)
 			require.NoError(t, err)
 
 			responseCh := make(chan providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], 20)
-			go func() {
-				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-				handler.Start(ctx, tc.ids, responseCh)
-				cancel()
-				close(responseCh)
-			}()
+
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			handler.Start(ctx, tc.ids, responseCh)
+			cancel()
+			close(responseCh)
 
 			expectedResponses := tc.responses
 			seenResponses := make(map[oracletypes.CurrencyPair]bool)
