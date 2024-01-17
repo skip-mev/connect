@@ -17,11 +17,11 @@ const (
 	Name = "crypto_dot_com"
 )
 
-var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*CryptoWebSocketDataHandler)(nil)
+var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
-// CryptoWebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
+// WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the Crypto.com websocket API.
-type CryptoWebSocketDataHandler struct {
+type WebSocketDataHandler struct {
 	logger *zap.Logger
 
 	// config is the config for the Crypto.com web socket API.
@@ -32,7 +32,7 @@ type CryptoWebSocketDataHandler struct {
 func NewWebSocketDataHandlerFromConfig(
 	logger *zap.Logger,
 	providerCfg config.ProviderConfig,
-) (*CryptoWebSocketDataHandler, error) {
+) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if providerCfg.Name != Name {
 		return nil, fmt.Errorf("invalid provider name %s", providerCfg.Name)
 	}
@@ -42,7 +42,7 @@ func NewWebSocketDataHandlerFromConfig(
 		return nil, fmt.Errorf("failed to read config file %s: %s", providerCfg.Path, err)
 	}
 
-	return &CryptoWebSocketDataHandler{
+	return &WebSocketDataHandler{
 		config: cfg,
 		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
@@ -52,12 +52,12 @@ func NewWebSocketDataHandlerFromConfig(
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg Config,
-) (*CryptoWebSocketDataHandler, error) {
+) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid config: %s", err)
 	}
 
-	return &CryptoWebSocketDataHandler{
+	return &WebSocketDataHandler{
 		config: cfg,
 		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
@@ -68,7 +68,7 @@ func NewWebSocketDataHandler(
 // a heartbeat response message must be sent back to the Crypto.com web socket API, otherwise
 // the connection will be closed. If a subscribe message is received, the message must be parsed
 // and a response must be returned. No update message is required for subscribe messages.
-func (h *CryptoWebSocketDataHandler) HandleMessage(
+func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []byte, error) {
 	var (
@@ -116,7 +116,7 @@ func (h *CryptoWebSocketDataHandler) HandleMessage(
 // CreateMessage is used to create a message to send to the data provider. This is used to
 // subscribe to the given currency pairs. This is called when the connection to the data
 // provider is first established.
-func (h *CryptoWebSocketDataHandler) CreateMessage(
+func (h *WebSocketDataHandler) CreateMessage(
 	cps []oracletypes.CurrencyPair,
 ) ([]byte, error) {
 	instruments := make([]string, 0)
@@ -139,12 +139,12 @@ func (h *CryptoWebSocketDataHandler) CreateMessage(
 }
 
 // Name returns the name of the data provider.
-func (h *CryptoWebSocketDataHandler) Name() string {
+func (h *WebSocketDataHandler) Name() string {
 	return Name
 }
 
 // URL is used to get the URL of the data provider.
-func (h *CryptoWebSocketDataHandler) URL() string {
+func (h *WebSocketDataHandler) URL() string {
 	if h.config.Production {
 		return ProductionURL
 	}

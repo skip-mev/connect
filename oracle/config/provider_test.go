@@ -69,6 +69,7 @@ path = "testpath"
 [web_socket]
 enabled = true
 max_buffer_size = 100
+reconnection_timeout = "5s"
 `
 
 	invalidWebSocketConfigContent = `
@@ -78,6 +79,7 @@ path = "testpath"
 [web_socket]
 enabled = true
 max_buffer_size = -1
+reconnection_timeout = "5s"
 `
 
 	noHandlerSpecificationConfigContent = `
@@ -98,6 +100,16 @@ max_queries = 10
 [web_socket]
 enabled = true
 max_buffer_size = 100
+reconnection_timeout = "5s"
+`
+
+	badReconnectionTimeoutConfigContent = `
+name = "testname"
+path = "testpath"
+[web_socket]
+enabled = true
+max_buffer_size = 100
+reconnection_timeout = -1s
 `
 )
 
@@ -150,6 +162,11 @@ func TestReadProviderConfigFromFile(t *testing.T) {
 		{
 			name:        "duplicate handler config",
 			config:      duplicateHandlerConfigContent,
+			expectedErr: true,
+		},
+		{
+			name:        "bad reconnection timeout config",
+			config:      badReconnectionTimeoutConfigContent,
 			expectedErr: true,
 		},
 	}
