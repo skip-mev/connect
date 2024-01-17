@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (

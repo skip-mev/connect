@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
+
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
