@@ -50,4 +50,4 @@ $ make run-prom-client
 
 ## Future Work
 
-The oracle side car is a combination of the oracle and provider packages. This is being moved to a separate repository.
+The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).
