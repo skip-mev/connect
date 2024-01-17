@@ -15,7 +15,7 @@ const (
 )
 
 type (
-	// Response BinanceResponse is the expected response returned by the Binance API.
+	// Response is the expected response returned by the Binance API.
 	// The response is json formatted.
 	// Response format:
 	//
