@@ -9,7 +9,7 @@
 [![License: Apache-2.0](https://img.shields.io/github/license/skip-mev/slinky.svg?style=flat-square)](https://github.com/skip-mev/slinky/blob/main/LICENSE)
 [![Lines Of Code](https://img.shields.io/tokei/lines/github/skip-mev/slinky?style=flat-square)](https://github.com/skip-mev/slinky)
 
-A general purpose price oracle leveraging ABCI++
+A general purpose price oracle leveraging ABCI++.
 
 ## Install
 
@@ -17,37 +17,37 @@ A general purpose price oracle leveraging ABCI++
 $ go install github.com/skip-mev/slinky
 ```
 
-## Status
+## Overview
 
-Current, slinkly contains the following structure:
+The slinky repository is composed of the following core packages:
 
-```text
-.
-├── config        <- Configuration that instructs the Oracle
-├── oracle        <- The oracle implementation along with providers and types
-│   ├── provider
-│   └── types
-└── pkg           <- Package types and utilities
-    └── sync
+* **abci** - This package contains the [vote extension](./abci/ve/README.md), [proposal](./abci/proposals/README.md), and [preblock handlers](./abci/preblock/oracle/README.md) that are used to broadcast oracle data to the network and to store it in the blockchain.
+* **oracle** - This [package](./oracle/) contains the main oracle that aggregates external data sources before broadcasting it to the network. You can reference the provider documentation [here](./providers/base/README.md) to get a high level overview of how the oracle works.
+* **providers** - This package contains a collection of [web socket](./providers/websockets/README.md) and [API](./providers/apis/README.md) based data providers that are used by the oracle to collect external data. 
+* **x/oracle** - This package contains a Cosmos SDK module that allows you to store oracle data on a blockchain.
+* **x/alerts** - This package contains a Cosmos SDK module that allows network participants to create alerts when oracle data that is in violation of some condition is broadcast to the network and stored on the blockchain.
+* **x/sla** - This package contains a Cosmos SDK module that allows you to create service level agreements (SLAs) that can be used to incentivize network participants to consistently, reliably provide data with high uptime.
+
+## Usage
+
+To run the oracle, run the following command:
+
+```bash
+$ make run-oracle-server
 ```
 
-The following components have been implemented:
+To check the current aggregated prices, open a new terminal and run the following command:
 
-* `oracle.go`: The main oracle implementation that is responsible for fetching prices
-  from providers given a set of assets and a set of providers.
-* `provider.go`: The provider interface that is used to fetch prices from a given
-  provider along with a mock implementation.
-* `client/local.go`: A local client that is used to communicate with an ABCI++
-  application.
-* `client/grpc.go`: A gRPC client that is used to communicate with an ABCI++
-  application.
-* `abci/vote_ext.go`: A vote extension handler implementation.
+```bash
+$ make run-oracle-client
+```
 
-The following components are still in progress or need to be implemented completely:
+To see all network metrics, open a new terminal and run the following command and then navigate to http://localhost:9090:
 
-* gRPC server & corresponding CLI command to launch it
-* x/oracle module
-* various providers in `oracle/provider/` such Kraken, Binance, etc...
-* config type definition in `config/`
-* tests!!!
+```bash
+$ make run-prom-client
+```
 
+## Future Work
+
+The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).
