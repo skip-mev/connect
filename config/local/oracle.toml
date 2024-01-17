@@ -51,7 +51,7 @@ name = "okx"
 path = "config/local/providers/okx.json"
 web_socket.enabled = true
 web_socket.max_buffer_size = 1000
-web_socket.reconnection_timeout = "5s"
+web_socket.reconnection_timeout = "10s"
 
 
 # Currency Pairs
