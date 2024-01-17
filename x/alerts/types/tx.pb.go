@@ -114,10 +114,12 @@ func (m *MsgAlertResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAlertResponse proto.InternalMessageInfo
 
-// MsgConclusion defines a message carrying a Conclusion made by the SecondTier, which will be used to
-// close an alert. And trigger any ramifications of the conclusion.
+// MsgConclusion defines a message carrying a Conclusion made by the SecondTier,
+// which will be used to close an alert. And trigger any ramifications of the
+// conclusion.
 type MsgConclusion struct {
-	// signer is the signer of this transaction (notice, this may not always be a node from the SecondTier)
+	// signer is the signer of this transaction (notice, this may not always be a
+	// node from the SecondTier)
 	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// conclusion is the conclusion to be filed
 	Conclusion *types.Any `protobuf:"bytes,2,opt,name=conclusion,proto3" json:"conclusion,omitempty"`
@@ -206,8 +208,8 @@ func (m *MsgConclusionResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgConclusionResponse proto.InternalMessageInfo
 
-// MsgUpdateParams defines the message type expected by the UpdateParams rpc. It contains an authority
-// address, and the new Params for the x/alerts module.
+// MsgUpdateParams defines the message type expected by the UpdateParams rpc. It
+// contains an authority address, and the new Params for the x/alerts module.
 type MsgUpdateParams struct {
 	// authority is the address of the authority that is submitting the update
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
@@ -359,16 +361,19 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// Alert creates a new alert. On alert creation (if valid), the alert will be saved to state,
-	// and its bond will be escrowed until a corresponding Conclusion is filed to close the alert.
+	// Alert creates a new alert. On alert creation (if valid), the alert will be
+	// saved to state, and its bond will be escrowed until a corresponding
+	// Conclusion is filed to close the alert.
 	Alert(ctx context.Context, in *MsgAlert, opts ...grpc.CallOption) (*MsgAlertResponse, error)
-	// Conclusion closes an alert. On alert conclusion (if valid), the alert will be marked as
-	// Concluded, the bond for the alert will either be burned or returned, and a set of incentives
-	// will be issued to the validators deemed malicious by the conclusion.
+	// Conclusion closes an alert. On alert conclusion (if valid), the alert will
+	// be marked as Concluded, the bond for the alert will either be burned or
+	// returned, and a set of incentives will be issued to the validators deemed
+	// malicious by the conclusion.
 	Conclusion(ctx context.Context, in *MsgConclusion, opts ...grpc.CallOption) (*MsgConclusionResponse, error)
-	// UpdateParams updates the parameters of the alerts module. Specifically, the only address that
-	// is capable of submitting this Msg is the module-authority, in general, the x/gov module-account.
-	// The process for executing this message will be via governance proposal
+	// UpdateParams updates the parameters of the alerts module. Specifically, the
+	// only address that is capable of submitting this Msg is the
+	// module-authority, in general, the x/gov module-account. The process for
+	// executing this message will be via governance proposal
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 }
 
@@ -409,16 +414,19 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// Alert creates a new alert. On alert creation (if valid), the alert will be saved to state,
-	// and its bond will be escrowed until a corresponding Conclusion is filed to close the alert.
+	// Alert creates a new alert. On alert creation (if valid), the alert will be
+	// saved to state, and its bond will be escrowed until a corresponding
+	// Conclusion is filed to close the alert.
 	Alert(context.Context, *MsgAlert) (*MsgAlertResponse, error)
-	// Conclusion closes an alert. On alert conclusion (if valid), the alert will be marked as
-	// Concluded, the bond for the alert will either be burned or returned, and a set of incentives
-	// will be issued to the validators deemed malicious by the conclusion.
+	// Conclusion closes an alert. On alert conclusion (if valid), the alert will
+	// be marked as Concluded, the bond for the alert will either be burned or
+	// returned, and a set of incentives will be issued to the validators deemed
+	// malicious by the conclusion.
 	Conclusion(context.Context, *MsgConclusion) (*MsgConclusionResponse, error)
-	// UpdateParams updates the parameters of the alerts module. Specifically, the only address that
-	// is capable of submitting this Msg is the module-authority, in general, the x/gov module-account.
-	// The process for executing this message will be via governance proposal
+	// UpdateParams updates the parameters of the alerts module. Specifically, the
+	// only address that is capable of submitting this Msg is the
+	// module-authority, in general, the x/gov module-account. The process for
+	// executing this message will be via governance proposal
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 }
 

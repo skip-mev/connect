@@ -1777,14 +1777,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// GetIncentivesByTypeRequest is the request type for the Query/GetIncentivesByType
-// RPC method.
+// GetIncentivesByTypeRequest is the request type for the
+// Query/GetIncentivesByType RPC method.
 type GetIncentivesByTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// IncentiveType is the incentive type i.e. (BadPriceIncentiveType, GoodPriceIncentiveType).
+	// IncentiveType is the incentive type i.e. (BadPriceIncentiveType,
+	// GoodPriceIncentiveType).
 	IncentiveType string `protobuf:"bytes,1,opt,name=incentive_type,json=incentiveType,proto3" json:"incentive_type,omitempty"`
 }
 
@@ -1815,8 +1816,8 @@ func (x *GetIncentivesByTypeRequest) GetIncentiveType() string {
 	return ""
 }
 
-// GetIncentivesByTypeResponse is the response type for the Query/GetIncentivesByType
-// RPC method.
+// GetIncentivesByTypeResponse is the response type for the
+// Query/GetIncentivesByType RPC method.
 type GetIncentivesByTypeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

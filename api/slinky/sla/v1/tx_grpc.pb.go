@@ -31,8 +31,8 @@ type MsgClient interface {
 	// AddSLA defines a method for adding a new SLAs to the store. Note, this will
 	// overwrite any existing SLA with the same ID.
 	AddSLAs(ctx context.Context, in *MsgAddSLAs, opts ...grpc.CallOption) (*MsgAddSLAsResponse, error)
-	// RemoveSLA defines a method for removing existing SLAs from the store. Note, this
-	// will not panic if the SLA does not exist.
+	// RemoveSLA defines a method for removing existing SLAs from the store. Note,
+	// this will not panic if the SLA does not exist.
 	RemoveSLAs(ctx context.Context, in *MsgRemoveSLAs, opts ...grpc.CallOption) (*MsgRemoveSLAsResponse, error)
 	// Params defines a method for updating the SLA module parameters.
 	Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error)
@@ -80,8 +80,8 @@ type MsgServer interface {
 	// AddSLA defines a method for adding a new SLAs to the store. Note, this will
 	// overwrite any existing SLA with the same ID.
 	AddSLAs(context.Context, *MsgAddSLAs) (*MsgAddSLAsResponse, error)
-	// RemoveSLA defines a method for removing existing SLAs from the store. Note, this
-	// will not panic if the SLA does not exist.
+	// RemoveSLA defines a method for removing existing SLAs from the store. Note,
+	// this will not panic if the SLA does not exist.
 	RemoveSLAs(context.Context, *MsgRemoveSLAs) (*MsgRemoveSLAsResponse, error)
 	// Params defines a method for updating the SLA module parameters.
 	Params(context.Context, *MsgParams) (*MsgParamsResponse, error)

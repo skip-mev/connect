@@ -28,9 +28,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // OracleVoteExtension defines the vote extension structure for oracle prices.
 type OracleVoteExtension struct {
-	// Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 -> 0x123.. (bytes).
-	// Notice the `id` function is determined by the `CurrencyPairIDStrategy` used in the
-	// VoteExtensionHandler.
+	// Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 ->
+	// 0x123.. (bytes). Notice the `id` function is determined by the
+	// `CurrencyPairIDStrategy` used in the VoteExtensionHandler.
 	Prices map[uint64][]byte `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 

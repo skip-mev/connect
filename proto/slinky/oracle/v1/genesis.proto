@@ -33,9 +33,11 @@ message QuotePrice {
   uint64 block_height = 3;
 }
 
-// CurrencyPairState represents the stateful information tracked by the x/oracle module per-currency-pair.
+// CurrencyPairState represents the stateful information tracked by the x/oracle
+// module per-currency-pair.
 message CurrencyPairState {
-  // QuotePrice is the latest price for a currency-pair, notice this value can be null in the case that no price exists for the currency-pair
+  // QuotePrice is the latest price for a currency-pair, notice this value can
+  // be null in the case that no price exists for the currency-pair
   QuotePrice price = 1 [ (gogoproto.nullable) = true ];
 
   // Nonce is the number of updates this currency-pair has received
@@ -63,9 +65,9 @@ message CurrencyPairGenesis {
 // GenesisState is the genesis-state for the x/oracle module, it takes a set of
 // predefined CurrencyPairGeneses
 message GenesisState {
-  // CurrencyPairGenesis is the set of CurrencyPairGeneses for the module. I.e 
-  // the starting set of CurrencyPairs for the module + information regarding their
-  // latest update.
+  // CurrencyPairGenesis is the set of CurrencyPairGeneses for the module. I.e
+  // the starting set of CurrencyPairs for the module + information regarding
+  // their latest update.
   repeated CurrencyPairGenesis currency_pair_genesis = 1
       [ (gogoproto.nullable) = false ];
 

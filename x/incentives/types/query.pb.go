@@ -29,10 +29,11 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GetIncentivesByTypeRequest is the request type for the Query/GetIncentivesByType
-// RPC method.
+// GetIncentivesByTypeRequest is the request type for the
+// Query/GetIncentivesByType RPC method.
 type GetIncentivesByTypeRequest struct {
-	// IncentiveType is the incentive type i.e. (BadPriceIncentiveType, GoodPriceIncentiveType).
+	// IncentiveType is the incentive type i.e. (BadPriceIncentiveType,
+	// GoodPriceIncentiveType).
 	IncentiveType string `protobuf:"bytes,1,opt,name=incentive_type,json=incentiveType,proto3" json:"incentive_type,omitempty"`
 }
 
@@ -76,8 +77,8 @@ func (m *GetIncentivesByTypeRequest) GetIncentiveType() string {
 	return ""
 }
 
-// GetIncentivesByTypeResponse is the response type for the Query/GetIncentivesByType
-// RPC method.
+// GetIncentivesByTypeResponse is the response type for the
+// Query/GetIncentivesByType RPC method.
 type GetIncentivesByTypeResponse struct {
 	// Entries is the list of incentives of the given type.
 	Entries [][]byte `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`

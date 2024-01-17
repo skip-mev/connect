@@ -511,10 +511,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// GoodPriceIncentive is a message that contains the information about a good price
-// that was submitted by a validator.
+// GoodPriceIncentive is a message that contains the information about a good
+// price that was submitted by a validator.
 //
-// NOTE: This is an example of a good price incentive. It is not used in production.
+// NOTE: This is an example of a good price incentive. It is not used in
+// production.
 type GoodPriceIncentive struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

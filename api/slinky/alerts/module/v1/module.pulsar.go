@@ -453,9 +453,9 @@ type Module struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Authority defines the custom module authority. The authority will default to the
-	// governance module account if not set. If the authority is set, the address provided
-	// must be a valid bech-32 address
+	// Authority defines the custom module authority. The authority will default
+	// to the governance module account if not set. If the authority is set, the
+	// address provided must be a valid bech-32 address
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 }
 

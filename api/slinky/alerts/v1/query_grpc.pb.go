@@ -27,8 +27,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// Alerts gets all alerts in state under the given status. If no status is given, all
-	// Alerts are returned
+	// Alerts gets all alerts in state under the given status. If no status is
+	// given, all Alerts are returned
 	Alerts(ctx context.Context, in *AlertsRequest, opts ...grpc.CallOption) (*AlertsResponse, error)
 	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
 }
@@ -63,8 +63,8 @@ func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grp
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// Alerts gets all alerts in state under the given status. If no status is given, all
-	// Alerts are returned
+	// Alerts gets all alerts in state under the given status. If no status is
+	// given, all Alerts are returned
 	Alerts(context.Context, *AlertsRequest) (*AlertsResponse, error)
 	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
 	mustEmbedUnimplementedQueryServer()

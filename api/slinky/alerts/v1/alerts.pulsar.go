@@ -3938,8 +3938,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Alert defines the basic meta-data necessary for the alerts module to resolve a claim that the price of a CurrencyPair
-// on-chain is deviating from the price off-chain.
+// Alert defines the basic meta-data necessary for the alerts module to resolve
+// a claim that the price of a CurrencyPair on-chain is deviating from the price
+// off-chain.
 type Alert struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3947,10 +3948,12 @@ type Alert struct {
 
 	// height represents the height for which the alert is filed.
 	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
-	// signer is the signer of this alert, this is the address that will receive the reward
-	// in the case of a positive conclusion, or whose bond will get slashed in the event of a negative conclusion.
+	// signer is the signer of this alert, this is the address that will receive
+	// the reward in the case of a positive conclusion, or whose bond will get
+	// slashed in the event of a negative conclusion.
 	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
-	// currency_pair is the currency-pair that this claim asserts is deviating from the price off-chain.
+	// currency_pair is the currency-pair that this claim asserts is deviating
+	// from the price off-chain.
 	CurrencyPair *v1.CurrencyPair `protobuf:"bytes,3,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
 }
 
@@ -3995,8 +3998,9 @@ func (x *Alert) GetCurrencyPair() *v1.CurrencyPair {
 	return nil
 }
 
-// AlertStatus contains the module specific state for an alert: Has the alert been concluded? What height was the alert
-// submitted, what height should the alert be purged?
+// AlertStatus contains the module specific state for an alert: Has the alert
+// been concluded? What height was the alert submitted, what height should the
+// alert be purged?
 type AlertStatus struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4006,7 +4010,8 @@ type AlertStatus struct {
 	ConclusionStatus uint64 `protobuf:"varint,1,opt,name=conclusion_status,json=conclusionStatus,proto3" json:"conclusion_status,omitempty"`
 	// SubmissionHeight is the height that the alert was submitted in.
 	SubmissionHeight uint64 `protobuf:"varint,2,opt,name=submission_height,json=submissionHeight,proto3" json:"submission_height,omitempty"`
-	// SubmissionTimestamp is the block-timestamp of the block that the alert was submitted in (as a UTC value in Unix time).
+	// SubmissionTimestamp is the block-timestamp of the block that the alert was
+	// submitted in (as a UTC value in Unix time).
 	SubmissionTimestamp uint64 `protobuf:"varint,3,opt,name=submission_timestamp,json=submissionTimestamp,proto3" json:"submission_timestamp,omitempty"`
 	// PurgeHeight is the height at which the alert should be purged.
 	PurgeHeight uint64 `protobuf:"varint,4,opt,name=purge_height,json=purgeHeight,proto3" json:"purge_height,omitempty"`
@@ -4060,8 +4065,9 @@ func (x *AlertStatus) GetPurgeHeight() uint64 {
 	return 0
 }
 
-// AlertWithStatus represents a wrapper around the Alert and AlertStatus objects, this is so that the module specific
-// information about Alerts can be packaged together.
+// AlertWithStatus represents a wrapper around the Alert and AlertStatus
+// objects, this is so that the module specific information about Alerts can be
+// packaged together.
 type AlertWithStatus struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4151,8 +4157,10 @@ func (x *Signature) GetSignature() []byte {
 	return nil
 }
 
-// MultiSigConcluson defines a conclusion that is accompanied by a set of signatures. The signature is defined over the
-// alert UID, status, OracleData, and PriceBound. The signatures are used to verify that the conclusion is valid.
+// MultiSigConcluson defines a conclusion that is accompanied by a set of
+// signatures. The signature is defined over the alert UID, status, OracleData,
+// and PriceBound. The signatures are used to verify that the conclusion is
+// valid.
 type MultiSigConclusion struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4162,13 +4170,16 @@ type MultiSigConclusion struct {
 	Alert *Alert `protobuf:"bytes,1,opt,name=alert,proto3" json:"alert,omitempty"`
 	// oracle_data is the oracle data that this conclusion references.
 	ExtendedCommitInfo *abci.ExtendedCommitInfo `protobuf:"bytes,2,opt,name=extended_commit_info,json=extendedCommitInfo,proto3" json:"extended_commit_info,omitempty"`
-	// signatures is a map of signer -> signature. Where the signature is over Alert.UID, PriceBound, the marshalled ExtendedCommitInfo, and status.
+	// signatures is a map of signer -> signature. Where the signature is over
+	// Alert.UID, PriceBound, the marshalled ExtendedCommitInfo, and status.
 	Signatures []*Signature `protobuf:"bytes,3,rep,name=signatures,proto3" json:"signatures,omitempty"`
-	// price-bound is the price bound of the currency-pair off-chain for the designated time-range.
+	// price-bound is the price bound of the currency-pair off-chain for the
+	// designated time-range.
 	PriceBound *PriceBound `protobuf:"bytes,4,opt,name=price_bound,json=priceBound,proto3" json:"price_bound,omitempty"`
 	// status is the status of the conclusion.
 	Status bool `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
-	// CurrencyPairID is the ID of the currency-pair that this conclusion corresponds to.
+	// CurrencyPairID is the ID of the currency-pair that this conclusion
+	// corresponds to.
 	CurrencyPairID uint64 `protobuf:"varint,6,opt,name=currency_pair_i_d,json=currencyPairID,proto3" json:"currency_pair_i_d,omitempty"`
 }
 
@@ -4234,10 +4245,11 @@ func (x *MultiSigConclusion) GetCurrencyPairID() uint64 {
 	return 0
 }
 
-// MultiSigConclusionVerificationParams defines the parameters necessary to verify a MultiSigConclusion.
-// It contains a map between signer and public key. Notice, the public-key (value) are the base-64 encoded bytes of
-// the public key. And the signer (key) is the bech32 encoded address of the signer. Notice, all public keys must be
-// secp256 keys.
+// MultiSigConclusionVerificationParams defines the parameters necessary to
+// verify a MultiSigConclusion. It contains a map between signer and public key.
+// Notice, the public-key (value) are the base-64 encoded bytes of the public
+// key. And the signer (key) is the bech32 encoded address of the signer.
+// Notice, all public keys must be secp256 keys.
 type MultiSigConclusionVerificationParams struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4274,7 +4286,8 @@ func (x *MultiSigConclusionVerificationParams) GetSigners() []*anypb.Any {
 	return nil
 }
 
-// PriceBound represents the bounds of the price of a currency-pair off chain for a designated time-range
+// PriceBound represents the bounds of the price of a currency-pair off chain
+// for a designated time-range
 type PriceBound struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

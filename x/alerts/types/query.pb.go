@@ -29,7 +29,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// AlertStatus is the type for the status of an Alert, it can be Unconcluded or Concluded.
+// AlertStatus is the type for the status of an Alert, it can be Unconcluded or
+// Concluded.
 type AlertStatusID int32
 
 const (
@@ -58,8 +59,9 @@ func (AlertStatusID) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_800538fad6183f61, []int{0}
 }
 
-// AlertsRequest is the request type for the Query.Alerts RPC method, the status field indicates
-// whether the request should return only Unconcluded / Concluded Alerts, or all Alerts.
+// AlertsRequest is the request type for the Query.Alerts RPC method, the status
+// field indicates whether the request should return only Unconcluded /
+// Concluded Alerts, or all Alerts.
 type AlertsRequest struct {
 	Status AlertStatusID `protobuf:"varint,1,opt,name=status,proto3,enum=slinky.alerts.v1.AlertStatusID" json:"status,omitempty"`
 }
@@ -104,8 +106,8 @@ func (m *AlertsRequest) GetStatus() AlertStatusID {
 	return AlertStatusID_CONCLUSION_STATUS_UNSPECIFIED
 }
 
-// AlertsResponse is the response type for the Query.Alerts RPC method, it contains the list of Alerts
-// that are being tracked by the alerts module.
+// AlertsResponse is the response type for the Query.Alerts RPC method, it
+// contains the list of Alerts that are being tracked by the alerts module.
 type AlertsResponse struct {
 	Alerts []Alert `protobuf:"bytes,1,rep,name=alerts,proto3" json:"alerts"`
 }
@@ -187,7 +189,8 @@ func (m *ParamsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ParamsRequest proto.InternalMessageInfo
 
-// ParamsResponse is the response type for the Query.Params RPC method, it contains the Params of the module.
+// ParamsResponse is the response type for the Query.Params RPC method, it
+// contains the Params of the module.
 type ParamsResponse struct {
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
@@ -285,8 +288,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Alerts gets all alerts in state under the given status. If no status is given, all
-	// Alerts are returned
+	// Alerts gets all alerts in state under the given status. If no status is
+	// given, all Alerts are returned
 	Alerts(ctx context.Context, in *AlertsRequest, opts ...grpc.CallOption) (*AlertsResponse, error)
 	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
 }
@@ -319,8 +322,8 @@ func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grp
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Alerts gets all alerts in state under the given status. If no status is given, all
-	// Alerts are returned
+	// Alerts gets all alerts in state under the given status. If no status is
+	// given, all Alerts are returned
 	Alerts(context.Context, *AlertsRequest) (*AlertsResponse, error)
 	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
 }

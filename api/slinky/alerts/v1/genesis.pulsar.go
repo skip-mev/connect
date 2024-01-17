@@ -2205,9 +2205,9 @@ type AlertParams struct {
 	// BondAmount is the minimum amount of bond required to submit an
 	// Alert
 	BondAmount *v1beta1.Coin `protobuf:"bytes,2,opt,name=bond_amount,json=bondAmount,proto3" json:"bond_amount,omitempty"`
-	// MaxBlockAge defines the maximum age of an Alert before it is pruned, notice this is defined wrt.
-	// the height that the Alert references, i.e Alerts are only relevant until Alert.Height + MaxBlockAge
-	// is reached.
+	// MaxBlockAge defines the maximum age of an Alert before it is pruned, notice
+	// this is defined wrt. the height that the Alert references, i.e Alerts are
+	// only relevant until Alert.Height + MaxBlockAge is reached.
 	MaxBlockAge uint64 `protobuf:"varint,3,opt,name=max_block_age,json=maxBlockAge,proto3" json:"max_block_age,omitempty"`
 }
 
@@ -2260,9 +2260,10 @@ type PruningParams struct {
 
 	// Enabled defines whether Alerts are to be pruned
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	// BlocksToPrune defines the number of blocks until an Alert will be pruned from state, notice this is
-	// defined wrt. the current block height, i.e Alerts will be stored in state until current_height + BlocksToPrune
-	// is reached.
+	// BlocksToPrune defines the number of blocks until an Alert will be pruned
+	// from state, notice this is defined wrt. the current block height, i.e
+	// Alerts will be stored in state until current_height + BlocksToPrune is
+	// reached.
 	BlocksToPrune uint64 `protobuf:"varint,2,opt,name=blocks_to_prune,json=blocksToPrune,proto3" json:"blocks_to_prune,omitempty"`
 }
 
@@ -2308,7 +2309,8 @@ type Params struct {
 
 	// AlertParams is the set of parameters for the x/Alerts module's Alerting.
 	AlertParams *AlertParams `protobuf:"bytes,1,opt,name=alert_params,json=alertParams,proto3" json:"alert_params,omitempty"`
-	// ConclusionVerificationParams is the set of parameters for the x/Alerts module's conclusion verification.
+	// ConclusionVerificationParams is the set of parameters for the x/Alerts
+	// module's conclusion verification.
 	ConclusionVerificationParams *anypb.Any `protobuf:"bytes,2,opt,name=conclusion_verification_params,json=conclusionVerificationParams,proto3" json:"conclusion_verification_params,omitempty"`
 	// PruningParams is the set of parameters for the x/Alerts module's pruning.
 	PruningParams *PruningParams `protobuf:"bytes,3,opt,name=pruning_params,json=pruningParams,proto3" json:"pruning_params,omitempty"`
@@ -2355,8 +2357,8 @@ func (x *Params) GetPruningParams() *PruningParams {
 	return nil
 }
 
-// GenesisState is the state that must be provided at genesis. It contains params for the module, and the set
-// initial Alerts.
+// GenesisState is the state that must be provided at genesis. It contains
+// params for the module, and the set initial Alerts.
 type GenesisState struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

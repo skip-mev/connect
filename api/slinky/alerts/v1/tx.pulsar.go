@@ -2594,14 +2594,16 @@ func (*MsgAlertResponse) Descriptor() ([]byte, []int) {
 	return file_slinky_alerts_v1_tx_proto_rawDescGZIP(), []int{1}
 }
 
-// MsgConclusion defines a message carrying a Conclusion made by the SecondTier, which will be used to
-// close an alert. And trigger any ramifications of the conclusion.
+// MsgConclusion defines a message carrying a Conclusion made by the SecondTier,
+// which will be used to close an alert. And trigger any ramifications of the
+// conclusion.
 type MsgConclusion struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// signer is the signer of this transaction (notice, this may not always be a node from the SecondTier)
+	// signer is the signer of this transaction (notice, this may not always be a
+	// node from the SecondTier)
 	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// conclusion is the conclusion to be filed
 	Conclusion *anypb.Any `protobuf:"bytes,2,opt,name=conclusion,proto3" json:"conclusion,omitempty"`
@@ -2667,8 +2669,8 @@ func (*MsgConclusionResponse) Descriptor() ([]byte, []int) {
 	return file_slinky_alerts_v1_tx_proto_rawDescGZIP(), []int{3}
 }
 
-// MsgUpdateParams defines the message type expected by the UpdateParams rpc. It contains an authority
-// address, and the new Params for the x/alerts module.
+// MsgUpdateParams defines the message type expected by the UpdateParams rpc. It
+// contains an authority address, and the new Params for the x/alerts module.
 type MsgUpdateParams struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

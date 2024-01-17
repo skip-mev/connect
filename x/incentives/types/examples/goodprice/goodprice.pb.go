@@ -24,10 +24,11 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GoodPriceIncentive is a message that contains the information about a good price
-// that was submitted by a validator.
+// GoodPriceIncentive is a message that contains the information about a good
+// price that was submitted by a validator.
 //
-// NOTE: This is an example of a good price incentive. It is not used in production.
+// NOTE: This is an example of a good price incentive. It is not used in
+// production.
 type GoodPriceIncentive struct {
 	// Validator is the address of the validator that submitted the good price.
 	Validator string `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator,omitempty"`

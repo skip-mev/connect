@@ -1110,7 +1110,8 @@ type IncentivesByType struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// IncentiveType is the incentive type i.e. (BadPriceIncentiveType, GoodPriceIncentiveType).
+	// IncentiveType is the incentive type i.e. (BadPriceIncentiveType,
+	// GoodPriceIncentiveType).
 	IncentiveType string `protobuf:"bytes,1,opt,name=incentive_type,json=incentiveType,proto3" json:"incentive_type,omitempty"`
 	// Entries is a list of incentive bytes.
 	Entries [][]byte `protobuf:"bytes,2,rep,name=entries,proto3" json:"entries,omitempty"`

@@ -142,9 +142,11 @@ func (m *QuotePrice) GetBlockHeight() uint64 {
 	return 0
 }
 
-// CurrencyPairState represents the stateful information tracked by the x/oracle module per-currency-pair.
+// CurrencyPairState represents the stateful information tracked by the x/oracle
+// module per-currency-pair.
 type CurrencyPairState struct {
-	// QuotePrice is the latest price for a currency-pair, notice this value can be null in the case that no price exists for the currency-pair
+	// QuotePrice is the latest price for a currency-pair, notice this value can
+	// be null in the case that no price exists for the currency-pair
 	Price *QuotePrice `protobuf:"bytes,1,opt,name=price,proto3" json:"price,omitempty"`
 	// Nonce is the number of updates this currency-pair has received
 	Nonce uint64 `protobuf:"varint,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
@@ -286,8 +288,8 @@ func (m *CurrencyPairGenesis) GetId() uint64 {
 // predefined CurrencyPairGeneses
 type GenesisState struct {
 	// CurrencyPairGenesis is the set of CurrencyPairGeneses for the module. I.e
-	// the starting set of CurrencyPairs for the module + information regarding their
-	// latest update.
+	// the starting set of CurrencyPairs for the module + information regarding
+	// their latest update.
 	CurrencyPairGenesis []CurrencyPairGenesis `protobuf:"bytes,1,rep,name=currency_pair_genesis,json=currencyPairGenesis,proto3" json:"currency_pair_genesis"`
 	// NextID is the next ID to be used for a CurrencyPair
 	NextId uint64 `protobuf:"varint,2,opt,name=next_id,json=nextId,proto3" json:"next_id,omitempty"`

@@ -1716,7 +1716,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AlertStatus is the type for the status of an Alert, it can be Unconcluded or Concluded.
+// AlertStatus is the type for the status of an Alert, it can be Unconcluded or
+// Concluded.
 type AlertStatusID int32
 
 const (
@@ -1766,8 +1767,9 @@ func (AlertStatusID) EnumDescriptor() ([]byte, []int) {
 	return file_slinky_alerts_v1_query_proto_rawDescGZIP(), []int{0}
 }
 
-// AlertsRequest is the request type for the Query.Alerts RPC method, the status field indicates
-// whether the request should return only Unconcluded / Concluded Alerts, or all Alerts.
+// AlertsRequest is the request type for the Query.Alerts RPC method, the status
+// field indicates whether the request should return only Unconcluded /
+// Concluded Alerts, or all Alerts.
 type AlertsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1803,8 +1805,8 @@ func (x *AlertsRequest) GetStatus() AlertStatusID {
 	return AlertStatusID_CONCLUSION_STATUS_UNSPECIFIED
 }
 
-// AlertsResponse is the response type for the Query.Alerts RPC method, it contains the list of Alerts
-// that are being tracked by the alerts module.
+// AlertsResponse is the response type for the Query.Alerts RPC method, it
+// contains the list of Alerts that are being tracked by the alerts module.
 type AlertsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1867,7 +1869,8 @@ func (*ParamsRequest) Descriptor() ([]byte, []int) {
 	return file_slinky_alerts_v1_query_proto_rawDescGZIP(), []int{2}
 }
 
-// ParamsResponse is the response type for the Query.Params RPC method, it contains the Params of the module.
+// ParamsResponse is the response type for the Query.Params RPC method, it
+// contains the Params of the module.
 type ParamsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

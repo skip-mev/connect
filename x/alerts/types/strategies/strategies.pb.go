@@ -26,12 +26,14 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// ValidatorAlertIncentive defines the incentive strategy to be executed for a validator that has been
-// confirmed to have at fault for an x/alerts alert. This strategy is expected to slash half of the validator's stake.
+// ValidatorAlertIncentive defines the incentive strategy to be executed for a
+// validator that has been confirmed to have at fault for an x/alerts alert.
+// This strategy is expected to slash half of the validator's stake.
 type ValidatorAlertIncentive struct {
 	// The validator that has been confirmed to have been at fault for an alert.
 	Validator types.Validator `protobuf:"bytes,1,opt,name=validator,proto3" json:"validator"`
-	// AlertSigner is the signer of the alert referenced by the conclusion that created this incentive.
+	// AlertSigner is the signer of the alert referenced by the conclusion that
+	// created this incentive.
 	AlertSigner string `protobuf:"bytes,2,opt,name=alert_signer,json=alertSigner,proto3" json:"alert_signer,omitempty"`
 	// AlertHeight is the height at which the infraction occurred
 	AlertHeight uint64 `protobuf:"varint,3,opt,name=alert_height,json=alertHeight,proto3" json:"alert_height,omitempty"`

@@ -2726,8 +2726,9 @@ func (x *Params) GetEnabled() bool {
 	return false
 }
 
-// PriceFeedSLA defines the the desired SLA for a given set of price feeds. A price
-// feed is defined to be a set of price prices for the same (currency pair, validator).
+// PriceFeedSLA defines the the desired SLA for a given set of price feeds. A
+// price feed is defined to be a set of price prices for the same (currency
+// pair, validator).
 type PriceFeedSLA struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2740,8 +2741,8 @@ type PriceFeedSLA struct {
 	// ExpectedUptime is the expected uptime for the given validator and price
 	// feed.
 	ExpectedUptime string `protobuf:"bytes,2,opt,name=expected_uptime,json=expectedUptime,proto3" json:"expected_uptime,omitempty"`
-	// SlashConstant is the constant by which we will multiply the deviation from the
-	// expected uptime.
+	// SlashConstant is the constant by which we will multiply the deviation from
+	// the expected uptime.
 	SlashConstant string `protobuf:"bytes,3,opt,name=slash_constant,json=slashConstant,proto3" json:"slash_constant,omitempty"`
 	// MinimumBlockUpdates is the minimum number of blocks that the
 	// validator had to have voted on in the maximum viable window
@@ -2815,8 +2816,8 @@ func (x *PriceFeedSLA) GetId() string {
 	return ""
 }
 
-// PriceFeed defines the object type that will be utilized to monitor how frequently validators
-// are voting with price updates across the network.
+// PriceFeed defines the object type that will be utilized to monitor how
+// frequently validators are voting with price updates across the network.
 type PriceFeed struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2824,8 +2825,8 @@ type PriceFeed struct {
 
 	// UpdateMap represents the relevant moving window of price feed updates.
 	UpdateMap []byte `protobuf:"bytes,1,opt,name=update_map,json=updateMap,proto3" json:"update_map,omitempty"`
-	// InclusionMap represents the relevant moving window of blocks that the validator
-	// has voted on.
+	// InclusionMap represents the relevant moving window of blocks that the
+	// validator has voted on.
 	InclusionMap []byte `protobuf:"bytes,2,opt,name=inclusion_map,json=inclusionMap,proto3" json:"inclusion_map,omitempty"`
 	// Index corresponds to the current index into the bitmap.
 	Index uint64 `protobuf:"varint,3,opt,name=index,proto3" json:"index,omitempty"`

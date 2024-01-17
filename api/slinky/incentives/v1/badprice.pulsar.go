@@ -511,10 +511,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// BadPriceIncentive is a message that contains the information about a bad price
-// that was submitted by a validator.
+// BadPriceIncentive is a message that contains the information about a bad
+// price that was submitted by a validator.
 //
-// NOTE: This is an example of a bad price incentive. It is not used in production.
+// NOTE: This is an example of a bad price incentive. It is not used in
+// production.
 type BadPriceIncentive struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

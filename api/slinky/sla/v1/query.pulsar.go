@@ -2609,7 +2609,8 @@ func (*GetAllSLAsRequest) Descriptor() ([]byte, []int) {
 	return file_slinky_sla_v1_query_proto_rawDescGZIP(), []int{0}
 }
 
-// QueryAllSLAsResponse is the response type for the Query/GetAllSLAs RPC method.
+// QueryAllSLAsResponse is the response type for the Query/GetAllSLAs RPC
+// method.
 type GetAllSLAsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2645,7 +2646,8 @@ func (x *GetAllSLAsResponse) GetSlas() []*PriceFeedSLA {
 	return nil
 }
 
-// QueryGetPriceFeedsRequest is the request type for the Query/GetPriceFeeds RPC method.
+// QueryGetPriceFeedsRequest is the request type for the Query/GetPriceFeeds RPC
+// method.
 type GetPriceFeedsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2682,7 +2684,8 @@ func (x *GetPriceFeedsRequest) GetId() string {
 	return ""
 }
 
-// QueryGetPriceFeedsResponse is the response type for the Query/GetPriceFeeds RPC method.
+// QueryGetPriceFeedsResponse is the response type for the Query/GetPriceFeeds
+// RPC method.
 type GetPriceFeedsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

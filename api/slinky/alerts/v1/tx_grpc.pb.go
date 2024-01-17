@@ -28,16 +28,19 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// Alert creates a new alert. On alert creation (if valid), the alert will be saved to state,
-	// and its bond will be escrowed until a corresponding Conclusion is filed to close the alert.
+	// Alert creates a new alert. On alert creation (if valid), the alert will be
+	// saved to state, and its bond will be escrowed until a corresponding
+	// Conclusion is filed to close the alert.
 	Alert(ctx context.Context, in *MsgAlert, opts ...grpc.CallOption) (*MsgAlertResponse, error)
-	// Conclusion closes an alert. On alert conclusion (if valid), the alert will be marked as
-	// Concluded, the bond for the alert will either be burned or returned, and a set of incentives
-	// will be issued to the validators deemed malicious by the conclusion.
+	// Conclusion closes an alert. On alert conclusion (if valid), the alert will
+	// be marked as Concluded, the bond for the alert will either be burned or
+	// returned, and a set of incentives will be issued to the validators deemed
+	// malicious by the conclusion.
 	Conclusion(ctx context.Context, in *MsgConclusion, opts ...grpc.CallOption) (*MsgConclusionResponse, error)
-	// UpdateParams updates the parameters of the alerts module. Specifically, the only address that
-	// is capable of submitting this Msg is the module-authority, in general, the x/gov module-account.
-	// The process for executing this message will be via governance proposal
+	// UpdateParams updates the parameters of the alerts module. Specifically, the
+	// only address that is capable of submitting this Msg is the
+	// module-authority, in general, the x/gov module-account. The process for
+	// executing this message will be via governance proposal
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 }
 
@@ -80,16 +83,19 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// Alert creates a new alert. On alert creation (if valid), the alert will be saved to state,
-	// and its bond will be escrowed until a corresponding Conclusion is filed to close the alert.
+	// Alert creates a new alert. On alert creation (if valid), the alert will be
+	// saved to state, and its bond will be escrowed until a corresponding
+	// Conclusion is filed to close the alert.
 	Alert(context.Context, *MsgAlert) (*MsgAlertResponse, error)
-	// Conclusion closes an alert. On alert conclusion (if valid), the alert will be marked as
-	// Concluded, the bond for the alert will either be burned or returned, and a set of incentives
-	// will be issued to the validators deemed malicious by the conclusion.
+	// Conclusion closes an alert. On alert conclusion (if valid), the alert will
+	// be marked as Concluded, the bond for the alert will either be burned or
+	// returned, and a set of incentives will be issued to the validators deemed
+	// malicious by the conclusion.
 	Conclusion(context.Context, *MsgConclusion) (*MsgConclusionResponse, error)
-	// UpdateParams updates the parameters of the alerts module. Specifically, the only address that
-	// is capable of submitting this Msg is the module-authority, in general, the x/gov module-account.
-	// The process for executing this message will be via governance proposal
+	// UpdateParams updates the parameters of the alerts module. Specifically, the
+	// only address that is capable of submitting this Msg is the
+	// module-authority, in general, the x/gov module-account. The process for
+	// executing this message will be via governance proposal
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

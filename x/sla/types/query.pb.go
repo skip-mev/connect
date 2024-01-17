@@ -66,7 +66,8 @@ func (m *GetAllSLAsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetAllSLAsRequest proto.InternalMessageInfo
 
-// QueryAllSLAsResponse is the response type for the Query/GetAllSLAs RPC method.
+// QueryAllSLAsResponse is the response type for the Query/GetAllSLAs RPC
+// method.
 type GetAllSLAsResponse struct {
 	SLAs []PriceFeedSLA `protobuf:"bytes,1,rep,name=slas,proto3" json:"slas"`
 }
@@ -111,7 +112,8 @@ func (m *GetAllSLAsResponse) GetSLAs() []PriceFeedSLA {
 	return nil
 }
 
-// QueryGetPriceFeedsRequest is the request type for the Query/GetPriceFeeds RPC method.
+// QueryGetPriceFeedsRequest is the request type for the Query/GetPriceFeeds RPC
+// method.
 type GetPriceFeedsRequest struct {
 	// ID defines the SLA to query price feeds for.
 	ID string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -157,7 +159,8 @@ func (m *GetPriceFeedsRequest) GetID() string {
 	return ""
 }
 
-// QueryGetPriceFeedsResponse is the response type for the Query/GetPriceFeeds RPC method.
+// QueryGetPriceFeedsResponse is the response type for the Query/GetPriceFeeds
+// RPC method.
 type GetPriceFeedsResponse struct {
 	// PriceFeeds defines the price feeds for the given SLA.
 	PriceFeeds []PriceFeed `protobuf:"bytes,1,rep,name=price_feeds,json=priceFeeds,proto3" json:"price_feeds"`
@@ -343,8 +346,8 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// GetAllSLAs returns all SLAs that the module is currently enforcing.
 	GetAllSLAs(ctx context.Context, in *GetAllSLAsRequest, opts ...grpc.CallOption) (*GetAllSLAsResponse, error)
-	// GetPriceFeeds returns all price feeds that the module is currently tracking.
-	// This request type inputs the SLA ID to query price feeds for.
+	// GetPriceFeeds returns all price feeds that the module is currently
+	// tracking. This request type inputs the SLA ID to query price feeds for.
 	GetPriceFeeds(ctx context.Context, in *GetPriceFeedsRequest, opts ...grpc.CallOption) (*GetPriceFeedsResponse, error)
 	// Params returns the current SLA module parameters.
 	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
@@ -389,8 +392,8 @@ func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grp
 type QueryServer interface {
 	// GetAllSLAs returns all SLAs that the module is currently enforcing.
 	GetAllSLAs(context.Context, *GetAllSLAsRequest) (*GetAllSLAsResponse, error)
-	// GetPriceFeeds returns all price feeds that the module is currently tracking.
-	// This request type inputs the SLA ID to query price feeds for.
+	// GetPriceFeeds returns all price feeds that the module is currently
+	// tracking. This request type inputs the SLA ID to query price feeds for.
 	GetPriceFeeds(context.Context, *GetPriceFeedsRequest) (*GetPriceFeedsResponse, error)
 	// Params returns the current SLA module parameters.
 	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
