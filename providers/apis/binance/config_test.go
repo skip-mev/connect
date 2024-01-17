@@ -12,7 +12,6 @@ import (
 var (
 	goodConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"BITCOIN": "bitcoin",
 		"ETHEREUM": "ethereum",
@@ -29,7 +28,6 @@ var (
 	`
 	noBasesConfig = `
 {
-	"apiKey": "",
 	"supportedQuotes": {
 		"USD": "usd",
 		"ETHEREUM": "eth"
@@ -38,7 +36,6 @@ var (
 `
 	noQuotesConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"BITCOIN": "bitcoin",
 		"ETHEREUM": "ethereum",
@@ -51,7 +48,6 @@ var (
 	`
 	malformedJSONConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"BITCOIN": "bitcoin",
 	},
@@ -62,7 +58,6 @@ var (
 	`
 	emptySupportedBaseKeyConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"": "bitcoin"
 	},
@@ -73,7 +68,6 @@ var (
 `
 	emptySupportedBaseValueConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"BITCOIN": ""
 	},
@@ -84,7 +78,6 @@ var (
 `
 	emptySupportedQuoteKeyConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"BITCOIN": "bitcoin"
 	},
@@ -95,7 +88,6 @@ var (
 `
 	emptySupportedQuoteValueConfig = `
 {
-	"apiKey": "",
 	"supportedBases": {
 		"BITCOIN": "bitcoin"
 	},
