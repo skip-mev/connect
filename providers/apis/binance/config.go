@@ -71,8 +71,8 @@ func (c *Config) Format() {
 	}
 }
 
-// ReadBinanceConfigFromFile reads a config from a file and returns the config.
-func ReadBinanceConfigFromFile(path string) (Config, error) {
+// ReadConfigFromFile reads a config from a file and returns the config.
+func ReadConfigFromFile(path string) (Config, error) {
 	var config Config
 
 	// Read in the config file

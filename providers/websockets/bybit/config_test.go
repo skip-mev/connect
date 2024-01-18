@@ -1,4 +1,4 @@
-package binance_test
+package bybit_test
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/alecthomas/assert/v2"
 
-	"github.com/skip-mev/slinky/providers/apis/binance"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
 )
 
 var (
@@ -149,7 +149,7 @@ func TestReadConfigFromFile(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Create temp file
-			f, err := os.CreateTemp("", "binance_config")
+			f, err := os.CreateTemp("", "bybit_config")
 			assert.NoError(t, err)
 			defer os.Remove(f.Name())
 
@@ -158,7 +158,7 @@ func TestReadConfigFromFile(t *testing.T) {
 			assert.NoError(t, err)
 
 			// Read config from file
-			_, err = binance.ReadConfigFromFile(f.Name())
+			_, err = bybit.ReadConfigFromFile(f.Name())
 			if tc.expectedErr {
 				assert.Error(t, err)
 			} else {

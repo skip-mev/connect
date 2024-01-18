@@ -20,7 +20,7 @@ func NewBinanceUSAPIHandler(
 		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
 	}
 
-	cfg, err := binance.ReadBinanceConfigFromFile(providerCfg.Path)
+	cfg, err := binance.ReadConfigFromFile(providerCfg.Path)
 	if err != nil {
 		return nil, err
 	}

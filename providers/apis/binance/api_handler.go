@@ -39,7 +39,7 @@ func NewBinanceAPIHandler(
 		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
 	}
 
-	cfg, err := ReadBinanceConfigFromFile(providerCfg.Path)
+	cfg, err := ReadConfigFromFile(providerCfg.Path)
 	if err != nil {
 		return nil, err
 	}
