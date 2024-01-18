@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/apis/binanceus"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base"
@@ -99,6 +100,8 @@ func apiProviderFromProviderConfig(
 		apiDataHandler, err = coingecko.NewCoinGeckoAPIHandler(cfg)
 	case coinbase.Name:
 		apiDataHandler, err = coinbase.NewCoinBaseAPIHandler(cfg)
+	case binanceus.Name:
+		apiDataHandler, err = binanceus.NewBinanceUSAPIHandler(cfg)
 	case static.Name:
 		apiDataHandler, err = static.NewStaticMockAPIHandler(cfg)
 		if err != nil {
