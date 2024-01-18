@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/apis/binanceus"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base"
@@ -20,6 +21,7 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -99,6 +101,8 @@ func apiProviderFromProviderConfig(
 		apiDataHandler, err = coingecko.NewCoinGeckoAPIHandler(cfg)
 	case coinbase.Name:
 		apiDataHandler, err = coinbase.NewCoinBaseAPIHandler(cfg)
+	case binanceus.Name:
+		apiDataHandler, err = binanceus.NewBinanceUSAPIHandler(cfg)
 	case static.Name:
 		apiDataHandler, err = static.NewStaticMockAPIHandler(cfg)
 		if err != nil {
@@ -162,6 +166,8 @@ func webSocketProviderFromProviderConfig(
 	switch cfg.Name {
 	case cryptodotcom.Name:
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandlerFromConfig(logger, cfg)
+	case okx.Name:
+		wsDataHandler, err = okx.NewWebSocketDataHandlerFromConfig(logger, cfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

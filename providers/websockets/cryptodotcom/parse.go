@@ -5,15 +5,16 @@ import (
 	"math/big"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 // parseInstrumentMessage is used to parse an instrument message received from the Crypto.com
 // web socket API. This message contains the latest price data for a set of instruments.
-func (h *CryptoWebSocketDataHandler) parseInstrumentMessage(
+func (h *WebSocketDataHandler) parseInstrumentMessage(
 	msg InstrumentResponseMessage,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
 	var (

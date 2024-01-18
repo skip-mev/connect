@@ -1,0 +1,12 @@
+{
+  "supportedBases": {
+    "BITCOIN": "BTC",
+    "ETHEREUM": "ETH",
+    "ATOM": "ATOM",
+    "SOLANA": "SOL",
+    "POLKADOT": "DOT"
+  },
+  "supportedQuotes": {
+    "USD": "USDT"
+  }
+}

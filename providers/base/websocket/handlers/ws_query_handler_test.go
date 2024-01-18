@@ -8,6 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	wserrors "github.com/skip-mev/slinky/providers/base/websocket/errors"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	handlermocks "github.com/skip-mev/slinky/providers/base/websocket/handlers/mocks"
@@ -15,9 +19,6 @@ import (
 	mockmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 var (

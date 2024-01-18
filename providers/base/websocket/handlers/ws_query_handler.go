@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/providers/base/websocket/errors"
 	"github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"go.uber.org/zap"
 )
 
 // WebSocketQueryHandler is an interface that encapsulates querying a web socket
