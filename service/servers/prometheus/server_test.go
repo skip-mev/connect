@@ -14,7 +14,7 @@ import (
 // Test that Starting the server fails if the address is incorrect.
 func TestStart(t *testing.T) {
 	t.Run("Start fails with incorrect address", func(t *testing.T) {
-		address := ":8080"
+		address := ":8081"
 
 		ps, err := prometheus.NewPrometheusServer(address, nil)
 		require.Nil(t, ps)
@@ -22,7 +22,7 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("Start succeeds with correct address", func(t *testing.T) {
-		address := "0.0.0.0:8080"
+		address := "0.0.0.0:8081"
 
 		ps, err := prometheus.NewPrometheusServer(address, zap.NewNop())
 		require.NotNil(t, ps)
