@@ -6,9 +6,12 @@ import (
 	"sync"
 	"time"
 
+	"cosmossdk.io/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/service/metrics"
 	"github.com/skip-mev/slinky/service"
 )
 
@@ -33,12 +36,26 @@ type GRPCClient struct {
 
 // NewGRPCClient creates a new grpc client of the oracle service, given the
 // address of the oracle server and a timeout for the client.
-func NewGRPCClient(addr string, t time.Duration) *GRPCClient {
+func NewGRPCClient(addr string, t time.Duration) service.OracleService {
 	return &GRPCClient{
 		addr:    addr,
 		timeout: t,
 		mtx:     sync.Mutex{},
 	}
+}
+
+// NewGRPCClientFromConfig creates a new grpc client of the oracle service, given the
+// oracle app config.
+func NewGRPCClientFromConfig(logger log.Logger, config config.AppConfig) service.OracleService {
+	if config.MetricsEnabled {
+		return NewMetricsClient(
+			logger,
+			NewGRPCClient(config.OracleAddress, config.ClientTimeout),
+			metrics.NewMetricsFromConfig(config),
+		)
+	}
+
+	return NewGRPCClient(config.OracleAddress, config.ClientTimeout)
 }
 
 // Start starts the GRPC client. This method dials the remote oracle-service

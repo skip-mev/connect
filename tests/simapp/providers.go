@@ -28,20 +28,20 @@ import (
 // DefaultProviderFactory returns a sample implementation of the provider factory. This provider
 // factory function returns providers the are API & web socket based.
 func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, oracleCfg config.OracleConfig, metricsCfg config.OracleMetricsConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-		if err := oracleCfg.ValidateBasic(); err != nil {
+	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err
 		}
 
-		cps := oracleCfg.CurrencyPairs
+		cps := cfg.CurrencyPairs
 
 		// Create the metrics that are used by the providers.
-		mWebSocket := wsmetrics.NewWebSocketMetricsFromConfig(metricsCfg)
-		mAPI := apimetrics.NewAPIMetricsFromConfig(metricsCfg)
-		mProviders := providermetrics.NewProviderMetricsFromConfig(metricsCfg)
+		mWebSocket := wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics)
+		mAPI := apimetrics.NewAPIMetricsFromConfig(cfg.Metrics)
+		mProviders := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
 		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], 0)
-		for _, p := range oracleCfg.Providers {
+		for _, p := range cfg.Providers {
 			switch {
 			case p.API.Enabled:
 				provider, err := apiProviderFromProviderConfig(logger, p, cps, mAPI, mProviders)

@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -18,31 +17,9 @@ const (
 	StatusLabel    = "status"
 )
 
-type Status int
-
-const (
-	StatusFailure Status = iota
-	StatusSuccess
-)
-
-func (s Status) String() string {
-	switch s {
-	case StatusFailure:
-		return "failure"
-	case StatusSuccess:
-		return "success"
-	default:
-		return "unknown"
-	}
-}
-
-func StatusFromError(err error) Status {
-	if err == nil {
-		return StatusSuccess
-	}
-	return StatusFailure
-}
-
+// Metrics defines an interface for instrumentation collection of the oracle. This interface
+// is used by the oracle client as well as the application.
+//
 //go:generate mockery --name Metrics --filename mock_metrics.go
 type Metrics interface {
 	// ObserveOracleResponseLatency records the time it took for the oracle to respond (this is a histogram)
@@ -64,12 +41,16 @@ type Metrics interface {
 	ObservePrepareProposalTime(duration time.Duration)
 }
 
-type nopMetricsImpl struct{}
-
-// NewNopMetrics returns a Metrics implementation that does nothing.
-func NewNopMetrics() Metrics {
-	return &nopMetricsImpl{}
+type metricsImpl struct {
+	oracleResponseLatency    prometheus.Histogram
+	oracleResponseCounter    *prometheus.CounterVec
+	voteIncludedInLastCommit *prometheus.CounterVec
+	tickerInclusionStatus    *prometheus.CounterVec
+	prepareProposalTime      prometheus.Histogram
+	processProposalTime      prometheus.Histogram
 }
+
+type nopMetricsImpl struct{}
 
 func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
 func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
@@ -126,13 +107,20 @@ func NewMetrics() Metrics {
 	return m
 }
 
-type metricsImpl struct {
-	oracleResponseLatency    prometheus.Histogram
-	oracleResponseCounter    *prometheus.CounterVec
-	voteIncludedInLastCommit *prometheus.CounterVec
-	tickerInclusionStatus    *prometheus.CounterVec
-	prepareProposalTime      prometheus.Histogram
-	processProposalTime      prometheus.Histogram
+// NewNopMetrics returns a Metrics implementation that does nothing.
+func NewNopMetrics() Metrics {
+	return &nopMetricsImpl{}
+}
+
+// NewMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
+// returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
+// If the metrics are not enabled, a nop implementation is returned.
+func NewMetricsFromConfig(cfg config.AppConfig) Metrics {
+	if !cfg.MetricsEnabled {
+		return NewNopMetrics()
+	}
+
+	return NewMetrics()
 }
 
 func (m *metricsImpl) ObserveProcessProposalTime(duration time.Duration) {
@@ -164,28 +152,4 @@ func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
 		TickerLabel:    ticker,
 		InclusionLabel: strconv.FormatBool(included),
 	}).Inc()
-}
-
-// NewServiceMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
-// returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
-// If the metrics are not enabled, a nop implementation is returned.
-func NewServiceMetricsFromConfig(cfg config.AppMetricsConfig) (Metrics, sdk.ConsAddress, error) {
-	if !cfg.Enabled {
-		return NewNopMetrics(), nil, nil
-	}
-
-	// ensure that the metrics are enabled
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, nil, err
-	}
-
-	// get the cons address
-	consAddress, err := cfg.ConsAddress()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// create the metrics
-	metrics := NewMetrics()
-	return metrics, consAddress, nil
 }

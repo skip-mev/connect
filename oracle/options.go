@@ -38,7 +38,7 @@ func WithMetrics(metrics metrics.Metrics) OracleOption {
 }
 
 // WithMetricsConfig sets the metrics on the oracle from the given config.
-func WithMetricsConfig(config config.OracleMetricsConfig) OracleOption {
+func WithMetricsConfig(config config.MetricsConfig) OracleOption {
 	return func(o *Oracle) {
 		o.metrics = metrics.NewMetricsFromConfig(config)
 	}
