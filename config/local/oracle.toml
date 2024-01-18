@@ -46,70 +46,12 @@ production = false
           Base = "SOLANA"
           Quote = "USD"
 
-[[providers]]
-  name = "coinbase"
-  [providers.api]
-    enabled = true
-    timeout = "500ms"
-    interval = "1s"
-    max_queries = 5
-    atomic = false
-    url = "https://api.coinbase.com/v2/prices/%s/spot"
-    name = "coinbase"
-  [providers.web_socket]
-    enabled = false
-    max_buffer_size = 0
-    reconnection_timeout = "0s"
-    wss = ""
-    name = ""
-  [providers.market_config]
-    name = "coinbase"
-    [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
-        ticker = "ATOM-USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
-          Base = "ATOM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "AVAX-USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
-          Base = "AVAX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
-        ticker = "BTC-USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
-          Base = "BITCOIN"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
-        ticker = "TIA-USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
-          Base = "CELESTIA"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "DYDX-USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
-          Base = "DYDX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
-        ticker = "ETH-BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "BITCOIN"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
-        ticker = "ETH-USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
-        ticker = "OSMO-USD"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
-          Base = "OSMOSIS"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
-        ticker = "SOL-USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
-          Base = "SOLANA"
-          Quote = "USD"
+name = "coinbase"
+path = "config/local/providers/coinbase.json"
+api.enabled = true
+api.timeout = "500ms"  # Replace "500ms" with your desired timeout duration.
+api.interval = "1s"  # Replace "1s" with your desired update interval duration.
+api.max_queries = 5  # Replace "5" with your desired maximum number of queries per update interval.
 
 [[providers]]
   name = "coingecko"
@@ -237,64 +179,28 @@ production = false
           Quote = "USD"
 
 [[providers]]
-  name = "okx"
-  [providers.api]
-    enabled = false
-    timeout = "0s"
-    interval = "0s"
-    max_queries = 0
-    atomic = false
-    url = ""
-    name = ""
-  [providers.web_socket]
-    enabled = true
-    max_buffer_size = 1000
-    reconnection_timeout = "10s"
-    wss = "wss://ws.okx.com:8443/ws/v5/public"
-    name = "okx"
-  [providers.market_config]
-    name = "okx"
-    [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
-        ticker = "ATOM-USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
-          Base = "ATOM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "AVAX-USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
-          Base = "AVAX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
-        ticker = "BTC-USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
-          Base = "BITCOIN"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
-        ticker = "TIA-USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
-          Base = "CELESTIA"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "DYDX-USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
-          Base = "DYDX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
-        ticker = "ETH-BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "BITCOIN"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
-        ticker = "ETH-USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
-        ticker = "SOL-USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
-          Base = "SOLANA"
-          Quote = "USD"
+name = "okx"
+path = "config/local/providers/okx.json"
+web_socket.enabled = true
+web_socket.max_buffer_size = 1000
+web_socket.reconnection_timeout = "10s"
+
+
+[[providers]]
+name = "binanceus"
+path = "config/local/providers/binanceus.json"
+api.enabled = true
+api.timeout = "500ms"
+api.interval = "1s"
+api.max_queries = 1 # Binance is atomic so it can fetch all prices in a single request.
+
+[[providers]]
+name = "kraken"
+path = "config/local/providers/kraken.json"
+web_socket.enabled = true
+web_socket.max_buffer_size = 1000  # Replace "1000" with your desired maximum buffer size.
+
+# Currency Pairs
 
 [[currency_pairs]]
   Base = "BITCOIN"

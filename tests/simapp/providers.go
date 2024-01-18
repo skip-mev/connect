@@ -21,6 +21,7 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -185,6 +186,8 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
+	case kraken.Name:
+		wsDataHandler, err = kraken.NewWebSocketDataHandlerFromConfig(logger, cfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
