@@ -3,12 +3,13 @@ package oracle
 import (
 	"math/big"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 // OracleOption is a function that can be used to configure an Oracle.

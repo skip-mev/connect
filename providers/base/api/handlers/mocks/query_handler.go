@@ -25,7 +25,8 @@ func (_m *QueryHandler[K, V]) Query(ctx context.Context, ids []K, responseCh cha
 func NewQueryHandler[K comparable, V interface{}](t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *QueryHandler[K, V] {
+},
+) *QueryHandler[K, V] {
 	mock := &QueryHandler[K, V]{}
 	mock.Mock.Test(t)
 

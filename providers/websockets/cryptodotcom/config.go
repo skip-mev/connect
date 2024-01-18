@@ -3,8 +3,9 @@ package cryptodotcom
 import (
 	"fmt"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/spf13/viper"
+
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // Config is the configuration for the Crypto.com provider. To access the available

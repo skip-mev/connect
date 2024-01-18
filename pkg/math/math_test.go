@@ -4,8 +4,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/pkg/math"
 )
 
 func TestMin(t *testing.T) {
