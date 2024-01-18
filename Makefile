@@ -35,7 +35,10 @@ run-prom-client:
 		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
 		prom/prometheus
 
-.PHONY: build run-oracle-server
+install:
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
+
+.PHONY: build run-oracle-server install
 
 ###############################################################################
 ##                                  Docker                                   ##

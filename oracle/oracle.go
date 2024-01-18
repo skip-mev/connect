@@ -197,7 +197,8 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 	timeFilteredPrices := make(map[oracletypes.CurrencyPair]*big.Int)
 	for pair, result := range prices {
 		// If the price is older than the update interval, skip it.
-		if diff := time.Since(result.Timestamp); diff > o.cfg.UpdateInterval {
+		diff := time.Now().UTC().Sub(result.Timestamp)
+		if diff > o.cfg.UpdateInterval {
 			o.logger.Debug(
 				"skipping price",
 				zap.String("provider", provider.Name()),
@@ -212,6 +213,7 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 			zap.String("provider", provider.Name()),
 			zap.String("pair", pair.String()),
 			zap.String("price", result.Value.String()),
+			zap.Duration("diff", diff),
 		)
 		timeFilteredPrices[pair] = result.Value
 	}

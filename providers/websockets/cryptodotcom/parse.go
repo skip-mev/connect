@@ -14,7 +14,7 @@ import (
 
 // parseInstrumentMessage is used to parse an instrument message received from the Crypto.com
 // web socket API. This message contains the latest price data for a set of instruments.
-func (h *CryptoWebSocketDataHandler) parseInstrumentMessage(
+func (h *WebSocketDataHandler) parseInstrumentMessage(
 	msg InstrumentResponseMessage,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
 	var (
