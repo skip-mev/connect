@@ -15,15 +15,25 @@ import (
 	"github.com/skip-mev/slinky/oracle/metrics"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	servicetypes "github.com/skip-mev/slinky/service/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ servicetypes.Oracle = (*Oracle)(nil)
+var _ Oracle = (*OracleImpl)(nil)
+
+// Oracle defines the expected interface for an oracle. It is consumed by the oracle server.
+//
+//go:generate mockery --name Oracle --filename mock_oracle.go
+type Oracle interface { // nolint
+	IsRunning() bool
+	GetLastSyncTime() time.Time
+	GetPrices() map[oracletypes.CurrencyPair]*big.Int
+	Start(ctx context.Context) error
+	Stop()
+}
 
 // Oracle implements the core component responsible for fetching exchange rates
 // for a given set of currency pairs and determining exchange rates.
-type Oracle struct {
+type OracleImpl struct { // nolint
 	// --------------------- General Config --------------------- //
 	mtx    sync.RWMutex
 	logger *zap.Logger
@@ -69,12 +79,12 @@ type Oracle struct {
 func New(
 	cfg config.OracleConfig,
 	opts ...OracleOption,
-) (*Oracle, error) {
+) (*OracleImpl, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid oracle config: %w", err)
 	}
 
-	o := &Oracle{
+	o := &OracleImpl{
 		closer:  ssync.NewCloser(),
 		cfg:     cfg,
 		logger:  zap.NewNop(),
@@ -94,14 +104,14 @@ func New(
 }
 
 // IsRunning returns true if the oracle is running.
-func (o *Oracle) IsRunning() bool {
+func (o *OracleImpl) IsRunning() bool {
 	return o.running.Load()
 }
 
 // Start starts the (blocking) oracle process. It will return when the context
 // is cancelled or the oracle is stopped. The oracle will fetch prices from each
 // provider concurrently every oracleTicker interval.
-func (o *Oracle) Start(ctx context.Context) error {
+func (o *OracleImpl) Start(ctx context.Context) error {
 	o.logger.Info("starting oracle")
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -134,7 +144,7 @@ func (o *Oracle) Start(ctx context.Context) error {
 }
 
 // Stop stops the oracle process and waits for it to gracefully exit.
-func (o *Oracle) Stop() {
+func (o *OracleImpl) Stop() {
 	o.logger.Info("stopping oracle")
 
 	o.closer.Close()
@@ -147,7 +157,7 @@ func (o *Oracle) Stop() {
 
 // tick executes a single oracle tick. It fetches prices from each provider's
 // cache and computes the aggregated price for each currency pair.
-func (o *Oracle) tick() {
+func (o *OracleImpl) tick() {
 	o.logger.Info("starting oracle tick")
 
 	defer func() {
@@ -178,7 +188,7 @@ func (o *Oracle) tick() {
 
 // fetchPrices retrieves the latest prices from a given provider and updates the aggregator
 // iff the price age is less than the update interval.
-func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.CurrencyPair, *big.Int]) {
+func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.CurrencyPair, *big.Int]) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("provider panicked", zap.Error(fmt.Errorf("%v", r)))
@@ -223,7 +233,7 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 }
 
 // GetLastSyncTime returns the last time the oracle successfully updated prices.
-func (o *Oracle) GetLastSyncTime() time.Time {
+func (o *OracleImpl) GetLastSyncTime() time.Time {
 	o.mtx.RLock()
 	defer o.mtx.RUnlock()
 
@@ -231,7 +241,7 @@ func (o *Oracle) GetLastSyncTime() time.Time {
 }
 
 // setLastSyncTime sets the last time the oracle successfully updated prices.
-func (o *Oracle) setLastSyncTime(t time.Time) {
+func (o *OracleImpl) setLastSyncTime(t time.Time) {
 	o.mtx.Lock()
 	defer o.mtx.Unlock()
 
@@ -239,6 +249,6 @@ func (o *Oracle) setLastSyncTime(t time.Time) {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *Oracle) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
+func (o *OracleImpl) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
 	return o.priceAggregator.GetAggregatedData()
 }

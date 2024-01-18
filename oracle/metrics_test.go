@@ -27,7 +27,7 @@ type OracleMetricsTestSuite struct {
 	// mock metrics
 	mockMetrics *metric_mocks.Metrics
 
-	o *oracle.Oracle
+	o oracle.Oracle
 }
 
 const (
@@ -52,10 +52,7 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	s.mockMetrics = metric_mocks.NewMetrics(s.T())
 
 	oracleConfig := config.OracleConfig{
-		InProcess:      true,
-		RemoteAddress:  "",
 		UpdateInterval: oracleTicker,
-		ClientTimeout:  5 * time.Second,
 	}
 
 	var err error

@@ -1,7 +1,6 @@
 package simapp
 
 import (
-	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -69,10 +68,9 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	oracleservice "github.com/skip-mev/slinky/service"
-	oracleclient "github.com/skip-mev/slinky/service/client"
+	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	"github.com/skip-mev/slinky/x/alerts"
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
@@ -158,8 +156,8 @@ type SimApp struct {
 	sm *module.SimulationManager
 
 	// processes
-	oraclePrometheusServer *oraclemetrics.PrometheusServer
-	oracleClient           oracleservice.OracleService
+	oraclePrometheusServer *promserver.PrometheusServer
+	oracleClient           oracleclient.OracleClient
 }
 
 func init() {
@@ -303,7 +301,7 @@ func NewSimApp(
 			panic(err)
 		}
 
-		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
+		app.oraclePrometheusServer, err = promserver.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
 		if err != nil {
 			panic(err)
 		}
@@ -314,7 +312,7 @@ func NewSimApp(
 
 	// start the oracle service
 	go func() {
-		if err := app.oracleClient.Start(context.Background()); err != nil {
+		if err := app.oracleClient.Start(); err != nil {
 			panic(err)
 		}
 	}()
@@ -447,7 +445,7 @@ func (app *SimApp) Close() error {
 
 	// close the oracle service
 	if app.oracleClient != nil {
-		app.oracleClient.Stop(context.Background()) // TODO(): is this the right context?
+		app.oracleClient.Stop()
 	}
 
 	// close the prometheus server if necessary

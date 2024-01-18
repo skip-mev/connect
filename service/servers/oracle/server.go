@@ -1,4 +1,4 @@
-package server
+package oracle
 
 import (
 	"context"
@@ -9,18 +9,22 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
+	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/pkg/sync"
-	"github.com/skip-mev/slinky/service"
-	servicetypes "github.com/skip-mev/slinky/service/types"
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
+)
+
+const (
+	Transport = "tcp"
 )
 
 // OracleServer is the base implementation of the service.OracleServer interface, this is meant to
 // serve requests from a remote OracleClient
 type OracleServer struct {
-	service.UnimplementedOracleServer
+	types.UnimplementedOracleServer
 
 	// expected implementation of the oracle
-	o servicetypes.Oracle
+	o oracle.Oracle
 
 	// underlying grpc-server
 	srv *grpc.Server
@@ -33,7 +37,7 @@ type OracleServer struct {
 }
 
 // NewOracleServer returns a new instance of the OracleServer, given an implementation of the Oracle interface.
-func NewOracleServer(o servicetypes.Oracle, logger *zap.Logger) *OracleServer {
+func NewOracleServer(o oracle.Oracle, logger *zap.Logger) *OracleServer {
 	logger = logger.With(zap.String("server", "oracle"))
 
 	os := &OracleServer{
@@ -58,10 +62,10 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 	os.srv = grpc.NewServer()
 
 	// register oracle server
-	service.RegisterOracleServer(os.srv, os)
+	types.RegisterOracleServer(os.srv, os)
 
 	// create listener
-	listener, err := net.Listen(servicetypes.Transport, fmt.Sprintf("%s:%s", host, port))
+	listener, err := net.Listen(Transport, fmt.Sprintf("%s:%s", host, port))
 	if err != nil {
 		return fmt.Errorf("[grpc server]: error creating listener: %v", err)
 	}
@@ -108,10 +112,10 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 
 // Prices calls the underlying oracle's implementation of GetPrices. It defers to the ctx in the request, and errors if the context is cancelled
 // for any reason, or if the oracle errors
-func (os *OracleServer) Prices(ctx context.Context, req *service.QueryPricesRequest) (*service.QueryPricesResponse, error) {
+func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesRequest) (*types.QueryPricesResponse, error) {
 	// check that the request is non-nil
 	if req == nil {
-		return nil, servicetypes.ErrorNilRequest
+		return nil, ErrNilRequest
 	}
 
 	os.logger.Info("received request for prices")
@@ -119,10 +123,10 @@ func (os *OracleServer) Prices(ctx context.Context, req *service.QueryPricesRequ
 	// check that oracle is running
 	if !os.o.IsRunning() {
 		os.logger.Error("oracle not running")
-		return nil, servicetypes.ErrorOracleNotRunning
+		return nil, ErrOracleNotRunning
 	}
 
-	resCh := make(chan *service.QueryPricesResponse)
+	resCh := make(chan *types.QueryPricesResponse)
 
 	// run the request in a goroutine, to unblock server + ctx cancellation
 	go func() {
@@ -132,8 +136,8 @@ func (os *OracleServer) Prices(ctx context.Context, req *service.QueryPricesRequ
 		// get the latest timestamp of the latest update from the oracle
 		timestamp := os.o.GetLastSyncTime()
 
-		resCh <- &service.QueryPricesResponse{
-			Prices:    servicetypes.ToReqPrices(prices),
+		resCh <- &types.QueryPricesResponse{
+			Prices:    ToReqPrices(prices),
 			Timestamp: timestamp,
 		}
 	}()

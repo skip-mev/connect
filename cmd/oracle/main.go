@@ -13,8 +13,8 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/service/server"
+	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
+	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	"github.com/skip-mev/slinky/tests/simapp"
 )
 
@@ -81,7 +81,7 @@ func main() {
 	}
 
 	// create server
-	srv := server.NewOracleServer(oracle, logger)
+	srv := oracleserver.NewOracleServer(oracle, logger)
 
 	// cancel oracle on interrupt or terminate
 	go func() {
@@ -96,7 +96,7 @@ func main() {
 	// start prometheus metrics
 	if cfg.Metrics.Enabled {
 		logger.Info("starting prometheus metrics", zap.String("address", cfg.Metrics.PrometheusServerAddress))
-		ps, err := oraclemetrics.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, logger)
+		ps, err := promserver.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, logger)
 		if err != nil {
 			logger.Error("failed to start prometheus metrics", zap.Error(err))
 			return

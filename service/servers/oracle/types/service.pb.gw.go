@@ -2,11 +2,11 @@
 // source: slinky/service/v1/service.proto
 
 /*
-Package service is a reverse proxy.
+Package types is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package service
+package types
 
 import (
 	"context"

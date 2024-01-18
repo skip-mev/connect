@@ -1,4 +1,4 @@
-package server_test
+package oracle_test
 
 import (
 	"context"
@@ -12,12 +12,11 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
 
-	"github.com/skip-mev/slinky/service"
-	"github.com/skip-mev/slinky/service/client"
-	"github.com/skip-mev/slinky/service/server"
-	stypes "github.com/skip-mev/slinky/service/types"
-	"github.com/skip-mev/slinky/service/types/mocks"
-	"github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/oracle/mocks"
+	client "github.com/skip-mev/slinky/service/clients/oracle"
+	server "github.com/skip-mev/slinky/service/servers/oracle"
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -33,7 +32,7 @@ type ServerTestSuite struct {
 
 	srv        *server.OracleServer
 	mockOracle *mocks.Oracle
-	client     *client.GRPCClient
+	client     client.OracleClient
 	ctx        context.Context
 	cancel     context.CancelFunc
 }
@@ -58,7 +57,7 @@ func (s *ServerTestSuite) SetupTest() {
 
 	// start server + client w/ context
 	go s.srv.StartServer(s.ctx, localhost, port)
-	s.Require().NoError(s.client.Start(context.Background()))
+	s.Require().NoError(s.client.Start())
 }
 
 // teardown test suite
@@ -75,7 +74,7 @@ func (s *ServerTestSuite) TearDownTest() {
 	}
 
 	// close client
-	s.Require().NoError(s.client.Stop(context.Background()))
+	s.Require().NoError(s.client.Stop())
 }
 
 func (s *ServerTestSuite) TestOracleServerNotRunning() {
@@ -83,10 +82,10 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 	s.mockOracle.On("IsRunning").Return(false)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect oracle not running error
-	s.Require().Equal(err.Error(), grpcErrPrefix+stypes.ErrorOracleNotRunning.Error())
+	s.Require().Equal(err.Error(), grpcErrPrefix+server.ErrOracleNotRunning.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {
@@ -95,7 +94,7 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 	s.mockOracle.On("GetPrices").Return(nil).After(delay)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect deadline exceeded error
 	s.Require().Equal(err.Error(), status.FromContextError(context.DeadlineExceeded).Err().Error())
@@ -104,17 +103,17 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
-	cp1 := types.CurrencyPair{
+	cp1 := oracletypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
 
-	cp2 := types.CurrencyPair{
+	cp2 := oracletypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
+	s.mockOracle.On("GetPrices").Return(map[oracletypes.CurrencyPair]*big.Int{
 		cp1: big.NewInt(100),
 		cp2: big.NewInt(200),
 	})
@@ -122,7 +121,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
 
 	// call from client
-	resp, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	resp, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 	s.Require().NoError(err)
 
 	// check response
@@ -145,7 +144,7 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 	}
 
 	// expect requests to server to timeout
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect request to have failed (connection is closed)
 	s.Require().NotNil(err)
