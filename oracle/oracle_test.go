@@ -33,8 +33,9 @@ var (
 		Path: "testpath2",
 		Name: "websocket1",
 		WebSocket: config.WebSocketConfig{
-			MaxBufferSize: 10,
-			Enabled:       true,
+			MaxBufferSize:       10,
+			Enabled:             true,
+			ReconnectionTimeout: 250 * time.Millisecond,
 		},
 	}
 )

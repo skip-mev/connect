@@ -43,8 +43,9 @@ var (
 		Name: "websocket",
 		Path: "test",
 		WebSocket: config.WebSocketConfig{
-			Enabled:       true,
-			MaxBufferSize: 10,
+			Enabled:             true,
+			MaxBufferSize:       10,
+			ReconnectionTimeout: time.Millisecond * 200,
 		},
 	}
 	pairs = []oracletypes.CurrencyPair{
@@ -109,7 +110,7 @@ func TestStart(t *testing.T) {
 		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
 			<-ctx.Done()
 			return ctx.Err()
-		}())
+		}()).Maybe()
 
 		provider, err := base.NewProvider(
 			wsConfig,
@@ -131,7 +132,7 @@ func TestStart(t *testing.T) {
 		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
 			<-ctx.Done()
 			return ctx.Err()
-		}())
+		}()).Maybe()
 
 		provider, err := base.NewProvider(
 			wsConfig,
@@ -285,6 +286,20 @@ func TestWebSocketProvider(t *testing.T) {
 					logger,
 					responses,
 				)
+			},
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
+		},
+		{
+			name: "continues restarting if the query handler returns",
+			handler: func() wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				handler := wshandlermocks.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+				handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("no gib price updates")).Maybe()
+
+				return handler
 			},
 			pairs: []oracletypes.CurrencyPair{
 				pairs[0],

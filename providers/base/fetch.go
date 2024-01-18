@@ -101,15 +101,24 @@ func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context, responseCh c
 
 // startWebSocket starts a connection to the web socket and handles the incoming messages.
 func (p *BaseProvider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
-	p.logger.Debug("starting web socket query handler")
+	// Start the web socket query handler. If the connection fails to start, then the query handler
+	// will be restarted after a timeout.
+	for {
+		select {
+		case <-ctx.Done():
+			p.logger.Info("provider stopped via context")
+			return ctx.Err()
+		default:
+			p.logger.Debug("starting web socket query handler")
+			if err := p.ws.Start(ctx, p.ids, responseCh); err != nil {
+				p.logger.Error("web socket query handler returned error", zap.Error(err))
+			}
 
-	if err := p.ws.Start(ctx, p.ids, responseCh); err != nil {
-		p.logger.Error("web socket query handler returned error", zap.Error(err))
-		return err
+			// If the web socket query handler returns, then the connection was closed. Wait for
+			// a bit before trying to reconnect.
+			time.Sleep(p.cfg.WebSocket.ReconnectionTimeout)
+		}
 	}
-
-	p.logger.Debug("web socket query handler finished")
-	return nil
 }
 
 // recv receives responses from the response channel and updates the data.
