@@ -44,6 +44,15 @@ name = "crypto_dot_com"
 path = "config/local/providers/crypto_dot_com.json"
 web_socket.enabled = true
 web_socket.max_buffer_size = 1000  # Replace "1000" with your desired maximum buffer size.
+web_socket.reconnection_timeout = "5s"  # Replace "5s" with your desired reconnection timeout duration.
+
+[[providers]]
+name = "okx"
+path = "config/local/providers/okx.json"
+web_socket.enabled = true
+web_socket.max_buffer_size = 1000
+web_socket.reconnection_timeout = "10s"
+
 
 [[providers]]
 name = "binanceus"
