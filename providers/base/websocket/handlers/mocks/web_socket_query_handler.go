@@ -34,7 +34,8 @@ func (_m *WebSocketQueryHandler[K, V]) Start(ctx context.Context, ids []K, respo
 func NewWebSocketQueryHandler[K comparable, V interface{}](t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *WebSocketQueryHandler[K, V] {
+},
+) *WebSocketQueryHandler[K, V] {
 	mock := &WebSocketQueryHandler[K, V]{}
 	mock.Mock.Test(t)
 

@@ -8,11 +8,12 @@ import (
 	"time"
 
 	"github.com/alecthomas/assert/v2"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 var (

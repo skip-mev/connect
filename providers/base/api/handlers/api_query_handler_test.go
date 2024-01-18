@@ -11,6 +11,9 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
@@ -18,8 +21,6 @@ import (
 	mockmetrics "github.com/skip-mev/slinky/providers/base/api/metrics/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 var (

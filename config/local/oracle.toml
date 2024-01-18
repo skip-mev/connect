@@ -54,6 +54,14 @@ web_socket.max_buffer_size = 1000
 web_socket.reconnection_timeout = "10s"
 
 
+[[providers]]
+name = "binanceus"
+path = "config/local/providers/binanceus.json"
+api.enabled = true
+api.timeout = "500ms"
+api.interval = "1s"
+api.max_queries = 1 # Binance is atomic so it can fetch all prices in a single request.
+
 # Currency Pairs
 
 [[currency_pairs]]

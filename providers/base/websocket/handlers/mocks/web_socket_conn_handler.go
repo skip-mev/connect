@@ -82,7 +82,8 @@ func (_m *WebSocketConnHandler) Write(message []byte) error {
 func NewWebSocketConnHandler(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *WebSocketConnHandler {
+},
+) *WebSocketConnHandler {
 	mock := &WebSocketConnHandler{}
 	mock.Mock.Test(t)
 
