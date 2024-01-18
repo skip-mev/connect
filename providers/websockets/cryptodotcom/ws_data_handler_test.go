@@ -362,7 +362,7 @@ func TestCreateMessage(t *testing.T) {
 			expectedBz, err := json.Marshal(tc.msg)
 			require.NoError(t, err)
 			require.Equal(t, 1, len(msgs))
-			require.Equal(t, expectedBz, msgs[0])
+			require.EqualValues(t, expectedBz, msgs[0])
 		})
 	}
 }

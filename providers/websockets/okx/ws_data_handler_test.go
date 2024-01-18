@@ -6,11 +6,12 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 var (
@@ -420,7 +421,7 @@ func TestCreateMessage(t *testing.T) {
 			}
 
 			require.Equal(t, 1, len(msgs))
-			require.Equal(t, tc.expected(), msgs[0])
+			require.EqualValues(t, tc.expected(), msgs[0])
 		})
 	}
 }

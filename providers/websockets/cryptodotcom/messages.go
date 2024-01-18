@@ -3,6 +3,7 @@ package cryptodotcom
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
