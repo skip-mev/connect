@@ -131,12 +131,12 @@ func (h *WebsocketDataHandler) HandleMessage(
 	}
 }
 
-// CreateMessage is used to create a an initial subsciption message to send to the data provider.
+// CreateMessages is used to create a an initial subscription message to send to the data provider.
 // Only the currency pairs that are specified in the config are subscribed to. The only channel
 // that is subscribed to is the index tickers channel - which supports spot markets.
-func (h *WebsocketDataHandler) CreateMessage(
+func (h *WebsocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]SubscriptionTopic, 0)
 
 	for _, cp := range cps {

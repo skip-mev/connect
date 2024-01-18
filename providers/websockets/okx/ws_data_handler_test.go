@@ -413,12 +413,14 @@ func TestCreateMessage(t *testing.T) {
 			handler, err := okx.NewWebSocketDataHandler(logger, config)
 			require.NoError(t, err)
 
-			message, err := handler.CreateMessage(tc.cps)
+			msgs, err := handler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
 			}
-			require.Equal(t, tc.expected(), message)
+
+			require.Equal(t, 1, len(msgs))
+			require.Equal(t, tc.expected(), msgs[0])
 		})
 	}
 }

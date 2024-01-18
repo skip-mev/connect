@@ -3,6 +3,7 @@ package okx
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
 type (
@@ -91,17 +92,19 @@ type SubscriptionTopic struct {
 // to the tickers channel.
 func NewSubscribeToTickersRequestMessage(
 	instruments []SubscriptionTopic,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(instruments) == 0 {
 		return nil, fmt.Errorf("instruments cannot be empty")
 	}
 
-	return json.Marshal(
+	bz, err := json.Marshal(
 		SubscribeRequestMessage{
 			Operation: string(OperationSubscribe),
 			Arguments: instruments,
 		},
 	)
+
+	return []handlers.WebsocketEncodedMessage{bz}, err
 }
 
 // SubscribeResponseMessage is the response message for subscribing to a channel. The

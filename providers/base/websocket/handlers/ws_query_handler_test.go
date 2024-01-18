@@ -86,7 +86,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				dataHandler.On("Name").Return(name).Maybe()
 				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return(nil, fmt.Errorf("no rizz alert")).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return(nil, fmt.Errorf("no rizz alert")).Once()
 
 				return dataHandler
 			},

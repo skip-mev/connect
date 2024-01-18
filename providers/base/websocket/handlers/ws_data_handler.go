@@ -17,9 +17,9 @@ type WebSocketDataHandler[K comparable, V any] interface {
 	// the handler should either return a response or an update message.
 	HandleMessage(message []byte) (response providertypes.GetResponse[K, V], updateMessage []byte, err error)
 
-	// CreateMessage is used to update the connection to the data provider. This can be used to subscribe
+	// CreateMessages is used to update the connection to the data provider. This can be used to subscribe
 	// to new events or unsubscribe from events.
-	CreateMessage(ids []K) ([]byte, error)
+	CreateMessages(ids []K) ([]WebsocketEncodedMessage, error)
 
 	// Name is used to get the name of the data provider.
 	Name() string

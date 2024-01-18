@@ -134,21 +134,24 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 
 	// Create the initial set of events that the channel will subscribe to.
 	h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.DialSuccess)
-	message, err := h.dataHandler.CreateMessage(h.ids)
+	messages, err := h.dataHandler.CreateMessages(h.ids)
 	if err != nil {
 		h.logger.Error("failed to create subscription messages", zap.Error(err))
 		h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.CreateMessageErr)
 		return errors.ErrCreateMessageWithErr(err)
 	}
 
-	h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
 	h.metrics.AddWebSocketDataHandlerStatus(h.dataHandler.Name(), metrics.CreateMessageSuccess)
 
-	// Send the initial payload to the data provider.
-	if err := h.connHandler.Write(message); err != nil {
-		h.logger.Error("failed to write message to web socket connection handler", zap.Error(err))
-		h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteErr)
-		return errors.ErrWriteWithErr(err)
+	for _, message := range messages {
+		h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
+
+		// Send the initial payload to the data provider.
+		if err := h.connHandler.Write(message); err != nil {
+			h.logger.Error("failed to write message to web socket connection handler", zap.Error(err))
+			h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteErr)
+			return errors.ErrWriteWithErr(err)
+		}
 	}
 
 	h.logger.Debug("initial payload sent; web socket connection successfully started")
