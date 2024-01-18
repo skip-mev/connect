@@ -4,7 +4,7 @@
 
 The Base Provider Metrics package provides a set of metrics that will be implemented by default for all providers that inherit from the Base Provider. These metrics are intended to be used to get insight into how often providers are successfully updating the data they are responsible for managing.
 
-## API Metrics
+## Provider Metrics
 
 The following metrics are provided by the Base Provider Metrics package:
 

@@ -69,7 +69,7 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 		}
 	default:
 		h.logger.Debug("received unknown event", zap.String("event", string(event)))
-		return nil, fmt.Errorf("recieved unknown event %s", event)
+		return nil, fmt.Errorf("received unknown event %s", event)
 	}
 }
 
@@ -93,6 +93,7 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 	}
 
 	// Get the currency pair from the instrument.
+	h.logger.Debug("received price update", zap.String("instrument", resp.Pair))
 	cp, ok := h.config.ReverseCache[resp.Pair]
 	if !ok {
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),

@@ -185,20 +185,12 @@ web_socket.enabled = true
 web_socket.max_buffer_size = 1000
 web_socket.reconnection_timeout = "10s"
 
-
-[[providers]]
-name = "binanceus"
-path = "config/local/providers/binanceus.json"
-api.enabled = true
-api.timeout = "500ms"
-api.interval = "1s"
-api.max_queries = 1 # Binance is atomic so it can fetch all prices in a single request.
-
 [[providers]]
 name = "kraken"
 path = "config/local/providers/kraken.json"
 web_socket.enabled = true
 web_socket.max_buffer_size = 1000  # Replace "1000" with your desired maximum buffer size.
+web_socket.reconnection_timeout = "10s"
 
 # Currency Pairs
 

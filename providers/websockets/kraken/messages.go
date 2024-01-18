@@ -319,32 +319,8 @@ const (
 
 // TickerData is the ticker data.
 type TickerData struct {
-	// // Ask is the best ask price.
-	// Ask []string `json:"a"`
-
-	// // Bid is the best bid price.
-	// Bid []string `json:"b"`
-
-	// // Close is the price and lot volume of the last trade.
-	// Close []string `json:"c"`
-
-	// // High is the today's and last 24 hours' high price.
-	// High []string `json:"h"`
-
-	// // Low is the today's and last 24 hours' low price.
-	// Low []string `json:"l"`
-
-	// // Open is the today's and last 24 hours' open price.
-	// Open []string `json:"o"`
-
 	// VolumeWeightedAveragePrice is the volume weighted average price.
 	VolumeWeightedAveragePrice []string `json:"p"`
-
-	// // NumberOfTrades is the number of trades.
-	// NumberOfTrades []int `json:"t"`
-
-	// // Volume is the volume.
-	// Volume []string `json:"v"`
 }
 
 const (
