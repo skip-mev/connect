@@ -12,7 +12,7 @@ require (
 	cosmossdk.io/log v1.2.1
 	cosmossdk.io/math v1.2.0
 	cosmossdk.io/store v1.0.1
-	cosmossdk.io/tools/confix v0.0.0-20230608151552-9b9e319d1abc
+	cosmossdk.io/tools/confix v0.1.1
 	cosmossdk.io/x/circuit v0.0.0-20230726190121-58855c685902
 	cosmossdk.io/x/tx v0.12.0
 	cosmossdk.io/x/upgrade v0.1.1
