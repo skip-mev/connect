@@ -1,11 +1,13 @@
 package keeper_test
 
 import (
-	"github.com/stretchr/testify/mock"
 	"time"
+
+	"github.com/stretchr/testify/mock"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )

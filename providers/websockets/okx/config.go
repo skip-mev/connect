@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/spf13/viper"
+
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type Config struct {

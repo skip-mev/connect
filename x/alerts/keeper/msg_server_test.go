@@ -2,9 +2,10 @@ package keeper_test
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/mock"
 	"math/big"
 	"time"
+
+	"github.com/stretchr/testify/mock"
 
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"

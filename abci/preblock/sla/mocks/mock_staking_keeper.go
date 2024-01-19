@@ -46,7 +46,8 @@ func (_m *StakingKeeper) GetBondedValidatorsByPower(ctx context.Context) ([]type
 func NewStakingKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *StakingKeeper {
+},
+) *StakingKeeper {
 	mock := &StakingKeeper{}
 	mock.Mock.Test(t)
 

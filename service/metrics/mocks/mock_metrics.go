@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	metrics "github.com/skip-mev/slinky/service/metrics"
 	mock "github.com/stretchr/testify/mock"
+
+	metrics "github.com/skip-mev/slinky/service/metrics"
 
 	time "time"
 )
@@ -49,7 +50,8 @@ func (_m *Metrics) ObserveProcessProposalTime(duration time.Duration) {
 func NewMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Metrics {
+},
+) *Metrics {
 	mock := &Metrics{}
 	mock.Mock.Test(t)
 

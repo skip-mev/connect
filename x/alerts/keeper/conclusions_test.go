@@ -6,11 +6,12 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func (s *KeeperTestSuite) TestConcludeAlert() {

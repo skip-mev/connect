@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	keeper "github.com/skip-mev/slinky/x/sla/keeper"
 	mock "github.com/stretchr/testify/mock"
+
+	keeper "github.com/skip-mev/slinky/x/sla/keeper"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -33,7 +34,8 @@ func (_m *Keeper) UpdatePriceFeeds(ctx types.Context, updates keeper.PriceFeedUp
 func NewKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Keeper {
+},
+) *Keeper {
 	mock := &Keeper{}
 	mock.Mock.Test(t)
 
