@@ -22,7 +22,7 @@ COVER_FILE ?= cover.out
 build:
 	go build -o ./build/ ./...
 
-run-oracle-server: build
+run-oracle-server: build update-local-config
 	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE}
 
 run-oracle-client: build

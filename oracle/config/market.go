@@ -42,6 +42,13 @@ type InvertedCurrencyPairMarketConfig struct {
 	MarketToCurrencyPairConfigs map[string]CurrencyPairMarketConfig
 }
 
+// NewMarketConfig returns a new MarketConfig instance.
+func NewMarketConfig() MarketConfig {
+	return MarketConfig{
+		CurrencyPairToMarketConfigs: make(map[string]CurrencyPairMarketConfig),
+	}
+}
+
 // Invert returns the inverted currency pair market config. This is used to
 // create the inverse currency pair market config for the provider.
 func (c *MarketConfig) Invert() InvertedCurrencyPairMarketConfig {
@@ -62,14 +69,19 @@ func (c *MarketConfig) ValidateBasic() error {
 		return fmt.Errorf("name cannot be empty")
 	}
 
-	for cp, marketConfig := range c.CurrencyPairToMarketConfigs {
-		if _, err := oracletypes.CurrencyPairFromString(cp); err != nil {
+	for cpStr, marketConfig := range c.CurrencyPairToMarketConfigs {
+		cp, err := oracletypes.CurrencyPairFromString(cpStr)
+		if err != nil {
 			return fmt.Errorf("currency pair is not formatted correctly %w", err)
 		}
 
 		if err := marketConfig.ValidateBasic(); err != nil {
 			return fmt.Errorf("market config is not formatted correctly %w", err)
 		}
+
+		// Update the correctly formatted currency pair string.
+		delete(c.CurrencyPairToMarketConfigs, cpStr)
+		c.CurrencyPairToMarketConfigs[cp.ToString()] = marketConfig
 	}
 
 	return nil

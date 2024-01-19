@@ -2,6 +2,49 @@ update_interval = "1s"
 production = false
 
 [[providers]]
+  name = "binance"
+  [providers.api]
+    enabled = true
+    timeout = "500ms"
+    interval = "1s"
+    max_queries = 1
+    atomic = true
+    url = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s"
+  [providers.web_socket]
+    enabled = false
+    max_buffer_size = 0
+    reconnection_timeout = "0s"
+    wss = ""
+  [providers.market_config]
+    name = "binance"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOMUSDT"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "BTCUSDT"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ETHBTC"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETHUSDT"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOLUSDT"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
   name = "coinbase"
   [providers.api]
     enabled = true
@@ -9,6 +52,7 @@ production = false
     interval = "1s"
     max_queries = 5
     atomic = false
+    url = "https://api.coinbase.com/v2/prices/%s/spot"
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
@@ -64,63 +108,64 @@ production = false
           Quote = "USD"
 
 [[providers]]
-  name = "binanceus"
+  name = "coingecko"
   [providers.api]
     enabled = true
     timeout = "500ms"
-    interval = "1s"
+    interval = "15s"
     max_queries = 1
     atomic = true
+    url = "https://api.coingecko.com/api/v3"
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
     reconnection_timeout = "0s"
     wss = ""
   [providers.market_config]
-    name = "binanceus"
+    name = "coingecko"
     [providers.market_config.currency_pair_to_market_configs]
       [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
-        ticker = "ATOMUSDT"
+        ticker = "cosmos/usd"
         [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "AVAXUSDT"
+        ticker = "avalanche/usd"
         [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
-        ticker = "BTCUSDT"
+        ticker = "bitcoin/usd"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
-        ticker = "TIAUSDT"
+        ticker = "celestia/usd"
         [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "DYDXUSDT"
+        ticker = "dydx-chain/usd"
         [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
-        ticker = "ETHBTC"
+        ticker = "ethereum/btc"
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
-        ticker = "ETHUSDT"
+        ticker = "ethereum/usd"
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
-        ticker = "OSMOUSDT"
+        ticker = "osmosis/usd"
         [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
-        ticker = "SOLUSDT"
+        ticker = "solana/usd"
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
@@ -133,6 +178,7 @@ production = false
     interval = "0s"
     max_queries = 0
     atomic = false
+    url = ""
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1000
@@ -177,7 +223,7 @@ production = false
           Base = "ETHEREUM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
-        ticker = "OSMOUSD-PERP"
+        ticker = "OSMO_USD"
         [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
@@ -195,6 +241,7 @@ production = false
     interval = "0s"
     max_queries = 0
     atomic = false
+    url = ""
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1000

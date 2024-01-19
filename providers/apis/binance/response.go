@@ -5,9 +5,14 @@ package binance
 // API does not require a subscription to use (i.e. No API key is required).
 
 const (
-	// BaseURL is the base URL of the Binance API. This includes the base and quote
+	// URL is the base URL of the Binance API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
-	BaseURL      = "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s"
+	URL = "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s"
+
+	// US_URL is the base URL of the Binance US API. This includes the base and quote
+	// currency pairs that need to be inserted into the URL.
+	US_URL = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s"
+
 	Quotation    = "%22"
 	Separator    = ","
 	LeftBracket  = "%5B"

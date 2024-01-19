@@ -174,6 +174,8 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 			return nil
 		}
 
+		h.logger.Debug("created url", zap.String("url", url))
+
 		// Make the request.
 		resp, err := h.requestHandler.Do(ctx, url)
 		if err != nil {

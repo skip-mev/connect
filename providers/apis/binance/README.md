@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Binance provider is used to fetch the spot price for cryptocurrencies from the [Binance API](https://binance-docs.github.io/apidocs/spot/en/#general-info).
+The Binance provider is used to fetch the spot price for cryptocurrencies from the [Binance API](https://binance-docs.github.io/apidocs/spot/en/#general-info). Note that only supported markets can be added to this provider's market configurations, otherwise all requests will fail. To see all of the supported markets please visit ,.....
 
 ## Configuration
 

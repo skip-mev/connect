@@ -27,14 +27,43 @@ var (
 			Timeout:    time.Second,
 			Interval:   time.Second,
 			MaxQueries: 1,
+			URL:        binance.URL,
 		},
-		CurrencyPairConfig: config.CurrencyPairConfig{
-			BaseOffChain: map[string]string{
-				"BITCOIN": "BTC",
-				"BINANCE": "BNB",
+		MarketConfig: config.MarketConfig{
+			Name: binance.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USDT": {
+					Ticker:       "BTCUSDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				},
+				"BINANCE/USDT": {
+					Ticker:       "BNBUSDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+				},
 			},
-			QuoteOffChain: map[string]string{
-				"USDT": "USDT",
+		},
+	}
+
+	providerCfgUS = config.ProviderConfig{
+		Name: binance.Name,
+		API: config.APIConfig{
+			Enabled:    true,
+			Timeout:    time.Second,
+			Interval:   time.Second,
+			MaxQueries: 1,
+			URL:        binance.US_URL,
+		},
+		MarketConfig: config.MarketConfig{
+			Name: binance.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USDT": {
+					Ticker:       "BTCUSDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				},
+				"BINANCE/USDT": {
+					Ticker:       "BNBUSDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+				},
 			},
 		},
 	}
@@ -84,10 +113,66 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := binance.APIHandler{
-				ProviderConfig: providerCfg,
-				BaseURL:        binance.BaseURL,
+			h, err := binance.NewBinanceAPIHandler(providerCfg)
+			require.NoError(t, err)
+
+			url, err := h.CreateURL(tc.cps)
+			if tc.expectedErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.url, url)
 			}
+		})
+	}
+}
+
+func TestCreateURL_US(t *testing.T) {
+	testCases := []struct {
+		name        string
+		cps         []oracletypes.CurrencyPair
+		url         string
+		expectedErr bool
+	}{
+		{
+			name: "valid single",
+			cps: []oracletypes.CurrencyPair{
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+			},
+			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
+			expectedErr: false,
+		},
+		{
+			name: "valid multiple",
+			cps: []oracletypes.CurrencyPair{
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+			},
+			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22BNBUSDT%22%5D",
+			expectedErr: false,
+		},
+		{
+			name: "unknown base currency",
+			cps: []oracletypes.CurrencyPair{
+				oracletypes.NewCurrencyPair("MOG", "USD"),
+			},
+			url:         "",
+			expectedErr: true,
+		},
+		{
+			name: "unknown quote currency",
+			cps: []oracletypes.CurrencyPair{
+				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+			},
+			url:         "",
+			expectedErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			h, err := binance.NewBinanceAPIHandler(providerCfgUS)
+			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
 			if tc.expectedErr {
@@ -183,9 +268,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("MOG", "USDT"): fmt.Errorf("unknown base currency MOG"),
-				},
+				map[oracletypes.CurrencyPair]error{},
 			),
 		},
 		{
@@ -198,9 +281,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("USDT", "MOG"): fmt.Errorf("unknown quote currency MOG"),
-				},
+				map[oracletypes.CurrencyPair]error{},
 			),
 		},
 		{
@@ -214,7 +295,7 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("json error"),
+					oracletypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("no response"),
 				},
 			),
 		},
@@ -237,12 +318,12 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := binance.APIHandler{
-				ProviderConfig: providerCfg,
-			}
+			h, err := binance.NewBinanceAPIHandler(providerCfg)
+			require.NoError(t, err)
 
 			now := time.Now()
 			resp := h.ParseResponse(tc.cps, tc.response)
+			fmt.Println(resp)
 
 			require.Len(t, resp.Resolved, len(tc.expected.Resolved))
 			require.Len(t, resp.UnResolved, len(tc.expected.UnResolved))
@@ -303,9 +384,9 @@ func TestDecode(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := binance.APIHandler{
-				ProviderConfig: providerCfg,
-			}
+			h, err := binance.NewBinanceAPIHandler(providerCfg)
+			require.NoError(t, err)
+
 			got, err := h.Decode(tc.response)
 			if tc.expectErr {
 				require.Error(t, err)

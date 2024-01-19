@@ -27,25 +27,31 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
-	config.ProviderConfig
-	BaseURL string
+	cfg config.ProviderConfig
+
+	// invertedMarketCfg is convience struct that contains the inverted market to currency pair mapping.
+	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
 // NewBinanceAPIHandler returns a new Binance API handler.
 func NewBinanceAPIHandler(
-	providerCfg config.ProviderConfig,
+	cfg config.ProviderConfig,
 ) (*APIHandler, error) {
-	if err := providerCfg.ValidateBasic(); err != nil {
+	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
 
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
+	if !cfg.API.Enabled {
+		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
+	}
+
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
 	}
 
 	return &APIHandler{
-		ProviderConfig: providerCfg,
-		BaseURL:        BaseURL,
+		cfg:               cfg,
+		invertedMarketCfg: cfg.MarketConfig.Invert(),
 	}, nil
 }
 
@@ -57,7 +63,7 @@ func (h *APIHandler) CreateURL(
 	var cpStrings string
 
 	for _, cp := range cps {
-		market, ok := h.MarketConfig.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			continue
 		}
@@ -71,7 +77,7 @@ func (h *APIHandler) CreateURL(
 
 	// remove last comma from list
 	cpStrings = strings.TrimSuffix(cpStrings, Separator)
-	return fmt.Sprintf(h.BaseURL, LeftBracket, cpStrings, RightBracket), nil
+	return fmt.Sprintf(h.cfg.API.URL, LeftBracket, cpStrings, RightBracket), nil
 }
 
 func (h *APIHandler) ParseResponse(
@@ -89,37 +95,37 @@ func (h *APIHandler) ParseResponse(
 		unresolved = make(map[oracletypes.CurrencyPair]error)
 	)
 
-	// Map each of the currency pairs for easy lookup.
-	cpMap := make(map[string]oracletypes.CurrencyPair)
+	// Determine of the provided currency pairs which are supported by the Binance API.
+	configuredCps := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.MarketConfig.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
-			unresolved[cp] = fmt.Errorf("could not find market config for cp %s", cp.String())
 			continue
 		}
 
-		cpMap[market.Ticker] = cp
+		configuredCps.CurrencyPairToMarketConfigs[cp.ToString()] = market
 	}
 
 	// Filter out the responses that are not expected.
 	for _, data := range result {
-		cp, ok := cpMap[data.Symbol]
+		market, ok := h.invertedMarketCfg.MarketToCurrencyPairConfigs[data.Symbol]
 		if !ok {
 			continue
 		}
 
+		cp := market.CurrencyPair
 		price, err := math.Float64StringToBigInt(data.Price, cp.Decimals())
 		if err != nil {
 			return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
 		}
 
 		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-		delete(cpMap, data.Symbol)
+		delete(configuredCps.CurrencyPairToMarketConfigs, cp.ToString())
 	}
 
-	// If there are any currency pairs that were not resolved, we need to add them
-	// to the unresolved map.
-	for _, cp := range cpMap {
+	// If there are any currency pairs that were not resolved, return an error.
+	for _, market := range configuredCps.CurrencyPairToMarketConfigs {
+		cp := market.CurrencyPair
 		unresolved[cp] = fmt.Errorf("currency pair %s did not get a response", cp.String())
 	}
 

@@ -25,7 +25,6 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*CoinBaseAP
 // by a base provider. The DataHandler fetches data from the spot price Coinbase API. It is
 // atomic in that it must request data from the Coinbase API sequentially for each currency pair.
 type CoinBaseAPIHandler struct { //nolint
-	// Config is the Coinbase config.
 	cfg config.ProviderConfig
 }
 
@@ -35,6 +34,10 @@ func NewCoinBaseAPIHandler(
 ) (*CoinBaseAPIHandler, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
+	if !cfg.API.Enabled {
+		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -60,12 +63,12 @@ func (h *CoinBaseAPIHandler) CreateURL(
 	// Ensure that the base and quote currencies are supported by the Coinbase API and
 	// are configured for the handler.
 	cp := cps[0]
-	market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.String()]
+	market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
 	if !ok {
 		return "", fmt.Errorf("unknown currency pair %s", cp)
 	}
 
-	return fmt.Sprintf(BaseURL, market.Ticker), nil
+	return fmt.Sprintf(h.cfg.API.URL, market.Ticker), nil
 }
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns
@@ -81,6 +84,16 @@ func (h *CoinBaseAPIHandler) ParseResponse(
 		)
 	}
 
+	// Check if this currency pair is supported by the Coinbase API.
+	cp := cps[0]
+	_, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+	if !ok {
+		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](
+			cps,
+			fmt.Errorf("unknown currency pair %s", cp),
+		)
+	}
+
 	// Parse the response into a CoinBaseResponse.
 	var result CoinBaseResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -88,7 +101,6 @@ func (h *CoinBaseAPIHandler) ParseResponse(
 	}
 
 	// Convert the float64 price into a big.Int.
-	cp := cps[0]
 	price, err := math.Float64StringToBigInt(result.Data.Amount, cp.Decimals())
 	if err != nil {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)

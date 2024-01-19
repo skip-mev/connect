@@ -32,13 +32,17 @@ type WebSocketDataHandler struct {
 	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
-// NewWebSocketDataHandlerFromConfig returns a new WebSocketDataHandler implementation for Crypto.com.
-func NewWebSocketDataHandlerFromConfig(
+// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Crypto.com.
+func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
+	if !cfg.WebSocket.Enabled {
+		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -49,21 +53,6 @@ func NewWebSocketDataHandlerFromConfig(
 		cfg:               cfg,
 		invertedMarketCfg: cfg.MarketConfig.Invert(),
 		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
-	}, nil
-}
-
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Crypto.com.
-func NewWebSocketDataHandler(
-	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %s", err)
-	}
-
-	return &WebSocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
 

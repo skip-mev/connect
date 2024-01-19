@@ -5,9 +5,9 @@ package coinbase
 // API does not require a subscription to use (i.e. No API key is required).
 
 const (
-	// BaseURL is the base URL of the Coinbase API. This includes the base and quote
+	// URL is the base URL of the Coinbase API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
-	BaseURL = "https://api.coinbase.com/v2/prices/%s/spot"
+	URL = "https://api.coinbase.com/v2/prices/%s/spot"
 )
 
 type (

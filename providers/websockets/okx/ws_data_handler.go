@@ -31,9 +31,9 @@ type WebsocketDataHandler struct {
 	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
-// NewWebSocketDataHandlerFromConfig returns a new WebSocketDataHandler implementation for OKX
+// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for OKX
 // from a given provider configuration.
-func NewWebSocketDataHandlerFromConfig(
+func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
@@ -41,24 +41,12 @@ func NewWebSocketDataHandlerFromConfig(
 		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if !cfg.WebSocket.Enabled {
+		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
 	}
 
-	return &WebsocketDataHandler{
-		cfg:               cfg,
-		invertedMarketCfg: cfg.MarketConfig.Invert(),
-		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
-	}, nil
-}
-
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for OKX.
-func NewWebSocketDataHandler(
-	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %s", err)
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
 	}
 
 	return &WebsocketDataHandler{
