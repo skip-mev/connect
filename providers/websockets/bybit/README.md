@@ -5,6 +5,7 @@
 The OKX provider is used to fetch the ticker price from the [ByBit web socket API](https://linear.app/skip/issue/BLO-733/bybit-provider). The total number of connections that can be opened is 500 per 5 minutes.  Spot subscription requests can only be made with up to 10 arguments per request.
 
 Connections may be disconnected if a heartbeat ping is not sent to the server every 20 seconds to maintain the connection.
+
 ```text
 If there’s a network problem, the system will automatically disable the connection.
 
