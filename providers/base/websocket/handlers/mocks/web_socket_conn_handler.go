@@ -37,6 +37,20 @@ func (_m *WebSocketConnHandler) Dial(url string) error {
 	return r0
 }
 
+// Heartbeat provides a mock function with given fields:
+func (_m *WebSocketConnHandler) Heartbeat() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Read provides a mock function with given fields:
 func (_m *WebSocketConnHandler) Read() ([]byte, error) {
 	ret := _m.Called()
@@ -82,8 +96,7 @@ func (_m *WebSocketConnHandler) Write(message []byte) error {
 func NewWebSocketConnHandler(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *WebSocketConnHandler {
+}) *WebSocketConnHandler {
 	mock := &WebSocketConnHandler{}
 	mock.Mock.Test(t)
 

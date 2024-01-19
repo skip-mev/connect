@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	handlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/skip-mev/slinky/providers/types"
 )
@@ -107,8 +106,7 @@ func (_m *WebSocketDataHandler[K, V]) URL() string {
 func NewWebSocketDataHandler[K comparable, V interface{}](t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *WebSocketDataHandler[K, V] {
+}) *WebSocketDataHandler[K, V] {
 	mock := &WebSocketDataHandler[K, V]{}
 	mock.Mock.Test(t)
 

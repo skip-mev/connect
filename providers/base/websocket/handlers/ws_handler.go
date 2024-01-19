@@ -31,6 +31,10 @@ type WebSocketConnHandler interface {
 
 	// Dial is used to create the connection to the data provider.
 	Dial(url string) error
+
+	// Heartbeat is an optional routine used to keep a connection open by sending heartbeat
+	// messages to the server.
+	Heartbeat() error
 }
 
 // WebSocketConnHandlerImpl is a struct that implements the WebSocketConnHandler interface.
@@ -89,4 +93,9 @@ func (h *WebSocketConnHandlerImpl) Close() error {
 	}
 
 	return h.conn.Close()
+}
+
+// Heartbeat is a no-op by default.
+func (h *WebSocketConnHandlerImpl) Heartbeat() error {
+	return nil
 }
