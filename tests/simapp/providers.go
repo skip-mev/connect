@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/binanceus"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
@@ -97,8 +96,6 @@ func apiProviderFromProviderConfig(
 	)
 
 	switch cfg.Name {
-	case coingecko.Name:
-		apiDataHandler, err = coingecko.NewCoinGeckoAPIHandler(cfg)
 	case coinbase.Name:
 		apiDataHandler, err = coinbase.NewCoinBaseAPIHandler(cfg)
 	case binanceus.Name:

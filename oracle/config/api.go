@@ -32,6 +32,10 @@ func (c *APIConfig) ValidateBasic() error {
 		return nil
 	}
 
+	if c.Atomic {
+		c.MaxQueries = 1
+	}
+
 	if c.MaxQueries < 1 {
 		return fmt.Errorf("api max queries must be greater than 0")
 	}

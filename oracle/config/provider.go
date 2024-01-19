@@ -20,7 +20,7 @@ type ProviderConfig struct {
 
 	// MarketConfig defines the provider's market configurations. In particular, this defines
 	// the mappings between on-chain and off-chain currency pairs.
-	MarketConfig ProviderMarketConfig `mapstructure:"market_config" toml:"market_config"`
+	MarketConfig MarketConfig `mapstructure:"market_config" toml:"market_config"`
 }
 
 func (c *ProviderConfig) ValidateBasic() error {
@@ -29,24 +29,32 @@ func (c *ProviderConfig) ValidateBasic() error {
 	}
 
 	if c.API.Enabled && c.WebSocket.Enabled {
-		return fmt.Errorf("provider cannot be both API and websocket based")
+		return fmt.Errorf("provider %s cannot be both API and websocket based", c.Name)
 	}
 
 	if err := c.MarketConfig.ValidateBasic(); err != nil {
-		return fmt.Errorf("market config is not formatted correctly %w", err)
+		return fmt.Errorf("market config for %s is not formatted correctly %w", c.Name, err)
 	}
 
 	if c.Name != c.MarketConfig.Name {
-		return fmt.Errorf("name must match market config name")
+		return fmt.Errorf("name must match market config name; %s != %s", c.Name, c.MarketConfig.Name)
 	}
 
 	if c.API.Enabled {
-		return c.API.ValidateBasic()
+		if err := c.API.ValidateBasic(); err != nil {
+			return fmt.Errorf("api config for %s is not formatted correctly %w", c.Name, err)
+		}
+
+		return nil
 	}
 
 	if c.WebSocket.Enabled {
-		return c.WebSocket.ValidateBasic()
+		if err := c.WebSocket.ValidateBasic(); err != nil {
+			return fmt.Errorf("websocket config for %s is not formatted correctly %w", c.Name, err)
+		}
+
+		return nil
 	}
 
-	return fmt.Errorf("provider must be either enable API or websocket based fetching")
+	return fmt.Errorf("provider %s must be either enable API or websocket based fetching", c.Name)
 }

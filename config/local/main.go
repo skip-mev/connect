@@ -8,6 +8,10 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/binanceus"
+	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/okx"
 
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -23,7 +27,7 @@ var LocalConfig = config.OracleConfig{
 			// -----------------------------------------------------------	//
 			// ---------------------Start API Providers--------------------	//
 			// -----------------------------------------------------------	//
-			Name: "coinbase",
+			Name: coinbase.Name,
 			API: config.APIConfig{
 				Atomic:     false,
 				Enabled:    true,
@@ -31,8 +35,8 @@ var LocalConfig = config.OracleConfig{
 				Interval:   1 * time.Second,
 				MaxQueries: 5,
 			},
-			MarketConfig: config.ProviderMarketConfig{
-				Name: "coinbase",
+			MarketConfig: config.MarketConfig{
+				Name: coinbase.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTC-USD",
@@ -74,14 +78,15 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
-			Name: "binanceus",
+			Name: binanceus.Name,
 			API: config.APIConfig{
-				Atomic:   true,
-				Enabled:  true,
-				Timeout:  500 * time.Millisecond,
-				Interval: 1 * time.Second,
+				Atomic:     true,
+				Enabled:    true,
+				Timeout:    500 * time.Millisecond,
+				Interval:   1 * time.Second,
+				MaxQueries: 1,
 			},
-			MarketConfig: config.ProviderMarketConfig{
+			MarketConfig: config.MarketConfig{
 				Name: "binanceus",
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
@@ -127,14 +132,15 @@ var LocalConfig = config.OracleConfig{
 		// ---------------------Start WebSocket Providers--------------	//
 		// -----------------------------------------------------------	//
 		{
-			Name: "crypto_dot_com",
+			Name: cryptodotcom.Name,
 			WebSocket: config.WebSocketConfig{
 				Enabled:             true,
 				MaxBufferSize:       1000,
 				ReconnectionTimeout: 5 * time.Second,
+				WSS:                 cryptodotcom.ProductionURL,
 			},
-			MarketConfig: config.ProviderMarketConfig{
-				Name: "crypto_dot_com",
+			MarketConfig: config.MarketConfig{
+				Name: cryptodotcom.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTCUSD-PERP",
@@ -176,14 +182,15 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
-			Name: "okx",
+			Name: okx.Name,
 			WebSocket: config.WebSocketConfig{
 				Enabled:             true,
 				MaxBufferSize:       1000,
 				ReconnectionTimeout: 10 * time.Second,
+				WSS:                 okx.ProductionURL,
 			},
-			MarketConfig: config.ProviderMarketConfig{
-				Name: "okx",
+			MarketConfig: config.MarketConfig{
+				Name: okx.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTC-USD",

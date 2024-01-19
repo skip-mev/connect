@@ -31,7 +31,6 @@ var (
 	logger = zap.NewExample()
 	apiCfg = config.ProviderConfig{
 		Name: "api",
-		Path: "test",
 		API: config.APIConfig{
 			Enabled:    true,
 			Timeout:    time.Millisecond * 250,
@@ -41,7 +40,6 @@ var (
 	}
 	wsConfig = config.ProviderConfig{
 		Name: "websocket",
-		Path: "test",
 		WebSocket: config.WebSocketConfig{
 			Enabled:             true,
 			MaxBufferSize:       10,

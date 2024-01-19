@@ -34,7 +34,7 @@ run-prom-client:
 		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
 		prom/prometheus
 
-update-local-client:
+update-local-config:
 	go run ./config/local/main.go
 
 install:

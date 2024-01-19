@@ -30,15 +30,10 @@ type StaticMockAPIHandler struct { //nolint
 // TokenNameToSymbol map to be populated w/ entries of the form CurrencyPair.ToString():
 // big.NewInt(price).
 func NewStaticMockAPIHandler(
-	providerCfg config.ProviderConfig,
+	cfg config.ProviderConfig,
 ) (*StaticMockAPIHandler, error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", providerCfg.Name)
-	}
-
-	config, err := ReadStaticMockProviderConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, err
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", cfg.Name)
 	}
 
 	s := StaticMockAPIHandler{
@@ -46,13 +41,13 @@ func NewStaticMockAPIHandler(
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
 
-	for cpString, price := range config.TokenPrices {
+	for cpString, market := range cfg.MarketConfig.CurrencyPairToMarketConfigs {
 		cp, err := oracletypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			continue
 		}
 
-		price, converted := big.NewInt(0).SetString(price, 10)
+		price, converted := big.NewInt(0).SetString(market.Ticker, 10)
 		if !converted {
 			return nil, fmt.Errorf("failed to parse price %s for currency pair %s", price, cpString)
 		}
@@ -67,12 +62,6 @@ func NewStaticMockAPIHandler(
 // CreateURL is a no-op.
 func (s *StaticMockAPIHandler) CreateURL(_ []oracletypes.CurrencyPair) (string, error) {
 	return "static-url", nil
-}
-
-// Atomic returns true as the static mock provider is atomic i.e. returns the price of all
-// currency pairs in a single request.
-func (s *StaticMockAPIHandler) Atomic() bool {
-	return true
 }
 
 // ParseResponse is a no-op. This simply returns the price of the currency pairs configured
@@ -95,9 +84,4 @@ func (s *StaticMockAPIHandler) ParseResponse(
 	}
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
-}
-
-// Name returns the name of the provider.
-func (s *StaticMockAPIHandler) Name() string {
-	return Name
 }

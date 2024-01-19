@@ -8,10 +8,12 @@ production = false
     timeout = "500ms"
     interval = "1s"
     max_queries = 5
+    atomic = false
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
     reconnection_timeout = "0s"
+    wss = ""
   [providers.market_config]
     name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
@@ -68,10 +70,12 @@ production = false
     timeout = "500ms"
     interval = "1s"
     max_queries = 1
+    atomic = true
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
     reconnection_timeout = "0s"
+    wss = ""
   [providers.market_config]
     name = "binanceus"
     [providers.market_config.currency_pair_to_market_configs]
@@ -128,10 +132,12 @@ production = false
     timeout = "0s"
     interval = "0s"
     max_queries = 0
+    atomic = false
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1000
     reconnection_timeout = "5s"
+    wss = "wss://stream.crypto.com/exchange/v1/market"
   [providers.market_config]
     name = "crypto_dot_com"
     [providers.market_config.currency_pair_to_market_configs]
@@ -188,10 +194,12 @@ production = false
     timeout = "0s"
     interval = "0s"
     max_queries = 0
+    atomic = false
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1000
     reconnection_timeout = "10s"
+    wss = "wss://ws.okx.com:8443/ws/v5/public"
   [providers.market_config]
     name = "okx"
     [providers.market_config.currency_pair_to_market_configs]

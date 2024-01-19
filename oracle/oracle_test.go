@@ -20,7 +20,6 @@ import (
 
 var (
 	providerCfg1 = config.ProviderConfig{
-		Path: "testpath",
 		Name: "api1",
 		API: config.APIConfig{
 			Interval:   500 * time.Millisecond,
@@ -30,7 +29,6 @@ var (
 		},
 	}
 	providerCfg2 = config.ProviderConfig{
-		Path: "testpath2",
 		Name: "websocket1",
 		WebSocket: config.WebSocketConfig{
 			MaxBufferSize:       10,

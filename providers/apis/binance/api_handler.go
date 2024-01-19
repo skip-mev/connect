@@ -27,7 +27,7 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
-	cfg     config.ProviderConfig
+	config.ProviderConfig
 	BaseURL string
 }
 
@@ -94,7 +94,7 @@ func (h *APIHandler) ParseResponse(
 	for _, cp := range cps {
 		market, ok := h.MarketConfig.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			unresolved[cp] = fmt.Errorf("unknown currency pair %s; could not find configuration", cp.String())
+			unresolved[cp] = fmt.Errorf("could not find market config for cp %s", cp.String())
 			continue
 		}
 

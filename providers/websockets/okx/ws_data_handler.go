@@ -25,42 +25,46 @@ type WebsocketDataHandler struct {
 	logger *zap.Logger
 
 	// config is the config for the OKX web socket API.
-	config Config
+	cfg config.ProviderConfig
+
+	// invertedMarketCfg is convience struct that contains the inverted market to currency pair mapping.
+	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
 // NewWebSocketDataHandlerFromConfig returns a new WebSocketDataHandler implementation for OKX
 // from a given provider configuration.
 func NewWebSocketDataHandlerFromConfig(
 	logger *zap.Logger,
-	providerCfg config.ProviderConfig,
+	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", providerCfg.Name)
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
 
-	cfg, err := ReadConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file %s: %s", providerCfg.Path, err)
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
 	}
 
 	return &WebsocketDataHandler{
-		config: cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+		cfg:               cfg,
+		invertedMarketCfg: cfg.MarketConfig.Invert(),
+		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for OKX.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg Config,
+	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid config: %s", err)
 	}
 
 	return &WebsocketDataHandler{
-		config: cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+		cfg:               cfg,
+		invertedMarketCfg: cfg.MarketConfig.Invert(),
+		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
 
@@ -140,7 +144,7 @@ func (h *WebsocketDataHandler) CreateMessage(
 	instruments := make([]SubscriptionTopic, 0)
 
 	for _, cp := range cps {
-		instrumentID, ok := h.config.Cache[cp]
+		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.ToString()))
 			continue
@@ -148,7 +152,7 @@ func (h *WebsocketDataHandler) CreateMessage(
 
 		instruments = append(instruments, SubscriptionTopic{
 			Channel:      string(IndexTickersChannel),
-			InstrumentID: instrumentID,
+			InstrumentID: market.Ticker,
 		})
 	}
 

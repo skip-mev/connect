@@ -65,7 +65,7 @@ func (h *CoinBaseAPIHandler) CreateURL(
 		return "", fmt.Errorf("unknown currency pair %s", cp)
 	}
 
-	return fmt.Sprintf(BaseURL, market), nil
+	return fmt.Sprintf(BaseURL, market.Ticker), nil
 }
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns

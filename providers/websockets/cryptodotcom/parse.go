@@ -18,30 +18,31 @@ func (h *WebSocketDataHandler) parseInstrumentMessage(
 	msg InstrumentResponseMessage,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
-		markets    = msg.Result.Data
+		resolved    = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved  = make(map[oracletypes.CurrencyPair]error)
+		instruments = msg.Result.Data
 	)
 
 	// If the response contained no instrument data, return an error.
-	if len(markets) == 0 {
+	if len(instruments) == 0 {
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved),
 			fmt.Errorf("no instrument data was returned")
 	}
 
 	// Iterate through each market and attempt to parse the price.
-	for _, market := range markets {
+	for _, instrument := range instruments {
 		// If we don't have a mapping for the instrument, return an error. This is likely a configuration
 		// error.
-		cp, ok := h.config.ReverseCache[market.InstrumentName]
+		market, ok := h.invertedMarketCfg.MarketToCurrencyPairConfigs[instrument.Name]
 		if !ok {
-			h.logger.Error("failed to find currency pair for instrument", zap.String("instrument", market.InstrumentName))
+			h.logger.Error("failed to find currency pair for instrument", zap.String("instrument", instrument.Name))
 			continue
 		}
 
 		// Attempt to parse the price.
-		if price, err := math.Float64StringToBigInt(market.LatestTradePrice, cp.Decimals()); err != nil {
-			unresolved[cp] = fmt.Errorf("failed to parse price %s: %s", market.LatestTradePrice, err)
+		cp := market.CurrencyPair
+		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, cp.Decimals()); err != nil {
+			unresolved[cp] = fmt.Errorf("failed to parse price %s: %s", instrument.LatestTradePrice, err)
 		} else {
 			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 		}
