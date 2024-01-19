@@ -1,11 +1,11 @@
 {
   "markets": {
-    "BITCOIN/USD": "BTCUSD",
-    "ETHEREUM/USD": "ETHUSD",
-    "SOLANA/USD": "SOLUSD",
-    "ATOM/USD": "ATOMUSD",
-    "POLKADOT/USD": "DOTUSD",
-    "DYDX/USD": "DYDXUSD",
+    "BITCOIN/USD": "BTCUSDT",
+    "ETHEREUM/USD": "ETHUSDT",
+    "SOLANA/USD": "SOLUSDT",
+    "ATOM/USD": "ATOMUSDT",
+    "POLKADOT/USD": "DOTUSDT",
+    "DYDX/USD": "DYDXUSDT",
     "ETHEREUM/BITCOIN": "ETHBTC"
   },
   "production": true
