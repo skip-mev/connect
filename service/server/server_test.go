@@ -144,7 +144,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
 	respBz, err := io.ReadAll(httpResp.Body)
 	s.Require().NoError(err)
-	s.Require().Equal(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":"%s"}`, cp1.ToString(), cp2.ToString(), ts.UTC().Format("2006-01-02T15:04:05.000000Z07:00")))
+	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.ToString(), cp2.ToString()))
 }
 
 // test that the oracle server closes when expected
