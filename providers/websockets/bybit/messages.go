@@ -24,6 +24,8 @@ const (
 
 	OperationPing Operation = "ping"
 
+	OperationPong Operation = "pong"
+
 	// TickerChannel is the channel for spot price updates.
 	TickerChannel Channel = "tickers"
 )
@@ -59,7 +61,7 @@ func NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncode
 	bz, err := json.Marshal(
 		SubscriptionRequest{
 			BaseRequest: BaseRequest{
-				Op: string(OperationPing),
+				Op: string(OperationSubscribe),
 			},
 			Args: tickers,
 		},
@@ -132,6 +134,26 @@ type SubscriptionResponse struct {
 	ReqID string `json:"req_id"`
 }
 
+// TickerUpdateMessage is the update sent for a subscribed ticker on the ByBit websocket API.
+//
+// Example:
+//
+//	{
+//	   "topic": "tickers.BTCUSDT",
+//	   "ts": 1673853746003,
+//	   "type": "snapshot",
+//	   "cs": 2588407389,
+//	   "data": {
+//	       "symbol": "BTCUSDT",
+//	       "lastPrice": "21109.77",
+//	       "highPrice24h": "21426.99",
+//	       "lowPrice24h": "20575",
+//	       "prevPrice24h": "20704.93",
+//	       "volume24h": "6780.866843",
+//	       "turnover24h": "141946527.22907118",
+//	       "price24hPcnt": "0.0196",
+//	       "usdIndexPrice": "21120.2400136"
+//	   }
 type TickerUpdateMessage struct {
 	Topic string           `json:"topic"`
 	Data  TickerUpdateData `json:"data"`

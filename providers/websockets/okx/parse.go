@@ -88,7 +88,7 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 		price, err := math.Float64StringToBigInt(ticker.IndexPrice, cp.Decimals())
 		if err != nil {
 			h.logger.Error("failed to convert price to big.Int", zap.Error(err))
-			unresolved[cp] = fmt.Errorf("failed to convert price to big.Int: %s", err)
+			unresolved[cp] = fmt.Errorf("failed to convert price to big.Int: %w", err)
 			continue
 		}
 

@@ -4,96 +4,69 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/alecthomas/assert/v2"
 
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
+	"github.com/skip-mev/slinky/providers/websockets/okx"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
-	goodConfig = `
+	validJSON = `
 {
-	"supportedBases": {
-		"BITCOIN": "BTC",
-		"ETHEREUM": "ETH",
-		"ATOM": "ATOM",
-		"SOLANA": "SOL",
-		"POLKADOT": "DOT",
-		"DYDX": "DYDX"
+	"markets": {
+		"BITCOIN/USD": "BTCUSD",
+		"ETHEREUM/USD": "ETHUSD",
+		"SOLANA/USD": "SOLUSD"
 	},
-	"supportedQuotes": {
-		"USD": "USD",
-		"ETHEREUM": "ETH"
-	}
+	"production": true
 }
 	`
-	noBasesConfig = `
+
+	emptyJSON = `
 {
-	"supportedQuotes": {
-		"USD": "USD",
-		"ETHEREUM": "ETH"
-	}
+	"markets": {},
+	"production": true
 }
 `
-	noQuotesConfig = `
+
+	invalidCPJSON = `
 {
-	"supportedBases": {
-		"BITCOIN": "BTC",
-		"ETHEREUM": "ETH",
-		"ATOM": "ATOM",
-		"SOLANA": "SOL",
-		"POLKADOT": "DOT",
-		"DYDX": "DYDX"
-	}
-}
-	`
-	malformedJSONConfig = `
-{
-	"supportedBases": {
-		"BITCOIN": "BTC",
+	"markets": {
+		"BITCOIN/USD": "BTCUSD",
+		"USD": "ETHUSD"
 	},
-	"supportedQuotes": {
-		"USD": "USD",
-	},
-}
-	`
-	emptySupportedBaseKeyConfig = `
-{
-	"supportedBases": {
-		"": "BTC"
-	},
-	"supportedQuotes": {
-		"USD": "USD"
-	}
+	"production": true
 }
 `
-	emptySupportedBaseValueConfig = `
+
+	emptyMarketJSON = `
 {
-	"supportedBases": {
-		"BITCOIN": ""
+	"markets": {
+		"BITCOIN/USD": "",
+		"ETHEREUM/USD": "ETHUSD"
 	},
-	"supportedQuotes": {
-		"USD": "USD"
-	}
+	"production": true
 }
 `
-	emptySupportedQuoteKeyConfig = `
+
+	invalidJSON = `
 {
-	"supportedBases": {
-		"BITCOIN": "BTC"
+	"markets": {
+		"BITCOIN/USD": "BTCUSD",
 	},
-	"supportedQuotes": {
-		"": "USD"
-	}
+	"production": true
 }
 `
-	emptySupportedQuoteValueConfig = `
+
+	duplicateMarketJSON = `
 {
-	"supportedBases": {
-		"BITCOIN": "BTC"
+	"markets": {
+		"BITCOIN/USD": "BTCUSD",
+		"BITCOIN/USDT": "BTCUSD"
 	},
-	"supportedQuotes": {
-		"USD": ""
-	}
+	"production": true
 }
 `
 )
@@ -105,43 +78,33 @@ func TestReadConfigFromFile(t *testing.T) {
 		expectedErr bool
 	}{
 		{
-			name:        "good config",
-			json:        goodConfig,
+			name:        "valid json",
+			json:        validJSON,
 			expectedErr: false,
 		},
 		{
-			name:        "no bases config",
-			json:        noBasesConfig,
+			name:        "empty json",
+			json:        emptyJSON,
 			expectedErr: true,
 		},
 		{
-			name:        "no quotes config",
-			json:        noQuotesConfig,
+			name:        "invalid currency pair",
+			json:        invalidCPJSON,
 			expectedErr: true,
 		},
 		{
-			name:        "malformed json config",
-			json:        malformedJSONConfig,
+			name:        "empty market",
+			json:        emptyMarketJSON,
 			expectedErr: true,
 		},
 		{
-			name:        "empty supported base key config",
-			json:        emptySupportedBaseKeyConfig,
+			name:        "invalid json",
+			json:        invalidJSON,
 			expectedErr: true,
 		},
 		{
-			name:        "empty supported base value config",
-			json:        emptySupportedBaseValueConfig,
-			expectedErr: true,
-		},
-		{
-			name:        "empty supported quote key config",
-			json:        emptySupportedQuoteKeyConfig,
-			expectedErr: true,
-		},
-		{
-			name:        "empty supported quote value config",
-			json:        emptySupportedQuoteValueConfig,
+			name:        "duplicate market",
+			json:        duplicateMarketJSON,
 			expectedErr: true,
 		},
 	}
@@ -149,7 +112,7 @@ func TestReadConfigFromFile(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Create temp file
-			f, err := os.CreateTemp("", "bybit_config")
+			f, err := os.CreateTemp("", "okx_config")
 			assert.NoError(t, err)
 			defer os.Remove(f.Name())
 
@@ -158,11 +121,115 @@ func TestReadConfigFromFile(t *testing.T) {
 			assert.NoError(t, err)
 
 			// Read config from file
-			_, err = bybit.ReadConfigFromFile(f.Name())
+			_, err = okx.ReadConfigFromFile(f.Name())
 			if tc.expectedErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateBsic(t *testing.T) {
+	testCases := []struct {
+		name        string
+		config      okx.Config
+		expectedErr bool
+	}{
+		{
+			name: "valid config",
+			config: okx.Config{
+				Markets: map[string]string{
+					"BITCOIN/USD":  "BTCUSD",
+					"ETHEREUM/USD": "ETHUSD",
+				},
+				Production: true,
+				Cache: map[oracletypes.CurrencyPair]string{
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"):  "BTCUSD",
+					oracletypes.NewCurrencyPair("ETHEREUM", "USD"): "ETHUSD",
+				},
+				ReverseCache: map[string]oracletypes.CurrencyPair{
+					"BTCUSD": oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					"ETHUSD": oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "missing currency pair in caches",
+			config: okx.Config{
+				Markets: map[string]string{
+					"BITCOIN/USD": "BTC-USD",
+					"USD":         "ETH-USD",
+				},
+				Production: true,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "duplicate market",
+			config: okx.Config{
+				Markets: map[string]string{
+					"BITCOIN/USD":  "BTC-USD",
+					"ETHEREUM/USD": "BTC-USD",
+				},
+				Production: true,
+				Cache: map[oracletypes.CurrencyPair]string{
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"):  "BTCUSD",
+					oracletypes.NewCurrencyPair("ETHEREUM", "USD"): "BTCUSD",
+				},
+				ReverseCache: map[string]oracletypes.CurrencyPair{
+					"BTCUSD": oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "empty market",
+			config: okx.Config{
+				Markets: map[string]string{
+					"BITCOIN/USD":  "BTC-USD",
+					"ETHEREUM/USD": "",
+				},
+				Production: true,
+				Cache: map[oracletypes.CurrencyPair]string{
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"): "BTCUSD",
+				},
+				ReverseCache: map[string]oracletypes.CurrencyPair{
+					"BTCUSD": oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad format for currency pair",
+			config: okx.Config{
+				Markets: map[string]string{
+					"BITCOIN/USD":  "BTC-USD",
+					"ETHEREUM/USD": "ETH-USD",
+				},
+				Production: true,
+				Cache: map[oracletypes.CurrencyPair]string{
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"): "BTCUSD",
+					oracletypes.NewCurrencyPair("", "USD"):        "ETHUSD",
+				},
+				ReverseCache: map[string]oracletypes.CurrencyPair{
+					"BTCUSD": oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					"ETHUSD": oracletypes.NewCurrencyPair("", "USD"),
+				},
+			},
+			expectedErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.config.ValidateBasic()
+			if tc.expectedErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}

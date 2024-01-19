@@ -10,50 +10,29 @@ import (
 )
 
 type Config struct {
-	// SupportedBases maps an oracle base currency to a ByBit base currency.
-	SupportedBases map[string]string `json:"supportedBases" validate:"required"`
-
-	// SupportedQuotes maps an oracle quote currency to a ByBit quote currency.
-	SupportedQuotes map[string]string `json:"supportedQuotes" validate:"required"`
+	// Markets is the list of markets to subscribe to. The key is the currency pair and the value
+	// is the pair ID. The pair ID must correspond to the spot market. For example,
+	// the pair ID for the BITCOIN/USDT market is BTCUSDT.
+	Markets map[string]string `json:"markets"`
 
 	// Production is true if the config is for production.
 	Production bool `json:"production"`
 
-	// Cache is a cache of currency pair to corresponding bybit pair ID.
+	// Cache is a cache of currency pair to corresponding pair ID.
 	Cache map[oracletypes.CurrencyPair]string
 
-	// ReverseCache is a cache of bybit pair ID to corresponding currency pair.
+	// ReverseCache is a cache of pair ID to corresponding currency pair.
 	ReverseCache map[string]oracletypes.CurrencyPair
 }
 
 // ValidateBasic performs basic validation on the config.
 func (c *Config) ValidateBasic() error {
-	if len(c.SupportedBases) == 0 {
-		return fmt.Errorf("must supply at least one supported base currency")
+	if len(c.Markets) == 0 {
+		return fmt.Errorf("no markets specified")
 	}
 
-	if len(c.SupportedQuotes) == 0 {
-		return fmt.Errorf("must supply at least one supported quote currency")
-	}
-
-	for k, v := range c.SupportedBases {
-		if len(k) == 0 {
-			return fmt.Errorf("supported base currency key cannot be empty")
-		}
-
-		if len(v) == 0 {
-			return fmt.Errorf("supported base currency value cannot be empty")
-		}
-	}
-
-	for k, v := range c.SupportedQuotes {
-		if len(k) == 0 {
-			return fmt.Errorf("supported quote currency key cannot be empty")
-		}
-
-		if len(v) == 0 {
-			return fmt.Errorf("supported quote currency value cannot be empty")
-		}
+	if len(c.Markets) != len(c.Cache) || len(c.Markets) != len(c.ReverseCache) {
+		return fmt.Errorf("cache does not match markets size")
 	}
 
 	seenMarkets := make(map[string]bool)
@@ -63,7 +42,7 @@ func (c *Config) ValidateBasic() error {
 		}
 
 		if len(market) == 0 {
-			return fmt.Errorf("cache contains empty instrument ID")
+			return fmt.Errorf("cache contains empty pair ID")
 		}
 
 		if _, ok := c.ReverseCache[market]; !ok {
@@ -80,19 +59,26 @@ func (c *Config) ValidateBasic() error {
 	return nil
 }
 
-// Format formats the config according to the requirements of the ByBit web socket API.
+// Format formats the config according to the requirements of the bybit web socket API.
 func (c *Config) Format() error {
 	c.Cache = make(map[oracletypes.CurrencyPair]string)
 	c.ReverseCache = make(map[string]oracletypes.CurrencyPair)
 
-	for cp, base := range c.SupportedBases {
-		delete(c.SupportedBases, cp)
-		c.SupportedBases[strings.ToUpper(cp)] = strings.ToUpper(base)
-	}
+	for cp, pairID := range c.Markets {
+		delete(c.Markets, cp)
 
-	for cp, quote := range c.SupportedQuotes {
-		delete(c.SupportedQuotes, cp)
-		c.SupportedQuotes[strings.ToUpper(cp)] = strings.ToUpper(quote)
+		// bybit expects all the pair IDs to be uppercase.
+		key := strings.ToUpper(cp)
+		value := strings.ToUpper(pairID)
+		oracleCP, err := oracletypes.CurrencyPairFromString(key)
+		if err != nil {
+			return fmt.Errorf("invalid currency pair %s: %s", key, err)
+		}
+
+		// Update the config.
+		c.Markets[key] = value
+		c.Cache[oracleCP] = value
+		c.ReverseCache[value] = oracleCP
 	}
 
 	return nil

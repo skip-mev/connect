@@ -2,6 +2,7 @@ package simapp
 
 import (
 	"fmt"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	"math/big"
 	"net/http"
 
@@ -168,6 +169,8 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandlerFromConfig(logger, cfg)
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandlerFromConfig(logger, cfg)
+	case bybit.Name:
+		wsDataHandler, err = bybit.NewWebSocketDataHandlerFromConfig(logger, cfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

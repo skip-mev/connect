@@ -53,6 +53,12 @@ web_socket.enabled = true
 web_socket.max_buffer_size = 1000
 web_socket.reconnection_timeout = "10s"
 
+[[providers]]
+name = "bybit"
+path = "config/local/providers/bybit.json"
+web_socket.enabled = true
+web_socket.max_buffer_size = 1000
+web_socket.reconnection_timeout = "10s"
 
 [[providers]]
 name = "binanceus"
