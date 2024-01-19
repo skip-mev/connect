@@ -28,6 +28,9 @@ const (
 
 	// TickerChannel is the channel for spot price updates.
 	TickerChannel Channel = "tickers"
+
+	// MaxArgsPerRequest is the maximum amount of arguments that can be made for a single request to the ByBit WS API.
+	MaxArgsPerRequest = 10
 )
 
 type BaseRequest struct {
@@ -54,20 +57,43 @@ type SubscriptionRequest struct {
 }
 
 func NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(tickers) == 0 {
+	numTickers := len(tickers)
+	if numTickers == 0 {
 		return nil, fmt.Errorf("tickers cannot be empty")
 	}
 
-	bz, err := json.Marshal(
-		SubscriptionRequest{
-			BaseRequest: BaseRequest{
-				Op: string(OperationSubscribe),
-			},
-			Args: tickers,
-		},
-	)
+	numMessages := (numTickers / MaxArgsPerRequest) + 1
+	messages := make([]handlers.WebsocketEncodedMessage, numMessages)
 
-	return []handlers.WebsocketEncodedMessage{bz}, err
+	for i := range messages {
+		start := i * MaxArgsPerRequest
+		end := (i + 1) * MaxArgsPerRequest
+
+		var argTickers []string
+		if i == numMessages-1 {
+			// if we are on the last message, truncate
+			argTickers = tickers[start:]
+		} else {
+			argTickers = tickers[start:end]
+		}
+
+		bz, err := json.Marshal(
+			SubscriptionRequest{
+				BaseRequest: BaseRequest{
+					Op: string(OperationSubscribe),
+				},
+				Args: argTickers,
+			},
+		)
+		if err != nil {
+			return messages, fmt.Errorf("unable to to marshal message: %w", err)
+		}
+
+		messages[i] = bz
+
+	}
+
+	return messages, nil
 }
 
 // HeartbeatPing is the ping sent to the server.
