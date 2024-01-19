@@ -33,7 +33,7 @@ type WebSocketQueryHandler[K comparable, V any] interface {
 type WebSocketQueryHandlerImpl[K comparable, V any] struct {
 	logger  *zap.Logger
 	metrics metrics.WebSocketMetrics
-	config  config.ProviderConfig
+	config  config.WebSocketConfig
 
 	// The connection handler is used to manage the connection to the data provider. This
 	// establishes the connection and sends/receives messages to/from the data provider.
@@ -50,7 +50,7 @@ type WebSocketQueryHandlerImpl[K comparable, V any] struct {
 // NewWebSocketQueryHandler creates a new web socket query handler.
 func NewWebSocketQueryHandler[K comparable, V any](
 	logger *zap.Logger,
-	config config.ProviderConfig,
+	config config.WebSocketConfig,
 	dataHandler WebSocketDataHandler[K, V],
 	connHandler WebSocketConnHandler,
 	m metrics.WebSocketMetrics,
@@ -59,7 +59,7 @@ func NewWebSocketQueryHandler[K comparable, V any](
 		return nil, fmt.Errorf("invalid config: %w", err)
 	}
 
-	if !config.WebSocket.Enabled {
+	if !config.Enabled {
 		return nil, fmt.Errorf("web socket is not enabled")
 	}
 
@@ -135,8 +135,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 // start is used to start the connection to the data provider.
 func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	// Start the connection.
-	h.logger.Debug("creating connection to data provider", zap.String("url", h.config.WebSocket.WSS))
-	if err := h.connHandler.Dial(h.config.WebSocket.WSS); err != nil {
+	h.logger.Debug("creating connection to data provider", zap.String("url", h.config.WSS))
+	if err := h.connHandler.Dial(h.config.WSS); err != nil {
 		h.logger.Error("failed to create connection with data provider", zap.Error(err))
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialErr)
 		return errors.ErrDialWithErr(err)

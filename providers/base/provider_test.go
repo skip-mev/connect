@@ -29,22 +29,20 @@ import (
 
 var (
 	logger = zap.NewExample()
-	apiCfg = config.ProviderConfig{
-		Name: "api",
-		API: config.APIConfig{
-			Enabled:    true,
-			Timeout:    time.Millisecond * 250,
-			Interval:   time.Millisecond * 500,
-			MaxQueries: 1,
-		},
+	apiCfg = config.APIConfig{
+		Enabled:    true,
+		Timeout:    time.Millisecond * 250,
+		Interval:   time.Millisecond * 500,
+		MaxQueries: 1,
+		URL:        "localhost:8080",
+		Name:       "api",
 	}
-	wsConfig = config.ProviderConfig{
-		Name: "websocket",
-		WebSocket: config.WebSocketConfig{
-			Enabled:             true,
-			MaxBufferSize:       10,
-			ReconnectionTimeout: time.Millisecond * 200,
-		},
+	wsCfg = config.WebSocketConfig{
+		Enabled:             true,
+		MaxBufferSize:       10,
+		ReconnectionTimeout: time.Millisecond * 500,
+		WSS:                 "wss:localhost:8080",
+		Name:                "websocket",
 	}
 	pairs = []oracletypes.CurrencyPair{
 		{
@@ -67,8 +65,9 @@ func TestStart(t *testing.T) {
 		handler := apihandlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
 
 		provider, err := base.NewProvider(
-			apiCfg,
+			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
 			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
 			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
 		)
@@ -86,14 +85,15 @@ func TestStart(t *testing.T) {
 		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return()
 
 		provider, err := base.NewProvider(
-			apiCfg,
+			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
 			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
 			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
-		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.API.Interval*2)
+		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
 
 		err = provider.Start(ctx)
@@ -105,14 +105,11 @@ func TestStart(t *testing.T) {
 		cancel()
 
 		handler := wshandlermocks.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
-		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
-			<-ctx.Done()
-			return ctx.Err()
-		}()).Maybe()
 
 		provider, err := base.NewProvider(
-			wsConfig,
+			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
 			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
 			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
 		)
@@ -123,7 +120,7 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes with deadline with websocket", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.API.Interval*2)
+		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
 
 		handler := wshandlermocks.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
@@ -133,8 +130,9 @@ func TestStart(t *testing.T) {
 		}()).Maybe()
 
 		provider, err := base.NewProvider(
-			wsConfig,
+			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
 			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
 			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
 		)
@@ -309,8 +307,9 @@ func TestWebSocketProvider(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-				wsConfig,
+				base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
 				base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
 				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
 			)
@@ -490,7 +489,7 @@ func TestAPIProviderLoop(t *testing.T) {
 
 					logger.Debug("sending response", zap.String("response", resp.String()))
 					responseCh <- resp
-				}).After(apiCfg.API.Interval * 2)
+				}).After(apiCfg.Interval * 2)
 
 				return handler
 			},
@@ -506,15 +505,16 @@ func TestAPIProviderLoop(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-				apiCfg,
+				base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
 				base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
 				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
 			)
 			require.NoError(t, err)
 
 			now := time.Now()
-			ctx, cancel := context.WithTimeout(context.Background(), apiCfg.API.Interval*5)
+			ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*5)
 			defer cancel()
 
 			err = provider.Start(ctx)
@@ -607,15 +607,16 @@ func TestMetrics(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-				apiCfg,
+				base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
 				base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
 				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
 				base.WithMetrics[oracletypes.CurrencyPair, *big.Int](tc.metrics()),
 			)
 			require.NoError(t, err)
 
-			ctx, cancel := context.WithTimeout(context.Background(), apiCfg.API.Interval*5)
+			ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*5)
 			defer cancel()
 
 			err = provider.Start(ctx)

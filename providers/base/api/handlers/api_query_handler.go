@@ -40,7 +40,7 @@ type APIQueryHandler[K comparable, V any] interface {
 type APIQueryHandlerImpl[K comparable, V any] struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
-	config  config.ProviderConfig
+	config  config.APIConfig
 
 	// The request handler is responsible for making outgoing HTTP requests with
 	// a given URL. This can be the default client or a custom client.
@@ -55,7 +55,7 @@ type APIQueryHandlerImpl[K comparable, V any] struct {
 // provider by using the APIDataHandler and RequestHandler.
 func NewAPIQueryHandler[K comparable, V any](
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
+	cfg config.APIConfig,
 	requestHandler RequestHandler,
 	apiHandler APIDataHandler[K, V],
 	metrics metrics.APIMetrics,
@@ -64,7 +64,7 @@ func NewAPIQueryHandler[K comparable, V any](
 		return nil, fmt.Errorf("invalid provider config: %w", err)
 	}
 
-	if !cfg.API.Enabled {
+	if !cfg.Enabled {
 		return nil, fmt.Errorf("api query handler is not enabled for the provider")
 	}
 
@@ -128,7 +128,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	// If our task is atomic, we can make a single request for all of the IDs. Otherwise,
 	// we need to make a request for each ID.
 	tasks := []func() error{}
-	if h.config.API.Atomic {
+	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
 	} else {
 		for i := 0; i < len(ids); i++ {
