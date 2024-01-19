@@ -1,12 +1,11 @@
 package keeper_test
 
 import (
+	"github.com/stretchr/testify/mock"
 	"time"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
-
 	"github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -39,7 +38,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 	s.Require().NoError(s.alertKeeper.SetAlert(s.ctx, alert3))
 
 	s.Run("expect no alerts are pruned at endblock if pruning is disabled in end-block", func() {
-		s.alertKeeper.SetParams(
+		err := s.alertKeeper.SetParams(
 			s.ctx,
 			types.NewParams(
 				types.AlertParams{},
@@ -49,6 +48,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 				},
 			),
 		)
+		s.Require().NoError(err)
 
 		// run endblocker
 		updates, err := s.alertKeeper.EndBlocker(s.ctx)
@@ -62,7 +62,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 	})
 
 	// enable pruning
-	s.alertKeeper.SetParams(
+	err := s.alertKeeper.SetParams(
 		s.ctx,
 		types.NewParams(
 			types.AlertParams{
@@ -76,6 +76,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 			},
 		),
 	)
+	s.Require().NoError(err)
 
 	s.Run("expect first alert is pruned at the end of endblock", func() {
 		updates, err := s.alertKeeper.EndBlocker(s.ctx)
@@ -120,11 +121,11 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 	// increment block height
 	s.ctx = s.ctx.WithBlockHeight(12)
 	s.Run("expect third alert is pruned at the end of endblock", func() {
-		s.bk.EXPECT().SendCoinsFromModuleToAccount(
-			gomock.Any(),
+		s.bk.On("SendCoinsFromModuleToAccount",
+			mock.Anything,
 			types.ModuleName,
 			sdk.AccAddress("abc3"),
-			CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
+			sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
 		).Return(nil)
 
 		updates, err := s.alertKeeper.EndBlocker(s.ctx)

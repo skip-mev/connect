@@ -6,48 +6,16 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
-
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
-
-// matcher for sdk.Coins
-type coinsMatcher struct {
-	coins sdk.Coins
-}
-
-func (c *coinsMatcher) Matches(x interface{}) bool {
-	coins, ok := x.(sdk.Coins)
-	if !ok {
-		return false
-	}
-
-	if len(coins) != len(c.coins) {
-		return false
-	}
-
-	for i, coin := range coins {
-		if !coin.IsEqual(c.coins[i]) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func (c *coinsMatcher) String() string {
-	return fmt.Sprintf("is equal to %v", c.coins)
-}
-
-func CoinsMatcher(coins sdk.Coins) gomock.Matcher {
-	return &coinsMatcher{coins: coins}
-}
 
 func (s *KeeperTestSuite) TestConcludeAlert() {
 	// set the params
-	s.alertKeeper.SetParams(s.ctx, types.Params{
+	err := s.alertKeeper.SetParams(s.ctx, types.Params{
 		AlertParams: types.AlertParams{
 			Enabled:     true,
 			MaxBlockAge: 10,
@@ -57,6 +25,7 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 			),
 		},
 	})
+	require.NoError(s.T(), err)
 
 	cases := []struct {
 		name          string
@@ -126,15 +95,16 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 					types.NewAlertStatus(10, 11, time.Time{}, types.Unconcluded),
 				)
 				// set the unconcluded alert
-				s.alertKeeper.SetAlert(
+				err := s.alertKeeper.SetAlert(
 					ctx,
 					alert,
 				)
+				s.Require().NoError(err)
 
-				s.bk.EXPECT().BurnCoins(
-					gomock.Any(),
+				s.bk.On("BurnCoins",
+					mock.Anything,
 					types.ModuleName,
-					CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
+					sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
 				).Return(nil)
 			},
 			nil,
@@ -153,16 +123,16 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 					types.NewAlertStatus(10, 11, time.Time{}, types.Unconcluded),
 				)
 				// set the unconcluded alert
-				s.alertKeeper.SetAlert(
+				s.Require().NoError(s.alertKeeper.SetAlert(
 					ctx,
 					alert,
-				)
+				))
 
-				s.bk.EXPECT().SendCoinsFromModuleToAccount(
-					gomock.Any(),
+				s.bk.On("SendCoinsFromModuleToAccount",
+					mock.Anything,
 					types.ModuleName,
 					sdk.AccAddress("abc"),
-					CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
+					sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
 				).Return(nil)
 			},
 			nil,

@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	"bytes"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"math/big"
 	"time"
 
@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
@@ -21,67 +20,6 @@ import (
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
-
-type incentivesMatcher struct {
-	incentives []*strategies.ValidatorAlertIncentive
-}
-
-func (im *incentivesMatcher) Matches(x interface{}) bool {
-	// cast x to array of ValidatorAlertIncentive
-	incentives, ok := x.([]incentivetypes.Incentive)
-	if !ok {
-		return false
-	}
-
-	// check that the length is the same
-	if len(incentives) != len(im.incentives) {
-		return false
-	}
-
-	// check that the values are the same
-	for i, incentive := range incentives {
-		// cast to ValidatorAlertIncentive
-		validatorIncentive, ok := incentive.(*strategies.ValidatorAlertIncentive)
-		if !ok {
-			return false
-		}
-
-		// check that the values are the same
-		if !incentiveEqual(validatorIncentive, im.incentives[i]) {
-			return false
-		}
-	}
-	return true
-}
-
-func incentiveEqual(got, exp *strategies.ValidatorAlertIncentive) bool {
-	if got.AlertHeight != exp.AlertHeight {
-		return false
-	}
-
-	if got.AlertSigner != exp.AlertSigner {
-		return false
-	}
-
-	if !bytes.Equal(got.Validator.Address, exp.Validator.Address) {
-		return false
-	}
-
-	if got.Validator.Power != exp.Validator.Power {
-		return false
-	}
-	return true
-}
-
-func (im *incentivesMatcher) String() string {
-	return fmt.Sprintf("is equal to %v", im.incentives)
-}
-
-func NewIncentivesMatcher(incentives []*strategies.ValidatorAlertIncentive) gomock.Matcher {
-	return &incentivesMatcher{
-		incentives: incentives,
-	}
-}
 
 func (s *KeeperTestSuite) TestMsgAlert() {
 	type testCase struct {
@@ -118,11 +56,12 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 		{
 			name: "alerts disabled - fail",
 			setup: func(ctx sdk.Context) {
-				s.alertKeeper.SetParams(ctx, types.Params{
+				err := s.alertKeeper.SetParams(ctx, types.Params{
 					AlertParams: types.AlertParams{
 						Enabled: false,
 					},
 				})
+				s.Require().NoError(err)
 			},
 			msg: &types.MsgAlert{
 				Alert: types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("base", "quote")),
@@ -183,7 +122,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a failed response from the oracle keeper (no currency pair)
-				s.ok.EXPECT().HasCurrencyPair(gomock.Any(), oracletypes.NewCurrencyPair("BTC", "USD")).Return(false)
+				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD")).Return(false).Once()
 			},
 			msg: &types.MsgAlert{
 				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
@@ -203,15 +142,15 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.EXPECT().HasCurrencyPair(gomock.Any(), oracletypes.NewCurrencyPair("BTC", "USD")).Return(true)
+				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD")).Return(true).Once()
 
 				// expect a failed response from the bank keeper
-				s.bk.EXPECT().SendCoinsFromAccountToModule(
-					gomock.Any(),
+				s.bk.On("SendCoinsFromAccountToModule",
+					mock.Anything,
 					sdk.AccAddress("abc"),
 					types.ModuleName,
-					CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
-				).Return(fmt.Errorf("bank error"))
+					sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
+				).Return(fmt.Errorf("bank error")).Once()
 			},
 			msg: &types.MsgAlert{
 				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
@@ -234,18 +173,18 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.EXPECT().HasCurrencyPair(
-					gomock.Any(),
+				s.ok.On("HasCurrencyPair",
+					mock.Anything,
 					oracletypes.NewCurrencyPair("BTC", "USD"),
-				).Return(true)
+				).Return(true).Once()
 
 				// expect a correct response from the bank keeper
-				s.bk.EXPECT().SendCoinsFromAccountToModule(
-					gomock.Any(),
+				s.bk.On("SendCoinsFromAccountToModule",
+					mock.Anything,
 					sdk.AccAddress("abc"),
 					types.ModuleName,
-					CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
-				).Return(nil)
+					sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
+				).Return(nil).Once()
 			},
 			msg: &types.MsgAlert{
 				Alert: validAlert,
@@ -254,12 +193,11 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 		},
 	}
 
-	ms := keeper.NewMsgServer(*s.alertKeeper)
-
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			// perform setup for test-case
 			tc.setup(s.ctx)
+			ms := keeper.NewMsgServer(*s.alertKeeper)
 
 			// run the message server
 			_, err := ms.Alert(s.ctx, tc.msg)
@@ -344,11 +282,11 @@ func (s *KeeperTestSuite) TestConclusion() {
 
 	s.Run("if alerts are not enabled", func() {
 		// set Alerts as disabled in Params
-		s.alertKeeper.SetParams(ctx, types.Params{
+		s.Require().NoError(s.alertKeeper.SetParams(ctx, types.Params{
 			AlertParams: types.AlertParams{
 				Enabled: false,
 			},
-		})
+		}))
 
 		// msg should pass validate basic
 		msg := &types.MsgConclusion{
@@ -469,10 +407,10 @@ func (s *KeeperTestSuite) TestConclusion() {
 			),
 		))
 
-		s.bk.EXPECT().BurnCoins(
-			gomock.Any(),
+		s.bk.On("BurnCoins",
+			mock.Anything,
 			types.ModuleName,
-			CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
+			sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
 		).Return(nil)
 
 		// msg should pass validate basic
@@ -520,15 +458,15 @@ func (s *KeeperTestSuite) TestConclusion() {
 
 		// create 3 validators
 		val1 := cmtabci.Validator{
-			Address: sdk.ConsAddress([]byte("val1")),
+			Address: sdk.ConsAddress("val1"),
 			Power:   10,
 		}
 		val2 := cmtabci.Validator{
-			Address: sdk.ConsAddress([]byte("val2")),
+			Address: sdk.ConsAddress("val2"),
 			Power:   10,
 		}
 		val3 := cmtabci.Validator{
-			Address: sdk.ConsAddress([]byte("val3")),
+			Address: sdk.ConsAddress("val3"),
 			Power:   10,
 		}
 
@@ -602,30 +540,28 @@ func (s *KeeperTestSuite) TestConclusion() {
 		conclusionAny, err := codectypes.NewAnyWithValue(&conclusion)
 		s.Require().NoError(err)
 
-		s.bk.EXPECT().SendCoinsFromModuleToAccount(
-			gomock.Any(),
+		s.bk.On("SendCoinsFromModuleToAccount",
+			mock.Anything,
 			types.ModuleName,
 			sdk.AccAddress("cosmos1"),
-			CoinsMatcher(sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount)),
+			sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
 		).Return(nil)
 
-		s.ik.EXPECT().AddIncentives(
-			gomock.Any(),
-			NewIncentivesMatcher(
-				[]*strategies.ValidatorAlertIncentive{
-					{
-						Validator:   val1,
-						AlertSigner: sdk.AccAddress("cosmos1").String(),
-						AlertHeight: uint64(1),
-					},
-					{
-						Validator:   val3,
-						AlertSigner: sdk.AccAddress("cosmos1").String(),
-						AlertHeight: uint64(1),
-					},
+		s.ik.On("AddIncentives",
+			mock.Anything,
+			[]incentivetypes.Incentive{
+				&strategies.ValidatorAlertIncentive{
+					Validator:   val1,
+					AlertSigner: sdk.AccAddress("cosmos1").String(),
+					AlertHeight: uint64(1),
 				},
-			),
-		)
+				&strategies.ValidatorAlertIncentive{
+					Validator:   val3,
+					AlertSigner: sdk.AccAddress("cosmos1").String(),
+					AlertHeight: uint64(1),
+				},
+			},
+		).Return(nil)
 
 		// msg should pass validate basic
 		msg := &types.MsgConclusion{
@@ -706,7 +642,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 
 	for _, tc := range cases {
 		params := types.DefaultParams("denom", nil)
-		s.alertKeeper.SetParams(s.ctx, params)
+		s.Require().NoError(s.alertKeeper.SetParams(s.ctx, params))
 		_, err := msgServer.UpdateParams(s.ctx, tc.msg)
 		if tc.expectErr == nil {
 			s.Require().NoError(err)
