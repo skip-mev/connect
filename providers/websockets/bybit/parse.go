@@ -2,13 +2,15 @@ package bybit
 
 import (
 	"fmt"
-	"github.com/skip-mev/slinky/pkg/math"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 	"math/big"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/pkg/math"
+	providertypes "github.com/skip-mev/slinky/providers/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseSubscribeResponseMessage parses a subscribe response message. The format of the message

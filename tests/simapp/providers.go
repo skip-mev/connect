@@ -2,9 +2,10 @@ package simapp
 
 import (
 	"fmt"
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	"math/big"
 	"net/http"
+
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
 
 	"go.uber.org/zap"
 

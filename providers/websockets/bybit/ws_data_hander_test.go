@@ -2,9 +2,10 @@ package bybit_test
 
 import (
 	"encoding/json"
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	"math/big"
 	"testing"
+
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
