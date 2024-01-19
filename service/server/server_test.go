@@ -3,7 +3,9 @@ package server_test
 import (
 	"context"
 	"fmt"
+	"io"
 	"math/big"
+	"net/http"
 	"testing"
 	"time"
 
@@ -34,6 +36,7 @@ type ServerTestSuite struct {
 	srv        *server.OracleServer
 	mockOracle *mocks.Oracle
 	client     *client.GRPCClient
+	httpClient *http.Client
 	ctx        context.Context
 	cancel     context.CancelFunc
 }
@@ -49,6 +52,7 @@ func (s *ServerTestSuite) SetupTest() {
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
 	s.client = client.NewGRPCClient(localhost+":"+port, timeout)
+	s.httpClient = http.DefaultClient
 
 	// create context
 	s.ctx, s.cancel = context.WithCancel(context.Background())
@@ -121,7 +125,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
 
-	// call from client
+	// call from grpc client
 	resp, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
 	s.Require().NoError(err)
 
@@ -129,13 +133,26 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(resp.Prices[cp1.ToString()], big.NewInt(100).String())
 	s.Require().Equal(resp.Prices[cp2.ToString()], big.NewInt(200).String())
 	// check timestamp
+
 	s.Require().Equal(resp.Timestamp, ts.UTC())
+
+	// call from http client
+	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
+	s.Require().NoError(err)
+
+	// check response
+	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
+	respBz, err := io.ReadAll(httpResp.Body)
+	s.Require().NoError(err)
+	s.Require().Equal(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":"%s"}`, cp1.ToString(), cp2.ToString(), ts.UTC().Format("2006-01-02T15:04:05.000000Z07:00")))
 }
 
 // test that the oracle server closes when expected
 func (s *ServerTestSuite) TestOracleServerClose() {
 	// close the server, and check that no requests are received
 	s.cancel()
+
+	s.mockOracle.On("IsRunning").Return(false)
 
 	// wait for server to close
 	select {

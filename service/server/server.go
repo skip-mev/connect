@@ -3,16 +3,25 @@ package server
 import (
 	"context"
 	"fmt"
-	"net"
+	"net/http"
+	"strings"
+	"time"
 
+	gateway "github.com/cosmos/gogogateway"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"go.uber.org/zap"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/slinky/pkg/sync"
 	"github.com/skip-mev/slinky/service"
 	servicetypes "github.com/skip-mev/slinky/service/types"
 )
+
+const DefaultServerShutdownTimeout = 3 * time.Second
 
 // OracleServer is the base implementation of the service.OracleServer interface, this is meant to
 // serve requests from a remote OracleClient
@@ -22,8 +31,14 @@ type OracleServer struct {
 	// expected implementation of the oracle
 	o servicetypes.Oracle
 
-	// underlying grpc-server
-	srv *grpc.Server
+	// underlying grpc-server -- serves all grpc requests
+	grpcSrv *grpc.Server
+
+	// grpc-gateway mux -- serves all http grpc proxy requests
+	gatewayMux *runtime.ServeMux
+
+	// underlying http server
+	httpSrv *http.Server
 
 	// closer to handle graceful closures from multiple go-routines
 	*sync.Closer
@@ -42,29 +57,59 @@ func NewOracleServer(o servicetypes.Oracle, logger *zap.Logger) *OracleServer {
 	}
 	os.Closer = sync.NewCloser().WithCallback(func() {
 		// if the server has been started, close it
-		if os.srv != nil {
-			os.srv.GracefulStop()
+		if os.httpSrv != nil {
+			ctx, cf := context.WithTimeout(context.Background(), DefaultServerShutdownTimeout)
+			_ = os.httpSrv.Shutdown(ctx)
+			cf()
 		}
 	})
 
 	return os
 }
 
+// routeRequest determines if the incoming http request is a grpc or http request and routes to the proper handler
+func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
+	if r.ProtoMajor == 2 && strings.HasPrefix(
+		r.Header.Get("Content-Type"), "application/grpc") {
+		os.grpcSrv.ServeHTTP(w, r)
+	} else {
+		os.gatewayMux.ServeHTTP(w, r)
+	}
+}
+
 // StartServer starts the oracle gRPC server on the given host and port. The server is killed on any errors from the listener, or if ctx is cancelled.
 // This method returns an error via any failure from the listener. This is a blocking call, i.e until the server is closed or the server errors,
 // this method will block.
 func (os *OracleServer) StartServer(ctx context.Context, host, port string) error {
-	// create grpc server
-	os.srv = grpc.NewServer()
-
-	// register oracle server
-	service.RegisterOracleServer(os.srv, os)
-
-	// create listener
-	listener, err := net.Listen(servicetypes.Transport, fmt.Sprintf("%s:%s", host, port))
-	if err != nil {
-		return fmt.Errorf("[grpc server]: error creating listener: %v", err)
+	serverEndpoint := fmt.Sprintf("%s:%s", host, port)
+	os.httpSrv = &http.Server{
+		Addr:              serverEndpoint,
+		ReadHeaderTimeout: DefaultServerShutdownTimeout,
 	}
+	// create grpc server
+	os.grpcSrv = grpc.NewServer()
+	// register oracle server
+	service.RegisterOracleServer(os.grpcSrv, os)
+
+	// register the grpc-gateway
+	// it handles the http request and dials the server endpoint with the grpc request
+	os.gatewayMux = runtime.NewServeMux(
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &gateway.JSONPb{
+			EmitDefaults: true,
+			Indent:       "",
+			OrigName:     true,
+		}),
+	)
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	err := service.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, serverEndpoint, opts)
+	if err != nil {
+		return err
+	}
+
+	router := http.NewServeMux()
+	router.HandleFunc("/", os.routeRequest)
+
+	os.httpSrv.Handler = h2c.NewHandler(router, &http2.Server{})
 
 	eg, ctx := errgroup.WithContext(ctx)
 
@@ -74,7 +119,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 		<-ctx.Done()
 		os.logger.Info("context cancelled, closing oracle")
 
-		os.Close()
+		_ = os.Close()
 		return nil
 	})
 
@@ -94,7 +139,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 			zap.String("port", port),
 		)
 
-		err := os.srv.Serve(listener)
+		err = os.httpSrv.ListenAndServe()
 		if err != nil {
 			return fmt.Errorf("[grpc server]: error serving: %v", err)
 		}
