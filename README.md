@@ -48,6 +48,12 @@ To see all network metrics, open a new terminal and run the following command an
 $ make run-prom-client
 ```
 
+To add a new provider, update the local config in [config/local/main.go](./config/local/main.go) and then run the following command:
+
+```bash
+$ make update-local-config
+```
+
 ## Future Work
 
 The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).

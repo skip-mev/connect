@@ -26,7 +26,12 @@ func (p *BaseProvider[K, V]) fetch(ctx context.Context) error {
 		// The buffer size is set to the minimum of the number of IDs and the max number of queries.
 		// This is to ensure that the response channel does not block the query handler and that the
 		// query handler does not exceed the rate limit parameters of the provider.
-		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), p.cfg.API.MaxQueries))
+		maxQueries := p.cfg.API.MaxQueries
+		if p.cfg.API.Atomic {
+			maxQueries = 1
+		}
+
+		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), maxQueries))
 	case p.ws != nil:
 		// Otherwise, the buffer size is set to the max buffer size configured for the web socket.
 		responseCh = make(chan providertypes.GetResponse[K, V], p.cfg.WebSocket.MaxBufferSize)

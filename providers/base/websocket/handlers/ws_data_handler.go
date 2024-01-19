@@ -20,10 +20,4 @@ type WebSocketDataHandler[K comparable, V any] interface {
 	// CreateMessage is used to update the connection to the data provider. This can be used to subscribe
 	// to new events or unsubscribe from events.
 	CreateMessage(ids []K) ([]byte, error)
-
-	// Name is used to get the name of the data provider.
-	Name() string
-
-	// URL is used to get the URL of the data provider.
-	URL() string
 }

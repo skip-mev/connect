@@ -1,194 +1,116 @@
 package config_test
 
 import (
-	"os"
 	"testing"
-
-	"github.com/alecthomas/assert/v2"
+	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/stretchr/testify/require"
 )
 
-var (
-	goodConfigContent = `
-name = "testname"
-path = "testpath"
-
-[api]
-enabled = true
-timeout = "5s"
-interval = "10s"
-max_queries = 10
-`
-
-	badConfigContent = `
-name = "testname"
-path = "testpath"
-
-[api]
-enabled = true
-timeout = "10"
-interval = "60"
-max_queries = 10
-`
-
-	missingFieldConfigContent = `
-name = "testname"
-path = "testpath"
-
-[api]
-enabled = true
-timeout = "10s"
-`
-
-	invalidIntervalConfigContent = `
-name = "testname"
-path = "testpath"
-
-[api]
-enabled = true
-timeout = "10s"
-interval = "5s"
-`
-
-	invalidMaxQueriesConfigContent = `
-name = "testname"
-path = "testpath"
-
-[api]
-enabled = true
-timeout = "10s"
-interval = "60s"
-max_queries = -1
-`
-
-	validWebSocketConfigContent = `
-name = "testname"
-path = "testpath"
-
-[web_socket]
-enabled = true
-max_buffer_size = 100
-reconnection_timeout = "5s"
-`
-
-	invalidWebSocketConfigContent = `
-name = "testname"
-path = "testpath"
-
-[web_socket]
-enabled = true
-max_buffer_size = -1
-reconnection_timeout = "5s"
-`
-
-	noHandlerSpecificationConfigContent = `
-name = "testname"
-path = "testpath"
-`
-
-	duplicateHandlerConfigContent = `
-name = "testname"
-path = "testpath"
-
-[api]
-enabled = true
-timeout = "5s"
-interval = "10s"
-max_queries = 10
-
-[web_socket]
-enabled = true
-max_buffer_size = 100
-reconnection_timeout = "5s"
-`
-
-	badReconnectionTimeoutConfigContent = `
-name = "testname"
-path = "testpath"
-[web_socket]
-enabled = true
-max_buffer_size = 100
-reconnection_timeout = -1s
-`
-)
-
-func TestReadProviderConfigFromFile(t *testing.T) {
+func TestProviderConfig(t *testing.T) {
 	testCases := []struct {
 		name        string
-		config      string
+		config      config.ProviderConfig
 		expectedErr bool
 	}{
 		{
-			name:        "good config",
-			config:      goodConfigContent,
+			name: "good API config",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+				},
+				Name: "test",
+			},
 			expectedErr: false,
 		},
 		{
-			name:        "bad config",
-			config:      badConfigContent,
-			expectedErr: true,
-		},
-		{
-			name:        "missing field config",
-			config:      missingFieldConfigContent,
-			expectedErr: true,
-		},
-		{
-			name:        "invalid interval config",
-			config:      invalidIntervalConfigContent,
-			expectedErr: true,
-		},
-		{
-			name:        "invalid max queries config",
-			config:      invalidMaxQueriesConfigContent,
-			expectedErr: true,
-		},
-		{
-			name:        "valid web socket config",
-			config:      validWebSocketConfigContent,
+			name: "good websocket config",
+			config: config.ProviderConfig{
+				WebSocket: config.WebSocketConfig{
+					Enabled:             true,
+					MaxBufferSize:       1,
+					ReconnectionTimeout: time.Second,
+				},
+				Name: "test",
+			},
 			expectedErr: false,
 		},
 		{
-			name:        "invalid web socket config",
-			config:      invalidWebSocketConfigContent,
+			name: "no name",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+				},
+			},
 			expectedErr: true,
 		},
 		{
-			name:        "no handler specification config",
-			config:      noHandlerSpecificationConfigContent,
+			name: "no API or websocket config",
+			config: config.ProviderConfig{
+				Name: "test",
+			},
 			expectedErr: true,
 		},
 		{
-			name:        "duplicate handler config",
-			config:      duplicateHandlerConfigContent,
+			name: "both API and websocket config",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+				},
+				WebSocket: config.WebSocketConfig{
+					Enabled:             true,
+					MaxBufferSize:       1,
+					ReconnectionTimeout: time.Second,
+				},
+				Name: "test",
+			},
 			expectedErr: true,
 		},
 		{
-			name:        "bad reconnection timeout config",
-			config:      badReconnectionTimeoutConfigContent,
+			name: "bad API config",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    2 * time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+				},
+				Name: "test",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad websocket config",
+			config: config.ProviderConfig{
+				WebSocket: config.WebSocketConfig{
+					Enabled:             true,
+					ReconnectionTimeout: 2 * time.Second,
+				},
+				Name: "test",
+			},
 			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Create temp file
-			f, err := os.CreateTemp("", "provider_config")
-			assert.NoError(t, err)
-			defer os.Remove(f.Name())
-
-			// Write the config as a toml file
-			_, err = f.WriteString(tc.config)
-			assert.NoError(t, err)
-
-			// Read config from file
-			_, err = config.ReadProviderConfigFromFile(f.Name())
+			err := tc.config.ValidateBasic()
 			if tc.expectedErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}
+
 }

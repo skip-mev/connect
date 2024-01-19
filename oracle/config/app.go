@@ -19,7 +19,8 @@ const (
 ###############################################################################
 [oracle]
 # Oracle Address is the URL of the out of process oracle sidecar. This is used to
-# connect to the oracle sidecar.
+# connect to the oracle sidecar when the application boots up. Note that the application
+# will not start if the oracle sidecar is not running.
 oracle_address = "{{ .Oracle.OracleAddress }}"
 
 # Client Timeout is the time that the client is willing to wait for responses from 
@@ -31,8 +32,8 @@ client_timeout = "{{ .Oracle.ClientTimeout }}"
 # the oracle and the app.
 metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
 
-# PrometheusServerAddress is the address of the prometheus server that the oracle 
-# will expose metrics to
+# PrometheusServerAddress is the address of the prometheus server that metrics will be
+# exposed to.
 prometheus_server_address = "{{ .Oracle.PrometheusServerAddress }}"
 
 # ValidatorConsAddress is the validator's consensus address. Validator's must register their
@@ -42,44 +43,38 @@ validator_cons_address = "{{ .Oracle.ValidatorConsAddress }}"
 )
 
 const (
-	// Flags utilized to retrieve the config from the config file.
-	flagOracleAddress = "oracle.oracle_address"
-
-	// Flags utilized to retrieve the config from the config file.
-	flagClientTimeout = "oracle.client_timeout"
-
-	// Flags utilized to retrieve the config from the config file.
-	flagMetricsEnabled = "oracle.metrics_enabled"
-
-	// Flags utilized to retrieve the config from the config file.
+	flagOracleAddress           = "oracle.oracle_address"
+	flagClientTimeout           = "oracle.client_timeout"
+	flagMetricsEnabled          = "oracle.metrics_enabled"
 	flagPrometheusServerAddress = "oracle.prometheus_server_address"
-
-	// Flags utilized to retrieve the config from the config file.
-	flagValidatorConsAddress = "oracle.validator_cons_address"
+	flagValidatorConsAddress    = "oracle.validator_cons_address"
 )
 
 // AppConfig contains the application side oracle configurations that must
 // be set in the app.toml file.
 type AppConfig struct {
-	// OracleAddress is the URL of the out of process oracle sidecar. This is used to
-	// connect to the oracle sidecar.
+	// OracleAddress is the URL of the out of process oracle sidecar. This is
+	// used to connect to the oracle sidecar.
 	OracleAddress string `mapstructure:"oracle_address" toml:"oracle_address"`
 
-	// ClientTimeout is the time that the client is willing to wait for responses from the oracle before timing out.
+	// ClientTimeout is the time that the client is willing to wait for responses
+	// from the oracle before timing out.
 	ClientTimeout time.Duration `mapstructure:"client_timeout" toml:"client_timeout"`
 
-	// MetricsEnabled is the address of the prometheus server that the oracle will expose metrics to
+	// MetricsEnabled is the address of the prometheus server that the oracle
+	// will expose metrics to
 	MetricsEnabled bool `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
 
-	// PrometheusServerAddress is the address of the prometheus server that the oracle will expose metrics to
+	// PrometheusServerAddress is the address of the prometheus server that the oracle
+	// will expose metrics to
 	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
 
-	// ValidatorConsAddress is the validator's consensus address. Validator's must register their
-	// consensus address in order to enable app side metrics.
+	// ValidatorConsAddress is the validator's consensus address. Validator's
+	// must register their consensus address in order to enable app side metrics.
 	ValidatorConsAddress string `mapstructure:"validator_cons_address" toml:"validator_cons_address"`
 }
 
-// ConsAddress returns the validator's consensus address
+// ConsAddress returns the validator's consensus address.
 func (c *AppConfig) ConsAddress() (sdk.ConsAddress, error) {
 	if len(c.ValidatorConsAddress) != 0 {
 		return sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
@@ -88,7 +83,7 @@ func (c *AppConfig) ConsAddress() (sdk.ConsAddress, error) {
 	return nil, nil
 }
 
-// ValidateBasic performs basic validation of the config.
+// ValidateBasic performs basic validation of the app config.
 func (c *AppConfig) ValidateBasic() error {
 	if len(c.OracleAddress) == 0 {
 		return fmt.Errorf("oracle address cannot be empty; please set oracle address in config")

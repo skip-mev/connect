@@ -64,7 +64,7 @@ func ReadOracleConfigFromFile(path string) (OracleConfig, error) {
 	}
 
 	// Check required fields.
-	requiredFields := []string{"update_interval", "providers", "currency_pairs", "production", "metrics"}
+	requiredFields := []string{"update_interval", "providers", "currency_pairs"}
 	for _, field := range requiredFields {
 		if !viper.IsSet(field) {
 			return OracleConfig{}, fmt.Errorf("required field %s is missing in config", field)

@@ -21,6 +21,10 @@ type APIConfig struct {
 	// within the interval. If the provider makes more queries than this, it will
 	// stop making queries until the next interval.
 	MaxQueries int `mapstructure:"max_queries" toml:"max_queries"`
+
+	// Atomic is a flag that indicates whether the provider can fetch multiple
+	// prices in a single API call.
+	Atomic bool `mapstructure:"atomic" toml:"atomic"`
 }
 
 func (c *APIConfig) ValidateBasic() error {

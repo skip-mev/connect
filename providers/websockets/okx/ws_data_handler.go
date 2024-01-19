@@ -155,17 +155,3 @@ func (h *WebsocketDataHandler) CreateMessage(
 	h.logger.Debug("subscribing to instruments", zap.Any("instruments", instruments))
 	return NewSubscribeToTickersRequestMessage(instruments)
 }
-
-// Name returns the name of the provider.
-func (h *WebsocketDataHandler) Name() string {
-	return Name
-}
-
-// URL returns the URL of the provider.
-func (h *WebsocketDataHandler) URL() string {
-	if h.config.Production {
-		return ProductionURL
-	}
-
-	return DemoURL
-}

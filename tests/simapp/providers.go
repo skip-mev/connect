@@ -125,6 +125,7 @@ func apiProviderFromProviderConfig(
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
 	apiQueryHandler, err := apihandlers.NewAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
+		cfg,
 		requestHandler,
 		apiDataHandler,
 		mAPI,
@@ -183,6 +184,7 @@ func webSocketProviderFromProviderConfig(
 	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
+		cfg,
 		wsDataHandler,
 		connHandler,
 		wsMetrics,

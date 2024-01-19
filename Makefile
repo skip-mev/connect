@@ -10,7 +10,6 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.toml
-METRICS_CONFIG_FILE ?= $(CURDIR)/config/local/metrics.toml
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
@@ -24,7 +23,7 @@ build:
 	go build -o ./build/ ./...
 
 run-oracle-server: build
-	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --metrics-config-path ${METRICS_CONFIG_FILE}
+	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE}
 
 run-oracle-client: build
 	./build/client --host localhost --port 8080
@@ -34,6 +33,9 @@ run-prom-client:
 		-p 9090:9090 \
 		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
 		prom/prometheus
+
+update-local-client:
+	go run ./config/local/main.go
 
 install:
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 

@@ -7,7 +7,7 @@ package coinbase
 const (
 	// BaseURL is the base URL of the Coinbase API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
-	BaseURL = "https://api.coinbase.com/v2/prices/%s-%s/spot"
+	BaseURL = "https://api.coinbase.com/v2/prices/%s/spot"
 )
 
 type (

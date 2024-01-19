@@ -27,7 +27,7 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
-	Config
+	cfg     config.ProviderConfig
 	BaseURL string
 }
 
@@ -35,18 +35,17 @@ type APIHandler struct {
 func NewBinanceAPIHandler(
 	providerCfg config.ProviderConfig,
 ) (*APIHandler, error) {
+	if err := providerCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
 	if providerCfg.Name != Name {
 		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
 	}
 
-	cfg, err := ReadBinanceConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, err
-	}
-
 	return &APIHandler{
-		Config:  cfg,
-		BaseURL: BaseURL,
+		ProviderConfig: providerCfg,
+		BaseURL:        BaseURL,
 	}, nil
 }
 
@@ -58,17 +57,12 @@ func (h *APIHandler) CreateURL(
 	var cpStrings string
 
 	for _, cp := range cps {
-		base, ok := h.SupportedBases[cp.Base]
+		market, ok := h.MarketConfig.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			continue
 		}
 
-		quote, ok := h.SupportedQuotes[cp.Quote]
-		if !ok {
-			continue
-		}
-
-		cpStrings += fmt.Sprintf("%s%s%s%s%s", Quotation, base, quote, Quotation, Separator)
+		cpStrings += fmt.Sprintf("%s%s%s%s", Quotation, market.Ticker, Quotation, Separator)
 	}
 
 	if len(cpStrings) == 0 {
@@ -98,19 +92,13 @@ func (h *APIHandler) ParseResponse(
 	// Map each of the currency pairs for easy lookup.
 	cpMap := make(map[string]oracletypes.CurrencyPair)
 	for _, cp := range cps {
-		base, ok := h.SupportedBases[cp.Base]
+		market, ok := h.MarketConfig.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			unresolved[cp] = fmt.Errorf("unknown base currency %s", cp.Base)
+			unresolved[cp] = fmt.Errorf("unknown currency pair %s; could not find configuration", cp.String())
 			continue
 		}
 
-		quote, ok := h.SupportedQuotes[cp.Quote]
-		if !ok {
-			unresolved[cp] = fmt.Errorf("unknown quote currency %s", cp.Quote)
-			continue
-		}
-
-		cpMap[fmt.Sprintf("%s%s", base, quote)] = cp
+		cpMap[market.Ticker] = cp
 	}
 
 	// Filter out the responses that are not expected.
@@ -136,15 +124,6 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
-}
-
-func (h *APIHandler) Atomic() bool {
-	return true
-}
-
-// Name returns the name of the handler.
-func (h *APIHandler) Name() string {
-	return Name
 }
 
 // Decode decodes the given http response into a BinanceResponse.

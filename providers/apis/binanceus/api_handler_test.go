@@ -12,6 +12,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/binanceus"
 	"github.com/skip-mev/slinky/providers/base/testutils"
@@ -19,17 +20,25 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var config = binance.NewConfig(
-	map[string]string{
-		"BITCOIN": "BTC",
-		"USDT":    "USDT",
-		"BINANCE": "BNB",
-	},
-	map[string]string{
-		"BITCOIN": "BTC",
-		"USDT":    "USDT",
-		"BINANCE": "BNB",
-	},
+var (
+	providerCfg = config.ProviderConfig{
+		Name: binance.Name,
+		API: config.APIConfig{
+			Enabled:    true,
+			Timeout:    time.Second,
+			Interval:   time.Second,
+			MaxQueries: 1,
+		},
+		CurrencyPairConfig: config.CurrencyPairConfig{
+			BaseOffChain: map[string]string{
+				"BITCOIN": "BTC",
+				"BINANCE": "BNB",
+			},
+			QuoteOffChain: map[string]string{
+				"USDT": "USDT",
+			},
+		},
+	}
 )
 
 func TestCreateURL(t *testing.T) {
@@ -77,8 +86,8 @@ func TestCreateURL(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			h := binance.APIHandler{
-				Config:  config,
-				BaseURL: binanceus.BaseURL,
+				ProviderConfig: providerCfg,
+				BaseURL:        binanceus.BaseURL,
 			}
 
 			url, err := h.CreateURL(tc.cps)
@@ -230,7 +239,7 @@ func TestParseResponse(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			h := binance.APIHandler{
-				Config: config,
+				ProviderConfig: providerCfg,
 			}
 
 			now := time.Now()
@@ -296,7 +305,7 @@ func TestDecode(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			h := binance.APIHandler{
-				Config: config,
+				ProviderConfig: providerCfg,
 			}
 			got, err := h.Decode(tc.response)
 			if tc.expectErr {
