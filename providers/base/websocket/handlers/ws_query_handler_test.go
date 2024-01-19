@@ -80,6 +80,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -115,6 +116,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(fmt.Errorf("no rizz alert")).Once()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -153,6 +155,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 				connHandler.On("Read").Return(nil, fmt.Errorf("no rizz alert")).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -193,6 +196,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -239,6 +243,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -288,6 +293,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(fmt.Errorf("no rizz alert")).Maybe()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -337,6 +343,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(fmt.Errorf("no rizz alert")).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -385,6 +392,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -444,6 +452,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
+				connHandler.On("Heartbeat").Return(nil).Maybe()
 
 				return connHandler
 			},
@@ -504,6 +513,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
+				connHandler.On("Heartbeat").Return(nil).Once()
 
 				return connHandler
 			},

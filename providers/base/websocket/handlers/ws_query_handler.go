@@ -154,6 +154,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		}
 	}
 
+	// start heartbeat routine
+	_ = h.connHandler.Heartbeat()
+
 	h.logger.Debug("initial payload sent; web socket connection successfully started")
 	h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteSuccess)
 	return nil
