@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -34,7 +35,7 @@ type WebSocketConnHandler interface {
 
 	// Heartbeat is an optional routine used to keep a connection open by sending heartbeat
 	// messages to the server.
-	Heartbeat() error
+	Heartbeat(ctx context.Context) error
 }
 
 // WebSocketConnHandlerImpl is a struct that implements the WebSocketConnHandler interface.
@@ -96,6 +97,6 @@ func (h *WebSocketConnHandlerImpl) Close() error {
 }
 
 // Heartbeat is a no-op by default.
-func (h *WebSocketConnHandlerImpl) Heartbeat() error {
+func (h *WebSocketConnHandlerImpl) Heartbeat(_ context.Context) error {
 	return nil
 }

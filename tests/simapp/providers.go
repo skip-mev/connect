@@ -172,6 +172,7 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = okx.NewWebSocketDataHandlerFromConfig(logger, cfg)
 	case bybit.Name:
 		wsDataHandler, err = bybit.NewWebSocketDataHandlerFromConfig(logger, cfg)
+		connHandler = bybit.NewWebSocketHandler(logger)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

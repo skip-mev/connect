@@ -154,9 +154,6 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 		}
 	}
 
-	// start heartbeat routine
-	_ = h.connHandler.Heartbeat()
-
 	h.logger.Debug("initial payload sent; web socket connection successfully started")
 	h.metrics.AddWebSocketConnectionStatus(h.dataHandler.Name(), metrics.WriteSuccess)
 	return nil
@@ -169,6 +166,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			h.logger.Error("panic occurred", zap.Any("err", err))
 		}
 	}()
+
+	h.logger.Debug("starting heartbeat routine")
+	_ = h.connHandler.Heartbeat(ctx)
 
 	h.logger.Debug("starting recv", zap.Int("buffer_size", cap(responseCh)))
 

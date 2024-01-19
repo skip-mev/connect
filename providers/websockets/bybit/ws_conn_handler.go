@@ -1,7 +1,13 @@
 package bybit
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"sync"
+	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/gorilla/websocket"
 
@@ -12,13 +18,15 @@ import (
 type WebSocketConnHandler struct {
 	sync.Mutex
 
+	logger *zap.Logger
+
 	// conn is the connection to the data provider.
 	conn *websocket.Conn
 }
 
-// NewWebSocketHandlerImpl returns a new WebSocketConnHandlerImpl.
-func NewWebSocketHandlerImpl() handlers.WebSocketConnHandler {
-	return &WebSocketConnHandler{}
+// NewWebSocketHandler returns a new WebSocketConnHandler.
+func NewWebSocketHandler(logger *zap.Logger) handlers.WebSocketConnHandler {
+	return &WebSocketConnHandler{logger: logger.With(zap.String("web_socket_conn_handler", Name))}
 }
 
 // Dial is used to create a new connection to the data provider with the given URL.
@@ -66,7 +74,31 @@ func (h *WebSocketConnHandler) Close() error {
 	return h.conn.Close()
 }
 
-// Heartbeat is a no-op by default.
-func (h *WebSocketConnHandler) Heartbeat() error {
-	return nil
+// Heartbeat sends a heartbeat ping to the server every 20 seconds until the context is cancelled.
+func (h *WebSocketConnHandler) Heartbeat(ctx context.Context) error {
+	for {
+		select {
+		case <-ctx.Done():
+			h.logger.Info("shutting down heartbeat routine")
+			return nil
+		default:
+			msg, err := json.Marshal(HeartbeatPing{BaseRequest{
+				ReqID: time.Now().String(),
+				Op:    string(OperationPing),
+			}})
+			if err != nil {
+				h.logger.Debug("unable to marshal heartbeat ping")
+				return fmt.Errorf("unable to marshal heartbeat ping")
+			}
+
+			err = h.Write(msg)
+			if err != nil {
+				h.logger.Debug("unable to write heartbeat ping")
+				return fmt.Errorf("unable to write heartbeat ping")
+			}
+
+			h.logger.Debug("sent heartbeat message")
+			time.Sleep(20 * time.Second)
+		}
+	}
 }
