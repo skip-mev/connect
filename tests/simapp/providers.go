@@ -40,6 +40,7 @@ func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.Currency
 		mAPI := apimetrics.NewAPIMetricsFromConfig(cfg.Metrics)
 		mProviders := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
+		// Create the providers.
 		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], 0)
 		for _, p := range cfg.Providers {
 			switch {
@@ -78,6 +79,13 @@ func apiProviderFromProviderConfig(
 ) (providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 	// Validate the provider config.
 	err := cfg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter the currency pairs to only include the ones that are configured in the provider
+	// config.
+	filteredCPs, err := filterForConfiguredCurrencyPairs(logger, cps, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +133,7 @@ func apiProviderFromProviderConfig(
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
 	apiQueryHandler, err := apihandlers.NewAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
-		cfg,
+		cfg.API,
 		requestHandler,
 		apiDataHandler,
 		mAPI,
@@ -136,10 +144,11 @@ func apiProviderFromProviderConfig(
 
 	// Create the provider.
 	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		cfg,
+		base.WithName[oracletypes.CurrencyPair, *big.Int](cfg.Name),
 		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 		base.WithAPIQueryHandler(apiQueryHandler),
-		base.WithIDs[oracletypes.CurrencyPair, *big.Int](cps),
+		base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](cfg.API),
+		base.WithIDs[oracletypes.CurrencyPair, *big.Int](filteredCPs),
 		base.WithMetrics[oracletypes.CurrencyPair, *big.Int](mProvider),
 	)
 }
@@ -155,6 +164,13 @@ func webSocketProviderFromProviderConfig(
 ) (providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 	// Validate the provider config.
 	err := cfg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter the currency pairs to only include the ones that are configured in the provider
+	// config.
+	filteredCPs, err := filterForConfiguredCurrencyPairs(logger, cps, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +200,7 @@ func webSocketProviderFromProviderConfig(
 	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
-		cfg,
+		cfg.WebSocket,
 		wsDataHandler,
 		connHandler,
 		wsMetrics,
@@ -195,10 +211,36 @@ func webSocketProviderFromProviderConfig(
 
 	// Create the provider.
 	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		cfg,
+		base.WithName[oracletypes.CurrencyPair, *big.Int](cfg.Name),
 		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 		base.WithWebSocketQueryHandler(wsQueryHandler),
-		base.WithIDs[oracletypes.CurrencyPair, *big.Int](cps),
+		base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](cfg.WebSocket),
+		base.WithIDs[oracletypes.CurrencyPair, *big.Int](filteredCPs),
 		base.WithMetrics[oracletypes.CurrencyPair, *big.Int](pMetrics),
 	)
+}
+
+// filterForConfiguredCurrencyPairs returns the set of currency pairs that are configured in the
+// providers config.
+func filterForConfiguredCurrencyPairs(
+	logger *zap.Logger,
+	cps []oracletypes.CurrencyPair,
+	cfg config.ProviderConfig,
+) ([]oracletypes.CurrencyPair, error) {
+	filteredCps := make([]oracletypes.CurrencyPair, 0)
+
+	for _, cp := range cps {
+		if _, ok := cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]; ok {
+			logger.Debug("provider supports currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+			filteredCps = append(filteredCps, cp)
+		} else {
+			logger.Debug("provider does not support currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+		}
+	}
+
+	if len(filteredCps) == 0 {
+		return nil, fmt.Errorf("no currency pairs supported by provider: %s", cfg.Name)
+	}
+
+	return filteredCps, nil
 }

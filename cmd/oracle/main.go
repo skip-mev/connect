@@ -69,8 +69,8 @@ func main() {
 
 	// Create the oracle.
 	oracle, err := oracle.New(
-		cfg,
-		oracle.WithProviders(providers), // Replace with custom providers.
+		oracle.WithUpdateInterval(cfg.UpdateInterval),
+		oracle.WithProviders(providers),                          // Replace with custom providers.
 		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithLogger(logger),

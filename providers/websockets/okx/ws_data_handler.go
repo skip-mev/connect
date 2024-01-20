@@ -51,7 +51,7 @@ func NewWebSocketDataHandler(
 
 	return &WebsocketDataHandler{
 		cfg:               cfg,
-		invertedMarketCfg: cfg.MarketConfig.Invert(),
+		invertedMarketCfg: cfg.Market.Invert(),
 		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
@@ -132,7 +132,7 @@ func (h *WebsocketDataHandler) CreateMessage(
 	instruments := make([]SubscriptionTopic, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.ToString()))
 			continue

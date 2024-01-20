@@ -69,6 +69,10 @@ func (c *MarketConfig) ValidateBasic() error {
 		return fmt.Errorf("name cannot be empty")
 	}
 
+	if len(c.CurrencyPairToMarketConfigs) == 0 {
+		return fmt.Errorf("market config must have at least one currency pair")
+	}
+
 	for cpStr, marketConfig := range c.CurrencyPairToMarketConfigs {
 		cp, err := oracletypes.CurrencyPairFromString(cpStr)
 		if err != nil {
@@ -92,5 +96,5 @@ func (c *CurrencyPairMarketConfig) ValidateBasic() error {
 		return fmt.Errorf("ticker cannot be empty")
 	}
 
-	return nil
+	return c.CurrencyPair.ValidateBasic()
 }

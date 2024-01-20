@@ -12,6 +12,9 @@ import (
 
 const (
 	// DefaultConfigTemplate should be utilized in the app.toml file.
+	// This template configures the application to connect to the
+	// oracle sidecar and exposes instrumentation for the oracle client
+	// and the interaction between the oracle and the app.
 	DefaultConfigTemplate = `
 
 ###############################################################################

@@ -46,7 +46,7 @@ func NewCoinGeckoAPIHandler(
 
 	return &CoinGeckoAPIHandler{
 		cfg:               cfg,
-		invertedMarketCfg: cfg.MarketConfig.Invert(),
+		invertedMarketCfg: cfg.Market.Invert(),
 	}, nil
 }
 
@@ -100,7 +100,7 @@ func (h *CoinGeckoAPIHandler) ParseResponse(
 	// Map each of the currency pairs for easy lookup.
 	configCPs := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			continue
 		}

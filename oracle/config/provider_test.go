@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,8 +23,20 @@ func TestProviderConfig(t *testing.T) {
 					Timeout:    time.Second,
 					Interval:   time.Second,
 					MaxQueries: 1,
+					Name:       "test",
+					Atomic:     true,
+					URL:        "http://test.com",
 				},
 				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
 			},
 			expectedErr: false,
 		},
@@ -34,8 +47,19 @@ func TestProviderConfig(t *testing.T) {
 					Enabled:             true,
 					MaxBufferSize:       1,
 					ReconnectionTimeout: time.Second,
+					WSS:                 "wss://test.com",
+					Name:                "test",
 				},
 				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
 			},
 			expectedErr: false,
 		},
@@ -47,6 +71,18 @@ func TestProviderConfig(t *testing.T) {
 					Timeout:    time.Second,
 					Interval:   time.Second,
 					MaxQueries: 1,
+					Name:       "test",
+					Atomic:     true,
+					URL:        "http://test.com",
+				},
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
 				},
 			},
 			expectedErr: true,
@@ -55,6 +91,15 @@ func TestProviderConfig(t *testing.T) {
 			name: "no API or websocket config",
 			config: config.ProviderConfig{
 				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
 			},
 			expectedErr: true,
 		},
@@ -66,13 +111,27 @@ func TestProviderConfig(t *testing.T) {
 					Timeout:    time.Second,
 					Interval:   time.Second,
 					MaxQueries: 1,
+					Name:       "test",
+					Atomic:     true,
+					URL:        "http://test.com",
 				},
 				WebSocket: config.WebSocketConfig{
 					Enabled:             true,
 					MaxBufferSize:       1,
 					ReconnectionTimeout: time.Second,
+					WSS:                 "wss://test.com",
+					Name:                "test",
 				},
 				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
 			},
 			expectedErr: true,
 		},
@@ -86,6 +145,15 @@ func TestProviderConfig(t *testing.T) {
 					MaxQueries: 1,
 				},
 				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
 			},
 			expectedErr: true,
 		},
@@ -97,6 +165,105 @@ func TestProviderConfig(t *testing.T) {
 					ReconnectionTimeout: 2 * time.Second,
 				},
 				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "mismatch names between provider and ws config",
+			config: config.ProviderConfig{
+				WebSocket: config.WebSocketConfig{
+					Enabled:             true,
+					MaxBufferSize:       1,
+					ReconnectionTimeout: time.Second,
+					WSS:                 "wss://test.com",
+					Name:                "test",
+				},
+				Name: "test2",
+				Market: config.MarketConfig{
+					Name: "test2",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "mismatch names between provider and api config",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+					Name:       "test",
+					Atomic:     true,
+					URL:        "http://test.com",
+				},
+				Name: "test2",
+				Market: config.MarketConfig{
+					Name: "test2",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad market config",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+					Name:       "test",
+					Atomic:     true,
+					URL:        "http://test.com",
+				},
+				Name:   "test",
+				Market: config.MarketConfig{},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "mismatch names between provider and market config",
+			config: config.ProviderConfig{
+				API: config.APIConfig{
+					Enabled:    true,
+					Timeout:    time.Second,
+					Interval:   time.Second,
+					MaxQueries: 1,
+					Name:       "test",
+					Atomic:     true,
+					URL:        "http://test.com",
+				},
+				Name: "test",
+				Market: config.MarketConfig{
+					Name: "test2",
+					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+						"BITCOIN/USD": {
+							Ticker:       "BTC/USD",
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+				},
 			},
 			expectedErr: true,
 		},

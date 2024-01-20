@@ -25,8 +25,9 @@ var (
 			WSS:                 cryptodotcom.URL_PROD,
 			MaxBufferSize:       100,
 			ReconnectionTimeout: 5 * time.Second,
+			Name:                cryptodotcom.Name,
 		},
-		MarketConfig: config.MarketConfig{
+		Market: config.MarketConfig{
 			Name: cryptodotcom.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {

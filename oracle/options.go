@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"math/big"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -14,6 +15,17 @@ import (
 
 // OracleOption is a function that can be used to configure an Oracle.
 type OracleOption func(*OracleImpl) //nolint
+
+// WithUpdateInterval sets the update interval on the Oracle.
+func WithUpdateInterval(updateInterval time.Duration) OracleOption {
+	return func(o *OracleImpl) {
+		if updateInterval <= 0 {
+			panic("update interval must be positive")
+		}
+
+		o.updateInterval = updateInterval
+	}
+}
 
 // WithLogger sets the logger on the Oracle.
 func WithLogger(logger *zap.Logger) OracleOption {

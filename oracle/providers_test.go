@@ -28,16 +28,6 @@ func (s *OracleTestSuite) TestProviders() {
 		expectedPrices map[oracletypes.CurrencyPair]*big.Int
 	}{
 		{
-			name: "no providers",
-			factory: func(
-				*zap.Logger,
-				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				return nil, nil
-			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
-		},
-		{
 			name: "1 provider with no prices",
 			factory: func(
 				*zap.Logger,
@@ -193,12 +183,11 @@ func (s *OracleTestSuite) TestProviders() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
 			}
-
 			providers, err := tc.factory(s.logger, cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 			)

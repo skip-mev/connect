@@ -28,15 +28,14 @@ type APIConfig struct {
 
 	// URL is the URL that is used to fetch data from the API.
 	URL string `mapstructure:"url" toml:"url"`
+
+	// Name is the name of the provider that corresponds to this config.
+	Name string `mapstructure:"name" toml:"name"`
 }
 
 func (c *APIConfig) ValidateBasic() error {
 	if !c.Enabled {
 		return nil
-	}
-
-	if c.Atomic {
-		c.MaxQueries = 1
 	}
 
 	if c.MaxQueries < 1 {
@@ -53,6 +52,10 @@ func (c *APIConfig) ValidateBasic() error {
 
 	if len(c.URL) == 0 {
 		return fmt.Errorf("provider url cannot be empty")
+	}
+
+	if len(c.Name) == 0 {
+		return fmt.Errorf("provider name cannot be empty")
 	}
 
 	return nil

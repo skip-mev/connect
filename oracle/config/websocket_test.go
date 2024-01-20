@@ -20,6 +20,8 @@ func TestWebSocketConfig(t *testing.T) {
 				Enabled:             true,
 				MaxBufferSize:       1,
 				ReconnectionTimeout: time.Second,
+				Name:                "test",
+				WSS:                 "wss://test.com",
 			},
 			expectedErr: false,
 		},
@@ -35,6 +37,8 @@ func TestWebSocketConfig(t *testing.T) {
 			config: config.WebSocketConfig{
 				Enabled:             true,
 				ReconnectionTimeout: time.Second,
+				Name:                "test",
+				WSS:                 "wss://test.com",
 			},
 			expectedErr: true,
 		},
@@ -43,6 +47,28 @@ func TestWebSocketConfig(t *testing.T) {
 			config: config.WebSocketConfig{
 				Enabled:       true,
 				MaxBufferSize: 1,
+				Name:          "test",
+				WSS:           "wss://test.com",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with no name",
+			config: config.WebSocketConfig{
+				Enabled:             true,
+				MaxBufferSize:       1,
+				ReconnectionTimeout: time.Second,
+				WSS:                 "wss://test.com",
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with no wss",
+			config: config.WebSocketConfig{
+				Enabled:             true,
+				MaxBufferSize:       1,
+				ReconnectionTimeout: time.Second,
+				Name:                "test",
 			},
 			expectedErr: true,
 		},

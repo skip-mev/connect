@@ -28,8 +28,9 @@ var (
 			Interval:   time.Second,
 			MaxQueries: 1,
 			URL:        binance.URL,
+			Name:       binance.Name,
 		},
-		MarketConfig: config.MarketConfig{
+		Market: config.MarketConfig{
 			Name: binance.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {
@@ -52,8 +53,9 @@ var (
 			Interval:   time.Second,
 			MaxQueries: 1,
 			URL:        binance.US_URL,
+			Name:       binance.Name,
 		},
-		MarketConfig: config.MarketConfig{
+		Market: config.MarketConfig{
 			Name: binance.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {

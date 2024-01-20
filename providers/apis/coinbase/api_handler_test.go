@@ -24,8 +24,9 @@ var providerCfg = config.ProviderConfig{
 		Interval:   time.Second,
 		MaxQueries: 1,
 		URL:        coinbase.URL,
+		Name:       coinbase.Name,
 	},
-	MarketConfig: config.MarketConfig{
+	Market: config.MarketConfig{
 		Name: coinbase.Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"BITCOIN/USD": {

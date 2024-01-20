@@ -20,13 +20,15 @@ var (
 	providerCfg = config.ProviderConfig{
 		Name: coingecko.Name,
 		API: config.APIConfig{
-			Enabled:  true,
-			URL:      coingecko.URL,
-			Timeout:  10 * time.Second,
-			Interval: 20 * time.Second,
-			Atomic:   true,
+			Enabled:    true,
+			URL:        coingecko.URL,
+			Timeout:    10 * time.Second,
+			Interval:   20 * time.Second,
+			Atomic:     true,
+			Name:       coingecko.Name,
+			MaxQueries: 1,
 		},
-		MarketConfig: config.MarketConfig{
+		Market: config.MarketConfig{
 			Name: coingecko.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {

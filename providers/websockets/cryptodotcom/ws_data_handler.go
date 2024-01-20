@@ -51,7 +51,7 @@ func NewWebSocketDataHandler(
 
 	return &WebSocketDataHandler{
 		cfg:               cfg,
-		invertedMarketCfg: cfg.MarketConfig.Invert(),
+		invertedMarketCfg: cfg.Market.Invert(),
 		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
@@ -118,7 +118,7 @@ func (h *WebSocketDataHandler) CreateMessage(
 	// corresponds to the perpetual contract name on the Crypto.com web socket API. This will
 	// only subscribe to price feeds that are configured in the config file.
 	for _, cp := range cps {
-		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			h.logger.Debug("no market configuration for currency pair", zap.String("currency_pair", cp.ToString()))
 			continue

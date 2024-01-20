@@ -26,6 +26,8 @@ var (
 			Timeout:    250 * time.Millisecond,
 			MaxQueries: 10,
 			Enabled:    true,
+			Name:       "api1",
+			URL:        "http://test.com",
 		},
 	}
 	providerCfg2 = config.ProviderConfig{
@@ -34,6 +36,8 @@ var (
 			MaxBufferSize:       10,
 			Enabled:             true,
 			ReconnectionTimeout: 250 * time.Millisecond,
+			WSS:                 "wss://test.com",
+			Name:                "websocket1",
 		},
 	}
 )
@@ -137,9 +141,9 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 			)
 			s.Require().NoError(err)
 
@@ -238,7 +242,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 			)
@@ -325,7 +329,7 @@ func (s *OracleTestSuite) TestStop() {
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 			)

@@ -63,7 +63,7 @@ func (h *CoinBaseAPIHandler) CreateURL(
 	// Ensure that the base and quote currencies are supported by the Coinbase API and
 	// are configured for the handler.
 	cp := cps[0]
-	market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+	market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 	if !ok {
 		return "", fmt.Errorf("unknown currency pair %s", cp)
 	}
@@ -86,7 +86,7 @@ func (h *CoinBaseAPIHandler) ParseResponse(
 
 	// Check if this currency pair is supported by the Coinbase API.
 	cp := cps[0]
-	_, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+	_, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 	if !ok {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](
 			cps,

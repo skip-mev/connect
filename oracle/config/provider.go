@@ -18,9 +18,9 @@ type ProviderConfig struct {
 	// does not support websocket based fetching, this field should be omitted.
 	WebSocket WebSocketConfig `mapstructure:"web_socket" toml:"web_socket"`
 
-	// MarketConfig defines the provider's market configurations. In particular, this defines
+	// Market defines the provider's market configurations. In particular, this defines
 	// the mappings between on-chain and off-chain currency pairs.
-	MarketConfig MarketConfig `mapstructure:"market_config" toml:"market_config"`
+	Market MarketConfig `mapstructure:"market_config" toml:"market_config"`
 }
 
 func (c *ProviderConfig) ValidateBasic() error {
@@ -32,12 +32,8 @@ func (c *ProviderConfig) ValidateBasic() error {
 		return fmt.Errorf("provider %s cannot be both API and websocket based", c.Name)
 	}
 
-	if err := c.MarketConfig.ValidateBasic(); err != nil {
-		return fmt.Errorf("market config for %s is not formatted correctly %w", c.Name, err)
-	}
-
-	if c.Name != c.MarketConfig.Name {
-		return fmt.Errorf("name must match market config name; %s != %s", c.Name, c.MarketConfig.Name)
+	if !c.API.Enabled && !c.WebSocket.Enabled {
+		return fmt.Errorf("provider %s must be either API or websocket based", c.Name)
 	}
 
 	if c.API.Enabled {
@@ -45,7 +41,9 @@ func (c *ProviderConfig) ValidateBasic() error {
 			return fmt.Errorf("api config for %s is not formatted correctly %w", c.Name, err)
 		}
 
-		return nil
+		if c.API.Name != c.Name {
+			return fmt.Errorf("received api config for %s but expected %s", c.API.Name, c.Name)
+		}
 	}
 
 	if c.WebSocket.Enabled {
@@ -53,8 +51,18 @@ func (c *ProviderConfig) ValidateBasic() error {
 			return fmt.Errorf("websocket config for %s is not formatted correctly %w", c.Name, err)
 		}
 
-		return nil
+		if c.WebSocket.Name != c.Name {
+			return fmt.Errorf("received websocket config for %s but expected %s", c.WebSocket.Name, c.Name)
+		}
 	}
 
-	return fmt.Errorf("provider %s must be either enable API or websocket based fetching", c.Name)
+	if err := c.Market.ValidateBasic(); err != nil {
+		return fmt.Errorf("market config for %s is not formatted correctly %w", c.Name, err)
+	}
+
+	if c.Name != c.Market.Name {
+		return fmt.Errorf("name must match market config name; %s != %s", c.Name, c.Market.Name)
+	}
+
+	return nil
 }

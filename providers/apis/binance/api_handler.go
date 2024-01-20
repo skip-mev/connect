@@ -51,7 +51,7 @@ func NewBinanceAPIHandler(
 
 	return &APIHandler{
 		cfg:               cfg,
-		invertedMarketCfg: cfg.MarketConfig.Invert(),
+		invertedMarketCfg: cfg.Market.Invert(),
 	}, nil
 }
 
@@ -63,7 +63,7 @@ func (h *APIHandler) CreateURL(
 	var cpStrings string
 
 	for _, cp := range cps {
-		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			continue
 		}
@@ -98,7 +98,7 @@ func (h *APIHandler) ParseResponse(
 	// Determine of the provided currency pairs which are supported by the Binance API.
 	configuredCps := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.cfg.MarketConfig.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			continue
 		}

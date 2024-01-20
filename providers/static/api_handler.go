@@ -41,7 +41,7 @@ func NewStaticMockAPIHandler(
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
 
-	for cpString, market := range cfg.MarketConfig.CurrencyPairToMarketConfigs {
+	for cpString, market := range cfg.Market.CurrencyPairToMarketConfigs {
 		cp, err := oracletypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			continue

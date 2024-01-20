@@ -23,8 +23,9 @@ var (
 			WSS:                 okx.URL_PROD,
 			MaxBufferSize:       100,
 			ReconnectionTimeout: 5 * time.Second,
+			Name:                okx.Name,
 		},
-		MarketConfig: config.MarketConfig{
+		Market: config.MarketConfig{
 			Name: okx.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {

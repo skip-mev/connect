@@ -38,10 +38,12 @@ func (c *OracleConfig) ValidateBasic() error {
 		return fmt.Errorf("oracle update interval must be greater than 0")
 	}
 
-	for _, cp := range c.CurrencyPairs {
-		if err := cp.ValidateBasic(); err != nil {
-			return fmt.Errorf("currency pair is not formatted correctly %w", err)
-		}
+	if len(c.Providers) == 0 {
+		return fmt.Errorf("oracle must have at least one provider")
+	}
+
+	if len(c.CurrencyPairs) == 0 {
+		return fmt.Errorf("oracle must have at least one currency pair")
 	}
 
 	for _, p := range c.Providers {
@@ -50,6 +52,11 @@ func (c *OracleConfig) ValidateBasic() error {
 		}
 	}
 
+	for _, cp := range c.CurrencyPairs {
+		if err := cp.ValidateBasic(); err != nil {
+			return fmt.Errorf("currency pair is not formatted correctly %w", err)
+		}
+	}
 	return c.Metrics.ValidateBasic()
 }
 

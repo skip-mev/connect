@@ -56,6 +56,7 @@ var LocalConfig = config.OracleConfig{
 			// the provider supports fetching data for the currency pair.
 			Name: binance.Name,
 			API: config.APIConfig{
+				Name:       binance.Name,
 				Atomic:     true,
 				Enabled:    true,
 				Timeout:    500 * time.Millisecond,
@@ -63,7 +64,7 @@ var LocalConfig = config.OracleConfig{
 				MaxQueries: 1,
 				URL:        binance.US_URL,
 			},
-			MarketConfig: config.MarketConfig{
+			Market: config.MarketConfig{
 				Name: binance.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
@@ -92,6 +93,7 @@ var LocalConfig = config.OracleConfig{
 		{
 			Name: coinbase.Name,
 			API: config.APIConfig{
+				Name:       coinbase.Name,
 				Atomic:     false,
 				Enabled:    true,
 				Timeout:    500 * time.Millisecond,
@@ -99,7 +101,7 @@ var LocalConfig = config.OracleConfig{
 				MaxQueries: 5,
 				URL:        coinbase.URL,
 			},
-			MarketConfig: config.MarketConfig{
+			Market: config.MarketConfig{
 				Name: coinbase.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
@@ -144,6 +146,7 @@ var LocalConfig = config.OracleConfig{
 		{
 			Name: coingecko.Name,
 			API: config.APIConfig{
+				Name:       coingecko.Name,
 				Atomic:     true,
 				Enabled:    true,
 				Timeout:    500 * time.Millisecond,
@@ -151,7 +154,7 @@ var LocalConfig = config.OracleConfig{
 				MaxQueries: 1,
 				URL:        coingecko.URL,
 			},
-			MarketConfig: config.MarketConfig{
+			Market: config.MarketConfig{
 				Name: coingecko.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
@@ -199,12 +202,13 @@ var LocalConfig = config.OracleConfig{
 		{
 			Name: cryptodotcom.Name,
 			WebSocket: config.WebSocketConfig{
+				Name:                cryptodotcom.Name,
 				Enabled:             true,
 				MaxBufferSize:       1000,
 				ReconnectionTimeout: 5 * time.Second,
 				WSS:                 cryptodotcom.URL_PROD,
 			},
-			MarketConfig: config.MarketConfig{
+			Market: config.MarketConfig{
 				Name: cryptodotcom.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
@@ -249,12 +253,13 @@ var LocalConfig = config.OracleConfig{
 		{
 			Name: okx.Name,
 			WebSocket: config.WebSocketConfig{
+				Name:                okx.Name,
 				Enabled:             true,
 				MaxBufferSize:       1000,
 				ReconnectionTimeout: 10 * time.Second,
 				WSS:                 okx.URL_PROD,
 			},
-			MarketConfig: config.MarketConfig{
+			Market: config.MarketConfig{
 				Name: okx.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {

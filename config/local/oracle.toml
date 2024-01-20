@@ -10,11 +10,13 @@ production = false
     max_queries = 1
     atomic = true
     url = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s"
+    name = "binance"
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
     reconnection_timeout = "0s"
     wss = ""
+    name = ""
   [providers.market_config]
     name = "binance"
     [providers.market_config.currency_pair_to_market_configs]
@@ -53,11 +55,13 @@ production = false
     max_queries = 5
     atomic = false
     url = "https://api.coinbase.com/v2/prices/%s/spot"
+    name = "coinbase"
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
     reconnection_timeout = "0s"
     wss = ""
+    name = ""
   [providers.market_config]
     name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
@@ -116,11 +120,13 @@ production = false
     max_queries = 1
     atomic = true
     url = "https://api.coingecko.com/api/v3"
+    name = "coingecko"
   [providers.web_socket]
     enabled = false
     max_buffer_size = 0
     reconnection_timeout = "0s"
     wss = ""
+    name = ""
   [providers.market_config]
     name = "coingecko"
     [providers.market_config.currency_pair_to_market_configs]
@@ -128,11 +134,6 @@ production = false
         ticker = "cosmos/usd"
         [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "avalanche/usd"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
-          Base = "AVAX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "bitcoin/usd"
@@ -179,11 +180,13 @@ production = false
     max_queries = 0
     atomic = false
     url = ""
+    name = ""
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1000
     reconnection_timeout = "5s"
     wss = "wss://stream.crypto.com/exchange/v1/market"
+    name = "crypto_dot_com"
   [providers.market_config]
     name = "crypto_dot_com"
     [providers.market_config.currency_pair_to_market_configs]
@@ -242,11 +245,13 @@ production = false
     max_queries = 0
     atomic = false
     url = ""
+    name = ""
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1000
     reconnection_timeout = "10s"
     wss = "wss://ws.okx.com:8443/ws/v5/public"
+    name = "okx"
   [providers.market_config]
     name = "okx"
     [providers.market_config.currency_pair_to_market_configs]

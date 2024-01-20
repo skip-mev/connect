@@ -21,7 +21,7 @@ import (
 
 const (
 	localhost     = "localhost"
-	port          = "8080"
+	port          = "8084"
 	timeout       = 1 * time.Second
 	delay         = 20 * time.Second
 	grpcErrPrefix = "rpc error: code = Unknown desc = "

@@ -11,7 +11,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -64,8 +63,9 @@ type OracleImpl struct { // nolint
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
 
-	// cfg is the oracle config.
-	cfg config.OracleConfig
+	// updateInterval is the interval at which the oracle will fetch prices from
+	// each provider.
+	updateInterval time.Duration
 }
 
 // New returns a new instance of an Oracle. The oracle inputs providers that are
@@ -76,17 +76,9 @@ type OracleImpl struct { // nolint
 // using TWAPs, TVWAPs, etc. When determining final prices, the oracle will utilize the aggregateFn
 // to compute the final price for each currency pair. By default, the oracle will compute the median
 // price across all providers.
-func New(
-	cfg config.OracleConfig,
-	opts ...OracleOption,
-) (*OracleImpl, error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid oracle config: %w", err)
-	}
-
+func New(opts ...OracleOption) (*OracleImpl, error) {
 	o := &OracleImpl{
 		closer:  ssync.NewCloser(),
-		cfg:     cfg,
 		logger:  zap.NewNop(),
 		metrics: metrics.NewNopMetrics(),
 		priceAggregator: aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
@@ -123,7 +115,7 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	o.running.Store(true)
 	defer o.running.Store(false)
 
-	ticker := time.NewTicker(o.cfg.UpdateInterval)
+	ticker := time.NewTicker(o.updateInterval)
 	defer ticker.Stop()
 
 	for {
@@ -208,7 +200,7 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 	for pair, result := range prices {
 		// If the price is older than the update interval, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
-		if diff > o.cfg.UpdateInterval {
+		if diff > o.updateInterval {
 			o.logger.Debug(
 				"skipping price",
 				zap.String("provider", provider.Name()),
