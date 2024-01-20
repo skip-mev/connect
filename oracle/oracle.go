@@ -22,7 +22,7 @@ var _ Oracle = (*OracleImpl)(nil)
 // Oracle defines the expected interface for an oracle. It is consumed by the oracle server.
 //
 //go:generate mockery --name Oracle --filename mock_oracle.go
-type Oracle interface { // nolint
+type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
 	GetPrices() map[oracletypes.CurrencyPair]*big.Int
@@ -32,7 +32,7 @@ type Oracle interface { // nolint
 
 // Oracle implements the core component responsible for fetching exchange rates
 // for a given set of currency pairs and determining exchange rates.
-type OracleImpl struct { // nolint
+type OracleImpl struct { //nolint
 	// --------------------- General Config --------------------- //
 	mtx    sync.RWMutex
 	logger *zap.Logger

@@ -7,11 +7,11 @@ const (
 	// DemoURL is used for testing purposes.
 
 	// URL_PROD is the public OKX Websocket URL.
-	URL_PROD = "wss://ws.okx.com:8443/ws/v5/public"
+	URL_PROD = "wss://ws.okx.com:8443/ws/v5/public" //nolint
 
 	// URL_PROD_AWS is the public OKX Websocket URL hosted on AWS.
-	URL_PROD_AWS = "wss://wsaws.okx.com:8443/ws/v5/public"
+	URL_PROD_AWS = "wss://wsaws.okx.com:8443/ws/v5/public" //nolint
 
 	// DemoURL is the public OKX Websocket URL for test usage.
-	URL_DEMO = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999"
+	URL_DEMO = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999" //nolint
 )

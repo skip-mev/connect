@@ -16,37 +16,35 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var (
-	providerCfg = config.ProviderConfig{
+var providerCfg = config.ProviderConfig{
+	Name: coingecko.Name,
+	API: config.APIConfig{
+		Enabled:    true,
+		URL:        coingecko.URL,
+		Timeout:    10 * time.Second,
+		Interval:   20 * time.Second,
+		Atomic:     true,
+		Name:       coingecko.Name,
+		MaxQueries: 1,
+	},
+	Market: config.MarketConfig{
 		Name: coingecko.Name,
-		API: config.APIConfig{
-			Enabled:    true,
-			URL:        coingecko.URL,
-			Timeout:    10 * time.Second,
-			Interval:   20 * time.Second,
-			Atomic:     true,
-			Name:       coingecko.Name,
-			MaxQueries: 1,
-		},
-		Market: config.MarketConfig{
-			Name: coingecko.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
-					Ticker:       "bitcoin/usd",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-				"ETHEREUM/USD": {
-					Ticker:       "ethereum/usd",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				},
-				"ETHEREUM/BITCOIN": {
-					Ticker:       "ethereum/btc",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-				},
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "bitcoin/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ethereum/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ethereum/btc",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 		},
-	}
-)
+	},
+}
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {

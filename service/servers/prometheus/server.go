@@ -22,7 +22,7 @@ const (
 // PrometheusServer is a prometheus server that serves metrics registered in the DefaultRegisterer.
 // It is a wrapper around the promhttp.Handler() handler. The server will be started in a go-routine,
 // and is gracefully stopped on close.
-type PrometheusServer struct {
+type PrometheusServer struct { //nolint
 	srv  *http.Server
 	done chan struct{}
 	*sync.Closer

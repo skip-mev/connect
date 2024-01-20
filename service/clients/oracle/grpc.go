@@ -22,7 +22,7 @@ var _ OracleClient = (*GRPCClient)(nil)
 // the gRPC client that connects to the oracle service.
 //
 //go:generate mockery --name OracleClient --filename mock_oracle_client.go
-type OracleClient interface {
+type OracleClient interface { //nolint
 	types.OracleClient
 
 	// Start starts the oracle client.

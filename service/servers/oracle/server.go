@@ -20,7 +20,7 @@ const (
 
 // OracleServer is the base implementation of the service.OracleServer interface, this is meant to
 // serve requests from a remote OracleClient
-type OracleServer struct {
+type OracleServer struct { //nolint
 	types.UnimplementedOracleServer
 
 	// expected implementation of the oracle

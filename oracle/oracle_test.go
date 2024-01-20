@@ -176,7 +176,6 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
 			},

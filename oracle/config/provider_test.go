@@ -279,5 +279,4 @@ func TestProviderConfig(t *testing.T) {
 			}
 		})
 	}
-
 }
