@@ -224,6 +224,7 @@ func webSocketProviderFromProviderConfig(
 // providers config.
 func filterForConfiguredCurrencyPairs(
 	logger *zap.Logger,
+	
 	cps []oracletypes.CurrencyPair,
 	cfg config.ProviderConfig,
 ) ([]oracletypes.CurrencyPair, error) {
