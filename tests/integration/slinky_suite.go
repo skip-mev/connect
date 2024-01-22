@@ -77,7 +77,7 @@ func DefaultOracleConfig(node *cosmos.ChainNode) (
 
 	// Create the metrics config
 	metricsConfig := oracleconfig.MetricsConfig{
-		PrometheusServerAddress: fmt.Sprintf("%s:%s", oracle.HostName(), "8081"),
+		PrometheusServerAddress: fmt.Sprintf("%s:%s", "0.0.0.0", "8081"),
 		OracleMetrics: oracleconfig.OracleMetricsConfig{
 			Enabled: true,
 		},

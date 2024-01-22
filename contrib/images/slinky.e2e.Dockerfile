@@ -15,7 +15,7 @@ RUN make build-test-app
 ## This will expose the tendermint and cosmos ports alongside 
 ## starting up the sim app and the slinky daemon
 FROM ubuntu:rolling
-EXPOSE 26656 26657 1317 9090 7171 26655
+EXPOSE 26656 26657 1317 9090 7171 26655 8081
 ENTRYPOINT ["slinkyd", "start"]
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
