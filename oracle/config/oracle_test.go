@@ -52,44 +52,6 @@ func TestOracleConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with no providers",
-			config: config.OracleConfig{
-				UpdateInterval: time.Second,
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-			},
-			expectedErr: true,
-		},
-		{
-			name: "bad config with no currency pairs",
-			config: config.OracleConfig{
-				UpdateInterval: time.Second,
-				Providers: []config.ProviderConfig{
-					{
-						Name: "test",
-						Market: config.MarketConfig{
-							Name: "test",
-							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
-									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-								},
-							},
-						},
-						WebSocket: config.WebSocketConfig{
-							Enabled:             true,
-							MaxBufferSize:       1,
-							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-						},
-					},
-				},
-			},
-			expectedErr: true,
-		},
-		{
 			name: "bad config with bad currency pair format",
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,

@@ -234,7 +234,7 @@ func filterForConfiguredCurrencyPairs(
 			logger.Debug("provider supports currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
 			filteredCps = append(filteredCps, cp)
 		} else {
-			logger.Debug("provider does not support currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+			logger.Warn("provider does not support currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
 		}
 	}
 
