@@ -24,12 +24,9 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler
 // APIHandler implements the Base Provider API handler interface for CoinGecko.
 // This provider can be configured to support API based fetching, however, the provider
 // does not require it.
-type APIHandler struct { //nolint
+type APIHandler struct {
 	// cfg is the provider config.
 	cfg config.ProviderConfig
-
-	// invertedMarketCfg is convenience struct that contains the inverted market to currency pair mapping.
-	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
 // NewAPIHandler returns a new CoinGecko API handler.
@@ -49,8 +46,7 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		cfg:               cfg,
-		invertedMarketCfg: cfg.Market.Invert(),
+		cfg: cfg,
 	}, nil
 }
 
@@ -113,7 +109,7 @@ func (h *APIHandler) ParseResponse(
 			ticker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			market, ok := h.invertedMarketCfg.MarketToCurrencyPairConfigs[ticker]
+			market, ok := h.cfg.Market.MarketToCurrencyPairConfigs[ticker]
 			if !ok {
 				continue
 			}

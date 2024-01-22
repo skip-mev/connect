@@ -27,9 +27,6 @@ type WebSocketDataHandler struct {
 
 	// config is the config for the Crypto.com web socket API.
 	cfg config.ProviderConfig
-
-	// invertedMarketCfg is a convenience struct that contains the inverted market to currency pair mapping.
-	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Crypto.com.
@@ -50,9 +47,8 @@ func NewWebSocketDataHandler(
 	}
 
 	return &WebSocketDataHandler{
-		cfg:               cfg,
-		invertedMarketCfg: cfg.Market.Invert(),
-		logger:            logger.With(zap.String("web_socket_data_handler", Name)),
+		cfg:    cfg,
+		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
 

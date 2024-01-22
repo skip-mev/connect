@@ -28,9 +28,6 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler
 type APIHandler struct {
 	// cfg is the config for the Binance API.
 	cfg config.ProviderConfig
-
-	// invertedMarketCfg is convenience struct that contains the inverted market to currency pair mapping.
-	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
 // NewAPIHandler returns a new Binance API handler.
@@ -50,8 +47,7 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		cfg:               cfg,
-		invertedMarketCfg: cfg.Market.Invert(),
+		cfg: cfg,
 	}, nil
 }
 
@@ -108,7 +104,7 @@ func (h *APIHandler) ParseResponse(
 
 	// Filter out the responses that are not expected.
 	for _, data := range result {
-		market, ok := h.invertedMarketCfg.MarketToCurrencyPairConfigs[data.Symbol]
+		market, ok := h.cfg.Market.MarketToCurrencyPairConfigs[data.Symbol]
 		if !ok {
 			continue
 		}

@@ -75,33 +75,15 @@ func TestMarketConfig(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
+
+				// Check that the inverted market config is correct.
+				require.Equal(t, len(tc.config.CurrencyPairToMarketConfigs), len(tc.config.MarketToCurrencyPairConfigs))
+				for _, marketConfig := range tc.config.CurrencyPairToMarketConfigs {
+					invertedMarketConfig, ok := tc.config.MarketToCurrencyPairConfigs[marketConfig.Ticker]
+					require.True(t, ok)
+					require.Equal(t, marketConfig, invertedMarketConfig)
+				}
 			}
 		})
-	}
-}
-
-func TestInvertMarketConfig(t *testing.T) {
-	cfg := config.MarketConfig{
-		Name: "test",
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
-				Ticker:       "BTC/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"BITCOIN/EURO": {
-				Ticker:       "BTC/EURO",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "EURO"),
-			},
-		},
-	}
-
-	invertedCfg := cfg.Invert()
-	require.Equal(t, "test", invertedCfg.Name)
-	require.Equal(t, len(cfg.CurrencyPairToMarketConfigs), len(invertedCfg.MarketToCurrencyPairConfigs))
-
-	for ticker, marketConfig := range cfg.CurrencyPairToMarketConfigs {
-		invertedMarketConfig, ok := invertedCfg.MarketToCurrencyPairConfigs[marketConfig.Ticker]
-		require.True(t, ok)
-		require.Equal(t, ticker, invertedMarketConfig.CurrencyPair.ToString())
 	}
 }

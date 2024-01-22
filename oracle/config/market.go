@@ -17,6 +17,12 @@ type MarketConfig struct {
 	// maps the on-chain currency pair representation (i.e. BITCOIN/USD) to the
 	// off-chain currency pair representation (i.e. BTC/USD).
 	CurrencyPairToMarketConfigs map[string]CurrencyPairMarketConfig `mapstructure:"currency_pair_to_market_configs" toml:"currency_pair_to_market_configs"`
+
+	// MarketToCurrencyPairConfigs is the config the provider uses to create mappings
+	// between off-chain and on-chain currency pairs. In particular, this config
+	// maps the off-chain currency pair representation (i.e. BTC/USD) to the
+	// on-chain currency pair representation (i.e. BITCOIN/USD).
+	MarketToCurrencyPairConfigs map[string]CurrencyPairMarketConfig
 }
 
 // CurrencyPairMarketConfig is the config the provider uses to create mappings
@@ -29,19 +35,6 @@ type CurrencyPairMarketConfig struct {
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
 
-// InvertedCurrencyPairMarketConfig is the config the provider uses to create mappings
-// between off-chain and on-chain currency pairs.
-type InvertedCurrencyPairMarketConfig struct {
-	// Name identifies which provider this config is for.
-	Name string
-
-	// MarketToCurrencyPairConfigs is the config the provider uses to create mappings
-	// between off-chain and on-chain currency pairs. In particular, this config
-	// maps the off-chain currency pair representation (i.e. BTC/USD) to the
-	// on-chain currency pair representation (i.e. BITCOIN/USD).
-	MarketToCurrencyPairConfigs map[string]CurrencyPairMarketConfig
-}
-
 // NewMarketConfig returns a new MarketConfig instance.
 func NewMarketConfig() MarketConfig {
 	return MarketConfig{
@@ -51,17 +44,14 @@ func NewMarketConfig() MarketConfig {
 
 // Invert returns the inverted currency pair market config. This is used to
 // create the inverse currency pair market config for the provider.
-func (c *MarketConfig) Invert() InvertedCurrencyPairMarketConfig {
-	invertedConfig := InvertedCurrencyPairMarketConfig{
-		Name:                        c.Name,
-		MarketToCurrencyPairConfigs: make(map[string]CurrencyPairMarketConfig),
-	}
+func (c *MarketConfig) Invert() map[string]CurrencyPairMarketConfig {
+	marketToCPConfig := make(map[string]CurrencyPairMarketConfig)
 
 	for _, marketConfig := range c.CurrencyPairToMarketConfigs {
-		invertedConfig.MarketToCurrencyPairConfigs[marketConfig.Ticker] = marketConfig
+		marketToCPConfig[marketConfig.Ticker] = marketConfig
 	}
 
-	return invertedConfig
+	return marketToCPConfig
 }
 
 // ValidateBasic performs basic validation of the market config.
@@ -88,6 +78,9 @@ func (c *MarketConfig) ValidateBasic() error {
 		delete(c.CurrencyPairToMarketConfigs, cpStr)
 		c.CurrencyPairToMarketConfigs[cp.ToString()] = marketConfig
 	}
+
+	// Invert the currency pair market config.
+	c.MarketToCurrencyPairConfigs = c.Invert()
 
 	return nil
 }
