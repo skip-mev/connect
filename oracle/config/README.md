@@ -1,5 +1,3 @@
-## TODSO
-
 # Configurations
 
 > To read more about how to configure a new provider to your oracle, please read the [Create Your Own Provider](../../providers/README.md) readme. This readme overview's the configuration options for the oracle service and its corresponding metrics intrumentation.
