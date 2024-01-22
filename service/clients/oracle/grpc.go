@@ -79,7 +79,6 @@ func (c *GRPCClient) Start() error {
 	conn, err := grpc.Dial(
 		c.addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to dial oracle gRPC server: %w", err)

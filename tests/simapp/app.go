@@ -282,6 +282,8 @@ func NewSimApp(
 		panic(err)
 	}
 
+	app.Logger().Info("oracle config", "config", cfg)
+
 	// If app level instrumentation is enabled, then wrap the oracle service with a metrics client
 	// to get metrics on the oracle service (for ABCI++). This will allow the instrumentation to track
 	// latency in VerifyVoteExtension requests and more.
@@ -310,13 +312,15 @@ func NewSimApp(
 		go app.oraclePrometheusServer.Start()
 	}
 
-	// start the oracle service
-	if err := app.oracleClient.Start(); err != nil {
-		app.Logger().Error("failed to start oracle client", "err", err)
-		panic(err)
-	}
+	// Connect to the oracle service.
+	go func() {
+		if err := app.oracleClient.Start(); err != nil {
+			app.Logger().Error("failed to start oracle client", "err", err)
+			panic(err)
+		}
 
-	app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
+		app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
+	}()
 
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {
