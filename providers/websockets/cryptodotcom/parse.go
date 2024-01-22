@@ -33,7 +33,7 @@ func (h *WebSocketDataHandler) parseInstrumentMessage(
 	for _, instrument := range instruments {
 		// If we don't have a mapping for the instrument, return an error. This is likely a configuration
 		// error.
-		market, ok := h.cfg.Market.MarketToCurrencyPairConfigs[instrument.Name]
+		market, ok := h.cfg.Market.TickerToMarketConfigs[instrument.Name]
 		if !ok {
 			h.logger.Error("failed to find currency pair for instrument", zap.String("instrument", instrument.Name))
 			continue

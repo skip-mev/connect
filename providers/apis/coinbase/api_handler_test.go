@@ -28,12 +28,12 @@ var providerCfg = config.ProviderConfig{
 	},
 	Market: config.MarketConfig{
 		Name: coinbase.Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
+		TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BTC-USD": {
 				Ticker:       "BTC-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
-			"ETHEREUM/USD": {
+			"ETH-USD": {
 				Ticker:       "ETH-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},

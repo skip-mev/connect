@@ -104,7 +104,7 @@ func (h *APIHandler) ParseResponse(
 
 	// Filter out the responses that are not expected.
 	for _, data := range result {
-		market, ok := h.cfg.Market.MarketToCurrencyPairConfigs[data.Symbol]
+		market, ok := h.cfg.Market.TickerToMarketConfigs[data.Symbol]
 		if !ok {
 			continue
 		}
