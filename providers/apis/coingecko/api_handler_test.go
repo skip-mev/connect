@@ -29,16 +29,16 @@ var providerCfg = config.ProviderConfig{
 	},
 	Market: config.MarketConfig{
 		Name: coingecko.Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
+		TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"bitcoin/usd": {
 				Ticker:       "bitcoin/usd",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
-			"ETHEREUM/USD": {
+			"ethereum/usd": {
 				Ticker:       "ethereum/usd",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
-			"ETHEREUM/BITCOIN": {
+			"ethereum/btc": {
 				Ticker:       "ethereum/btc",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},

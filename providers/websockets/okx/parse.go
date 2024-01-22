@@ -7,10 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 const (
@@ -77,7 +78,7 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 
 	// Iterate through all of the tickers and add them to the response.
 	for _, ticker := range resp.Data {
-		market, ok := h.cfg.Market.MarketToCurrencyPairConfigs[ticker.InstrumentID]
+		market, ok := h.cfg.Market.TickerToMarketConfigs[ticker.InstrumentID]
 		if !ok {
 			h.logger.Debug("currency pair not found for instrument ID", zap.String("instrument_id", ticker.InstrumentID))
 			continue

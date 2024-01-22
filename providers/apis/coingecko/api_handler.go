@@ -109,7 +109,7 @@ func (h *APIHandler) ParseResponse(
 			ticker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			market, ok := h.cfg.Market.MarketToCurrencyPairConfigs[ticker]
+			market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
 			if !ok {
 				continue
 			}
