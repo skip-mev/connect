@@ -109,7 +109,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coingecko.NewCoinGeckoAPIHandler(providerCfg)
+			h, err := coingecko.NewAPIHandler(providerCfg)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -355,7 +355,7 @@ shout out my label thats me
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coingecko.NewCoinGeckoAPIHandler(providerCfg)
+			h, err := coingecko.NewAPIHandler(providerCfg)
 			require.NoError(t, err)
 
 			now := time.Now()

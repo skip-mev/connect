@@ -115,7 +115,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewBinanceAPIHandler(providerCfg)
+			h, err := binance.NewAPIHandler(providerCfg)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -173,7 +173,7 @@ func TestCreateURL_US(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewBinanceAPIHandler(providerCfgUS)
+			h, err := binance.NewAPIHandler(providerCfgUS)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -320,7 +320,7 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewBinanceAPIHandler(providerCfg)
+			h, err := binance.NewAPIHandler(providerCfg)
 			require.NoError(t, err)
 
 			now := time.Now()
@@ -386,10 +386,7 @@ func TestDecode(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewBinanceAPIHandler(providerCfg)
-			require.NoError(t, err)
-
-			got, err := h.Decode(tc.response)
+			got, err := binance.Decode(tc.response)
 			if tc.expectErr {
 				require.Error(t, err)
 				return

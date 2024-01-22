@@ -1,7 +1,6 @@
 package binance
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -27,16 +26,17 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
+	// cfg is the config for the Binance API.
 	cfg config.ProviderConfig
 
-	// invertedMarketCfg is convience struct that contains the inverted market to currency pair mapping.
+	// invertedMarketCfg is convenience struct that contains the inverted market to currency pair mapping.
 	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
-// NewBinanceAPIHandler returns a new Binance API handler.
-func NewBinanceAPIHandler(
+// NewAPIHandler returns a new Binance API handler.
+func NewAPIHandler(
 	cfg config.ProviderConfig,
-) (*APIHandler, error) {
+) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
@@ -85,7 +85,7 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {
 	// Parse the response into a BinanceResponse.
-	result, err := h.Decode(resp)
+	result, err := Decode(resp)
 	if err != nil {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
 	}
@@ -130,12 +130,4 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
-}
-
-// Decode decodes the given http response into a BinanceResponse.
-func (h *APIHandler) Decode(resp *http.Response) (Response, error) {
-	// Parse the response into a BinanceResponse.
-	var result Response
-	err := json.NewDecoder(resp.Body).Decode(&result)
-	return result, err
 }

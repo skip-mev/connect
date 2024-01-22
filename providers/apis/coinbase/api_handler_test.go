@@ -85,7 +85,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coinbase.NewCoinBaseAPIHandler(providerCfg)
+			h, err := coinbase.NewAPIHandler(providerCfg)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -211,7 +211,7 @@ toms obvious but not minimal language
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coinbase.NewCoinBaseAPIHandler(providerCfg)
+			h, err := coinbase.NewAPIHandler(providerCfg)
 			require.NoError(t, err)
 
 			now := time.Now()

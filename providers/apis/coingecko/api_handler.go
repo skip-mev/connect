@@ -19,32 +19,36 @@ const (
 	Name = "coingecko"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*CoinGeckoAPIHandler)(nil)
+var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
-// CoinGeckoAPIHandler implements the Base Provider API handler interface for CoinGecko.
+// APIHandler implements the Base Provider API handler interface for CoinGecko.
 // This provider can be configured to support API based fetching, however, the provider
 // does not require it.
-type CoinGeckoAPIHandler struct { //nolint
+type APIHandler struct { //nolint
 	// cfg is the provider config.
 	cfg config.ProviderConfig
 
-	// invertedMarketCfg is convience struct that contains the inverted market to currency pair mapping.
+	// invertedMarketCfg is convenience struct that contains the inverted market to currency pair mapping.
 	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
-// NewCoinGeckoAPIHandler returns a new CoinGecko API handler.
-func NewCoinGeckoAPIHandler(
+// NewAPIHandler returns a new CoinGecko API handler.
+func NewAPIHandler(
 	cfg config.ProviderConfig,
-) (*CoinGeckoAPIHandler, error) {
+) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
+	if !cfg.API.Enabled {
+		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
 		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
 	}
 
-	return &CoinGeckoAPIHandler{
+	return &APIHandler{
 		cfg:               cfg,
 		invertedMarketCfg: cfg.Market.Invert(),
 	}, nil
@@ -54,7 +58,7 @@ func NewCoinGeckoAPIHandler(
 // given currency pairs. The CoinGecko API supports fetching spot prices for multiple
 // currency pairs in a single request. The URL that is generated automatically populates
 // the API key if it is set.
-func (h *CoinGeckoAPIHandler) CreateURL(
+func (h *APIHandler) CreateURL(
 	cps []oracletypes.CurrencyPair,
 ) (string, error) {
 	// Create a list of base currencies and quote currencies.
@@ -72,17 +76,11 @@ func (h *CoinGeckoAPIHandler) CreateURL(
 	return fmt.Sprintf("%s%s", h.cfg.API.URL, finalEndpoint), nil
 }
 
-// Atomic returns true as the CoinGecko API is atomic i.e. returns the price of all
-// currency pairs in a single request.
-func (h *CoinGeckoAPIHandler) Atomic() bool {
-	return true
-}
-
 // ParseResponse parses the response from the CoinGecko API. The response is expected
 // to match every base currency with every quote currency. As such, we need to filter
 // out the responses that are not expected. Note that the response will only return
 // a response for the inputted currency pairs.
-func (h *CoinGeckoAPIHandler) ParseResponse(
+func (h *APIHandler) ParseResponse(
 	cps []oracletypes.CurrencyPair,
 	resp *http.Response,
 ) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {

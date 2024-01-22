@@ -25,11 +25,11 @@ type StaticMockAPIHandler struct { //nolint
 	currencyPairs []oracletypes.CurrencyPair
 }
 
-// NewStaticMockAPIHandler returns a new StaticMockAPIHandler. This constructs a
+// NewAPIHandler returns a new StaticMockAPIHandler. This constructs a
 // new static mock provider from the config. Notice this method expects the
-// TokenNameToSymbol map to be populated w/ entries of the form CurrencyPair.ToString():
+// market configuration map to be populated w/ entries of the form CurrencyPair.ToString():
 // big.NewInt(price).
-func NewStaticMockAPIHandler(
+func NewAPIHandler(
 	cfg config.ProviderConfig,
 ) (*StaticMockAPIHandler, error) {
 	if cfg.Name != Name {

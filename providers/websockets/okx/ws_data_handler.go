@@ -27,7 +27,7 @@ type WebsocketDataHandler struct {
 	// config is the config for the OKX web socket API.
 	cfg config.ProviderConfig
 
-	// invertedMarketCfg is convience struct that contains the inverted market to currency pair mapping.
+	// invertedMarketCfg is convenience struct that contains the inverted market to currency pair mapping.
 	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 

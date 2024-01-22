@@ -19,19 +19,20 @@ const (
 	Name = "coinbase"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*CoinBaseAPIHandler)(nil)
+var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
-// CoinBaseAPIHandler implements the APIDataHandler interface for Coinbase, which can be used
+// APIHandler implements the APIDataHandler interface for Coinbase, which can be used
 // by a base provider. The DataHandler fetches data from the spot price Coinbase API. It is
 // atomic in that it must request data from the Coinbase API sequentially for each currency pair.
-type CoinBaseAPIHandler struct { //nolint
+type APIHandler struct {
+	// cfg is the config for the Coinbase API.
 	cfg config.ProviderConfig
 }
 
-// NewCoinBaseAPIHandler returns a new Coinbase APIDataHandler.
-func NewCoinBaseAPIHandler(
+// NewAPIHandler returns a new Coinbase APIDataHandler.
+func NewAPIHandler(
 	cfg config.ProviderConfig,
-) (*CoinBaseAPIHandler, error) {
+) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
@@ -44,7 +45,7 @@ func NewCoinBaseAPIHandler(
 		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
 	}
 
-	return &CoinBaseAPIHandler{
+	return &APIHandler{
 		cfg,
 	}, nil
 }
@@ -53,7 +54,7 @@ func NewCoinBaseAPIHandler(
 // given currency pair. Since the Coinbase API only supports fetching spot prices for
 // a single currency pair at a time, this function will return an error if the currency
 // pair slice contains more than one currency pair.
-func (h *CoinBaseAPIHandler) CreateURL(
+func (h *APIHandler) CreateURL(
 	cps []oracletypes.CurrencyPair,
 ) (string, error) {
 	if len(cps) != 1 {
@@ -73,7 +74,7 @@ func (h *CoinBaseAPIHandler) CreateURL(
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns
 // the resulting price. Note that this can only parse a single currency pair at a time.
-func (h *CoinBaseAPIHandler) ParseResponse(
+func (h *APIHandler) ParseResponse(
 	cps []oracletypes.CurrencyPair,
 	resp *http.Response,
 ) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {
@@ -90,7 +91,7 @@ func (h *CoinBaseAPIHandler) ParseResponse(
 	if !ok {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](
 			cps,
-			fmt.Errorf("unknown currency pair %s", cp),
+			fmt.Errorf("unknown currency pair %s", cp.ToString()),
 		)
 	}
 
