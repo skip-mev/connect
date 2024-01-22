@@ -35,7 +35,7 @@ run-prom-client:
 		prom/prometheus
 
 update-local-config:
-	go run ./config/local/main.go
+	@go run ./config/local/main.go
 
 install:
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
