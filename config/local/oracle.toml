@@ -1,0 +1,93 @@
+###############################################################################
+###                               Oracle                                    ###
+###############################################################################
+# OracleConfig TOML Configuration
+
+# Enabled specifies whether the side-car oracle needs to be run.
+enabled = true
+
+# InProcess specifies whether the oracle is currently running in-process (true) or out-of-process (false).
+in_process = true
+
+# ClientTimeout is the time that the client is willing to wait for responses from the oracle.
+client_timeout = "2s"  # Replace "2s" with your desired timeout duration.
+
+# RemoteAddress is the address of the remote oracle server (if it is running out-of-process).
+remote_address = ""
+
+# UpdateInterval is the interval at which the oracle will fetch prices from providers.
+update_interval = "2s"  # Replace "2s" with your desired update interval duration.
+
+# Production is the flag that determines whether the oracle is running in production mode.
+production = false
+
+# Providers is the list of providers that the oracle will fetch prices from.
+
+[[providers]]
+name = "coinbase"
+path = "config/local/providers/coinbase.json"
+api.enabled = true
+api.timeout = "500ms"  # Replace "500ms" with your desired timeout duration.
+api.interval = "1s"  # Replace "1s" with your desired update interval duration.
+api.max_queries = 5  # Replace "5" with your desired maximum number of queries per update interval.
+
+[[providers]]
+name = "coingecko"
+path = "config/local/providers/coingecko.json"
+api.enabled = true
+api.timeout = "500ms"
+api.interval = "1s"
+api.max_queries = 1 # CoinGecko is atomic so it can fetch all prices in a single request.
+
+[[providers]]
+name = "crypto_dot_com"
+path = "config/local/providers/crypto_dot_com.json"
+web_socket.enabled = true
+web_socket.max_buffer_size = 1000  # Replace "1000" with your desired maximum buffer size.
+web_socket.reconnection_timeout = "5s"  # Replace "5s" with your desired reconnection timeout duration.
+
+[[providers]]
+name = "okx"
+path = "config/local/providers/okx.json"
+web_socket.enabled = true
+web_socket.max_buffer_size = 1000
+web_socket.reconnection_timeout = "10s"
+
+
+[[providers]]
+name = "binanceus"
+path = "config/local/providers/binanceus.json"
+api.enabled = true
+api.timeout = "500ms"
+api.interval = "1s"
+api.max_queries = 1 # Binance is atomic so it can fetch all prices in a single request.
+
+# Currency Pairs
+
+[[currency_pairs]]
+base = "BITCOIN"
+quote = "USD"
+
+[[currency_pairs]]
+base = "ETHEREUM"
+quote = "USD"
+
+[[currency_pairs]]
+base = "ATOM"
+quote = "USD"
+
+[[currency_pairs]]
+base = "SOLANA"
+quote = "USD"
+
+[[currency_pairs]]
+base = "POLKADOT"
+quote = "USD"
+
+[[currency_pairs]]
+base = "DYDX"
+quote = "USD"
+
+[[currency_pairs]]
+base = "ETHEREUM"
+quote = "BITCOIN"
