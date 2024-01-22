@@ -1,4 +1,4 @@
-package types
+package oracle
 
 import (
 	"math/big"

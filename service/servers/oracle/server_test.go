@@ -1,11 +1,9 @@
-package server_test
+package oracle_test
 
 import (
 	"context"
 	"fmt"
-	"io"
 	"math/big"
-	"net/http"
 	"testing"
 	"time"
 
@@ -14,17 +12,16 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
 
-	"github.com/skip-mev/slinky/service"
-	"github.com/skip-mev/slinky/service/client"
-	"github.com/skip-mev/slinky/service/server"
-	stypes "github.com/skip-mev/slinky/service/types"
-	"github.com/skip-mev/slinky/service/types/mocks"
-	"github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/oracle/mocks"
+	client "github.com/skip-mev/slinky/service/clients/oracle"
+	server "github.com/skip-mev/slinky/service/servers/oracle"
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
 	localhost     = "localhost"
-	port          = "8080"
+	port          = "8084"
 	timeout       = 1 * time.Second
 	delay         = 20 * time.Second
 	grpcErrPrefix = "rpc error: code = Unknown desc = "
@@ -35,8 +32,7 @@ type ServerTestSuite struct {
 
 	srv        *server.OracleServer
 	mockOracle *mocks.Oracle
-	client     *client.GRPCClient
-	httpClient *http.Client
+	client     client.OracleClient
 	ctx        context.Context
 	cancel     context.CancelFunc
 }
@@ -52,7 +48,6 @@ func (s *ServerTestSuite) SetupTest() {
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
 	s.client = client.NewGRPCClient(localhost+":"+port, timeout)
-	s.httpClient = http.DefaultClient
 
 	// create context
 	s.ctx, s.cancel = context.WithCancel(context.Background())
@@ -62,7 +57,7 @@ func (s *ServerTestSuite) SetupTest() {
 
 	// start server + client w/ context
 	go s.srv.StartServer(s.ctx, localhost, port)
-	s.Require().NoError(s.client.Start(context.Background()))
+	s.Require().NoError(s.client.Start())
 }
 
 // teardown test suite
@@ -79,7 +74,7 @@ func (s *ServerTestSuite) TearDownTest() {
 	}
 
 	// close client
-	s.Require().NoError(s.client.Stop(context.Background()))
+	s.Require().NoError(s.client.Stop())
 }
 
 func (s *ServerTestSuite) TestOracleServerNotRunning() {
@@ -87,10 +82,10 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 	s.mockOracle.On("IsRunning").Return(false)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect oracle not running error
-	s.Require().Equal(err.Error(), grpcErrPrefix+stypes.ErrorOracleNotRunning.Error())
+	s.Require().Equal(err.Error(), grpcErrPrefix+server.ErrOracleNotRunning.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {
@@ -99,7 +94,7 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 	s.mockOracle.On("GetPrices").Return(nil).After(delay)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect deadline exceeded error
 	s.Require().Equal(err.Error(), status.FromContextError(context.DeadlineExceeded).Err().Error())
@@ -108,51 +103,38 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
-	cp1 := types.CurrencyPair{
+	cp1 := oracletypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
 
-	cp2 := types.CurrencyPair{
+	cp2 := oracletypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
+	s.mockOracle.On("GetPrices").Return(map[oracletypes.CurrencyPair]*big.Int{
 		cp1: big.NewInt(100),
 		cp2: big.NewInt(200),
 	})
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
 
-	// call from grpc client
-	resp, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	// call from client
+	resp, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 	s.Require().NoError(err)
 
 	// check response
 	s.Require().Equal(resp.Prices[cp1.ToString()], big.NewInt(100).String())
 	s.Require().Equal(resp.Prices[cp2.ToString()], big.NewInt(200).String())
 	// check timestamp
-
 	s.Require().Equal(resp.Timestamp, ts.UTC())
-
-	// call from http client
-	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
-	s.Require().NoError(err)
-
-	// check response
-	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
-	respBz, err := io.ReadAll(httpResp.Body)
-	s.Require().NoError(err)
-	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.ToString(), cp2.ToString()))
 }
 
 // test that the oracle server closes when expected
 func (s *ServerTestSuite) TestOracleServerClose() {
 	// close the server, and check that no requests are received
 	s.cancel()
-
-	s.mockOracle.On("IsRunning").Return(false)
 
 	// wait for server to close
 	select {
@@ -162,7 +144,7 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 	}
 
 	// expect requests to server to timeout
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect request to have failed (connection is closed)
 	s.Require().NotNil(err)

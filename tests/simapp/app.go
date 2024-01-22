@@ -1,7 +1,6 @@
 package simapp
 
 import (
-	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -68,12 +67,10 @@ import (
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
-	"github.com/skip-mev/slinky/aggregator"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	oracleservice "github.com/skip-mev/slinky/service"
-	serviceclient "github.com/skip-mev/slinky/service/client"
+	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	"github.com/skip-mev/slinky/x/alerts"
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
@@ -159,8 +156,8 @@ type SimApp struct {
 	sm *module.SimulationManager
 
 	// processes
-	oraclePrometheusServer *oraclemetrics.PrometheusServer
-	oracleService          oracleservice.OracleService
+	oraclePrometheusServer *promserver.PrometheusServer
+	oracleClient           oracleclient.OracleClient
 }
 
 func init() {
@@ -285,49 +282,37 @@ func NewSimApp(
 		panic(err)
 	}
 
-	oracleCfg, err := oracleconfig.ReadOracleConfigFromFile(cfg.OraclePath)
-	if err != nil {
-		panic(err)
-	}
-
-	metricsCfg, err := oracleconfig.ReadMetricsConfigFromFile(cfg.MetricsPath)
-	if err != nil {
-		panic(err)
-	}
-
-	zapLogger, err := zap.NewProduction()
-	if err != nil {
-		panic(err)
-	}
-
-	// Create the oracle service.
-	app.oracleService, err = serviceclient.NewOracleService(
-		zapLogger,
-		oracleCfg,
-		metricsCfg,
-		DefaultProviderFactory(),
-		aggregator.ComputeMedian(),
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	// Create the metrics service that will be used on the application.
-	metrics, consAddress, err := servicemetrics.NewServiceMetricsFromConfig(metricsCfg.AppMetrics)
-	if err != nil {
-		panic(err)
-	}
-
 	// If app level instrumentation is enabled, then wrap the oracle service with a metrics client
 	// to get metrics on the oracle service (for ABCI++). This will allow the instrumentation to track
 	// latency in VerifyVoteExtension requests and more.
-	if metricsCfg.AppMetrics.Enabled {
-		app.oracleService = serviceclient.NewMetricsClient(app.Logger(), app.oracleService, metrics)
+	oracleMetrics := servicemetrics.NewMetricsFromConfig(cfg)
+
+	// Create the oracle service.
+	app.oracleClient = oracleclient.NewMetricsClient(
+		app.Logger(),
+		oracleclient.NewGRPCClient(cfg.OracleAddress, cfg.ClientTimeout),
+		oracleMetrics,
+	)
+
+	// Start the prometheus server if required
+	if cfg.MetricsEnabled {
+		logger, err := zap.NewProduction()
+		if err != nil {
+			panic(err)
+		}
+
+		app.oraclePrometheusServer, err = promserver.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
+		if err != nil {
+			panic(err)
+		}
+
+		// start the prometheus server
+		go app.oraclePrometheusServer.Start()
 	}
 
 	// start the oracle service
 	go func() {
-		if err := app.oracleService.Start(context.Background()); err != nil {
+		if err := app.oracleClient.Start(); err != nil {
 			panic(err)
 		}
 	}()
@@ -357,7 +342,7 @@ func NewSimApp(
 			compression.NewZStdCompressor(),
 		),
 		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
-		metrics,
+		oracleMetrics,
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
@@ -370,6 +355,11 @@ func NewSimApp(
 		oraclepreblockmath.DefaultPowerThreshold,
 	)
 
+	consAddress, err := cfg.ConsAddress()
+	if err != nil {
+		panic(err)
+	}
+
 	// Create the pre-finalize block hook that will be used to apply oracle data
 	// to the state before any transactions are executed (in finalize block).
 	oraclePreBlockHandler := oraclepreblock.NewOraclePreBlockHandler(
@@ -377,7 +367,7 @@ func NewSimApp(
 		aggregatorFn,
 		app.OracleKeeper,
 		consAddress,
-		metrics,
+		oracleMetrics,
 		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 		compression.NewCompressionVoteExtensionCodec(
 			compression.NewDefaultVoteExtensionCodec(),
@@ -395,7 +385,7 @@ func NewSimApp(
 	// vote extensions (i.e. oracle data).
 	voteExtensionsHandler := ve.NewVoteExtensionHandler(
 		app.Logger(),
-		app.oracleService,
+		app.oracleClient,
 		time.Second,
 		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 		compression.NewCompressionVoteExtensionCodec(
@@ -406,17 +396,6 @@ func NewSimApp(
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
-
-	// start the prometheus server if required
-	if metricsCfg.AppMetrics.Enabled || metricsCfg.OracleMetrics.Enabled {
-		app.oraclePrometheusServer, err = oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, zapLogger)
-		if err != nil {
-			panic(err)
-		}
-
-		// start the prometheus server
-		go app.oraclePrometheusServer.Start()
-	}
 
 	/****  Module Options ****/
 
@@ -465,8 +444,8 @@ func (app *SimApp) Close() error {
 	}
 
 	// close the oracle service
-	if app.oracleService != nil {
-		app.oracleService.Stop(context.Background()) // TODO(): is this the right context?
+	if app.oracleClient != nil {
+		app.oracleClient.Stop()
 	}
 
 	// close the prometheus server if necessary

@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos_proto/cosmos.proto";
 
-option go_package = "github.com/skip-mev/slinky/service";
+option go_package = "github.com/skip-mev/slinky/service/servers/oracle/types";
 
 // Oracle defines the gRPC oracle service.
 service Oracle {

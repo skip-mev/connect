@@ -1,4 +1,4 @@
-package client_test
+package oracle_test
 
 import (
 	"context"
@@ -10,18 +10,18 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/skip-mev/slinky/service"
-	"github.com/skip-mev/slinky/service/client"
+	client "github.com/skip-mev/slinky/service/clients/oracle"
+	clientmock "github.com/skip-mev/slinky/service/clients/oracle/mocks"
 	"github.com/skip-mev/slinky/service/metrics"
 	metrics_mock "github.com/skip-mev/slinky/service/metrics/mocks"
-	service_mock "github.com/skip-mev/slinky/service/mocks"
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
 )
 
 type MetricsClientTestSuite struct {
 	suite.Suite
-	m          *metrics_mock.Metrics       // mocked metrics
-	mockClient *service_mock.OracleService // mocked client
-	client     *client.MetricsClient       // metrics client
+	m          *metrics_mock.Metrics    // mocked metrics
+	mockClient *clientmock.OracleClient // mocked client
+	client     *client.MetricsClient    // metrics client
 }
 
 func TestMetricsClientTestSuite(t *testing.T) {
@@ -30,7 +30,7 @@ func TestMetricsClientTestSuite(t *testing.T) {
 
 func (s *MetricsClientTestSuite) SetupSubTest() {
 	s.m = metrics_mock.NewMetrics(s.T())
-	s.mockClient = service_mock.NewOracleService(s.T())
+	s.mockClient = clientmock.NewOracleClient(s.T())
 	s.client = client.NewMetricsClient(log.NewNopLogger(), s.mockClient, s.m)
 }
 
@@ -39,8 +39,8 @@ func (s *MetricsClientTestSuite) TestResponses() {
 	s.Run("test that correct responses are reported correctly", func() {
 		// expect a normal response
 		ctx := context.Background()
-		req := &service.QueryPricesRequest{}
-		res := &service.QueryPricesResponse{}
+		req := &types.QueryPricesRequest{}
+		res := &types.QueryPricesResponse{}
 		s.mockClient.On("Prices", ctx, req).Return(res, nil).Once()
 		// expect a normal response
 		s.m.On("AddOracleResponse", metrics.StatusSuccess).Return().Once()
@@ -57,7 +57,7 @@ func (s *MetricsClientTestSuite) TestResponses() {
 	s.Run("test that error responses are reported correctly", func() {
 		// expect an error response
 		ctx := context.Background()
-		req := &service.QueryPricesRequest{}
+		req := &types.QueryPricesRequest{}
 		s.mockClient.On("Prices", ctx, req).Return(nil, fmt.Errorf("error"))
 		// expect an error response
 		s.m.On("AddOracleResponse", metrics.StatusFailure).Return()
@@ -76,8 +76,8 @@ func (s *MetricsClientTestSuite) TestResponseLatency() {
 	s.Run("test that response latency is reported correctly, no latency", func() {
 		// expect a normal response
 		ctx := context.Background()
-		req := &service.QueryPricesRequest{}
-		res := &service.QueryPricesResponse{}
+		req := &types.QueryPricesRequest{}
+		res := &types.QueryPricesResponse{}
 		s.mockClient.On("Prices", ctx, req).Return(res, nil).Once()
 		// expect a normal response
 		s.m.On("AddOracleResponse", metrics.StatusSuccess).Return().Once()
@@ -97,8 +97,8 @@ func (s *MetricsClientTestSuite) TestResponseLatency() {
 	s.Run("test that response latency is reported correctly, with latency", func() {
 		// expect a normal response
 		ctx := context.Background()
-		req := &service.QueryPricesRequest{}
-		res := &service.QueryPricesResponse{}
+		req := &types.QueryPricesRequest{}
+		res := &types.QueryPricesResponse{}
 		s.mockClient.On("Prices", ctx, req).Return(res, nil).Once().After(100 * time.Millisecond)
 		// expect a normal response
 		s.m.On("AddOracleResponse", metrics.StatusSuccess).Return().Once()

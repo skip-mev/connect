@@ -1,33 +1,35 @@
-package client
+package oracle
 
 import (
 	"context"
 	"time"
 
 	"cosmossdk.io/log"
+	"google.golang.org/grpc"
 
-	"github.com/skip-mev/slinky/service"
 	"github.com/skip-mev/slinky/service/metrics"
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
 )
 
-var _ service.OracleService = (*MetricsClient)(nil)
+var _ OracleClient = (*MetricsClient)(nil)
 
 // MetricsClient is a wrapper around a Client implementation that exports system-level metrics about the client.
 type MetricsClient struct {
-	logger log.Logger
-	service.OracleService
+	OracleClient
+
+	logger  log.Logger
 	metrics metrics.Metrics
 }
 
-func NewMetricsClient(logger log.Logger, client service.OracleService, metrics metrics.Metrics) *MetricsClient {
+func NewMetricsClient(logger log.Logger, client OracleClient, metrics metrics.Metrics) *MetricsClient {
 	return &MetricsClient{
-		logger:        logger,
-		OracleService: client,
-		metrics:       metrics,
+		logger:       logger,
+		OracleClient: client,
+		metrics:      metrics,
 	}
 }
 
-func (m *MetricsClient) Prices(ctx context.Context, req *service.QueryPricesRequest) (res *service.QueryPricesResponse, err error) {
+func (m *MetricsClient) Prices(ctx context.Context, req *types.QueryPricesRequest, _ ...grpc.CallOption) (res *types.QueryPricesResponse, err error) {
 	// measure the beginning of call
 	start := time.Now()
 
@@ -39,7 +41,7 @@ func (m *MetricsClient) Prices(ctx context.Context, req *service.QueryPricesRequ
 	}()
 
 	// call the underlying client
-	res, err = m.OracleService.Prices(ctx, req)
+	res, err = m.OracleClient.Prices(ctx, req)
 
 	m.logger.Debug("calling underlying client", "res", res, "err", err, "duration", time.Since(start))
 	return
