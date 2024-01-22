@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -50,7 +51,7 @@ validator_cons_address = "{{ .Oracle.ValidatorConsAddress }}"
 )
 
 const (
-	flatEnabled                 = "oracle.enabled"
+	flagEnabled                 = "oracle.enabled"
 	flagOracleAddress           = "oracle.oracle_address"
 	flagClientTimeout           = "oracle.client_timeout"
 	flagMetricsEnabled          = "oracle.metrics_enabled"
@@ -99,8 +100,8 @@ func (c *AppConfig) ValidateBasic() error {
 		return nil
 	}
 
-	if len(c.OracleAddress) == 0 {
-		return fmt.Errorf("oracle address cannot be empty; please set oracle address in config")
+	if _, err := url.ParseRequestURI(c.OracleAddress); err != nil {
+		return fmt.Errorf("oracle address must be valid: %w", err)
 	}
 
 	if c.ClientTimeout <= 0 {
@@ -158,7 +159,7 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	)
 
 	// determine if the oracle is enabled
-	if v := opts.Get(flatEnabled); v != nil {
+	if v := opts.Get(flagEnabled); v != nil {
 		if cfg.Enabled, err = cast.ToBoolE(v); err != nil {
 			return cfg, err
 		}
