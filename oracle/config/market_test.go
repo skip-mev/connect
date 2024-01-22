@@ -19,8 +19,8 @@ func TestMarketConfig(t *testing.T) {
 			name: "good config",
 			config: config.MarketConfig{
 				Name: "test",
-				TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-					"BTC/USD": {
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
 						Ticker:       "BTC/USD",
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 					},
@@ -31,8 +31,8 @@ func TestMarketConfig(t *testing.T) {
 		{
 			name: "bad config with no name",
 			config: config.MarketConfig{
-				TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-					"BTC/USD": {
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
 						Ticker:       "BTC/USD",
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 					},
@@ -41,10 +41,10 @@ func TestMarketConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with mismatching tickers",
+			name: "bad config with poorly formatted currency pair key",
 			config: config.MarketConfig{
 				Name: "test",
-				TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOINUSD": {
 						Ticker:       "BTC/USD",
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
@@ -54,11 +54,11 @@ func TestMarketConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with bad currency pair",
+			name: "bad config with bad currency pair in config",
 			config: config.MarketConfig{
 				Name: "test",
-				TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-					"BTC/USD": {
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
 						Ticker:       "BTC/USD",
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", ""),
 					},
@@ -78,9 +78,9 @@ func TestMarketConfig(t *testing.T) {
 
 				// Validate that the config was inverted correctly.
 				require.Equal(t, len(tc.config.CurrencyPairToMarketConfigs), len(tc.config.TickerToMarketConfigs))
-				for _, marketConfig := range tc.config.TickerToMarketConfigs {
-					require.Contains(t, tc.config.CurrencyPairToMarketConfigs, marketConfig.CurrencyPair.ToString())
-					require.Equal(t, marketConfig, tc.config.CurrencyPairToMarketConfigs[marketConfig.CurrencyPair.ToString()])
+				for _, marketConfig := range tc.config.CurrencyPairToMarketConfigs {
+					require.Contains(t, tc.config.TickerToMarketConfigs, marketConfig.Ticker)
+					require.Equal(t, marketConfig, tc.config.TickerToMarketConfigs[marketConfig.Ticker])
 				}
 			}
 		})
