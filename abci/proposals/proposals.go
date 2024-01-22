@@ -171,12 +171,13 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		preHandleTime := prepareBlockStart.Sub(startTime)
 		postHandleTime := time.Now().Sub(prepareBlockEnd)
 		h.logger.Info(
-			"recording handle time metrics",
+			"recording handle time metrics (nano-seconds)",
 			"pre_handle_time", preHandleTime,
 			"post_handle_time", postHandleTime,
 			"total_time", preHandleTime+postHandleTime,
 		)
-		h.metrics.ObservePrepareProposalTime(preHandleTime + postHandleTime)
+
+		h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, preHandleTime + postHandleTime)
 		h.logger.Info(
 			"prepared proposal",
 			"txs", len(resp.Txs),
@@ -223,18 +224,13 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 		start := time.Now()
+
+		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
 			return nil, fmt.Errorf("received a nil request")
 		}
-		defer func() {
-			processDuration := time.Now().Sub(start)
-			h.logger.Info(
-				"recording process proposal time",
-				"duration", processDuration,
-			)
-			h.metrics.ObserveProcessProposalTime(processDuration)
-		}()
+	
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
@@ -275,6 +271,14 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			// Process the transactions in the proposal with the oracle data removed.
 			req.Txs = req.Txs[NumInjectedTxs:]
 		}
+
+		// record time spent in slinky-specific ProcesssProposal
+		processDuration := time.Now().Sub(start)
+		h.logger.Info(
+			"recording process proposal time",
+			"duration (nano-seconds)", processDuration,
+		)
+		h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, processDuration)
 
 		return h.processProposalHandler(ctx, req)
 	}

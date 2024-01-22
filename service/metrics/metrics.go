@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	TickerLabel    = "ticker"
-	InclusionLabel = "included"
-	AppNamespace   = "app"
-	ProviderLabel  = "provider"
-	StatusLabel    = "status"
+	TickerLabel     = "ticker"
+	InclusionLabel  = "included"
+	AppNamespace    = "app"
+	ProviderLabel   = "provider"
+	StatusLabel     = "status"
 	ABCIMethodLabel = "abci_method"
 )
 
@@ -100,7 +100,7 @@ func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
 func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
 func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)           {}
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)    {}
-func (m *nopMetricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration)
+func (m *nopMetricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration) {}
 
 func NewMetrics() Metrics {
 	m := &metricsImpl{
@@ -129,7 +129,7 @@ func NewMetrics() Metrics {
 			Namespace: AppNamespace,
 			Name:      "abci_method_latency",
 			Help:      "The time it took for an ABCI method to execute slinky specific logic (in seconds)",
-			Buckets:   []float64{.0001,.0004,.002,.009,.02,.1,.65,2,6,25},
+			Buckets:   []float64{.0001, .0004, .002, .009, .02, .1, .65, 2, 6, 25},
 		}, []string{ABCIMethodLabel}),
 	}
 
@@ -148,7 +148,7 @@ type metricsImpl struct {
 	oracleResponseCounter    *prometheus.CounterVec
 	voteIncludedInLastCommit *prometheus.CounterVec
 	tickerInclusionStatus    *prometheus.CounterVec
-	abciMethodLatency *prometheus.HistogramVec
+	abciMethodLatency        *prometheus.HistogramVec
 }
 
 func (m *metricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration) {
