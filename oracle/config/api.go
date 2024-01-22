@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -51,8 +52,8 @@ func (c *APIConfig) ValidateBasic() error {
 		return fmt.Errorf("provider timeout must be greater than 0 and less than the interval")
 	}
 
-	if len(c.URL) == 0 {
-		return fmt.Errorf("provider url cannot be empty")
+	if _, err := url.ParseRequestURI(c.URL); err != nil {
+		return fmt.Errorf("provider url must be valid: %w", err)
 	}
 
 	if len(c.Name) == 0 {

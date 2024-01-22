@@ -12,11 +12,17 @@ type MarketConfig struct {
 	// Name identifies which provider this config is for.
 	Name string `mapstructure:"name" toml:"name"`
 
+	// TickerToMarketConfigs is the config the provider uses to create mappings
+	// between on-chain and off-chain currency pairs. In particular, this config
+	// maps the off-chain currency pair representation (i.e. BTC/USD) to the
+	// on-chain currency pair representation (i.e. BITCOIN/USD).
+	TickerToMarketConfigs map[string]CurrencyPairMarketConfig `mapstructure:"currency_pair_to_market_configs" toml:"currency_pair_to_market_configs"`
+
 	// CurrencyPairToMarketConfigs is the config the provider uses to create mappings
 	// between on-chain and off-chain currency pairs. In particular, this config
 	// maps the on-chain currency pair representation (i.e. BITCOIN/USD) to the
 	// off-chain currency pair representation (i.e. BTC/USD).
-	CurrencyPairToMarketConfigs map[string]CurrencyPairMarketConfig `mapstructure:"currency_pair_to_market_configs" toml:"currency_pair_to_market_configs"`
+	CurrencyPairToMarketConfigs map[string]CurrencyPairMarketConfig
 }
 
 // CurrencyPairMarketConfig is the config the provider uses to create mappings
@@ -29,19 +35,6 @@ type CurrencyPairMarketConfig struct {
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
 
-// InvertedCurrencyPairMarketConfig is the config the provider uses to create mappings
-// between off-chain and on-chain currency pairs.
-type InvertedCurrencyPairMarketConfig struct {
-	// Name identifies which provider this config is for.
-	Name string
-
-	// MarketToCurrencyPairConfigs is the config the provider uses to create mappings
-	// between off-chain and on-chain currency pairs. In particular, this config
-	// maps the off-chain currency pair representation (i.e. BTC/USD) to the
-	// on-chain currency pair representation (i.e. BITCOIN/USD).
-	MarketToCurrencyPairConfigs map[string]CurrencyPairMarketConfig
-}
-
 // NewMarketConfig returns a new MarketConfig instance.
 func NewMarketConfig() MarketConfig {
 	return MarketConfig{
@@ -51,17 +44,14 @@ func NewMarketConfig() MarketConfig {
 
 // Invert returns the inverted currency pair market config. This is used to
 // create the inverse currency pair market config for the provider.
-func (c *MarketConfig) Invert() InvertedCurrencyPairMarketConfig {
-	invertedConfig := InvertedCurrencyPairMarketConfig{
-		Name:                        c.Name,
-		MarketToCurrencyPairConfigs: make(map[string]CurrencyPairMarketConfig),
+func (c *MarketConfig) Invert() map[string]CurrencyPairMarketConfig {
+	c.CurrencyPairToMarketConfigs = make(map[string]CurrencyPairMarketConfig)
+
+	for _, marketConfig := range c.TickerToMarketConfigs {
+		c.CurrencyPairToMarketConfigs[marketConfig.CurrencyPair.ToString()] = marketConfig
 	}
 
-	for _, marketConfig := range c.CurrencyPairToMarketConfigs {
-		invertedConfig.MarketToCurrencyPairConfigs[marketConfig.Ticker] = marketConfig
-	}
-
-	return invertedConfig
+	return c.CurrencyPairToMarketConfigs
 }
 
 // ValidateBasic performs basic validation of the market config.
@@ -70,24 +60,26 @@ func (c *MarketConfig) ValidateBasic() error {
 		return fmt.Errorf("name cannot be empty")
 	}
 
-	if len(c.CurrencyPairToMarketConfigs) == 0 {
+	if len(c.TickerToMarketConfigs) == 0 {
 		return fmt.Errorf("market config must have at least one currency pair")
 	}
 
-	for cpStr, marketConfig := range c.CurrencyPairToMarketConfigs {
-		cp, err := oracletypes.CurrencyPairFromString(cpStr)
-		if err != nil {
-			return fmt.Errorf("currency pair is not formatted correctly %w", err)
+	for ticker, marketConfig := range c.TickerToMarketConfigs {
+		if len(ticker) == 0 {
+			return fmt.Errorf("ticker cannot be empty")
+		}
+
+		if ticker != marketConfig.Ticker {
+			return fmt.Errorf("ticker must match market config ticker; %s != %s", ticker, marketConfig.Ticker)
 		}
 
 		if err := marketConfig.ValidateBasic(); err != nil {
 			return fmt.Errorf("market config is not formatted correctly %w", err)
 		}
-
-		// Update the correctly formatted currency pair string.
-		delete(c.CurrencyPairToMarketConfigs, cpStr)
-		c.CurrencyPairToMarketConfigs[cp.ToString()] = marketConfig
 	}
+
+	// Invert the ticker market config into the currency pair market config.
+	c.Invert()
 
 	return nil
 }
