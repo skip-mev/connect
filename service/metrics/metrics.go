@@ -16,6 +16,7 @@ const (
 	AppNamespace   = "app"
 	ProviderLabel  = "provider"
 	StatusLabel    = "status"
+	ABCIMethodLabel = "abci_method"
 )
 
 type Status int
@@ -43,6 +44,33 @@ func StatusFromError(err error) Status {
 	return StatusFailure
 }
 
+type ABCIMethod int
+
+const (
+	PrepareProposal ABCIMethod = iota
+	ProcessProposal
+	ExtendVote
+	VerifyVoteExtension
+	FinalizeBlock
+)
+
+func (a ABCIMethod) String() string {
+	switch a {
+	case PrepareProposal:
+		return "prepare_proposal"
+	case ProcessProposal:
+		return "process_proposal"
+	case ExtendVote:
+		return "extend_vote"
+	case VerifyVoteExtension:
+		return "verify_vote_extension"
+	case FinalizeBlock:
+		return "finalize_block"
+	default:
+		return "not_implemented"
+	}
+}
+
 //go:generate mockery --name Metrics --filename mock_metrics.go
 type Metrics interface {
 	// ObserveOracleResponseLatency records the time it took for the oracle to respond (this is a histogram)
@@ -57,11 +85,8 @@ type Metrics interface {
 	// AddTickerInclusionStatus increments the counter representing the number of times a ticker was included (or not included) in the last commit.
 	AddTickerInclusionStatus(ticker string, included bool)
 
-	// ObserveProcessProposalTime records the time it took for the oracle-specific parts of process proposal
-	ObserveProcessProposalTime(duration time.Duration)
-
-	// ObservePrepareProposalTime records the time it took for the oracle-specific parts of prepare proposal
-	ObservePrepareProposalTime(duration time.Duration)
+	// ObserveABCIMethodLatency reports the given latency (as a duration), for the given ABCIMethod, and updates the ABCIMethodLatency histogram w/ that value.
+	ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration)
 }
 
 type nopMetricsImpl struct{}
@@ -75,8 +100,7 @@ func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
 func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
 func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)           {}
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)    {}
-func (m *nopMetricsImpl) ObservePrepareProposalTime(_ time.Duration)   {}
-func (m *nopMetricsImpl) ObserveProcessProposalTime(_ time.Duration)   {}
+func (m *nopMetricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration)
 
 func NewMetrics() Metrics {
 	m := &metricsImpl{
@@ -101,18 +125,12 @@ func NewMetrics() Metrics {
 			Name:      "ticker_inclusion_status",
 			Help:      "The number of times a ticker was included (or not included) in this validator's vote",
 		}, []string{TickerLabel, InclusionLabel}),
-		prepareProposalTime: prometheus.NewHistogram(prometheus.HistogramOpts{
+		abciMethodLatency: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: AppNamespace,
-			Name:      "oracle_prepare_proposal_time",
-			Help:      "The time it took for the oracle-specific parts of prepare proposal",
-			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
-		}),
-		processProposalTime: prometheus.NewHistogram(prometheus.HistogramOpts{
-			Namespace: AppNamespace,
-			Name:      "oracle_process_proposal_time",
-			Help:      "The time it took for the oracle-specific parts of process proposal",
-			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
-		}),
+			Name:      "abci_method_latency",
+			Help:      "The time it took for an ABCI method to execute slinky specific logic (in seconds)",
+			Buckets:   []float64{.0001,.0004,.002,.009,.02,.1,.65,2,6,25},
+		}, []string{ABCIMethodLabel}),
 	}
 
 	// register the above metrics
@@ -120,8 +138,7 @@ func NewMetrics() Metrics {
 	prometheus.MustRegister(m.oracleResponseCounter)
 	prometheus.MustRegister(m.voteIncludedInLastCommit)
 	prometheus.MustRegister(m.tickerInclusionStatus)
-	prometheus.MustRegister(m.prepareProposalTime)
-	prometheus.MustRegister(m.processProposalTime)
+	prometheus.MustRegister(m.abciMethodLatency)
 
 	return m
 }
@@ -131,16 +148,13 @@ type metricsImpl struct {
 	oracleResponseCounter    *prometheus.CounterVec
 	voteIncludedInLastCommit *prometheus.CounterVec
 	tickerInclusionStatus    *prometheus.CounterVec
-	prepareProposalTime      prometheus.Histogram
-	processProposalTime      prometheus.Histogram
+	abciMethodLatency *prometheus.HistogramVec
 }
 
-func (m *metricsImpl) ObserveProcessProposalTime(duration time.Duration) {
-	m.processProposalTime.Observe(float64(duration.Milliseconds()))
-}
-
-func (m *metricsImpl) ObservePrepareProposalTime(duration time.Duration) {
-	m.prepareProposalTime.Observe(float64(duration.Milliseconds()))
+func (m *metricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration) {
+	m.abciMethodLatency.With(prometheus.Labels{
+		ABCIMethodLabel: method.String(),
+	}).Observe(duration.Seconds())
 }
 
 func (m *metricsImpl) ObserveOracleResponseLatency(duration time.Duration) {

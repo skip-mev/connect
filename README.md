@@ -48,6 +48,12 @@ To see all network metrics, open a new terminal and run the following command an
 $ make run-prom-client
 ```
 
+## Metrics
+### Oracle Service Metrics
+- metrics relevant to the oracle service's health + operation are [here](./oracle/metrics/README.md)
+- metrics relevant to the operation / health of the oracle's providers are [here](./providers/base/metrics/README.md)
+### Oracle Application / Network Metrics
+- metrics relevant to the network's (that is running the instance slinky) performance are [here](./service/metrics/README.md)
 ## Future Work
 
 The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).

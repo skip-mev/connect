@@ -40,7 +40,7 @@ type VoteExtensionHandler struct {
 	// voteExtensionCodec is an interface to handle the marshalling / unmarshalling of vote-extensions
 	voteExtensionCodec compression.VoteExtensionCodec
 
-	// preBlocker is utilzed to update and retrieve the latest on-chain price information.
+	// preBlocker is utilized to update and retrieve the latest on-chain price information.
 	preBlocker sdk.PreBlocker
 }
 
@@ -106,7 +106,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 		reqCtx, cancel := context.WithTimeout(ctx.Context(), h.timeout)
 		defer cancel()
 
-		// To ensure liveliness, we return a vote even if the oracle is not running
+		// To ensure liveness, we return a vote even if the oracle is not running
 		// or if the oracle returns a bad response.
 		oracleResp, err := h.oracleClient.Prices(reqCtx, &service.QueryPricesRequest{})
 		if err != nil {
