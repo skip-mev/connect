@@ -18,6 +18,12 @@ type WebSocketConfig struct {
 	// ReconnectionTimeout is the timeout for the provider to attempt to reconnect
 	// to the websocket endpoint.
 	ReconnectionTimeout time.Duration `mapstructure:"reconnection_timeout" toml:"reconnection_timeout"`
+
+	// WSS is the websocket endpoint for the provider.
+	WSS string `mapstructure:"wss" toml:"wss"`
+
+	// Name is the name of the provider that corresponds to this config.
+	Name string `mapstructure:"name" toml:"name"`
 }
 
 func (c *WebSocketConfig) ValidateBasic() error {
@@ -31,6 +37,14 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.ReconnectionTimeout <= 0 {
 		return fmt.Errorf("websocket reconnection timeout must be greater than 0")
+	}
+
+	if len(c.WSS) == 0 {
+		return fmt.Errorf("websocket endpoint cannot be empty")
+	}
+
+	if len(c.Name) == 0 {
+		return fmt.Errorf("websocket name cannot be empty")
 	}
 
 	return nil

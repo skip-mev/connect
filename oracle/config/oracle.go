@@ -9,24 +9,11 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// OracleConfig is the base config for both out-of-process and in-process oracles.
-// If the oracle is to be configured out-of-process in base-app, a grpc-client of
-// the grpc-server running at RemoteAddress is instantiated, otherwise, an in-process
-// local client oracle is instantiated. Note, that you can only have one oracle
-// running at a time.
+// OracleConfig is the over-arching config for the oracle sidecar and instrumentation. The
+// oracle is configured via a set of data providers (i.e. coinbase, binance, etc.) and a set
+// of currency pairs (i.e. BTC/USD, ETH/USD, etc.). The oracle will fetch prices from the
+// data providers for the currency pairs at the specified update interval.
 type OracleConfig struct {
-	// Enabled specifies whether the side-car oracle needs to be run.
-	Enabled bool `mapstructure:"enabled" toml:"enabled"`
-
-	// InProcess specifies whether the oracle configured, is currently running as a remote grpc-server, or will be run in process
-	InProcess bool `mapstructure:"in_process" toml:"in_process"`
-
-	// RemoteAddress is the address of the remote oracle server (if it is running out-of-process)
-	RemoteAddress string `mapstructure:"remote_address" toml:"remote_address"`
-
-	// ClientTimeout is the time that the client is willing to wait for responses from the oracle before timing out.
-	ClientTimeout time.Duration `mapstructure:"client_timeout" toml:"client_timeout"`
-
 	// UpdateInterval is the interval at which the oracle will fetch prices from providers
 	UpdateInterval time.Duration `mapstructure:"update_interval" toml:"update_interval"`
 
@@ -39,26 +26,24 @@ type OracleConfig struct {
 	// Production specifies whether the oracle is running in production mode. This is used to
 	// determine whether the oracle should be run in debug mode or not.
 	Production bool `mapstructure:"production" toml:"production"`
+
+	// MetricsConfig is the metrics configurations for the oracle. This configuration object allows for
+	// metrics tracking of the oracle and the interaction between the oracle and the app.
+	Metrics MetricsConfig `mapstructure:"metrics" toml:"metrics"`
 }
 
 // ValidateBasic performs basic validation on the oracle config.
 func (c *OracleConfig) ValidateBasic() error {
-	if !c.Enabled {
-		return nil
+	if c.UpdateInterval <= 0 {
+		return fmt.Errorf("oracle update interval must be greater than 0")
 	}
 
-	if !c.InProcess && len(c.RemoteAddress) == 0 {
-		return fmt.Errorf("must supply a remote address if the oracle is running out of process")
+	if len(c.Providers) == 0 {
+		return fmt.Errorf("oracle must have at least one provider")
 	}
 
-	if c.UpdateInterval <= 0 || c.ClientTimeout <= 0 {
-		return fmt.Errorf("oracle update interval and client timeout must be greater than 0")
-	}
-
-	for _, cp := range c.CurrencyPairs {
-		if err := cp.ValidateBasic(); err != nil {
-			return fmt.Errorf("currency pair is not formatted correctly %w", err)
-		}
+	if len(c.CurrencyPairs) == 0 {
+		return fmt.Errorf("oracle must have at least one currency pair")
 	}
 
 	for _, p := range c.Providers {
@@ -67,7 +52,12 @@ func (c *OracleConfig) ValidateBasic() error {
 		}
 	}
 
-	return nil
+	for _, cp := range c.CurrencyPairs {
+		if err := cp.ValidateBasic(); err != nil {
+			return fmt.Errorf("currency pair is not formatted correctly %w", err)
+		}
+	}
+	return c.Metrics.ValidateBasic()
 }
 
 // ReadOracleConfigFromFile reads a config from a file and returns the config.
@@ -81,7 +71,7 @@ func ReadOracleConfigFromFile(path string) (OracleConfig, error) {
 	}
 
 	// Check required fields.
-	requiredFields := []string{"enabled", "in_process", "remote_address", "client_timeout", "update_interval", "production"}
+	requiredFields := []string{"update_interval", "providers", "currency_pairs"}
 	for _, field := range requiredFields {
 		if !viper.IsSet(field) {
 			return OracleConfig{}, fmt.Errorf("required field %s is missing in config", field)
