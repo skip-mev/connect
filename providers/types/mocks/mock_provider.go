@@ -7,6 +7,8 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
+	metrics "github.com/skip-mev/slinky/providers/base/metrics"
+
 	types "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -66,6 +68,24 @@ func (_m *Provider[K, V]) Start(_a0 context.Context) error {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Type provides a mock function with given fields:
+func (_m *Provider[K, V]) Type() metrics.ProviderType {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Type")
+	}
+
+	var r0 metrics.ProviderType
+	if rf, ok := ret.Get(0).(func() metrics.ProviderType); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(metrics.ProviderType)
 	}
 
 	return r0

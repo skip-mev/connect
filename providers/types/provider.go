@@ -4,6 +4,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
+
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
@@ -22,6 +24,9 @@ type Provider[K comparable, V GetResult] interface {
 
 	// Start starts the provider.
 	Start(context.Context) error
+
+	// Type returns the type of the provider data handler.
+	Type() providermetrics.ProviderType
 }
 
 // ProviderFactory inputs the oracle configuration and returns a set of providers. Developers

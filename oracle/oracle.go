@@ -156,7 +156,7 @@ func (o *Oracle) tick() {
 		}
 	}()
 
-	// Reset all of the provider prices before fetching new prices.
+	// Reset the provider prices before fetching new prices.
 	o.priceAggregator.ResetProviderData()
 
 	// Retrieve the latest prices from each provider.
