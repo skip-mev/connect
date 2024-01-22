@@ -32,36 +32,3 @@ To retrieve all of the supported [spot markets](https://www.okx.com/docs-v5/en/?
 ```bash
 curl https://www.okx.com/api/v5/public/instruments?instType=SPOT
 ```
-
-## Configuration
-
-The configuration structure for this provider looks like the following:
-
-```golang
-type Config struct {
-	// Markets is the list of markets to subscribe to. The key is the currency pair and the value
-	// is the instrument ID. The instrument ID must correspond to the spot market. For example,
-	// the instrument ID for the BITCOIN/USDT market is BTC-USDT.
-	Markets map[string]string `json:"markets"`
-
-	// Production is true if the config is for production.
-	Production bool `json:"production"`
-}
-```
-
-Note that if production is set to false, all prices returned by any subscribed markets will be static. A sample configuration is shown below:
-
-```json
-{
-    "markets": {
-        "BITCOIN/USD": "BTC-USD", // Spot market
-        "ETHEREUM/USD": "ETH-USD", // Spot market
-        "SOLANA/USD": "SOL-USD", // Spot market
-        "ATOM/USD": "ATOM-USD", // Spot market
-        "POLKADOT/USD": "DOT-USD", // Spot market
-        "DYDX/USD": "DYDX-USD", // Spot market
-        "ETHEREUM/BITCOIN": "ETH-BTC" // Spot market
-    },
-    "production": true
-}
-```
