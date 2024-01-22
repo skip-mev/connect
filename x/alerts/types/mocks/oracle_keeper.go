@@ -14,21 +14,19 @@ type OracleKeeper struct {
 	mock.Mock
 }
 
-// GetAllCurrencyPairs provides a mock function with given fields: ctx
-func (_m *OracleKeeper) GetAllCurrencyPairs(ctx types.Context) []oracletypes.CurrencyPair {
-	ret := _m.Called(ctx)
+// HasCurrencyPair provides a mock function with given fields: ctx, cp
+func (_m *OracleKeeper) HasCurrencyPair(ctx types.Context, cp oracletypes.CurrencyPair) bool {
+	ret := _m.Called(ctx, cp)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetAllCurrencyPairs")
+		panic("no return value specified for HasCurrencyPair")
 	}
 
-	var r0 []oracletypes.CurrencyPair
-	if rf, ok := ret.Get(0).(func(types.Context) []oracletypes.CurrencyPair); ok {
-		r0 = rf(ctx)
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) bool); ok {
+		r0 = rf(ctx, cp)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]oracletypes.CurrencyPair)
-		}
+		r0 = ret.Get(0).(bool)
 	}
 
 	return r0
