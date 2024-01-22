@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	metrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	mock "github.com/stretchr/testify/mock"
+
+	metrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 
 	time "time"
 )
@@ -29,7 +30,8 @@ func (_m *APIMetrics) ObserveProviderResponseLatency(providerName string, durati
 func NewAPIMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *APIMetrics {
+},
+) *APIMetrics {
 	mock := &APIMetrics{}
 	mock.Mock.Test(t)
 

@@ -107,7 +107,8 @@ func (_m *StakingKeeper) Slash(ctx context.Context, consAddr cosmos_sdktypes.Con
 func NewStakingKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *StakingKeeper {
+},
+) *StakingKeeper {
 	mock := &StakingKeeper{}
 	mock.Mock.Test(t)
 

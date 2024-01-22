@@ -32,7 +32,7 @@ The `APIDataHandler` interface is primarily responsible for constructing the URL
 // paired with the APIQueryHandler. The APIQueryHandler will use the APIDataHandler
 // to create the URL to be sent to the HTTP client and to parse the response from the
 // API.
-type APIDataHandler[K comparable, V any] interface {
+type APIDataHandler[K comparable, V providertypes.GetResult] interface {
 	CreateURL(ids []K) (string, error)
 	ParseResponse(ids []K, response *http.Response) GetResponse[K, V]
 	Atomic() bool
@@ -42,7 +42,7 @@ type APIDataHandler[K comparable, V any] interface {
 
 #### Determining K and V
 
-> **Currently the oracle only supports `*big.Int` as the `V` type and `oracletypes.CurrencyPair` as the `K` type.** This will change in the future once generics are supported on the chain side.
+> **Currently, the oracle only supports `*big.Int` as the `V` type and `oracletypes.CurrencyPair` as the `K` type.** This will change in the future once generics are supported on the chain side.
 
 First developers must determine the type of data that they want to fetch from the underlying data source. This can be any type that is supported by the oracle. For example, the simplest example is price data for a given currency pair (base / quote). The `K` type would be the currency pair and the `V` type would be the price data.
 

@@ -18,7 +18,7 @@ import (
 // response channel. These are processed asynchronously by the provider.
 //
 //go:generate mockery --name WebSocketQueryHandler --output ./mocks/ --case underscore
-type WebSocketQueryHandler[K comparable, V any] interface {
+type WebSocketQueryHandler[K comparable, V providertypes.GetResult] interface {
 	// Start should initialize the web socket connection and start listening for
 	// the data (i.e. ids). All web socket responses should be sent to the response
 	// channel.
@@ -29,7 +29,7 @@ type WebSocketQueryHandler[K comparable, V any] interface {
 // WebSocketQueryHandler interface. This is used to establish a connection to the data
 // provider and subscribe to events for a given set of IDs. It runs in a separate go
 // routine and will send all responses to the response channel as they are received.
-type WebSocketQueryHandlerImpl[K comparable, V any] struct {
+type WebSocketQueryHandlerImpl[K comparable, V providertypes.GetResult] struct {
 	logger  *zap.Logger
 	metrics metrics.WebSocketMetrics
 
@@ -46,7 +46,7 @@ type WebSocketQueryHandlerImpl[K comparable, V any] struct {
 }
 
 // NewWebSocketQueryHandler creates a new web socket query handler.
-func NewWebSocketQueryHandler[K comparable, V any](
+func NewWebSocketQueryHandler[K comparable, V providertypes.GetResult](
 	logger *zap.Logger,
 	dataHandler WebSocketDataHandler[K, V],
 	connHandler WebSocketConnHandler,

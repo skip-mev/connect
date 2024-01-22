@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	metrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	mock "github.com/stretchr/testify/mock"
+
+	metrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 
 	time "time"
 )
@@ -34,7 +35,8 @@ func (_m *WebSocketMetrics) ObserveWebSocketLatency(provider string, duration ti
 func NewWebSocketMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *WebSocketMetrics {
+},
+) *WebSocketMetrics {
 	mock := &WebSocketMetrics{}
 	mock.Mock.Test(t)
 

@@ -102,7 +102,8 @@ func (_m *Oracle) Stop() {
 func NewOracle(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *Oracle {
+},
+) *Oracle {
 	mock := &Oracle{}
 	mock.Mock.Test(t)
 

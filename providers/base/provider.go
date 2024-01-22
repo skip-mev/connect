@@ -16,7 +16,7 @@ import (
 )
 
 // Provider implements a base provider that can be used to build other providers.
-type Provider[K comparable, V any] struct {
+type Provider[K comparable, V providertypes.GetResult] struct {
 	mu     sync.Mutex
 	logger *zap.Logger
 
@@ -50,7 +50,7 @@ type Provider[K comparable, V any] struct {
 }
 
 // NewProvider returns a new Base provider.
-func NewProvider[K comparable, V any](
+func NewProvider[K comparable, V providertypes.GetResult](
 	cfg config.ProviderConfig,
 	opts ...ProviderOption[K, V],
 ) (providertypes.Provider[K, V], error) {

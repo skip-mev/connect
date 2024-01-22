@@ -17,7 +17,7 @@ import (
 
 // CreateWebSocketQueryHandlerWithGetResponses creates a mock query handler that returns the given responses every
 // time it is invoked.
-func CreateWebSocketQueryHandlerWithGetResponses[K comparable, V any](
+func CreateWebSocketQueryHandlerWithGetResponses[K comparable, V providertypes.GetResult](
 	t *testing.T,
 	timeout time.Duration,
 	logger *zap.Logger,
@@ -40,7 +40,7 @@ func CreateWebSocketQueryHandlerWithGetResponses[K comparable, V any](
 
 // CreateWebSocketQueryHandlerWithResponseFn creates a mock query handler that invokes the given function every time it is
 // invoked. The function should utilize the response channel to send responses to the provider.
-func CreateWebSocketQueryHandlerWithResponseFn[K comparable, V any](
+func CreateWebSocketQueryHandlerWithResponseFn[K comparable, V providertypes.GetResult](
 	t *testing.T,
 	fn func(chan<- providertypes.GetResponse[K, V]),
 ) handlers.WebSocketQueryHandler[K, V] {
@@ -55,7 +55,7 @@ func CreateWebSocketQueryHandlerWithResponseFn[K comparable, V any](
 }
 
 // CreateWebSocketProviderWithGetResponses creates a new web socket provider with the given responses.
-func CreateWebSocketProviderWithGetResponses[K comparable, V any](
+func CreateWebSocketProviderWithGetResponses[K comparable, V providertypes.GetResult](
 	t *testing.T,
 	timeout time.Duration,
 	cfg config.ProviderConfig,
@@ -80,7 +80,7 @@ func CreateWebSocketProviderWithGetResponses[K comparable, V any](
 }
 
 // CreateWebSocketProviderWithResponseFn creates a new web socket provider with the given response function.
-func CreateWebSocketProviderWithResponseFn[K comparable, V any](
+func CreateWebSocketProviderWithResponseFn[K comparable, V providertypes.GetResult](
 	t *testing.T,
 	cfg config.ProviderConfig,
 	logger *zap.Logger,

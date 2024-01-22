@@ -12,7 +12,7 @@ import (
 // create the URL to be sent to the HTTP client and parse the response from the client.
 //
 //go:generate mockery --name APIDataHandler --output ./mocks/ --case underscore
-type APIDataHandler[K comparable, V any] interface {
+type APIDataHandler[K comparable, V providertypes.GetResult] interface {
 	// CreateURL is used to create the URL to be sent to the http client. The function
 	// should utilize the IDs passed in as references to the data that needs to be fetched.
 	CreateURL(ids []K) (string, error)
@@ -24,8 +24,8 @@ type APIDataHandler[K comparable, V any] interface {
 	ParseResponse(ids []K, response *http.Response) providertypes.GetResponse[K, V]
 
 	// Atomic is used to determine whether the handler can make a single request for all
-	// of the IDs or multiple requests for each ID. If true, the handler will make a single
-	// request for all of the IDs. If false, the handler will make a request for each ID.
+	//  IDs or multiple requests for each ID. If true, the handler will make a single
+	// request for all IDs. If false, the handler will make a request for each ID.
 	Atomic() bool
 
 	// Name is used to get the name of the handler.
