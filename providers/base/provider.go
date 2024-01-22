@@ -15,8 +15,8 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// BaseProvider implements a base provider that can be used to build other providers.
-type BaseProvider[K comparable, V any] struct { //nolint
+// Provider implements a base provider that can be used to build other providers.
+type Provider[K comparable, V any] struct {
 	mu     sync.Mutex
 	logger *zap.Logger
 
@@ -58,7 +58,7 @@ func NewProvider[K comparable, V any](
 		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
 
-	p := &BaseProvider[K, V]{
+	p := &Provider[K, V]{
 		cfg:    cfg,
 		logger: zap.NewNop(),
 		ids:    make([]K, 0),
@@ -86,7 +86,7 @@ func NewProvider[K comparable, V any](
 
 // Start starts the provider's main loop. The provider will fetch the data from the handler
 // and continuously update the data. This blocks until the provider is stopped.
-func (p *BaseProvider[K, V]) Start(ctx context.Context) error {
+func (p *Provider[K, V]) Start(ctx context.Context) error {
 	p.logger.Info("starting provider")
 	if len(p.ids) == 0 {
 		p.logger.Warn("no ids to fetch")
@@ -97,14 +97,14 @@ func (p *BaseProvider[K, V]) Start(ctx context.Context) error {
 }
 
 // Name returns the name of the provider.
-func (p *BaseProvider[K, V]) Name() string {
+func (p *Provider[K, V]) Name() string {
 	return p.cfg.Name
 }
 
 // GetData returns the latest data recorded by the provider. The data is constantly
 // updated by the provider's main loop and provides access to the latest data - prices
 // in constant time.
-func (p *BaseProvider[K, V]) GetData() map[K]providertypes.Result[V] {
+func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -113,4 +113,16 @@ func (p *BaseProvider[K, V]) GetData() map[K]providertypes.Result[V] {
 	maps.Copy(cpy, p.data)
 
 	return cpy
+}
+
+// Type returns the type of data handler the provider uses
+func (p *Provider[K, V]) Type() providermetrics.ProviderType {
+	switch {
+	case p.cfg.API.Enabled:
+		return providermetrics.API
+	case p.cfg.WebSocket.Enabled:
+		return providermetrics.WebSockets
+	default:
+		return "unknown"
+	}
 }

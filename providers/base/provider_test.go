@@ -563,9 +563,9 @@ func TestMetrics(t *testing.T) {
 				m := metricmocks.NewProviderMetrics(t)
 				p1 := strings.ToLower(fmt.Sprint(pairs[0]))
 
-				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Success).Maybe()
-				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Success).Maybe()
-				m.On("LastUpdated", apiCfg.Name, p1).Maybe()
+				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Success, providermetrics.API).Maybe()
+				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Success, providermetrics.API).Maybe()
+				m.On("LastUpdated", apiCfg.Name, p1, providermetrics.API).Maybe()
 
 				return m
 			},
@@ -594,9 +594,9 @@ func TestMetrics(t *testing.T) {
 				m := metricmocks.NewProviderMetrics(t)
 				p1 := strings.ToLower(fmt.Sprint(pairs[0]))
 
-				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Failure).Maybe()
-				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Failure).Maybe()
-				m.On("LastUpdated", apiCfg.Name, p1).Maybe()
+				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Failure, providermetrics.API).Maybe()
+				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Failure, providermetrics.API).Maybe()
+				m.On("LastUpdated", apiCfg.Name, p1, providermetrics.API).Maybe()
 
 				return m
 			},

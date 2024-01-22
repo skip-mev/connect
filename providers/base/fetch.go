@@ -15,7 +15,7 @@ import (
 
 // fetch is the main blocker for the provider. It is responsible for fetching data from the
 // data provider and updating the data.
-func (p *BaseProvider[K, V]) fetch(ctx context.Context) error {
+func (p *Provider[K, V]) fetch(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -50,7 +50,7 @@ func (p *BaseProvider[K, V]) fetch(ctx context.Context) error {
 
 // startAPI is the main loop for the provider. It is responsible for fetching data from the API
 // and updating the data.
-func (p *BaseProvider[K, V]) startAPI(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
+func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
 	p.logger.Info("starting api query handler")
 
 	ticker := time.NewTicker(p.cfg.API.Interval)
@@ -77,7 +77,7 @@ func (p *BaseProvider[K, V]) startAPI(ctx context.Context, responseCh chan<- pro
 
 // attemptDataUpdate tries to update data by fetching and parsing API data.
 // It logs any errors encountered during the process.
-func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) {
+func (p *Provider[K, V]) attemptDataUpdate(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) {
 	if len(p.ids) == 0 {
 		p.logger.Debug("no ids to fetch")
 		return
@@ -100,7 +100,7 @@ func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context, responseCh c
 }
 
 // startWebSocket starts a connection to the web socket and handles the incoming messages.
-func (p *BaseProvider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
+func (p *Provider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
 	// Start the web socket query handler. If the connection fails to start, then the query handler
 	// will be restarted after a timeout.
 	for {
@@ -122,7 +122,7 @@ func (p *BaseProvider[K, V]) startWebSocket(ctx context.Context, responseCh chan
 }
 
 // recv receives responses from the response channel and updates the data.
-func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan providertypes.GetResponse[K, V]) {
+func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertypes.GetResponse[K, V]) {
 	// Wait for the data to be retrieved until the context is cancelled.
 	for {
 		select {
@@ -132,7 +132,7 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 		case r := <-responseCh:
 			resolved, unResolved := r.Resolved, r.UnResolved
 
-			// Update all of the resolved data.
+			// Update all the resolved data.
 			for id, result := range resolved {
 				p.logger.Debug(
 					"successfully fetched data",
@@ -144,12 +144,13 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 
 				// Update the metrics.
 				strID := strings.ToLower(fmt.Sprint(id))
-				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Success)
-				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Success)
-				p.metrics.LastUpdated(p.cfg.Name, strID)
+				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Success, p.Type())
+				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Success, p.Type())
+				p.metrics.LastUpdated(p.cfg.Name, strID, p.Type())
+				// p.metrics.AddPrice(p.cfg.Name, strID, result)
 			}
 
-			// Log and record all of the unresolved data.
+			// Log and record all the unresolved data.
 			for id, err := range unResolved {
 				p.logger.Debug(
 					"failed to fetch data",
@@ -159,8 +160,8 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 
 				// Update the metrics.
 				strID := strings.ToLower(fmt.Sprint(id))
-				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Failure)
-				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Failure)
+				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Failure, p.Type())
+				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Failure, p.Type())
 			}
 		}
 	}
@@ -168,7 +169,7 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 
 // updateData sets the latest data for the provider. This will only update the data if the timestamp
 // of the data is greater than the current data.
-func (p *BaseProvider[K, V]) updateData(id K, result providertypes.Result[V]) {
+func (p *Provider[K, V]) updateData(id K, result providertypes.Result[V]) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 

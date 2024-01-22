@@ -12,19 +12,19 @@ type ProviderMetrics struct {
 	mock.Mock
 }
 
-// AddProviderResponse provides a mock function with given fields: providerName, status
-func (_m *ProviderMetrics) AddProviderResponse(providerName string, status metrics.Status) {
-	_m.Called(providerName, status)
+// AddProviderResponse provides a mock function with given fields: providerName, status, providerType
+func (_m *ProviderMetrics) AddProviderResponse(providerName string, status metrics.Status, providerType metrics.ProviderType) {
+	_m.Called(providerName, status, providerType)
 }
 
-// AddProviderResponseByID provides a mock function with given fields: providerName, id, status
-func (_m *ProviderMetrics) AddProviderResponseByID(providerName string, id string, status metrics.Status) {
-	_m.Called(providerName, id, status)
+// AddProviderResponseByID provides a mock function with given fields: providerName, id, status, providerType
+func (_m *ProviderMetrics) AddProviderResponseByID(providerName string, id string, status metrics.Status, providerType metrics.ProviderType) {
+	_m.Called(providerName, id, status, providerType)
 }
 
-// LastUpdated provides a mock function with given fields: providerName, id
-func (_m *ProviderMetrics) LastUpdated(providerName string, id string) {
-	_m.Called(providerName, id)
+// LastUpdated provides a mock function with given fields: providerName, id, providerType
+func (_m *ProviderMetrics) LastUpdated(providerName string, id string, providerType metrics.ProviderType) {
+	_m.Called(providerName, id, providerType)
 }
 
 // NewProviderMetrics creates a new instance of ProviderMetrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

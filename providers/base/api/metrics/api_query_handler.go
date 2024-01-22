@@ -27,9 +27,9 @@ type APIMetrics interface {
 	// This increments the number of responses by provider, id (i.e. currency pair), and status.
 	AddProviderResponse(providerName, id string, status Status)
 
-	// ObserveProviderResponseTime records the time it took for a provider to respond for
+	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
-	// time it took for all of the requests to complete.
+	// time it took for all the requests to complete.
 	ObserveProviderResponseLatency(providerName string, duration time.Duration)
 }
 
@@ -82,7 +82,7 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, sta
 	m.responseStatusPerProvider.With(providermetrics.ProviderLabel, providerName, providermetrics.IDLabel, id, StatusLabel, status.String()).Add(1)
 }
 
-// ObserveProviderResponseTime records the time it took for a provider to respond.
+// ObserveProviderResponseLatency records the time it took for a provider to respond.
 func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
 	m.responseTimePerProvider.With(providermetrics.ProviderLabel, providerName).Observe(float64(duration.Milliseconds()))
 }
