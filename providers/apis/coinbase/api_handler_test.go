@@ -9,19 +9,37 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var config = coinbase.NewConfig(
-	map[string]string{
-		"BITCOIN":  "BTC",
-		"USD":      "USD",
-		"ETHEREUM": "ETH",
+var providerCfg = config.ProviderConfig{
+	Name: coinbase.Name,
+	API: config.APIConfig{
+		Enabled:    true,
+		Timeout:    time.Second,
+		Interval:   time.Second,
+		MaxQueries: 1,
+		URL:        coinbase.URL,
+		Name:       coinbase.Name,
 	},
-)
+	Market: config.MarketConfig{
+		Name: coinbase.Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTC-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETH-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+		},
+	},
+}
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
@@ -67,9 +85,8 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := coinbase.CoinBaseAPIHandler{
-				Config: config,
-			}
+			h, err := coinbase.NewCoinBaseAPIHandler(providerCfg)
+			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
 			if tc.expectedErr {
@@ -109,26 +126,6 @@ func TestParseResponse(t *testing.T) {
 					},
 				},
 				map[oracletypes.CurrencyPair]error{},
-			),
-		},
-		{
-			name: "invalid quote currency",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"data": {
-		"amount": "1020.25",
-		"currency": "MOG"
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("expected quote currency USD, got MOG"),
-				},
 			),
 		},
 		{
@@ -210,35 +207,12 @@ toms obvious but not minimal language
 				},
 			),
 		},
-		{
-			name: "quote currency is not supported",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"data": {
-		"amount": "1020.25",
-		"currency": "MOG"
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("unknown quote currency MOG"),
-				},
-			),
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := coinbase.CoinBaseAPIHandler{
-				Config: config,
-			}
+			h, err := coinbase.NewCoinBaseAPIHandler(providerCfg)
+			require.NoError(t, err)
 
 			now := time.Now()
 			resp := h.ParseResponse(tc.cps, tc.response)

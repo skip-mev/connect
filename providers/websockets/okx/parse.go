@@ -77,13 +77,14 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 
 	// Iterate through all of the tickers and add them to the response.
 	for _, ticker := range resp.Data {
-		cp, ok := h.config.ReverseCache[ticker.InstrumentID]
+		market, ok := h.invertedMarketCfg.MarketToCurrencyPairConfigs[ticker.InstrumentID]
 		if !ok {
 			h.logger.Debug("currency pair not found for instrument ID", zap.String("instrument_id", ticker.InstrumentID))
 			continue
 		}
 
 		// Convert the price to a big.Int.
+		cp := market.CurrencyPair
 		price, err := math.Float64StringToBigInt(ticker.IndexPrice, cp.Decimals())
 		if err != nil {
 			h.logger.Error("failed to convert price to big.Int", zap.Error(err))

@@ -12,16 +12,9 @@ import (
 // API can be configured to be API based or not.
 
 const (
-	// APIKeyHeader is the header used to send the API key to the CoinGecko API.
-	APIKeyHeader = "&x-cg-pro-api-key=" //nolint:gosec
-
-	// BaseURL is the base URL for the CoinGecko API. This URL does not require
+	// URL is the base URL for the CoinGecko API. This URL does not require
 	// an API key but may be rate limited.
-	BaseURL = "https://api.coingecko.com/api/v3"
-
-	// APIURL is the api base URL for the CoinGecko API. This API requires an
-	// API key and is rate limited according to the CoinGecko plan.
-	APIURL = "https://pro-api.coingecko.com/api/v3"
+	URL = "https://api.coingecko.com/api/v3"
 
 	// PairPriceEndpoint is the URL used to fetch the price of a list of currency
 	// pairs. The ids are the base currencies and the vs_currencies are the quote
@@ -33,6 +26,11 @@ const (
 	// results are returned with 18 decimal places and are expected to be converted
 	// to the appropriate precision by the parser.
 	Precision = "&precision=18"
+
+	// TickerSeparator is the formatter of the ticker that is used to fetch the price
+	// of a currency pair. The first currency is the base currency and the second
+	// currency is the quote currency.
+	TickerSeparator = "/"
 )
 
 type (
@@ -70,20 +68,27 @@ func (h *CoinGeckoAPIHandler) getUniqueBaseAndQuoteDenoms(pairs []types.Currency
 	// Iterate through every currency pair and add the base and quote to the
 	// unique bases and quotes list as long as they are supported.
 	for _, cp := range pairs {
-		if _, ok := seenBases[cp.Base]; !ok {
-			if b, ok := h.SupportedBases[cp.Base]; ok {
-				bases = append(bases, b)
-			}
-
-			seenBases[cp.Base] = struct{}{}
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
+		if !ok {
+			continue
 		}
 
-		if _, ok := seenQuotes[cp.Quote]; !ok {
-			if q, ok := h.SupportedQuotes[cp.Quote]; ok {
-				quotes = append(quotes, q)
-			}
+		// Split the market ticker into the base and quote currencies.
+		split := strings.Split(market.Ticker, TickerSeparator)
+		if len(split) != 2 {
+			continue
+		}
 
-			seenQuotes[cp.Quote] = struct{}{}
+		base := split[0]
+		if _, ok := seenBases[base]; !ok {
+			seenBases[base] = struct{}{}
+			bases = append(bases, base)
+		}
+
+		quote := split[1]
+		if _, ok := seenQuotes[quote]; !ok {
+			seenQuotes[quote] = struct{}{}
+			quotes = append(quotes, quote)
 		}
 	}
 

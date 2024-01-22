@@ -25,25 +25,28 @@ var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*CoinGeckoA
 // This provider can be configured to support API based fetching, however, the provider
 // does not require it.
 type CoinGeckoAPIHandler struct { //nolint
-	// Config is the CoinGecko config.
-	Config
+	// cfg is the provider config.
+	cfg config.ProviderConfig
+
+	// invertedMarketCfg is convience struct that contains the inverted market to currency pair mapping.
+	invertedMarketCfg config.InvertedCurrencyPairMarketConfig
 }
 
 // NewCoinGeckoAPIHandler returns a new CoinGecko API handler.
 func NewCoinGeckoAPIHandler(
-	providerCfg config.ProviderConfig,
+	cfg config.ProviderConfig,
 ) (*CoinGeckoAPIHandler, error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
 
-	cfg, err := ReadCoinGeckoConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, err
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
 	}
 
 	return &CoinGeckoAPIHandler{
-		Config: cfg,
+		cfg:               cfg,
+		invertedMarketCfg: cfg.Market.Invert(),
 	}, nil
 }
 
@@ -65,14 +68,8 @@ func (h *CoinGeckoAPIHandler) CreateURL(
 	pricesEndPoint := fmt.Sprintf(PairPriceEndpoint, bases, quotes)
 	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)
 
-	// If the API key is set, we need append the API url with the API key header along
-	// with the API key.
-	if len(h.APIKey) != 0 {
-		return fmt.Sprintf("%s%s%s%s", APIURL, finalEndpoint, APIKeyHeader, h.APIKey), nil
-	}
-
 	// Otherwise, we just return the base url with the endpoint.
-	return fmt.Sprintf("%s%s", BaseURL, finalEndpoint), nil
+	return fmt.Sprintf("%s%s", h.cfg.API.URL, finalEndpoint), nil
 }
 
 // Atomic returns true as the CoinGecko API is atomic i.e. returns the price of all
@@ -101,48 +98,41 @@ func (h *CoinGeckoAPIHandler) ParseResponse(
 	)
 
 	// Map each of the currency pairs for easy lookup.
-	cpMap := make(map[string]oracletypes.CurrencyPair)
+	configCPs := config.NewMarketConfig()
 	for _, cp := range cps {
-		base, ok := h.SupportedBases[cp.Base]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
-			unresolved[cp] = fmt.Errorf("unknown base currency %s", cp.Base)
 			continue
 		}
 
-		quote, ok := h.SupportedQuotes[cp.Quote]
-		if !ok {
-			unresolved[cp] = fmt.Errorf("unknown quote currency %s", cp.Quote)
-			continue
-		}
-
-		cpMap[fmt.Sprintf("%s-%s", base, quote)] = cp
+		configCPs.CurrencyPairToMarketConfigs[cp.ToString()] = market
 	}
 
 	// Filter out the responses that are not expected.
 	for base, quotes := range result {
 		for quote, price := range quotes {
-			key := fmt.Sprintf("%s-%s", base, quote)
-			cp, ok := cpMap[key]
+			// The ticker is represented as base/quote.
+			ticker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
+
+			// If the ticker is not configured, we skip it.
+			market, ok := h.invertedMarketCfg.MarketToCurrencyPairConfigs[ticker]
 			if !ok {
 				continue
 			}
 
+			// Resolve the price.
+			cp := market.CurrencyPair
 			price := math.Float64ToBigInt(price, cp.Decimals())
 			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-			delete(cpMap, key)
+			delete(configCPs.CurrencyPairToMarketConfigs, cp.ToString())
 		}
 	}
 
 	// If there are any currency pairs that were not resolved, we need to add them
 	// to the unresolved map.
-	for _, cp := range cpMap {
-		unresolved[cp] = fmt.Errorf("currency pair %s did not get a response", cp.String())
+	for _, market := range configCPs.CurrencyPairToMarketConfigs {
+		unresolved[market.CurrencyPair] = fmt.Errorf("currency pair %s did not get a response", market.CurrencyPair.ToString())
 	}
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
-}
-
-// Name returns the name of the handler.
-func (h *CoinGeckoAPIHandler) Name() string {
-	return Name
 }
