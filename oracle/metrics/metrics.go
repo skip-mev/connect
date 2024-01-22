@@ -10,12 +10,12 @@ import (
 )
 
 const (
-	// MetricsSubsystem is a subsystem shared by all metrics exposed by this
+	// OracleSubsystem is a subsystem shared by all metrics exposed by this
 	// package.
 	OracleSubsystem = "oracle"
 )
 
-// OracleMetrics is an interface that defines the API for oracle metrics.
+// Metrics is an interface that defines the API for oracle metrics.
 //
 //go:generate mockery --name Metrics --filename mock_metrics.go
 type Metrics interface {
