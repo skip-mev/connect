@@ -10,13 +10,12 @@ import (
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	testutil "github.com/skip-mev/slinky/x/alerts/testutil"
 	"github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/slinky/x/alerts/types/mocks"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
@@ -122,9 +121,11 @@ func TestValidatorAlertIncentive(t *testing.T) {
 }
 
 func TestStrategy(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	mockStakingKeeper := testutil.NewMockStakingKeeper(ctrl)
-	mockBankKeeper := testutil.NewMockBankKeeper(ctrl)
+	var (
+		mockStakingKeeper *mocks.StakingKeeper
+		mockBankKeeper    *mocks.BankKeeper
+	)
+
 	ctx := sdk.Context{}.WithLogger(log.NewNopLogger())
 
 	slashFraction := math.LegacyNewDecFromIntWithPrec(math.NewInt(5), 1)
@@ -138,7 +139,10 @@ func TestStrategy(t *testing.T) {
 		{
 			"incorrect incentive type",
 			&goodprice.GoodPriceIncentive{},
-			func() {},
+			func() {
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+			},
 			fmt.Errorf("incentive must be of type ValidatorAlertIncentive, got %T", &goodprice.GoodPriceIncentive{}),
 		},
 		{
@@ -148,7 +152,9 @@ func TestStrategy(t *testing.T) {
 				Power:   1,
 			}, 1, sdk.AccAddress("test")),
 			func() {
-				mockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, fmt.Errorf("error"))
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+				mockStakingKeeper.On("GetValidatorByConsAddr", ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, fmt.Errorf("error")).Once()
 			},
 			fmt.Errorf("validator with address %s does not exist", sdk.ConsAddress("test")),
 		},
@@ -159,8 +165,10 @@ func TestStrategy(t *testing.T) {
 				Power:   1,
 			}, 1, sdk.AccAddress("test")),
 			func() {
-				mockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil)
-				mockStakingKeeper.EXPECT().Slash(ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.Int{}, fmt.Errorf("slash error"))
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+				mockStakingKeeper.On("GetValidatorByConsAddr", ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil).Once()
+				mockStakingKeeper.On("Slash", ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.Int{}, fmt.Errorf("slash error")).Once()
 			},
 			fmt.Errorf("failed to slash validator: slash error"),
 		},
@@ -171,9 +179,11 @@ func TestStrategy(t *testing.T) {
 				Power:   1,
 			}, 1, sdk.AccAddress("test")),
 			func() {
-				mockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil)
-				mockStakingKeeper.EXPECT().Slash(ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil)
-				mockStakingKeeper.EXPECT().BondDenom(ctx).Return("", fmt.Errorf("error"))
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+				mockStakingKeeper.On("GetValidatorByConsAddr", ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil).Once()
+				mockStakingKeeper.On("Slash", ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil).Once()
+				mockStakingKeeper.On("BondDenom", ctx).Return("", fmt.Errorf("error"))
 			},
 			fmt.Errorf("failed to get bond denom: error"),
 		},
@@ -184,10 +194,12 @@ func TestStrategy(t *testing.T) {
 				Power:   1,
 			}, 1, sdk.AccAddress("test")),
 			func() {
-				mockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil)
-				mockStakingKeeper.EXPECT().Slash(ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil)
-				mockStakingKeeper.EXPECT().BondDenom(ctx).Return("stake", nil)
-				mockBankKeeper.EXPECT().MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(fmt.Errorf("mint error"))
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+				mockStakingKeeper.On("GetValidatorByConsAddr", ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil).Once()
+				mockStakingKeeper.On("Slash", ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil).Once()
+				mockStakingKeeper.On("BondDenom", ctx).Return("stake", nil).Once()
+				mockBankKeeper.On("MintCoins", ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(fmt.Errorf("mint error")).Once()
 			},
 			fmt.Errorf("failed to mint coins: mint error"),
 		},
@@ -198,11 +210,13 @@ func TestStrategy(t *testing.T) {
 				Power:   1,
 			}, 1, sdk.AccAddress("signer")),
 			func() {
-				mockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil)
-				mockStakingKeeper.EXPECT().Slash(ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil)
-				mockStakingKeeper.EXPECT().BondDenom(ctx).Return("stake", nil)
-				mockBankKeeper.EXPECT().MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(nil)
-				mockBankKeeper.EXPECT().SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress("signer"), sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(fmt.Errorf("send error"))
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+				mockStakingKeeper.On("GetValidatorByConsAddr", ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil).Once()
+				mockStakingKeeper.On("Slash", ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil).Once()
+				mockStakingKeeper.On("BondDenom", ctx).Return("stake", nil).Once()
+				mockBankKeeper.On("MintCoins", ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(nil).Once()
+				mockBankKeeper.On("SendCoinsFromModuleToAccount", ctx, types.ModuleName, sdk.AccAddress("signer"), sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(fmt.Errorf("send error")).Once()
 			},
 			fmt.Errorf("failed to send coins: send error"),
 		},
@@ -213,21 +227,22 @@ func TestStrategy(t *testing.T) {
 				Power:   1,
 			}, 1, sdk.AccAddress("signer")),
 			func() {
-				mockStakingKeeper.EXPECT().GetValidatorByConsAddr(ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil)
-				mockStakingKeeper.EXPECT().Slash(ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil)
-				mockStakingKeeper.EXPECT().BondDenom(ctx).Return("stake", nil)
-				mockBankKeeper.EXPECT().MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(nil)
-				mockBankKeeper.EXPECT().SendCoinsFromModuleToAccount(ctx, types.ModuleName, sdk.AccAddress("signer"), sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(nil)
+				mockStakingKeeper = mocks.NewStakingKeeper(t)
+				mockBankKeeper = mocks.NewBankKeeper(t)
+				mockStakingKeeper.On("GetValidatorByConsAddr", ctx, sdk.ConsAddress("test")).Return(stakingtypes.Validator{}, nil).Once()
+				mockStakingKeeper.On("Slash", ctx, sdk.ConsAddress("test"), 1-sdk.ValidatorUpdateDelay, int64(1), slashFraction).Return(math.NewInt(1), nil).Once()
+				mockStakingKeeper.On("BondDenom", ctx).Return("stake", nil).Once()
+				mockBankKeeper.On("MintCoins", ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(nil).Once()
+				mockBankKeeper.On("SendCoinsFromModuleToAccount", ctx, types.ModuleName, sdk.AccAddress("signer"), sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(1)))).Return(nil).Once()
 			},
 			nil,
 		},
 	}
 
-	strategy := strategies.DefaultValidatorAlertIncentiveStrategy(mockStakingKeeper, mockBankKeeper)
-
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.setup()
+			strategy := strategies.DefaultValidatorAlertIncentiveStrategy(mockStakingKeeper, mockBankKeeper)
 
 			_, err := strategy(ctx, tc.validatorIncentive)
 			if err == nil {
