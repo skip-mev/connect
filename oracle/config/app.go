@@ -26,7 +26,7 @@ enabled = "{{ .Oracle.Enabled }}"
 
 # Oracle Address is the URL of the out of process oracle sidecar. This is used to
 # connect to the oracle sidecar when the application boots up. Note that the application
-# will not start if the oracle sidecar is not running.
+# will not start if the oracle sidecar is enabled but the address is not supplied.
 oracle_address = "{{ .Oracle.OracleAddress }}"
 
 # Client Timeout is the time that the client is willing to wait for responses from 
@@ -42,8 +42,9 @@ metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
 # exposed to.
 prometheus_server_address = "{{ .Oracle.PrometheusServerAddress }}"
 
-# ValidatorConsAddress is the validator's consensus address. Validator's must register their
-# consensus address in order to enable app side metrics.
+# ValidatorConsAddress is the validator's consensus address. This is optional. If supplied,
+# the oracle will expose metrics for how often the validator's vote extensions are included
+# in blocks and more.
 validator_cons_address = "{{ .Oracle.ValidatorConsAddress }}"
 `
 )
@@ -79,8 +80,7 @@ type AppConfig struct {
 	// will expose metrics to
 	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
 
-	// ValidatorConsAddress is the validator's consensus address. Validator's
-	// must register their consensus address in order to enable app side metrics.
+	// ValidatorConsAddress is the validator's consensus address.
 	ValidatorConsAddress string `mapstructure:"validator_cons_address" toml:"validator_cons_address"`
 }
 
@@ -131,7 +131,7 @@ func ReadConfigFromFile(path string) (AppConfig, error) {
 	}
 
 	// Check required fields
-	fields := []string{"oracle_address", "client_timeout"}
+	fields := []string{"enabled", "oracle_address", "client_timeout"}
 	for _, field := range fields {
 		if !viper.IsSet(field) {
 			return config, fmt.Errorf("required oracle field is missing in config")

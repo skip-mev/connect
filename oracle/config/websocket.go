@@ -26,6 +26,7 @@ type WebSocketConfig struct {
 	Name string `mapstructure:"name" toml:"name"`
 }
 
+// ValidateBasic performs basic validation of the websocket config.
 func (c *WebSocketConfig) ValidateBasic() error {
 	if !c.Enabled {
 		return nil

@@ -33,6 +33,7 @@ type APIConfig struct {
 	Name string `mapstructure:"name" toml:"name"`
 }
 
+// ValidateBasic performs basic validation of the API config.
 func (c *APIConfig) ValidateBasic() error {
 	if !c.Enabled {
 		return nil

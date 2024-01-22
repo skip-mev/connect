@@ -27,8 +27,7 @@ type OracleConfig struct {
 	// determine whether the oracle should be run in debug mode or not.
 	Production bool `mapstructure:"production" toml:"production"`
 
-	// MetricsConfig is the metrics configurations for the oracle. This configuration object allows for
-	// metrics tracking of the oracle and the interaction between the oracle and the app.
+	// Metrics is the metrics configurations for the oracle.
 	Metrics MetricsConfig `mapstructure:"metrics" toml:"metrics"`
 }
 
@@ -36,14 +35,6 @@ type OracleConfig struct {
 func (c *OracleConfig) ValidateBasic() error {
 	if c.UpdateInterval <= 0 {
 		return fmt.Errorf("oracle update interval must be greater than 0")
-	}
-
-	if len(c.Providers) == 0 {
-		return fmt.Errorf("oracle must have at least one provider")
-	}
-
-	if len(c.CurrencyPairs) == 0 {
-		return fmt.Errorf("oracle must have at least one currency pair")
 	}
 
 	for _, p := range c.Providers {
