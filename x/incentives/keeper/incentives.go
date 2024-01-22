@@ -13,7 +13,7 @@ func (k Keeper) GetIncentivesByType(ctx sdk.Context, incentive types.Incentive) 
 	key := types.GetIncentiveKey(incentive)
 
 	// Create a callback to unmarshal the incentives.
-	incentives := []types.Incentive{}
+	var incentives []types.Incentive
 	cb := func(it db.Iterator) error {
 		if err := incentive.Unmarshal(it.Value()); err != nil {
 			return err
