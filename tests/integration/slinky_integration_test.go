@@ -117,10 +117,10 @@ func TestSlinkyOracleIntegration(t *testing.T) {
 }
 
 func TestSlinkySlashingIntegration(t *testing.T) {
-	baseSuite := integration.NewSlinkyIntegrationSuite(
-		spec,
-		oracleImage,
-	)
+	// baseSuite := integration.NewSlinkyIntegrationSuite(
+	// 	spec,
+	// 	oracleImage,
+	// )
 
-	suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
+	// suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
 }

@@ -311,11 +311,12 @@ func NewSimApp(
 	}
 
 	// start the oracle service
-	go func() {
-		if err := app.oracleClient.Start(); err != nil {
-			panic(err)
-		}
-	}()
+	if err := app.oracleClient.Start(); err != nil {
+		app.Logger().Error("failed to start oracle client", "err", err)
+		panic(err)
+	}
+
+	app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
 
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {

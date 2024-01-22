@@ -293,10 +293,6 @@ var LocalConfig = config.OracleConfig{
 						Ticker:       "ETH-BTC",
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 					},
-					"OSMOSIS/USD": {
-						Ticker:       "OSMO-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
-					},
 				},
 			},
 		},

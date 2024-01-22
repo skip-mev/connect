@@ -77,6 +77,9 @@ func (c *MarketConfig) ValidateBasic() error {
 		if err := marketConfig.ValidateBasic(); err != nil {
 			return fmt.Errorf("market config is not formatted correctly %w", err)
 		}
+
+		delete(c.CurrencyPairToMarketConfigs, cpStr)
+		c.CurrencyPairToMarketConfigs[cp.ToString()] = marketConfig
 	}
 
 	// Invert the ticker market config into the currency pair market config.
