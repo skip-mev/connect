@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+	"time"
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 
@@ -23,6 +24,7 @@ import (
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/ve"
+	servicemetricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -852,6 +854,133 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 			}
 		})
 	}
+}
+
+func (s *ProposalsTestSuite) TestProposalLatency() {
+	// check that no latency is reported for a failed PrepareProposal
+	metricsmocks := servicemetricsmocks.NewMetrics(s.T())
+
+	s.Run("failed prepare proposal does not report latency", func() {
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				return nil, fmt.Errorf("prepare proposal failed")
+			},
+			nil,
+			ve.NoOpValidateVoteExtensions,
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsmocks,
+		)
+
+		// make vote-extensions not enabled
+		cp := s.ctx.ConsensusParams()
+		cp.Abci.VoteExtensionsEnableHeight = 3
+		s.ctx = s.ctx.WithConsensusParams(cp)
+
+		req := &cometabci.RequestPrepareProposal{
+			Height: 2,
+		}
+
+		// expect no metric to be reported
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
+		s.Require().Error(err, "prepare proposal failed")
+	})
+
+	// check that latency reported in upstream logic is ignored
+	s.Run("wrapped prepare proposal latency is ignored", func() {
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				// simulate a long-running prepare proposal
+				time.Sleep(200 * time.Millisecond)
+				return &cometabci.ResponsePrepareProposal{
+					Txs: nil,
+				}, nil
+			},
+			nil,
+			ve.NoOpValidateVoteExtensions,
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsmocks,
+		)
+
+		req := s.createRequestPrepareProposal( // the votes here are invalid, but that's fine
+			cometabci.ExtendedCommitInfo{
+				Round: 1,
+				Votes: []cometabci.ExtendedVoteInfo{
+					{
+						VoteExtension: []byte("vote-extension"),
+					},
+				},
+			},
+			nil,
+			4, // vote extensions will be enabled
+		)
+		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
+			// the second arg shld be a duration
+			latency := args.Get(1).(time.Duration)
+			s.Require().True(latency < 100*time.Millisecond) // shld have ignored the wrapped prepareProposal latency
+		}).Once()
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
+		s.Require().NoError(err)
+	})
+
+	s.Run("failed process proposal does not report latency", func() {
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			baseapp.NoOpPrepareProposal(),
+			func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+				return nil, fmt.Errorf("process proposal failed")
+			},
+			ve.NoOpValidateVoteExtensions,
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsmocks,
+		)
+
+		req := s.createRequestProcessProposal(nil, 2)
+
+		_, err := propHandler.ProcessProposalHandler()(s.ctx, req)
+		s.Require().Error(err, "process proposal failed")
+	})
+
+	s.Run("wrapped process proposal latency is ignored", func() {
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			baseapp.NoOpPrepareProposal(),
+			func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+				// simulate a long-running process proposal
+				time.Sleep(200 * time.Millisecond)
+				return &cometabci.ResponseProcessProposal{}, nil
+			},
+			ve.NoOpValidateVoteExtensions,
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsmocks,
+		)
+
+		_, extInfoBz, err := testutils.CreateExtendedCommitInfo(
+			[]cometabci.ExtendedVoteInfo{},
+			codec.NewDefaultExtendedCommitCodec(),
+		)
+		s.Require().NoError(err)
+
+		req := s.createRequestProcessProposal([][]byte{extInfoBz}, 4)
+		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
+			// the second arg shld be a duration
+			latency := args.Get(1).(time.Duration)
+			s.Require().True(latency < 100*time.Millisecond) // shld have ignored the wrapped processProposal latency
+		}).Once()
+
+		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
+		s.Require().NoError(err)
+	})
 }
 
 func (s *ProposalsTestSuite) createRequestPrepareProposal(

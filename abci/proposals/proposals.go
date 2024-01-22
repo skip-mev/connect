@@ -3,8 +3,7 @@ package proposals
 import (
 	"bytes"
 	"fmt"
-
-	"github.com/cometbft/cometbft/types/time"
+	"time"
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 
@@ -177,7 +176,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			"total_time", preHandleTime+postHandleTime,
 		)
 
-		h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, preHandleTime + postHandleTime)
+		h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, preHandleTime+postHandleTime)
 		h.logger.Info(
 			"prepared proposal",
 			"txs", len(resp.Txs),
@@ -230,7 +229,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			h.logger.Error("ProcessProposalHandler received a nil request")
 			return nil, fmt.Errorf("received a nil request")
 		}
-	
+
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
@@ -274,12 +273,17 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		// record time spent in slinky-specific ProcesssProposal
 		processDuration := time.Now().Sub(start)
-		h.logger.Info(
-			"recording process proposal time",
-			"duration (nano-seconds)", processDuration,
-		)
-		h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, processDuration)
 
-		return h.processProposalHandler(ctx, req)
+		// call the wrapped process-proposal
+		resp, err := h.processProposalHandler(ctx, req)
+		if err == nil {
+			// record time spent in slinky-specific ProcesssProposal on successful process-proposals
+			h.logger.Info(
+				"recording process proposal time",
+				"duration (nano-seconds)", processDuration,
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, processDuration)
+		}
+		return resp, err
 	}
 }

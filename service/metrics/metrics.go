@@ -96,10 +96,10 @@ func NewNopMetrics() Metrics {
 	return &nopMetricsImpl{}
 }
 
-func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
-func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)           {}
-func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)    {}
+func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)                       {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Status)                                         {}
+func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                                 {}
+func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)                          {}
 func (m *nopMetricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration) {}
 
 func NewMetrics() Metrics {
