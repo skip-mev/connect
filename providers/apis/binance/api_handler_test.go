@@ -32,12 +32,12 @@ var (
 		},
 		Market: config.MarketConfig{
 			Name: binance.Name,
-			TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BTCUSDT": {
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USDT": {
 					Ticker:       "BTCUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 				},
-				"BNBUSDT": {
+				"BINANCE/USDT": {
 					Ticker:       "BNBUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT"),
 				},
@@ -57,12 +57,12 @@ var (
 		},
 		Market: config.MarketConfig{
 			Name: binance.Name,
-			TickerToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BTCUSDT": {
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USDT": {
 					Ticker:       "BTCUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 				},
-				"BNBUSDT": {
+				"BINANCE/USDT": {
 					Ticker:       "BNBUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT"),
 				},
