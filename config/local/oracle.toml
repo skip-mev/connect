@@ -340,3 +340,4 @@ production = false
 [metrics]
   prometheus_server_address = "localhost:8000"
   enabled = true
+ 
