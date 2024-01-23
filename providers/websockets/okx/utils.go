@@ -6,12 +6,12 @@ const (
 	// The two production URLs are defined in ProductionURL and ProductionAWSURL. The
 	// DemoURL is used for testing purposes.
 
-	// ProductionURL is the public OKX Websocket URL.
-	ProductionURL = "wss://ws.okx.com:8443/ws/v5/public"
+	// URL_PROD is the public OKX Websocket URL.
+	URL_PROD = "wss://ws.okx.com:8443/ws/v5/public" //nolint
 
-	// ProductionAWSURL is the public OKX Websocket URL hosted on AWS.
-	ProductionAWSURL = "wss://wsaws.okx.com:8443/ws/v5/public"
+	// URL_PROD_AWS is the public OKX Websocket URL hosted on AWS.
+	URL_PROD_AWS = "wss://wsaws.okx.com:8443/ws/v5/public" //nolint
 
 	// DemoURL is the public OKX Websocket URL for test usage.
-	DemoURL = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999"
+	URL_DEMO = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999" //nolint
 )

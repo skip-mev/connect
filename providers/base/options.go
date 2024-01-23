@@ -3,6 +3,7 @@ package base
 import (
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -11,6 +12,17 @@ import (
 // ProviderOption is a function that can be used to modify a provider.
 type ProviderOption[K comparable, V any] func(*BaseProvider[K, V])
 
+// WithName sets the name of the provider.
+func WithName[K comparable, V any](name string) ProviderOption[K, V] {
+	return func(p *BaseProvider[K, V]) {
+		if name == "" {
+			panic("cannot set empty name")
+		}
+
+		p.name = name
+	}
+}
+
 // WithLogger sets the logger for the provider.
 func WithLogger[K comparable, V any](logger *zap.Logger) ProviderOption[K, V] {
 	return func(p *BaseProvider[K, V]) {
@@ -18,7 +30,7 @@ func WithLogger[K comparable, V any](logger *zap.Logger) ProviderOption[K, V] {
 			panic("cannot set nil logger")
 		}
 
-		p.logger = logger.With(zap.String("provider", p.cfg.Name))
+		p.logger = logger.With(zap.String("provider", p.name))
 	}
 }
 
@@ -38,6 +50,17 @@ func WithAPIQueryHandler[K comparable, V any](api apihandlers.APIQueryHandler[K,
 	}
 }
 
+// WithAPIConfig sets the APIConfig for the provider.
+func WithAPIConfig[K comparable, V any](cfg config.APIConfig) ProviderOption[K, V] {
+	return func(p *BaseProvider[K, V]) {
+		if cfg.ValidateBasic() != nil {
+			panic("invalid api config")
+		}
+
+		p.apiCfg = cfg
+	}
+}
+
 // WithWebSocketQueryHandler sets the WebSocketQueryHandler for the provider. If your provider
 // utilizes a websocket based provider, you should use this option to set the WebSocketQueryHandler.
 func WithWebSocketQueryHandler[K comparable, V any](ws wshandlers.WebSocketQueryHandler[K, V]) ProviderOption[K, V] {
@@ -51,6 +74,17 @@ func WithWebSocketQueryHandler[K comparable, V any](ws wshandlers.WebSocketQuery
 		}
 
 		p.ws = ws
+	}
+}
+
+// WithWebSocketConfig sets the WebSocketConfig for the provider.
+func WithWebSocketConfig[K comparable, V any](cfg config.WebSocketConfig) ProviderOption[K, V] {
+	return func(p *BaseProvider[K, V]) {
+		if cfg.ValidateBasic() != nil {
+			panic("invalid web socket config")
+		}
+
+		p.wsCfg = cfg
 	}
 }
 

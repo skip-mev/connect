@@ -33,7 +33,7 @@ type OracleMetricsImpl struct {
 
 // NewMetricsFromConfig returns a oracle Metrics implementation based on the provided
 // config.
-func NewMetricsFromConfig(config config.OracleMetricsConfig) Metrics {
+func NewMetricsFromConfig(config config.MetricsConfig) Metrics {
 	if config.Enabled {
 		return NewMetrics()
 	}

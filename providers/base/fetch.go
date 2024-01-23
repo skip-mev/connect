@@ -26,10 +26,10 @@ func (p *BaseProvider[K, V]) fetch(ctx context.Context) error {
 		// The buffer size is set to the minimum of the number of IDs and the max number of queries.
 		// This is to ensure that the response channel does not block the query handler and that the
 		// query handler does not exceed the rate limit parameters of the provider.
-		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), p.cfg.API.MaxQueries))
+		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), p.apiCfg.MaxQueries))
 	case p.ws != nil:
 		// Otherwise, the buffer size is set to the max buffer size configured for the web socket.
-		responseCh = make(chan providertypes.GetResponse[K, V], p.cfg.WebSocket.MaxBufferSize)
+		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
 	default:
 		return fmt.Errorf("no api or web socket configured")
 	}
@@ -53,7 +53,7 @@ func (p *BaseProvider[K, V]) fetch(ctx context.Context) error {
 func (p *BaseProvider[K, V]) startAPI(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
 	p.logger.Info("starting api query handler")
 
-	ticker := time.NewTicker(p.cfg.API.Interval)
+	ticker := time.NewTicker(p.apiCfg.Interval)
 	defer ticker.Stop()
 
 	// Start the data update loop.
@@ -83,7 +83,7 @@ func (p *BaseProvider[K, V]) attemptDataUpdate(ctx context.Context, responseCh c
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, p.cfg.API.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, p.apiCfg.Timeout)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -116,7 +116,7 @@ func (p *BaseProvider[K, V]) startWebSocket(ctx context.Context, responseCh chan
 
 			// If the web socket query handler returns, then the connection was closed. Wait for
 			// a bit before trying to reconnect.
-			time.Sleep(p.cfg.WebSocket.ReconnectionTimeout)
+			time.Sleep(p.wsCfg.ReconnectionTimeout)
 		}
 	}
 }
@@ -144,9 +144,9 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 
 				// Update the metrics.
 				strID := strings.ToLower(fmt.Sprint(id))
-				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Success)
-				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Success)
-				p.metrics.LastUpdated(p.cfg.Name, strID)
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Success)
+				p.metrics.AddProviderResponse(p.name, providermetrics.Success)
+				p.metrics.LastUpdated(p.name, strID)
 			}
 
 			// Log and record all of the unresolved data.
@@ -159,8 +159,8 @@ func (p *BaseProvider[K, V]) recv(ctx context.Context, responseCh <-chan provide
 
 				// Update the metrics.
 				strID := strings.ToLower(fmt.Sprint(id))
-				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Failure)
-				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Failure)
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure)
+				p.metrics.AddProviderResponse(p.name, providermetrics.Failure)
 			}
 		}
 	}

@@ -162,6 +162,6 @@ type InstrumentData struct {
 	// LatestTradePrice is the price of the latest trade, null if there weren't any trades.
 	LatestTradePrice string `json:"a"`
 
-	// InstrumentName is the instrument name.
-	InstrumentName string `json:"i"`
+	// Name is the instrument name.
+	Name string `json:"i"`
 }

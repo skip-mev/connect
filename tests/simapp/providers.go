@@ -9,7 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/apis/binanceus"
+	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base"
@@ -28,20 +28,21 @@ import (
 // DefaultProviderFactory returns a sample implementation of the provider factory. This provider
 // factory function returns providers the are API & web socket based.
 func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, oracleCfg config.OracleConfig, metricsCfg config.OracleMetricsConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-		if err := oracleCfg.ValidateBasic(); err != nil {
+	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err
 		}
 
-		cps := oracleCfg.CurrencyPairs
+		cps := cfg.CurrencyPairs
 
 		// Create the metrics that are used by the providers.
-		mWebSocket := wsmetrics.NewWebSocketMetricsFromConfig(metricsCfg)
-		mAPI := apimetrics.NewAPIMetricsFromConfig(metricsCfg)
-		mProviders := providermetrics.NewProviderMetricsFromConfig(metricsCfg)
+		mWebSocket := wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics)
+		mAPI := apimetrics.NewAPIMetricsFromConfig(cfg.Metrics)
+		mProviders := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
+		// Create the providers.
 		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], 0)
-		for _, p := range oracleCfg.Providers {
+		for _, p := range cfg.Providers {
 			switch {
 			case p.API.Enabled:
 				provider, err := apiProviderFromProviderConfig(logger, p, cps, mAPI, mProviders)
@@ -82,6 +83,13 @@ func apiProviderFromProviderConfig(
 		return nil, err
 	}
 
+	// Filter the currency pairs to only include the ones that are configured in the provider
+	// config.
+	filteredCPs, err := filterForConfiguredCurrencyPairs(logger, cps, cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	// Create the underlying client that will be used to fetch data from the API. This client
 	// will limit the number of concurrent connections and uses the configured timeout to
 	// ensure requests do not hang.
@@ -97,14 +105,14 @@ func apiProviderFromProviderConfig(
 	)
 
 	switch cfg.Name {
-	case coingecko.Name:
-		apiDataHandler, err = coingecko.NewCoinGeckoAPIHandler(cfg)
+	case binance.Name:
+		apiDataHandler, err = binance.NewAPIHandler(cfg)
 	case coinbase.Name:
-		apiDataHandler, err = coinbase.NewCoinBaseAPIHandler(cfg)
-	case binanceus.Name:
-		apiDataHandler, err = binanceus.NewBinanceUSAPIHandler(cfg)
+		apiDataHandler, err = coinbase.NewAPIHandler(cfg)
+	case coingecko.Name:
+		apiDataHandler, err = coingecko.NewAPIHandler(cfg)
 	case static.Name:
-		apiDataHandler, err = static.NewStaticMockAPIHandler(cfg)
+		apiDataHandler, err = static.NewAPIHandler(cfg)
 		if err != nil {
 			return nil, err
 		}
@@ -125,6 +133,7 @@ func apiProviderFromProviderConfig(
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
 	apiQueryHandler, err := apihandlers.NewAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
+		cfg.API,
 		requestHandler,
 		apiDataHandler,
 		mAPI,
@@ -135,10 +144,11 @@ func apiProviderFromProviderConfig(
 
 	// Create the provider.
 	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		cfg,
+		base.WithName[oracletypes.CurrencyPair, *big.Int](cfg.Name),
 		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 		base.WithAPIQueryHandler(apiQueryHandler),
-		base.WithIDs[oracletypes.CurrencyPair, *big.Int](cps),
+		base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](cfg.API),
+		base.WithIDs[oracletypes.CurrencyPair, *big.Int](filteredCPs),
 		base.WithMetrics[oracletypes.CurrencyPair, *big.Int](mProvider),
 	)
 }
@@ -158,6 +168,13 @@ func webSocketProviderFromProviderConfig(
 		return nil, err
 	}
 
+	// Filter the currency pairs to only include the ones that are configured in the provider
+	// config.
+	filteredCPs, err := filterForConfiguredCurrencyPairs(logger, cps, cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	var (
 		wsDataHandler wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
 		connHandler   wshandlers.WebSocketConnHandler
@@ -165,9 +182,9 @@ func webSocketProviderFromProviderConfig(
 
 	switch cfg.Name {
 	case cryptodotcom.Name:
-		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandlerFromConfig(logger, cfg)
+		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
 	case okx.Name:
-		wsDataHandler, err = okx.NewWebSocketDataHandlerFromConfig(logger, cfg)
+		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
@@ -183,6 +200,7 @@ func webSocketProviderFromProviderConfig(
 	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
+		cfg.WebSocket,
 		wsDataHandler,
 		connHandler,
 		wsMetrics,
@@ -193,10 +211,36 @@ func webSocketProviderFromProviderConfig(
 
 	// Create the provider.
 	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		cfg,
+		base.WithName[oracletypes.CurrencyPair, *big.Int](cfg.Name),
 		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 		base.WithWebSocketQueryHandler(wsQueryHandler),
-		base.WithIDs[oracletypes.CurrencyPair, *big.Int](cps),
+		base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](cfg.WebSocket),
+		base.WithIDs[oracletypes.CurrencyPair, *big.Int](filteredCPs),
 		base.WithMetrics[oracletypes.CurrencyPair, *big.Int](pMetrics),
 	)
+}
+
+// filterForConfiguredCurrencyPairs returns the set of currency pairs that are configured in the
+// providers config.
+func filterForConfiguredCurrencyPairs(
+	logger *zap.Logger,
+	cps []oracletypes.CurrencyPair,
+	cfg config.ProviderConfig,
+) ([]oracletypes.CurrencyPair, error) {
+	filteredCps := make([]oracletypes.CurrencyPair, 0)
+
+	for _, cp := range cps {
+		if _, ok := cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]; ok {
+			logger.Debug("provider supports currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+			filteredCps = append(filteredCps, cp)
+		} else {
+			logger.Debug("provider does not support currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+		}
+	}
+
+	if len(filteredCps) == 0 {
+		return nil, fmt.Errorf("no currency pairs supported by provider: %s", cfg.Name)
+	}
+
+	return filteredCps, nil
 }
