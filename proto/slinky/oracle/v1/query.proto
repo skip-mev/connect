@@ -1,6 +1,5 @@
 syntax = "proto3";
 package slinky.oracle.v1;
-
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "slinky/oracle/v1/genesis.proto";
@@ -37,8 +36,7 @@ message GetPriceRequest {
   oneof currency_pair_selector {
     // CurrencyPair type
     CurrencyPair currency_pair = 1;
-    // stringified representation of the CurrencyPair (notice, this must be the
-    // result of CurrencyPair.ToString())
+    // string representation of the CurrencyPair
     string currency_pair_id = 2;
   }
 }
