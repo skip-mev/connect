@@ -400,7 +400,7 @@ func NewSimApp(
 			compression.NewZLibCompressor(),
 		),
 		oraclePreBlockHandler.PreBlocker(),
-		metrics,
+		oracleMetrics,
 	)
 	app.SetExtendVoteHandler(voteExtensionsHandler.ExtendVoteHandler())
 	app.SetVerifyVoteExtensionHandler(voteExtensionsHandler.VerifyVoteExtensionHandler())
