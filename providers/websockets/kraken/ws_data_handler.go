@@ -26,40 +26,28 @@ type WebSocketDataHandler struct {
 	logger *zap.Logger
 
 	// config is the config for the Kraken web socket API.
-	config Config
-}
-
-// NewWebSocketDataHandlerFromConfig returns a new WebSocketDataHandler implementation for Kraken.
-func NewWebSocketDataHandlerFromConfig(
-	logger *zap.Logger,
-	providerCfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", providerCfg.Name)
-	}
-
-	cfg, err := ReadConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file %s: %s", providerCfg.Path, err)
-	}
-
-	return &WebSocketDataHandler{
-		config: cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
-	}, nil
+	cfg config.ProviderConfig
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Kraken.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg Config,
+	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %s", err)
+		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
+	if !cfg.WebSocket.Enabled {
+		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+	}
+
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
 	}
 
 	return &WebSocketDataHandler{
-		config: cfg,
+		cfg:    cfg,
 		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
@@ -112,28 +100,14 @@ func (h *WebSocketDataHandler) CreateMessage(
 	instruments := make([]string, 0)
 
 	for _, cp := range cps {
-		instrument, ok := h.config.Cache[cp]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
 			h.logger.Debug("no instrument found for currency pair", zap.String("currency_pair", cp.ToString()))
 			continue
 		}
 
-		instruments = append(instruments, instrument)
+		instruments = append(instruments, market.Ticker)
 	}
 
 	return NewSubscribeRequestMessage(instruments)
-}
-
-// Name returns the name of the data provider.
-func (h *WebSocketDataHandler) Name() string {
-	return Name
-}
-
-// URL is used to get the URL of the data provider.
-func (h *WebSocketDataHandler) URL() string {
-	if h.config.Production {
-		return ProductionURL
-	}
-
-	return BetaURL
 }

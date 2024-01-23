@@ -94,7 +94,7 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 
 	// Get the currency pair from the instrument.
 	h.logger.Debug("received price update", zap.String("instrument", resp.Pair))
-	cp, ok := h.config.ReverseCache[resp.Pair]
+	market, ok := h.cfg.Market.TickerToMarketConfigs[resp.Pair]
 	if !ok {
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("no currency pair found for instrument %s", resp.Pair)
@@ -107,6 +107,7 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 	}
 
 	// Parse the price update.
+	cp := market.CurrencyPair
 	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
 	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals())
 	if err != nil {

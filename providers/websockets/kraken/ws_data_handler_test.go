@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+	"time"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -16,19 +18,27 @@ import (
 var (
 	logger = zap.NewExample()
 
-	config = kraken.Config{
-		Markets: map[string]string{
-			"BITCOIN/USD":  "XBT/USD",
-			"ETHEREUM/USD": "ETH/USD",
+	cfg = config.ProviderConfig{
+		Name: kraken.Name,
+		WebSocket: config.WebSocketConfig{
+			Enabled:             true,
+			MaxBufferSize:       1024,
+			ReconnectionTimeout: 10 * time.Second,
+			WSS:                 kraken.URL,
+			Name:                kraken.Name,
 		},
-		Production: true,
-		Cache: map[oracletypes.CurrencyPair]string{
-			oracletypes.NewCurrencyPair("BITCOIN", "USD"):  "XBT/USD",
-			oracletypes.NewCurrencyPair("ETHEREUM", "USD"): "ETH/USD",
-		},
-		ReverseCache: map[string]oracletypes.CurrencyPair{
-			"XBT/USD": oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			"ETH/USD": oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+		Market: config.MarketConfig{
+			Name: kraken.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USD": {
+					Ticker:       "XBT/USD",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				},
+				"ETHEREUM/USD": {
+					Ticker:       "ETH/USD",
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				},
+			},
 		},
 	}
 )
@@ -206,7 +216,7 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kraken.NewWebSocketDataHandler(logger, config)
+			handler, err := kraken.NewWebSocketDataHandler(logger, cfg)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := handler.HandleMessage(tc.msg())
@@ -321,7 +331,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kraken.NewWebSocketDataHandler(logger, config)
+			handler, err := kraken.NewWebSocketDataHandler(logger, cfg)
 			require.NoError(t, err)
 
 			actual, err := handler.CreateMessage(tc.cps)

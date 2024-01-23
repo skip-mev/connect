@@ -187,7 +187,7 @@ func webSocketProviderFromProviderConfig(
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
-		wsDataHandler, err = kraken.NewWebSocketDataHandlerFromConfig(logger, cfg)
+		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

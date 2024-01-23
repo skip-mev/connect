@@ -10,11 +10,11 @@ const (
 	// https://docs.kraken.com/websockets/. Kraken provides a authenticated and
 	// unauthenticated websocket. The URLs defined below are all unauthenticated.
 
-	// ProductionURL is the production websocket URL for Kraken.
-	ProductionURL = "wss://ws.kraken.com"
+	// URL is the production websocket URL for Kraken.
+	URL = "wss://ws.kraken.com"
 
-	// BetaURL is the demo websocket URL for Kraken.
-	BetaURL = "wss://beta-ws.kraken.com"
+	// URL_BETA is the demo websocket URL for Kraken.
+	URL_BETA = "wss://beta-ws.kraken.com" //nolint
 )
 
 // DecodeTickerResponseMessage decodes a ticker response message .
