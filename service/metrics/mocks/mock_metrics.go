@@ -30,18 +30,13 @@ func (_m *Metrics) AddVoteIncludedInLastCommit(included bool) {
 	_m.Called(included)
 }
 
+// ObserveABCIMethodLatency provides a mock function with given fields: method, duration
+func (_m *Metrics) ObserveABCIMethodLatency(method metrics.ABCIMethod, duration time.Duration) {
+	_m.Called(method, duration)
+}
+
 // ObserveOracleResponseLatency provides a mock function with given fields: duration
 func (_m *Metrics) ObserveOracleResponseLatency(duration time.Duration) {
-	_m.Called(duration)
-}
-
-// ObservePrepareProposalTime provides a mock function with given fields: duration
-func (_m *Metrics) ObservePrepareProposalTime(duration time.Duration) {
-	_m.Called(duration)
-}
-
-// ObserveProcessProposalTime provides a mock function with given fields: duration
-func (_m *Metrics) ObserveProcessProposalTime(duration time.Duration) {
 	_m.Called(duration)
 }
 

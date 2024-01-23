@@ -3,8 +3,7 @@ package proposals
 import (
 	"bytes"
 	"fmt"
-
-	"github.com/cometbft/cometbft/types/time"
+	"time"
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 
@@ -93,11 +92,24 @@ func NewProposalHandler(
 // enabled, the handler will inject the extended commit info into the proposal.
 func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
-		startTime := time.Now()
 		var (
-			extInfoBz []byte
-			err       error
+			extInfoBz                     []byte
+			err                           error
+			wrappedPrepareProposalLatency time.Duration
 		)
+		startTime := time.Now()
+
+		// report the slinky specific PrepareProposal latency
+		defer func() {
+			totalLatency := time.Since(startTime)
+			h.logger.Info(
+				"recording handle time metrics of prepare-proposal (seconds)",
+				"total latency", totalLatency.Seconds(),
+				"wrapped prepare proposal latency", wrappedPrepareProposalLatency.Seconds(),
+				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, totalLatency-wrappedPrepareProposalLatency)
+		}()
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
@@ -154,29 +166,19 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			}
 		}
 
-		prepareBlockStart := time.Now()
-		// Build the proposal.
+		// Build the proposal. Get the duration that the wrapped prepare proposal handler executed for.
+		wrappedPrepareProposalStartTime := time.Now()
 		resp, err := h.prepareProposalHandler(ctx, req)
+		wrappedPrepareProposalLatency = time.Since(wrappedPrepareProposalStartTime)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
-		prepareBlockEnd := time.Now()
 		h.logger.Info("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
 
 		// Inject our VE Tx ( if extInfoBz is non-empty), and resize our response Txs to respect req.MaxTxBytes
 		resp.Txs = h.injectAndResize(resp.Txs, extInfoBz, req.MaxTxBytes+int64(len(extInfoBz)))
 
-		// Record total time--not including h.prepareProposalHandler
-		preHandleTime := prepareBlockStart.Sub(startTime)
-		postHandleTime := time.Now().Sub(prepareBlockEnd)
-		h.logger.Info(
-			"recording handle time metrics",
-			"pre_handle_time", preHandleTime,
-			"post_handle_time", postHandleTime,
-			"total_time", preHandleTime+postHandleTime,
-		)
-		h.metrics.ObservePrepareProposalTime(preHandleTime + postHandleTime)
 		h.logger.Info(
 			"prepared proposal",
 			"txs", len(resp.Txs),
@@ -223,18 +225,26 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 		start := time.Now()
+		var wrappedProcessProposalLatency time.Duration
+
+		// Defer a function to record the total time it took to process the proposal.
+		defer func() {
+			totalLatency := time.Since(start)
+			h.logger.Info(
+				"recording handle time metrics of process-proposal (seconds)",
+				"total latency", totalLatency.Seconds(),
+				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
+				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, totalLatency-wrappedProcessProposalLatency)
+		}()
+
+		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
 			return nil, fmt.Errorf("received a nil request")
 		}
-		defer func() {
-			processDuration := time.Now().Sub(start)
-			h.logger.Info(
-				"recording process proposal time",
-				"duration", processDuration,
-			)
-			h.metrics.ObserveProcessProposalTime(processDuration)
-		}()
+
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
@@ -276,6 +286,10 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			req.Txs = req.Txs[NumInjectedTxs:]
 		}
 
-		return h.processProposalHandler(ctx, req)
+		// call the wrapped process-proposal
+		wrappedProcessProposalStartTime := time.Now()
+		resp, err := h.processProposalHandler(ctx, req)
+		wrappedProcessProposalLatency = time.Since(wrappedProcessProposalStartTime)
+		return resp, err
 	}
 }
