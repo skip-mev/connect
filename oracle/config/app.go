@@ -73,9 +73,8 @@ type AppConfig struct {
 	// from the oracle before timing out.
 	ClientTimeout time.Duration `mapstructure:"client_timeout" toml:"client_timeout"`
 
-	// MetricsEnabled is the address of the prometheus server that the oracle
-	// will expose metrics to
-	MetricsEnabled bool `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
+	// MetricsEnabled is a flag that determines whether oracle metrics are enabled.
+	MetricsEnabled bool `mapstructure:"metrics_enabled" toml:"metrics_enabled"`
 
 	// PrometheusServerAddress is the address of the prometheus server that the oracle
 	// will expose metrics to

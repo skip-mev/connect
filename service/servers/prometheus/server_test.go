@@ -1,4 +1,4 @@
-package metrics_test
+package prometheus_test
 
 import (
 	"net/http"
@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/metrics"
+	"github.com/skip-mev/slinky/service/servers/prometheus"
 )
 
 // Test that Starting the server fails if the address is incorrect.
 func TestStart(t *testing.T) {
 	t.Run("Start fails with incorrect address", func(t *testing.T) {
-		address := ":8080"
+		address := ":8081"
 
-		ps, err := metrics.NewPrometheusServer(address, nil)
+		ps, err := prometheus.NewPrometheusServer(address, nil)
 		require.Nil(t, ps)
 		require.Error(t, err, "invalid prometheus server address: :8080")
 	})
@@ -24,7 +24,7 @@ func TestStart(t *testing.T) {
 	t.Run("Start succeeds with correct address", func(t *testing.T) {
 		address := "0.0.0.0:8081"
 
-		ps, err := metrics.NewPrometheusServer(address, zap.NewNop())
+		ps, err := prometheus.NewPrometheusServer(address, zap.NewNop())
 		require.NotNil(t, ps)
 		require.NoError(t, err)
 

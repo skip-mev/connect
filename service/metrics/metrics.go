@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -180,26 +179,13 @@ func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
 	}).Inc()
 }
 
-// NewServiceMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
+// NewMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
 // returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
 // If the metrics are not enabled, a nop implementation is returned.
-func NewServiceMetricsFromConfig(cfg config.AppMetricsConfig) (Metrics, sdk.ConsAddress, error) {
-	if !cfg.Enabled {
-		return NewNopMetrics(), nil, nil
+func NewMetricsFromConfig(cfg config.AppConfig) Metrics {
+	if !cfg.MetricsEnabled {
+		return NewNopMetrics()
 	}
 
-	// ensure that the metrics are enabled
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, nil, err
-	}
-
-	// get the cons address
-	consAddress, err := cfg.ConsAddress()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// create the metrics
-	metrics := NewMetrics()
-	return metrics, consAddress, nil
+	return NewMetrics()
 }

@@ -1,4 +1,4 @@
-package server_test
+package oracle_test
 
 import (
 	"context"
@@ -9,16 +9,17 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/log"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
 
-	"github.com/skip-mev/slinky/service"
-	"github.com/skip-mev/slinky/service/client"
-	"github.com/skip-mev/slinky/service/server"
-	stypes "github.com/skip-mev/slinky/service/types"
-	"github.com/skip-mev/slinky/service/types/mocks"
+	"github.com/skip-mev/slinky/oracle/mocks"
+	client "github.com/skip-mev/slinky/service/clients/oracle"
+	"github.com/skip-mev/slinky/service/metrics"
+	server "github.com/skip-mev/slinky/service/servers/oracle"
+	stypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -35,7 +36,7 @@ type ServerTestSuite struct {
 
 	srv        *server.OracleServer
 	mockOracle *mocks.Oracle
-	client     *client.GRPCClient
+	client     client.OracleClient
 	httpClient *http.Client
 	ctx        context.Context
 	cancel     context.CancelFunc
@@ -51,7 +52,16 @@ func (s *ServerTestSuite) SetupTest() {
 
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
-	s.client = client.NewGRPCClient(localhost+":"+port, timeout)
+
+	var err error
+	s.client, err = client.NewClient(
+		log.NewTestLogger(s.T()),
+		localhost+":"+port,
+		timeout,
+		metrics.NewNopMetrics(),
+	)
+	s.Require().NoError(err)
+
 	s.httpClient = http.DefaultClient
 
 	// create context
@@ -62,7 +72,7 @@ func (s *ServerTestSuite) SetupTest() {
 
 	// start server + client w/ context
 	go s.srv.StartServer(s.ctx, localhost, port)
-	s.Require().NoError(s.client.Start(context.Background()))
+	s.Require().NoError(s.client.Start())
 }
 
 // teardown test suite
@@ -79,7 +89,7 @@ func (s *ServerTestSuite) TearDownTest() {
 	}
 
 	// close client
-	s.Require().NoError(s.client.Stop(context.Background()))
+	s.Require().NoError(s.client.Stop())
 }
 
 func (s *ServerTestSuite) TestOracleServerNotRunning() {
@@ -87,10 +97,10 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 	s.mockOracle.On("IsRunning").Return(false)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect oracle not running error
-	s.Require().Equal(err.Error(), grpcErrPrefix+stypes.ErrorOracleNotRunning.Error())
+	s.Require().Equal(err.Error(), grpcErrPrefix+server.ErrOracleNotRunning.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {
@@ -99,7 +109,7 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 	s.mockOracle.On("GetPrices").Return(nil).After(delay)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect deadline exceeded error
 	s.Require().Equal(err.Error(), status.FromContextError(context.DeadlineExceeded).Err().Error())
@@ -126,7 +136,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
 
 	// call from grpc client
-	resp, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	resp, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 	s.Require().NoError(err)
 
 	// check response
@@ -152,8 +162,6 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 	// close the server, and check that no requests are received
 	s.cancel()
 
-	s.mockOracle.On("IsRunning").Return(false)
-
 	// wait for server to close
 	select {
 	case <-s.srv.Done():
@@ -162,7 +170,7 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 	}
 
 	// expect requests to server to timeout
-	_, err := s.client.Prices(context.Background(), &service.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect request to have failed (connection is closed)
 	s.Require().NotNil(err)
