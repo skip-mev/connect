@@ -68,7 +68,7 @@ type Oracle struct {
 // price across all providers.
 func New(
 	cfg config.OracleConfig,
-	opts ...OracleOption,
+	opts ...Option,
 ) (*Oracle, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid oracle config: %w", err)
@@ -220,7 +220,7 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 		timeFilteredPrices[pair] = result.Value
 
 		// update price metric
-		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), result.Value.Int64())
+		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), float64(result.Value.Int64()))
 	}
 
 	o.logger.Info("provider returned prices",
@@ -248,5 +248,14 @@ func (o *Oracle) setLastSyncTime(t time.Time) {
 
 // GetPrices returns the aggregate prices from the oracle.
 func (o *Oracle) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
-	return o.priceAggregator.GetAggregatedData()
+	prices := o.priceAggregator.GetAggregatedData()
+
+	// set metrics in background
+	go func() {
+		for cp, price := range prices {
+			o.metrics.UpdateAggregatePrice(cp.String(), float64(price.Int64()))
+		}
+	}()
+
+	return prices
 }

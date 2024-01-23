@@ -32,13 +32,17 @@ type Metrics interface {
 	// TODO: Add more metrics here in later PRs.
 
 	// UpdatePrice price updates the price for the given pairID for the provider.
-	UpdatePrice(name, handlerType, pairID string, price int64)
+	UpdatePrice(name, handlerType, pairID string, price float64)
+
+	// UpdateAggregatePrice rice updates the aggregated price for the given pairID.
+	UpdateAggregatePrice(pairID string, price float64)
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
 type OracleMetricsImpl struct {
-	ticks  metrics.Counter
-	prices metrics.Gauge
+	ticks           metrics.Counter
+	prices          metrics.Gauge
+	aggregatePrices metrics.Gauge
 }
 
 // NewMetricsFromConfig returns a oracle Metrics implementation based on the provided
@@ -63,6 +67,11 @@ func NewMetrics() Metrics {
 			Name:      "provider_price",
 			Help:      "Price gauge for a given currency pair on a provider",
 		}, []string{}),
+		aggregatePrices: prometheus.NewGaugeFrom(stdprom.GaugeOpts{
+			Namespace: OracleSubsystem,
+			Name:      "aggregate_price",
+			Help:      "Aggregate price for a given currency pair",
+		}, []string{}),
 	}
 
 	return m
@@ -71,8 +80,9 @@ func NewMetrics() Metrics {
 // NewNopMetrics returns a Metrics implementation that does nothing.
 func NewNopMetrics() Metrics {
 	return &OracleMetricsImpl{
-		ticks:  discard.NewCounter(),
-		prices: discard.NewGauge(),
+		ticks:           discard.NewCounter(),
+		prices:          discard.NewGauge(),
+		aggregatePrices: discard.NewGauge(),
 	}
 }
 
@@ -82,10 +92,17 @@ func (m *OracleMetricsImpl) AddTick() {
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
-func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string, price int64) {
+func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string, price float64) {
 	m.prices.With(
 		ProviderLabel, providerName,
 		ProviderTypeLabel, handlerType,
 		PairIDLabel, pairID,
-	).Add(float64(price))
+	).Add(price)
+}
+
+// UpdateAggregatePrice updates the aggregated price for the given pairID.
+func (m *OracleMetricsImpl) UpdateAggregatePrice(pairID string, price float64) {
+	m.prices.With(
+		PairIDLabel, pairID,
+	).Add(price)
 }

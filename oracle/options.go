@@ -12,11 +12,11 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// OracleOption is a function that can be used to configure an Oracle.
-type OracleOption func(*Oracle) //nolint
+// Option is a function that can be used to configure an Oracle.
+type Option func(*Oracle)
 
 // WithLogger sets the logger on the Oracle.
-func WithLogger(logger *zap.Logger) OracleOption {
+func WithLogger(logger *zap.Logger) Option {
 	return func(o *Oracle) {
 		if logger == nil {
 			panic("cannot set nil logger")
@@ -27,7 +27,7 @@ func WithLogger(logger *zap.Logger) OracleOption {
 }
 
 // WithMetrics sets the metrics on the Oracle.
-func WithMetrics(metrics metrics.Metrics) OracleOption {
+func WithMetrics(metrics metrics.Metrics) Option {
 	return func(o *Oracle) {
 		if metrics == nil {
 			panic("cannot set nil metrics")
@@ -38,14 +38,14 @@ func WithMetrics(metrics metrics.Metrics) OracleOption {
 }
 
 // WithMetricsConfig sets the metrics on the oracle from the given config.
-func WithMetricsConfig(config config.OracleMetricsConfig) OracleOption {
+func WithMetricsConfig(config config.OracleMetricsConfig) Option {
 	return func(o *Oracle) {
 		o.metrics = metrics.NewMetricsFromConfig(config)
 	}
 }
 
 // WithAggregateFunction sets the aggregate function on the Oracle.
-func WithAggregateFunction(fn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int]) OracleOption {
+func WithAggregateFunction(fn aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int]) Option {
 	return func(o *Oracle) {
 		if fn == nil {
 			panic("cannot set aggregate function on nil aggregator")
@@ -58,7 +58,7 @@ func WithAggregateFunction(fn aggregator.AggregateFn[string, map[oracletypes.Cur
 }
 
 // WithDataAggregator sets the data aggregator on the Oracle.
-func WithDataAggregator(agg *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]) OracleOption {
+func WithDataAggregator(agg *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]) Option {
 	return func(o *Oracle) {
 		if agg == nil {
 			panic("cannot set nil aggregator")
@@ -69,7 +69,7 @@ func WithDataAggregator(agg *aggregator.DataAggregator[string, map[oracletypes.C
 }
 
 // WithProviders sets the providers on the Oracle.
-func WithProviders(providers []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]) OracleOption {
+func WithProviders(providers []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]) Option {
 	return func(o *Oracle) {
 		o.providers = providers
 	}

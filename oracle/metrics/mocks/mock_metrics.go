@@ -14,8 +14,13 @@ func (_m *Metrics) AddTick() {
 	_m.Called()
 }
 
+// UpdateAggregatePrice provides a mock function with given fields: pairID, price
+func (_m *Metrics) UpdateAggregatePrice(pairID string, price float64) {
+	_m.Called(pairID, price)
+}
+
 // UpdatePrice provides a mock function with given fields: name, handlerType, pairID, price
-func (_m *Metrics) UpdatePrice(name string, handlerType string, pairID string, price int64) {
+func (_m *Metrics) UpdatePrice(name string, handlerType string, pairID string, price float64) {
 	_m.Called(name, handlerType, pairID, price)
 }
 

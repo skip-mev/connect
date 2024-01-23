@@ -3,9 +3,10 @@ package oracle_test
 import (
 	"context"
 	"fmt"
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	"math/big"
 	"time"
+
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 
 	"go.uber.org/zap"
 
