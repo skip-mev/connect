@@ -51,7 +51,7 @@ const (
 	ProcessProposal
 	ExtendVote
 	VerifyVoteExtension
-	FinalizeBlock
+	PreBlock
 )
 
 func (a ABCIMethod) String() string {
@@ -64,7 +64,7 @@ func (a ABCIMethod) String() string {
 		return "extend_vote"
 	case VerifyVoteExtension:
 		return "verify_vote_extension"
-	case FinalizeBlock:
+	case PreBlock:
 		return "finalize_block"
 	default:
 		return "not_implemented"
