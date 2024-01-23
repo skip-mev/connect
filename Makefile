@@ -225,7 +225,9 @@ lint-markdown:
 ###                                Mocks                                    ###
 ###############################################################################
 
-mocks:
+mocks: gen-mocks format
+
+gen-mocks:
 	@echo "--> generating mocks"
 	@go install github.com/vektra/mockery/v2
 	@go generate ./...

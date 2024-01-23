@@ -3,6 +3,7 @@ package oracle_test
 import (
 	"context"
 	"fmt"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	"math/big"
 	"time"
 
@@ -208,7 +209,7 @@ func (s *OracleTestSuite) TestProviders() {
 			providers, err := tc.factory(s.logger, cfg, metricsCfg)
 			s.Require().NoError(err)
 
-			oracle, err := oracle.New(
+			testOracle, err := oracle.New(
 				cfg,
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
@@ -216,22 +217,22 @@ func (s *OracleTestSuite) TestProviders() {
 			s.Require().NoError(err)
 
 			go func() {
-				oracle.Start(ctx)
+				s.Require().NoError(testOracle.Start(ctx))
 			}()
 
 			// Wait for the oracle to start and update.
 			time.Sleep(3 * cfg.UpdateInterval)
 
 			// Get the prices.
-			prices := oracle.GetPrices()
+			prices := testOracle.GetPrices()
 			s.Require().Equal(tc.expectedPrices, prices)
 
 			// Stop the oracle.
-			oracle.Stop()
+			testOracle.Stop()
 
 			// Ensure that the oracle is not running.
 			checkFn := func() bool {
-				return !oracle.IsRunning()
+				return !testOracle.IsRunning()
 			}
 			s.Eventually(checkFn, 5*time.Second, 100*time.Millisecond)
 		})
@@ -244,6 +245,7 @@ func (s *OracleTestSuite) noStartProvider(name string) providertypes.Provider[or
 	provider.On("Name").Return(name).Maybe()
 	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz error")).Maybe()
 	provider.On("GetData").Return(nil).Maybe()
+	provider.On("Type").Return(providermetrics.API)
 
 	return provider
 }

@@ -10,6 +10,12 @@ import (
 )
 
 const (
+	// ProviderLabel is a label for the provider name.
+	ProviderLabel = "provider"
+	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
+	ProviderTypeLabel = "type"
+	// PairIDLabel is the
+	PairIDLabel = "pair"
 	// OracleSubsystem is a subsystem shared by all metrics exposed by this
 	// package.
 	OracleSubsystem = "oracle"
@@ -24,11 +30,15 @@ type Metrics interface {
 	AddTick()
 	//
 	// TODO: Add more metrics here in later PRs.
+
+	// UpdatePrice price updates the price for the given pairID for the provider.
+	UpdatePrice(name, handlerType, pairID string, price int64)
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
 type OracleMetricsImpl struct {
-	ticks metrics.Counter
+	ticks  metrics.Counter
+	prices metrics.Gauge
 }
 
 // NewMetricsFromConfig returns a oracle Metrics implementation based on the provided
@@ -48,6 +58,11 @@ func NewMetrics() Metrics {
 			Name:      "ticks",
 			Help:      "Number of ticks with a successful oracle update.",
 		}, []string{}),
+		prices: prometheus.NewGaugeFrom(stdprom.GaugeOpts{
+			Namespace: OracleSubsystem,
+			Name:      "provider_price",
+			Help:      "Price gauge for a given currency pair on a provider",
+		}, []string{}),
 	}
 
 	return m
@@ -56,11 +71,21 @@ func NewMetrics() Metrics {
 // NewNopMetrics returns a Metrics implementation that does nothing.
 func NewNopMetrics() Metrics {
 	return &OracleMetricsImpl{
-		ticks: discard.NewCounter(),
+		ticks:  discard.NewCounter(),
+		prices: discard.NewGauge(),
 	}
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
 func (m *OracleMetricsImpl) AddTick() {
 	m.ticks.Add(1)
+}
+
+// UpdatePrice price updates the price for the given pairID for the provider.
+func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string, price int64) {
+	m.prices.With(
+		ProviderLabel, providerName,
+		ProviderTypeLabel, handlerType,
+		PairIDLabel, pairID,
+	).Add(float64(price))
 }

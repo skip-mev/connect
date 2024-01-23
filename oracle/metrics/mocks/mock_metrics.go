@@ -14,6 +14,11 @@ func (_m *Metrics) AddTick() {
 	_m.Called()
 }
 
+// UpdatePrice provides a mock function with given fields: name, handlerType, pairID, price
+func (_m *Metrics) UpdatePrice(name string, handlerType string, pairID string, price int64) {
+	_m.Called(name, handlerType, pairID, price)
+}
+
 // NewMetrics creates a new instance of Metrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMetrics(t interface {

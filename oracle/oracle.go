@@ -185,12 +185,12 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 		}
 	}()
 
-	o.logger.Info("retrieving prices", zap.String("provider", provider.Name()))
+	o.logger.Info("retrieving prices", zap.String("provider", provider.Name()), zap.String("data handler type", string(provider.Type())))
 
 	// Fetch and set prices from the provider.
 	prices := provider.GetData()
 	if prices == nil {
-		o.logger.Info("provider returned nil prices", zap.String("provider", provider.Name()))
+		o.logger.Info("provider returned nil prices", zap.String("provider", provider.Name()), zap.String("data handler type", string(provider.Type())))
 		return
 	}
 
@@ -202,6 +202,7 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 			o.logger.Debug(
 				"skipping price",
 				zap.String("provider", provider.Name()),
+				zap.String("data handler type", string(provider.Type())),
 				zap.String("pair", pair.String()),
 				zap.Duration("diff", diff),
 			)
@@ -211,14 +212,21 @@ func (o *Oracle) fetchPrices(provider providertypes.Provider[oracletypes.Currenc
 		o.logger.Debug(
 			"adding price",
 			zap.String("provider", provider.Name()),
+			zap.String("data handler type", string(provider.Type())),
 			zap.String("pair", pair.String()),
 			zap.String("price", result.Value.String()),
 			zap.Duration("diff", diff),
 		)
 		timeFilteredPrices[pair] = result.Value
+
+		// update price metric
+		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), result.Value.Int64())
 	}
 
-	o.logger.Info("provider returned prices", zap.String("provider", provider.Name()), zap.Int("prices", len(prices)))
+	o.logger.Info("provider returned prices",
+		zap.String("provider", provider.Name()),
+		zap.String("data handler type", string(provider.Type())),
+		zap.Int("prices", len(prices)))
 	o.priceAggregator.SetProviderData(provider.Name(), timeFilteredPrices)
 }
 

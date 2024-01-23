@@ -11,9 +11,10 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	metric_mocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
+	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	provider_mocks "github.com/skip-mev/slinky/providers/types/mocks"
+	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -21,11 +22,11 @@ type OracleMetricsTestSuite struct {
 	suite.Suite
 
 	// mocked providers
-	mockProvider1 *provider_mocks.Provider[oracletypes.CurrencyPair, *big.Int]
-	mockProvider2 *provider_mocks.Provider[oracletypes.CurrencyPair, *big.Int]
+	mockProvider1 *providermocks.Provider[oracletypes.CurrencyPair, *big.Int]
+	mockProvider2 *providermocks.Provider[oracletypes.CurrencyPair, *big.Int]
 
 	// mock metrics
-	mockMetrics *metric_mocks.Metrics
+	mockMetrics *metricmocks.Metrics
 
 	o *oracle.Oracle
 }
@@ -42,14 +43,14 @@ func TestOracleMetricsTestSuite(t *testing.T) {
 
 func (s *OracleMetricsTestSuite) SetupTest() {
 	// mock providers
-	s.mockProvider1 = provider_mocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
+	s.mockProvider1 = providermocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
 	s.mockProvider1.On("Name").Return("provider1").Maybe()
 
-	s.mockProvider2 = provider_mocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
+	s.mockProvider2 = providermocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
 	s.mockProvider2.On("Name").Return("provider2").Maybe()
 
 	// mock metrics
-	s.mockMetrics = metric_mocks.NewMetrics(s.T())
+	s.mockMetrics = metricmocks.NewMetrics(s.T())
 
 	oracleConfig := config.OracleConfig{
 		InProcess:      true,
@@ -87,10 +88,12 @@ func (s *OracleMetricsTestSuite) TestTickMetric() {
 
 	s.mockProvider1.On("Name").Return("provider1")
 	s.mockProvider1.On("Start", mock.Anything).Return(nil)
+	s.mockProvider1.On("Type").Return(providermetrics.API)
 	s.mockProvider1.On("GetData").Return(nil)
 
 	s.mockProvider2.On("Name").Return("provider2")
 	s.mockProvider2.On("Start", mock.Anything).Return(nil)
+	s.mockProvider2.On("Type").Return(providermetrics.API)
 	s.mockProvider2.On("GetData").Return(nil, nil)
 
 	// wait for a tick on the oracle
