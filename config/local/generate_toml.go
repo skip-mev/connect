@@ -1,6 +1,9 @@
+//go:generate go run generate_toml.go
+
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -14,6 +17,10 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+)
+
+var (
+	oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to write the oracle config file to")
 )
 
 // LocalConfig defines a readable config for local development. Any changes to this
@@ -191,9 +198,9 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 		},
-		// // -----------------------------------------------------------	//
-		// // ---------------------Start WebSocket Providers--------------	//
-		// // -----------------------------------------------------------	//
+		// -----------------------------------------------------------	//
+		// ---------------------Start WebSocket Providers--------------	//
+		// -----------------------------------------------------------	//
 		//
 		// NOTE: Some of the provider's are only capable of fetching data for a subset of
 		// all of the currency pairs. Before adding a new market to the oracle, ensure that
@@ -299,17 +306,14 @@ var LocalConfig = config.OracleConfig{
 	},
 }
 
-const (
-	// localPath is the path to the local config file.
-	localPath = "./config/local/oracle.toml"
-)
-
 // main executes a simple script that encodes the local config file to the local
 // directory.
 func main() {
+	flag.Parse()
+
 	// Open the local config file. This will overwrite any changes made to the
 	// local config file.
-	f, err := os.Create(localPath)
+	f, err := os.Create(*oracleCfgPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error creating local config file: %v\n", err)
 	}

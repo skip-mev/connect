@@ -48,7 +48,7 @@ To see all network metrics, open a new terminal and run the following command an
 $ make run-prom-client
 ```
 
-To add a new provider, update the local config in [config/local/main.go](./config/local/main.go) and then run the following command:
+To add a new provider, update the local config in [config/local/generate_toml.go](./config/local/generate_toml.go) and then run the following command:
 
 ```bash
 $ make update-local-config

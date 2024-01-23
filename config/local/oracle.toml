@@ -290,11 +290,6 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
-        ticker = "OSMO-USD"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
-          Base = "OSMOSIS"
-          Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USD"
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
@@ -340,4 +335,3 @@ production = false
 [metrics]
   prometheus_server_address = "localhost:8000"
   enabled = true
- 
