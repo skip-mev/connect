@@ -8,10 +8,10 @@ var (
 	// message. Handlers must be able to handle heartbeat messages.
 	ErrHandleMessage = errors.New("web socket data handler failed to handle message")
 
-	// ErrCreateMessage is returned when the WebSocketDataHandler cannot create a
-	// subscription message. This can occur if the handler is not configured to
+	// ErrCreateMessages is returned when the WebSocketDataHandler cannot create a
+	// subscription messages. This can occur if the handler is not configured to
 	// handle the given ids.
-	ErrCreateMessage = errors.New("web socket data handler failed to create message")
+	ErrCreateMessages = errors.New("web socket data handler failed to create messages")
 
 	// ErrRead is returned when the WebSocketConnHandler cannot read a message.
 	ErrRead = errors.New("web socket connection handler failed to read message")
@@ -33,11 +33,11 @@ func ErrHandleMessageWithErr(err error) error {
 	return errors.Join(ErrHandleMessage, err)
 }
 
-// ErrCreateMessageWithErr is used to create a new ErrCreateMessage with the given error.
+// ErrCreateMessageWithErr is used to create a new ErrCreateMessages with the given error.
 // Provider's that implement the WebSocketDataHandler interface should use this function to
 // create the error.
 func ErrCreateMessageWithErr(err error) error {
-	return errors.Join(ErrCreateMessage, err)
+	return errors.Join(ErrCreateMessages, err)
 }
 
 // ErrReadWithErr is used to create a new ErrRead with the given error.

@@ -102,12 +102,12 @@ func (h *WebSocketDataHandler) HandleMessage(
 	}
 }
 
-// CreateMessage is used to create a message to send to the data provider. This is used to
+// CreateMessages is used to create a message to send to the data provider. This is used to
 // subscribe to the given currency pairs. This is called when the connection to the data
 // provider is first established.
-func (h *WebSocketDataHandler) CreateMessage(
+func (h *WebSocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
 	// Iterate through each currency pair and get the instrument name. The instrument name
