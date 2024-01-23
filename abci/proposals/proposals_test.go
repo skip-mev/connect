@@ -860,34 +860,6 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 	// check that no latency is reported for a failed PrepareProposal
 	metricsmocks := servicemetricsmocks.NewMetrics(s.T())
 
-	s.Run("failed prepare proposal does not report latency", func() {
-		propHandler := proposals.NewProposalHandler(
-			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
-				return nil, fmt.Errorf("prepare proposal failed")
-			},
-			nil,
-			ve.NoOpValidateVoteExtensions,
-			codec.NewDefaultVoteExtensionCodec(),
-			codec.NewDefaultExtendedCommitCodec(),
-			currencypairmocks.NewCurrencyPairStrategy(s.T()),
-			metricsmocks,
-		)
-
-		// make vote-extensions not enabled
-		cp := s.ctx.ConsensusParams()
-		cp.Abci.VoteExtensionsEnableHeight = 3
-		s.ctx = s.ctx.WithConsensusParams(cp)
-
-		req := &cometabci.RequestPrepareProposal{
-			Height: 2,
-		}
-
-		// expect no metric to be reported
-		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
-		s.Require().Error(err, "prepare proposal failed")
-	})
-
 	// check that latency reported in upstream logic is ignored
 	s.Run("wrapped prepare proposal latency is ignored", func() {
 		propHandler := proposals.NewProposalHandler(
@@ -929,26 +901,6 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
-	})
-
-	s.Run("failed process proposal does not report latency", func() {
-		propHandler := proposals.NewProposalHandler(
-			log.NewTestLogger(s.T()),
-			baseapp.NoOpPrepareProposal(),
-			func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
-				return nil, fmt.Errorf("process proposal failed")
-			},
-			ve.NoOpValidateVoteExtensions,
-			codec.NewDefaultVoteExtensionCodec(),
-			codec.NewDefaultExtendedCommitCodec(),
-			currencypairmocks.NewCurrencyPairStrategy(s.T()),
-			metricsmocks,
-		)
-
-		req := s.createRequestProcessProposal(nil, 2)
-
-		_, err := propHandler.ProcessProposalHandler()(s.ctx, req)
-		s.Require().Error(err, "process proposal failed")
 	})
 
 	s.Run("wrapped process proposal latency is ignored", func() {

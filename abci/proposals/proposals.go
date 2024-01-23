@@ -92,11 +92,24 @@ func NewProposalHandler(
 // enabled, the handler will inject the extended commit info into the proposal.
 func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
-		startTime := time.Now()
 		var (
-			extInfoBz []byte
-			err       error
+			extInfoBz                     []byte
+			err                           error
+			wrappedPrepareProposalLatency time.Duration
 		)
+		startTime := time.Now()
+
+		// report the slinky specific PrepareProposal latency
+		defer func() {
+			totalLatency := time.Since(startTime)
+			h.logger.Info(
+				"recording handle time metrics of prepare-proposal (seconds)",
+				"total latency", totalLatency.Seconds(),
+				"wrapped prepare proposal latency", wrappedPrepareProposalLatency.Seconds(),
+				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, totalLatency-wrappedPrepareProposalLatency)
+		}()
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
@@ -153,29 +166,19 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			}
 		}
 
-		preHandleTime := time.Since(startTime)
-		// Build the proposal.
+		// Build the proposal. Get the duration that the wrapped prepare proposal handler executed for.
+		wrappedPrepareProposalStartTime := time.Now()
 		resp, err := h.prepareProposalHandler(ctx, req)
+		wrappedPrepareProposalLatency = time.Since(wrappedPrepareProposalStartTime)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
-		prepareBlockEnd := time.Now()
 		h.logger.Info("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
 
 		// Inject our VE Tx ( if extInfoBz is non-empty), and resize our response Txs to respect req.MaxTxBytes
 		resp.Txs = h.injectAndResize(resp.Txs, extInfoBz, req.MaxTxBytes+int64(len(extInfoBz)))
 
-		// Record total time--not including h.prepareProposalHandler
-		postHandleTime := time.Since(prepareBlockEnd)
-		h.logger.Info(
-			"recording handle time metrics (seconds)",
-			"pre_handle_time", preHandleTime.Seconds(),
-			"post_handle_time", postHandleTime.Seconds(),
-			"total_time", (preHandleTime + postHandleTime).Seconds(),
-		)
-
-		h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, preHandleTime+postHandleTime)
 		h.logger.Info(
 			"prepared proposal",
 			"txs", len(resp.Txs),
@@ -222,6 +225,19 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 		start := time.Now()
+		var wrappedProcessProposalLatency time.Duration
+
+		// Defer a function to record the total time it took to process the proposal.
+		defer func() {
+			totalLatency := time.Since(start)
+			h.logger.Info(
+				"recording handle time metrics of process-proposal (seconds)",
+				"total latency", totalLatency.Seconds(),
+				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
+				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, totalLatency-wrappedProcessProposalLatency)
+		}()
 
 		// this should never happen, but just in case
 		if req == nil {
@@ -270,19 +286,10 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			req.Txs = req.Txs[NumInjectedTxs:]
 		}
 
-		// record time spent in slinky-specific ProcesssProposal
-		processDuration := time.Since(start)
-
 		// call the wrapped process-proposal
+		wrappedProcessProposalStartTime := time.Now()
 		resp, err := h.processProposalHandler(ctx, req)
-		if err == nil {
-			// record time spent in slinky-specific ProcesssProposal on successful process-proposals
-			h.logger.Info(
-				"recording process proposal time",
-				"duration (seconds)", processDuration.Seconds(),
-			)
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, processDuration)
-		}
+		wrappedProcessProposalLatency = time.Since(wrappedProcessProposalStartTime)
 		return resp, err
 	}
 }
