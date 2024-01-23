@@ -65,7 +65,7 @@ func (a ABCIMethod) String() string {
 	case VerifyVoteExtension:
 		return "verify_vote_extension"
 	case PreBlock:
-		return "finalize_block"
+		return "pre_blocker"
 	default:
 		return "not_implemented"
 	}
