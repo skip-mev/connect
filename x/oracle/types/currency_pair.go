@@ -34,11 +34,8 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	return nil
 }
 
-// ToString returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
-//
-// NOTICE: prefer ToString over the default String method, as the ToString method is used for marshalling
-// currency-pairs into vote-extensions.
-func (cp *CurrencyPair) ToString() string {
+// String returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
+func (cp *CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
