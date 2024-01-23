@@ -143,7 +143,7 @@ func (h *WebsocketDataHandler) CreateMessage(
 	for _, cp := range cps {
 		instrumentID, ok := h.config.Cache[cp]
 		if !ok {
-			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.ToString()))
+			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
 			continue
 		}
 

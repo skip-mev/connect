@@ -96,12 +96,12 @@ func NewKeeper(
 
 // RemoveCurrencyPair removes a given CurrencyPair from state, i.e removes its nonce + QuotePrice from the module's store.
 func (k Keeper) RemoveCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
-	k.currencyPairs.Remove(ctx, cp.ToString())
+	k.currencyPairs.Remove(ctx, cp.String())
 }
 
 // HasCurrencyPair returns true if a given CurrencyPair is stored in state, false otherwise.
 func (k Keeper) HasCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) bool {
-	ok, err := k.currencyPairs.Has(ctx, cp.ToString())
+	ok, err := k.currencyPairs.Has(ctx, cp.String())
 	if err != nil || !ok {
 		return false
 	}
@@ -137,7 +137,7 @@ func (k Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
 
 // GetNonceForCurrency Pair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
 func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (uint64, error) {
-	cps, err := k.currencyPairs.Get(ctx, cp.ToString())
+	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
 		return 0, err
 	}
@@ -148,7 +148,7 @@ func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) 
 // GetPriceForCurrencyPair retrieves the QuotePrice for a given CurrencyPair. if a QuotePrice does not
 // exist for the given CurrencyPair, this function errors and returns an empty QuotePrice
 func (k Keeper) GetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (types.QuotePrice, error) {
-	cps, err := k.currencyPairs.Get(ctx, cp.ToString())
+	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
 		return types.QuotePrice{}, err
 	}
@@ -166,7 +166,7 @@ func (k Keeper) GetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) 
 // and set its nonce to 0.
 func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, qp types.QuotePrice) error {
 	// get the current state for the currency-pair, fail if it does not exist
-	cps, err := k.currencyPairs.Get(ctx, cp.ToString())
+	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
 		// get the next currency-pair id
 		id, err := k.nextCurrencyPairID.Next(ctx)
@@ -182,7 +182,7 @@ func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, 
 	}
 
 	// set the updated state
-	return k.currencyPairs.Set(ctx, cp.ToString(), cps)
+	return k.currencyPairs.Set(ctx, cp.String(), cps)
 }
 
 // CreateCurrencyPair creates a CurrencyPair in state, and sets its ID to the next available ID. If the CurrencyPair already exists, return an error.
@@ -200,13 +200,13 @@ func (k Keeper) CreateCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) error
 
 	state := types.NewCurrencyPairState(id, 0, nil)
 
-	return k.currencyPairs.Set(ctx, cp.ToString(), state)
+	return k.currencyPairs.Set(ctx, cp.String(), state)
 }
 
 // GetIDForCurrencyPair returns the ID for a given CurrencyPair. If the CurrencyPair does not exist, return 0, false, if
 // it does, return true and the ID.
 func (k Keeper) GetIDForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (uint64, bool) {
-	cps, err := k.currencyPairs.Get(ctx, cp.ToString())
+	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
 		return 0, false
 	}

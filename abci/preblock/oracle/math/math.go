@@ -98,7 +98,7 @@ func VoteWeightedMedian(
 				if price == nil {
 					logger.Info(
 						"price is nil",
-						"currency_pair", currencyPair.ToString(),
+						"currency_pair", currencyPair.String(),
 						"validator_address", valAddress,
 					)
 
@@ -141,7 +141,7 @@ func VoteWeightedMedian(
 
 				logger.Info(
 					"computed stake-weighted median price for currency pair",
-					"currency_pair", currencyPair.ToString(),
+					"currency_pair", currencyPair.String(),
 					"percent_submitted", percentSubmitted.String(),
 					"threshold", threshold.String(),
 					"final_price", prices[currencyPair].String(),
@@ -149,7 +149,7 @@ func VoteWeightedMedian(
 			} else {
 				logger.Info(
 					"not enough voting power to compute stake-weighted median price price for currency pair",
-					"currency_pair", currencyPair.ToString(),
+					"currency_pair", currencyPair.String(),
 					"threshold", threshold.String(),
 					"percent_submitted", percentSubmitted.String(),
 				)

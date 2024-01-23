@@ -59,15 +59,15 @@ func (gs *GenesisState) Validate() error {
 		}
 
 		// check for repeated currency-pairs
-		if _, ok := cps[cpg.CurrencyPair.ToString()]; ok {
-			return fmt.Errorf("repeated currency-pair: %v", cpg.CurrencyPair.ToString())
+		if _, ok := cps[cpg.CurrencyPair.String()]; ok {
+			return fmt.Errorf("repeated currency-pair: %v", cpg.CurrencyPair.String())
 		}
 
 		// add the ID to the set of IDs
 		ids[cpg.Id] = struct{}{}
 
 		// add the currency-pair to the set of currency-pairs
-		cps[cpg.CurrencyPair.ToString()] = struct{}{}
+		cps[cpg.CurrencyPair.String()] = struct{}{}
 	}
 
 	return nil
