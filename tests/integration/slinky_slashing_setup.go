@@ -17,17 +17,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
-	testutil "github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	codec "github.com/skip-mev/slinky/abci/strategies/codec"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/static"
+	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const gasPrice = 100
@@ -59,7 +58,7 @@ func (s *SlinkySlashingIntegrationSuite) SubmitAlert(user cosmos.User, alert ale
 	return client.BroadcastTxCommit(context.Background(), tx)
 }
 
-// Submit conclusion submits the provided conclusion to the chain
+// SubmitConclusion submits the provided conclusion to the chain
 func (s *SlinkySlashingIntegrationSuite) SubmitConclusion(user cosmos.User, conclusion alerttypes.Conclusion) (*coretypes.ResultBroadcastTxCommit, error) {
 	addr, err := sdk.AccAddressFromBech32(user.FormattedAddress())
 	s.Require().NoError(err)
@@ -184,7 +183,7 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 	// Configure the default price on the static mock provider.
 	staticMockProvider := static.StaticMockProviderConfig{
 		TokenPrices: map[string]string{
-			ticker.ToString(): big.NewInt(price).String(),
+			ticker.String(): big.NewInt(price).String(),
 		},
 	}
 
