@@ -3,7 +3,9 @@ package oracle_test
 import (
 	"context"
 	"fmt"
+	"io"
 	"math/big"
+	"net/http"
 	"testing"
 	"time"
 
@@ -17,8 +19,8 @@ import (
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/metrics"
 	server "github.com/skip-mev/slinky/service/servers/oracle"
-	"github.com/skip-mev/slinky/service/servers/oracle/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	stypes "github.com/skip-mev/slinky/service/servers/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -35,6 +37,7 @@ type ServerTestSuite struct {
 	srv        *server.OracleServer
 	mockOracle *mocks.Oracle
 	client     client.OracleClient
+	httpClient *http.Client
 	ctx        context.Context
 	cancel     context.CancelFunc
 }
@@ -58,6 +61,8 @@ func (s *ServerTestSuite) SetupTest() {
 		metrics.NewNopMetrics(),
 	)
 	s.Require().NoError(err)
+
+	s.httpClient = http.DefaultClient
 
 	// create context
 	s.ctx, s.cancel = context.WithCancel(context.Background())
@@ -92,10 +97,10 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 	s.mockOracle.On("IsRunning").Return(false)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect oracle not running error
-	s.Require().Equal(grpcErrPrefix+server.ErrOracleNotRunning.Error(), err.Error())
+	s.Require().Equal(err.Error(), grpcErrPrefix+server.ErrOracleNotRunning.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {
@@ -104,7 +109,7 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 	s.mockOracle.On("GetPrices").Return(nil).After(delay)
 
 	// call from client
-	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect deadline exceeded error
 	s.Require().Equal(err.Error(), status.FromContextError(context.DeadlineExceeded).Err().Error())
@@ -113,32 +118,43 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
-	cp1 := oracletypes.CurrencyPair{
+	cp1 := types.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
 
-	cp2 := oracletypes.CurrencyPair{
+	cp2 := types.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[oracletypes.CurrencyPair]*big.Int{
+	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
 		cp1: big.NewInt(100),
 		cp2: big.NewInt(200),
 	})
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
 
-	// call from client
-	resp, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
+	// call from grpc client
+	resp, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 	s.Require().NoError(err)
 
 	// check response
 	s.Require().Equal(resp.Prices[cp1.ToString()], big.NewInt(100).String())
 	s.Require().Equal(resp.Prices[cp2.ToString()], big.NewInt(200).String())
 	// check timestamp
+
 	s.Require().Equal(resp.Timestamp, ts.UTC())
+
+	// call from http client
+	httpResp, err := s.httpClient.Get(fmt.Sprintf("http://%s:%s/slinky/oracle/v1/prices", localhost, port))
+	s.Require().NoError(err)
+
+	// check response
+	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
+	respBz, err := io.ReadAll(httpResp.Body)
+	s.Require().NoError(err)
+	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.ToString(), cp2.ToString()))
 }
 
 // test that the oracle server closes when expected
@@ -154,7 +170,7 @@ func (s *ServerTestSuite) TestOracleServerClose() {
 	}
 
 	// expect requests to server to timeout
-	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
+	_, err := s.client.Prices(context.Background(), &stypes.QueryPricesRequest{})
 
 	// expect request to have failed (connection is closed)
 	s.Require().NotNil(err)
