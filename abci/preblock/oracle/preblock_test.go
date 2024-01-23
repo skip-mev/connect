@@ -8,14 +8,18 @@ import (
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
+	cmtabci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	currencypairmock "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -35,6 +39,7 @@ type PreBlockTestSuite struct {
 	cpID          *currencypairmock.CurrencyPairStrategy
 	veCodec       compression.VoteExtensionCodec
 	commitCodec   compression.ExtendedCommitCodec
+	mockMetrics   *metricmock.Metrics
 }
 
 func TestPreBlockTestSuite(t *testing.T) {
@@ -105,7 +110,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	)
 
 	// Use mock metrics
-	mockMetrics := metricmock.NewMetrics(s.T())
+	s.mockMetrics = metricmock.NewMetrics(s.T())
 
 	// Create the oracle keeper
 	s.oracleKeeper = testutils.CreateTestOracleKeeperWithGenesis(s.ctx, s.key, s.genesis)
@@ -117,7 +122,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 		aggregationFn,
 		s.oracleKeeper,
 		s.myVal,
-		mockMetrics,
+		s.mockMetrics,
 		s.cpID,
 		s.veCodec,
 		s.commitCodec,
@@ -192,5 +197,39 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		// Check that the price was not written to state.
 		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, unsupportedCP)
 		s.Require().Error(err)
+	})
+}
+
+func (s *PreBlockTestSuite) TestPreblockLatency() {
+	s.Run("expect no metric invocation in non-Finalize Exec mode", func() {
+		s.ctx = s.ctx.WithBlockHeight(1)
+		s.ctx = s.ctx.WithExecMode(sdk.ExecModePrepareProposal)
+		// ves are not enabled
+		s.ctx = s.ctx.WithConsensusParams(
+			cmtproto.ConsensusParams{
+				Abci: &cmtproto.ABCIParams{
+					VoteExtensionsEnableHeight: 2,
+				},
+			},
+		)
+
+		// run preblocker 
+		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
+	})
+
+	s.Run("expect metric invocation in Finalize Exec mode", func() {
+		s.ctx = s.ctx.WithBlockHeight(1)
+		s.ctx = s.ctx.WithExecMode(sdk.ExecModeFinalize)
+		// ves are not enabled
+		s.ctx = s.ctx.WithConsensusParams(
+			cmtproto.ConsensusParams{
+				Abci: &cmtproto.ABCIParams{
+					VoteExtensionsEnableHeight: 2,
+				},
+			},
+		)
+		s.mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
+		// run preblocker 
+		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})	
 	})
 }

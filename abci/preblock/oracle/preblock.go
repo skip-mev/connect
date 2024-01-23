@@ -2,7 +2,7 @@ package oracle
 
 import (
 	"math/big"
-
+	"time"
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -89,6 +89,20 @@ func NewOraclePreBlockHandler(
 // the oracle data to the store.
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		start := time.Now()
+		defer func() {
+			// only measure latency in Finalize
+			if ctx.ExecMode() == sdk.ExecModeFinalize {
+				latency := time.Since(start)
+				h.logger.Info(
+					"finished executing the pre-block hook",
+					"height", ctx.BlockHeight(),
+					"latency (seconds)", latency.Seconds(),
+				)
+				h.metrics.ObserveABCIMethodLatency(servicemetrics.PreBlock, latency)
+			}
+		}()
+
 		// If vote extensions are not enabled, then we don't need to do anything.
 		if !ve.VoteExtensionsEnabled(ctx) || req == nil {
 			h.logger.Info(
