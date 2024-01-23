@@ -49,7 +49,7 @@ type WebSocketMetricsImpl struct {
 }
 
 // NewWebSocketMetricsFromConfig returns a new Metrics struct given the main oracle metrics config.
-func NewWebSocketMetricsFromConfig(config config.OracleMetricsConfig) WebSocketMetrics {
+func NewWebSocketMetricsFromConfig(config config.MetricsConfig) WebSocketMetrics {
 	if config.Enabled {
 		return NewWebSocketMetrics()
 	}

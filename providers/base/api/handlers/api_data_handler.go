@@ -22,12 +22,4 @@ type APIDataHandler[K comparable, V any] interface {
 	// be returned in the unresolved map. The timestamp associated with the result should
 	// reflect either the time the data was fetched or the time the API last updated the data.
 	ParseResponse(ids []K, response *http.Response) providertypes.GetResponse[K, V]
-
-	// Atomic is used to determine whether the handler can make a single request for all
-	// of the IDs or multiple requests for each ID. If true, the handler will make a single
-	// request for all of the IDs. If false, the handler will make a request for each ID.
-	Atomic() bool
-
-	// Name is used to get the name of the handler.
-	Name() string
 }
