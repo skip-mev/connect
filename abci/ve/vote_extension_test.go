@@ -19,6 +19,8 @@ import (
 	"github.com/skip-mev/slinky/abci/ve"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/service"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	servicemetricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/service/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -283,6 +285,7 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 				tc.currencyPairStrategy(),
 				codec,
 				preblock.NoOpPreBlocker(),
+				servicemetrics.NewNopMetrics(),
 			)
 
 			req := &cometabci.RequestExtendVote{}
@@ -512,6 +515,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 				tc.currencyPairStrategy(),
 				codec,
 				preblock.NoOpPreBlocker(),
+				servicemetrics.NewNopMetrics(),
 			).VerifyVoteExtensionHandler()
 
 			resp, err := handler(s.ctx, tc.getReq())
@@ -524,4 +528,41 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 			}
 		})
 	}
+}
+
+func (s *VoteExtenstionTestSuite) TestExtendVoteLatency() {
+	metrics := servicemetricsmocks.NewMetrics(s.T())
+	os := mocks.NewOracleService(s.T())
+	handler := ve.NewVoteExtensionHandler(
+		log.NewTestLogger(s.T()),
+		os,
+		time.Second*1,
+		mockstrategies.NewCurrencyPairStrategy(s.T()),
+		codec.NewDefaultVoteExtensionCodec(),
+		preblock.NoOpPreBlocker(),
+		metrics,
+	)
+
+	// mock
+	os.On("Prices", mock.Anything, mock.Anything).Return(
+		&service.QueryPricesResponse{
+			Prices:    map[string]string{},
+			Timestamp: time.Now(),
+		},
+		nil,
+	).Run(func(args mock.Arguments) {
+		// sleep to simulate latency
+		time.Sleep(100 * time.Millisecond)
+	})
+
+	metrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything).Run(func(args mock.Arguments) {
+		latency := args.Get(1).(time.Duration)
+		s.Require().True(latency > 100*time.Millisecond)
+	})
+
+	_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{
+		Height: 1,
+		Txs:    [][]byte{},
+	})
+	s.Require().NoError(err)
 }
