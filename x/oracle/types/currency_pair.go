@@ -19,7 +19,7 @@ func NewCurrencyPair(base, quote string) CurrencyPair {
 
 // ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e
 // Base + Quote are non-empty, and are in upper-case.
-func (cp CurrencyPair) ValidateBasic() error {
+func (cp *CurrencyPair) ValidateBasic() error {
 	// strings must be valid
 	if cp.Base == "" || cp.Quote == "" {
 		return fmt.Errorf("empty quote or base string")
@@ -38,7 +38,7 @@ func (cp CurrencyPair) ValidateBasic() error {
 //
 // NOTICE: prefer ToString over the default String method, as the ToString method is used for marshalling
 // currency-pairs into vote-extensions.
-func (cp CurrencyPair) ToString() string {
+func (cp *CurrencyPair) ToString() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
@@ -57,7 +57,7 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 
 // Decimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
 // the number of decimals is 18. Otherwise, the decimals will be reorted to 8.
-func (cp CurrencyPair) Decimals() int {
+func (cp *CurrencyPair) Decimals() int {
 	if strings.ToUpper(cp.Quote) == ethereum {
 		return 18
 	}
@@ -75,7 +75,7 @@ func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) Curre
 
 // ValidateBasic checks that the CurrencyPairState is valid, i.e the nonce is zero if the QuotePrice is nil, and non-zero
 // otherwise.
-func (cps CurrencyPairState) ValidateBasic() error {
+func (cps *CurrencyPairState) ValidateBasic() error {
 	// check that the nonce is zero if the QuotePrice is nil
 	if cps.Price == nil && cps.Nonce != 0 {
 		return fmt.Errorf("invalid nonce, no price update but non-zero nonce: %v", cps.Nonce)

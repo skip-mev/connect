@@ -10,7 +10,7 @@ import (
 // ValidateBasic validates that the CurrencyPair is valid, and performs any necessary validation on the
 // genesis QuotePrice for the CurrencyPair. This fails if the CurrencyPair is invalid, or if the QuotePrice is nil,
 // but the Nonce is non-nil.
-func (cpg CurrencyPairGenesis) ValidateBasic() error {
+func (cpg *CurrencyPairGenesis) ValidateBasic() error {
 	// validate the CurrencyPair
 	if err := cpg.CurrencyPair.ValidateBasic(); err != nil {
 		return err
@@ -39,7 +39,7 @@ func DefaultGenesisState() *GenesisState {
 
 // Validate validates the currency-pair geneses that the Genesis-State is composed of
 // valid CurrencyPairGeneses, and that no ID for a currency-pair is repeated.
-func (gs GenesisState) Validate() error {
+func (gs *GenesisState) Validate() error {
 	ids := make(map[uint64]struct{})
 	cps := make(map[string]struct{})
 	for _, cpg := range gs.CurrencyPairGenesis {
