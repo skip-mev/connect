@@ -900,7 +900,10 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				}, nil
 			},
 			nil,
-			ve.NoOpValidateVoteExtensions,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				time.Sleep(100 * time.Millisecond)
+				return nil
+			},
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
@@ -910,19 +913,18 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		req := s.createRequestPrepareProposal( // the votes here are invalid, but that's fine
 			cometabci.ExtendedCommitInfo{
 				Round: 1,
-				Votes: []cometabci.ExtendedVoteInfo{
-					{
-						VoteExtension: []byte("vote-extension"),
-					},
-				},
+				Votes: nil,
 			},
 			nil,
 			4, // vote extensions will be enabled
 		)
+
+		s.ctx = s.ctx.WithBlockHeight(4)
 		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
 			// the second arg shld be a duration
 			latency := args.Get(1).(time.Duration)
-			s.Require().True(latency < 100*time.Millisecond) // shld have ignored the wrapped prepareProposal latency
+			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
+			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored wrapped prepare-proposal latency
 		}).Once()
 
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
@@ -958,7 +960,11 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				time.Sleep(200 * time.Millisecond)
 				return &cometabci.ResponseProcessProposal{}, nil
 			},
-			ve.NoOpValidateVoteExtensions,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				// simulate a long-running validate vote extensions
+				time.Sleep(100 * time.Millisecond)
+				return nil
+			},
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
@@ -975,7 +981,8 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
 			// the second arg shld be a duration
 			latency := args.Get(1).(time.Duration)
-			s.Require().True(latency < 100*time.Millisecond) // shld have ignored the wrapped processProposal latency
+			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
+			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored the wrapped processProposal latency
 		}).Once()
 
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)

@@ -153,7 +153,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			}
 		}
 
-		prepareBlockStart := time.Now()
+		preHandleTime := time.Since(startTime)
 		// Build the proposal.
 		resp, err := h.prepareProposalHandler(ctx, req)
 		if err != nil {
@@ -167,13 +167,12 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		resp.Txs = h.injectAndResize(resp.Txs, extInfoBz, req.MaxTxBytes+int64(len(extInfoBz)))
 
 		// Record total time--not including h.prepareProposalHandler
-		preHandleTime := prepareBlockStart.Sub(startTime)
-		postHandleTime := time.Now().Sub(prepareBlockEnd)
+		postHandleTime := time.Since(prepareBlockEnd)
 		h.logger.Info(
-			"recording handle time metrics (nano-seconds)",
-			"pre_handle_time", preHandleTime,
-			"post_handle_time", postHandleTime,
-			"total_time", preHandleTime+postHandleTime,
+			"recording handle time metrics (seconds)",
+			"pre_handle_time", preHandleTime.Seconds(),
+			"post_handle_time", postHandleTime.Seconds(),
+			"total_time", (preHandleTime + postHandleTime).Seconds(),
 		)
 
 		h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, preHandleTime+postHandleTime)
@@ -272,7 +271,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		}
 
 		// record time spent in slinky-specific ProcesssProposal
-		processDuration := time.Now().Sub(start)
+		processDuration := time.Since(start)
 
 		// call the wrapped process-proposal
 		resp, err := h.processProposalHandler(ctx, req)
@@ -280,7 +279,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			// record time spent in slinky-specific ProcesssProposal on successful process-proposals
 			h.logger.Info(
 				"recording process proposal time",
-				"duration (nano-seconds)", processDuration,
+				"duration (seconds)", processDuration.Seconds(),
 			)
 			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, processDuration)
 		}
