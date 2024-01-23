@@ -213,7 +213,7 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 			},
 		)
 
-		// run preblocker 
+		// run preblocker
 		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
 	})
 
@@ -229,7 +229,7 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 			},
 		)
 		s.mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
-		// run preblocker 
-		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})	
+		// run preblocker
+		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
 	})
 }
