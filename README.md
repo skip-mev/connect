@@ -54,6 +54,12 @@ To add a new provider, update the local config in [config/local/generate_toml.go
 $ make update-local-config
 ```
 
+To run a local blockchain, first start the oracle server and then run the following command (in a separate window):
+
+```bash
+$ make build-and-start-app
+```
+
 ## Future Work
 
 The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).

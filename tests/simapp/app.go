@@ -287,41 +287,42 @@ func NewSimApp(
 	// latency in VerifyVoteExtension requests and more.
 	oracleMetrics := servicemetrics.NewMetricsFromConfig(cfg)
 
+	// Create the oracle service.
+	app.oracleClient, err = oracleclient.NewClientFromConfig(
+		cfg,
+		app.Logger().With("client", "oracle"),
+		oracleMetrics,
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// If the oracle is enabled, then create the oracle service and connect to it.
-	if cfg.Enabled {
-		// Create the oracle service.
-		app.oracleClient = oracleclient.NewMetricsClient(
-			app.Logger(),
-			oracleclient.NewGRPCClient(cfg.OracleAddress, cfg.ClientTimeout),
-			oracleMetrics,
-		)
-
-		// Start the prometheus server if required
-		if cfg.MetricsEnabled {
-			logger, err := zap.NewProduction()
-			if err != nil {
-				panic(err)
-			}
-
-			app.oraclePrometheusServer, err = promserver.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
-			if err != nil {
-				panic(err)
-			}
-
-			// start the prometheus server
-			go app.oraclePrometheusServer.Start()
+	// Start the prometheus server if required
+	if cfg.MetricsEnabled {
+		logger, err := zap.NewProduction()
+		if err != nil {
+			panic(err)
 		}
 
-		// Connect to the oracle service.
-		go func() {
-			if err := app.oracleClient.Start(); err != nil {
-				app.Logger().Error("failed to start oracle client", "err", err)
-				panic(err)
-			}
+		app.oraclePrometheusServer, err = promserver.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
+		if err != nil {
+			panic(err)
+		}
 
-			app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
-		}()
+		// start the prometheus server
+		go app.oraclePrometheusServer.Start()
 	}
+
+	// Connect to the oracle service.
+	go func() {
+		if err := app.oracleClient.Start(); err != nil {
+			app.Logger().Error("failed to start oracle client", "err", err)
+			panic(err)
+		}
+
+		app.Logger().Info("started oracle client", "address", cfg.OracleAddress)
+	}()
 
 	// register streaming services
 	if err := app.RegisterStreamingServices(appOpts, app.kvStoreKeys()); err != nil {

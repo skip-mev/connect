@@ -18,29 +18,13 @@ import (
 
 var _ OracleClient = (*GRPCClient)(nil)
 
-// OracleClient defines the interface that will be utilized by the application
-// to query the oracle service. This interface is meant to be implemented by
-// the gRPC client that connects to the oracle service.
-//
-//go:generate mockery --name OracleClient --filename mock_oracle_client.go
-type OracleClient interface { //nolint
-	types.OracleClient
-
-	// Start starts the oracle client. This should connect to the remote oracle
-	// service and return an error if the connection fails.
-	Start() error
-
-	// Stop stops the oracle client.
-	Stop() error
-}
-
 // GRPCClient defines an implementation of a gRPC oracle client. This client can
 // be used in ABCI++ calls where the application wants the oracle process to be
 // run out-of-process. The client must be started upon app construction and
 // stopped upon app shutdown/cleanup.
 type GRPCClient struct {
 	logger log.Logger
-	mtx    sync.Mutex
+	mutex  sync.Mutex
 
 	// address of remote oracle server
 	addr string
@@ -54,15 +38,19 @@ type GRPCClient struct {
 	metrics metrics.Metrics
 }
 
-// NewGRPCClientFromConfig creates a new grpc client of the oracle service with the given
+// NewClientFromConfig creates a new grpc client of the oracle service with the given
 // app configuration. This returns an error if the configuration is invalid.
-func NewGRPCClientFromConfig(
+func NewClientFromConfig(
 	cfg config.AppConfig,
 	logger log.Logger,
 	metrics metrics.Metrics,
 ) (OracleClient, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
+	}
+
+	if !cfg.Enabled {
+		return &NoOpClient{}, nil
 	}
 
 	if logger == nil {
@@ -81,9 +69,9 @@ func NewGRPCClientFromConfig(
 	}, nil
 }
 
-// NewGRPCClient creates a new grpc client of the oracle service with the given
+// NewClient creates a new grpc client of the oracle service with the given
 // address and timeout.
-func NewGRPCClient(
+func NewClient(
 	logger log.Logger,
 	addr string,
 	timeout time.Duration,
@@ -127,19 +115,20 @@ func (c *GRPCClient) Start() error {
 		return fmt.Errorf("failed to dial oracle gRPC server: %w", err)
 	}
 
-	c.mtx.Lock()
+	c.mutex.Lock()
 	c.client = types.NewOracleClient(conn)
 	c.conn = conn
-	c.mtx.Unlock()
+	c.mutex.Unlock()
 
 	c.logger.Info("oracle client started")
+
 	return nil
 }
 
 // Stop stops the GRPC client. This method closes the connection to the remote.
 func (c *GRPCClient) Stop() error {
-	c.mtx.Lock()
-	defer c.mtx.Unlock()
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
 	c.logger.Info("stopping oracle client")
 	if c.conn == nil {
@@ -148,6 +137,7 @@ func (c *GRPCClient) Stop() error {
 
 	err := c.conn.Close()
 	c.logger.Info("oracle client stopped", "err", err)
+
 	return err
 }
 
@@ -158,19 +148,11 @@ func (c *GRPCClient) Prices(
 	req *types.QueryPricesRequest,
 	_ ...grpc.CallOption,
 ) (resp *types.QueryPricesResponse, err error) {
-	c.mtx.Lock()
-	defer c.mtx.Unlock()
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
 	start := time.Now()
-	c.logger.Info("calling oracle client", "timestamp", start)
-
 	defer func() {
-		if err != nil {
-			c.logger.Error("oracle client returned error", "err", err)
-		} else {
-			c.logger.Info("oracle client returned response", "resp", resp)
-		}
-
 		// Observe the duration of the call as well as the error.
 		c.metrics.ObserveOracleResponseLatency(time.Since(start))
 		c.metrics.AddOracleResponse(metrics.StatusFromError(err))
@@ -181,7 +163,6 @@ func (c *GRPCClient) Prices(
 	defer cancel()
 
 	if c.client == nil {
-		c.logger.Error("oracle client not started")
 		return nil, fmt.Errorf("oracle client not started")
 	}
 

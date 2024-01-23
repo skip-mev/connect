@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/log"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/mocks"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
+	"github.com/skip-mev/slinky/service/metrics"
 	server "github.com/skip-mev/slinky/service/servers/oracle"
 	"github.com/skip-mev/slinky/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -47,7 +49,15 @@ func (s *ServerTestSuite) SetupTest() {
 
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
-	s.client = client.NewGRPCClient(localhost+":"+port, timeout)
+
+	var err error
+	s.client, err = client.NewClient(
+		log.NewTestLogger(s.T()),
+		localhost+":"+port,
+		timeout,
+		metrics.NewNopMetrics(),
+	)
+	s.Require().NoError(err)
 
 	// create context
 	s.ctx, s.cancel = context.WithCancel(context.Background())

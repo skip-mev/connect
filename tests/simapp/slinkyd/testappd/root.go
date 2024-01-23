@@ -186,6 +186,7 @@ func initAppConfig() (string, interface{}) {
 	// Sample config to run this locally
 	//
 	oracleConfig := oracleconfig.AppConfig{
+		Enabled:                 true,
 		OracleAddress:           "localhost:8080",
 		ClientTimeout:           250 * time.Millisecond,
 		MetricsEnabled:          true,
