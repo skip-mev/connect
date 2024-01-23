@@ -66,12 +66,12 @@ func NewMetrics() Metrics {
 			Namespace: OracleSubsystem,
 			Name:      "provider_price",
 			Help:      "Price gauge for a given currency pair on a provider",
-		}, []string{}),
+		}, []string{ProviderLabel, ProviderTypeLabel, PairIDLabel}),
 		aggregatePrices: prometheus.NewGaugeFrom(stdprom.GaugeOpts{
 			Namespace: OracleSubsystem,
 			Name:      "aggregate_price",
 			Help:      "Aggregate price for a given currency pair",
-		}, []string{}),
+		}, []string{PairIDLabel}),
 	}
 
 	return m
@@ -102,7 +102,7 @@ func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
 func (m *OracleMetricsImpl) UpdateAggregatePrice(pairID string, price float64) {
-	m.prices.With(
+	m.aggregatePrices.With(
 		PairIDLabel, pairID,
 	).Add(price)
 }
