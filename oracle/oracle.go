@@ -84,6 +84,7 @@ func New(opts ...OracleOption) (*OracleImpl, error) {
 		priceAggregator: aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
 			aggregator.WithAggregateFn(aggregator.ComputeMedian()),
 		),
+		updateInterval: 1 * time.Second,
 	}
 
 	for _, opt := range opts {

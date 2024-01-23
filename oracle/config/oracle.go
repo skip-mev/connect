@@ -61,14 +61,6 @@ func ReadOracleConfigFromFile(path string) (OracleConfig, error) {
 		return OracleConfig{}, err
 	}
 
-	// Check required fields.
-	requiredFields := []string{"update_interval"}
-	for _, field := range requiredFields {
-		if !viper.IsSet(field) {
-			return OracleConfig{}, fmt.Errorf("required field %s is missing in config", field)
-		}
-	}
-
 	// Unmarshal the config.
 	var config OracleConfig
 	if err := viper.Unmarshal(&config); err != nil {
