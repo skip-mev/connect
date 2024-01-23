@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"os"
 	"time"
@@ -49,15 +48,9 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 }
 
 func DefaultOracleConfig(node *cosmos.ChainNode) oracleconfig.OracleConfig {
-	oracle := GetOracleSideCar(node)
-
 	// Create the oracle config
 	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
-		Metrics: oracleconfig.MetricsConfig{
-			Enabled:                 true,
-			PrometheusServerAddress: fmt.Sprintf("%s:%s", oracle.HostName(), "8081"),
-		},
 	}
 
 	return oracleConfig

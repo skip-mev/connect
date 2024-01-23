@@ -74,6 +74,8 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 
 // SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
 func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.OracleConfig) {
+	oracle := GetOracleSideCar(node)
+
 	// read the app config from the node
 	bz, err := node.ReadFile(context.Background(), appConfigPath)
 	if err != nil {
@@ -94,7 +96,7 @@ func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.Ora
 
 	// Update the file paths to the oracle and metrics configs.
 	oracleAppConfig["enabled"] = true
-	oracleAppConfig["oracle_address"] = fmt.Sprintf("%s:%s", node.HostName(), "8080")
+	oracleAppConfig["oracle_address"] = fmt.Sprintf("%s:%s", oracle.HostName(), "8080")
 	oracleAppConfig["client_timeout"] = "1s"
 	oracleAppConfig["metrics_enabled"] = false
 
