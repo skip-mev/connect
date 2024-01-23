@@ -39,8 +39,9 @@ func (cp *CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
-// ToStringLegacy returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
-func (cp CurrencyPair) ToStringLegacy() string {
+// CurrencyPairString constructs and returns the string representation of a currency pair.
+func CurrencyPairString(base, quote string) string {
+	cp := NewCurrencyPair(base, quote)
 	return cp.String()
 }
 
