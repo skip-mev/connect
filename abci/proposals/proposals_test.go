@@ -927,7 +927,6 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			4, // vote extensions will be enabled
 		)
 
-		s.ctx = s.ctx.WithBlockHeight(4)
 		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
 			// the second arg shld be a duration
 			latency := args.Get(1).(time.Duration)

@@ -244,6 +244,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			h.logger.Error("ProcessProposalHandler received a nil request")
 			return nil, fmt.Errorf("received a nil request")
 		}
+
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
 
 		h.logger.Info(
