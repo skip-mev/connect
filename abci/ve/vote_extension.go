@@ -14,6 +14,7 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -43,6 +44,9 @@ type VoteExtensionHandler struct {
 
 	// preBlocker is utilized to update and retrieve the latest on-chain price information.
 	preBlocker sdk.PreBlocker
+
+	// metrics is the service metrics interface that the vote-extension handler will use to report metrics.
+	metrics servicemetrics.Metrics
 }
 
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
@@ -53,6 +57,7 @@ func NewVoteExtensionHandler(
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
 	preBlocker sdk.PreBlocker,
+	metrics servicemetrics.Metrics,
 ) *VoteExtensionHandler {
 	return &VoteExtensionHandler{
 		logger:               logger,
@@ -61,15 +66,29 @@ func NewVoteExtensionHandler(
 		currencyPairStrategy: strategy,
 		voteExtensionCodec:   codec,
 		preBlocker:           preBlocker,
+		metrics:              metrics,
 	}
 }
 
 // ExtendVoteHandler returns a handler that extends a vote with the oracle's
 // current price feed. In the case where oracle data is unable to be fetched
 // or correctly marshalled, the handler will return an empty vote extension to
-// ensure liveliness.
+// ensure liveness.
 func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestExtendVote) (resp *cometabci.ResponseExtendVote, err error) {
+		start := time.Now()
+
+		// measure latencies from invocation to return
+		defer func() {
+			latency := time.Since(start)
+			h.logger.Info(
+				"extend vote handler",
+				"duration (seconds)", latency.Seconds(),
+				"err", err,
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.ExtendVote, latency)
+		}()
+
 		if req == nil {
 			h.logger.Error("extend vote handler received a nil request")
 			return nil, fmt.Errorf("ExtendVoteHandler received a nil request")
@@ -176,6 +195,18 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 // We reject any vote extensions that are not empty and fail to unmarshal or contain invalid prices.
 func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (*cometabci.ResponseVerifyVoteExtension, error) {
+		start := time.Now()
+
+		// measure latencies from invocation to return
+		defer func() {
+			latency := time.Since(start)
+			h.logger.Info(
+				"verify vote extension handler",
+				"duration (seconds)", latency.Seconds(),
+			)
+			h.metrics.ObserveABCIMethodLatency(servicemetrics.VerifyVoteExtension, latency)
+		}()
+
 		if req == nil {
 			h.logger.Error("VerifyVoteExtensionHandler received a nil request")
 			return nil, fmt.Errorf("VerifyVoteExtensionHandler received a nil request")
