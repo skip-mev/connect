@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"time"
 
 	cmtcfg "github.com/cometbft/cometbft/config"
 	dbm "github.com/cosmos/cosmos-db"
@@ -160,8 +161,8 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		WASM   WASMConfig          `mapstructure:"wasm"`
-		Oracle oracleconfig.Config `mapstructure:"oracle"`
+		WASM   WASMConfig             `mapstructure:"wasm"`
+		Oracle oracleconfig.AppConfig `mapstructure:"oracle"`
 	}
 
 	// Optionally allow the chain developer to overwrite the SDK's default
@@ -184,9 +185,12 @@ func initAppConfig() (string, interface{}) {
 
 	// Sample config to run this locally
 	//
-	oracleConfig := oracleconfig.Config{
-		OraclePath:  "config/local/oracle.toml",
-		MetricsPath: "config/local/metrics.toml",
+	oracleConfig := oracleconfig.AppConfig{
+		Enabled:                 true,
+		OracleAddress:           "localhost:8080",
+		ClientTimeout:           250 * time.Millisecond,
+		MetricsEnabled:          true,
+		PrometheusServerAddress: "localhost:8001",
 	}
 
 	customAppConfig := CustomAppConfig{

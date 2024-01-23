@@ -22,7 +22,7 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("Start succeeds with correct address", func(t *testing.T) {
-		address := "0.0.0.0:8080"
+		address := "0.0.0.0:8081"
 
 		ps, err := metrics.NewPrometheusServer(address, zap.NewNop())
 		require.NotNil(t, ps)

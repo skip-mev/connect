@@ -79,42 +79,6 @@ func (_m *WebSocketDataHandler[K, V]) HandleMessage(message []byte) (types.GetRe
 	return r0, r1, r2
 }
 
-// Name provides a mock function with given fields:
-func (_m *WebSocketDataHandler[K, V]) Name() string {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for Name")
-	}
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
-// URL provides a mock function with given fields:
-func (_m *WebSocketDataHandler[K, V]) URL() string {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for URL")
-	}
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
 // NewWebSocketDataHandler creates a new instance of WebSocketDataHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewWebSocketDataHandler[K comparable, V interface{}](t interface {

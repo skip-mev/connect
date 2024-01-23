@@ -13,16 +13,15 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
-	"github.com/skip-mev/slinky/service/server"
+	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
+	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	"github.com/skip-mev/slinky/tests/simapp"
 )
 
 var (
-	host           = flag.String("host", "localhost", "host for the grpc-service to listen on")
-	port           = flag.String("port", "8080", "port for the grpc-service to listen on")
-	oracleCfgPath  = flag.String("oracle-config-path", "oracle_config.toml", "path to the oracle config file")
-	metricsCfgPath = flag.String("metrics-config-path", "metrics_config.toml", "path to the metrics config file")
+	host          = flag.String("host", "localhost", "host for the grpc-service to listen on")
+	port          = flag.String("port", "8080", "port for the grpc-service to listen on")
+	oracleCfgPath = flag.String("oracle-config-path", "oracle_config.toml", "path to the oracle config file")
 )
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -40,19 +39,14 @@ func main() {
 	// parse flags
 	flag.Parse()
 
-	oracleCfg, err := config.ReadOracleConfigFromFile(*oracleCfgPath)
+	cfg, err := config.ReadOracleConfigFromFile(*oracleCfgPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read oracle config file: %s\n", err.Error())
 		return
 	}
 
-	if !oracleCfg.Enabled {
-		fmt.Fprintf(os.Stderr, "oracle is not enabled\n")
-		return
-	}
-
 	var logger *zap.Logger
-	if !oracleCfg.Production {
+	if !cfg.Production {
 		logger, err = zap.NewDevelopment()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to create logger: %s\n", err.Error())
@@ -66,14 +60,8 @@ func main() {
 		}
 	}
 
-	metricsCfg, err := config.ReadMetricsConfigFromFile(*metricsCfgPath)
-	if err != nil {
-		logger.Error("failed to read metrics config file", zap.Error(err))
-		return
-	}
-
 	// This can be replaced with a custom provider factory. See the simapp package for an example.
-	providers, err := simapp.DefaultProviderFactory()(logger, oracleCfg, metricsCfg.OracleMetrics)
+	providers, err := simapp.DefaultProviderFactory()(logger, cfg)
 	if err != nil {
 		logger.Error("failed to create providers using the factory", zap.Error(err))
 		return
@@ -81,10 +69,10 @@ func main() {
 
 	// Create the oracle.
 	oracle, err := oracle.New(
-		oracleCfg,
-		oracle.WithProviders(providers), // Replace with custom providers.
+		oracle.WithUpdateInterval(cfg.UpdateInterval),
+		oracle.WithProviders(providers),                          // Replace with custom providers.
 		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
-		oracle.WithMetricsConfig(metricsCfg.OracleMetrics),
+		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithLogger(logger),
 	)
 	if err != nil {
@@ -93,7 +81,7 @@ func main() {
 	}
 
 	// create server
-	srv := server.NewOracleServer(oracle, logger)
+	srv := oracleserver.NewOracleServer(oracle, logger)
 
 	// cancel oracle on interrupt or terminate
 	go func() {
@@ -106,9 +94,9 @@ func main() {
 	}()
 
 	// start prometheus metrics
-	if metricsCfg.OracleMetrics.Enabled {
-		logger.Info("starting prometheus metrics", zap.String("address", metricsCfg.PrometheusServerAddress))
-		ps, err := oraclemetrics.NewPrometheusServer(metricsCfg.PrometheusServerAddress, logger)
+	if cfg.Metrics.Enabled {
+		logger.Info("starting prometheus metrics", zap.String("address", cfg.Metrics.PrometheusServerAddress))
+		ps, err := promserver.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, logger)
 		if err != nil {
 			logger.Error("failed to start prometheus metrics", zap.Error(err))
 			return

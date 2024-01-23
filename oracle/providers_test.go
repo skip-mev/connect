@@ -28,22 +28,10 @@ func (s *OracleTestSuite) TestProviders() {
 		expectedPrices map[oracletypes.CurrencyPair]*big.Int
 	}{
 		{
-			name: "no providers",
-			factory: func(
-				*zap.Logger,
-				config.OracleConfig,
-				config.OracleMetricsConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				return nil, nil
-			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
-		},
-		{
 			name: "1 provider with no prices",
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -63,7 +51,6 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
@@ -93,7 +80,6 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
@@ -139,7 +125,6 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
@@ -169,7 +154,6 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
@@ -198,18 +182,12 @@ func (s *OracleTestSuite) TestProviders() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
-				InProcess:      true,
-				ClientTimeout:  1 * time.Second,
 			}
-			metricsCfg := config.OracleMetricsConfig{
-				Enabled: false,
-			}
-
-			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			providers, err := tc.factory(s.logger, cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 			)
