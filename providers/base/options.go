@@ -10,10 +10,10 @@ import (
 )
 
 // ProviderOption is a function that can be used to modify a provider.
-type ProviderOption[K comparable, V providertypes.GetResult] func(*Provider[K, V])
+type ProviderOption[K providertypes.ResponseKey, V providertypes.ResponseValue] func(*Provider[K, V])
 
 // WithLogger sets the logger for the provider.
-func WithLogger[K comparable, V providertypes.GetResult](logger *zap.Logger) ProviderOption[K, V] {
+func WithLogger[K providertypes.ResponseKey, V providertypes.ResponseValue](logger *zap.Logger) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if logger == nil {
 			panic("cannot set nil logger")
@@ -25,7 +25,7 @@ func WithLogger[K comparable, V providertypes.GetResult](logger *zap.Logger) Pro
 
 // WithAPIQueryHandler sets the APIQueryHandler for the provider. If your provider utilizes a
 // API (HTTP) based provider, you should use this option to set the APIQueryHandler.
-func WithAPIQueryHandler[K comparable, V providertypes.GetResult](api apihandlers.APIQueryHandler[K, V]) ProviderOption[K, V] {
+func WithAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](api apihandlers.APIQueryHandler[K, V]) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if p.api != nil {
 			panic("cannot set api query handler twice")
@@ -41,7 +41,7 @@ func WithAPIQueryHandler[K comparable, V providertypes.GetResult](api apihandler
 
 // WithWebSocketQueryHandler sets the WebSocketQueryHandler for the provider. If your provider
 // utilizes a websocket based provider, you should use this option to set the WebSocketQueryHandler.
-func WithWebSocketQueryHandler[K comparable, V providertypes.GetResult](ws wshandlers.WebSocketQueryHandler[K, V]) ProviderOption[K, V] {
+func WithWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](ws wshandlers.WebSocketQueryHandler[K, V]) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if p.ws != nil {
 			panic("cannot set web socket query handler twice")
@@ -56,7 +56,7 @@ func WithWebSocketQueryHandler[K comparable, V providertypes.GetResult](ws wshan
 }
 
 // WithIDs sets the IDs that the provider is responsible for fetching data for.
-func WithIDs[K comparable, V providertypes.GetResult](ids []K) ProviderOption[K, V] {
+func WithIDs[K providertypes.ResponseKey, V providertypes.ResponseValue](ids []K) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if ids == nil {
 			panic("cannot set nil ids")
@@ -67,7 +67,7 @@ func WithIDs[K comparable, V providertypes.GetResult](ids []K) ProviderOption[K,
 }
 
 // WithMetrics sets the metrics implementation for the provider.
-func WithMetrics[K comparable, V providertypes.GetResult](metrics providermetrics.ProviderMetrics) ProviderOption[K, V] {
+func WithMetrics[K providertypes.ResponseKey, V providertypes.ResponseValue](metrics providermetrics.ProviderMetrics) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if metrics == nil {
 			panic("cannot set nil metrics")

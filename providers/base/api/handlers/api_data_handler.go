@@ -12,7 +12,7 @@ import (
 // create the URL to be sent to the HTTP client and parse the response from the client.
 //
 //go:generate mockery --name APIDataHandler --output ./mocks/ --case underscore
-type APIDataHandler[K comparable, V providertypes.GetResult] interface {
+type APIDataHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	// CreateURL is used to create the URL to be sent to the http client. The function
 	// should utilize the IDs passed in as references to the data that needs to be fetched.
 	CreateURL(ids []K) (string, error)

@@ -22,7 +22,7 @@ import (
 // asynchronously by the provider.
 //
 //go:generate mockery --name APIQueryHandler --output ./mocks/ --case underscore
-type APIQueryHandler[K comparable, V providertypes.GetResult] interface {
+type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	Query(
 		ctx context.Context,
 		ids []K,
@@ -36,7 +36,7 @@ type APIQueryHandler[K comparable, V providertypes.GetResult] interface {
 // response channel. In the case where the APIQueryHandler is atomic, the handler
 // will make a single request for all IDs. If the APIQueryHandler is not
 // atomic, the handler will make a request for each ID in a separate go routine.
-type APIQueryHandlerImpl[K comparable, V providertypes.GetResult] struct {
+type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 
@@ -51,7 +51,7 @@ type APIQueryHandlerImpl[K comparable, V providertypes.GetResult] struct {
 
 // NewAPIQueryHandler creates a new APIQueryHandler. It manages querying the data
 // provider by using the APIDataHandler and RequestHandler.
-func NewAPIQueryHandler[K comparable, V providertypes.GetResult](
+func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	logger *zap.Logger,
 	requestHandler RequestHandler,
 	apiHandler APIDataHandler[K, V],

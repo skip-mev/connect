@@ -11,7 +11,7 @@ import (
 // to the data provider, and handle incoming events accordingly.
 //
 //go:generate mockery --name WebSocketDataHandler --output ./mocks/ --case underscore
-type WebSocketDataHandler[K comparable, V providertypes.GetResult] interface {
+type WebSocketDataHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	// HandleMessage is used to handle a message received from the data provider. Message parsing
 	// and response creation should be handled by this data handler. Given a message from the web socket
 	// the handler should either return a response or an update message.
