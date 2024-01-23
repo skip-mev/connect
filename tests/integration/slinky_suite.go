@@ -183,8 +183,7 @@ func (s *SlinkyIntegrationSuite) TearDownSuite() {
 
 	// keep the chain running
 	s.T().Log("Keeping the chain running")
-	for {
-	}
+	select {}
 }
 
 func (s *SlinkyIntegrationSuite) SetupTest() {
@@ -200,7 +199,7 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 		oCfg, mCfg := DefaultOracleConfig(node)
 
 		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg, mCfg)
-		RestartOracle(node)
+		s.Require().NoError(RestartOracle(node))
 	}
 
 	if len(resp.CurrencyPairs) == 0 {
@@ -209,7 +208,7 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 
 	ids := make([]string, len(resp.CurrencyPairs))
 	for i, cp := range resp.CurrencyPairs {
-		ids[i] = cp.ToString()
+		ids[i] = cp.String()
 	}
 
 	// remove all currency-pairs
@@ -253,7 +252,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
 	s.Run("Remove a currency-pair and check Prices", func() {
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.NewCurrencyPair("BTC", "USD").ToString()}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.CurrencyPairString("BTC", "USD")}...))
 
 		// check that the currency-pair is added to state
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -273,7 +272,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 2)
 
 		// remove btc from state
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.ToString()}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.String()}...))
 
 		// check that the currency-pair is removed from state
 		resp, err = QueryCurrencyPairs(s.chain)
@@ -328,7 +327,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			// Write the static provider config to the node
 			staticConfig := static.StaticMockProviderConfig{
 				TokenPrices: map[string]string{
-					cp.ToString(): "1140",
+					cp.String(): "1140",
 				},
 			}
 
@@ -337,7 +336,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
 
 			SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
-			RestartOracle(node)
+			s.Require().NoError(RestartOracle(node))
 		}
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
@@ -545,9 +544,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		// Write the static provider config to the node
 		staticConfig := static.StaticMockProviderConfig{
 			TokenPrices: map[string]string{
-				cp1.ToString(): "1140",
-				cp2.ToString(): "1141",
-				cp3.ToString(): "1142",
+				cp1.String(): "1140",
+				cp2.String(): "1141",
+				cp3.String(): "1142",
 			},
 		}
 
@@ -623,8 +622,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		// Write the static provider config to the node
 		staticConfig := static.StaticMockProviderConfig{
 			TokenPrices: map[string]string{
-				cp1.ToString(): "1140",
-				cp2.ToString(): "1141",
+				cp1.String(): "1140",
+				cp2.String(): "1141",
 			},
 		}
 
@@ -633,7 +632,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
-		RestartOracle(node)
+		s.Require().NoError(RestartOracle(node))
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
