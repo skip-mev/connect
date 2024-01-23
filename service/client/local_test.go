@@ -119,6 +119,6 @@ func (s *ClientTestSuite) TestClientReturnsValidPrices() {
 	s.Require().NoError(err)
 
 	// check response
-	s.Require().Equal(resp.Prices[cp1.ToString()], big.NewInt(100).String())
-	s.Require().Equal(resp.Prices[cp2.ToString()], big.NewInt(200).String())
+	s.Require().Equal(resp.Prices[cp1.String()], big.NewInt(100).String())
+	s.Require().Equal(resp.Prices[cp2.String()], big.NewInt(200).String())
 }

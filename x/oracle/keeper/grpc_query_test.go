@@ -59,7 +59,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 
 		// assert that currency-pairs are correctly returned
 		for _, cp := range res.CurrencyPairs {
-			_, ok := expectedCurrencyPairs[cp.ToString()]
+			_, ok := expectedCurrencyPairs[cp.String()]
 			assert.True(t, ok)
 		}
 	})

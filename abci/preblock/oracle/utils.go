@@ -30,7 +30,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 		if !ok || price == nil {
 			h.logger.Info(
 				"no price for currency pair",
-				"currency_pair", cp.ToString(),
+				"currency_pair", cp.String(),
 			)
 
 			continue
@@ -46,7 +46,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 		if err := h.keeper.SetPriceForCurrencyPair(ctx, cp, quotePrice); err != nil {
 			h.logger.Error(
 				"failed to set price for currency pair",
-				"currency_pair", cp.ToString(),
+				"currency_pair", cp.String(),
 				"quote_price", cp.String(),
 				"err", err,
 			)
@@ -56,7 +56,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 
 		h.logger.Info(
 			"set price for currency pair",
-			"currency_pair", cp.ToString(),
+			"currency_pair", cp.String(),
 			"quote_price", quotePrice.Price.String(),
 		)
 	}
@@ -81,7 +81,7 @@ func (h *PreBlockHandler) recordMetrics(validatorVotePresent bool) {
 	h.metrics.AddVoteIncludedInLastCommit(validatorVotePresent)
 
 	for ticker := range validatorPrices {
-		h.metrics.AddTickerInclusionStatus(ticker.ToString(), true)
+		h.metrics.AddTickerInclusionStatus(ticker.String(), true)
 	}
 }
 
