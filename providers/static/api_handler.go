@@ -27,7 +27,7 @@ type StaticMockAPIHandler struct { //nolint
 
 // NewStaticMockAPIHandler returns a new StaticMockAPIHandler. This constructs a
 // new static mock provider from the config. Notice this method expects the
-// TokenNameToSymbol map to be populated w/ entries of the form CurrencyPair.ToString():
+// TokenNameToSymbol map to be populated w/ entries of the form CurrencyPair.String():
 // big.NewInt(price).
 func NewStaticMockAPIHandler(
 	providerCfg config.ProviderConfig,
