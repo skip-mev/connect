@@ -1,4 +1,5 @@
-//go:generate go run generate_toml.go
+//go:build ignore
+// +build ignore
 
 package main
 

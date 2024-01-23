@@ -21,7 +21,7 @@ import (
 
 const (
 	localhost     = "localhost"
-	port          = "8084"
+	port          = "8080"
 	timeout       = 1 * time.Second
 	delay         = 20 * time.Second
 	grpcErrPrefix = "rpc error: code = Unknown desc = "
@@ -85,7 +85,7 @@ func (s *ServerTestSuite) TestOracleServerNotRunning() {
 	_, err := s.client.Prices(context.Background(), &types.QueryPricesRequest{})
 
 	// expect oracle not running error
-	s.Require().Equal(err.Error(), grpcErrPrefix+server.ErrOracleNotRunning.Error())
+	s.Require().Equal(grpcErrPrefix+server.ErrOracleNotRunning.Error(), err.Error())
 }
 
 func (s *ServerTestSuite) TestOracleServerTimeout() {

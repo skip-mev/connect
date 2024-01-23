@@ -10,7 +10,7 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.toml
-LOCAL_CONFIG_DIR ?= $(CURDIR)/config/local
+CONFIG_DIR ?= $(CURDIR)/config
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
@@ -36,7 +36,7 @@ run-prom-client:
 		prom/prometheus
 
 update-local-config:
-	@go generate ${LOCAL_CONFIG_DIR}
+	go generate ${CONFIG_DIR}
 
 install:
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 

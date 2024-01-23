@@ -16,6 +16,7 @@ require (
 	cosmossdk.io/x/circuit v0.1.0
 	cosmossdk.io/x/tx v0.13.0
 	cosmossdk.io/x/upgrade v0.1.1
+	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/alecthomas/assert/v2 v2.5.0
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
@@ -52,8 +53,6 @@ require (
 	google.golang.org/protobuf v1.32.0
 	mvdan.cc/gofumpt v0.5.0
 )
-
-require github.com/BurntSushi/toml v1.3.2
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
