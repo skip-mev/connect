@@ -640,9 +640,9 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
 	})
 
-	s.Run("test oracle client failures", func() {
+	s.Run("test client failure", func() {
 		mockMetrics := metricsmocks.NewMetrics(s.T())
-		clientError := fmt.Errorf("pre-blocker failure")
+		clientError := fmt.Errorf("client failure")
 		mockClient := mocks.NewOracleClient(s.T())
 		handler := ve.NewVoteExtensionHandler(
 			log.NewTestLogger(s.T()),

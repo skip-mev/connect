@@ -145,7 +145,9 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			err = OracleClientError{err}
+			err = OracleClientError{
+				Err: err,
+			}
 
 			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
