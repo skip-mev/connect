@@ -903,6 +903,39 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		s.Require().NoError(err)
 	})
 
+	s.Run("prepare proposal latency is reported in the case of failures", func() {
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			nil,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				time.Sleep(100 * time.Millisecond)
+				return fmt.Errorf("error in validate vote extensions")
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsmocks,
+		)
+
+		req := s.createRequestPrepareProposal( // the votes here are invalid, but that's fine
+			cometabci.ExtendedCommitInfo{
+				Round: 1,
+				Votes: nil,
+			},
+			nil,
+			4, // vote extensions will be enabled
+		)
+		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
+			// the second arg shld be a duration
+			latency := args.Get(1).(time.Duration)
+			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
+		}).Once()
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
+		s.Require().Error(err, "error in validate vote extensions")
+	})
+
 	s.Run("wrapped process proposal latency is ignored", func() {
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
@@ -939,6 +972,38 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
+	})
+
+	s.Run("process proposal latency is reported in the case of failures", func() {
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			nil,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				time.Sleep(100 * time.Millisecond)
+				return fmt.Errorf("error in validate vote extensions")
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsmocks,
+		)
+
+		_, extInfoBz, err := testutils.CreateExtendedCommitInfo(
+			[]cometabci.ExtendedVoteInfo{},
+			codec.NewDefaultExtendedCommitCodec(),
+		)
+		s.Require().NoError(err)
+
+		req := s.createRequestProcessProposal([][]byte{extInfoBz}, 4)
+		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
+			// the second arg shld be a duration
+			latency := args.Get(1).(time.Duration)
+			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
+		}).Once()
+
+		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
+		s.Require().Error(err, "error in validate vote extensions")
 	})
 }
 
