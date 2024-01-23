@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alecthomas/assert/v2"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
@@ -367,7 +366,7 @@ func TestCreateMessage(t *testing.T) {
 			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
-			msg, err := wsHandler.CreateMessage(tc.cps)
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
@@ -376,7 +375,8 @@ func TestCreateMessage(t *testing.T) {
 
 			expectedBz, err := json.Marshal(tc.msg)
 			require.NoError(t, err)
-			assert.Equal(t, expectedBz, msg)
+			require.Equal(t, 1, len(msgs))
+			require.EqualValues(t, expectedBz, msgs[0])
 		})
 	}
 }
