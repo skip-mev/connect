@@ -147,7 +147,6 @@ func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertyp
 				p.metrics.AddProviderResponseByID(p.cfg.Name, strID, providermetrics.Success, p.Type())
 				p.metrics.AddProviderResponse(p.cfg.Name, providermetrics.Success, p.Type())
 				p.metrics.LastUpdated(p.cfg.Name, strID, p.Type())
-				// p.metrics.AddPrice(p.cfg.Name, strID, result)
 			}
 
 			// Log and record all the unresolved data.
