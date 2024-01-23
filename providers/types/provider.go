@@ -29,5 +29,4 @@ type Provider[K comparable, V any] interface {
 type ProviderFactory[K comparable, V any] func(
 	*zap.Logger,
 	config.OracleConfig,
-	config.OracleMetricsConfig,
 ) ([]Provider[K, V], error)

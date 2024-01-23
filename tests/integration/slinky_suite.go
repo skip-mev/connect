@@ -2,11 +2,8 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"math/big"
 	"os"
-	"path"
 	"time"
 
 	"cosmossdk.io/math"
@@ -22,8 +19,6 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-
-	"github.com/skip-mev/slinky/providers/static"
 )
 
 const (
@@ -44,7 +39,6 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 		StartCmd: []string{
 			"oracle",
 			"--oracle-config-path", "/oracle/oracle.toml",
-			"--metrics-config-path", "/oracle/metrics.toml",
 			"--host", "0.0.0.0",
 			"--port", "8080",
 		},
@@ -53,41 +47,13 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 	}
 }
 
-func DefaultOracleConfig(node *cosmos.ChainNode) (
-	oracleconfig.OracleConfig,
-	oracleconfig.MetricsConfig,
-) {
-	oracle := GetOracleSideCar(node)
-
+func DefaultOracleConfig(node *cosmos.ChainNode) oracleconfig.OracleConfig {
 	// Create the oracle config
 	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
-		InProcess:      false,
-		RemoteAddress:  fmt.Sprintf("%s:%s", oracle.HostName(), "8080"),
-		ClientTimeout:  500 * time.Millisecond,
-		Enabled:        true,
 	}
 
-	// get the consensus address of the node
-	bz, _, err := node.ExecBin(context.Background(), "cometbft", "show-address")
-	if err != nil {
-		panic(err)
-	}
-	consAddress := sdk.ConsAddress(bz)
-
-	// Create the metrics config
-	metricsConfig := oracleconfig.MetricsConfig{
-		PrometheusServerAddress: fmt.Sprintf("%s:%s", "0.0.0.0", "8081"),
-		OracleMetrics: oracleconfig.OracleMetricsConfig{
-			Enabled: true,
-		},
-		AppMetrics: oracleconfig.AppMetricsConfig{
-			Enabled:              true,
-			ValidatorConsAddress: consAddress.String(),
-		},
-	}
-
-	return oracleConfig, metricsConfig
+	return oracleConfig
 }
 
 func GetOracleSideCar(node *cosmos.ChainNode) *cosmos.SidecarProcess {
@@ -159,12 +125,12 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 			AddSidecarToNode(node, s.oracleConfig)
 
 			// set config for the oracle
-			oracleCfg, metricsCfg := DefaultOracleConfig(node)
-			SetOracleConfigsOnOracle(GetOracleSideCar(node), oracleCfg, metricsCfg)
+			oracleCfg := DefaultOracleConfig(node)
+			SetOracleConfigsOnOracle(GetOracleSideCar(node), oracleCfg)
 
 			// set the out-of-process oracle config for all nodes
 			node.WithPrestartNode(func(n *cosmos.ChainNode) {
-				SetOracleConfigsOnApp(n, oracleCfg, metricsCfg)
+				SetOracleConfigsOnApp(n, oracleCfg)
 			})
 		}
 	})
@@ -197,9 +163,9 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 	// reset the oracle services
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
-		oCfg, mCfg := DefaultOracleConfig(node)
+		oCfg := DefaultOracleConfig(node)
 
-		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg, mCfg)
+		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg)
 		RestartOracle(node)
 	}
 
@@ -312,31 +278,31 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		for _, node := range s.chain.Nodes() {
 			oracle := GetOracleSideCar(node)
 
-			oracleConfig, metricsConfig := DefaultOracleConfig(node)
+			oracleConfig := DefaultOracleConfig(node)
 			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 				Name: "static-mock-provider",
-				Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
 				API: oracleconfig.APIConfig{
 					Enabled:    true,
 					Timeout:    250 * time.Millisecond,
 					Interval:   250 * time.Millisecond,
 					MaxQueries: 1,
+					URL:        "http://un-used-url.com",
+					Atomic:     true,
+					Name:       "static-mock-provider",
+				},
+				Market: oracleconfig.MarketConfig{
+					Name: "static-mock-provider",
+					CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
+						cp.ToString(): {
+							Ticker:       "1140",
+							CurrencyPair: cp,
+						},
+					},
 				},
 			})
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
-			// Write the static provider config to the node
-			staticConfig := static.StaticMockProviderConfig{
-				TokenPrices: map[string]string{
-					cp.ToString(): "1140",
-				},
-			}
-
-			bz, err := json.Marshal(staticConfig)
-			s.Require().NoError(err)
-			s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
-
-			SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
+			SetOracleConfigsOnOracle(oracle, oracleConfig)
 			RestartOracle(node)
 		}
 
@@ -529,33 +495,43 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	for _, node := range s.chain.Nodes() {
 		oracle := GetOracleSideCar(node)
 
-		oracleConfig, metricsConfig := DefaultOracleConfig(node)
+		oracleConfig := DefaultOracleConfig(node)
+
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: "static-mock-provider",
-			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
 			API: oracleconfig.APIConfig{
 				Enabled:    true,
 				Timeout:    250 * time.Millisecond,
 				Interval:   250 * time.Millisecond,
 				MaxQueries: 1,
+				URL:        "http://un-used-url.com",
+				Atomic:     true,
+				Name:       "static-mock-provider",
+			},
+			Market: oracleconfig.MarketConfig{
+				Name: "static-mock-provider",
+				CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
+					cp1.ToString(): {
+						Ticker:       "1140",
+						CurrencyPair: cp1,
+					},
+					cp2.ToString(): {
+						Ticker:       "1141",
+						CurrencyPair: cp2,
+					},
+					cp3.ToString(): {
+						Ticker:       "1142",
+						CurrencyPair: cp3,
+					},
+				},
 			},
 		})
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
 
-		// Write the static provider config to the node
-		staticConfig := static.StaticMockProviderConfig{
-			TokenPrices: map[string]string{
-				cp1.ToString(): "1140",
-				cp2.ToString(): "1141",
-				cp3.ToString(): "1142",
-			},
-		}
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp1)
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp2)
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
 
-		bz, err := json.Marshal(staticConfig)
-		s.Require().NoError(err)
-		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
-
-		SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
+		SetOracleConfigsOnOracle(oracle, oracleConfig)
 		RestartOracle(node)
 	}
 
@@ -607,32 +583,39 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracle := GetOracleSideCar(node)
 
-		oracleConfig, metricsConfig := DefaultOracleConfig(node)
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cps...)
+		oracleConfig := DefaultOracleConfig(node)
+
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: "static-mock-provider",
-			Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
 			API: oracleconfig.APIConfig{
 				Enabled:    true,
 				Timeout:    250 * time.Millisecond,
 				Interval:   250 * time.Millisecond,
 				MaxQueries: 1,
+				URL:        "http://un-used-url.com",
+				Atomic:     true,
+				Name:       "static-mock-provider",
+			},
+			Market: oracleconfig.MarketConfig{
+				Name: "static-mock-provider",
+				CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
+					cp1.ToString(): {
+						Ticker:       "1140",
+						CurrencyPair: cp1,
+					},
+					cp2.ToString(): {
+						Ticker:       "1141",
+						CurrencyPair: cp2,
+					},
+				},
 			},
 		})
 
-		// Write the static provider config to the node
-		staticConfig := static.StaticMockProviderConfig{
-			TokenPrices: map[string]string{
-				cp1.ToString(): "1140",
-				cp2.ToString(): "1141",
-			},
-		}
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp1)
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp2)
+		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
 
-		bz, err := json.Marshal(staticConfig)
-		s.Require().NoError(err)
-		s.Require().NoError(oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath))
-
-		SetOracleConfigsOnOracle(oracle, oracleConfig, metricsConfig)
+		SetOracleConfigsOnOracle(oracle, oracleConfig)
 		RestartOracle(node)
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{

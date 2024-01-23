@@ -21,8 +21,19 @@ type APIConfig struct {
 	// within the interval. If the provider makes more queries than this, it will
 	// stop making queries until the next interval.
 	MaxQueries int `mapstructure:"max_queries" toml:"max_queries"`
+
+	// Atomic is a flag that indicates whether the provider can fulfill its queries
+	// in a single request.
+	Atomic bool `mapstructure:"atomic" toml:"atomic"`
+
+	// URL is the URL that is used to fetch data from the API.
+	URL string `mapstructure:"url" toml:"url"`
+
+	// Name is the name of the provider that corresponds to this config.
+	Name string `mapstructure:"name" toml:"name"`
 }
 
+// ValidateBasic performs basic validation of the API config.
 func (c *APIConfig) ValidateBasic() error {
 	if !c.Enabled {
 		return nil
@@ -38,6 +49,14 @@ func (c *APIConfig) ValidateBasic() error {
 
 	if c.Interval < c.Timeout {
 		return fmt.Errorf("provider timeout must be greater than 0 and less than the interval")
+	}
+
+	if len(c.URL) == 0 {
+		return fmt.Errorf("provider url cannot be empty")
+	}
+
+	if len(c.Name) == 0 {
+		return fmt.Errorf("provider name cannot be empty")
 	}
 
 	return nil

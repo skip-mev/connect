@@ -18,7 +18,7 @@ var CtxErrors = map[error]struct{}{
 }
 
 // StartProviders starts all providers.
-func (o *Oracle) StartProviders(ctx context.Context) {
+func (o *OracleImpl) StartProviders(ctx context.Context) {
 	providerGroup, ctx := errgroup.WithContext(ctx)
 	providerGroup.SetLimit(len(o.providers))
 
@@ -32,7 +32,7 @@ func (o *Oracle) StartProviders(ctx context.Context) {
 
 // execProvider executes a given provider. The provider continues
 // to concurrently run until the context is canceled.
-func (o *Oracle) execProviderFn(
+func (o *OracleImpl) execProviderFn(
 	ctx context.Context,
 	p providertypes.Provider[oracletypes.CurrencyPair, *big.Int],
 ) func() error {
