@@ -1074,7 +1074,6 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
 
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
-
 		// make vote-extensions not enabled to skip validate vote extensions
 		s.ctx = s.ctx.WithBlockHeight(1)
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 3)
