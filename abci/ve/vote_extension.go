@@ -17,6 +17,7 @@ import (
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 )
 
 // VoteExtensionHandler is a handler that extends a vote with the oracle's
@@ -76,8 +77,18 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestExtendVote) (resp *cometabci.ResponseExtendVote, err error) {
 		start := time.Now()
 
-		// measure latencies from invocation to return
+		// measure latencies from invocation to return, catch panics first
 		defer func() {
+			// catch panics if possible
+			if r := recover(); r != nil {
+				h.logger.Error(
+					"recovered from panic in ExtendVoteHandler",
+					"err", r,
+				)
+
+				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, Panic{r.(error)}
+			}
+
 			latency := time.Since(start)
 			h.logger.Info(
 				"extend vote handler",
@@ -89,19 +100,9 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		if req == nil {
 			h.logger.Error("extend vote handler received a nil request")
-			return nil, fmt.Errorf("ExtendVoteHandler received a nil request")
+			err = slinkyabci.NilRequestError{servicemetrics.ExtendVote}
+			return nil, err
 		}
-		// Catch any panic that occurs in the oracle request.
-		defer func() {
-			if r := recover(); r != nil {
-				h.logger.Error(
-					"recovered from panic in ExtendVoteHandler",
-					"err", r,
-				)
-
-				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
-			}
-		}()
 
 		// Update the latest on-chain prices with the vote extensions included in the current
 		// block proposal.
@@ -109,14 +110,15 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			Txs:    req.Txs,
 			Height: req.Height,
 		}
-		if _, err := h.preBlocker(ctx, reqFinalizeBlock); err != nil {
+		if _, err = h.preBlocker(ctx, reqFinalizeBlock); err != nil {
 			h.logger.Error(
 				"failed to aggregate oracle votes",
 				"height", req.Height,
 				"err", err,
 			)
+			err = PreBlockError{err}
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		// Create a context with a timeout to ensure we do not wait forever for the oracle
@@ -135,7 +137,9 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			err = OracleClientError{err}
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		// If we get no response, we return an empty vote extension.
@@ -145,7 +149,9 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"height", req.Height,
 			)
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			err = OracleClientError{fmt.Errorf("oracle returned nil prices")}
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		// Transform the response prices into a vote extension.
