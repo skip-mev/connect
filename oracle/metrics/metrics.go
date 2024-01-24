@@ -97,12 +97,12 @@ func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string
 		ProviderLabel, providerName,
 		ProviderTypeLabel, handlerType,
 		PairIDLabel, pairID,
-	).Add(price)
+	).Set(price)
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
 func (m *OracleMetricsImpl) UpdateAggregatePrice(pairID string, price float64) {
 	m.aggregatePrices.With(
 		PairIDLabel, pairID,
-	).Add(price)
+	).Set(price)
 }

@@ -15,7 +15,7 @@ import (
 
 const (
 	// Name is the name of the exchange.
-	Name = "coinbase_websocket"
+	Name = "coinbase"
 )
 
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
