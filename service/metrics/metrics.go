@@ -98,7 +98,7 @@ type metricsImpl struct {
 	voteIncludedInLastCommit *prometheus.CounterVec
 	tickerInclusionStatus    *prometheus.CounterVec
 	abciMethodLatency        *prometheus.HistogramVec
-	abciRequests			 *prometheus.CounterVec
+	abciRequests             *prometheus.CounterVec
 	chainID                  string
 }
 
