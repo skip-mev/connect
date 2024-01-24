@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: slinky/service/v1/service.proto
+// source: slinky/service/v1/oracle.proto
 
 package servicev1
 
@@ -107,5 +107,5 @@ var Oracle_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "slinky/service/v1/service.proto",
+	Metadata: "slinky/service/v1/oracle.proto",
 }
