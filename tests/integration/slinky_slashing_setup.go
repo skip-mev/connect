@@ -15,11 +15,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
-	testutil "github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	codec "github.com/skip-mev/slinky/abci/strategies/codec"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
@@ -55,7 +55,7 @@ func (s *SlinkySlashingIntegrationSuite) SubmitAlert(user cosmos.User, alert ale
 	return client.BroadcastTxCommit(context.Background(), tx)
 }
 
-// Submit conclusion submits the provided conclusion to the chain
+// SubmitConclusion submits the provided conclusion to the chain
 func (s *SlinkySlashingIntegrationSuite) SubmitConclusion(user cosmos.User, conclusion alerttypes.Conclusion) (*coretypes.ResultBroadcastTxCommit, error) {
 	addr, err := sdk.AccAddressFromBech32(user.FormattedAddress())
 	s.Require().NoError(err)
@@ -178,7 +178,7 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 		Market: oracleconfig.MarketConfig{
 			Name: "static-mock-provider",
 			CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-				ticker.ToString(): {
+				ticker.String(): {
 					Ticker:       big.NewInt(price).String(),
 					CurrencyPair: ticker,
 				},

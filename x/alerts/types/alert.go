@@ -65,7 +65,7 @@ func (a Alert) ValidateBasic() error {
 func (a Alert) UID() []byte {
 	heightBz := []byte(fmt.Sprintf("%d", a.Height))
 	signerBz := []byte(a.Signer)
-	currencyPairBz := []byte(a.CurrencyPair.ToString())
+	currencyPairBz := []byte(a.CurrencyPair.String())
 	return tmhash.SumTruncated(append(append(heightBz, signerBz...), currencyPairBz...))
 }
 

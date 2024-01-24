@@ -3,8 +3,9 @@ package oracle
 import (
 	"context"
 
-	"github.com/skip-mev/slinky/service/servers/oracle/types"
 	"google.golang.org/grpc"
+
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
 )
 
 // OracleClient defines the interface that will be utilized by the application
