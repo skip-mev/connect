@@ -13,8 +13,9 @@ import (
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve/types"
-	"github.com/skip-mev/slinky/service"
+	client "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -28,7 +29,7 @@ type VoteExtensionHandler struct {
 	// oracleClient is the oracle client (remote or local) that is responsible for fetching prices
 	//
 	// TODO: Add a separate interface just for the client.
-	oracleClient service.OracleService
+	oracleClient client.OracleClient
 
 	// timeout is the maximum amount of time to wait for the oracle to respond
 	// to a price request.
@@ -51,7 +52,7 @@ type VoteExtensionHandler struct {
 // NewVoteExtensionHandler returns a new VoteExtensionHandler.
 func NewVoteExtensionHandler(
 	logger log.Logger,
-	oracleClient service.OracleService,
+	oracleClient client.OracleClient,
 	timeout time.Duration,
 	strategy currencypair.CurrencyPairStrategy,
 	codec compression.VoteExtensionCodec,
@@ -127,7 +128,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		// To ensure liveness, we return a vote even if the oracle is not running
 		// or if the oracle returns a bad response.
-		oracleResp, err := h.oracleClient.Prices(reqCtx, &service.QueryPricesRequest{})
+		oracleResp, err := h.oracleClient.Prices(reqCtx, &servicetypes.QueryPricesRequest{})
 		if err != nil {
 			h.logger.Error(
 				"failed to retrieve oracle prices for vote extension; returning empty vote extension",

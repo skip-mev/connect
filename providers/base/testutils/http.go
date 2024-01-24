@@ -75,8 +75,9 @@ func CreateAPIProviderWithGetResponses[K providertypes.ResponseKey, V providerty
 	)
 
 	provider, err := base.NewProvider[K, V](
-		cfg,
+		base.WithName[K, V](cfg.Name),
 		base.WithAPIQueryHandler[K, V](handler),
+		base.WithAPIConfig[K, V](cfg.API),
 		base.WithLogger[K, V](logger),
 		base.WithIDs[K, V](ids),
 	)
@@ -99,8 +100,9 @@ func CreateAPIProviderWithResponseFn[K providertypes.ResponseKey, V providertype
 	)
 
 	provider, err := base.NewProvider[K, V](
-		cfg,
+		base.WithName[K, V](cfg.Name),
 		base.WithAPIQueryHandler[K, V](handler),
+		base.WithAPIConfig[K, V](cfg.API),
 		base.WithLogger[K, V](logger),
 		base.WithIDs[K, V](ids),
 	)

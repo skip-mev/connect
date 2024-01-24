@@ -58,8 +58,7 @@ func (_m *Keeper) SetPriceForCurrencyPair(ctx types.Context, cp oracletypes.Curr
 func NewKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *Keeper {
+}) *Keeper {
 	mock := &Keeper{}
 	mock.Mock.Test(t)
 

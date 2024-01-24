@@ -20,11 +20,17 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	mu     sync.Mutex
 	logger *zap.Logger
 
+	// name is the name of the provider.
+	name string
+
 	// api is the handler for the querying api data. Developer's implement this interface
 	// to extend the provider's functionality. For example, this could be used to fetch
 	// prices from an API, where K is the currency pair and V is the price. For more information
 	// on how to implement a custom handler, please see the providers/base/README.md file.
 	api apihandlers.APIQueryHandler[K, V]
+
+	// apiCfg is the API configuration for the provider.
+	apiCfg config.APIConfig
 
 	// ws is the handler for the web socket data. Developers implement this interface to extend
 	// the provider's functionality. For example, this could be used to fetch prices from a
@@ -32,11 +38,8 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	// to implement a custom handler, please see the providers/base/README.md file.
 	ws wshandlers.WebSocketQueryHandler[K, V]
 
-	// cfg is the provider's config. This contains the name, path, fetch timeout, and
-	// fetch interval for the provider. To read more about the config, see the
-	// oracle/config/provider.go file. To read more about how to configure a custom provider,
-	// please see the providers/README.md file.
-	cfg config.ProviderConfig
+	// wsCfg is the web socket configuration for the provider.
+	wsCfg config.WebSocketConfig
 
 	// data is the latest set of key -> value pairs for the provider i.e. the latest prices
 	// for a given set of currency pairs.
@@ -50,16 +53,8 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 }
 
 // NewProvider returns a new Base provider.
-func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](
-	cfg config.ProviderConfig,
-	opts ...ProviderOption[K, V],
-) (providertypes.Provider[K, V], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
-	}
-
+func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opts ...ProviderOption[K, V]) (providertypes.Provider[K, V], error) {
 	p := &Provider[K, V]{
-		cfg:    cfg,
 		logger: zap.NewNop(),
 		ids:    make([]K, 0),
 		data:   make(map[K]providertypes.Result[V]),
@@ -69,12 +64,15 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](
 		opt(p)
 	}
 
-	if p.api == nil && p.ws == nil {
-		return nil, fmt.Errorf("no query handler specified for provider %s", cfg.Name)
-	}
-
-	if p.api != nil && p.ws != nil {
-		return nil, fmt.Errorf("cannot specify both an api and web socket query handler for provider %s", cfg.Name)
+	switch {
+	case p.api != nil && p.ws != nil:
+		return nil, fmt.Errorf("cannot configure both api and web socket")
+	case p.api == nil && p.ws == nil:
+		return nil, fmt.Errorf("must configure either api or web socket")
+	case p.apiCfg.ValidateBasic() != nil:
+		return nil, fmt.Errorf("invalid api config")
+	case p.wsCfg.ValidateBasic() != nil:
+		return nil, fmt.Errorf("invalid web socket config")
 	}
 
 	if p.metrics == nil {
@@ -98,7 +96,7 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 
 // Name returns the name of the provider.
 func (p *Provider[K, V]) Name() string {
-	return p.cfg.Name
+	return p.name
 }
 
 // GetData returns the latest data recorded by the provider. The data is constantly
@@ -118,9 +116,9 @@ func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
 // Type returns the type of data handler the provider uses
 func (p *Provider[K, V]) Type() providermetrics.ProviderType {
 	switch {
-	case p.cfg.API.Enabled:
+	case p.apiCfg.Enabled && p.api != nil:
 		return providermetrics.API
-	case p.cfg.WebSocket.Enabled:
+	case p.wsCfg.Enabled && p.ws != nil:
 		return providermetrics.WebSockets
 	default:
 		return "unknown"

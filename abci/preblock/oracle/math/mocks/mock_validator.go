@@ -455,8 +455,7 @@ func (_m *ValidatorI) TokensFromSharesTruncated(_a0 math.LegacyDec) math.LegacyD
 func NewValidatorI(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *ValidatorI {
+}) *ValidatorI {
 	mock := &ValidatorI{}
 	mock.Mock.Test(t)
 

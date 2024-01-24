@@ -3,6 +3,7 @@
 package mocks
 
 import (
+	handlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/skip-mev/slinky/providers/types"
@@ -13,24 +14,24 @@ type WebSocketDataHandler[K types.ResponseKey, V types.ResponseValue] struct {
 	mock.Mock
 }
 
-// CreateMessage provides a mock function with given fields: ids
-func (_m *WebSocketDataHandler[K, V]) CreateMessage(ids []K) ([]byte, error) {
+// CreateMessages provides a mock function with given fields: ids
+func (_m *WebSocketDataHandler[K, V]) CreateMessages(ids []K) ([]handlers.WebsocketEncodedMessage, error) {
 	ret := _m.Called(ids)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateMessage")
+		panic("no return value specified for CreateMessages")
 	}
 
-	var r0 []byte
+	var r0 []handlers.WebsocketEncodedMessage
 	var r1 error
-	if rf, ok := ret.Get(0).(func([]K) ([]byte, error)); ok {
+	if rf, ok := ret.Get(0).(func([]K) ([]handlers.WebsocketEncodedMessage, error)); ok {
 		return rf(ids)
 	}
-	if rf, ok := ret.Get(0).(func([]K) []byte); ok {
+	if rf, ok := ret.Get(0).(func([]K) []handlers.WebsocketEncodedMessage); ok {
 		r0 = rf(ids)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
+			r0 = ret.Get(0).([]handlers.WebsocketEncodedMessage)
 		}
 	}
 
@@ -80,49 +81,12 @@ func (_m *WebSocketDataHandler[K, V]) HandleMessage(message []byte) (types.GetRe
 	return r0, r1, r2
 }
 
-// Name provides a mock function with given fields:
-func (_m *WebSocketDataHandler[K, V]) Name() string {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for Name")
-	}
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
-// URL provides a mock function with given fields:
-func (_m *WebSocketDataHandler[K, V]) URL() string {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for URL")
-	}
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
 // NewWebSocketDataHandler creates a new instance of WebSocketDataHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewWebSocketDataHandler[K types.ResponseKey, V types.ResponseValue](t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *WebSocketDataHandler[K, V] {
+}) *WebSocketDataHandler[K, V] {
 	mock := &WebSocketDataHandler[K, V]{}
 	mock.Mock.Test(t)
 

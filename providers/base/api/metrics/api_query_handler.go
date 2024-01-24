@@ -43,7 +43,7 @@ type APIMetricsImpl struct {
 }
 
 // NewAPIMetricsFromConfig returns a new Metrics struct given the main oracle metrics config.
-func NewAPIMetricsFromConfig(config config.OracleMetricsConfig) APIMetrics {
+func NewAPIMetricsFromConfig(config config.MetricsConfig) APIMetrics {
 	if config.Enabled {
 		return NewAPIMetrics()
 	}

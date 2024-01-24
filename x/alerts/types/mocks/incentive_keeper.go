@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	incentivestypes "github.com/skip-mev/slinky/x/incentives/types"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -38,8 +37,7 @@ func (_m *IncentiveKeeper) AddIncentives(ctx types.Context, incentives []incenti
 func NewIncentiveKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *IncentiveKeeper {
+}) *IncentiveKeeper {
 	mock := &IncentiveKeeper{}
 	mock.Mock.Test(t)
 

@@ -70,8 +70,9 @@ func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V prov
 	)
 
 	p, err := base.NewProvider[K, V](
-		cfg,
+		base.WithName[K, V](cfg.Name),
 		base.WithWebSocketQueryHandler[K, V](handler),
+		base.WithWebSocketConfig[K, V](cfg.WebSocket),
 		base.WithLogger[K, V](logger),
 	)
 	require.NoError(t, err)
@@ -92,8 +93,9 @@ func CreateWebSocketProviderWithResponseFn[K providertypes.ResponseKey, V provid
 	)
 
 	p, err := base.NewProvider[K, V](
-		cfg,
+		base.WithName[K, V](cfg.Name),
 		base.WithWebSocketQueryHandler[K, V](handler),
+		base.WithWebSocketConfig[K, V](cfg.WebSocket),
 		base.WithLogger[K, V](logger),
 	)
 	require.NoError(t, err)

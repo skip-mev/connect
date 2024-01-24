@@ -19,30 +19,33 @@ const (
 	Name = "coinbase"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*CoinBaseAPIHandler)(nil)
+var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
-// CoinBaseAPIHandler implements the APIDataHandler interface for Coinbase, which can be used
+// APIHandler implements the APIDataHandler interface for Coinbase, which can be used
 // by a base provider. The DataHandler fetches data from the spot price Coinbase API. It is
 // atomic in that it must request data from the Coinbase API sequentially for each currency pair.
-type CoinBaseAPIHandler struct { //nolint
-	// Config is the Coinbase config.
-	Config
+type APIHandler struct {
+	// cfg is the config for the Coinbase API.
+	cfg config.ProviderConfig
 }
 
-// NewCoinBaseAPIHandler returns a new Coinbase APIDataHandler.
-func NewCoinBaseAPIHandler(
-	providerCfg config.ProviderConfig,
-) (*CoinBaseAPIHandler, error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, providerCfg.Name)
+// NewAPIHandler returns a new Coinbase APIDataHandler.
+func NewAPIHandler(
+	cfg config.ProviderConfig,
+) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid provider config %s", err)
 	}
 
-	cfg, err := ReadCoinbaseConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, err
+	if !cfg.API.Enabled {
+		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
 	}
 
-	return &CoinBaseAPIHandler{
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
+	}
+
+	return &APIHandler{
 		cfg,
 	}, nil
 }
@@ -51,7 +54,7 @@ func NewCoinBaseAPIHandler(
 // given currency pair. Since the Coinbase API only supports fetching spot prices for
 // a single currency pair at a time, this function will return an error if the currency
 // pair slice contains more than one currency pair.
-func (h *CoinBaseAPIHandler) CreateURL(
+func (h *APIHandler) CreateURL(
 	cps []oracletypes.CurrencyPair,
 ) (string, error) {
 	if len(cps) != 1 {
@@ -61,28 +64,17 @@ func (h *CoinBaseAPIHandler) CreateURL(
 	// Ensure that the base and quote currencies are supported by the Coinbase API and
 	// are configured for the handler.
 	cp := cps[0]
-	base, ok := h.SymbolMap[cp.Base]
+	market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 	if !ok {
-		return "", fmt.Errorf("unknown base currency %s", cp.Base)
+		return "", fmt.Errorf("unknown currency pair %s", cp)
 	}
 
-	quote, ok := h.SymbolMap[cp.Quote]
-	if !ok {
-		return "", fmt.Errorf("unknown quote currency %s", cp.Quote)
-	}
-
-	return fmt.Sprintf(BaseURL, base, quote), nil
-}
-
-// Atomic returns true as this API handler must request data from the Coinbase API
-// sequentially for each currency pair.
-func (h *CoinBaseAPIHandler) Atomic() bool {
-	return false
+	return fmt.Sprintf(h.cfg.API.URL, market.Ticker), nil
 }
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns
 // the resulting price. Note that this can only parse a single currency pair at a time.
-func (h *CoinBaseAPIHandler) ParseResponse(
+func (h *APIHandler) ParseResponse(
 	cps []oracletypes.CurrencyPair,
 	resp *http.Response,
 ) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {
@@ -93,13 +85,13 @@ func (h *CoinBaseAPIHandler) ParseResponse(
 		)
 	}
 
-	// If the response quote currency does not match the requested quote currency, return an error.
+	// Check if this currency pair is supported by the Coinbase API.
 	cp := cps[0]
-	quote, ok := h.SymbolMap[cp.Quote]
+	_, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 	if !ok {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](
 			cps,
-			fmt.Errorf("unknown quote currency %s", cp.Quote),
+			fmt.Errorf("unknown currency pair %s", cp.String()),
 		)
 	}
 
@@ -109,28 +101,16 @@ func (h *CoinBaseAPIHandler) ParseResponse(
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
 	}
 
-	if quote != result.Data.Currency {
-		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](
-			cps,
-			fmt.Errorf("expected quote currency %s, got %s", cp.Quote, result.Data.Currency),
-		)
-	}
-
 	// Convert the float64 price into a big.Int.
-	floatAmount := result.Data.Amount
-	price, err := math.Float64StringToBigInt(floatAmount, cp.Decimals())
+	price, err := math.Float64StringToBigInt(result.Data.Amount, cp.Decimals())
 	if err != nil {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
 	}
 
-	resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-		cp: providertypes.NewResult[*big.Int](price, time.Now()),
-	}
-
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
-}
-
-// Name returns the name of the handler.
-func (h *CoinBaseAPIHandler) Name() string {
-	return Name
+	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
+		map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			cp: providertypes.NewResult[*big.Int](price, time.Now()),
+		},
+		nil,
+	)
 }

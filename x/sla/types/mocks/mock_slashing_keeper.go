@@ -50,8 +50,7 @@ func (_m *SlashingKeeper) Slash(ctx context.Context, consAddr types.ConsAddress,
 func NewSlashingKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *SlashingKeeper {
+}) *SlashingKeeper {
 	mock := &SlashingKeeper{}
 	mock.Mock.Test(t)
 

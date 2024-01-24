@@ -3,6 +3,7 @@ package base
 import (
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -12,6 +13,17 @@ import (
 // ProviderOption is a function that can be used to modify a provider.
 type ProviderOption[K providertypes.ResponseKey, V providertypes.ResponseValue] func(*Provider[K, V])
 
+// WithName sets the name of the provider.
+func WithName[K providertypes.ResponseKey, V providertypes.ResponseValue](name string) ProviderOption[K, V] {
+	return func(p *Provider[K, V]) {
+		if name == "" {
+			panic("cannot set empty name")
+		}
+
+		p.name = name
+	}
+}
+
 // WithLogger sets the logger for the provider.
 func WithLogger[K providertypes.ResponseKey, V providertypes.ResponseValue](logger *zap.Logger) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
@@ -19,7 +31,7 @@ func WithLogger[K providertypes.ResponseKey, V providertypes.ResponseValue](logg
 			panic("cannot set nil logger")
 		}
 
-		p.logger = logger.With(zap.String("provider", p.cfg.Name))
+		p.logger = logger.With(zap.String("provider", p.name))
 	}
 }
 
@@ -39,6 +51,17 @@ func WithAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVa
 	}
 }
 
+// WithAPIConfig sets the APIConfig for the provider.
+func WithAPIConfig[K providertypes.ResponseKey, V providertypes.ResponseValue](cfg config.APIConfig) ProviderOption[K, V] {
+	return func(p *Provider[K, V]) {
+		if cfg.ValidateBasic() != nil {
+			panic("invalid api config")
+		}
+
+		p.apiCfg = cfg
+	}
+}
+
 // WithWebSocketQueryHandler sets the WebSocketQueryHandler for the provider. If your provider
 // utilizes a websocket based provider, you should use this option to set the WebSocketQueryHandler.
 func WithWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](ws wshandlers.WebSocketQueryHandler[K, V]) ProviderOption[K, V] {
@@ -52,6 +75,17 @@ func WithWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Resp
 		}
 
 		p.ws = ws
+	}
+}
+
+// WithWebSocketConfig sets the WebSocketConfig for the provider.
+func WithWebSocketConfig[K providertypes.ResponseKey, V providertypes.ResponseValue](cfg config.WebSocketConfig) ProviderOption[K, V] {
+	return func(p *Provider[K, V]) {
+		if cfg.ValidateBasic() != nil {
+			panic("invalid web socket config")
+		}
+
+		p.wsCfg = cfg
 	}
 }
 

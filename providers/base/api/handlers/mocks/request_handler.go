@@ -50,8 +50,7 @@ func (_m *RequestHandler) Do(ctx context.Context, url string) (*http.Response, e
 func NewRequestHandler(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *RequestHandler {
+}) *RequestHandler {
 	mock := &RequestHandler{}
 	mock.Mock.Test(t)
 

@@ -34,5 +34,4 @@ type Provider[K ResponseKey, V ResponseValue] interface {
 type ProviderFactory[K ResponseKey, V ResponseValue] func(
 	*zap.Logger,
 	config.OracleConfig,
-	config.OracleMetricsConfig,
 ) ([]Provider[K, V], error)

@@ -5,9 +5,8 @@ package mocks
 import (
 	context "context"
 
-	mock "github.com/stretchr/testify/mock"
-
 	metrics "github.com/skip-mev/slinky/providers/base/metrics"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/skip-mev/slinky/providers/types"
 )
@@ -96,8 +95,7 @@ func (_m *Provider[K, V]) Type() metrics.ProviderType {
 func NewProvider[K types.ResponseKey, V types.ResponseValue](t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *Provider[K, V] {
+}) *Provider[K, V] {
 	mock := &Provider[K, V]{}
 	mock.Mock.Test(t)
 

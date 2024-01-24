@@ -29,8 +29,7 @@ func (_m *Metrics) UpdatePrice(name string, handlerType string, pairID string, p
 func NewMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *Metrics {
+}) *Metrics {
 	mock := &Metrics{}
 	mock.Mock.Test(t)
 

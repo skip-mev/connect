@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -40,8 +39,7 @@ func (_m *OracleKeeper) GetAllCurrencyPairs(ctx types.Context) []oracletypes.Cur
 func NewOracleKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *OracleKeeper {
+}) *OracleKeeper {
 	mock := &OracleKeeper{}
 	mock.Mock.Test(t)
 

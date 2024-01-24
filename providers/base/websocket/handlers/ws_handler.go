@@ -6,6 +6,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// WebsocketEncodedMessage is a type alias for a websocket message encoded to bytes.
+type WebsocketEncodedMessage []byte
+
 // WebSocketConnHandler is an interface the encapsulates the functionality of a web socket
 // connection to a data provider. It provides the simple CRUD operations for a web socket
 // connection. The connection handler is responsible for managing the connection to the

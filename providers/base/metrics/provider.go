@@ -8,7 +8,7 @@ import (
 	"github.com/go-kit/kit/metrics/prometheus"
 	stdprom "github.com/prometheus/client_golang/prometheus"
 
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 )
 
@@ -65,7 +65,7 @@ type ProviderMetricsImpl struct {
 }
 
 // NewProviderMetricsFromConfig returns a new Metrics struct given the main oracle metrics config.
-func NewProviderMetricsFromConfig(config oracleconfig.OracleMetricsConfig) ProviderMetrics {
+func NewProviderMetricsFromConfig(config config.MetricsConfig) ProviderMetrics {
 	if config.Enabled {
 		return NewProviderMetrics()
 	}

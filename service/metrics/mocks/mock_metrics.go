@@ -3,9 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
-
 	metrics "github.com/skip-mev/slinky/service/metrics"
+	mock "github.com/stretchr/testify/mock"
 
 	time "time"
 )
@@ -45,8 +44,7 @@ func (_m *Metrics) ObserveOracleResponseLatency(duration time.Duration) {
 func NewMetrics(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *Metrics {
+}) *Metrics {
 	mock := &Metrics{}
 	mock.Mock.Test(t)
 

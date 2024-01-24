@@ -64,8 +64,7 @@ func (_m *StakingKeeper) Slash(ctx types.Context, val types.ValAddress, amount m
 func NewStakingKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *StakingKeeper {
+}) *StakingKeeper {
 	mock := &StakingKeeper{}
 	mock.Mock.Test(t)
 

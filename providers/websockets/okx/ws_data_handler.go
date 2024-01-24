@@ -26,41 +26,29 @@ type WebsocketDataHandler struct {
 	logger *zap.Logger
 
 	// config is the config for the OKX web socket API.
-	config Config
+	cfg config.ProviderConfig
 }
 
-// NewWebSocketDataHandlerFromConfig returns a new WebSocketDataHandler implementation for OKX
+// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for OKX
 // from a given provider configuration.
-func NewWebSocketDataHandlerFromConfig(
-	logger *zap.Logger,
-	providerCfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", providerCfg.Name)
-	}
-
-	cfg, err := ReadConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file %s: %s", providerCfg.Path, err)
-	}
-
-	return &WebsocketDataHandler{
-		config: cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
-	}, nil
-}
-
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for OKX.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg Config,
+	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %s", err)
+		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
+	if !cfg.WebSocket.Enabled {
+		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+	}
+
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
 	}
 
 	return &WebsocketDataHandler{
-		config: cfg,
+		cfg:    cfg,
 		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
@@ -132,16 +120,16 @@ func (h *WebsocketDataHandler) HandleMessage(
 	}
 }
 
-// CreateMessage is used to create a an initial subsciption message to send to the data provider.
+// CreateMessages is used to create a an initial subscription message to send to the data provider.
 // Only the currency pairs that are specified in the config are subscribed to. The only channel
 // that is subscribed to is the index tickers channel - which supports spot markets.
-func (h *WebsocketDataHandler) CreateMessage(
+func (h *WebsocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]SubscriptionTopic, 0)
 
 	for _, cp := range cps {
-		instrumentID, ok := h.config.Cache[cp]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
 			continue
@@ -149,24 +137,10 @@ func (h *WebsocketDataHandler) CreateMessage(
 
 		instruments = append(instruments, SubscriptionTopic{
 			Channel:      string(IndexTickersChannel),
-			InstrumentID: instrumentID,
+			InstrumentID: market.Ticker,
 		})
 	}
 
 	h.logger.Debug("subscribing to instruments", zap.Any("instruments", instruments))
 	return NewSubscribeToTickersRequestMessage(instruments)
-}
-
-// Name returns the name of the provider.
-func (h *WebsocketDataHandler) Name() string {
-	return Name
-}
-
-// URL returns the URL of the provider.
-func (h *WebsocketDataHandler) URL() string {
-	if h.config.Production {
-		return ProductionURL
-	}
-
-	return DemoURL
 }

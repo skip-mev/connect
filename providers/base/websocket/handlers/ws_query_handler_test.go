@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	wserrors "github.com/skip-mev/slinky/providers/base/websocket/errors"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	handlermocks "github.com/skip-mev/slinky/providers/base/websocket/handlers/mocks"
@@ -27,8 +28,16 @@ var (
 	ethusd  = oracletypes.NewCurrencyPair("ETH", "USD")
 	atomusd = oracletypes.NewCurrencyPair("ATOM", "USD")
 
-	websocketURL = "ws://localhost:8080"
-	name         = "sirmoggintonwebsocket"
+	name        = "sirmoggintonwebsocket"
+	testMessage = []byte("gib me money")
+
+	cfg = config.WebSocketConfig{
+		Name:                "sirmoggintonwebsocket",
+		WSS:                 "ws://localhost:8080",
+		Enabled:             true,
+		MaxBufferSize:       1024,
+		ReconnectionTimeout: 5 * time.Second,
+	}
 )
 
 func TestWebSocketQueryHandler(t *testing.T) {
@@ -51,10 +60,6 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
-
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-
 				return dataHandler
 			},
 			metrics: func() metrics.WebSocketMetrics {
@@ -84,9 +89,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return(nil, fmt.Errorf("no rizz alert")).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return(nil, fmt.Errorf("no rizz alert")).Once()
 
 				return dataHandler
 			},
@@ -102,7 +105,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			ids: []oracletypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 				UnResolved: map[oracletypes.CurrencyPair]error{
-					btcusd: wserrors.ErrCreateMessage,
+					btcusd: wserrors.ErrCreateMessages,
 				},
 			},
 		},
@@ -119,9 +122,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
 				return dataHandler
 			},
@@ -157,9 +158,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
 				return dataHandler
 			},
@@ -189,7 +188,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 
 				return connHandler
@@ -197,9 +196,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
 					nil,
@@ -235,7 +232,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 
 				return connHandler
@@ -243,9 +240,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
 					[]byte("hearb eat"),
@@ -282,7 +277,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(fmt.Errorf("no rizz alert")).Maybe()
@@ -292,9 +287,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
 					[]byte("hearb eat"),
@@ -332,7 +325,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(fmt.Errorf("no rizz alert")).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
 
@@ -341,9 +334,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
 					[]byte("hearb eat"),
@@ -380,7 +371,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 
@@ -389,9 +380,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -439,7 +428,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
 
@@ -447,9 +436,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -499,7 +487,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
 				connHandler.On("Dial", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return([]byte("gib me money"), nil).Maybe().After(time.Second)
+				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 
@@ -508,9 +496,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
 				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				dataHandler.On("Name").Return(name).Maybe()
-				dataHandler.On("URL").Return(websocketURL).Once()
-				dataHandler.On("CreateMessage", mock.Anything).Return([]byte("gib me money"), nil).Once()
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -587,6 +573,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			handler, err := handlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 				logger,
+				cfg,
 				tc.dataHandler(),
 				tc.connHandler(),
 				tc.metrics(),

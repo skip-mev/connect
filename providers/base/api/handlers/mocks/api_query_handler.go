@@ -25,8 +25,7 @@ func (_m *APIQueryHandler[K, V]) Query(ctx context.Context, ids []K, responseCh 
 func NewAPIQueryHandler[K types.ResponseKey, V types.ResponseValue](t interface {
 	mock.TestingT
 	Cleanup(func())
-},
-) *APIQueryHandler[K, V] {
+}) *APIQueryHandler[K, V] {
 	mock := &APIQueryHandler[K, V]{}
 	mock.Mock.Test(t)
 

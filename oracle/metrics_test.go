@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/slinky/oracle"
-	"github.com/skip-mev/slinky/oracle/config"
 	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -28,7 +27,7 @@ type OracleMetricsTestSuite struct {
 	// mock metrics
 	mockMetrics *metricmocks.Metrics
 
-	o *oracle.Oracle
+	o oracle.Oracle
 }
 
 const (
@@ -52,16 +51,9 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	// mock metrics
 	s.mockMetrics = metricmocks.NewMetrics(s.T())
 
-	oracleConfig := config.OracleConfig{
-		InProcess:      true,
-		RemoteAddress:  "",
-		UpdateInterval: oracleTicker,
-		ClientTimeout:  5 * time.Second,
-	}
-
 	var err error
 	s.o, err = oracle.New(
-		oracleConfig,
+		oracle.WithUpdateInterval(oracleTicker),
 		oracle.WithProviders(
 			[]providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{
 				s.mockProvider1,
