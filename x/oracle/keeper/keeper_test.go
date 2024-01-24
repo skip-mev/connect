@@ -158,7 +158,7 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 
 	// check for inclusion
 	for _, ticker := range tickers {
-		ts := ticker.ToString()
+		ts := ticker.String()
 		_, ok := expectedCurrencyPairs[ts]
 		assert.True(s.T(), ok)
 	}
@@ -184,7 +184,7 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 
 		var found bool
 		for _, cp := range cps {
-			if cp.ToString() == "NEW/PAIR" {
+			if cp.String() == "NEW/PAIR" {
 				found = true
 				break
 			}

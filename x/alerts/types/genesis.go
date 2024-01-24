@@ -50,5 +50,5 @@ func (gs GenesisState) ValidateBasic() error {
 }
 
 func alertKey(a AlertWithStatus) string {
-	return fmt.Sprint(a.Alert.Height) + a.Alert.CurrencyPair.ToString()
+	return fmt.Sprint(a.Alert.Height) + a.Alert.CurrencyPair.String()
 }

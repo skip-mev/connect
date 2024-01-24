@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/oracle/config"
 )
 
 func TestAPIConfig(t *testing.T) {
