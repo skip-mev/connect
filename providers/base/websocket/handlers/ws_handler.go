@@ -69,7 +69,6 @@ func (h *WebSocketConnHandlerImpl) Dial(url string) error {
 		EnableCompression: h.cfg.EnableCompression,
 	}
 
-	// TODO: Determine whether the default dialer is safe to use.
 	var err error
 	h.conn, _, err = dialer.Dial(url, nil)
 	return err
