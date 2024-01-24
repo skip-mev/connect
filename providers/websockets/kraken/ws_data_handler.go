@@ -100,9 +100,9 @@ func (h *WebSocketDataHandler) CreateMessages(
 	instruments := make([]string, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("no instrument found for currency pair", zap.String("currency_pair", cp.ToString()))
+			h.logger.Debug("no instrument found for currency pair", zap.String("currency_pair", cp.String()))
 			continue
 		}
 
