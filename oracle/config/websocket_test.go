@@ -186,6 +186,24 @@ func TestWebSocketConfig(t *testing.T) {
 			},
 			expectedErr: true,
 		},
+		{
+			name: "bad config with bad ping interval",
+			config: config.WebSocketConfig{
+				Enabled:             true,
+				MaxBufferSize:       1,
+				ReconnectionTimeout: config.DefaultReconnectionTimeout,
+				Name:                "test",
+				WSS:                 "wss://test.com",
+				ReadBufferSize:      config.DefaultReadBufferSize,
+				WriteBufferSize:     config.DefaultWriteBufferSize,
+				HandshakeTimeout:    config.DefaultHandshakeTimeout,
+				EnableCompression:   config.DefaultEnableCompression,
+				ReadTimeout:         config.DefaultReadTimeout,
+				WriteTimeout:        config.DefaultWriteTimeout,
+				PingInterval:        -1,
+			},
+			expectedErr: true,
+		},
 	}
 
 	for _, tc := range testCases {

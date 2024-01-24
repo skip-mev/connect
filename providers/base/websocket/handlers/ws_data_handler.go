@@ -20,4 +20,7 @@ type WebSocketDataHandler[K providertypes.ResponseKey, V providertypes.ResponseV
 	// CreateMessages is used to update the connection to the data provider. This can be used to subscribe
 	// to new events or unsubscribe from events.
 	CreateMessages(ids []K) ([]WebsocketEncodedMessage, error)
+
+	// HeartBeatMessages is used to construct a heartbeat messages to be sent to the data provider.
+	HeartBeatMessages() ([]WebsocketEncodedMessage, error)
 }

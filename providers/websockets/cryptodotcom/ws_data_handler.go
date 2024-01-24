@@ -126,3 +126,8 @@ func (h *WebSocketDataHandler) CreateMessages(
 	h.logger.Debug("subscribing to instruments", zap.Strings("instruments", instruments))
 	return NewInstrumentMessage(instruments)
 }
+
+// HeartBeatMessages is not used for Crypto.com.
+func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+	return nil, nil
+}
