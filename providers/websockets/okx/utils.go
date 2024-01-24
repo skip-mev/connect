@@ -1,5 +1,7 @@
 package okx
 
+import "github.com/skip-mev/slinky/oracle/config"
+
 const (
 	// OKX provides a few different URLs for its Websocket API. The URLs can be found
 	// in the documentation here: https://www.okx.com/docs-v5/en/?shell#overview-production-trading-services
@@ -14,4 +16,21 @@ const (
 
 	// DemoURL is the public OKX Websocket URL for test usage.
 	URL_DEMO = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999" //nolint
+)
+
+var (
+	// DefaultWebSocketConfig is the default configuration for the OKX Websocket.
+	DefaultWebSocketConfig = config.WebSocketConfig{
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       1000,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		WSS:                 URL_PROD,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+	}
 )

@@ -23,7 +23,7 @@ const (
 
 	// DefaultEnabledCompression is the default enabled compression for the Coinbase Websocket.
 	// It is recommended to set this as true (please see the Coinbase documentation for more).
-	DefaultEnabledCompression = true
+	DefaultEnabledCompression = false
 
 	// DefaultWriteTimeout is the default write timeout for the Coinbase Websocket.
 	// As recommended by Coinbase, this is set to 5 seconds.
@@ -31,9 +31,8 @@ const (
 )
 
 var (
-	// WebSocketConfig is the default configuration for the Coinbase Websocket.
-	// Please see the Coinbase readme for more information.
-	WebSocketConfig = config.WebSocketConfig{
+	// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
+	DefaultWebSocketConfig = config.WebSocketConfig{
 		Enabled:             true,
 		Name:                Name,
 		MaxBufferSize:       config.DefaultMaxBufferSize,

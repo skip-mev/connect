@@ -1,5 +1,11 @@
 package coinbase
 
+import (
+	"time"
+
+	"github.com/skip-mev/slinky/oracle/config"
+)
+
 // NOTE: All of the documentation for this file can be located on the Coinbase
 // API documentation: https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-prices#get-spot-price. This
 // API does not require a subscription to use (i.e. No API key is required).
@@ -8,6 +14,19 @@ const (
 	// URL is the base URL of the Coinbase API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
 	URL = "https://api.coinbase.com/v2/prices/%s/spot"
+)
+
+var (
+	// DefaultAPIConfig is the default configuration for the Coinbase API.
+	DefaultAPIConfig = config.APIConfig{
+		Name:       Name,
+		Atomic:     false,
+		Enabled:    true,
+		Timeout:    500 * time.Millisecond,
+		Interval:   1 * time.Second,
+		MaxQueries: 5,
+		URL:        URL,
+	}
 )
 
 type (

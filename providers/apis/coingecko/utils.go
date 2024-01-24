@@ -3,7 +3,9 @@ package coingecko
 import (
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -31,6 +33,19 @@ const (
 	// of a currency pair. The first currency is the base currency and the second
 	// currency is the quote currency.
 	TickerSeparator = "/"
+)
+
+var (
+	// DefaultAPIConfig is the default configuration for the CoinGecko API.
+	DefaultAPIConfig = config.APIConfig{
+		Name:       Name,
+		Atomic:     true,
+		Enabled:    true,
+		Timeout:    500 * time.Millisecond,
+		Interval:   15 * time.Second, // Coingecko has a very low rate limit.
+		MaxQueries: 1,
+		URL:        URL,
+	}
 )
 
 type (
