@@ -3,15 +3,11 @@ package metrics
 import (
 	"time"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
-
-	"github.com/go-kit/kit/metrics"
-	"github.com/go-kit/kit/metrics/discard"
-	"github.com/go-kit/kit/metrics/prometheus"
-	stdprom "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 const (
@@ -54,13 +50,13 @@ type ProviderMetrics interface {
 // ProviderMetricsImpl contains metrics exposed by this package.
 type ProviderMetricsImpl struct {
 	// Number of provider successes by ID.
-	responseStatusPerProviderByID metrics.Counter
+	responseStatusPerProviderByID *prometheus.CounterVec
 
 	// Number of provider successes.
-	responseStatusPerProvider metrics.Counter
+	responseStatusPerProvider *prometheus.CounterVec
 
 	// Last time a given ID (i.e. currency pair) was updated.
-	lastUpdatedPerProvider metrics.Gauge
+	lastUpdatedPerProvider *prometheus.GaugeVec
 }
 
 // NewProviderMetricsFromConfig returns a new Metrics struct given the main oracle metrics config.
@@ -74,61 +70,74 @@ func NewProviderMetricsFromConfig(config config.MetricsConfig) ProviderMetrics {
 // NewProviderMetrics returns a Provider Metrics implementation that uses Prometheus.
 func NewProviderMetrics() ProviderMetrics {
 	m := &ProviderMetricsImpl{
-		responseStatusPerProviderByID: prometheus.NewCounterFrom(stdprom.CounterOpts{
+		responseStatusPerProviderByID: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses_per_id",
 			Help:      "Number of provider successes with a given ID.",
 		}, []string{ProviderLabel, IDLabel, StatusLabel, ProviderTypeLabel}),
-		responseStatusPerProvider: prometheus.NewCounterFrom(stdprom.CounterOpts{
+		responseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses",
 			Help:      "Number of provider successes.",
 		}, []string{ProviderLabel, StatusLabel, ProviderTypeLabel}),
-		lastUpdatedPerProvider: prometheus.NewGaugeFrom(stdprom.GaugeOpts{
+		lastUpdatedPerProvider: stdprom.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_last_updated_id",
 			Help:      "Last time a given ID (i.e. currency pair) was updated.",
 		}, []string{ProviderLabel, IDLabel, ProviderTypeLabel}),
 	}
 
+	// register the above metrics
+	prometheus.MustRegister(m.responseStatusPerProviderByID)
+	prometheus.MustRegister(m.responseStatusPerProvider)
+	prometheus.MustRegister(m.lastUpdatedPerProvider)
+
 	return m
 }
 
+type noOpProviderMetricsImpl struct{}
+
 // NewNopProviderMetrics returns a Provider Metrics implementation that does not collect metrics.
 func NewNopProviderMetrics() ProviderMetrics {
-	return &ProviderMetricsImpl{
-		responseStatusPerProviderByID: discard.NewCounter(),
-		responseStatusPerProvider:     discard.NewCounter(),
-		lastUpdatedPerProvider:        discard.NewGauge(),
-	}
+	return &noOpProviderMetricsImpl{}
 }
+
+func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ providertypes.ProviderType) {
+}
+
+func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ providertypes.ProviderType) {
+}
+func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.ProviderType) {}
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
 func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType) {
-	m.responseStatusPerProviderByID.With(
-		ProviderLabel, providerName,
-		IDLabel, id,
-		StatusLabel, string(status),
-		ProviderTypeLabel, string(providerType),
+	m.responseStatusPerProviderByID.With(prometheus.Labels{
+		ProviderLabel:     providerName,
+		IDLabel:           id,
+		StatusLabel:       string(status),
+		ProviderTypeLabel: string(providerType),
+	},
 	).Add(1)
 }
 
 // AddProviderResponse increments the number of ticks with a fully successful provider update.
 func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType) {
-	m.responseStatusPerProvider.With(
-		ProviderLabel, providerName,
-		StatusLabel, string(status),
-		ProviderTypeLabel, string(providerType),
+	m.responseStatusPerProvider.With(prometheus.Labels{
+		ProviderLabel:     providerName,
+		StatusLabel:       string(status),
+		ProviderTypeLabel: string(providerType),
+	},
 	).Add(1)
 }
 
 // LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
 func (m *ProviderMetricsImpl) LastUpdated(providerName, id string, providerType providertypes.ProviderType) {
 	now := time.Now().UTC()
-	m.lastUpdatedPerProvider.With(
-		ProviderLabel, providerName,
-		IDLabel, id,
-		ProviderTypeLabel, string(providerType),
+	m.lastUpdatedPerProvider.With(prometheus.Labels{
+		ProviderLabel:     providerName,
+		IDLabel:           id,
+		ProviderTypeLabel: string(providerType),
+	},
 	).Set(float64(now.Unix()))
 }
