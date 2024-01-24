@@ -65,7 +65,7 @@ message GetPriceResponse {
 
 // GetPricesRequest takes an identifier for the CurrencyPair
 // in the format base/quote
-message GetPricesRequest { repeated string currency_pair_ids = 2; }
+message GetPricesRequest { repeated string currency_pair_ids = 1; }
 
 // GetPricesResponse is the response from the GetPrices grpc method exposed from
 // the x/oracle query service
