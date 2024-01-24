@@ -1,6 +1,7 @@
 package simapp
 
 import (
+	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -317,9 +318,9 @@ func NewSimApp(
 		go app.oraclePrometheusServer.Start()
 	}
 
-	// Connect to the oracle service.
+	// Connect to the oracle service (default timeout of 5 seconds).
 	go func() {
-		if err := app.oracleClient.Start(); err != nil {
+		if err := app.oracleClient.Start(context.Background()); err != nil {
 			app.Logger().Error("failed to start oracle client", "err", err)
 			panic(err)
 		}
