@@ -58,7 +58,13 @@ func NewWebSocketDataHandler(
 
 // HandleMessage is used to handle a message received from the data provider. The Coinbase web
 // socket expects the client to send a subscribe message within 5 seconds of the initial connection.
-// Otherwise the connection will be closed.
+// Otherwise the connection will be closed. There are two types of messages that can be received
+// from the Coinbase web socket API:
+//
+//  1. SubscriptionsMessage: This is sent by the Coinbase web socket API after a subscribe message
+//     is sent. This message contains the list of channels that were successfully subscribed to.
+//  2. TickerMessage: This is sent by the Coinbase web socket API when a match happens. This message
+//     contains the price of the currency pair.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
@@ -73,16 +79,23 @@ func (h *WebSocketDataHandler) HandleMessage(
 
 	switch MessageType(msg.Type) {
 	case SubscriptionsMessage:
-		h.logger.Info("received subscriptions message")
+		h.logger.Debug("received subscriptions message")
 
 		var subscriptionsMessage SubscribeResponseMessage
 		if err := json.Unmarshal(message, &subscriptionsMessage); err != nil {
 			return resp, nil, fmt.Errorf("failed to unmarshal subscriptions message %s", err)
 		}
 
+		// Log the channels that were successfully subscribed to.
+		for _, channel := range subscriptionsMessage.Channels {
+			for _, instrument := range channel.Instruments {
+				h.logger.Debug("subscribed to ticker channel", zap.String("instrument", instrument), zap.String("channel", channel.Name))
+			}
+		}
+
 		return resp, nil, nil
 	case TickerMessage:
-		h.logger.Info("received ticker message")
+		h.logger.Debug("received ticker message")
 
 		var tickerMessage TickerResponseMessage
 		if err := json.Unmarshal(message, &tickerMessage); err != nil {
@@ -92,7 +105,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 		resp, err := h.parseTickerResponseMessage(tickerMessage)
 		return resp, nil, err
 	default:
-		h.logger.Info("received unknown message type", zap.String("type", msg.Type))
+		h.logger.Debug("received unknown message type", zap.String("type", msg.Type))
 		return resp, nil, fmt.Errorf("invalid message type %s", msg.Type)
 	}
 }
@@ -108,6 +121,7 @@ func (h *WebSocketDataHandler) CreateMessages(
 	for _, cp := range cps {
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
+			h.logger.Debug("currency pair not found in market configs", zap.String("currency_pair", cp.String()))
 			continue
 		}
 

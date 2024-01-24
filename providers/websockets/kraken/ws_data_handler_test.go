@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
-	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -20,20 +19,8 @@ var (
 	logger = zap.NewExample()
 
 	cfg = config.ProviderConfig{
-		Name: kraken.Name,
-		WebSocket: config.WebSocketConfig{
-			Enabled:             true,
-			MaxBufferSize:       1024,
-			ReconnectionTimeout: 10 * time.Second,
-			WSS:                 kraken.URL,
-			Name:                kraken.Name,
-			ReadBufferSize:      config.DefaultReadBufferSize,
-			WriteBufferSize:     config.DefaultWriteBufferSize,
-			HandshakeTimeout:    config.DefaultHandshakeTimeout,
-			EnableCompression:   config.DefaultEnableCompression,
-			ReadTimeout:         config.DefaultReadTimeout,
-			WriteTimeout:        config.DefaultWriteTimeout,
-		},
+		Name:      kraken.Name,
+		WebSocket: kraken.DefaultWebSocketConfig,
 		Market: config.MarketConfig{
 			Name: kraken.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{

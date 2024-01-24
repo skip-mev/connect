@@ -158,19 +158,19 @@ func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncod
 // ref: https://docs.cloud.coinbase.com/exchange/docs/websocket-overview#subscriptions-message
 type SubscribeResponseMessage struct {
 	// Type is the type of message.
-	Type MessageType `json:"type"`
+	Type string `json:"type"`
 
 	// Channels is a list of channels that were subscribed to.
-	Channels Channel `json:"channels"`
+	Channels []Channel `json:"channels"`
 }
 
 // Channel represents a channel that was subscribed to.
 type Channel struct {
 	// Name is the name of the channel.
-	Name ChannelType `json:"name"`
+	Name string `json:"name"`
 
-	// ProductIDs is a list of product IDs that were subscribed to.
-	ProductIDs []string `json:"product_ids"`
+	// Instruments is a list of product IDs (markets) that were subscribed to.
+	Instruments []string `json:"product_ids"`
 }
 
 // TickerResponseMessage represents a ticker response message.
@@ -200,7 +200,7 @@ type Channel struct {
 // ref: https://docs.cloud.coinbase.com/exchange/docs/websocket-channels#ticker-channel
 type TickerResponseMessage struct {
 	// Type is the type of message.
-	Type MessageType `json:"type"`
+	Type string `json:"type"`
 
 	// Sequence is the sequence number of the message.
 	Sequence int64 `json:"sequence"`
