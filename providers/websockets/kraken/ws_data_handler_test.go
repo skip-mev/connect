@@ -27,6 +27,12 @@ var (
 			ReconnectionTimeout: 10 * time.Second,
 			WSS:                 kraken.URL,
 			Name:                kraken.Name,
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
 		Market: config.MarketConfig{
 			Name: kraken.Name,
