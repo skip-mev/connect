@@ -17,7 +17,7 @@ func (k Keeper) SetPriceFeed(
 	ctx sdk.Context,
 	priceFeed slatypes.PriceFeed,
 ) error {
-	key := collections.Join3(priceFeed.ID, priceFeed.CurrencyPair.ToString(), priceFeed.Validator)
+	key := collections.Join3(priceFeed.ID, priceFeed.CurrencyPair.String(), priceFeed.Validator)
 	return k.priceFeeds.Set(ctx, key, priceFeed)
 }
 
@@ -29,7 +29,7 @@ func (k Keeper) GetPriceFeed(
 	cp oracletypes.CurrencyPair,
 	consAddress sdk.ConsAddress,
 ) (slatypes.PriceFeed, error) {
-	key := collections.Join3(slaID, cp.ToString(), consAddress.Bytes())
+	key := collections.Join3(slaID, cp.String(), consAddress.Bytes())
 	return k.priceFeeds.Get(ctx, key)
 }
 
@@ -57,7 +57,7 @@ func (k Keeper) RemovePriceFeed(
 	cp oracletypes.CurrencyPair,
 	consAddress sdk.ConsAddress,
 ) error {
-	key := collections.Join3(slaID, cp.ToString(), consAddress.Bytes())
+	key := collections.Join3(slaID, cp.String(), consAddress.Bytes())
 	return k.priceFeeds.Remove(ctx, key)
 }
 
@@ -68,7 +68,7 @@ func (k Keeper) RemovePriceFeedByCurrencyPair(
 	slaID string,
 	cp oracletypes.CurrencyPair,
 ) error {
-	prefix := collections.NewSuperPrefixedTripleRange[string, string, []byte](slaID, cp.ToString())
+	prefix := collections.NewSuperPrefixedTripleRange[string, string, []byte](slaID, cp.String())
 	return k.priceFeeds.Clear(ctx, prefix)
 }
 
@@ -87,7 +87,7 @@ func (k Keeper) ContainsPriceFeed(
 	cp oracletypes.CurrencyPair,
 	validator sdk.ConsAddress,
 ) (bool, error) {
-	key := collections.Join3(slaID, cp.ToString(), validator.Bytes())
+	key := collections.Join3(slaID, cp.String(), validator.Bytes())
 	return k.priceFeeds.Has(ctx, key)
 }
 
