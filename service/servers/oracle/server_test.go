@@ -48,7 +48,7 @@ func TestServerTestSuite(t *testing.T) {
 
 func (s *ServerTestSuite) SetupTest() {
 	// mock logger
-	logger := zap.NewNop()
+	logger := zap.NewExample()
 
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
