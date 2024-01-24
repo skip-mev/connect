@@ -127,7 +127,6 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		return fmt.Errorf("failed to start connection: %w", err)
 	}
 
-	// Start a go routine to send heartbeats to the data provider.
 	if h.config.PingInterval > 0 {
 		go h.heartBeat(ctx)
 	}

@@ -39,8 +39,8 @@ const (
 	// connection.
 	DefaultWriteTimeout = 45 * time.Second
 
-	// DefaultPingInterval is the default interval at which the provider should send
-	// ping messages to the server.
+	// DefaultPingInterval is the default interval to ping the server. Note that a
+	// ping interval of 0 disables pings.
 	DefaultPingInterval = 0 * time.Second
 )
 
@@ -92,8 +92,8 @@ type WebSocketConfig struct {
 	// not time out.
 	WriteTimeout time.Duration `mapstructure:"write_deadline" toml:"write_deadline"`
 
-	// PingInterval is the interval at which the provider should send ping messages
-	// to the server. If this is 0, then no ping messages will be sent.
+	// PingInterval is the interval to ping the server. Note that a ping interval
+	// of 0 disables pings.
 	PingInterval time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
 }
 
@@ -140,7 +140,7 @@ func (c *WebSocketConfig) ValidateBasic() error {
 	}
 
 	if c.PingInterval < 0 {
-		return fmt.Errorf("websocket ping interval cannot be negative")
+		return fmt.Errorf("websocket ping interval must be greater than 0")
 	}
 
 	return nil
