@@ -12,7 +12,6 @@ const (
 	WSSEndpoint = "%s?token=%s"
 
 	// WSS is the websocket URL for Kucoin. Note that this may change as the URL is
-	// dynamically generated. A token is required to connect to the websocket feed.
 	WSS = "wss://ws-api-spot.kucoin.com/"
 
 	// URL is the Kucoin websocket URL. This URL specifically points to the public
