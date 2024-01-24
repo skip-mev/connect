@@ -20,7 +20,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	for _, cpg := range gs.CurrencyPairGenesis {
 		state := types.NewCurrencyPairState(cpg.Id, cpg.Nonce, cpg.CurrencyPairPrice)
 
-		if err := k.currencyPairs.Set(ctx, cpg.CurrencyPair.ToString(), state); err != nil {
+		if err := k.currencyPairs.Set(ctx, cpg.CurrencyPair.String(), state); err != nil {
 			panic(fmt.Errorf("error in genesis: %v", err))
 		}
 	}
@@ -29,7 +29,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	k.nextCurrencyPairID.Set(ctx, gs.NextId)
 }
 
-// ExportGenesis, retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.
+// ExportGenesis retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.
 // This module panics on any errors encountered in execution.
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	// get the current next ID

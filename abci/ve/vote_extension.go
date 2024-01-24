@@ -26,9 +26,7 @@ import (
 type VoteExtensionHandler struct {
 	logger log.Logger
 
-	// oracleClient is the oracle client (remote or local) that is responsible for fetching prices
-	//
-	// TODO: Add a separate interface just for the client.
+	// oracleClient is the remote oracle client that is responsible for fetching prices
 	oracleClient client.OracleClient
 
 	// timeout is the maximum amount of time to wait for the oracle to respond

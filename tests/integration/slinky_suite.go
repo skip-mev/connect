@@ -149,8 +149,7 @@ func (s *SlinkyIntegrationSuite) TearDownSuite() {
 
 	// keep the chain running
 	s.T().Log("Keeping the chain running")
-	for {
-	}
+	select {}
 }
 
 func (s *SlinkyIntegrationSuite) SetupTest() {
@@ -166,7 +165,7 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 		oCfg := DefaultOracleConfig(node)
 
 		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg)
-		RestartOracle(node)
+		s.Require().NoError(RestartOracle(node))
 	}
 
 	if len(resp.CurrencyPairs) == 0 {
@@ -175,7 +174,7 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 
 	ids := make([]string, len(resp.CurrencyPairs))
 	for i, cp := range resp.CurrencyPairs {
-		ids[i] = cp.ToString()
+		ids[i] = cp.String()
 	}
 
 	// remove all currency-pairs
@@ -219,7 +218,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
 	s.Run("Remove a currency-pair and check Prices", func() {
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.NewCurrencyPair("BTC", "USD").ToString()}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.CurrencyPairString("BTC", "USD")}...))
 
 		// check that the currency-pair is added to state
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -239,7 +238,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 2)
 
 		// remove btc from state
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.ToString()}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.String()}...))
 
 		// check that the currency-pair is removed from state
 		resp, err = QueryCurrencyPairs(s.chain)
@@ -293,7 +292,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 				Market: oracleconfig.MarketConfig{
 					Name: "static-mock-provider",
 					CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-						cp.ToString(): {
+						cp.String(): {
 							Ticker:       "1140",
 							CurrencyPair: cp,
 						},
@@ -303,7 +302,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
 			SetOracleConfigsOnOracle(oracle, oracleConfig)
-			RestartOracle(node)
+			s.Require().NoError(RestartOracle(node))
 		}
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
@@ -511,15 +510,15 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			Market: oracleconfig.MarketConfig{
 				Name: "static-mock-provider",
 				CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-					cp1.ToString(): {
+					cp1.String(): {
 						Ticker:       "1140",
 						CurrencyPair: cp1,
 					},
-					cp2.ToString(): {
+					cp2.String(): {
 						Ticker:       "1141",
 						CurrencyPair: cp2,
 					},
-					cp3.ToString(): {
+					cp3.String(): {
 						Ticker:       "1142",
 						CurrencyPair: cp3,
 					},
@@ -532,7 +531,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
-		RestartOracle(node)
+		s.Require().NoError(RestartOracle(node))
 	}
 
 	s.Run("all oracles running for multiple price feeds", func() {
@@ -599,11 +598,11 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			Market: oracleconfig.MarketConfig{
 				Name: "static-mock-provider",
 				CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-					cp1.ToString(): {
+					cp1.String(): {
 						Ticker:       "1140",
 						CurrencyPair: cp1,
 					},
-					cp2.ToString(): {
+					cp2.String(): {
 						Ticker:       "1141",
 						CurrencyPair: cp2,
 					},
@@ -616,7 +615,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
-		RestartOracle(node)
+		s.Require().NoError(RestartOracle(node))
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{

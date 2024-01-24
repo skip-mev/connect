@@ -25,6 +25,12 @@ var (
 			MaxBufferSize:       100,
 			ReconnectionTimeout: 5 * time.Second,
 			Name:                cryptodotcom.Name,
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
 		Market: config.MarketConfig{
 			Name: cryptodotcom.Name,

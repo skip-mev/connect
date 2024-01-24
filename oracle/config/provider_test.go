@@ -4,9 +4,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestProviderConfig(t *testing.T) {
@@ -49,6 +50,12 @@ func TestProviderConfig(t *testing.T) {
 					ReconnectionTimeout: time.Second,
 					WSS:                 "wss://test.com",
 					Name:                "test",
+					ReadBufferSize:      config.DefaultReadBufferSize,
+					WriteBufferSize:     config.DefaultWriteBufferSize,
+					HandshakeTimeout:    config.DefaultHandshakeTimeout,
+					EnableCompression:   config.DefaultEnableCompression,
+					ReadTimeout:         config.DefaultReadTimeout,
+					WriteTimeout:        config.DefaultWriteTimeout,
 				},
 				Name: "test",
 				Market: config.MarketConfig{
@@ -121,6 +128,12 @@ func TestProviderConfig(t *testing.T) {
 					ReconnectionTimeout: time.Second,
 					WSS:                 "wss://test.com",
 					Name:                "test",
+					ReadBufferSize:      config.DefaultReadBufferSize,
+					WriteBufferSize:     config.DefaultWriteBufferSize,
+					HandshakeTimeout:    config.DefaultHandshakeTimeout,
+					EnableCompression:   config.DefaultEnableCompression,
+					ReadTimeout:         config.DefaultReadTimeout,
+					WriteTimeout:        config.DefaultWriteTimeout,
 				},
 				Name: "test",
 				Market: config.MarketConfig{

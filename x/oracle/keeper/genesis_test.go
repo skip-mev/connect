@@ -152,12 +152,12 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		expectedNonces := map[string]uint64{"AA/BB": 2, "CC/DD": 1}
 
 		for _, cpg := range gs.CurrencyPairGenesis {
-			qp, ok := expectedCurrencyPairs[cpg.CurrencyPair.ToString()]
+			qp, ok := expectedCurrencyPairs[cpg.CurrencyPair.String()]
 			assert.True(s.T(), ok)
 			// check equality for quote-prices
 			checkQuotePriceEqual(s.T(), qp, *cpg.CurrencyPairPrice)
 			// check equality of nonces
-			nonce, ok := expectedNonces[cpg.CurrencyPair.ToString()]
+			nonce, ok := expectedNonces[cpg.CurrencyPair.String()]
 			assert.True(s.T(), ok)
 			assert.Equal(s.T(), nonce, cpg.Nonce)
 		}
@@ -230,7 +230,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		// iterate over CurrencyPairGeneses in egs
 		for _, cpg := range egs.CurrencyPairGenesis {
 			// expect that all currency-pairs in gen-state are expected
-			cps := cpg.CurrencyPair.ToString()
+			cps := cpg.CurrencyPair.String()
 			_, ok := expectedCurrencyPairs[cps]
 			assert.True(s.T(), ok)
 

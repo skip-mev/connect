@@ -94,12 +94,12 @@ func (h *APIHandler) ParseResponse(
 	// Map each of the currency pairs for easy lookup.
 	configCPs := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			continue
 		}
 
-		configCPs.CurrencyPairToMarketConfigs[cp.ToString()] = market
+		configCPs.CurrencyPairToMarketConfigs[cp.String()] = market
 	}
 
 	// Filter out the responses that are not expected.
@@ -118,14 +118,14 @@ func (h *APIHandler) ParseResponse(
 			cp := market.CurrencyPair
 			price := math.Float64ToBigInt(price, cp.Decimals())
 			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-			delete(configCPs.CurrencyPairToMarketConfigs, cp.ToString())
+			delete(configCPs.CurrencyPairToMarketConfigs, cp.String())
 		}
 	}
 
 	// If there are any currency pairs that were not resolved, we need to add them
 	// to the unresolved map.
 	for _, market := range configCPs.CurrencyPairToMarketConfigs {
-		unresolved[market.CurrencyPair] = fmt.Errorf("currency pair %s did not get a response", market.CurrencyPair.ToString())
+		unresolved[market.CurrencyPair] = fmt.Errorf("currency pair %s did not get a response", market.CurrencyPair.String())
 	}
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)

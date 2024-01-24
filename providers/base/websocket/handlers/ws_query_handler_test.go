@@ -37,6 +37,12 @@ var (
 		Enabled:             true,
 		MaxBufferSize:       1024,
 		ReconnectionTimeout: 5 * time.Second,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
 	}
 )
 

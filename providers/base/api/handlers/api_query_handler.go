@@ -162,7 +162,7 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 				h.logger.Error("panic occurred in subtask", zap.Any("panic", r), zap.Any("ids", ids))
 			}
 
-			h.logger.Info("finished subtask", zap.Any("ids", ids))
+			h.logger.Debug("finished subtask", zap.Any("ids", ids))
 		}()
 
 		h.logger.Debug("starting subtask", zap.Any("ids", ids))

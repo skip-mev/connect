@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -20,9 +21,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var (
-	oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to write the oracle config file to")
-)
+var oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to write the oracle config file to")
 
 // LocalConfig defines a readable config for local development. Any changes to this
 // file should be reflected in oracle.toml. To update the oracle.toml file, run
@@ -211,9 +210,15 @@ var LocalConfig = config.OracleConfig{
 			WebSocket: config.WebSocketConfig{
 				Name:                cryptodotcom.Name,
 				Enabled:             true,
-				MaxBufferSize:       1000,
-				ReconnectionTimeout: 5 * time.Second,
+				MaxBufferSize:       config.DefaultMaxBufferSize,
+				ReconnectionTimeout: config.DefaultReconnectionTimeout,
 				WSS:                 cryptodotcom.URL_PROD,
+				ReadBufferSize:      config.DefaultReadBufferSize,
+				WriteBufferSize:     config.DefaultWriteBufferSize,
+				HandshakeTimeout:    config.DefaultHandshakeTimeout,
+				EnableCompression:   config.DefaultEnableCompression,
+				ReadTimeout:         config.DefaultReadTimeout,
+				WriteTimeout:        config.DefaultWriteTimeout,
 			},
 			Market: config.MarketConfig{
 				Name: cryptodotcom.Name,
@@ -263,8 +268,14 @@ var LocalConfig = config.OracleConfig{
 				Name:                okx.Name,
 				Enabled:             true,
 				MaxBufferSize:       1000,
-				ReconnectionTimeout: 10 * time.Second,
+				ReconnectionTimeout: config.DefaultReconnectionTimeout,
 				WSS:                 okx.URL_PROD,
+				ReadBufferSize:      config.DefaultReadBufferSize,
+				WriteBufferSize:     config.DefaultWriteBufferSize,
+				HandshakeTimeout:    config.DefaultHandshakeTimeout,
+				EnableCompression:   config.DefaultEnableCompression,
+				ReadTimeout:         config.DefaultReadTimeout,
+				WriteTimeout:        config.DefaultWriteTimeout,
 			},
 			Market: config.MarketConfig{
 				Name: okx.Name,

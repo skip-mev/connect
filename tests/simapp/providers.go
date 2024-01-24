@@ -26,7 +26,7 @@ import (
 )
 
 // DefaultProviderFactory returns a sample implementation of the provider factory. This provider
-// factory function returns providers the are API & web socket based.
+// factory function returns providers that are API & web socket based.
 func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
@@ -194,7 +194,10 @@ func webSocketProviderFromProviderConfig(
 
 	// If a custom request handler is not provided, create a new default one.
 	if connHandler == nil {
-		connHandler = wshandlers.NewWebSocketHandlerImpl()
+		connHandler, err = wshandlers.NewWebSocketHandlerImpl(cfg.WebSocket)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
@@ -230,11 +233,11 @@ func filterForConfiguredCurrencyPairs(
 	filteredCps := make([]oracletypes.CurrencyPair, 0)
 
 	for _, cp := range cps {
-		if _, ok := cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]; ok {
-			logger.Debug("provider supports currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+		if _, ok := cfg.Market.CurrencyPairToMarketConfigs[cp.String()]; ok {
+			logger.Debug("provider supports currency pair", zap.String("currency_pair", cp.String()), zap.String("provider", cfg.Name))
 			filteredCps = append(filteredCps, cp)
 		} else {
-			logger.Debug("provider does not support currency pair", zap.String("currency_pair", cp.ToString()), zap.String("provider", cfg.Name))
+			logger.Debug("provider does not support currency pair", zap.String("currency_pair", cp.String()), zap.String("provider", cfg.Name))
 		}
 	}
 
