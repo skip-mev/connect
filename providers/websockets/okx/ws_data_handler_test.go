@@ -5,29 +5,38 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+	"time"
 
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
-
+	"github.com/skip-mev/slinky/oracle/config"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 )
 
 var (
-	config = okx.Config{
-		Markets: map[string]string{
-			"BITCOIN/USDT":  "BTC-USDT",
-			"ETHEREUM/USDT": "ETH-USDT",
+	providerCfg = config.ProviderConfig{
+		Name: okx.Name,
+		WebSocket: config.WebSocketConfig{
+			Enabled:             true,
+			WSS:                 okx.URL_PROD,
+			MaxBufferSize:       100,
+			ReconnectionTimeout: 5 * time.Second,
+			Name:                okx.Name,
 		},
-		Production: true,
-		Cache: map[oracletypes.CurrencyPair]string{
-			oracletypes.NewCurrencyPair("BITCOIN", "USDT"):  "BTC-USDT",
-			oracletypes.NewCurrencyPair("ETHEREUM", "USDT"): "ETH-USDT",
-		},
-		ReverseCache: map[string]oracletypes.CurrencyPair{
-			"BTC-USDT": oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-			"ETH-USDT": oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+		Market: config.MarketConfig{
+			Name: okx.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USDT": {
+					Ticker:       "BTC-USDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				},
+				"ETHEREUM/USDT": {
+					Ticker:       "ETH-USDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				},
+			},
 		},
 	}
 
@@ -303,7 +312,7 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := okx.NewWebSocketDataHandler(logger, config)
+			wsHandler, err := okx.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -411,15 +420,17 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := okx.NewWebSocketDataHandler(logger, config)
+			handler, err := okx.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
-			message, err := handler.CreateMessage(tc.cps)
+			msgs, err := handler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
 			}
-			require.Equal(t, tc.expected(), message)
+
+			require.Equal(t, 1, len(msgs))
+			require.EqualValues(t, tc.expected(), msgs[0])
 		})
 	}
 }

@@ -26,40 +26,28 @@ type WebSocketDataHandler struct {
 	logger *zap.Logger
 
 	// config is the config for the Crypto.com web socket API.
-	config Config
-}
-
-// NewWebSocketDataHandlerFromConfig returns a new WebSocketDataHandler implementation for Crypto.com.
-func NewWebSocketDataHandlerFromConfig(
-	logger *zap.Logger,
-	providerCfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if providerCfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", providerCfg.Name)
-	}
-
-	cfg, err := ReadConfigFromFile(providerCfg.Path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read config file %s: %s", providerCfg.Path, err)
-	}
-
-	return &WebSocketDataHandler{
-		config: cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
-	}, nil
+	cfg config.ProviderConfig
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Crypto.com.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg Config,
+	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %s", err)
+		return nil, fmt.Errorf("invalid provider config %s", err)
+	}
+
+	if !cfg.WebSocket.Enabled {
+		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+	}
+
+	if cfg.Name != Name {
+		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
 	}
 
 	return &WebSocketDataHandler{
-		config: cfg,
+		cfg:    cfg,
 		logger: logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
@@ -114,41 +102,27 @@ func (h *WebSocketDataHandler) HandleMessage(
 	}
 }
 
-// CreateMessage is used to create a message to send to the data provider. This is used to
+// CreateMessages is used to create a message to send to the data provider. This is used to
 // subscribe to the given currency pairs. This is called when the connection to the data
 // provider is first established.
-func (h *WebSocketDataHandler) CreateMessage(
+func (h *WebSocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
 	// Iterate through each currency pair and get the instrument name. The instrument name
 	// corresponds to the perpetual contract name on the Crypto.com web socket API. This will
 	// only subscribe to price feeds that are configured in the config file.
 	for _, cp := range cps {
-		instrument, ok := h.config.Cache[cp]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
 		if !ok {
-			h.logger.Debug("no instrument for currency pair", zap.String("currency_pair", cp.ToString()))
+			h.logger.Debug("no market configuration for currency pair", zap.String("currency_pair", cp.ToString()))
 			continue
 		}
 
-		instruments = append(instruments, fmt.Sprintf(TickerChannel, instrument))
+		instruments = append(instruments, fmt.Sprintf(TickerChannel, market.Ticker))
 	}
 
 	h.logger.Debug("subscribing to instruments", zap.Strings("instruments", instruments))
 	return NewInstrumentMessage(instruments)
-}
-
-// Name returns the name of the data provider.
-func (h *WebSocketDataHandler) Name() string {
-	return Name
-}
-
-// URL is used to get the URL of the data provider.
-func (h *WebSocketDataHandler) URL() string {
-	if h.config.Production {
-		return ProductionURL
-	}
-
-	return SandboxURL
 }

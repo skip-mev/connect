@@ -14,24 +14,6 @@ type APIDataHandler[K comparable, V interface{}] struct {
 	mock.Mock
 }
 
-// Atomic provides a mock function with given fields:
-func (_m *APIDataHandler[K, V]) Atomic() bool {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for Atomic")
-	}
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func() bool); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	return r0
-}
-
 // CreateURL provides a mock function with given fields: ids
 func (_m *APIDataHandler[K, V]) CreateURL(ids []K) (string, error) {
 	ret := _m.Called(ids)
@@ -58,24 +40,6 @@ func (_m *APIDataHandler[K, V]) CreateURL(ids []K) (string, error) {
 	}
 
 	return r0, r1
-}
-
-// Name provides a mock function with given fields:
-func (_m *APIDataHandler[K, V]) Name() string {
-	ret := _m.Called()
-
-	if len(ret) == 0 {
-		panic("no return value specified for Name")
-	}
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
 }
 
 // ParseResponse provides a mock function with given fields: ids, response

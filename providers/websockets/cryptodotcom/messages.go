@@ -3,6 +3,8 @@ package cryptodotcom
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
 type (
@@ -92,17 +94,19 @@ type InstrumentParams struct {
 
 // NewInstrumentMessage returns a new InstrumentRequestMessage that can be sent to
 // the Crypto.com websocket API.
-func NewInstrumentMessage(instruments []string) ([]byte, error) {
+func NewInstrumentMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(instruments) == 0 {
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	return json.Marshal(InstrumentRequestMessage{
+	bz, err := json.Marshal(InstrumentRequestMessage{
 		Method: string(InstrumentMethod),
 		Params: InstrumentParams{
 			Channels: instruments,
 		},
 	})
+
+	return []handlers.WebsocketEncodedMessage{bz}, err
 }
 
 // InstrumentResponseMessage is the response received from the Crypto.com websocket API when subscribing
@@ -158,6 +162,6 @@ type InstrumentData struct {
 	// LatestTradePrice is the price of the latest trade, null if there weren't any trades.
 	LatestTradePrice string `json:"a"`
 
-	// InstrumentName is the instrument name.
-	InstrumentName string `json:"i"`
+	// Name is the instrument name.
+	Name string `json:"i"`
 }

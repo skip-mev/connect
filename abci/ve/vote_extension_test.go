@@ -18,8 +18,11 @@ import (
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/ve"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
-	"github.com/skip-mev/slinky/service"
-	"github.com/skip-mev/slinky/service/mocks"
+	client "github.com/skip-mev/slinky/service/clients/oracle"
+	"github.com/skip-mev/slinky/service/clients/oracle/mocks"
+	"github.com/skip-mev/slinky/service/metrics"
+	metricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
+	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -55,7 +58,7 @@ func TestVoteExtensionTestSuite(t *testing.T) {
 func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 	cases := []struct {
 		name                 string
-		oracleService        func() service.OracleService
+		oracleService        func() client.OracleClient
 		currencyPairStrategy func() *mockstrategies.CurrencyPairStrategy
 		expectedResponse     *abcitypes.OracleVoteExtension
 		extendVoteRequest    func() *cometabci.RequestExtendVote
@@ -63,8 +66,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 	}{
 		{
 			name: "nil request returns an error",
-			oracleService: func() service.OracleService {
-				return mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				return mocks.NewOracleClient(s.T())
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
 				return mockstrategies.NewCurrencyPairStrategy(s.T())
@@ -74,11 +77,11 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "oracle service returns no prices",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
-					&service.QueryPricesResponse{
+					&servicetypes.QueryPricesResponse{
 						Prices: nilPrices,
 					},
 					nil,
@@ -95,11 +98,11 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "oracle service returns a single price",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
-					&service.QueryPricesResponse{
+					&servicetypes.QueryPricesResponse{
 						Prices: singlePrice,
 					},
 					nil,
@@ -123,11 +126,11 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "oracle service returns multiple prices",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
-					&service.QueryPricesResponse{
+					&servicetypes.QueryPricesResponse{
 						Prices: multiplePrices,
 					},
 					nil,
@@ -155,8 +158,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "oracle service panics",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Panic("panic")
 
@@ -171,8 +174,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "oracle service returns an nil response",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
 					nil,
@@ -190,8 +193,8 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "oracle service returns an error",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
 					nil,
@@ -209,11 +212,11 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "currency pair id strategy returns an error",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
-					&service.QueryPricesResponse{
+					&servicetypes.QueryPricesResponse{
 						Prices: multiplePrices,
 					},
 					nil,
@@ -238,11 +241,11 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 		},
 		{
 			name: "currency pair price strategy returns an error",
-			oracleService: func() service.OracleService {
-				mockServer := mocks.NewOracleService(s.T())
+			oracleService: func() client.OracleClient {
+				mockServer := mocks.NewOracleClient(s.T())
 
 				mockServer.On("Prices", mock.Anything, mock.Anything).Return(
-					&service.QueryPricesResponse{
+					&servicetypes.QueryPricesResponse{
 						Prices: multiplePrices,
 					},
 					nil,
@@ -283,6 +286,7 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 				tc.currencyPairStrategy(),
 				codec,
 				preblock.NoOpPreBlocker(),
+				metrics.NewNopMetrics(),
 			)
 
 			req := &cometabci.RequestExtendVote{}
@@ -507,11 +511,12 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 		s.Run(tc.name, func() {
 			handler := ve.NewVoteExtensionHandler(
 				log.NewTestLogger(s.T()),
-				mocks.NewOracleService(s.T()),
+				mocks.NewOracleClient(s.T()),
 				time.Second*1,
 				tc.currencyPairStrategy(),
 				codec,
 				preblock.NoOpPreBlocker(),
+				metrics.NewNopMetrics(),
 			).VerifyVoteExtensionHandler()
 
 			resp, err := handler(s.ctx, tc.getReq())
@@ -524,4 +529,41 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 			}
 		})
 	}
+}
+
+func (s *VoteExtenstionTestSuite) TestExtendVoteLatency() {
+	m := metricsmocks.NewMetrics(s.T())
+	os := mocks.NewOracleClient(s.T())
+	handler := ve.NewVoteExtensionHandler(
+		log.NewTestLogger(s.T()),
+		os,
+		time.Second*1,
+		mockstrategies.NewCurrencyPairStrategy(s.T()),
+		codec.NewDefaultVoteExtensionCodec(),
+		preblock.NoOpPreBlocker(),
+		m,
+	)
+
+	// mock
+	os.On("Prices", mock.Anything, mock.Anything).Return(
+		&servicetypes.QueryPricesResponse{
+			Prices:    map[string]string{},
+			Timestamp: time.Now(),
+		},
+		nil,
+	).Run(func(args mock.Arguments) {
+		// sleep to simulate latency
+		time.Sleep(100 * time.Millisecond)
+	})
+
+	m.On("ObserveABCIMethodLatency", metrics.ExtendVote, mock.Anything).Run(func(args mock.Arguments) {
+		latency := args.Get(1).(time.Duration)
+		s.Require().True(latency > 100*time.Millisecond)
+	})
+
+	_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{
+		Height: 1,
+		Txs:    [][]byte{},
+	})
+	s.Require().NoError(err)
 }

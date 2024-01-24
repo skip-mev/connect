@@ -48,6 +48,18 @@ To see all network metrics, open a new terminal and run the following command an
 $ make run-prom-client
 ```
 
+To add a new provider, update the local config in [config/local/generate_toml.go](./config/local/generate_toml.go) and then run the following command:
+
+```bash
+$ make update-local-config
+```
+
+To run a local blockchain, first start the oracle server and then run the following command (in a separate window):
+
+```bash
+$ make build-and-start-app
+```
+
 ## Metrics
 
 ### Oracle Service Metrics

@@ -9,41 +9,47 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var (
-	config = coingecko.Config{
-		SupportedBases: map[string]string{
-			"BITCOIN":  "bitcoin",
-			"ETHEREUM": "ethereum",
+var providerCfg = config.ProviderConfig{
+	Name: coingecko.Name,
+	API: config.APIConfig{
+		Enabled:    true,
+		URL:        coingecko.URL,
+		Timeout:    10 * time.Second,
+		Interval:   20 * time.Second,
+		Atomic:     true,
+		Name:       coingecko.Name,
+		MaxQueries: 1,
+	},
+	Market: config.MarketConfig{
+		Name: coingecko.Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "bitcoin/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ethereum/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ethereum/btc",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
 		},
-		SupportedQuotes: map[string]string{
-			"USD":     "usd",
-			"BITCOIN": "btc",
-		},
-	}
-	apiConfig = coingecko.Config{
-		APIKey: "test-key",
-		SupportedBases: map[string]string{
-			"BITCOIN":  "bitcoin",
-			"ETHEREUM": "ethereum",
-		},
-		SupportedQuotes: map[string]string{
-			"USD":     "usd",
-			"BITCOIN": "btc",
-		},
-	}
-)
+	},
+}
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
 		cps         []oracletypes.CurrencyPair
-		config      coingecko.Config
 		url         string
 		expectedErr bool
 	}{
@@ -52,7 +58,6 @@ func TestCreateURL(t *testing.T) {
 			cps: []oracletypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
-			config:      config,
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
 			expectedErr: false,
 		},
@@ -62,7 +67,6 @@ func TestCreateURL(t *testing.T) {
 				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
-			config:      config,
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&precision=18",
 			expectedErr: false,
 		},
@@ -73,17 +77,7 @@ func TestCreateURL(t *testing.T) {
 				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 				oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
-			config:      config,
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,btc&precision=18",
-			expectedErr: false,
-		},
-		{
-			name: "single valid currency pair with api key",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			config:      apiConfig,
-			url:         "https://pro-api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18&x-cg-pro-api-key=test-key",
 			expectedErr: false,
 		},
 		{
@@ -91,7 +85,6 @@ func TestCreateURL(t *testing.T) {
 			cps: []oracletypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("MOG", "USD"),
 			},
-			config:      config,
 			url:         "",
 			expectedErr: true,
 		},
@@ -100,7 +93,6 @@ func TestCreateURL(t *testing.T) {
 			cps: []oracletypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
 			},
-			config:      config,
 			url:         "",
 			expectedErr: true,
 		},
@@ -110,7 +102,6 @@ func TestCreateURL(t *testing.T) {
 				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 				oracletypes.NewCurrencyPair("MOG", "USD"),
 			},
-			config:      config,
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
 			expectedErr: false,
 		},
@@ -118,9 +109,8 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := coingecko.CoinGeckoAPIHandler{
-				Config: tc.config,
-			}
+			h, err := coingecko.NewAPIHandler(providerCfg)
+			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
 			if tc.expectedErr {
@@ -243,9 +233,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("MOG", "USD"): fmt.Errorf("unknown base currency MOG"),
-				},
+				map[oracletypes.CurrencyPair]error{},
 			),
 		},
 		{
@@ -264,9 +252,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("unknown quote currency MOG"),
-				},
+				map[oracletypes.CurrencyPair]error{},
 			),
 		},
 		{
@@ -340,13 +326,13 @@ shout out my label thats me
 		{
 			name: "single base with multiple quotes",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("BITCOIN", "BITCOIN"),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
-	"bitcoin": {
+	"ethereum": {
 		"usd": 1020.25,
 		"btc": 1
 	}
@@ -355,10 +341,10 @@ shout out my label thats me
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					oracletypes.NewCurrencyPair("ETHEREUM", "USD"): {
 						Value: big.NewInt(102025000000),
 					},
-					oracletypes.NewCurrencyPair("BITCOIN", "BITCOIN"): {
+					oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"): {
 						Value: big.NewInt(100000000),
 					},
 				},
@@ -369,9 +355,8 @@ shout out my label thats me
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h := coingecko.CoinGeckoAPIHandler{
-				Config: config,
-			}
+			h, err := coingecko.NewAPIHandler(providerCfg)
+			require.NoError(t, err)
 
 			now := time.Now()
 			resp := h.ParseResponse(tc.cps, tc.response)
