@@ -3,6 +3,8 @@ package metrics
 import (
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/go-kit/kit/metrics"
 	"github.com/go-kit/kit/metrics/discard"
 	"github.com/go-kit/kit/metrics/prometheus"
@@ -17,11 +19,15 @@ const (
 	ProviderLabel = "provider"
 	// IDLabel is a label for the ID of a provider response.
 	IDLabel = "id"
+	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
+	ProviderTypeLabel = "type"
 	// StatusLabel is a label for the status of a provider response.
 	StatusLabel = "status"
 )
 
-type Status string
+type (
+	Status string
+)
 
 const (
 	Success Status = "success"
@@ -36,13 +42,13 @@ const (
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
 	// for a given provider and ID (i.e. currency pair).
-	AddProviderResponseByID(providerName, id string, status Status)
+	AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType)
 
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
-	AddProviderResponse(providerName string, status Status)
+	AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType)
 
 	// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
-	LastUpdated(providerName, id string)
+	LastUpdated(providerName, id string, providerType providertypes.ProviderType)
 }
 
 // ProviderMetricsImpl contains metrics exposed by this package.
@@ -72,17 +78,17 @@ func NewProviderMetrics() ProviderMetrics {
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses_per_id",
 			Help:      "Number of provider successes with a given ID.",
-		}, []string{ProviderLabel, IDLabel, StatusLabel}),
+		}, []string{ProviderLabel, IDLabel, StatusLabel, ProviderTypeLabel}),
 		responseStatusPerProvider: prometheus.NewCounterFrom(stdprom.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses",
 			Help:      "Number of provider successes.",
-		}, []string{ProviderLabel, StatusLabel}),
+		}, []string{ProviderLabel, StatusLabel, ProviderTypeLabel}),
 		lastUpdatedPerProvider: prometheus.NewGaugeFrom(stdprom.GaugeOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_last_updated_id",
 			Help:      "Last time a given ID (i.e. currency pair) was updated.",
-		}, []string{ProviderLabel, IDLabel}),
+		}, []string{ProviderLabel, IDLabel, ProviderTypeLabel}),
 	}
 
 	return m
@@ -99,17 +105,30 @@ func NewNopProviderMetrics() ProviderMetrics {
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
-func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status) {
-	m.responseStatusPerProviderByID.With(ProviderLabel, providerName, IDLabel, id, StatusLabel, string(status)).Add(1)
+func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType) {
+	m.responseStatusPerProviderByID.With(
+		ProviderLabel, providerName,
+		IDLabel, id,
+		StatusLabel, string(status),
+		ProviderTypeLabel, string(providerType),
+	).Add(1)
 }
 
 // AddProviderResponse increments the number of ticks with a fully successful provider update.
-func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status) {
-	m.responseStatusPerProvider.With(ProviderLabel, providerName, StatusLabel, string(status)).Add(1)
+func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType) {
+	m.responseStatusPerProvider.With(
+		ProviderLabel, providerName,
+		StatusLabel, string(status),
+		ProviderTypeLabel, string(providerType),
+	).Add(1)
 }
 
 // LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
-func (m *ProviderMetricsImpl) LastUpdated(providerName, id string) {
+func (m *ProviderMetricsImpl) LastUpdated(providerName, id string, providerType providertypes.ProviderType) {
 	now := time.Now().UTC()
-	m.lastUpdatedPerProvider.With(ProviderLabel, providerName, IDLabel, id).Set(float64(now.Unix()))
+	m.lastUpdatedPerProvider.With(
+		ProviderLabel, providerName,
+		IDLabel, id,
+		ProviderTypeLabel, string(providerType),
+	).Set(float64(now.Unix()))
 }
