@@ -199,6 +199,9 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 
 	timeFilteredPrices := make(map[oracletypes.CurrencyPair]*big.Int)
 	for pair, result := range prices {
+		// update price metric
+		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), float64(result.Value.Int64()))
+
 		// If the price is older than the update interval, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
 		if diff > o.updateInterval {
@@ -221,9 +224,6 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 			zap.Duration("diff", diff),
 		)
 		timeFilteredPrices[pair] = result.Value
-
-		// update price metric
-		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), float64(result.Value.Int64()))
 	}
 
 	o.logger.Info("provider returned prices",
