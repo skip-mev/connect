@@ -7,7 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "slinky/sla/v1/genesis.proto";
 
-// Query Service for the SLA module.
+// Query is the query service for the x/sla module.
 service Query {
   // GetAllSLAs returns all SLAs that the module is currently enforcing.
   rpc GetAllSLAs(GetAllSLAsRequest) returns (GetAllSLAsResponse) {
