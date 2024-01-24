@@ -8,6 +8,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/alerts/types";
 
+// Query is the query service for the x/alerts module.
 service Query {
   // Alerts gets all alerts in state under the given status. If no status is
   // given, all Alerts are returned

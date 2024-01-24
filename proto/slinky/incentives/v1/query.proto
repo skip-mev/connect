@@ -7,6 +7,7 @@ import "slinky/incentives/v1/genesis.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/incentives/types";
 
+// Query is the query service for the x/incentives module.
 service Query {
   // GetIncentivesByType returns all incentives of a given type. If the type is
   // not registered with the module, an error is returned.
