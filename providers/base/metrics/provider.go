@@ -80,7 +80,7 @@ func NewProviderMetrics() ProviderMetrics {
 			Name:      "provider_status_responses",
 			Help:      "Number of provider successes.",
 		}, []string{ProviderLabel, StatusLabel, ProviderTypeLabel}),
-		lastUpdatedPerProvider: stdprom.NewGaugeVec(prometheus.GaugeOpts{
+		lastUpdatedPerProvider: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_last_updated_id",
 			Help:      "Last time a given ID (i.e. currency pair) was updated.",
@@ -104,7 +104,6 @@ func NewNopProviderMetrics() ProviderMetrics {
 
 func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ providertypes.ProviderType) {
 }
-
 func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ providertypes.ProviderType) {
 }
 func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.ProviderType) {}
