@@ -14,8 +14,8 @@ import (
 type WebSocketDataHandler[K comparable, V any] interface {
 	// HandleMessage is used to handle a message received from the data provider. Message parsing
 	// and response creation should be handled by this data handler. Given a message from the web socket
-	// the handler should either return a response or an update message.
-	HandleMessage(message []byte) (response providertypes.GetResponse[K, V], updateMessage []byte, err error)
+	// the handler should either return a response or a set of update messages.
+	HandleMessage(message []byte) (response providertypes.GetResponse[K, V], updateMessages []WebsocketEncodedMessage, err error)
 
 	// CreateMessages is used to update the connection to the data provider. This can be used to subscribe
 	// to new events or unsubscribe from events.

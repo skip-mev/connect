@@ -223,19 +223,20 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
 			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
 
-			// If the update message is not nil, send it to the data provider.
+			// If the update messages are not nil, send it to the data provider.
 			if len(updateMessage) != 0 {
-				h.logger.Debug("sending update message to data provider", zap.Binary("update_message", updateMessage))
-				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
+				for _, msg := range updateMessage {
+					h.logger.Debug("sending update message to data provider", zap.Binary("update_message", msg))
+					h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
 
-				if err := h.connHandler.Write(updateMessage); err != nil {
-					h.logger.Error("failed to write update message", zap.Error(err))
-					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
-				} else {
-					h.logger.Debug("update message sent")
-					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+					if err := h.connHandler.Write(msg); err != nil {
+						h.logger.Error("failed to write update message", zap.Error(err))
+						h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
+					} else {
+						h.logger.Debug("update message sent")
+						h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+					}
 				}
-
 			}
 		}
 
