@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"math/big"
 	"testing"
+	"time"
+
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 
@@ -15,41 +19,55 @@ import (
 )
 
 var (
-	config = bybit.Config{
-		Markets: map[string]string{
-			"BITCOIN/USD":  "BTCUSD",
-			"ETHEREUM/USD": "ETHUSD",
+	logger = zap.NewExample()
+
+	cfg = config.ProviderConfig{
+		Name: bybit.Name,
+		WebSocket: config.WebSocketConfig{
+			Enabled:             true,
+			MaxBufferSize:       1024,
+			ReconnectionTimeout: 10 * time.Second,
+			WSS:                 bybit.ProductionURL,
+			Name:                bybit.Name,
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
-		Production: true,
-		Cache: map[oracletypes.CurrencyPair]string{
-			oracletypes.NewCurrencyPair("BITCOIN", "USD"):  "BTCUSD",
-			oracletypes.NewCurrencyPair("ETHEREUM", "USD"): "ETHUSD",
-		},
-		ReverseCache: map[string]oracletypes.CurrencyPair{
-			"BTCUSD": oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			"ETHUSD": oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+		Market: config.MarketConfig{
+			Name: bybit.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USD": {
+					Ticker:       "BTCUSD",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				},
+				"ETHEREUM/USD": {
+					Ticker:       "ETHUSD",
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				},
+			},
 		},
 	}
-
-	logger = zap.NewExample()
 )
 
 func TestHandlerMessage(t *testing.T) {
 	testCases := []struct {
-		name          string
-		msg           func() []byte
-		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
-		updateMessage func() []byte
-		expErr        bool
+		name      string
+		msg       func() []byte
+		resp      providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		updateMsg func() []handlers.WebsocketEncodedMessage
+		expErr    bool
 	}{
 		{
 			name: "invalid message",
 			msg: func() []byte {
 				return []byte("invalid message")
 			},
-			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-			updateMessage: func() []byte { return nil },
-			expErr:        true,
+			resp:      providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:    true,
 		},
 		{
 			name: "invalid message type",
@@ -63,9 +81,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-			updateMessage: func() []byte { return nil },
-			expErr:        true,
+			resp:      providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:    true,
 		},
 		{
 			name: "price update",
@@ -91,8 +109,8 @@ func TestHandlerMessage(t *testing.T) {
 				},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
-			expErr:        false,
+			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:    false,
 		},
 		{
 			name: "price update with unknown pair ID",
@@ -114,8 +132,8 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
-			expErr:        false,
+			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:    false,
 		},
 		{
 			name: "successful subscription",
@@ -139,8 +157,8 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
-			expErr:        false,
+			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:    false,
 		},
 		{
 			name: "subscription error",
@@ -164,7 +182,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte {
+			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -173,7 +191,7 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := bybit.NewWebSocketDataHandler(logger, config)
+			wsHandler, err := bybit.NewWebSocketDataHandler(logger, cfg)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -182,7 +200,7 @@ func TestHandlerMessage(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.Equal(t, tc.updateMessage(), updateMsg)
+			require.EqualValues(t, tc.updateMsg(), updateMsg)
 
 			require.Equal(t, len(tc.resp.Resolved), len(resp.Resolved))
 			require.Equal(t, len(tc.resp.UnResolved), len(resp.UnResolved))
@@ -270,7 +288,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := bybit.NewWebSocketDataHandler(logger, config)
+			handler, err := bybit.NewWebSocketDataHandler(logger, cfg)
 			require.NoError(t, err)
 
 			msgs, err := handler.CreateMessages(tc.cps)

@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/skip-mev/slinky/service"
+	"github.com/skip-mev/slinky/service/servers/oracle/types"
 )
 
 var (
@@ -41,7 +41,7 @@ func main() {
 	defer conn.Close()
 
 	// Create a new client
-	client := service.NewOracleClient(conn)
+	client := types.NewOracleClient(conn)
 
 	// Continuous loop
 	for {
@@ -52,7 +52,7 @@ func main() {
 		default:
 			// Call Prices RPC
 			log.Printf("Calling Prices RPC...\n")
-			resp, err := client.Prices(context.Background(), &service.QueryPricesRequest{})
+			resp, err := client.Prices(context.Background(), &types.QueryPricesRequest{})
 			if err != nil {
 				log.Fatalf("could not get prices: %v", err) //nolint
 			}

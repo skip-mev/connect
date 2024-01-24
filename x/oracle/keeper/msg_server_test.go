@@ -126,7 +126,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				assert.Nil(s.T(), err)
 
 				// check the nonce is correct (if the cp had already existed in state, check that it was not overwritten)
-				if cp.ToString() == "E/F" {
+				if cp.String() == "E/F" {
 					assert.Equal(s.T(), nonce, uint64(100))
 				} else {
 					assert.Equal(s.T(), nonce, uint64(0))

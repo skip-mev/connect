@@ -5,7 +5,7 @@ import (
 )
 
 func NewCurrencyPairNotExistError(cp CurrencyPair) CurrencyPairNotExistError {
-	return CurrencyPairNotExistError{cp.ToString()}
+	return CurrencyPairNotExistError{cp.String()}
 }
 
 type CurrencyPairNotExistError struct {
@@ -17,7 +17,7 @@ func (e CurrencyPairNotExistError) Error() string {
 }
 
 func NewQuotePriceNotExistError(cp CurrencyPair) QuotePriceNotExistError {
-	return QuotePriceNotExistError{cp.ToString()}
+	return QuotePriceNotExistError{cp.String()}
 }
 
 type QuotePriceNotExistError struct {
@@ -33,7 +33,7 @@ type CurrencyPairAlreadyExistsError struct {
 }
 
 func NewCurrencyPairAlreadyExistsError(cp CurrencyPair) CurrencyPairAlreadyExistsError {
-	return CurrencyPairAlreadyExistsError{cp.ToString()}
+	return CurrencyPairAlreadyExistsError{cp.String()}
 }
 
 func (e CurrencyPairAlreadyExistsError) Error() string {

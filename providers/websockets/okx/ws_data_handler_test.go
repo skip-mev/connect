@@ -5,29 +5,46 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
-	config = okx.Config{
-		Markets: map[string]string{
-			"BITCOIN/USDT":  "BTC-USDT",
-			"ETHEREUM/USDT": "ETH-USDT",
+	providerCfg = config.ProviderConfig{
+		Name: okx.Name,
+		WebSocket: config.WebSocketConfig{
+			Enabled:             true,
+			WSS:                 okx.URL_PROD,
+			MaxBufferSize:       100,
+			ReconnectionTimeout: 5 * time.Second,
+			Name:                okx.Name,
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
-		Production: true,
-		Cache: map[oracletypes.CurrencyPair]string{
-			oracletypes.NewCurrencyPair("BITCOIN", "USDT"):  "BTC-USDT",
-			oracletypes.NewCurrencyPair("ETHEREUM", "USDT"): "ETH-USDT",
-		},
-		ReverseCache: map[string]oracletypes.CurrencyPair{
-			"BTC-USDT": oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-			"ETH-USDT": oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+		Market: config.MarketConfig{
+			Name: okx.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USDT": {
+					Ticker:       "BTC-USDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				},
+				"ETHEREUM/USDT": {
+					Ticker:       "ETH-USDT",
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				},
+			},
 		},
 	}
 
@@ -39,7 +56,7 @@ func TestHandlerMessage(t *testing.T) {
 		name          string
 		msg           func() []byte
 		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
-		updateMessage func() []byte
+		updateMessage func() []handlers.WebsocketEncodedMessage
 		expErr        bool
 	}{
 		{
@@ -48,7 +65,7 @@ func TestHandlerMessage(t *testing.T) {
 				return []byte("invalid message")
 			},
 			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 		{
@@ -64,7 +81,7 @@ func TestHandlerMessage(t *testing.T) {
 				return bz
 			},
 			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 		{
@@ -96,7 +113,7 @@ func TestHandlerMessage(t *testing.T) {
 				},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -135,7 +152,7 @@ func TestHandlerMessage(t *testing.T) {
 				},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -163,7 +180,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -187,7 +204,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -223,7 +240,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte {
+			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
@@ -237,7 +254,7 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				return []handlers.WebsocketEncodedMessage{bz}
 			},
 			expErr: false,
 		},
@@ -260,7 +277,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 		{
@@ -296,14 +313,14 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := okx.NewWebSocketDataHandler(logger, config)
+			wsHandler, err := okx.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -410,7 +427,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := okx.NewWebSocketDataHandler(logger, config)
+			handler, err := okx.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
 			msgs, err := handler.CreateMessages(tc.cps)

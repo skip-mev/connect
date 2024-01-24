@@ -11,6 +11,7 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -39,6 +40,7 @@ type APIQueryHandler[K comparable, V any] interface {
 type APIQueryHandlerImpl[K comparable, V any] struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
+	config  config.APIConfig
 
 	// The request handler is responsible for making outgoing HTTP requests with
 	// a given URL. This can be the default client or a custom client.
@@ -53,10 +55,19 @@ type APIQueryHandlerImpl[K comparable, V any] struct {
 // provider by using the APIDataHandler and RequestHandler.
 func NewAPIQueryHandler[K comparable, V any](
 	logger *zap.Logger,
+	cfg config.APIConfig,
 	requestHandler RequestHandler,
 	apiHandler APIDataHandler[K, V],
 	metrics metrics.APIMetrics,
 ) (APIQueryHandler[K, V], error) {
+	if err := cfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid provider config: %w", err)
+	}
+
+	if !cfg.Enabled {
+		return nil, fmt.Errorf("api query handler is not enabled for the provider")
+	}
+
 	if logger == nil {
 		return nil, fmt.Errorf("no logger specified for api query handler")
 	}
@@ -74,7 +85,8 @@ func NewAPIQueryHandler[K comparable, V any](
 	}
 
 	return &APIQueryHandlerImpl[K, V]{
-		logger:         logger.With(zap.String("api_data_handler", apiHandler.Name())),
+		logger:         logger.With(zap.String("api_data_handler", cfg.Name)),
+		config:         cfg,
 		requestHandler: requestHandler,
 		apiHandler:     apiHandler,
 		metrics:        metrics,
@@ -102,7 +114,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 			h.logger.Error("panic in api query handler", zap.Any("panic", r))
 		}
 
-		h.metrics.ObserveProviderResponseLatency(h.apiHandler.Name(), time.Since(start))
+		h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
 		h.logger.Debug("finished api query handler")
 	}()
 
@@ -116,7 +128,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	// If our task is atomic, we can make a single request for all of the IDs. Otherwise,
 	// we need to make a request for each ID.
 	tasks := []func() error{}
-	if h.apiHandler.Atomic() {
+	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
 	} else {
 		for i := 0; i < len(ids); i++ {
@@ -150,7 +162,7 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 				h.logger.Error("panic occurred in subtask", zap.Any("panic", r), zap.Any("ids", ids))
 			}
 
-			h.logger.Info("finished subtask", zap.Any("ids", ids))
+			h.logger.Debug("finished subtask", zap.Any("ids", ids))
 		}()
 
 		h.logger.Debug("starting subtask", zap.Any("ids", ids))
@@ -161,6 +173,8 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrCreateURLWithErr(err)))
 			return nil
 		}
+
+		h.logger.Debug("created url", zap.String("url", url))
 
 		// Make the request.
 		resp, err := h.requestHandler.Do(ctx, url)
@@ -195,9 +209,9 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 
 	// Update the metrics.
 	for id := range response.Resolved {
-		h.metrics.AddProviderResponse(h.apiHandler.Name(), strings.ToLower(fmt.Sprint(id)), metrics.Success)
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(fmt.Sprint(id)), metrics.Success)
 	}
 	for id, err := range response.UnResolved {
-		h.metrics.AddProviderResponse(h.apiHandler.Name(), strings.ToLower(fmt.Sprint(id)), metrics.StatusFromError(err))
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(fmt.Sprint(id)), metrics.StatusFromError(err))
 	}
 }

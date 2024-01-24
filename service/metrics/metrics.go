@@ -4,18 +4,19 @@ import (
 	"strconv"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
 const (
-	TickerLabel    = "ticker"
-	InclusionLabel = "included"
-	AppNamespace   = "app"
-	ProviderLabel  = "provider"
-	StatusLabel    = "status"
+	TickerLabel     = "ticker"
+	InclusionLabel  = "included"
+	AppNamespace    = "app"
+	ProviderLabel   = "provider"
+	StatusLabel     = "status"
+	ABCIMethodLabel = "abci_method"
+	ChainIDLabel    = "chain_id"
 )
 
 type Status int
@@ -43,6 +44,33 @@ func StatusFromError(err error) Status {
 	return StatusFailure
 }
 
+type ABCIMethod int
+
+const (
+	PrepareProposal ABCIMethod = iota
+	ProcessProposal
+	ExtendVote
+	VerifyVoteExtension
+	FinalizeBlock
+)
+
+func (a ABCIMethod) String() string {
+	switch a {
+	case PrepareProposal:
+		return "prepare_proposal"
+	case ProcessProposal:
+		return "process_proposal"
+	case ExtendVote:
+		return "extend_vote"
+	case VerifyVoteExtension:
+		return "verify_vote_extension"
+	case FinalizeBlock:
+		return "finalize_block"
+	default:
+		return "not_implemented"
+	}
+}
+
 //go:generate mockery --name Metrics --filename mock_metrics.go
 type Metrics interface {
 	// ObserveOracleResponseLatency records the time it took for the oracle to respond (this is a histogram)
@@ -57,11 +85,8 @@ type Metrics interface {
 	// AddTickerInclusionStatus increments the counter representing the number of times a ticker was included (or not included) in the last commit.
 	AddTickerInclusionStatus(ticker string, included bool)
 
-	// ObserveProcessProposalTime records the time it took for the oracle-specific parts of process proposal
-	ObserveProcessProposalTime(duration time.Duration)
-
-	// ObservePrepareProposalTime records the time it took for the oracle-specific parts of prepare proposal
-	ObservePrepareProposalTime(duration time.Duration)
+	// ObserveABCIMethodLatency reports the given latency (as a duration), for the given ABCIMethod, and updates the ABCIMethodLatency histogram w/ that value.
+	ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration)
 }
 
 type nopMetricsImpl struct{}
@@ -71,48 +96,41 @@ func NewNopMetrics() Metrics {
 	return &nopMetricsImpl{}
 }
 
-func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration) {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Status)                   {}
-func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)           {}
-func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)    {}
-func (m *nopMetricsImpl) ObservePrepareProposalTime(_ time.Duration)   {}
-func (m *nopMetricsImpl) ObserveProcessProposalTime(_ time.Duration)   {}
+func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)           {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Status)                             {}
+func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                     {}
+func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)              {}
+func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration) {}
 
-func NewMetrics() Metrics {
+func NewMetrics(chainID string) Metrics {
 	m := &metricsImpl{
-		oracleResponseLatency: prometheus.NewHistogram(prometheus.HistogramOpts{
+		oracleResponseLatency: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: AppNamespace,
 			Name:      "oracle_response_latency",
 			Help:      "The time it took for the oracle to respond",
 			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
-		}),
+		}, []string{ChainIDLabel}),
 		oracleResponseCounter: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: AppNamespace,
 			Name:      "oracle_responses",
 			Help:      "The number of oracle responses",
-		}, []string{StatusLabel}),
+		}, []string{StatusLabel, ChainIDLabel}),
 		voteIncludedInLastCommit: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: AppNamespace,
 			Name:      "vote_included_in_last_commit",
 			Help:      "The number of times this validator's vote was included in the last commit",
-		}, []string{InclusionLabel}),
+		}, []string{InclusionLabel, ChainIDLabel}),
 		tickerInclusionStatus: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: AppNamespace,
 			Name:      "ticker_inclusion_status",
 			Help:      "The number of times a ticker was included (or not included) in this validator's vote",
-		}, []string{TickerLabel, InclusionLabel}),
-		prepareProposalTime: prometheus.NewHistogram(prometheus.HistogramOpts{
+		}, []string{TickerLabel, InclusionLabel, ChainIDLabel}),
+		abciMethodLatency: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: AppNamespace,
-			Name:      "oracle_prepare_proposal_time",
-			Help:      "The time it took for the oracle-specific parts of prepare proposal",
-			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
-		}),
-		processProposalTime: prometheus.NewHistogram(prometheus.HistogramOpts{
-			Namespace: AppNamespace,
-			Name:      "oracle_process_proposal_time",
-			Help:      "The time it took for the oracle-specific parts of process proposal",
-			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
-		}),
+			Name:      "abci_method_latency",
+			Help:      "The time it took for an ABCI method to execute slinky specific logic (in seconds)",
+			Buckets:   []float64{.0001, .0004, .002, .009, .02, .1, .65, 2, 6, 25},
+		}, []string{ABCIMethodLabel, ChainIDLabel}),
 	}
 
 	// register the above metrics
@@ -120,42 +138,46 @@ func NewMetrics() Metrics {
 	prometheus.MustRegister(m.oracleResponseCounter)
 	prometheus.MustRegister(m.voteIncludedInLastCommit)
 	prometheus.MustRegister(m.tickerInclusionStatus)
-	prometheus.MustRegister(m.prepareProposalTime)
-	prometheus.MustRegister(m.processProposalTime)
+	prometheus.MustRegister(m.abciMethodLatency)
+
+	m.chainID = chainID
 
 	return m
 }
 
 type metricsImpl struct {
-	oracleResponseLatency    prometheus.Histogram
+	oracleResponseLatency    *prometheus.HistogramVec
 	oracleResponseCounter    *prometheus.CounterVec
 	voteIncludedInLastCommit *prometheus.CounterVec
 	tickerInclusionStatus    *prometheus.CounterVec
-	prepareProposalTime      prometheus.Histogram
-	processProposalTime      prometheus.Histogram
+	abciMethodLatency        *prometheus.HistogramVec
+	chainID                  string
 }
 
-func (m *metricsImpl) ObserveProcessProposalTime(duration time.Duration) {
-	m.processProposalTime.Observe(float64(duration.Milliseconds()))
-}
-
-func (m *metricsImpl) ObservePrepareProposalTime(duration time.Duration) {
-	m.prepareProposalTime.Observe(float64(duration.Milliseconds()))
+func (m *metricsImpl) ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration) {
+	m.abciMethodLatency.With(prometheus.Labels{
+		ABCIMethodLabel: method.String(),
+		ChainIDLabel:    m.chainID,
+	}).Observe(duration.Seconds())
 }
 
 func (m *metricsImpl) ObserveOracleResponseLatency(duration time.Duration) {
-	m.oracleResponseLatency.Observe(float64(duration.Milliseconds()))
+	m.oracleResponseLatency.With(prometheus.Labels{
+		ChainIDLabel: m.chainID,
+	}).Observe(float64(duration.Milliseconds()))
 }
 
 func (m *metricsImpl) AddOracleResponse(status Status) {
 	m.oracleResponseCounter.With(prometheus.Labels{
-		StatusLabel: status.String(),
+		StatusLabel:  status.String(),
+		ChainIDLabel: m.chainID,
 	}).Inc()
 }
 
 func (m *metricsImpl) AddVoteIncludedInLastCommit(included bool) {
 	m.voteIncludedInLastCommit.With(prometheus.Labels{
 		InclusionLabel: strconv.FormatBool(included),
+		ChainIDLabel:   m.chainID,
 	}).Inc()
 }
 
@@ -163,29 +185,24 @@ func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
 	m.tickerInclusionStatus.With(prometheus.Labels{
 		TickerLabel:    ticker,
 		InclusionLabel: strconv.FormatBool(included),
+		ChainIDLabel:   m.chainID,
 	}).Inc()
 }
 
-// NewServiceMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
+// NewMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
 // returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
 // If the metrics are not enabled, a nop implementation is returned.
-func NewServiceMetricsFromConfig(cfg config.AppMetricsConfig) (Metrics, sdk.ConsAddress, error) {
+func NewMetricsFromConfig(cfg config.AppConfig, chainID string) (Metrics, error) {
 	if !cfg.Enabled {
-		return NewNopMetrics(), nil, nil
+		return NewNopMetrics(), nil
 	}
 
 	// ensure that the metrics are enabled
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, nil, err
-	}
-
-	// get the cons address
-	consAddress, err := cfg.ConsAddress()
-	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	// create the metrics
-	metrics := NewMetrics()
-	return metrics, consAddress, nil
+	metrics := NewMetrics(chainID)
+	return metrics, nil
 }

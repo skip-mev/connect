@@ -20,22 +20,30 @@ import (
 
 var (
 	providerCfg1 = config.ProviderConfig{
-		Path: "testpath",
 		Name: "api1",
 		API: config.APIConfig{
 			Interval:   500 * time.Millisecond,
 			Timeout:    250 * time.Millisecond,
 			MaxQueries: 10,
 			Enabled:    true,
+			Name:       "api1",
+			URL:        "http://test.com",
 		},
 	}
 	providerCfg2 = config.ProviderConfig{
-		Path: "testpath2",
 		Name: "websocket1",
 		WebSocket: config.WebSocketConfig{
 			MaxBufferSize:       10,
 			Enabled:             true,
 			ReconnectionTimeout: 250 * time.Millisecond,
+			WSS:                 "wss://test.com",
+			Name:                "websocket1",
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
 	}
 )
@@ -77,7 +85,6 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
 			},
@@ -87,7 +94,6 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -107,7 +113,6 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -136,20 +141,15 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
-				ClientTimeout:  1 * time.Second,
-				InProcess:      true,
-			}
-			metricsCfg := config.OracleMetricsConfig{
-				Enabled: false,
 			}
 
-			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			providers, err := tc.factory(s.logger, cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 			)
 			s.Require().NoError(err)
 
@@ -182,7 +182,6 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
 			},
@@ -193,7 +192,6 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -214,7 +212,6 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -244,18 +241,13 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
-				ClientTimeout:  1 * time.Second,
-				InProcess:      true,
-			}
-			metricsCfg := config.OracleMetricsConfig{
-				Enabled: false,
 			}
 
-			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			providers, err := tc.factory(s.logger, cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 			)
@@ -287,7 +279,6 @@ func (s *OracleTestSuite) TestStop() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -308,7 +299,6 @@ func (s *OracleTestSuite) TestStop() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-				config.OracleMetricsConfig,
 			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
@@ -338,18 +328,13 @@ func (s *OracleTestSuite) TestStop() {
 		s.Run(tc.name, func() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
-				ClientTimeout:  1 * time.Second,
-				InProcess:      true,
-			}
-			metricsCfg := config.OracleMetricsConfig{
-				Enabled: false,
 			}
 
-			providers, err := tc.factory(s.logger, cfg, metricsCfg)
+			providers, err := tc.factory(s.logger, cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
-				cfg,
+				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 			)
@@ -372,7 +357,7 @@ func (s *OracleTestSuite) TestStop() {
 	}
 }
 
-func checkFn(o *oracle.Oracle) func() bool {
+func checkFn(o oracle.Oracle) func() bool {
 	return func() bool {
 		return !o.IsRunning()
 	}

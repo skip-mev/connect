@@ -10,19 +10,46 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
-	config = cryptodotcom.Config{
-		Markets: map[string]string{
-			"BITCOIN/USD":  "BTCUSD-PERP",
-			"ETHEREUM/USD": "ETHUSD-PERP",
-			"SOLANA/USD":   "SOLUSD-PERP",
+	providerCfg = config.ProviderConfig{
+		Name: cryptodotcom.Name,
+		WebSocket: config.WebSocketConfig{
+			Enabled:             true,
+			WSS:                 cryptodotcom.URL_PROD,
+			MaxBufferSize:       100,
+			ReconnectionTimeout: 5 * time.Second,
+			Name:                cryptodotcom.Name,
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
-		Production: true,
+		Market: config.MarketConfig{
+			Name: cryptodotcom.Name,
+			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+				"BITCOIN/USD": {
+					Ticker:       "BTCUSD-PERP",
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				},
+				"ETHEREUM/USD": {
+					Ticker:       "ETHUSD-PERP",
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				},
+				"SOLANA/USD": {
+					Ticker:       "SOLUSD-PERP",
+					CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				},
+			},
+		},
 	}
 
 	btcusd = oracletypes.NewCurrencyPair("BITCOIN", "USD")
@@ -37,7 +64,7 @@ func TestHandleMessage(t *testing.T) {
 		name         string
 		msg          func() []byte
 		resp         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
-		expUpdateMsg func() []byte
+		expUpdateMsg func() []handlers.WebsocketEncodedMessage
 		expErr       bool
 	}{
 		{
@@ -46,7 +73,7 @@ func TestHandleMessage(t *testing.T) {
 				return []byte(`no rizz message`)
 			},
 			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte { return nil },
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
 		{
@@ -60,7 +87,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte { return nil },
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
 		{
@@ -75,7 +102,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte { return nil },
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
 		{
@@ -91,14 +118,14 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				msg := cryptodotcom.HeartBeatResponseMessage{
 					ID:     42069,
 					Method: string(cryptodotcom.HeartBeatResponseMethod),
 				}
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
-				return bz
+				return []handlers.WebsocketEncodedMessage{bz}
 			},
 			expErr: false,
 		},
@@ -118,7 +145,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: true,
@@ -133,7 +160,7 @@ func TestHandleMessage(t *testing.T) {
 					Result: cryptodotcom.InstrumentResult{
 						Data: []cryptodotcom.InstrumentData{
 							{
-								InstrumentName:   "BTCUSD-PERP",
+								Name:             "BTCUSD-PERP",
 								LatestTradePrice: "42069",
 							},
 						},
@@ -149,7 +176,7 @@ func TestHandleMessage(t *testing.T) {
 				},
 				UnResolved: map[oracletypes.CurrencyPair]error{},
 			},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -164,7 +191,7 @@ func TestHandleMessage(t *testing.T) {
 					Result: cryptodotcom.InstrumentResult{
 						Data: []cryptodotcom.InstrumentData{
 							{
-								InstrumentName:   "MOGUSD-PERP",
+								Name:             "MOGUSD-PERP",
 								LatestTradePrice: "42069",
 							},
 						},
@@ -175,7 +202,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -190,15 +217,15 @@ func TestHandleMessage(t *testing.T) {
 					Result: cryptodotcom.InstrumentResult{
 						Data: []cryptodotcom.InstrumentData{
 							{
-								InstrumentName:   "BTCUSD-PERP",
+								Name:             "BTCUSD-PERP",
 								LatestTradePrice: "42069",
 							},
 							{
-								InstrumentName:   "ETHUSD-PERP",
+								Name:             "ETHUSD-PERP",
 								LatestTradePrice: "2000",
 							},
 							{
-								InstrumentName:   "SOLUSD-PERP",
+								Name:             "SOLUSD-PERP",
 								LatestTradePrice: "1000",
 							},
 						},
@@ -216,7 +243,7 @@ func TestHandleMessage(t *testing.T) {
 				},
 				UnResolved: map[oracletypes.CurrencyPair]error{},
 			},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -231,11 +258,11 @@ func TestHandleMessage(t *testing.T) {
 					Result: cryptodotcom.InstrumentResult{
 						Data: []cryptodotcom.InstrumentData{
 							{
-								InstrumentName:   "BTCUSD-PERP",
+								Name:             "BTCUSD-PERP",
 								LatestTradePrice: "42069",
 							},
 							{
-								InstrumentName:   "SOLUSD-PERP",
+								Name:             "SOLUSD-PERP",
 								LatestTradePrice: "$42,069.00",
 							},
 						},
@@ -253,7 +280,7 @@ func TestHandleMessage(t *testing.T) {
 					solusd: fmt.Errorf("failed to parse price $42,069.00: invalid syntax"),
 				},
 			},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -262,10 +289,7 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := config.Format()
-			require.NoError(t, err)
-
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, config)
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -346,10 +370,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := config.Format()
-			require.NoError(t, err)
-
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, config)
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, providerCfg)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

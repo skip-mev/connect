@@ -2,9 +2,7 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
 	"math/big"
-	"path"
 	"time"
 
 	"cosmossdk.io/math"
@@ -17,17 +15,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
-	testutil "github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	codec "github.com/skip-mev/slinky/abci/strategies/codec"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/static"
 )
 
 const gasPrice = 100
@@ -59,7 +55,7 @@ func (s *SlinkySlashingIntegrationSuite) SubmitAlert(user cosmos.User, alert ale
 	return client.BroadcastTxCommit(context.Background(), tx)
 }
 
-// Submit conclusion submits the provided conclusion to the chain
+// SubmitConclusion submits the provided conclusion to the chain
 func (s *SlinkySlashingIntegrationSuite) SubmitConclusion(user cosmos.User, conclusion alerttypes.Conclusion) (*coretypes.ResultBroadcastTxCommit, error) {
 	addr, err := sdk.AccAddressFromBech32(user.FormattedAddress())
 	s.Require().NoError(err)
@@ -167,37 +163,30 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 	}
 
 	oracle := GetOracleSideCar(node)
-
-	oCfg, mCfg := DefaultOracleConfig(node)
-	oCfg.Providers = append(oCfg.Providers, config.ProviderConfig{
+	oracleConfig := DefaultOracleConfig(node)
+	oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 		Name: "static-mock-provider",
-		Path: path.Join(oracle.HomeDir(), staticMockProviderConfigPath),
-		API: config.APIConfig{
+		API: oracleconfig.APIConfig{
 			Enabled:    true,
 			Timeout:    250 * time.Millisecond,
 			Interval:   250 * time.Millisecond,
 			MaxQueries: 1,
+			URL:        "http://un-used-url.com",
+			Atomic:     true,
+			Name:       "static-mock-provider",
+		},
+		Market: oracleconfig.MarketConfig{
+			Name: "static-mock-provider",
+			CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
+				ticker.String(): {
+					Ticker:       big.NewInt(price).String(),
+					CurrencyPair: ticker,
+				},
+			},
 		},
 	})
-	oCfg.CurrencyPairs = append(oCfg.CurrencyPairs, ticker)
-
-	// Configure the default price on the static mock provider.
-	staticMockProvider := static.StaticMockProviderConfig{
-		TokenPrices: map[string]string{
-			ticker.ToString(): big.NewInt(price).String(),
-		},
-	}
-
-	// Write the config to the file.
-	bz, err := json.Marshal(staticMockProvider)
-	if err != nil {
-		return err
-	}
-	if err := oracle.WriteFile(context.Background(), bz, staticMockProviderConfigPath); err != nil {
-		return err
-	}
-
-	SetOracleConfigsOnOracle(oracle, oCfg, mCfg)
+	oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, ticker)
+	SetOracleConfigsOnOracle(oracle, oracleConfig)
 
 	return RestartOracle(node)
 }

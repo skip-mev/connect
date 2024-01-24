@@ -13,12 +13,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/slinky/x/alerts/keeper"
-	alerttestutil "github.com/skip-mev/slinky/x/alerts/testutil"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
+	"github.com/skip-mev/slinky/x/alerts/types/mocks"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -31,11 +30,11 @@ type KeeperTestSuite struct {
 	// alert keeper
 	alertKeeper *keeper.Keeper
 	// bank-keeper
-	bk *alerttestutil.MockBankKeeper
+	bk *mocks.BankKeeper
 	// oracle-keeper
-	ok *alerttestutil.MockOracleKeeper
+	ok *mocks.OracleKeeper
 	// incentive-keeper
-	ik *alerttestutil.MockIncentiveKeeper
+	ik *mocks.IncentiveKeeper
 	// private-key
 	privateKey cryptotypes.PrivKey
 	// authority
@@ -53,10 +52,9 @@ func (s *KeeperTestSuite) SetupTest() {
 	strategies.RegisterInterfaces(encCfg.InterfaceRegistry)
 	alerttypes.RegisterInterfaces(encCfg.InterfaceRegistry)
 
-	ctrl := gomock.NewController(s.T())
-	s.bk = alerttestutil.NewMockBankKeeper(ctrl)
-	s.ok = alerttestutil.NewMockOracleKeeper(ctrl)
-	s.ik = alerttestutil.NewMockIncentiveKeeper(ctrl)
+	s.bk = mocks.NewBankKeeper(s.T())
+	s.ok = mocks.NewOracleKeeper(s.T())
+	s.ik = mocks.NewIncentiveKeeper(s.T())
 
 	s.authority = sdk.AccAddress("authority")
 	s.alertKeeper = keeper.NewKeeper(ss, encCfg.Codec, s.ok, s.bk, s.ik, strategies.DefaultHandleValidatorIncentive(), s.authority)

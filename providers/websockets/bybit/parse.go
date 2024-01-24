@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
@@ -18,7 +20,7 @@ import (
 //
 // 1. Successfully subscribed to the channel. In this case, no further action is required.
 // 2. Error message. In this case, we attempt to re-subscribe to the channel.
-func (h *WebsocketDataHandler) parsSubscriptionResponse(resp SubscriptionResponse) ([]byte, error) {
+func (h *WebsocketDataHandler) parseSubscriptionResponse(resp SubscriptionResponse) ([]handlers.WebsocketEncodedMessage, error) {
 	// A response with an event type of subscribe means that we have successfully subscribed to the channel.
 	if t := Operation(resp.Op); t == OperationSubscribe && resp.Success {
 		h.logger.Info("successfully subscribed to channel", zap.String("connection", resp.ConnID))
@@ -54,11 +56,13 @@ func (h *WebsocketDataHandler) parseTickerUpdate(
 
 	data := resp.Data
 	// Iterate through all the tickers and add them to the response.
-	cp, ok := h.config.ReverseCache[data.Symbol]
+	market, ok := h.cfg.Market.TickerToMarketConfigs[data.Symbol]
 	if !ok {
 		h.logger.Debug("currency pair not found for symbol ID", zap.String("symbol", data.Symbol))
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 	}
+
+	cp := market.CurrencyPair
 
 	// Convert the price to a big.Int.
 	price, err := math.Float64StringToBigInt(data.LastPrice, cp.Decimals())

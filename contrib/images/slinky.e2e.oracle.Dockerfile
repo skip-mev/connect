@@ -1,8 +1,12 @@
 FROM golang:1.21-bullseye AS builder
 
 WORKDIR /src/slinky
+COPY go.mod .
+
+RUN go mod download
+
 COPY . .
-RUN make tidy
+
 RUN make build
 
 FROM ubuntu:rolling

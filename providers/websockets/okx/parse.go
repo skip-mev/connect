@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -29,7 +30,7 @@ const (
 //
 // 1. Successfully subscribed to the channel. In this case, no further action is required.
 // 2. Error message. In this case, we attempt to re-subscribe to the channel.
-func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeResponseMessage) ([]byte, error) {
+func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeResponseMessage) ([]handlers.WebsocketEncodedMessage, error) {
 	// A response with an event type of subscribe means that we have successfully subscribed to the channel.
 	if t := EventType(resp.Event); t == EventSubscribe {
 		h.logger.Info("successfully subscribed to channel", zap.String("instrument", resp.Arguments.InstrumentID))
@@ -57,7 +58,12 @@ func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeRespo
 
 	// Re-subscribe to the channel.
 	h.logger.Debug("re-subscribing to channel", zap.Any("instrument", request.Arguments))
-	return json.Marshal(request)
+	bz, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %s", err)
+	}
+
+	return []handlers.WebsocketEncodedMessage{bz}, nil
 }
 
 // parseTickerResponseMessage parses a ticker response message. The format of the message is defined
@@ -78,13 +84,14 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 
 	// Iterate through all of the tickers and add them to the response.
 	for _, ticker := range resp.Data {
-		cp, ok := h.config.ReverseCache[ticker.InstrumentID]
+		market, ok := h.cfg.Market.TickerToMarketConfigs[ticker.InstrumentID]
 		if !ok {
 			h.logger.Debug("currency pair not found for instrument ID", zap.String("instrument_id", ticker.InstrumentID))
 			continue
 		}
 
 		// Convert the price to a big.Int.
+		cp := market.CurrencyPair
 		price, err := math.Float64StringToBigInt(ticker.IndexPrice, cp.Decimals())
 		if err != nil {
 			h.logger.Error("failed to convert price to big.Int", zap.Error(err))
