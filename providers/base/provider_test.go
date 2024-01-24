@@ -43,6 +43,12 @@ var (
 		ReconnectionTimeout: time.Millisecond * 500,
 		WSS:                 "wss:localhost:8080",
 		Name:                "websocket",
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
 	}
 	pairs = []oracletypes.CurrencyPair{
 		{
