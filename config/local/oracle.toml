@@ -17,6 +17,12 @@ production = false
     reconnection_timeout = "0s"
     wss = ""
     name = ""
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "0s"
+    enable_compression = false
+    read_deadline = "0s"
+    write_deadline = "0s"
   [providers.market_config]
     name = "binance"
     [providers.market_config.currency_pair_to_market_configs]
@@ -62,6 +68,12 @@ production = false
     reconnection_timeout = "0s"
     wss = ""
     name = ""
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "0s"
+    enable_compression = false
+    read_deadline = "0s"
+    write_deadline = "0s"
   [providers.market_config]
     name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
@@ -127,6 +139,12 @@ production = false
     reconnection_timeout = "0s"
     wss = ""
     name = ""
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "0s"
+    enable_compression = false
+    read_deadline = "0s"
+    write_deadline = "0s"
   [providers.market_config]
     name = "coingecko"
     [providers.market_config.currency_pair_to_market_configs]
@@ -183,10 +201,16 @@ production = false
     name = ""
   [providers.web_socket]
     enabled = true
-    max_buffer_size = 1000
-    reconnection_timeout = "5s"
+    max_buffer_size = 1024
+    reconnection_timeout = "10s"
     wss = "wss://stream.crypto.com/exchange/v1/market"
     name = "crypto_dot_com"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
   [providers.market_config]
     name = "crypto_dot_com"
     [providers.market_config.currency_pair_to_market_configs]
@@ -252,6 +276,12 @@ production = false
     reconnection_timeout = "10s"
     wss = "wss://ws.okx.com:8443/ws/v5/public"
     name = "okx"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
   [providers.market_config]
     name = "okx"
     [providers.market_config.currency_pair_to_market_configs]

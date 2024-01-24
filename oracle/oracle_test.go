@@ -38,6 +38,12 @@ var (
 			ReconnectionTimeout: 250 * time.Millisecond,
 			WSS:                 "wss://test.com",
 			Name:                "websocket1",
+			ReadBufferSize:      config.DefaultReadBufferSize,
+			WriteBufferSize:     config.DefaultWriteBufferSize,
+			HandshakeTimeout:    config.DefaultHandshakeTimeout,
+			EnableCompression:   config.DefaultEnableCompression,
+			ReadTimeout:         config.DefaultReadTimeout,
+			WriteTimeout:        config.DefaultWriteTimeout,
 		},
 	}
 )
