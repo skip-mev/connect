@@ -15,8 +15,8 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// BaseProvider implements a base provider that can be used to build other providers.
-type BaseProvider[K comparable, V any] struct { //nolint
+// Provider implements a base provider that can be used to build other providers.
+type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	mu     sync.Mutex
 	logger *zap.Logger
 
@@ -53,8 +53,8 @@ type BaseProvider[K comparable, V any] struct { //nolint
 }
 
 // NewProvider returns a new Base provider.
-func NewProvider[K comparable, V any](opts ...ProviderOption[K, V]) (providertypes.Provider[K, V], error) {
-	p := &BaseProvider[K, V]{
+func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opts ...ProviderOption[K, V]) (providertypes.Provider[K, V], error) {
+	p := &Provider[K, V]{
 		logger: zap.NewNop(),
 		ids:    make([]K, 0),
 		data:   make(map[K]providertypes.Result[V]),
@@ -84,7 +84,7 @@ func NewProvider[K comparable, V any](opts ...ProviderOption[K, V]) (providertyp
 
 // Start starts the provider's main loop. The provider will fetch the data from the handler
 // and continuously update the data. This blocks until the provider is stopped.
-func (p *BaseProvider[K, V]) Start(ctx context.Context) error {
+func (p *Provider[K, V]) Start(ctx context.Context) error {
 	p.logger.Info("starting provider")
 	if len(p.ids) == 0 {
 		p.logger.Warn("no ids to fetch")
@@ -95,14 +95,14 @@ func (p *BaseProvider[K, V]) Start(ctx context.Context) error {
 }
 
 // Name returns the name of the provider.
-func (p *BaseProvider[K, V]) Name() string {
+func (p *Provider[K, V]) Name() string {
 	return p.name
 }
 
 // GetData returns the latest data recorded by the provider. The data is constantly
 // updated by the provider's main loop and provides access to the latest data - prices
 // in constant time.
-func (p *BaseProvider[K, V]) GetData() map[K]providertypes.Result[V] {
+func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -111,4 +111,16 @@ func (p *BaseProvider[K, V]) GetData() map[K]providertypes.Result[V] {
 	maps.Copy(cpy, p.data)
 
 	return cpy
+}
+
+// Type returns the type of data handler the provider uses
+func (p *Provider[K, V]) Type() providertypes.ProviderType {
+	switch {
+	case p.apiCfg.Enabled && p.api != nil:
+		return providertypes.API
+	case p.wsCfg.Enabled && p.ws != nil:
+		return providertypes.WebSockets
+	default:
+		return "unknown"
+	}
 }
