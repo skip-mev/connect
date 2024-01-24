@@ -30,7 +30,7 @@ type Oracle interface {
 	Stop()
 }
 
-// Oracle implements the core component responsible for fetching exchange rates
+// OracleImpl implements the core component responsible for fetching exchange rates
 // for a given set of currency pairs and determining exchange rates.
 type OracleImpl struct { //nolint
 	// --------------------- General Config --------------------- //
@@ -76,7 +76,7 @@ type OracleImpl struct { //nolint
 // using TWAPs, TVWAPs, etc. When determining final prices, the oracle will utilize the aggregateFn
 // to compute the final price for each currency pair. By default, the oracle will compute the median
 // price across all providers.
-func New(opts ...OracleOption) (*OracleImpl, error) {
+func New(opts ...Option) (*OracleImpl, error) {
 	o := &OracleImpl{
 		closer:  ssync.NewCloser(),
 		logger:  zap.NewNop(),
@@ -159,7 +159,7 @@ func (o *OracleImpl) tick() {
 		}
 	}()
 
-	// Reset all of the provider prices before fetching new prices.
+	// Reset the provider prices before fetching new prices.
 	o.priceAggregator.ResetProviderData()
 
 	// Retrieve the latest prices from each provider.
@@ -188,23 +188,27 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 		}
 	}()
 
-	o.logger.Info("retrieving prices", zap.String("provider", provider.Name()))
+	o.logger.Info("retrieving prices", zap.String("provider", provider.Name()), zap.String("data handler type", string(provider.Type())))
 
 	// Fetch and set prices from the provider.
 	prices := provider.GetData()
 	if prices == nil {
-		o.logger.Info("provider returned nil prices", zap.String("provider", provider.Name()))
+		o.logger.Info("provider returned nil prices", zap.String("provider", provider.Name()), zap.String("data handler type", string(provider.Type())))
 		return
 	}
 
 	timeFilteredPrices := make(map[oracletypes.CurrencyPair]*big.Int)
 	for pair, result := range prices {
+		// update price metric
+		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), float64(result.Value.Int64()))
+
 		// If the price is older than the update interval, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
 		if diff > o.updateInterval {
 			o.logger.Debug(
 				"skipping price",
 				zap.String("provider", provider.Name()),
+				zap.String("data handler type", string(provider.Type())),
 				zap.String("pair", pair.String()),
 				zap.Duration("diff", diff),
 			)
@@ -214,6 +218,7 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 		o.logger.Debug(
 			"adding price",
 			zap.String("provider", provider.Name()),
+			zap.String("data handler type", string(provider.Type())),
 			zap.String("pair", pair.String()),
 			zap.String("price", result.Value.String()),
 			zap.Duration("diff", diff),
@@ -221,7 +226,10 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 		timeFilteredPrices[pair] = result.Value
 	}
 
-	o.logger.Info("provider returned prices", zap.String("provider", provider.Name()), zap.Int("prices", len(prices)))
+	o.logger.Info("provider returned prices",
+		zap.String("provider", provider.Name()),
+		zap.String("data handler type", string(provider.Type())),
+		zap.Int("prices", len(prices)))
 	o.priceAggregator.SetProviderData(provider.Name(), timeFilteredPrices)
 }
 
@@ -243,5 +251,14 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 
 // GetPrices returns the aggregate prices from the oracle.
 func (o *OracleImpl) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
-	return o.priceAggregator.GetAggregatedData()
+	prices := o.priceAggregator.GetAggregatedData()
+
+	// set metrics in background
+	go func() {
+		for cp, price := range prices {
+			o.metrics.UpdateAggregatePrice(cp.String(), float64(price.Int64()))
+		}
+	}()
+
+	return prices
 }
