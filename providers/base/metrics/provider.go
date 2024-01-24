@@ -3,6 +3,8 @@ package metrics
 import (
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/go-kit/kit/metrics"
 	"github.com/go-kit/kit/metrics/discard"
 	"github.com/go-kit/kit/metrics/prometheus"
@@ -24,15 +26,12 @@ const (
 )
 
 type (
-	Status       string
-	ProviderType string
+	Status string
 )
 
 const (
-	Success    Status       = "success"
-	Failure    Status       = "failure"
-	WebSockets ProviderType = "websockets"
-	API        ProviderType = "api"
+	Success Status = "success"
+	Failure Status = "failure"
 )
 
 // ProviderMetrics is an interface that defines the API for metrics collection for providers. The
@@ -43,13 +42,13 @@ const (
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
 	// for a given provider and ID (i.e. currency pair).
-	AddProviderResponseByID(providerName, id string, status Status, providerType ProviderType)
+	AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType)
 
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
-	AddProviderResponse(providerName string, status Status, providerType ProviderType)
+	AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType)
 
 	// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
-	LastUpdated(providerName, id string, providerType ProviderType)
+	LastUpdated(providerName, id string, providerType providertypes.ProviderType)
 }
 
 // ProviderMetricsImpl contains metrics exposed by this package.
@@ -106,7 +105,7 @@ func NewNopProviderMetrics() ProviderMetrics {
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
-func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, providerType ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType) {
 	m.responseStatusPerProviderByID.With(
 		ProviderLabel, providerName,
 		IDLabel, id,
@@ -116,7 +115,7 @@ func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, s
 }
 
 // AddProviderResponse increments the number of ticks with a fully successful provider update.
-func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, providerType ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType) {
 	m.responseStatusPerProvider.With(
 		ProviderLabel, providerName,
 		StatusLabel, string(status),
@@ -125,7 +124,7 @@ func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status St
 }
 
 // LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
-func (m *ProviderMetricsImpl) LastUpdated(providerName, id string, providerType ProviderType) {
+func (m *ProviderMetricsImpl) LastUpdated(providerName, id string, providerType providertypes.ProviderType) {
 	now := time.Now().UTC()
 	m.lastUpdatedPerProvider.With(
 		ProviderLabel, providerName,

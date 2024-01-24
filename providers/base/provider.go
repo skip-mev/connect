@@ -114,12 +114,12 @@ func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
 }
 
 // Type returns the type of data handler the provider uses
-func (p *Provider[K, V]) Type() providermetrics.ProviderType {
+func (p *Provider[K, V]) Type() providertypes.ProviderType {
 	switch {
 	case p.apiCfg.Enabled && p.api != nil:
-		return providermetrics.API
+		return providertypes.API
 	case p.wsCfg.Enabled && p.ws != nil:
-		return providermetrics.WebSockets
+		return providertypes.WebSockets
 	default:
 		return "unknown"
 	}

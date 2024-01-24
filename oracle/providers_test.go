@@ -6,8 +6,6 @@ import (
 	"math/big"
 	"time"
 
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
-
 	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/mock"
@@ -224,7 +222,7 @@ func (s *OracleTestSuite) noStartProvider(name string) providertypes.Provider[or
 	provider.On("Name").Return(name).Maybe()
 	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz error")).Maybe()
 	provider.On("GetData").Return(nil).Maybe()
-	provider.On("Type").Return(providermetrics.API)
+	provider.On("Type").Return(providertypes.API)
 
 	return provider
 }

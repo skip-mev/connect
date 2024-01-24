@@ -11,7 +11,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -80,12 +79,12 @@ func (s *OracleMetricsTestSuite) TestTickMetric() {
 
 	s.mockProvider1.On("Name").Return("provider1")
 	s.mockProvider1.On("Start", mock.Anything).Return(nil)
-	s.mockProvider1.On("Type").Return(providermetrics.API)
+	s.mockProvider1.On("Type").Return(providertypes.API)
 	s.mockProvider1.On("GetData").Return(nil)
 
 	s.mockProvider2.On("Name").Return("provider2")
 	s.mockProvider2.On("Start", mock.Anything).Return(nil)
-	s.mockProvider2.On("Type").Return(providermetrics.API)
+	s.mockProvider2.On("Type").Return(providertypes.API)
 	s.mockProvider2.On("GetData").Return(nil, nil)
 
 	// wait for a tick on the oracle

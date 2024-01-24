@@ -4,9 +4,14 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
 
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
-
 	"github.com/skip-mev/slinky/oracle/config"
+)
+
+type ProviderType string
+
+const (
+	WebSockets ProviderType = "websockets"
+	API        ProviderType = "api"
 )
 
 // Provider defines an interface a data provider must implement.
@@ -26,7 +31,7 @@ type Provider[K ResponseKey, V ResponseValue] interface {
 	Start(context.Context) error
 
 	// Type returns the type of the provider data handler.
-	Type() providermetrics.ProviderType
+	Type() ProviderType
 }
 
 // ProviderFactory inputs the oracle configuration and returns a set of providers. Developers
