@@ -13,6 +13,7 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
+	"github.com/skip-mev/slinky/abci/types"
 )
 
 const (
@@ -122,7 +123,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
-			err = NilRequestError{PrepareProposal}
+			err = types.NilRequestError{servicemetrics.PrepareProposal}
 			return nil, err
 		}
 
@@ -159,7 +160,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
-				err = CodecError{err}
+				err = types.CodecError{err}
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
@@ -184,8 +185,8 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		wrappedPrepareProposalLatency = time.Since(wrappedPrepareProposalStartTime)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
-			err = WrappedHandlerError{
-				Handler: PrepareProposal,
+			err = types.WrappedHandlerError{
+				Handler: servicemetrics.PrepareProposal,
 				Err:     err,
 			}
 
@@ -269,7 +270,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
-			err = NilRequestError{ProcessProposal}
+			err = types.NilRequestError{servicemetrics.ProcessProposal}
 			return nil, err
 		}
 
@@ -296,7 +297,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			extInfo, err = h.extendedCommitCodec.Decode(req.Txs[OracleInfoIndex])
 			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
-				err = CodecError{err}
+				err = types.CodecError{err}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
@@ -322,8 +323,8 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		wrappedProcessProposalStartTime := time.Now()
 		resp, err = h.processProposalHandler(ctx, req)
 		if err != nil {
-			err = WrappedHandlerError{
-				Handler: ProcessProposal,
+			err = types.WrappedHandlerError{
+				Handler: servicemetrics.ProcessProposal,
 				Err:     err,
 			}
 		}

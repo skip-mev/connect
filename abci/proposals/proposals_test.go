@@ -8,7 +8,7 @@ import (
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 
-	"github.com/cometbft/cometbft/types"
+	cmttypes "github.com/cometbft/cometbft/types"
 
 	"cosmossdk.io/log"
 
@@ -26,6 +26,7 @@ import (
 	"github.com/skip-mev/slinky/abci/ve"
 	servicemetricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/abci/types"
 )
 
 var (
@@ -1033,11 +1034,11 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			metricsMocks,
 		)
 
-		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, proposals.NilRequestError{}).Once()
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, types.NilRequestError{}).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
 
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, nil)
-		s.Require().Error(err, proposals.NilRequestError{})
+		s.Require().Error(err, types.NilRequestError{})
 	})
 	// test failing wrapped prepare proposal
 	s.Run("test failing wrapped prepare proposal", func() {
@@ -1058,8 +1059,8 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
 			metricsMocks,
 		)
-		expErr := proposals.WrappedHandlerError{
-			Handler: proposals.PrepareProposal,
+		expErr := types.WrappedHandlerError{
+			Handler: servicemetrics.PrepareProposal,
 			Err:     prepareErr,
 		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
@@ -1125,7 +1126,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
 			metricsMocks,
 		)
-		expErr := proposals.CodecError{codecErr}
+		expErr := types.CodecError{codecErr}
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
 
@@ -1182,11 +1183,11 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			metricsMocks,
 		)
 
-		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, proposals.NilRequestError{proposals.ProcessProposal}).Once()
+		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, types.NilRequestError{servicemetrics.ProcessProposal}).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
 
 		_, err := propHandler.ProcessProposalHandler()(s.ctx, nil)
-		s.Require().Error(err, proposals.NilRequestError{proposals.ProcessProposal})
+		s.Require().Error(err, types.NilRequestError{servicemetrics.ProcessProposal})
 	})
 	// test failed wrapped process-proposal
 	s.Run("test failed wrapped process-proposal", func() {
@@ -1205,8 +1206,8 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			metricsMocks,
 		)
-		expErr := proposals.WrappedHandlerError{
-			Handler: proposals.ProcessProposal,
+		expErr := types.WrappedHandlerError{
+			Handler: servicemetrics.ProcessProposal,
 			Err:     processErr,
 		}
 
@@ -1290,7 +1291,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			metricsMocks,
 		)
-		expErr := proposals.CodecError{codecErr}
+		expErr := types.CodecError{codecErr}
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
 
@@ -1358,7 +1359,7 @@ func (s *ProposalsTestSuite) createRequestPrepareProposal(
 		LocalLastCommit: extendedCommitInfo,
 		Height:          height,
 		// Use the same default MaxTxBytes that comet does
-		MaxTxBytes: types.DefaultBlockParams().MaxBytes,
+		MaxTxBytes: cmttypes.DefaultBlockParams().MaxBytes,
 	}
 }
 
