@@ -18,7 +18,7 @@ type OracleClient interface { //nolint
 
 	// Start starts the oracle client. This should connect to the remote oracle
 	// service and return an error if the connection fails.
-	Start() error
+	Start(context.Context) error
 
 	// Stop stops the oracle client.
 	Stop() error
@@ -29,7 +29,7 @@ type OracleClient interface { //nolint
 type NoOpClient struct{}
 
 // Start is a no-op.
-func (NoOpClient) Start() error {
+func (NoOpClient) Start(context.Context) error {
 	return nil
 }
 

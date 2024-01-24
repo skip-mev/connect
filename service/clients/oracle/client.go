@@ -108,8 +108,8 @@ func NewClient(
 }
 
 // Start starts the GRPC client. This method dials the remote oracle-service
-// and errors if the connection fails.
-func (c *GRPCClient) Start() error {
+// and errors if the connection fails. This method may block (depending on the blockingDial option).
+func (c *GRPCClient) Start(ctx context.Context) error {
 	c.logger.Info("starting oracle client", "addr", c.addr)
 
 	opts := []grpc.DialOption{
@@ -120,10 +120,23 @@ func (c *GRPCClient) Start() error {
 		opts = append(opts, grpc.WithBlock())
 	}
 
-	conn, err := grpc.Dial(
-		c.addr,
-		opts...,
+	// dial the client, but defer to context closure, if necessary
+	var (
+		conn *grpc.ClientConn
+		err  error
+		done = make(chan struct{})
 	)
+	go func() {
+		defer close(done)
+		conn, err = grpc.DialContext(ctx, c.addr, opts...)
+	}()
+
+	// wait for either the context to close or the dial to complete
+	select {
+	case <-ctx.Done():
+		err = fmt.Errorf("context closed before oracle client could start: %w", ctx.Err())
+	case <-done:
+	}
 	if err != nil {
 		c.logger.Error("failed to dial oracle gRPC server", "err", err)
 		return fmt.Errorf("failed to dial oracle gRPC server: %w", err)
