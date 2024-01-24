@@ -190,7 +190,7 @@ production = false
           Quote = "USD"
 
 [[providers]]
-  name = "coinbase_websocket"
+  name = "coinbase"
   [providers.api]
     enabled = false
     timeout = "0s"
@@ -204,7 +204,7 @@ production = false
     max_buffer_size = 1024
     reconnection_timeout = "10s"
     wss = "wss://ws-feed.exchange.coinbase.com"
-    name = "coinbase_websocket"
+    name = "coinbase"
     read_buffer_size = 0
     write_buffer_size = 0
     handshake_timeout = "45s"
@@ -212,7 +212,7 @@ production = false
     read_deadline = "45s"
     write_deadline = "5s"
   [providers.market_config]
-    name = "coinbase_websocket"
+    name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
       [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM-USD"
