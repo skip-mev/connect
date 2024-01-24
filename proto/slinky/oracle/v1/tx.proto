@@ -9,6 +9,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/oracle/types";
 
+// Msg is the message service for the x/oracle module.
 service Msg {
   option (cosmos.msg.v1.service) = true;
 

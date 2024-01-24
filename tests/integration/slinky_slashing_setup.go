@@ -21,6 +21,7 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -185,6 +186,7 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 			},
 		},
 	})
+
 	oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, ticker)
 	SetOracleConfigsOnOracle(oracle, oracleConfig)
 

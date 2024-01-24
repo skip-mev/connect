@@ -59,7 +59,7 @@ func NewWebSocketDataHandler(
 // and a response must be returned. No update message is required for subscribe messages.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []byte, error) {
+) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
 		msg  InstrumentResponseMessage
 		resp providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
@@ -86,7 +86,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 			return resp, nil, err
 		}
 
-		return resp, heartbeatResp, nil
+		return resp, []handlers.WebsocketEncodedMessage{heartbeatResp}, nil
 	case InstrumentMethod:
 		h.logger.Debug("received instrument message")
 

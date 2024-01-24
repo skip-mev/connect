@@ -25,7 +25,7 @@ func CreateResponseFromJSON(m string) *http.Response {
 
 // CreateAPIQueryHandlerWithGetResponses creates a mock query handler that returns the given responses every
 // time it is invoked.
-func CreateAPIQueryHandlerWithGetResponses[K comparable, V any](
+func CreateAPIQueryHandlerWithGetResponses[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
@@ -46,7 +46,7 @@ func CreateAPIQueryHandlerWithGetResponses[K comparable, V any](
 
 // CreateAPIQueryHandlerWithResponseFn creates a mock query handler that invokes the given function every time it is
 // invoked. The function should utilize the response channel to send responses to the provider.
-func CreateAPIQueryHandlerWithResponseFn[K comparable, V any](
+func CreateAPIQueryHandlerWithResponseFn[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	fn func(chan<- providertypes.GetResponse[K, V]),
 ) handlers.APIQueryHandler[K, V] {
@@ -60,8 +60,8 @@ func CreateAPIQueryHandlerWithResponseFn[K comparable, V any](
 	return handler
 }
 
-// CreateProviderWithGetResponses creates a new provider with the given responses.
-func CreateAPIProviderWithGetResponses[K comparable, V any](
+// CreateAPIProviderWithGetResponses creates a new provider with the given responses.
+func CreateAPIProviderWithGetResponses[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
@@ -87,7 +87,7 @@ func CreateAPIProviderWithGetResponses[K comparable, V any](
 }
 
 // CreateAPIProviderWithResponseFn creates a new provider with the given response function.
-func CreateAPIProviderWithResponseFn[K comparable, V any](
+func CreateAPIProviderWithResponseFn[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	logger *zap.Logger,
 	cfg config.ProviderConfig,

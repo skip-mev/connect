@@ -11,6 +11,7 @@ import "slinky/alerts/v1/genesis.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/alerts/types";
 
+// Msg is the message service for the x/alerts module.
 service Msg {
   option (cosmos.msg.v1.service) = true;
 

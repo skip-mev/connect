@@ -8,7 +8,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/sla/types";
 
-// Message service defines the types of messages supported by the sla module.
+// Msg is the message service for the x/sla module.
 service Msg {
   option (cosmos.msg.v1.service) = true;
 

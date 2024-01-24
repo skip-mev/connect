@@ -23,7 +23,7 @@ import (
 // asynchronously by the provider.
 //
 //go:generate mockery --name APIQueryHandler --output ./mocks/ --case underscore
-type APIQueryHandler[K comparable, V any] interface {
+type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	Query(
 		ctx context.Context,
 		ids []K,
@@ -35,9 +35,9 @@ type APIQueryHandler[K comparable, V any] interface {
 // This is used to query using http requests. It manages querying the data provider
 // by using the APIDataHandler and RequestHandler. All responses are sent to the
 // response channel. In the case where the APIQueryHandler is atomic, the handler
-// will make a single request for all of the IDs. If the APIQueryHandler is not
+// will make a single request for all IDs. If the APIQueryHandler is not
 // atomic, the handler will make a request for each ID in a separate go routine.
-type APIQueryHandlerImpl[K comparable, V any] struct {
+type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 	config  config.APIConfig
@@ -53,7 +53,7 @@ type APIQueryHandlerImpl[K comparable, V any] struct {
 
 // NewAPIQueryHandler creates a new APIQueryHandler. It manages querying the data
 // provider by using the APIDataHandler and RequestHandler.
-func NewAPIQueryHandler[K comparable, V any](
+func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	logger *zap.Logger,
 	cfg config.APIConfig,
 	requestHandler RequestHandler,
@@ -94,7 +94,7 @@ func NewAPIQueryHandler[K comparable, V any](
 }
 
 // Query is used to query the API data provider for the given IDs. This method blocks
-// until all of the responses have been sent to the response channel. Query will only
+// until all responses have been sent to the response channel. Query will only
 // make N concurrent requests at a time, where N is the capacity of the response channel.
 func (h *APIQueryHandlerImpl[K, V]) Query(
 	ctx context.Context,
@@ -125,9 +125,9 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	wg.SetLimit(cap(responseCh))
 	h.logger.Debug("setting concurrency limit", zap.Int("limit", cap(responseCh)))
 
-	// If our task is atomic, we can make a single request for all of the IDs. Otherwise,
+	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
 	// we need to make a request for each ID.
-	tasks := []func() error{}
+	var tasks []func() error
 	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
 	} else {
@@ -142,7 +142,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		wg.Go(task)
 	}
 
-	// Wait for all of the tasks to complete.
+	// Wait for all tasks to complete.
 	if err := wg.Wait(); err != nil {
 		h.logger.Error("error querying ids", zap.Error(err))
 	}

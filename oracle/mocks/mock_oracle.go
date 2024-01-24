@@ -40,6 +40,10 @@ func (_m *Oracle) GetLastSyncTime() time.Time {
 func (_m *Oracle) GetPrices() map[types.CurrencyPair]*big.Int {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for GetPrices")
+	}
+
 	var r0 map[types.CurrencyPair]*big.Int
 	if rf, ok := ret.Get(0).(func() map[types.CurrencyPair]*big.Int); ok {
 		r0 = rf()
