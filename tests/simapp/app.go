@@ -319,10 +319,8 @@ func NewSimApp(
 	}
 
 	// Connect to the oracle service (default timeout of 5 seconds).
-	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	go func() {
-		if err := app.oracleClient.Start(dialCtx); err != nil {
+		if err := app.oracleClient.Start(context.Background()); err != nil {
 			app.Logger().Error("failed to start oracle client", "err", err)
 			panic(err)
 		}
