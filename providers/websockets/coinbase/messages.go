@@ -52,7 +52,7 @@ const (
 // that was received.
 type BaseMessage struct {
 	// Type is the type of message.
-	Type MessageType `json:"type"`
+	Type string `json:"type"`
 }
 
 // SubscribeRequestMessage represents a subscribe request message.

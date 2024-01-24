@@ -20,22 +20,20 @@ const (
 	URL_BETA = "wss://beta-ws.kraken.com" //nolint
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Kraken Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: 10 * time.Second,
-		WSS:                 URL,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the Kraken Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                Name,
+	Enabled:             true,
+	MaxBufferSize:       1000,
+	ReconnectionTimeout: 10 * time.Second,
+	WSS:                 URL,
+	ReadBufferSize:      config.DefaultReadBufferSize,
+	WriteBufferSize:     config.DefaultWriteBufferSize,
+	HandshakeTimeout:    config.DefaultHandshakeTimeout,
+	EnableCompression:   config.DefaultEnableCompression,
+	ReadTimeout:         config.DefaultReadTimeout,
+	WriteTimeout:        config.DefaultWriteTimeout,
+}
 
 // DecodeTickerResponseMessage decodes a ticker response message .
 func DecodeTickerResponseMessage(message []byte) (TickerResponseMessage, error) {

@@ -15,19 +15,17 @@ const (
 	URL_SANDBOX = "wss://uat-stream.3ona.co/exchange/v1/market" //nolint
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URL_PROD,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                Name,
+	Enabled:             true,
+	MaxBufferSize:       config.DefaultMaxBufferSize,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	WSS:                 URL_PROD,
+	ReadBufferSize:      config.DefaultReadBufferSize,
+	WriteBufferSize:     config.DefaultWriteBufferSize,
+	HandshakeTimeout:    config.DefaultHandshakeTimeout,
+	EnableCompression:   config.DefaultEnableCompression,
+	ReadTimeout:         config.DefaultReadTimeout,
+	WriteTimeout:        config.DefaultWriteTimeout,
+}

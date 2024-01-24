@@ -14,7 +14,7 @@ const (
 	URL = "wss://ws-feed.exchange.coinbase.com"
 
 	// URL_SANDBOX is the sandbox Coinbase Websocket URL.
-	URL_SANDBOX = "wss://ws-feed-public.sandbox.exchange.coinbase.com"
+	URL_SANDBOX = "wss://ws-feed-public.sandbox.exchange.coinbase.com" //nolint
 )
 
 const (
@@ -30,19 +30,17 @@ const (
 	DefaultWriteTimeout = 5 * time.Second
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:             true,
-		Name:                Name,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URL,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   DefaultEnabledCompression,
-		WriteTimeout:        DefaultWriteTimeout,
-		ReadTimeout:         config.DefaultReadTimeout,
-	}
-)
+// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Enabled:             true,
+	Name:                Name,
+	MaxBufferSize:       config.DefaultMaxBufferSize,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	WSS:                 URL,
+	ReadBufferSize:      config.DefaultReadBufferSize,
+	WriteBufferSize:     config.DefaultWriteBufferSize,
+	HandshakeTimeout:    config.DefaultHandshakeTimeout,
+	EnableCompression:   DefaultEnabledCompression,
+	WriteTimeout:        DefaultWriteTimeout,
+	ReadTimeout:         config.DefaultReadTimeout,
+}

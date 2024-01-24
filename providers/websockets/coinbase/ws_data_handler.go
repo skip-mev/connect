@@ -92,7 +92,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 		resp, err := h.parseTickerResponseMessage(tickerMessage)
 		return resp, nil, err
 	default:
-		h.logger.Info("received unknown message type", zap.String("type", string(msg.Type)))
+		h.logger.Info("received unknown message type", zap.String("type", msg.Type))
 		return resp, nil, fmt.Errorf("invalid message type %s", msg.Type)
 	}
 }
