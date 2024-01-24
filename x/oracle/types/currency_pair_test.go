@@ -86,7 +86,7 @@ func TestToFromString(t *testing.T) {
 		},
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
-			types.CurrencyPair{Base: "A", Quote: "B"}.ToString(),
+			types.CurrencyPairString("A", "B"),
 			types.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},

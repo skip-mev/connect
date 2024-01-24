@@ -236,12 +236,12 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
 			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: oracletypes.NewCurrencyPair("BTC", "USD").ToString(),
+				CurrencyPairId: oracletypes.CurrencyPairString("BTC", "USD"),
 			},
 		})
 		if err == nil {
 			// remove the currency-pair
-			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.ToString()}...))
+			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.String()}...))
 		}
 
 		// get the current height
@@ -283,7 +283,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
 			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: cp.ToString(),
+				CurrencyPairId: cp.String(),
 			},
 		})
 		if err != nil {
@@ -394,7 +394,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	oraclesClient := oracletypes.NewQueryClient(cc)
 	_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
 		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-			CurrencyPairId: cp.ToString(),
+			CurrencyPairId: cp.String(),
 		},
 	})
 	if err != nil {
@@ -839,7 +839,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	ctx := context.Background()
 	_, err = oraclesClient.GetPrice(ctx, &oracletypes.GetPriceRequest{
 		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-			CurrencyPairId: cp.ToString(),
+			CurrencyPairId: cp.String(),
 		},
 	})
 	if err != nil {

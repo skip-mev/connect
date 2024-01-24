@@ -2140,8 +2140,7 @@ type GetPriceRequest_CurrencyPair struct {
 }
 
 type GetPriceRequest_CurrencyPairId struct {
-	// stringified representation of the CurrencyPair (notice, this must be the
-	// result of CurrencyPair.ToString())
+	// string representation of the CurrencyPair
 	CurrencyPairId string `protobuf:"bytes,2,opt,name=currency_pair_id,json=currencyPairId,proto3,oneof"`
 }
 

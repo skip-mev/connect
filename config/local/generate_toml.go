@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -21,9 +22,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var (
-	oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to write the oracle config file to")
-)
+var oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to write the oracle config file to")
 
 // LocalConfig defines a readable config for local development. Any changes to this
 // file should be reflected in oracle.toml. To update the oracle.toml file, run
