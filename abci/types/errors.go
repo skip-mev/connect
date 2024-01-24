@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 )
 

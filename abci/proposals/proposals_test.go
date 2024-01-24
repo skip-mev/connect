@@ -23,10 +23,10 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
+	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	servicemetricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/skip-mev/slinky/abci/types"
 )
 
 var (
@@ -935,7 +935,9 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
 		}).Once()
 
-		experr := proposals.InvalidExtendedCommitInfoError{fmt.Errorf("error in validate vote extensions")}
+		experr := proposals.InvalidExtendedCommitInfoError{
+			Err: fmt.Errorf("error in validate vote extensions"),
+		}
 		metricsmocks.On("AddABCIRequest", servicemetrics.PrepareProposal, experr).Once()
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
 		s.Require().Error(err, experr)
@@ -1008,7 +1010,10 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
 		}).Once()
 
-		experr := proposals.InvalidExtendedCommitInfoError{fmt.Errorf("error in validate vote extensions")}
+		experr := proposals.InvalidExtendedCommitInfoError{
+			Err: fmt.Errorf("error in validate vote extensions"),
+		}
+
 		metricsmocks.On("AddABCIRequest", servicemetrics.ProcessProposal, experr).Once()
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
 		s.Require().Error(err, experr)
@@ -1034,11 +1039,15 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			metricsMocks,
 		)
 
-		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, types.NilRequestError{}).Once()
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, types.NilRequestError{
+			Handler: servicemetrics.PrepareProposal,
+		}).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
 
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, nil)
-		s.Require().Error(err, types.NilRequestError{})
+		s.Require().Error(err, types.NilRequestError{
+			Handler: servicemetrics.PrepareProposal,
+		})
 	})
 	// test failing wrapped prepare proposal
 	s.Run("test failing wrapped prepare proposal", func() {
@@ -1094,7 +1103,9 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
 			metricsMocks,
 		)
-		expErr := proposals.InvalidExtendedCommitInfoError{extCommitError}
+		expErr := proposals.InvalidExtendedCommitInfoError{
+			Err: extCommitError,
+		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
 
@@ -1126,7 +1137,9 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
 			metricsMocks,
 		)
-		expErr := types.CodecError{codecErr}
+		expErr := types.CodecError{
+			Err: codecErr,
+		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
 
@@ -1183,11 +1196,16 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			metricsMocks,
 		)
 
-		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, types.NilRequestError{servicemetrics.ProcessProposal}).Once()
+		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, types.NilRequestError{
+			Handler: servicemetrics.ProcessProposal,
+		}).Once()
+
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
 
 		_, err := propHandler.ProcessProposalHandler()(s.ctx, nil)
-		s.Require().Error(err, types.NilRequestError{servicemetrics.ProcessProposal})
+		s.Require().Error(err, types.NilRequestError{
+			Handler: servicemetrics.ProcessProposal,
+		})
 	})
 	// test failed wrapped process-proposal
 	s.Run("test failed wrapped process-proposal", func() {
@@ -1291,7 +1309,9 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			metricsMocks,
 		)
-		expErr := types.CodecError{codecErr}
+		expErr := types.CodecError{
+			Err: codecErr,
+		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
 
@@ -1322,7 +1342,9 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			metricsMocks,
 		)
-		expErr := proposals.InvalidExtendedCommitInfoError{validateErr}
+		expErr := proposals.InvalidExtendedCommitInfoError{
+			Err: validateErr,
+		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
 

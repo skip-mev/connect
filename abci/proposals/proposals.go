@@ -12,8 +12,8 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/abci/types"
+	"github.com/skip-mev/slinky/abci/ve"
 )
 
 const (
@@ -123,7 +123,9 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
-			err = types.NilRequestError{servicemetrics.PrepareProposal}
+			err = types.NilRequestError{
+				Handler: servicemetrics.PrepareProposal,
+			}
 			return nil, err
 		}
 
@@ -146,7 +148,9 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
-				err = InvalidExtendedCommitInfoError{err}
+				err = InvalidExtendedCommitInfoError{
+					Err: err,
+				}
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
@@ -160,7 +164,9 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
-				err = types.CodecError{err}
+				err = types.CodecError{
+					Err: err,
+				}
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
@@ -270,7 +276,9 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
-			err = types.NilRequestError{servicemetrics.ProcessProposal}
+			err = types.NilRequestError{
+				Handler: servicemetrics.ProcessProposal,
+			}
 			return nil, err
 		}
 
@@ -297,7 +305,9 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			extInfo, err = h.extendedCommitCodec.Decode(req.Txs[OracleInfoIndex])
 			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
-				err = types.CodecError{err}
+				err = types.CodecError{
+					Err: err,
+				}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
@@ -309,7 +319,9 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
-				err = InvalidExtendedCommitInfoError{err}
+				err = InvalidExtendedCommitInfoError{
+					Err: err,
+				}
 
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
