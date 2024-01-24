@@ -1014,6 +1014,204 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 	})
 }
 
+func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
+	// test nil request
+	s.Run("test nil request", func() {
+		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				return nil, nil
+			},
+			nil,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				return nil
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsMocks,
+		)
+
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, proposals.NilRequestError{}).Once()
+		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, nil)
+		s.Require().Error(err, proposals.NilRequestError{})
+	})
+	// test failing wrapped prepare proposal
+	s.Run("test failing wrapped prepare proposal", func() {
+		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+
+		prepareErr := fmt.Errorf("error in prepare proposal")
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				return nil, prepareErr
+			},
+			nil,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				return nil
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsMocks,
+		)
+		expErr := proposals.WrappedHandlerError{
+			Handler: proposals.PrepareProposal,
+			Err: prepareErr,
+		}
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
+
+		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
+		
+		// make vote-extensions not enabled to skip validate vote extensions
+		s.ctx = s.ctx.WithBlockHeight(1)
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 3)
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, &cometabci.RequestPrepareProposal{})
+		s.Require().Error(err, expErr)
+	})
+
+	// test invalid extendedcommit
+	s.Run("test invalid extended commit", func() {
+		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+
+		extCommitError := fmt.Errorf("error in validating extended commit")
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				return nil, nil
+			},
+			nil,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				return extCommitError
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+			codec.NewDefaultExtendedCommitCodec(),
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsMocks,
+		)
+		expErr := proposals.InvalidExtendedCommitInfoError{extCommitError}
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
+		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
+
+		// make vote-extensions enabled
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 1)
+		s.ctx = s.ctx.WithBlockHeight(4)
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, &cometabci.RequestPrepareProposal{})
+		s.Require().Error(err, expErr)
+	})
+
+	// test codec failure
+	s.Run("test invalid extended commit", func() {
+		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+		codecErr := fmt.Errorf("error in codec")
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				return nil, nil
+			},
+			nil,
+			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+				return nil
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+			fakeExtendedCommitCodec{
+				codecErr,
+			},
+			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			metricsMocks,
+		)
+		expErr := proposals.CodecError{codecErr}
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
+		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
+
+		// make vote-extensions enabled
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 1)
+		s.ctx = s.ctx.WithBlockHeight(4)
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, &cometabci.RequestPrepareProposal{})
+		s.Require().Error(err, expErr)
+	})
+
+	// test success
+	s.Run("test success", func() {
+		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				return &cometabci.ResponsePrepareProposal{}, nil
+			},
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			metricsMocks,
+		)
+
+		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, servicemetrics.Success{}).Once()
+		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
+
+		// make vote-extensions enabled
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 4)
+		s.ctx = s.ctx.WithBlockHeight(1)
+
+		_, err := propHandler.PrepareProposalHandler()(s.ctx, &cometabci.RequestPrepareProposal{})
+		s.Require().NoError(err)
+	})
+}
+
+func (s *ProposalsTestSuite) TestProcessProposalStatus() {
+	// test nil request
+	s.Run("test nil request", func() {
+		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+
+		propHandler := proposals.NewProposalHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			metricsMocks,
+		)
+
+		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, proposals.NilRequestError{proposals.ProcessProposal}).Once()
+		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
+
+		_, err := propHandler.ProcessProposalHandler()(s.ctx, nil)
+		s.Require().Error(err, proposals.NilRequestError{proposals.ProcessProposal})
+	})
+	// test failed wrapped process-proposal
+
+	// test success
+
+	// test failing w/ missing commit info
+
+	// test codec failure
+
+	// test invalid extended commit
+}
+
+type fakeExtendedCommitCodec struct {
+	toReturn error
+}
+
+func (f fakeExtendedCommitCodec) Encode(cometabci.ExtendedCommitInfo) ([]byte, error) {
+	return nil, f.toReturn
+}
+
+func (f fakeExtendedCommitCodec) Decode([]byte) (cometabci.ExtendedCommitInfo, error) {
+	return cometabci.ExtendedCommitInfo{}, f.toReturn
+}
+
+
 func (s *ProposalsTestSuite) createRequestPrepareProposal(
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 	txs [][]byte,
