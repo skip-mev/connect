@@ -860,8 +860,8 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 	// check that no latency is reported for a failed PrepareProposal
 	metricsmocks := servicemetricsmocks.NewMetrics(s.T())
 
-	// check that latency reported in upstream logic is ignored
-	s.Run("wrapped prepare proposal latency is ignored", func() {
+	// check that latency reported in upstream logic is reported
+	s.Run("wrapped prepare proposal latency is reported", func() {
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
@@ -898,6 +898,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
 			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored wrapped prepare-proposal latency
 		}).Once()
+		metricsmocks.On("AddABCIRequest", servicemetrics.PrepareProposal, servicemetrics.Success{}).Once()
 
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
@@ -933,11 +934,13 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
 		}).Once()
 
+		experr := proposals.InvalidExtendedCommitInfoError{fmt.Errorf("error in validate vote extensions")}
+		metricsmocks.On("AddABCIRequest", servicemetrics.PrepareProposal, experr).Once()
 		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
-		s.Require().Error(err, "error in validate vote extensions")
+		s.Require().Error(err, experr)
 	})
 
-	s.Run("wrapped process proposal latency is ignored", func() {
+	s.Run("wrapped process proposal latency is reported", func() {
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			baseapp.NoOpPrepareProposal(),
@@ -970,7 +973,8 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
 			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored the wrapped processProposal latency
 		}).Once()
-
+	
+		metricsmocks.On("AddABCIRequest", servicemetrics.ProcessProposal, servicemetrics.Success{}).Once()
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
 	})
@@ -1002,9 +1006,11 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			latency := args.Get(1).(time.Duration)
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
 		}).Once()
-
+		
+		experr := proposals.InvalidExtendedCommitInfoError{fmt.Errorf("error in validate vote extensions")}
+		metricsmocks.On("AddABCIRequest", servicemetrics.ProcessProposal, experr).Once()
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
-		s.Require().Error(err, "error in validate vote extensions")
+		s.Require().Error(err, experr)
 	})
 }
 
@@ -1031,3 +1037,4 @@ func (s *ProposalsTestSuite) createRequestProcessProposal(
 		Height: height,
 	}
 }
+
