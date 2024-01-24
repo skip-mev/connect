@@ -104,6 +104,7 @@ func NewNopProviderMetrics() ProviderMetrics {
 
 func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ providertypes.ProviderType) {
 }
+
 func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ providertypes.ProviderType) {
 }
 func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.ProviderType) {}

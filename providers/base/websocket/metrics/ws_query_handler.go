@@ -91,8 +91,10 @@ func NewNopWebSocketMetrics() WebSocketMetrics {
 
 func (m *noOpWebSocketMetricsImpl) AddWebSocketConnectionStatus(_ string, _ ConnectionStatus) {
 }
+
 func (m *noOpWebSocketMetricsImpl) AddWebSocketDataHandlerStatus(_ string, _ HandlerStatus) {
 }
+
 func (m *noOpWebSocketMetricsImpl) ObserveWebSocketLatency(_ string, _ time.Duration) {
 }
 
@@ -111,13 +113,15 @@ func (m *WebSocketMetricsImpl) AddWebSocketConnectionStatus(provider string, sta
 func (m *WebSocketMetricsImpl) AddWebSocketDataHandlerStatus(provider string, status HandlerStatus) {
 	m.dataHandlerStatusPerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: provider,
-		StatusLabel:                   status.String()},
+		StatusLabel:                   status.String(),
+	},
 	).Add(1)
 }
 
 // ObserveWebSocketLatency adds a latency observation to the metrics collector for the given provider.
 func (m *WebSocketMetricsImpl) ObserveWebSocketLatency(provider string, duration time.Duration) {
 	m.responseTimePerProvider.With(prometheus.Labels{
-		providermetrics.ProviderLabel: provider},
+		providermetrics.ProviderLabel: provider,
+	},
 	).Observe(float64(duration.Milliseconds()))
 }
