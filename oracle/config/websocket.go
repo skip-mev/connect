@@ -5,6 +5,41 @@ import (
 	"time"
 )
 
+const (
+	// DefaultMaxBufferSize is the default maximum number of messages that the provider
+	// will buffer at any given time.
+	DefaultMaxBufferSize = 1024
+
+	// DefaultReconnectionTimeout is the default timeout for the provider to attempt
+	// to reconnect to the websocket endpoint.
+	DefaultReconnectionTimeout = 10 * time.Second
+
+	// DefaultReadBufferSize is the default I/O read buffer size. If a buffer size of
+	// 0 is specified, then a default buffer size is used i.e. the buffers allocated
+	// by the HTTP server.
+	DefaultReadBufferSize = 0
+
+	// DefaultWriteBufferSize is the default I/O write buffer size. If a buffer size of
+	// 0 is specified, then a default buffer size is used i.e. the buffers allocated
+	// by the HTTP server.
+	DefaultWriteBufferSize = 0
+
+	// DefaultHandshakeTimeout is the default duration for the handshake to complete.
+	DefaultHandshakeTimeout = 45 * time.Second
+
+	// DefaultEnableCompression is the default value for whether the client should
+	// attempt to negotiate per message compression (RFC 7692).
+	DefaultEnableCompression = false
+
+	// DefaultReadTimeout is the default read deadline on the underlying network
+	// connection.
+	DefaultReadTimeout = 45 * time.Second
+
+	// DefaultWriteTimeout is the default write deadline on the underlying network
+	// connection.
+	DefaultWriteTimeout = 45 * time.Second
+)
+
 // WebSocketConfig defines a config for a websocket based data provider.
 type WebSocketConfig struct {
 	// Enabled is a flag that indicates whether the provider is web socket based.
@@ -38,20 +73,20 @@ type WebSocketConfig struct {
 
 	// EnableCompression specifies if the client should attempt to negotiate per
 	// message compression (RFC 7692). Setting this value to true does not guarantee
-	// that compression will be supported.
+	// that compression will be supported. Note that enabling compression may 
 	EnableCompression bool `mapstructure:"enable_compression" toml:"enable_compression"`
 
-	// ReadDeadline sets the read deadline on the underlying network connection.
+	// ReadTimeout sets the read deadline on the underlying network connection.
 	// After a read has timed out, the websocket connection state is corrupt and
 	// all future reads will return an error. A zero value for t means reads will
 	// not time out.
-	ReadDeadline time.Duration `mapstructure:"read_deadline" toml:"read_deadline"`
+	ReadTimeout time.Duration `mapstructure:"read_deadline" toml:"read_deadline"`
 
-	// WriteDeadline sets the write deadline on the underlying network
+	// WriteTimeout sets the write deadline on the underlying network
 	// connection. After a write has timed out, the websocket state is corrupt and
 	// all future writes will return an error. A zero value for t means writes will
 	// not time out.
-	WriteDeadline time.Duration `mapstructure:"write_deadline" toml:"write_deadline"`
+	WriteTimeout time.Duration `mapstructure:"write_deadline" toml:"write_deadline"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.
@@ -74,6 +109,26 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if len(c.Name) == 0 {
 		return fmt.Errorf("websocket name cannot be empty")
+	}
+
+	if c.ReadBufferSize < 0 {
+		return fmt.Errorf("websocket read buffer size cannot be negative")
+	}
+
+	if c.WriteBufferSize < 0 {
+		return fmt.Errorf("websocket write buffer size cannot be negative")
+	}
+
+	if c.HandshakeTimeout <= 0 {
+		return fmt.Errorf("websocket handshake timeout must be greater than 0")
+	}
+
+	if c.ReadTimeout <= 0 {
+		return fmt.Errorf("websocket read timeout must be greater than 0")
+	}
+
+	if c.WriteTimeout <= 0 {
+		return fmt.Errorf("websocket write timeout must be greater than 0")
 	}
 
 	return nil
