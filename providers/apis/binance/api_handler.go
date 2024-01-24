@@ -59,7 +59,7 @@ func (h *APIHandler) CreateURL(
 	var cpStrings string
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			continue
 		}
@@ -94,12 +94,12 @@ func (h *APIHandler) ParseResponse(
 	// Determine of the provided currency pairs which are supported by the Binance API.
 	configuredCps := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.ToString()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			continue
 		}
 
-		configuredCps.CurrencyPairToMarketConfigs[cp.ToString()] = market
+		configuredCps.CurrencyPairToMarketConfigs[cp.String()] = market
 	}
 
 	// Filter out the responses that are not expected.
@@ -116,7 +116,7 @@ func (h *APIHandler) ParseResponse(
 		}
 
 		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-		delete(configuredCps.CurrencyPairToMarketConfigs, cp.ToString())
+		delete(configuredCps.CurrencyPairToMarketConfigs, cp.String())
 	}
 
 	// If there are any currency pairs that were not resolved, return an error.

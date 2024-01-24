@@ -109,7 +109,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.String(), true).Once()
 
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Once()
 		cpID.On("GetDecodedPrice", s.ctx, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil).Once()
@@ -151,8 +151,8 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", ethUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.String(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethUSD.String(), true).Once()
 
 		// Assume the validator takes up all of the voting power
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -204,7 +204,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.String(), true).Once()
 
 		// Assume the validators have an equal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -260,7 +260,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.String(), true).Once()
 
 		// Assume the validators have an equal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -315,8 +315,8 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", ethUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.String(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethUSD.String(), true).Once()
 
 		// Assume the validators have an unequal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
@@ -387,9 +387,9 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 
 		// The validator is included in the commit and the price should be included
 		mockMetrics.On("AddVoteIncludedInLastCommit", true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", btcUSD.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", ethBTC.ToString(), true).Once()
-		mockMetrics.On("AddTickerInclusionStatus", ethUSD.ToString(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", btcUSD.String(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethBTC.String(), true).Once()
+		mockMetrics.On("AddTickerInclusionStatus", ethUSD.String(), true).Once()
 
 		// Assume the validators have an unequal stake
 		mockValidatorStore.On("ValidatorByConsAddr", mock.Anything, s.myVal).Return(
