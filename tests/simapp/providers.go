@@ -194,7 +194,10 @@ func webSocketProviderFromProviderConfig(
 
 	// If a custom request handler is not provided, create a new default one.
 	if connHandler == nil {
-		connHandler = wshandlers.NewWebSocketHandlerImpl()
+		connHandler, err = wshandlers.NewWebSocketHandlerImpl(cfg.WebSocket)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.

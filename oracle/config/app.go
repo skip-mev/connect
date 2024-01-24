@@ -26,8 +26,9 @@ const (
 enabled = "{{ .Oracle.Enabled }}"
 
 # Oracle Address is the URL of the out of process oracle sidecar. This is used to
-# connect to the oracle sidecar when the application boots up. Note that the application
-# will not start if the oracle sidecar is enabled but the address is not supplied.
+# connect to the oracle sidecar when the application boots up. Note that the address
+# can be modified at any point, but will only take effect after the application is
+# restarted.
 oracle_address = "{{ .Oracle.OracleAddress }}"
 
 # Client Timeout is the time that the client is willing to wait for responses from 
@@ -77,7 +78,7 @@ type AppConfig struct {
 	MetricsEnabled bool `mapstructure:"metrics_enabled" toml:"metrics_enabled"`
 
 	// PrometheusServerAddress is the address of the prometheus server that the oracle
-	// will expose metrics to
+	// will expose metrics to.
 	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
 
 	// ValidatorConsAddress is the validator's consensus address.
@@ -130,14 +131,6 @@ func ReadConfigFromFile(path string) (AppConfig, error) {
 
 	if err := viper.ReadInConfig(); err != nil {
 		return config, err
-	}
-
-	// Check required fields
-	fields := []string{"enabled", "oracle_address", "client_timeout"}
-	for _, field := range fields {
-		if !viper.IsSet(field) {
-			return config, fmt.Errorf("required oracle field is missing in config")
-		}
 	}
 
 	// unmarshal config
