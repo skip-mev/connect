@@ -20,5 +20,5 @@ message IncentivesByType {
   // GoodPriceIncentiveType).
   string incentive_type = 1;
   // Entries is a list of incentive bytes.
-  repeated bytes entries = 2 [ (gogoproto.nullable) = false ];
+  repeated bytes entries = 2;
 }

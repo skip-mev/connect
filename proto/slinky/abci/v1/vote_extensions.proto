@@ -1,11 +1,6 @@
 syntax = "proto3";
 package slinky.abci.v1;
 
-import "gogoproto/gogo.proto";
-import "google/api/annotations.proto";
-import "google/protobuf/timestamp.proto";
-import "cosmos_proto/cosmos.proto";
-
 option go_package = "github.com/skip-mev/slinky/abci/ve/types";
 
 // OracleVoteExtension defines the vote extension structure for oracle prices.
