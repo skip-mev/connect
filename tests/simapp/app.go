@@ -285,7 +285,10 @@ func NewSimApp(
 	// If app level instrumentation is enabled, then wrap the oracle service with a metrics client
 	// to get metrics on the oracle service (for ABCI++). This will allow the instrumentation to track
 	// latency in VerifyVoteExtension requests and more.
-	oracleMetrics := servicemetrics.NewMetricsFromConfig(cfg)
+	oracleMetrics, err := servicemetrics.NewMetricsFromConfig(cfg, app.ChainID())
+	if err != nil {
+		panic(err)
+	}
 
 	// Create the oracle service.
 	app.oracleClient, err = oracleclient.NewClientFromConfig(
