@@ -13,7 +13,7 @@ service Query {
   rpc GetIncentivesByType(GetIncentivesByTypeRequest)
       returns (GetIncentivesByTypeResponse) {
     option (google.api.http).get =
-        "/slinky/incentives/v1/get_incentives_by_type";
+        "/slinky/incentives/v1/get_incentives_by_type/{incentive_type}";
   }
 
   // GetAllIncentives returns all incentives.

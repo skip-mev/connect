@@ -3,12 +3,12 @@ package alertsv1
 
 import (
 	_ "cosmossdk.io/api/amino"
+	v1 "github.com/skip-mev/slinky/api/slinky/oracle/v1"
 	abci "cosmossdk.io/api/tendermint/abci"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	v1 "github.com/skip-mev/slinky/api/slinky/oracle/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
