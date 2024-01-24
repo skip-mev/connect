@@ -36,6 +36,8 @@ type GRPCClient struct {
 	timeout time.Duration
 	// metrics contains the instrumentation for the oracle client
 	metrics metrics.Metrics
+	// blockingDial is a parameter which determines whether the client should block on dialing the server
+	blockingDial bool
 }
 
 // NewClientFromConfig creates a new grpc client of the oracle service with the given
@@ -44,6 +46,7 @@ func NewClientFromConfig(
 	cfg config.AppConfig,
 	logger log.Logger,
 	metrics metrics.Metrics,
+	opts ...Option,
 ) (OracleClient, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
@@ -61,12 +64,7 @@ func NewClientFromConfig(
 		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
-	return &GRPCClient{
-		logger:  logger,
-		addr:    cfg.OracleAddress,
-		timeout: cfg.ClientTimeout,
-		metrics: metrics,
-	}, nil
+	return NewClient(logger, cfg.OracleAddress, cfg.ClientTimeout, metrics, opts...)
 }
 
 // NewClient creates a new grpc client of the oracle service with the given
@@ -76,6 +74,7 @@ func NewClient(
 	addr string,
 	timeout time.Duration,
 	metrics metrics.Metrics,
+	opts ...Option,
 ) (OracleClient, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -93,12 +92,19 @@ func NewClient(
 		return nil, fmt.Errorf("timeout must be positive")
 	}
 
-	return &GRPCClient{
+	client := &GRPCClient{
 		logger:  logger,
 		addr:    addr,
 		timeout: timeout,
 		metrics: metrics,
-	}, nil
+	}
+
+	// apply options
+	for _, opt := range opts {
+		opt(client)
+	}
+
+	return client, nil
 }
 
 // Start starts the GRPC client. This method dials the remote oracle-service
@@ -106,9 +112,17 @@ func NewClient(
 func (c *GRPCClient) Start() error {
 	c.logger.Info("starting oracle client", "addr", c.addr)
 
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	if c.blockingDial {
+		opts = append(opts, grpc.WithBlock())
+	}
+
 	conn, err := grpc.Dial(
 		c.addr,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		opts...,
 	)
 	if err != nil {
 		c.logger.Error("failed to dial oracle gRPC server", "err", err)
