@@ -32,7 +32,7 @@ The `APIDataHandler` interface is primarily responsible for constructing the URL
 // paired with the APIQueryHandler. The APIQueryHandler will use the APIDataHandler
 // to create the URL to be sent to the HTTP client and to parse the response from the
 // API.
-type APIDataHandler[K comparable, V providertypes.GetResult] interface {
+type APIDataHandler[K providertypes.ResponseKey, V providertypes.providertypes.ResponseValue] interface {
 	CreateURL(ids []K) (string, error)
 	ParseResponse(ids []K, response *http.Response) GetResponse[K, V]
 	Atomic() bool
