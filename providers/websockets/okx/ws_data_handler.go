@@ -67,7 +67,7 @@ func NewWebSocketDataHandler(
 // will be restarted after the configured restart interval.
 func (h *WebsocketDataHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []byte, error) {
+) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
 		resp        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
 		baseMessage BaseMessage

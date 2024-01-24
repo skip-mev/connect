@@ -3,6 +3,8 @@ package kraken
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
 type (
@@ -158,12 +160,12 @@ type Subscription struct {
 // given asset pairs.
 func NewSubscribeRequestMessage(
 	instruments []string,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(instruments) == 0 {
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	return json.Marshal(
+	bz, err := json.Marshal(
 		SubscribeRequestMessage{
 			Event: string(SubscribeEvent),
 			Pair:  instruments,
@@ -172,6 +174,8 @@ func NewSubscribeRequestMessage(
 			},
 		},
 	)
+
+	return []handlers.WebsocketEncodedMessage{bz}, err
 }
 
 // SubscribeResponseMessage is the message that is sent to the client when the

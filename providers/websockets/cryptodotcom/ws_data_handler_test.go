@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -57,7 +58,7 @@ func TestHandleMessage(t *testing.T) {
 		name         string
 		msg          func() []byte
 		resp         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
-		expUpdateMsg func() []byte
+		expUpdateMsg func() []handlers.WebsocketEncodedMessage
 		expErr       bool
 	}{
 		{
@@ -66,7 +67,7 @@ func TestHandleMessage(t *testing.T) {
 				return []byte(`no rizz message`)
 			},
 			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte { return nil },
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
 		{
@@ -80,7 +81,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte { return nil },
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
 		{
@@ -95,7 +96,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte { return nil },
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
 		{
@@ -111,14 +112,14 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				msg := cryptodotcom.HeartBeatResponseMessage{
 					ID:     42069,
 					Method: string(cryptodotcom.HeartBeatResponseMethod),
 				}
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
-				return bz
+				return []handlers.WebsocketEncodedMessage{bz}
 			},
 			expErr: false,
 		},
@@ -138,7 +139,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: true,
@@ -169,7 +170,7 @@ func TestHandleMessage(t *testing.T) {
 				},
 				UnResolved: map[oracletypes.CurrencyPair]error{},
 			},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -195,7 +196,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -236,7 +237,7 @@ func TestHandleMessage(t *testing.T) {
 				},
 				UnResolved: map[oracletypes.CurrencyPair]error{},
 			},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,
@@ -273,7 +274,7 @@ func TestHandleMessage(t *testing.T) {
 					solusd: fmt.Errorf("failed to parse price $42,069.00: invalid syntax"),
 				},
 			},
-			expUpdateMsg: func() []byte {
+			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expErr: false,

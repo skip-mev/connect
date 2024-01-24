@@ -60,7 +60,7 @@ func NewWebSocketDataHandler(
 //     heartbeats, and system status updates.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []byte, error) {
+) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
 		resp        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
 		baseMessage BaseMessage
@@ -94,9 +94,9 @@ func (h *WebSocketDataHandler) HandleMessage(
 // CreateMessage is used to create a message to send to the data provider. This is used to
 // subscribe to the given currency pairs. This is called when the connection to the data
 // provider is first established.
-func (h *WebSocketDataHandler) CreateMessage(
+func (h *WebSocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
-) ([]byte, error) {
+) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
 	for _, cp := range cps {

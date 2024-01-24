@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"go.uber.org/zap"
@@ -22,7 +23,7 @@ import (
 //  3. Subscription status response messages. This is used to check if the subscription request
 //     was successful. If the subscription request was not successful, the handler will attempt
 //     to resubscribe to the market.
-func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]byte, error) {
+func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]handlers.WebsocketEncodedMessage, error) {
 	switch event {
 	case SystemStatusEvent:
 		h.logger.Debug("received system status response message")
