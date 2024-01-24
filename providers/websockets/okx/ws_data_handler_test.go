@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -55,7 +56,7 @@ func TestHandlerMessage(t *testing.T) {
 		name          string
 		msg           func() []byte
 		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
-		updateMessage func() []byte
+		updateMessage func() []handlers.WebsocketEncodedMessage
 		expErr        bool
 	}{
 		{
@@ -64,7 +65,7 @@ func TestHandlerMessage(t *testing.T) {
 				return []byte("invalid message")
 			},
 			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 		{
@@ -80,7 +81,7 @@ func TestHandlerMessage(t *testing.T) {
 				return bz
 			},
 			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 		{
@@ -112,7 +113,7 @@ func TestHandlerMessage(t *testing.T) {
 				},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -151,7 +152,7 @@ func TestHandlerMessage(t *testing.T) {
 				},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -179,7 +180,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -203,7 +204,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
 		{
@@ -239,7 +240,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte {
+			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
@@ -253,7 +254,7 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				return []handlers.WebsocketEncodedMessage{bz}
 			},
 			expErr: false,
 		},
@@ -276,7 +277,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 		{
@@ -312,7 +313,7 @@ func TestHandlerMessage(t *testing.T) {
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
-			updateMessage: func() []byte { return nil },
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
 	}

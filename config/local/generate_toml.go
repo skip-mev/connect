@@ -16,6 +16,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -310,6 +311,59 @@ var LocalConfig = config.OracleConfig{
 					},
 					"ETHEREUM/BITCOIN": {
 						Ticker:       "ETH-BTC",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+				},
+			},
+		},
+		{
+			Name: kraken.Name,
+			WebSocket: config.WebSocketConfig{
+				Name:                kraken.Name,
+				Enabled:             true,
+				MaxBufferSize:       1000,
+				ReconnectionTimeout: 10 * time.Second,
+				WSS:                 kraken.URL,
+				ReadBufferSize:      config.DefaultReadBufferSize,
+				WriteBufferSize:     config.DefaultWriteBufferSize,
+				HandshakeTimeout:    config.DefaultHandshakeTimeout,
+				EnableCompression:   config.DefaultEnableCompression,
+				ReadTimeout:         config.DefaultReadTimeout,
+				WriteTimeout:        config.DefaultWriteTimeout,
+			},
+			Market: config.MarketConfig{
+				Name: kraken.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "XBT/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETH/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "ATOM/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOL/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"CELESTIA/USD": {
+						Ticker:       "TIA/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAX/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDX/USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ETH/XBT",
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 					},
 				},
