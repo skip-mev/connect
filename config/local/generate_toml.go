@@ -324,6 +324,12 @@ var LocalConfig = config.OracleConfig{
 				MaxBufferSize:       1000,
 				ReconnectionTimeout: 10 * time.Second,
 				WSS:                 kraken.URL,
+				ReadBufferSize:      config.DefaultReadBufferSize,
+				WriteBufferSize:     config.DefaultWriteBufferSize,
+				HandshakeTimeout:    config.DefaultHandshakeTimeout,
+				EnableCompression:   config.DefaultEnableCompression,
+				ReadTimeout:         config.DefaultReadTimeout,
+				WriteTimeout:        config.DefaultWriteTimeout,
 			},
 			Market: config.MarketConfig{
 				Name: kraken.Name,
