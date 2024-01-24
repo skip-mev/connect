@@ -73,7 +73,7 @@ type WebSocketConfig struct {
 
 	// EnableCompression specifies if the client should attempt to negotiate per
 	// message compression (RFC 7692). Setting this value to true does not guarantee
-	// that compression will be supported. Note that enabling compression may 
+	// that compression will be supported. Note that enabling compression may
 	EnableCompression bool `mapstructure:"enable_compression" toml:"enable_compression"`
 
 	// ReadTimeout sets the read deadline on the underlying network connection.
