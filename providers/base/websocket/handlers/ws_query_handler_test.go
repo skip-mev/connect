@@ -249,7 +249,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-					[]byte("hearb eat"),
+					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
 
@@ -296,7 +296,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-					[]byte("hearb eat"),
+					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
 
@@ -343,7 +343,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
-					[]byte("hearb eat"),
+					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
 
@@ -453,7 +453,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
 				dataHandler.On("HandleMessage", mock.Anything).Return(
 					response,
-					[]byte("hearb eat"),
+					[]handlers.WebsocketEncodedMessage{[]byte("hearb eat")},
 					nil,
 				).Maybe()
 
