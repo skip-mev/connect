@@ -98,7 +98,7 @@ type SubscribeRequestMessage struct {
 	// Type is the type of message.
 	Type string `json:"type"`
 
-	// Channels is a list of channels to subscribe to.
+	// ProductIDs is a list of product IDs (markets) to subscribe to.
 	ProductIDs []string `json:"product_ids"`
 
 	// Channels is a list of channels to subscribe to.
