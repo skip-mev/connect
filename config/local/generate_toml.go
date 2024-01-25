@@ -384,7 +384,7 @@ var LocalConfig = config.OracleConfig{
 				EnableCompression:   config.DefaultEnableCompression,
 				ReadTimeout:         config.DefaultReadTimeout,
 				WriteTimeout:        config.DefaultWriteTimeout,
-				PingInterval:        20,
+				PingInterval:        20 * time.Second,
 			},
 			Market: config.MarketConfig{
 				Name: bybit.Name,
