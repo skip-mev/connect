@@ -110,7 +110,7 @@ func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string
 		ProviderTypeLabel: handlerType,
 		PairIDLabel:       pairID,
 	},
-	).Add(price)
+	).Set(price)
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
@@ -118,5 +118,5 @@ func (m *OracleMetricsImpl) UpdateAggregatePrice(pairID string, price float64) {
 	m.aggregatePrices.With(prometheus.Labels{
 		PairIDLabel: pairID,
 	},
-	).Add(price)
+	).Set(price)
 }

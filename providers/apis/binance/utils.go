@@ -3,6 +3,9 @@ package binance
 import (
 	"encoding/json"
 	"net/http"
+	"time"
+
+	"github.com/skip-mev/slinky/oracle/config"
 )
 
 // NOTE: All the documentation for this file can be located on the Binance github
@@ -25,6 +28,30 @@ const (
 	Separator    = ","
 	LeftBracket  = "%5B"
 	RightBracket = "%5D"
+)
+
+var (
+	// DefaultUSAPIConfig is the default configuration for the Binance API.
+	DefaultUSAPIConfig = config.APIConfig{
+		Name:       Name,
+		Atomic:     true,
+		Enabled:    true,
+		Timeout:    500 * time.Millisecond,
+		Interval:   1 * time.Second,
+		MaxQueries: 1,
+		URL:        US_URL,
+	}
+
+	// DefaultNonUSAPIConfig is the default configuration for the Binance API.
+	DefaultNonUSAPIConfig = config.APIConfig{
+		Name:       Name,
+		Atomic:     true,
+		Enabled:    true,
+		Timeout:    500 * time.Millisecond,
+		Interval:   1 * time.Second,
+		MaxQueries: 1,
+		URL:        URL,
+	}
 )
 
 type (

@@ -18,14 +18,7 @@ import (
 
 var providerCfg = config.ProviderConfig{
 	Name: coinbase.Name,
-	API: config.APIConfig{
-		Enabled:    true,
-		Timeout:    time.Second,
-		Interval:   time.Second,
-		MaxQueries: 1,
-		URL:        coinbase.URL,
-		Name:       coinbase.Name,
-	},
+	API:  coinbase.DefaultAPIConfig,
 	Market: config.MarketConfig{
 		Name: coinbase.Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{

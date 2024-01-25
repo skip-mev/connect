@@ -19,20 +19,8 @@ import (
 
 var (
 	providerCfg = config.ProviderConfig{
-		Name: cryptodotcom.Name,
-		WebSocket: config.WebSocketConfig{
-			Enabled:             true,
-			WSS:                 cryptodotcom.URL_PROD,
-			MaxBufferSize:       100,
-			ReconnectionTimeout: 5 * time.Second,
-			Name:                cryptodotcom.Name,
-			ReadBufferSize:      config.DefaultReadBufferSize,
-			WriteBufferSize:     config.DefaultWriteBufferSize,
-			HandshakeTimeout:    config.DefaultHandshakeTimeout,
-			EnableCompression:   config.DefaultEnableCompression,
-			ReadTimeout:         config.DefaultReadTimeout,
-			WriteTimeout:        config.DefaultWriteTimeout,
-		},
+		Name:      cryptodotcom.Name,
+		WebSocket: cryptodotcom.DefaultWebSocketConfig,
 		Market: config.MarketConfig{
 			Name: cryptodotcom.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
