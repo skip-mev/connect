@@ -12,8 +12,8 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/abci/types"
+	"github.com/skip-mev/slinky/abci/ve"
 )
 
 const (
@@ -108,17 +108,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
 			)
 
-			// record latency
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, totalLatency-wrappedPrepareProposalLatency)
-
-			// record success/failure
-			var label servicemetrics.Labeller
-			if err != nil {
-				label, _ = err.(servicemetrics.Labeller)
-			} else {
-				label = servicemetrics.Success{}
-			}
-			h.metrics.AddABCIRequest(servicemetrics.PrepareProposal, label)
+			types.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
 		}()
 
 		if req == nil {
@@ -261,16 +251,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
 				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
 			)
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, totalLatency-wrappedProcessProposalLatency)
-
-			// record success/failure
-			var label servicemetrics.Labeller
-			if err != nil {
-				label, _ = err.(servicemetrics.Labeller)
-			} else {
-				label = servicemetrics.Success{}
-			}
-			h.metrics.AddABCIRequest(servicemetrics.ProcessProposal, label)
+			types.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
 		}()
 
 		// this should never happen, but just in case
