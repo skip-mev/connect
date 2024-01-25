@@ -407,20 +407,10 @@ production = false
     write_deadline = "45s"
     ping_interval = "0s"
   [providers.market_config]
-    name = "crypto_dot_com"
+    name = "kucoin"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
-        ticker = "ATOMUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
-          Base = "ATOM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "AVAXUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
-          Base = "AVAX"
-          Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
-        ticker = "BTCUSD-PERP"
+        ticker = "BTC-USDT"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
