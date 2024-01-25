@@ -47,22 +47,3 @@ type Config struct {
 	// Production is true if the config is for production.
 	Production bool `json:"production"`
 }
-```
-
-Note that if production is set to false, all prices will be returned from the ByBit testnet. A sample configuration is shown below:
-
-```json
-{
-  "markets": {
-    "BITCOIN/USD": "BTCUSDT",
-    "ETHEREUM/USD": "ETHUSDT",
-    "SOLANA/USD": "SOLUSDT",
-    "ATOM/USD": "ATOMUSDT",
-    "POLKADOT/USD": "DOTUSDT",
-    "DYDX/USD": "DYDXUSDT",
-    "ETHEREUM/BITCOIN": "ETHBTC"
-  },
-  "production": true
-}
-
-```
