@@ -127,6 +127,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		return fmt.Errorf("failed to start connection: %w", err)
 	}
 
+	// Start a go routine to send heartbeats to the data provider.
+	if h.config.PingInterval > 0 {
+		go h.heartBeat(ctx)
+	}
+
 	// Start receiving messages from the data provider.
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.Healthy)
 	return h.recv(ctx, responseCh)
@@ -167,6 +172,44 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	h.logger.Debug("initial payload sent; web socket connection successfully started")
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 	return nil
+}
+
+// heartBeat is used to send heartbeats to the data provider. This will
+// send a heartbeat message to the data provider every ping interval.
+func (h *WebSocketQueryHandlerImpl[K, V]) heartBeat(ctx context.Context) {
+	ticker := time.NewTicker(h.config.PingInterval)
+	defer ticker.Stop()
+
+	h.logger.Debug("starting heartbeat loop", zap.Duration("ping_interval", h.config.PingInterval))
+
+	for {
+		select {
+		case <-ctx.Done():
+			h.logger.Debug("context finished; stopping heartbeat")
+			return
+		case <-ticker.C:
+			h.logger.Debug("creating heartbeat messages")
+			msgs, err := h.dataHandler.HeartBeatMessages()
+			if err != nil {
+				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatErr)
+				h.logger.Error("failed to create heartbeat messages", zap.Error(err))
+				continue
+			}
+
+			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatSuccess)
+			h.logger.Debug("sending heartbeat messages to data provider", zap.Int("num_msgs", len(msgs)))
+
+			for _, msg := range msgs {
+				if err := h.connHandler.Write(msg); err != nil {
+					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
+					h.logger.Error("failed to write heartbeat message", zap.Error(err))
+				} else {
+					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+					h.logger.Debug("heartbeat message sent")
+				}
+			}
+		}
+	}
 }
 
 // recv is used to manage the connection to the data provider.
