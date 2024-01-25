@@ -13,13 +13,13 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/binance"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
+	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -54,24 +54,18 @@ var LocalConfig = config.OracleConfig{
 	},
 	UpdateInterval: 1 * time.Second,
 	Providers: []config.ProviderConfig{
+		// -----------------------------------------------------------	//
+		// ---------------------Start API Providers--------------------	//
+		// -----------------------------------------------------------	//
+		//
+		// NOTE: Some of the provider's are only capable of fetching data for a subset of
+		// all of the currency pairs. Before adding a new market to the oracle, ensure that
+		// the provider supports fetching data for the currency pair.
 		{
 			// -----------------------------------------------------------	//
-			// ---------------------Start API Providers--------------------	//
-			// -----------------------------------------------------------	//
-			//
-			// NOTE: Some of the provider's are only capable of fetching data for a subset of
-			// all of the currency pairs. Before adding a new market to the oracle, ensure that
-			// the provider supports fetching data for the currency pair.
+			// ---------------------Start Binance API----------------------	//
 			Name: binance.Name,
-			API: config.APIConfig{
-				Name:       binance.Name,
-				Atomic:     true,
-				Enabled:    true,
-				Timeout:    500 * time.Millisecond,
-				Interval:   1 * time.Second,
-				MaxQueries: 1,
-				URL:        binance.US_URL,
-			},
+			API:  binance.DefaultUSAPIConfig,
 			Market: config.MarketConfig{
 				Name: binance.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -99,18 +93,12 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
-			Name: coinbase.Name,
-			API: config.APIConfig{
-				Name:       coinbase.Name,
-				Atomic:     false,
-				Enabled:    true,
-				Timeout:    500 * time.Millisecond,
-				Interval:   1 * time.Second,
-				MaxQueries: 5,
-				URL:        coinbase.URL,
-			},
+			// -----------------------------------------------------------	//
+			// ---------------------Start Coinbase API--------------------	//
+			Name: coinbaseapi.Name,
+			API:  coinbaseapi.DefaultAPIConfig,
 			Market: config.MarketConfig{
-				Name: coinbase.Name,
+				Name: coinbaseapi.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTC-USD",
@@ -152,16 +140,10 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
+			// -----------------------------------------------------------	//
+			// ---------------------Start Coingecko API-------------------	//
 			Name: coingecko.Name,
-			API: config.APIConfig{
-				Name:       coingecko.Name,
-				Atomic:     true,
-				Enabled:    true,
-				Timeout:    500 * time.Millisecond,
-				Interval:   15 * time.Second, // Coingecko has a very low rate limit.
-				MaxQueries: 1,
-				URL:        coingecko.URL,
-			},
+			API:  coingecko.DefaultAPIConfig,
 			Market: config.MarketConfig{
 				Name: coingecko.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -208,20 +190,57 @@ var LocalConfig = config.OracleConfig{
 		// all currency pairs. Before adding a new market to the oracle, ensure that
 		// the provider supports fetching data for the currency pair.
 		{
-			Name: cryptodotcom.Name,
-			WebSocket: config.WebSocketConfig{
-				Name:                cryptodotcom.Name,
-				Enabled:             true,
-				MaxBufferSize:       config.DefaultMaxBufferSize,
-				ReconnectionTimeout: config.DefaultReconnectionTimeout,
-				WSS:                 cryptodotcom.URL_PROD,
-				ReadBufferSize:      config.DefaultReadBufferSize,
-				WriteBufferSize:     config.DefaultWriteBufferSize,
-				HandshakeTimeout:    config.DefaultHandshakeTimeout,
-				EnableCompression:   config.DefaultEnableCompression,
-				ReadTimeout:         config.DefaultReadTimeout,
-				WriteTimeout:        config.DefaultWriteTimeout,
+			// -----------------------------------------------------------	//
+			// ---------------------Start Coinbase WebSocket--------------	//
+			Name:      coinbasews.Name,
+			WebSocket: coinbasews.DefaultWebSocketConfig,
+			Market: config.MarketConfig{
+				Name: coinbasews.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "BTC-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETH-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "ATOM-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOL-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"CELESTIA/USD": {
+						Ticker:       "TIA-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAX-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDX-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ETH-BTC",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+					"OSMOSIS/USD": {
+						Ticker:       "OSMO-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+					},
+				},
 			},
+		},
+		{
+			// -----------------------------------------------------------	//
+			// ---------------------Start Crypto.com WebSocket------------	//
+			Name:      cryptodotcom.Name,
+			WebSocket: cryptodotcom.DefaultWebSocketConfig,
 			Market: config.MarketConfig{
 				Name: cryptodotcom.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -265,73 +284,10 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
-			Name: okx.Name,
-			WebSocket: config.WebSocketConfig{
-				Name:                okx.Name,
-				Enabled:             true,
-				MaxBufferSize:       1000,
-				ReconnectionTimeout: config.DefaultReconnectionTimeout,
-				WSS:                 okx.URL_PROD,
-				ReadBufferSize:      config.DefaultReadBufferSize,
-				WriteBufferSize:     config.DefaultWriteBufferSize,
-				HandshakeTimeout:    config.DefaultHandshakeTimeout,
-				EnableCompression:   config.DefaultEnableCompression,
-				ReadTimeout:         config.DefaultReadTimeout,
-				WriteTimeout:        config.DefaultWriteTimeout,
-			},
-			Market: config.MarketConfig{
-				Name: okx.Name,
-				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-					"BITCOIN/USD": {
-						Ticker:       "BTC-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-					},
-					"ETHEREUM/USD": {
-						Ticker:       "ETH-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-					},
-					"ATOM/USD": {
-						Ticker:       "ATOM-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
-					},
-					"SOLANA/USD": {
-						Ticker:       "SOL-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-					},
-					"CELESTIA/USD": {
-						Ticker:       "TIA-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-					},
-					"AVAX/USD": {
-						Ticker:       "AVAX-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
-					},
-					"DYDX/USD": {
-						Ticker:       "DYDX-USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
-					},
-					"ETHEREUM/BITCOIN": {
-						Ticker:       "ETH-BTC",
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-					},
-				},
-			},
-		},
-		{
-			Name: kraken.Name,
-			WebSocket: config.WebSocketConfig{
-				Name:                kraken.Name,
-				Enabled:             true,
-				MaxBufferSize:       1000,
-				ReconnectionTimeout: 10 * time.Second,
-				WSS:                 kraken.URL,
-				ReadBufferSize:      config.DefaultReadBufferSize,
-				WriteBufferSize:     config.DefaultWriteBufferSize,
-				HandshakeTimeout:    config.DefaultHandshakeTimeout,
-				EnableCompression:   config.DefaultEnableCompression,
-				ReadTimeout:         config.DefaultReadTimeout,
-				WriteTimeout:        config.DefaultWriteTimeout,
-			},
+			// -----------------------------------------------------------	//
+			// ---------------------Start Kraken WebSocket----------------	//
+			Name:      kraken.Name,
+			WebSocket: kraken.DefaultWebSocketConfig,
 			Market: config.MarketConfig{
 				Name: kraken.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -371,21 +327,8 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
-			Name: bybit.Name,
-			WebSocket: config.WebSocketConfig{
-				Name:                bybit.Name,
-				Enabled:             true,
-				MaxBufferSize:       1000,
-				ReconnectionTimeout: 10 * time.Second,
-				WSS:                 bybit.ProductionURL,
-				ReadBufferSize:      config.DefaultReadBufferSize,
-				WriteBufferSize:     config.DefaultWriteBufferSize,
-				HandshakeTimeout:    config.DefaultHandshakeTimeout,
-				EnableCompression:   config.DefaultEnableCompression,
-				ReadTimeout:         config.DefaultReadTimeout,
-				WriteTimeout:        config.DefaultWriteTimeout,
-				PingInterval:        20 * time.Second,
-			},
+			Name:      bybit.Name,
+			WebSocket: bybit.DefaultWebSocketConfig,
 			Market: config.MarketConfig{
 				Name: bybit.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -412,6 +355,49 @@ var LocalConfig = config.OracleConfig{
 					"DYDX/USD": {
 						Ticker:       "DYDXUSDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+				},
+			},
+		},
+		{
+			// -----------------------------------------------------------	//
+			// ---------------------Start OKX WebSocket-------------------	//
+			Name:      okx.Name,
+			WebSocket: okx.DefaultWebSocketConfig,
+			Market: config.MarketConfig{
+				Name: okx.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "BTC-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETH-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "ATOM-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOL-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"CELESTIA/USD": {
+						Ticker:       "TIA-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAX-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDX-USD",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ETH-BTC",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 					},
 				},
 			},

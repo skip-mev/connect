@@ -27,7 +27,7 @@ var (
 			Enabled:             true,
 			MaxBufferSize:       1024,
 			ReconnectionTimeout: 10 * time.Second,
-			WSS:                 bybit.ProductionURL,
+			WSS:                 bybit.URLProd,
 			Name:                bybit.Name,
 			ReadBufferSize:      config.DefaultReadBufferSize,
 			WriteBufferSize:     config.DefaultWriteBufferSize,
