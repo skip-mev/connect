@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// PreBlockError is an error that is returned when the pre-block simulation fails.
 type PreBlockError struct {
 	Err error
 }
@@ -16,6 +17,7 @@ func (e PreBlockError) Label() string {
 	return "PreBlockError"
 }
 
+// Panic is an error that is returned when a panic occurs in the ABCI handler.
 type Panic struct {
 	Err error
 }
@@ -28,6 +30,7 @@ func (e Panic) Label() string {
 	return "Panic"
 }
 
+// OracleClientError is an error that is returned when the oracle client's response is invalid.
 type OracleClientError struct {
 	Err error
 }
@@ -40,6 +43,8 @@ func (e OracleClientError) Label() string {
 	return "OracleClientError"
 }
 
+// TransformPricesError is an error that is returned when there is a failure in attempting to transform the prices returned
+// from the oracle server to the format expected by the validator set.
 type TransformPricesError struct {
 	Err error
 }
@@ -52,6 +57,7 @@ func (e TransformPricesError) Label() string {
 	return "TransformPricesError"
 }
 
+// ValidateVoteExtensionError is an error that is returned when there is a failure in validating a vote extension.
 type ValidateVoteExtensionError struct {
 	Err error
 }
