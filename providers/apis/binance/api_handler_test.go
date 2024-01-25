@@ -22,14 +22,7 @@ import (
 var (
 	providerCfg = config.ProviderConfig{
 		Name: binance.Name,
-		API: config.APIConfig{
-			Enabled:    true,
-			Timeout:    time.Second,
-			Interval:   time.Second,
-			MaxQueries: 1,
-			URL:        binance.URL,
-			Name:       binance.Name,
-		},
+		API:  binance.DefaultNonUSAPIConfig,
 		Market: config.MarketConfig{
 			Name: binance.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -47,14 +40,7 @@ var (
 
 	providerCfgUS = config.ProviderConfig{
 		Name: binance.Name,
-		API: config.APIConfig{
-			Enabled:    true,
-			Timeout:    time.Second,
-			Interval:   time.Second,
-			MaxQueries: 1,
-			URL:        binance.US_URL,
-			Name:       binance.Name,
-		},
+		API:  binance.DefaultUSAPIConfig,
 		Market: config.MarketConfig{
 			Name: binance.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{

@@ -190,6 +190,77 @@ production = false
           Quote = "USD"
 
 [[providers]]
+  name = "coinbase"
+  [providers.api]
+    enabled = false
+    timeout = "0s"
+    interval = "0s"
+    max_queries = 0
+    atomic = false
+    url = ""
+    name = ""
+  [providers.web_socket]
+    enabled = true
+    max_buffer_size = 1024
+    reconnection_timeout = "10s"
+    wss = "wss://ws-feed.exchange.coinbase.com"
+    name = "coinbase"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "5s"
+  [providers.market_config]
+    name = "coinbase"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOM-USD"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "AVAX-USD"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "BTC-USD"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+        ticker = "TIA-USD"
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
+          Base = "CELESTIA"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "DYDX-USD"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ETH-BTC"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETH-USD"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
+        ticker = "OSMO-USD"
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
+          Base = "OSMOSIS"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOL-USD"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
   name = "crypto_dot_com"
   [providers.api]
     enabled = false
@@ -261,6 +332,72 @@ production = false
           Quote = "USD"
 
 [[providers]]
+  name = "kraken"
+  [providers.api]
+    enabled = false
+    timeout = "0s"
+    interval = "0s"
+    max_queries = 0
+    atomic = false
+    url = ""
+    name = ""
+  [providers.web_socket]
+    enabled = true
+    max_buffer_size = 1000
+    reconnection_timeout = "10s"
+    wss = "wss://ws.kraken.com"
+    name = "kraken"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
+  [providers.market_config]
+    name = "kraken"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOM/USD"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "AVAX/USD"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "XBT/USD"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+        ticker = "TIA/USD"
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
+          Base = "CELESTIA"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "DYDX/USD"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ETH/XBT"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETH/USD"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOL/USD"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
   name = "okx"
   [providers.api]
     enabled = false
@@ -322,66 +459,6 @@ production = false
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
-          Base = "SOLANA"
-          Quote = "USD"
-
-[[providers]]
-  name = "kraken"
-  [providers.api]
-    enabled = false
-    timeout = "0s"
-    interval = "0s"
-    max_queries = 0
-    atomic = false
-    url = ""
-    name = ""
-  [providers.web_socket]
-    enabled = true
-    max_buffer_size = 1000
-    reconnection_timeout = "10s"
-    wss = "wss://ws.kraken.com"
-    name = "kraken"
-  [providers.market_config]
-    name = "kraken"
-    [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
-        ticker = "ATOM/USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
-          Base = "ATOM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "AVAX/USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
-          Base = "AVAX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
-        ticker = "XBT/USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
-          Base = "BITCOIN"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
-        ticker = "TIA/USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
-          Base = "CELESTIA"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "DYDX/USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
-          Base = "DYDX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
-        ticker = "ETH/XBT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "BITCOIN"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
-        ticker = "ETH/USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
-        ticker = "SOL/USD"
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"

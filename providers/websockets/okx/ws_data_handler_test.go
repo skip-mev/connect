@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -19,20 +18,8 @@ import (
 
 var (
 	providerCfg = config.ProviderConfig{
-		Name: okx.Name,
-		WebSocket: config.WebSocketConfig{
-			Enabled:             true,
-			WSS:                 okx.URL_PROD,
-			MaxBufferSize:       100,
-			ReconnectionTimeout: 5 * time.Second,
-			Name:                okx.Name,
-			ReadBufferSize:      config.DefaultReadBufferSize,
-			WriteBufferSize:     config.DefaultWriteBufferSize,
-			HandshakeTimeout:    config.DefaultHandshakeTimeout,
-			EnableCompression:   config.DefaultEnableCompression,
-			ReadTimeout:         config.DefaultReadTimeout,
-			WriteTimeout:        config.DefaultWriteTimeout,
-		},
+		Name:      okx.Name,
+		WebSocket: okx.DefaultWebSocketConfig,
 		Market: config.MarketConfig{
 			Name: okx.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -351,13 +338,13 @@ func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
 		cps         []oracletypes.CurrencyPair
-		expected    func() []byte
+		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
 			cps:  []oracletypes.CurrencyPair{},
-			expected: func() []byte {
+			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expectedErr: true,
@@ -367,7 +354,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []oracletypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 			},
-			expected: func() []byte {
+			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
@@ -381,7 +368,7 @@ func TestCreateMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				return []handlers.WebsocketEncodedMessage{bz}
 			},
 			expectedErr: false,
 		},
@@ -391,7 +378,7 @@ func TestCreateMessage(t *testing.T) {
 				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
 			},
-			expected: func() []byte {
+			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
 					Operation: string(okx.OperationSubscribe),
 					Arguments: []okx.SubscriptionTopic{
@@ -409,7 +396,7 @@ func TestCreateMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				return []handlers.WebsocketEncodedMessage{bz}
 			},
 			expectedErr: false,
 		},
@@ -419,7 +406,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []oracletypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("MOG", "USDT"),
 			},
-			expected: func() []byte {
+			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
 			expectedErr: true,
@@ -437,8 +424,7 @@ func TestCreateMessage(t *testing.T) {
 				return
 			}
 
-			require.Equal(t, 1, len(msgs))
-			require.EqualValues(t, tc.expected(), msgs[0])
+			require.Equal(t, tc.expected(), msgs)
 		})
 	}
 }
