@@ -420,7 +420,7 @@ production = false
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
-    ping_interval = "20ns"
+    ping_interval = "20s"
   [providers.market_config]
     name = "bybit"
     [providers.market_config.currency_pair_to_market_configs]

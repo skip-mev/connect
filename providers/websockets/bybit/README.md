@@ -1,4 +1,4 @@
-# OKX Provider
+# ByBit Provider
 
 ## Overview
 
