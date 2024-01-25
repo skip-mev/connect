@@ -27,7 +27,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.4.11
-	github.com/go-kit/kit v0.13.0
+	github.com/go-kit/kit v0.13.0 // indirect
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3
