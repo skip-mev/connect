@@ -56,6 +56,8 @@ type SubscriptionRequest struct {
 	Args []string `json:"args"`
 }
 
+// NewSubscriptionRequestMessage creates subscription messages corresponding to the provided tickers.
+// If the number of tickers is greater than 10, the requests will be broken into 10-ticker messages.
 func NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncodedMessage, error) {
 	numTickers := len(tickers)
 	if numTickers == 0 {
@@ -108,6 +110,7 @@ type HeartbeatPing struct {
 	BaseRequest
 }
 
+// NewHeartbeatPingMessage returns the encoded message for sending a heartbeat message to a peer.
 func NewHeartbeatPingMessage() ([]handlers.WebsocketEncodedMessage, error) {
 	bz, err := json.Marshal(
 		HeartbeatPing{
@@ -120,14 +123,12 @@ func NewHeartbeatPingMessage() ([]handlers.WebsocketEncodedMessage, error) {
 	return []handlers.WebsocketEncodedMessage{bz}, err
 }
 
+// BaseResponse is the base structure for responses sent from a peer.
 type BaseResponse struct {
-	Success bool `json:"success"`
-
-	RetMsg string `json:"ret_msg"`
-
-	ConnID string `json:"conn_id"`
-
-	Op string `json:"op"`
+	Success bool   `json:"success"`
+	RetMsg  string `json:"ret_msg"`
+	ConnID  string `json:"conn_id"`
+	Op      string `json:"op"`
 }
 
 // HeartbeatPong is the pong sent back from the server after a ping.
@@ -185,6 +186,7 @@ type TickerUpdateMessage struct {
 	Data  TickerUpdateData `json:"data"`
 }
 
+// TickerUpdateData is the data stored inside a ticker update message.
 type TickerUpdateData struct {
 	Symbol    string `json:"symbol"`
 	LastPrice string `json:"lastPrice"`

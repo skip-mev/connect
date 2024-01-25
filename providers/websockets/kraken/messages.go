@@ -8,13 +8,13 @@ import (
 )
 
 type (
-	// Events correspond to the various message types that are sent to the client.
+	// Event correspond to the various message types that are sent to the client.
 	Event string
 
 	// Status correspond to the various status types that are sent to the client.
 	Status string
 
-	// Channels correspond to the various channels that are available for
+	// Channel correspond to the various channels that are available for
 	// subscription.
 	Channel string
 )
@@ -80,7 +80,7 @@ type BaseMessage struct {
 	Event string `json:"event"`
 }
 
-// SystemStatusMessage is the message that is sent to the client when the
+// SystemStatusResponseMessage is the message that is sent to the client when the
 // connection is first established.
 //
 //	{
@@ -123,7 +123,7 @@ type HeartbeatResponseMessage struct {
 	Event string `json:"event"`
 }
 
-// SubscibeRequestMessage is the message that is sent to the server to subscribe
+// SubscribeRequestMessage is the message that is sent to the server to subscribe
 // to a channel.
 //
 //	{

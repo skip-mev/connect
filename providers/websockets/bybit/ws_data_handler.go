@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	// Name is the name of the OKX provider.
+	// Name is the name of the ByBit provider.
 	Name = "bybit"
 )
 
