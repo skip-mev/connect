@@ -146,6 +146,10 @@ func (h *WebSocketConnHandlerImpl) SetConnection(conn *websocket.Conn) {
 	h.Lock()
 	defer h.Unlock()
 
+	if h.conn != nil {
+		panic("connection has already been established")
+	}
+
 	h.conn = conn
 }
 
