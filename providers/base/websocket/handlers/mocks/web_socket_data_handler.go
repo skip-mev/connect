@@ -73,6 +73,32 @@ func (_m *WebSocketDataHandler[K, V]) HandleMessage(message []byte) (types.GetRe
 	return r0, r1, r2
 }
 
+// HeartBeatMessages provides a mock function with given fields:
+func (_m *WebSocketDataHandler[K, V]) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+	ret := _m.Called()
+
+	var r0 []handlers.WebsocketEncodedMessage
+	var r1 error
+	if rf, ok := ret.Get(0).(func() ([]handlers.WebsocketEncodedMessage, error)); ok {
+		return rf()
+	}
+	if rf, ok := ret.Get(0).(func() []handlers.WebsocketEncodedMessage); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]handlers.WebsocketEncodedMessage)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewWebSocketDataHandler creates a new instance of WebSocketDataHandler. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewWebSocketDataHandler[K types.ResponseKey, V types.ResponseValue](t interface {
