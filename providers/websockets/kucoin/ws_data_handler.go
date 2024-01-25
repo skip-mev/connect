@@ -1,6 +1,7 @@
 package kucoin
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 
@@ -51,14 +52,60 @@ func NewWebSocketDataHandler(
 	}, nil
 }
 
+// HandleMessage is used to handle a message received from the data provider. The Kucoin web
+// socket expects the client to send a subscribe message within 10 seconds of the
+// connection, with a ping message sent every 10 seconds. There are 4 types of messages
+// that can be received from the Kucoin web socket:
+//
+//  1. WelcomeMessage: This is sent by the Kucoin web socket when the connection is
+//     established.
+//  2. PongMessage: This is sent by the Kucoin web socket in response to a ping message.
+//  3. AckMessage: This is sent by the Kucoin web socket in response to a subscribe
+//     message.
+//  4. Message: This is sent by the Kucoin web socket when a match happens.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
 		resp providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		msg  BaseMessage
 	)
 
-	return resp, nil, nil
+	// Determine the type of message received.
+	if err := json.Unmarshal(message, &msg); err != nil {
+		return resp, nil, err
+	}
+
+	switch msgType := MessageType(msg.Type); msgType {
+	case WelcomeMessage:
+		h.logger.Debug("received welcome message")
+		return resp, nil, nil
+	case PongMessage:
+		h.logger.Debug("received pong message")
+		return resp, nil, nil
+	case AckMessage:
+		h.logger.Debug("received ack message; markets were successfully subscribed to")
+		return resp, nil, nil
+	case Message:
+		h.logger.Debug("received price feed message")
+
+		// Parse the message.
+		var ticker TickerResponseMessage
+		if err := json.Unmarshal(message, &ticker); err != nil {
+			return resp, nil, fmt.Errorf("failed to unmarshal ticker response message %s", err)
+		}
+
+		// Parse the price data from the message.
+		resp, err := h.parseTickerResponseMessage(ticker)
+		if err != nil {
+			return resp, nil, err
+		}
+
+		return resp, nil, nil
+	default:
+		h.logger.Debug("received invalid message type", zap.String("message_type", string(msgType)))
+		return resp, nil, fmt.Errorf("invalid message type %s", msgType)
+	}
 }
 
 func (h *WebSocketDataHandler) CreateMessages(
@@ -81,5 +128,5 @@ func (h *WebSocketDataHandler) CreateMessages(
 
 // HeartBeatMessages is not used for Kraken.
 func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
-	return nil, nil
+	return NewHeartbeatMessage()
 }

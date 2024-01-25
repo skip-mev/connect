@@ -76,6 +76,12 @@ const (
 	TickerSubject SubjectType = "trade.ticker"
 )
 
+// BaseMessage is utilized to determine the type of message that was received.
+type BaseMessage struct {
+	// Type is the type of message.
+	Type string `json:"type"`
+}
+
 // WelcomeResponseMessage represents the welcome message received when first
 // connecting to the websocket.
 //
@@ -108,6 +114,19 @@ type PingRequestMessage struct {
 
 	// Type is the type of message.
 	Type string `json:"type"`
+}
+
+// NewHeartbeatMessage returns a new heartbeat message.
+func NewHeartbeatMessage() ([]handlers.WebsocketEncodedMessage, error) {
+	bz, err := json.Marshal(PingRequestMessage{
+		ID:   fmt.Sprintf("%d", time.Now().Unix()),
+		Type: string(PingMessage),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal ping request message: %w", err)
+	}
+
+	return []handlers.WebsocketEncodedMessage{bz}, nil
 }
 
 // PongResponseMessage represents a pong / heartbeat message that is sent from
@@ -244,3 +263,13 @@ type TickerResponseMessageData struct {
 	// Price is the last traded price.
 	Price string `json:"price"`
 }
+
+const (
+	// ExpectedTopicLength is the expected length of the topic field in the
+	// TickerResponseMessage.
+	ExpectedTopicLength = 2
+
+	// TickerIndex is the index of the ticker in the topic field of the
+	// TickerResponseMessage.
+	TickerIndex = 1
+)

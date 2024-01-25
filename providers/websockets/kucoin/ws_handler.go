@@ -3,6 +3,7 @@ package kucoin
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/goccy/go-json"
 	"github.com/skip-mev/slinky/oracle/config"
@@ -23,14 +24,19 @@ type WebSocketConnHandler struct {
 }
 
 // NewWebSocketHandler returns a new WebSocketConnHandler.
-func NewWebSocketHandler(cfg config.WebSocketConfig) (wshandlers.WebSocketConnHandler, error) {
+func NewWebSocketHandler(cfg config.WebSocketConfig, requestHandler apihandlers.RequestHandler) (wshandlers.WebSocketConnHandler, error) {
 	handler, err := wshandlers.NewWebSocketHandlerImpl(cfg)
 	if err != nil {
 		return nil, err
 	}
 
+	if requestHandler == nil {
+		return nil, fmt.Errorf("request handler cannot be nil")
+	}
+
 	return &WebSocketConnHandler{
 		WebSocketConnHandlerImpl: handler,
+		requestHandler:           requestHandler,
 	}, nil
 }
 
@@ -69,7 +75,13 @@ func (h *WebSocketConnHandler) Dial(url string) error {
 	}
 
 	// Create the websocket URL.
-	wss := fmt.Sprintf(WSSEndpoint, resp.Data.InstanceServers[0].Endpoint, resp.Data.Token)
+	server := resp.Data.InstanceServers[0]
+	wss := fmt.Sprintf(WSSEndpoint, server.Endpoint, resp.Data.Token)
+
+	// Update the web socket config with the new WSS and ping interval.
+	cfg.WSS = wss
+	cfg.PingInterval = time.Duration(server.PingInterval) * time.Millisecond
+
 	conn, _, err := h.CreateDialer().Dial(wss, nil)
 	if err != nil {
 		return err
