@@ -3,10 +3,7 @@ package metrics
 import (
 	"time"
 
-	"github.com/go-kit/kit/metrics"
-	"github.com/go-kit/kit/metrics/discard"
-	"github.com/go-kit/kit/metrics/prometheus"
-	stdprom "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
@@ -36,10 +33,10 @@ type APIMetrics interface {
 // APIMetricsImpl contains metrics exposed by this package.
 type APIMetricsImpl struct {
 	// Number of provider successes.
-	responseStatusPerProvider metrics.Counter
+	responseStatusPerProvider *prometheus.CounterVec
 
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
-	responseTimePerProvider metrics.Histogram
+	responseTimePerProvider *prometheus.HistogramVec
 }
 
 // NewAPIMetricsFromConfig returns a new Metrics struct given the main oracle metrics config.
@@ -53,12 +50,12 @@ func NewAPIMetricsFromConfig(config config.MetricsConfig) APIMetrics {
 // NewAPIMetrics returns a Provider Metrics implementation that uses Prometheus.
 func NewAPIMetrics() APIMetrics {
 	m := &APIMetricsImpl{
-		responseStatusPerProvider: prometheus.NewCounterFrom(stdprom.CounterOpts{
+		responseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_status_per_provider",
 			Help:      "Number of API provider successes.",
 		}, []string{providermetrics.ProviderLabel, providermetrics.IDLabel, StatusLabel}),
-		responseTimePerProvider: prometheus.NewHistogramFrom(stdprom.HistogramOpts{
+		responseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_time_per_provider",
 			Help:      "Response time per API provider.",
@@ -69,20 +66,30 @@ func NewAPIMetrics() APIMetrics {
 	return m
 }
 
+type noOpAPIMetricsImpl struct{}
+
 // NewNopAPIMetrics returns a Provider Metrics implementation that does nothing.
 func NewNopAPIMetrics() APIMetrics {
-	return &APIMetricsImpl{
-		responseStatusPerProvider: discard.NewCounter(),
-		responseTimePerProvider:   discard.NewHistogram(),
-	}
+	return &noOpAPIMetricsImpl{}
 }
+
+func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ Status)         {}
+func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration) {}
 
 // AddProviderResponse increments the number of requests by provider and status.
 func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, status Status) {
-	m.responseStatusPerProvider.With(providermetrics.ProviderLabel, providerName, providermetrics.IDLabel, id, StatusLabel, status.String()).Add(1)
+	m.responseStatusPerProvider.With(prometheus.Labels{
+		providermetrics.ProviderLabel: providerName,
+		providermetrics.IDLabel:       id,
+		StatusLabel:                   status.String(),
+	},
+	).Add(1)
 }
 
 // ObserveProviderResponseLatency records the time it took for a provider to respond.
 func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
-	m.responseTimePerProvider.With(providermetrics.ProviderLabel, providerName).Observe(float64(duration.Milliseconds()))
+	m.responseTimePerProvider.With(prometheus.Labels{
+		providermetrics.ProviderLabel: providerName,
+	},
+	).Observe(float64(duration.Milliseconds()))
 }
