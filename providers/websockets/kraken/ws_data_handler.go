@@ -111,3 +111,8 @@ func (h *WebSocketDataHandler) CreateMessages(
 
 	return NewSubscribeRequestMessage(instruments)
 }
+
+// HeartBeatMessages is not used for Kraken.
+func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+	return nil, nil
+}

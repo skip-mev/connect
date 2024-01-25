@@ -44,6 +44,12 @@ const (
 	// HandleMessageSuccess indicates that the provider successfully handled the message from the
 	// data provider.
 	HandleMessageSuccess
+	// HeartBeatSuccess indicates that the provider successfully constructed a heartbeat message
+	// to send to the data provider.
+	HeartBeatSuccess
+	// HeartBeatErr indicates that the provider could not construct a heartbeat message to send
+	// to the data provider.
+	HeartBeatErr
 	// Unknown indicates that the provider encountered an unknown error.
 	Unknown
 )
@@ -87,6 +93,10 @@ func (s HandlerStatus) String() string {
 		return "handle_message_err"
 	case HandleMessageSuccess:
 		return "handle_message_success"
+	case HeartBeatSuccess:
+		return "heartbeat_success"
+	case HeartBeatErr:
+		return "heartbeat_err"
 	default:
 		return "unknown_err"
 	}

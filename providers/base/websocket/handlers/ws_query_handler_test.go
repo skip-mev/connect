@@ -30,6 +30,7 @@ var (
 
 	name        = "sirmoggintonwebsocket"
 	testMessage = []byte("gib me money")
+	heartbeat   = []byte("heartbeat")
 
 	cfg = config.WebSocketConfig{
 		Name:                "sirmoggintonwebsocket",
@@ -43,12 +44,29 @@ var (
 		EnableCompression:   config.DefaultEnableCompression,
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
+		PingInterval:        config.DefaultPingInterval,
+	}
+
+	heartbeatCfg = config.WebSocketConfig{
+		Name:                "sirmoggintonwebsocket",
+		WSS:                 "ws://localhost:8080",
+		Enabled:             true,
+		MaxBufferSize:       1024,
+		ReconnectionTimeout: 5 * time.Second,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+		PingInterval:        1 * time.Second,
 	}
 )
 
 func TestWebSocketQueryHandler(t *testing.T) {
 	testCases := []struct {
 		name        string
+		cfg         config.WebSocketConfig
 		connHandler func() handlers.WebSocketConnHandler
 		dataHandler func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
 		metrics     func() metrics.WebSocketMetrics
@@ -57,6 +75,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 	}{
 		{
 			name: "fails to dial the websocket",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -85,6 +104,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "fails to create subscriptions",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -117,6 +137,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "fails to write to the websocket on initial subscription",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -151,6 +172,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "fails to read from the websocket",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -189,6 +211,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "fails to parse the response from the websocket",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -233,6 +256,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "pseudo heart beat update message with no response",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -279,6 +303,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "fails to send the update message to the websocket",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -327,6 +352,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "fails to close the websocket",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -373,6 +399,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "returns a single response with no update message",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -430,6 +457,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "returns a single response with an update message",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -489,6 +517,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 		},
 		{
 			name: "returns multiple responses with no update message",
+			cfg:  cfg,
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
@@ -573,13 +602,181 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "is able to create a heart beat message and send it to the websocket",
+			cfg:  heartbeatCfg,
+			connHandler: func() handlers.WebSocketConnHandler {
+				connHandler := handlermocks.NewWebSocketConnHandler(t)
+
+				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Write", testMessage).Return(nil).Once()
+				connHandler.On("Read").Return(nil, nil).Maybe().After(time.Second)
+				connHandler.On("Close").Return(nil).Once()
+
+				connHandler.On("Write", heartbeat).Return(nil).Maybe()
+
+				return connHandler
+			},
+			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
+				dataHandler.On("HandleMessage", mock.Anything).Return(
+					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+					nil,
+					nil,
+				).Maybe()
+				dataHandler.On("HeartBeatMessages").Return([]handlers.WebsocketEncodedMessage{heartbeat}, nil).Maybe()
+
+				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				// start
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				// recv
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				// heart beat
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HeartBeatSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Maybe()
+
+				// close
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
+			ids: []oracletypes.CurrencyPair{
+				btcusd,
+			},
+			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+		},
+		{
+			name: "is unable to create a heart beat message and send it to the websocket",
+			cfg:  heartbeatCfg,
+			connHandler: func() handlers.WebSocketConnHandler {
+				connHandler := handlermocks.NewWebSocketConnHandler(t)
+
+				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Write", testMessage).Return(nil).Once()
+				connHandler.On("Read").Return(nil, nil).Maybe().After(time.Second)
+				connHandler.On("Close").Return(nil).Once()
+
+				return connHandler
+			},
+			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
+				dataHandler.On("HandleMessage", mock.Anything).Return(
+					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+					nil,
+					nil,
+				).Maybe()
+				dataHandler.On("HeartBeatMessages").Return(nil, fmt.Errorf("no rizz err")).Maybe()
+
+				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				// start
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				// recv
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				// heart beat
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HeartBeatErr).Return().Maybe()
+
+				// close
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
+			ids: []oracletypes.CurrencyPair{
+				btcusd,
+			},
+			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+		},
+		{
+			name: "is able to create a heart beat message and but cannot write it to the websocket",
+			cfg:  heartbeatCfg,
+			connHandler: func() handlers.WebSocketConnHandler {
+				connHandler := handlermocks.NewWebSocketConnHandler(t)
+
+				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Write", testMessage).Return(nil).Once()
+				connHandler.On("Read").Return(nil, nil).Maybe().After(time.Second)
+				connHandler.On("Close").Return(nil).Once()
+
+				connHandler.On("Write", heartbeat).Return(fmt.Errorf("no rizz err")).Maybe()
+
+				return connHandler
+			},
+			dataHandler: func() handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] {
+				dataHandler := handlermocks.NewWebSocketDataHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
+				dataHandler.On("HandleMessage", mock.Anything).Return(
+					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+					nil,
+					nil,
+				).Maybe()
+				dataHandler.On("HeartBeatMessages").Return([]handlers.WebsocketEncodedMessage{heartbeat}, nil).Maybe()
+
+				return dataHandler
+			},
+			metrics: func() metrics.WebSocketMetrics {
+				m := mockmetrics.NewWebSocketMetrics(t)
+
+				// start
+				m.On("AddWebSocketConnectionStatus", name, metrics.DialSuccess).Return().Once()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.CreateMessageSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
+
+				// recv
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadSuccess).Return().Maybe()
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HandleMessageSuccess).Return().Maybe()
+				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
+
+				// heart beat
+				m.On("AddWebSocketDataHandlerStatus", name, metrics.HeartBeatSuccess).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.WriteErr).Return().Maybe()
+
+				// close
+				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()
+				m.On("AddWebSocketConnectionStatus", name, metrics.Unhealthy).Return().Once()
+
+				return m
+			},
+			ids: []oracletypes.CurrencyPair{
+				btcusd,
+			},
+			responses: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			handler, err := handlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 				logger,
-				cfg,
+				tc.cfg,
 				tc.dataHandler(),
 				tc.connHandler(),
 				tc.metrics(),
