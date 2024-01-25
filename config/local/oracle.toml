@@ -216,10 +216,22 @@ production = false
     write_deadline = "45s"
     ping_interval = "0s"
   [providers.market_config]
+<<<<<<< HEAD
     name = "bitfinex"
     [providers.market_config.currency_pair_to_market_configs]
       [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAXUSD"
+=======
+    name = "crypto_dot_com"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOMUSD-PERP"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "AVAXUSD-PERP"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
@@ -229,33 +241,59 @@ production = false
           Base = "BITCOIN"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+<<<<<<< HEAD
         ticker = "TIAUSD"
+=======
+        ticker = "TIAUSD-PERP"
         [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
-          Base = "CELESTIA"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+<<<<<<< HEAD
         ticker = "DYDXUSD"
+=======
+        ticker = "DYDXUSD-PERP"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+<<<<<<< HEAD
         ticker = "ETHBTC"
+=======
+        ticker = "ETH_BTC"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+<<<<<<< HEAD
         ticker = "ETHUSD"
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOLUSD"
+=======
+        ticker = "ETHUSD-PERP"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
+        ticker = "OSMO_USD"
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
+          Base = "OSMOSIS"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOLUSD-PERP"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
 
 [[providers]]
+<<<<<<< HEAD
   name = "bybit"
+=======
+  name = "kraken"
+>>>>>>> 14850b7 (docs)
   [providers.api]
     enabled = false
     timeout = "0s"
@@ -268,29 +306,48 @@ production = false
     enabled = true
     max_buffer_size = 1000
     reconnection_timeout = "10s"
+<<<<<<< HEAD
     wss = "wss://stream.bybit.com/v5/public/spot"
     name = "bybit"
+=======
+    wss = "wss://ws.kraken.com"
+    name = "kraken"
+>>>>>>> 14850b7 (docs)
     read_buffer_size = 0
     write_buffer_size = 0
     handshake_timeout = "45s"
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
+<<<<<<< HEAD
     ping_interval = "15s"
   [providers.market_config]
     name = "bybit"
     [providers.market_config.currency_pair_to_market_configs]
       [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSDT"
+=======
+    ping_interval = "0s"
+  [providers.market_config]
+    name = "kraken"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOM/USD"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+<<<<<<< HEAD
         ticker = "AVAXUSDT"
+=======
+        ticker = "AVAX/USD"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+<<<<<<< HEAD
         ticker = "BTCUSDT"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
@@ -302,17 +359,48 @@ production = false
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSDT"
+=======
+        ticker = "XBT/USD"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+        ticker = "TIA/USD"
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
+          Base = "CELESTIA"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "DYDX/USD"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ETH/XBT"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETH/USD"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+<<<<<<< HEAD
         ticker = "SOLUSDT"
+=======
+        ticker = "SOL/USD"
+>>>>>>> 14850b7 (docs)
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
 
 [[providers]]
+<<<<<<< HEAD
   name = "coinbase"
+=======
+  name = "kucoin"
+>>>>>>> 14850b7 (docs)
   [providers.api]
     enabled = false
     timeout = "0s"
