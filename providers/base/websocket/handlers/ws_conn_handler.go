@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -47,7 +48,7 @@ type WebSocketConnHandlerImpl struct {
 }
 
 // NewWebSocketHandlerImpl returns a new WebSocketConnHandlerImpl.
-func NewWebSocketHandlerImpl(cfg config.WebSocketConfig) (WebSocketConnHandler, error) {
+func NewWebSocketHandlerImpl(cfg config.WebSocketConfig) (*WebSocketConnHandlerImpl, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
 	}
@@ -57,29 +58,37 @@ func NewWebSocketHandlerImpl(cfg config.WebSocketConfig) (WebSocketConnHandler, 
 	}, nil
 }
 
-// Dial is used to create a new connection to the data provider with the given URL.
-func (h *WebSocketConnHandlerImpl) Dial(url string) error {
-	h.Mutex.Lock()
-	defer h.Mutex.Unlock()
-
-	dialer := websocket.Dialer{
+// CreateDialer is a function that dynamically creates a new websocket dialer.
+func (h *WebSocketConnHandlerImpl) CreateDialer() *websocket.Dialer {
+	return &websocket.Dialer{
 		Proxy:             http.ProxyFromEnvironment,
 		HandshakeTimeout:  h.cfg.HandshakeTimeout,
 		ReadBufferSize:    h.cfg.ReadBufferSize,
 		WriteBufferSize:   h.cfg.WriteBufferSize,
 		EnableCompression: h.cfg.EnableCompression,
 	}
+}
 
-	var err error
-	h.conn, _, err = dialer.Dial(url, nil)
+// Dial is used to create a new connection to the data provider with the given URL.
+func (h *WebSocketConnHandlerImpl) Dial(url string) error {
+	conn, _, err := h.CreateDialer().Dial(url, nil)
+	if err != nil {
+		return err
+	}
+
+	h.SetConnection(conn)
 	return err
 }
 
 // Read is used to read data from the data provider. Each web socket data handler is responsible
 // for determining how to parse the data and being aware of the data format (text, json, etc.).
 func (h *WebSocketConnHandlerImpl) Read() ([]byte, error) {
-	h.Mutex.Lock()
-	defer h.Mutex.Unlock()
+	h.Lock()
+	defer h.Unlock()
+
+	if h.conn == nil {
+		return nil, fmt.Errorf("connection has not been established")
+	}
 
 	// Set the read deadline to the configured read timeout.
 	if err := h.conn.SetReadDeadline(time.Now().Add(h.cfg.ReadTimeout)); err != nil {
@@ -93,8 +102,12 @@ func (h *WebSocketConnHandlerImpl) Read() ([]byte, error) {
 // Write is used to write messages to the data provider. By default, all messages are sent as
 // text messages. This permits encoding json messages as text messages.
 func (h *WebSocketConnHandlerImpl) Write(message []byte) error {
-	h.Mutex.Lock()
-	defer h.Mutex.Unlock()
+	h.Lock()
+	defer h.Unlock()
+
+	if h.conn == nil {
+		return fmt.Errorf("connection has not been established")
+	}
 
 	// Set the write deadline to the configured write timeout.
 	if err := h.conn.SetWriteDeadline(time.Now().Add(h.cfg.WriteTimeout)); err != nil {
@@ -106,8 +119,12 @@ func (h *WebSocketConnHandlerImpl) Write(message []byte) error {
 
 // Close is used to close the connection to the data provider.
 func (h *WebSocketConnHandlerImpl) Close() error {
-	h.Mutex.Lock()
-	defer h.Mutex.Unlock()
+	h.Lock()
+	defer h.Unlock()
+
+	if h.conn == nil {
+		return fmt.Errorf("connection has not been established")
+	}
 
 	// Set the write deadline to the configured write timeout.
 	if err := h.conn.SetWriteDeadline(time.Now().Add(h.cfg.WriteTimeout)); err != nil {
@@ -122,4 +139,28 @@ func (h *WebSocketConnHandlerImpl) Close() error {
 	}
 
 	return h.conn.Close()
+}
+
+// SetConnection is used to set the connection to the data provider.
+func (h *WebSocketConnHandlerImpl) SetConnection(conn *websocket.Conn) {
+	h.Lock()
+	defer h.Unlock()
+
+	h.conn = conn
+}
+
+// GetConfig is used to get the configuration for the connection handler.
+func (h *WebSocketConnHandlerImpl) GetConfig() config.WebSocketConfig {
+	h.Lock()
+	defer h.Unlock()
+
+	return h.cfg
+}
+
+// SetConfig is used to set the configuration for the connection handler.
+func (h *WebSocketConnHandlerImpl) SetConfig(cfg config.WebSocketConfig) {
+	h.Lock()
+	defer h.Unlock()
+
+	h.cfg = cfg
 }

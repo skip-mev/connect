@@ -129,7 +129,10 @@ func apiProviderFromProviderConfig(
 
 	// If a custom request handler is not provided, create a new default one.
 	if requestHandler == nil {
-		requestHandler = apihandlers.NewRequestHandlerImpl(client)
+		requestHandler, err = apihandlers.NewRequestHandlerImpl(client)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
