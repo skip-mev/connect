@@ -32,18 +32,3 @@ To retrieve all of the supported [spot markets](https://bybit-exchange.github.io
 ```bash
 curl "https://api.bybit.com/v5/market/instruments-info" 
 ```
-
-## Configuration
-
-The configuration structure for this provider looks like the following:
-
-```golang
-type Config struct {
-	// Markets is the list of markets to subscribe to. The key is the currency pair and the value
-	// is the pair ID. The pair ID must correspond to the spot market. For example,
-	// the pair ID for the BITCOIN/USDT market is BTCUSDT.
-	Markets map[string]string `json:"markets"`
-
-	// Production is true if the config is for production.
-	Production bool `json:"production"`
-}
