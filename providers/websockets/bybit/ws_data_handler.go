@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -96,7 +97,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 		}
 
 		return resp, updateMessage, nil
-	case opType == OperationPong:
+	case opType == OperationPing:
 		h.logger.Debug("received pong response message")
 
 		return resp, nil, nil
@@ -110,7 +111,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 		// parse
 		resp, err := h.parseTickerUpdate(update)
 		if err != nil {
-			h.logger.Error("failed to parse ticker update message", zap.Error(err))
+			h.logger.Error("failed to parse ticker update message", zap.Any("base", baseResponse), zap.Any("message", update), zap.Error(err))
 			return resp, nil, fmt.Errorf("failed to parse ticker update message: %s", err)
 		}
 
@@ -138,4 +139,20 @@ func (h *WebsocketDataHandler) CreateMessages(
 
 	h.logger.Debug("subscribing to pairs", zap.Any("pairs", pairs))
 	return NewSubscriptionRequestMessage(pairs)
+}
+
+// HeartBeatMessages is used to construct heartbeat messages to be sent to the data provider. Note that
+// the handler must maintain the necessary state information to construct the heartbeat messages. This
+// can be done on the fly as messages as handled by the handler.
+func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+	msg, err := json.Marshal(HeartbeatPing{BaseRequest{
+		ReqID: time.Now().String(),
+		Op:    string(OperationPing),
+	}})
+	if err != nil {
+		h.logger.Debug("unable to marshal heartbeat ping")
+		return nil, fmt.Errorf("unable to marshal heartbeat ping: %w", err)
+	}
+
+	return []handlers.WebsocketEncodedMessage{msg}, nil
 }

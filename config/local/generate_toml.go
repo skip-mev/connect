@@ -205,7 +205,7 @@ var LocalConfig = config.OracleConfig{
 		// -----------------------------------------------------------	//
 		//
 		// NOTE: Some of the provider's are only capable of fetching data for a subset of
-		// all of the currency pairs. Before adding a new market to the oracle, ensure that
+		// all currency pairs. Before adding a new market to the oracle, ensure that
 		// the provider supports fetching data for the currency pair.
 		{
 			Name: cryptodotcom.Name,
@@ -384,6 +384,7 @@ var LocalConfig = config.OracleConfig{
 				EnableCompression:   config.DefaultEnableCompression,
 				ReadTimeout:         config.DefaultReadTimeout,
 				WriteTimeout:        config.DefaultWriteTimeout,
+				PingInterval:        20,
 			},
 			Market: config.MarketConfig{
 				Name: bybit.Name,
@@ -411,10 +412,6 @@ var LocalConfig = config.OracleConfig{
 					"DYDX/USD": {
 						Ticker:       "DYDXUSDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
-					},
-					"ETHEREUM/BITCOIN": {
-						Ticker:       "ETHBTC",
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 					},
 				},
 			},

@@ -219,9 +219,6 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		}
 	}()
 
-	h.logger.Debug("starting heartbeat routine")
-	_ = h.connHandler.Heartbeat(ctx)
-
 	h.logger.Debug("starting recv", zap.Int("buffer_size", cap(responseCh)))
 
 	for {

@@ -190,7 +190,6 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	case bybit.Name:
 		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
-		connHandler = bybit.NewWebSocketHandler(logger)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	default:
@@ -208,7 +207,7 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
+	// Create the web socket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,

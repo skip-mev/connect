@@ -23,6 +23,7 @@ production = false
     enable_compression = false
     read_deadline = "0s"
     write_deadline = "0s"
+    ping_interval = "0s"
   [providers.market_config]
     name = "binance"
     [providers.market_config.currency_pair_to_market_configs]
@@ -74,6 +75,7 @@ production = false
     enable_compression = false
     read_deadline = "0s"
     write_deadline = "0s"
+    ping_interval = "0s"
   [providers.market_config]
     name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
@@ -145,6 +147,7 @@ production = false
     enable_compression = false
     read_deadline = "0s"
     write_deadline = "0s"
+    ping_interval = "0s"
   [providers.market_config]
     name = "coingecko"
     [providers.market_config.currency_pair_to_market_configs]
@@ -211,6 +214,7 @@ production = false
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
+    ping_interval = "0s"
   [providers.market_config]
     name = "crypto_dot_com"
     [providers.market_config.currency_pair_to_market_configs]
@@ -282,6 +286,7 @@ production = false
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
+    ping_interval = "0s"
   [providers.market_config]
     name = "okx"
     [providers.market_config.currency_pair_to_market_configs]
@@ -348,6 +353,7 @@ production = false
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
+    ping_interval = "0s"
   [providers.market_config]
     name = "kraken"
     [providers.market_config.currency_pair_to_market_configs]
@@ -414,6 +420,7 @@ production = false
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
+    ping_interval = "20ns"
   [providers.market_config]
     name = "bybit"
     [providers.market_config.currency_pair_to_market_configs]
@@ -437,11 +444,6 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
-        ticker = "ETHBTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "BITCOIN"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSDT"
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
