@@ -20,9 +20,6 @@ type WebSocketConnHandler struct {
 	// requestHandler is the request handler to use for making requests to the
 	// Kucoin API.
 	requestHandler apihandlers.RequestHandler
-
-	// id is the ID of the websocket connection.
-	id string
 }
 
 // NewWebSocketHandler returns a new WebSocketConnHandler.
@@ -81,20 +78,4 @@ func (h *WebSocketConnHandler) Dial(url string) error {
 	// Set the connection on the handler.
 	h.SetConnection(conn)
 	return nil
-}
-
-// SetID sets the ID of the websocket connection.
-func (h *WebSocketConnHandler) SetID(id string) {
-	h.Lock()
-	defer h.Unlock()
-
-	h.id = id
-}
-
-// GetID returns the ID of the websocket connection.
-func (h *WebSocketConnHandler) GetID() string {
-	h.Lock()
-	defer h.Unlock()
-
-	return h.id
 }

@@ -107,6 +107,10 @@ func (h *WebSocketConnHandlerImpl) Read() ([]byte, error) {
 		return nil, fmt.Errorf("connection has not been established")
 	}
 
+	if h.conn == nil {
+		return nil, fmt.Errorf("connection has not been established")
+	}
+
 	// Set the read deadline to the configured read timeout.
 	if err := h.conn.SetReadDeadline(time.Now().Add(h.cfg.ReadTimeout)); err != nil {
 		return nil, err
@@ -126,6 +130,10 @@ func (h *WebSocketConnHandlerImpl) Write(message []byte) error {
 		return fmt.Errorf("connection has not been established")
 	}
 
+	if h.conn == nil {
+		return fmt.Errorf("connection has not been established")
+	}
+
 	// Set the write deadline to the configured write timeout.
 	if err := h.conn.SetWriteDeadline(time.Now().Add(h.cfg.WriteTimeout)); err != nil {
 		return err
@@ -138,6 +146,10 @@ func (h *WebSocketConnHandlerImpl) Write(message []byte) error {
 func (h *WebSocketConnHandlerImpl) Close() error {
 	h.Lock()
 	defer h.Unlock()
+
+	if h.conn == nil {
+		return fmt.Errorf("connection has not been established")
+	}
 
 	if h.conn == nil {
 		return fmt.Errorf("connection has not been established")
