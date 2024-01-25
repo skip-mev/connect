@@ -48,7 +48,7 @@ func TestServerTestSuite(t *testing.T) {
 
 func (s *ServerTestSuite) SetupTest() {
 	// mock logger
-	logger := zap.NewNop()
+	logger := zap.NewExample()
 
 	s.mockOracle = mocks.NewOracle(s.T())
 	s.srv = server.NewOracleServer(s.mockOracle, logger)
@@ -59,7 +59,9 @@ func (s *ServerTestSuite) SetupTest() {
 		localhost+":"+port,
 		timeout,
 		metrics.NewNopMetrics(),
+		client.WithBlockingDial(), // block on dialing the server
 	)
+
 	s.Require().NoError(err)
 
 	s.httpClient = http.DefaultClient
@@ -72,7 +74,10 @@ func (s *ServerTestSuite) SetupTest() {
 
 	// start server + client w/ context
 	go s.srv.StartServer(s.ctx, localhost, port)
-	s.Require().NoError(s.client.Start())
+
+	dialCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	s.Require().NoError(s.client.Start(dialCtx))
 }
 
 // teardown test suite

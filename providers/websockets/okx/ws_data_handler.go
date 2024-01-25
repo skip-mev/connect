@@ -144,3 +144,8 @@ func (h *WebsocketDataHandler) CreateMessages(
 	h.logger.Debug("subscribing to instruments", zap.Any("instruments", instruments))
 	return NewSubscribeToTickersRequestMessage(instruments)
 }
+
+// HeartBeatMessages is not used for okx.
+func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+	return nil, nil
+}
