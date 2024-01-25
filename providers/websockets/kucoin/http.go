@@ -22,14 +22,14 @@ const (
 //	{
 //		"code": "200000",
 //		"data": {
-//		  	"token": "2neAiuYvAU61ZDXANAGAsiL4-iAExhsBXZxftpOeh_55i3Ysy2q2LEsEWU64mdzUOPusi34M_wGoSf7iNyEWJ4aBZXpWhrmY9jKtqkdWoFa75w3istPvPtiYB9J6i9GjsxUuhPw3BlrzazF6ghq4L_u0MhKxG3x8TeN4aVbNiYo=.mvnekBb8DJegZIgYLs2FBQ==",
+//		  	"token": "token1234567890",
 //		  	"instanceServers": [
 //					{
-//			  		"endpoint": "wss://ws-api-spot.kucoin.com/", // It is recommended to use a dynamic URL, which may change
-//			  		"encrypt": true,
-//			  		"protocol": "websocket",
-//			  		"pingInterval": 18000,
-//			  		"pingTimeout": 10000
+//			  			"endpoint": "wss://ws-api-spot.kucoin.com/", // It is recommended to use a dynamic URL, which may change
+//			  			"encrypt": true,
+//			  			"protocol": "websocket",
+//			  			"pingInterval": 18000,
+//			  			"pingTimeout": 10000
 //					}
 //		  		]
 //			}
