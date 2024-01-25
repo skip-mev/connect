@@ -30,4 +30,6 @@ type SubscribedMessage struct {
 }
 
 type TickerStream struct {
+	ChannelID string  `json:"chanId" validate:"required"`
+	LastPrice float64 `json:"lastPrice" validate:"required"`
 }
