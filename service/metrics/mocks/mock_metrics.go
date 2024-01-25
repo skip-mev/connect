@@ -20,7 +20,7 @@ func (_m *Metrics) AddABCIRequest(method metrics.ABCIMethod, status metrics.Labe
 }
 
 // AddOracleResponse provides a mock function with given fields: status
-func (_m *Metrics) AddOracleResponse(status metrics.Status) {
+func (_m *Metrics) AddOracleResponse(status metrics.Labeller) {
 	_m.Called(status)
 }
 

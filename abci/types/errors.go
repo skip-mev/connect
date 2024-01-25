@@ -6,6 +6,7 @@ import (
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 )
 
+// NilRequestError is an error that is returned when a nil request is given to the handler.
 type NilRequestError struct {
 	Handler servicemetrics.ABCIMethod
 }
@@ -18,6 +19,8 @@ func (e NilRequestError) Label() string {
 	return "NilRequestError"
 }
 
+// WrappedHandlerError is an error that is returned when a handler that is wrapped by a Slinky ABCI handler
+// returns an error.
 type WrappedHandlerError struct {
 	Handler servicemetrics.ABCIMethod
 	Err     error
@@ -31,6 +34,7 @@ func (e WrappedHandlerError) Label() string {
 	return "WrappedHandlerError"
 }
 
+// CodecError is an error that is returned when a codec fails to marshal or unmarshal a type.
 type CodecError struct {
 	Err error
 }

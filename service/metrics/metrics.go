@@ -15,7 +15,7 @@ type Metrics interface {
 	ObserveOracleResponseLatency(duration time.Duration)
 
 	// AddOracleResponse increments the number of oracle responses, this can represent a liveness counter. This metric is paginated by status.
-	AddOracleResponse(status Status)
+	AddOracleResponse(status Labeller)
 
 	// AddVoteIncludedInLastCommit increments the number of votes included in the last commit
 	AddVoteIncludedInLastCommit(included bool)
@@ -38,7 +38,7 @@ func NewNopMetrics() Metrics {
 }
 
 func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)           {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Status)                             {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                           {}
 func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                     {}
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)              {}
 func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration) {}
@@ -115,9 +115,9 @@ func (m *metricsImpl) ObserveOracleResponseLatency(duration time.Duration) {
 	}).Observe(float64(duration.Milliseconds()))
 }
 
-func (m *metricsImpl) AddOracleResponse(status Status) {
+func (m *metricsImpl) AddOracleResponse(status Labeller) {
 	m.oracleResponseCounter.With(prometheus.Labels{
-		StatusLabel:  status.String(),
+		StatusLabel:  status.Label(),
 		ChainIDLabel: m.chainID,
 	}).Inc()
 }

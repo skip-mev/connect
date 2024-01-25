@@ -1,9 +1,11 @@
 package metrics
 
 const (
+	// Metric namespace
+	AppNamespace = "app"
+	// Metrics labels
 	TickerLabel           = "ticker"
 	InclusionLabel        = "included"
-	AppNamespace          = "app"
 	ProviderLabel         = "provider"
 	StatusLabel           = "status"
 	ABCIMethodLabel       = "abci_method"
@@ -11,31 +13,17 @@ const (
 	ABCIMethodStatusLabel = "abci_method_status"
 )
 
-type Status int
-
-const (
-	StatusFailure Status = iota
-	StatusSuccess
-)
-
-func (s Status) String() string {
-	switch s {
-	case StatusFailure:
-		return "failure"
-	case StatusSuccess:
-		return "success"
-	default:
-		return "unknown"
-	}
-}
-
-func StatusFromError(err error) Status {
+// StatusFromError returns a Labeller that can be used to label metrics based on the error. This
+// is used to label metrics based on the error returned from oracle client requests.
+func StatusFromError(err error) Labeller {
 	if err == nil {
-		return StatusSuccess
+		return Success{}
 	}
-	return StatusFailure
+	return Failure{}
 }
 
+// ABCIMethod is an identifier for ABCI methods, this is used to paginate latencies / responses in prometheus
+// metrics.
 type ABCIMethod int
 
 const (
@@ -63,6 +51,7 @@ func (a ABCIMethod) String() string {
 	}
 }
 
+// Labeller is an interface that can be implemented by errors to provide a label for prometheus metrics.
 type Labeller interface {
 	Label() string
 }
@@ -71,4 +60,10 @@ type Success struct{}
 
 func (s Success) Label() string {
 	return "Success"
+}
+
+type Failure struct{}
+
+func (f Failure) Label() string {
+	return "Failure"
 }

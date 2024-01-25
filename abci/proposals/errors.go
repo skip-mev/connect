@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// InvalidExtendedCommitInfoError is an error that is returned when a proposed ExtendedCommitInfo is invalid.
 type InvalidExtendedCommitInfoError struct {
 	Err error
 }
@@ -16,6 +17,8 @@ func (e InvalidExtendedCommitInfoError) Label() string {
 	return "InvalidExtendedCommitInfoError"
 }
 
+// MissingCommitInfoError is an error that is returned when a proposal is missing the CommitInfo from the previous
+// height.
 type MissingCommitInfoError struct{}
 
 func (e MissingCommitInfoError) Error() string {
