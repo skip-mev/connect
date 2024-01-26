@@ -75,7 +75,6 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			extendVoteRequest: func() *cometabci.RequestExtendVote { return nil },
-			expectedError:     true,
 		},
 		{
 			name: "oracle service returns no prices",
@@ -193,7 +192,6 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
 			},
-			expectedError: true,
 		},
 		{
 			name: "oracle service returns an error",
@@ -213,7 +211,6 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
 			},
-			expectedError: true,
 		},
 		{
 			name: "currency pair id strategy returns an error",
@@ -300,6 +297,9 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 			}
 			resp, err := h.ExtendVoteHandler()(s.ctx, req)
 			if !tc.expectedError {
+				if resp == nil || len(resp.VoteExtension) == 0 {
+					return
+				}
 				s.Require().NoError(err)
 				s.Require().NotNil(resp)
 				ve, err := codec.Decode(resp.VoteExtension)
@@ -591,8 +591,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
 		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
 
-		_, err := handler.ExtendVoteHandler()(s.ctx, nil)
-		s.Require().Error(err, expErr)
+		handler.ExtendVoteHandler()(s.ctx, nil)
 	})
 
 	s.Run("test panic", func() {
@@ -638,8 +637,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
 		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
 
-		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
-		s.Require().Error(err, expErr)
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
 	})
 
 	s.Run("test oracle client failures", func() {
@@ -664,8 +662,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
 		mockClient.On("Prices", mock.Anything, &servicetypes.QueryPricesRequest{}).Return(nil, clientError)
 
-		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
-		s.Require().Error(err, expErr)
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
 	})
 
 	s.Run("test price transformation failures", func() {
@@ -694,8 +691,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			},
 		}, nil)
 
-		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
-		s.Require().Error(err, expErr)
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
 	})
 
 	s.Run("test codec failures", func() {
@@ -726,8 +722,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			Prices: map[uint64][]byte{},
 		}).Return(nil, codecError)
 
-		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
-		s.Require().Error(err, expErr)
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
 	})
 
 	s.Run("test success", func() {

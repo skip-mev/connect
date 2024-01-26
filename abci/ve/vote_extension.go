@@ -97,6 +97,11 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 			slinkyabci.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.ExtendVote)
+
+			// ignore all non-panic errors
+			if _, ok := err.(Panic); !ok {
+				err = nil
+			}
 		}()
 
 		if req == nil {
