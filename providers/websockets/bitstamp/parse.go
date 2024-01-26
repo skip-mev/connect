@@ -12,6 +12,7 @@ import (
 )
 
 // parseTickerMessage parses a ticker message received from the Bitstamp websocket API.
+// All price updates must be made from the live trades channel.
 func (h *WebSocketDataHandler) parseTickerMessage(
 	msg TickerResponseMessage,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
@@ -20,19 +21,19 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 		unResolved = make(map[oracletypes.CurrencyPair]error)
 	)
 
+	// Ensure that the price feeds are coming from the live trading channel.
 	if !strings.HasPrefix(msg.Channel, string(TickerChannel)) {
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("invalid ticker message %s", msg.Channel)
 	}
 
-	// Get the ticker from the message.
 	tickerSplit := strings.Split(msg.Channel, string(TickerChannel))
 	if len(tickerSplit) != ExpectedTickerLength {
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("invalid ticker message length %s", msg.Channel)
 	}
 
-	// Get the currency pair from the message.
+	// Get the ticker from the message and market.
 	ticker := tickerSplit[TickerCurrencyPairIndex]
 	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
 	if !ok {

@@ -53,16 +53,18 @@ func NewWebSocketDataHandler(
 }
 
 // HandleMessage handles a message received from the Bitstamp websocket API. There
-// are three types of messages that can be received:
+// are four types of messages that can be received:
 //
 //  1. HeartbeatEvent: This is a heartbeat event. This event is sent from the server
 //     to the client letting the client know that the connection is still alive.
-//  2. TickerEvent: This is a ticker event. This event is sent from the server to
-//     the client when a ticker update is available.
-//  3. ReconnectEvent: This is a reconnect event. This event is sent from the server
-//     to the client when the server is about to disconnect the client. The client
-//     has a few seconds to reconnect. If the client does not reconnect, the client
-//     will be disconnected.
+//  2. ReconnectEvent: This is a reconnect event. This event is sent from the server
+//     to the client letting the client know that the server is about to restart.
+//  3. SubscriptionSucceededEvent: This is a subscription succeeded event. This event
+//     is sent from the server to the client letting the client know that the
+//     subscription was successful.
+//  4. TradeEvent: This is a trade event. This event is sent from the server to the
+//     client letting the client know that a trade has occurred. This event contains
+//     the price information for the trade.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
@@ -94,6 +96,8 @@ func (h *WebSocketDataHandler) HandleMessage(
 		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subcriptionMsg.Channel))
 		return resp, nil, nil
 	case TradeEvent:
+		h.logger.Debug("received trade event")
+
 		var tickerMsg TickerResponseMessage
 		if err := json.Unmarshal(message, &tickerMsg); err != nil {
 			return resp, nil, fmt.Errorf("failed to unmarshal ticker message %s", err)
@@ -103,10 +107,14 @@ func (h *WebSocketDataHandler) HandleMessage(
 		resp, err := h.parseTickerMessage(tickerMsg)
 		return resp, nil, err
 	default:
+		h.logger.Debug("received unknown event", zap.String("event", string(event)))
 		return resp, nil, fmt.Errorf("unknown event type %s", event)
 	}
 }
 
+// CreateMessages creates the messages to send to the Bitstamp websocket API. The
+// messages are used to subscribe to the live trades channel for the specified currency
+// pairs.
 func (h *WebSocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
 ) ([]handlers.WebsocketEncodedMessage, error) {
@@ -115,8 +123,7 @@ func (h *WebSocketDataHandler) CreateMessages(
 	for _, cp := range cps {
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("currency pair not found in market configs", zap.String("currency_pair", cp.String()))
-			continue
+			return nil, fmt.Errorf("currency pair not found in market configs %s", cp.String())
 		}
 
 		instruments = append(instruments, fmt.Sprintf("%s%s", TickerChannel, market.Ticker))
@@ -125,7 +132,8 @@ func (h *WebSocketDataHandler) CreateMessages(
 	return NewSubscriptionRequestMessages(instruments)
 }
 
-// HeartBeatMessages is not used for Bitstamp.
+// HeartBeatMessages is used to create the heartbeat messages to send to the Bitstamp
+// websocket API.
 func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
-	return nil, nil
+	return NewHeartbeatRequestMessage()
 }
