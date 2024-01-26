@@ -16,14 +16,7 @@ import (
 func (h *WebsocketDataHandler) parseSubscribedMessage(
 	msg SubscribedMessage,
 ) error {
-	market, ok := h.cfg.Market.TickerToMarketConfigs[msg.Pair]
-	if !ok {
-		return fmt.Errorf("unable to find market for currency pair: %s", msg.Pair)
-	}
-
-	h.channelMap[msg.ChannelID] = market
-
-	return nil
+	return h.UpdateChannelMap(msg.ChannelID, msg.Pair)
 }
 
 func (h *WebsocketDataHandler) parseErrorMessage(

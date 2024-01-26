@@ -28,6 +28,17 @@ type WebsocketDataHandler struct {
 	cfg config.ProviderConfig
 }
 
+// UpdateChannelMap updates the internal map from
+func (h *WebsocketDataHandler) UpdateChannelMap(channelID, ticker string) error {
+	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
+	if !ok {
+		return fmt.Errorf("unable to find market for currency pair: %s", ticker)
+	}
+
+	h.channelMap[channelID] = market
+	return nil
+}
+
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for BitFinex
 // from a given provider configuration.
 func NewWebSocketDataHandler(
@@ -114,7 +125,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 		return resp, updateMessage, nil
 
 		// otherwise, this is a stream message
-	default:
+	case EventNil:
 		if err := json.Unmarshal(message, &baseStream); err != nil {
 			h.logger.Debug("unable to unmarshal message into stream message", zap.Error(err))
 			return resp, nil, err
@@ -142,6 +153,9 @@ func (h *WebsocketDataHandler) HandleMessage(
 			return resp, nil, nil
 		}
 
+	default:
+		h.logger.Error("unknown message", zap.Any("message", message))
+		return resp, nil, fmt.Errorf("unknown message: %v", message)
 	}
 }
 
@@ -157,7 +171,7 @@ func (h *WebsocketDataHandler) CreateMessages(
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
-			continue
+			return nil, fmt.Errorf("currency pair %s not in config", cp.String())
 		}
 
 		msg, err := NewSubscribeMessage(market.Ticker)

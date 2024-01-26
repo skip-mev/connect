@@ -26,6 +26,8 @@ const (
 	EventSubscribed Event = "subscribed"
 	// EventError indicates that an error occurred.
 	EventError Event = "error"
+	// EventNil represents an empty event field.
+	EventNil Event = ""
 	// ChannelTicker is the channel name for the ticker channel.
 	ChannelTicker Channel = "ticker"
 	// ChannelIdHeartbeat is the channelID always used for a heartbeat.

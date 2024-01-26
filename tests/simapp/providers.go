@@ -2,6 +2,7 @@ package simapp
 
 import (
 	"fmt"
+	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"math/big"
 	"net/http"
 
@@ -183,6 +184,8 @@ func webSocketProviderFromProviderConfig(
 	)
 
 	switch cfg.Name {
+	case bitfinex.Name:
+		wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, cfg)
 	case coinbasews.Name:
 		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg)
 	case cryptodotcom.Name:
