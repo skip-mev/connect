@@ -16,7 +16,7 @@ type (
 	WebsocketEncodedMessage []byte
 
 	// PreDialHook is a function that is called before the connection is established. This
-	// is useful for dynamically generating the URL and token for the connection.
+	// is useful for dynamically generating configurations for the connection.
 	PreDialHook func(*WebSocketConnHandlerImpl) error
 )
 

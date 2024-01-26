@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	// BulletPublicEndpoint is the endpoint to connect to for the public feed. This
+	// BulletPublicEndpoint is the endpoint to connect to the public WSS feed. This
 	// requires a POST request with no body to receive a token and endpoints to
 	// connect to.
 	BulletPublicEndpoint = "/api/v1/bullet-public"
@@ -33,14 +33,14 @@ const (
 //	{
 //		"code": "200000",
 //		"data": {
-//		  	"token": "token1234567890",
+//		  	"token": "token1234567890", // Used to suffix the WSS URL
 //		  	"instanceServers": [
 //					{
 //			  			"endpoint": "wss://ws-api-spot.kucoin.com/", // It is recommended to use a dynamic URL, which may change
 //			  			"encrypt": true,
 //			  			"protocol": "websocket",
-//			  			"pingInterval": 18000,
-//			  			"pingTimeout": 10000
+//			  			"pingInterval": 18000, // We use this as the ping interval
+//			  			"pingTimeout": 10000 // We use this as the read timeout
 //					}
 //		  		]
 //			}

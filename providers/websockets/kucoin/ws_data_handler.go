@@ -27,6 +27,9 @@ type WebSocketDataHandler struct {
 
 	// config is the config for the Kucoin web socket API.
 	cfg config.ProviderConfig
+
+	// sequences is a map of currency pair to sequence number.
+	sequences map[oracletypes.CurrencyPair]int64
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Kraken.
@@ -47,8 +50,9 @@ func NewWebSocketDataHandler(
 	}
 
 	return &WebSocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+		cfg:       cfg,
+		logger:    logger.With(zap.String("web_socket_data_handler", Name)),
+		sequences: make(map[oracletypes.CurrencyPair]int64),
 	}, nil
 }
 

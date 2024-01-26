@@ -58,17 +58,13 @@ const (
 	//
 	// ref: https://www.kucoin.com/docs/websocket/spot-trading/public-channels/ticker
 	Message MessageType = "message"
-)
 
-const (
 	// TickerTopic represents the ticker topic. This will subscribe to the spot market
 	// ticker for the specified trading pairs.
 	//
 	// ref: https://www.kucoin.com/docs/websocket/spot-trading/public-channels/ticker
 	TickerTopic TopicType = "/market/ticker:"
-)
 
-const (
 	// TickerSubject represents the ticker subject. This should be returned in the
 	// response message when subscribing to the ticker topic.
 	//
@@ -78,6 +74,9 @@ const (
 
 // BaseMessage is utilized to determine the type of message that was received.
 type BaseMessage struct {
+	// ID is the ID of the message.
+	ID string `json:"id"`
+
 	// Type is the type of message.
 	Type string `json:"type"`
 }
@@ -92,18 +91,16 @@ type BaseMessage struct {
 //
 // ref: https://www.kucoin.com/docs/websocket/basic-info/ping
 type PingRequestMessage struct {
-	// ID is the ID of the message.
-	ID string `json:"id"`
-
-	// Type is the type of message.
-	Type string `json:"type"`
+	BaseMessage
 }
 
 // NewHeartbeatMessage returns a new heartbeat message.
 func NewHeartbeatMessage() ([]handlers.WebsocketEncodedMessage, error) {
 	bz, err := json.Marshal(PingRequestMessage{
-		ID:   fmt.Sprintf("%d", time.Now().Unix()),
-		Type: string(PingMessage),
+		BaseMessage: BaseMessage{
+			ID:   fmt.Sprintf("%d", time.Now().Unix()),
+			Type: string(PingMessage),
+		},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal ping request message: %w", err)
@@ -205,6 +202,9 @@ type TickerResponseMessage struct {
 
 // TickerResponseMessageData is the data field of the TickerResponseMessage.
 type TickerResponseMessageData struct {
+	// Sequence is the sequence number.
+	Sequence string `json:"sequence"`
+
 	// Price is the last traded price.
 	Price string `json:"price"`
 }

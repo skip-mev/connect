@@ -32,7 +32,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 
 	// Determine if the sequence number is valid.
 	cp := market.CurrencyPair
-	sequence, ok := h.sequence[market.CurrencyPair]
+	sequence, ok := h.sequence[cp]
 	switch {
 	case !ok || sequence < msg.Sequence:
 		// If the sequence number is not found, then this is the first message

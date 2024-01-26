@@ -107,6 +107,7 @@ func TestHandleMessage(t *testing.T) {
 					"topic": "/market/ticker:BTC-USDT",
 					"subject": "trade.ticker",
 					"data": {
+						"sequence": "1",
 						"price": "0.1"
 					}
 				}`)
@@ -122,6 +123,54 @@ func TestHandleMessage(t *testing.T) {
 				return nil
 			},
 			expectedErr: false,
+		},
+		{
+			name: "duplicate valid ticker response message",
+			msg: func() []byte {
+				return []byte(`{
+					"id": "id",
+					"type": "message",
+					"topic": "/market/ticker:BTC-USDT",
+					"subject": "trade.ticker",
+					"data": {
+						"sequence": "1",
+						"price": "0.1"
+					}
+				}`)
+			},
+			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+				UnResolved: map[oracletypes.CurrencyPair]error{
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("err"),
+				},
+			},
+			updateMsg: func() []handlers.WebsocketEncodedMessage {
+				return nil
+			},
+			expectedErr: true,
+		},
+		{
+			name: "unable to parse sequence",
+			msg: func() []byte {
+				return []byte(`{
+					"id": "id",
+					"type": "message",
+					"topic": "/market/ticker:BTC-USDT",
+					"subject": "trade.ticker",
+					"data": {
+						"sequence": "mog",
+						"price": "0.1"
+					}
+				}`)
+			},
+			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+				UnResolved: map[oracletypes.CurrencyPair]error{
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("received out of order ticker response message"),
+				},
+			},
+			updateMsg: func() []handlers.WebsocketEncodedMessage {
+				return nil
+			},
+			expectedErr: true,
 		},
 		{
 			name: "missing ticker data",
@@ -201,15 +250,20 @@ func TestHandleMessage(t *testing.T) {
 		},
 	}
 
+	handler, err := kucoin.NewWebSocketDataHandler(logger, providerCfg)
+	require.NoError(t, err)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kucoin.NewWebSocketDataHandler(logger, providerCfg)
-			require.NoError(t, err)
-
 			resp, updateMsg, err := handler.HandleMessage(tc.msg())
-			fmt.Println(err)
 			if tc.expectedErr {
 				require.Error(t, err)
+
+				require.LessOrEqual(t, len(resp.UnResolved), 1)
+				for cp := range tc.resp.UnResolved {
+					require.Contains(t, resp.UnResolved, cp)
+					require.Error(t, resp.UnResolved[cp])
+				}
 				return
 			}
 
