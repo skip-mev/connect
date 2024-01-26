@@ -5,12 +5,14 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/binance"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -20,6 +22,7 @@ import (
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
@@ -108,8 +111,8 @@ func apiProviderFromProviderConfig(
 	switch cfg.Name {
 	case binance.Name:
 		apiDataHandler, err = binance.NewAPIHandler(cfg)
-	case coinbase.Name:
-		apiDataHandler, err = coinbase.NewAPIHandler(cfg)
+	case coinbaseapi.Name:
+		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg)
 	case coingecko.Name:
 		apiDataHandler, err = coingecko.NewAPIHandler(cfg)
 	case static.Name:
@@ -128,7 +131,10 @@ func apiProviderFromProviderConfig(
 
 	// If a custom request handler is not provided, create a new default one.
 	if requestHandler == nil {
-		requestHandler = apihandlers.NewRequestHandlerImpl(client)
+		requestHandler, err = apihandlers.NewRequestHandlerImpl(client)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
@@ -182,12 +188,16 @@ func webSocketProviderFromProviderConfig(
 	)
 
 	switch cfg.Name {
+	case coinbasews.Name:
+		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg)
 	case cryptodotcom.Name:
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
-	case okx.Name:
-		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
+	case bybit.Name:
+		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
+	case okx.Name:
+		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
@@ -203,7 +213,7 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
+	// Create the web socket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,
