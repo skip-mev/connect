@@ -595,6 +595,73 @@ production = false
           Quote = "USD"
 
 [[providers]]
+  name = "huobi"
+  [providers.api]
+    enabled = false
+    timeout = "0s"
+    interval = "0s"
+    max_queries = 0
+    atomic = false
+    url = ""
+    name = ""
+  [providers.web_socket]
+    enabled = true
+    max_buffer_size = 1000
+    reconnection_timeout = "10s"
+    wss = "wss://api.huobi.pro/ws"
+    name = "huobi"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
+    ping_interval = "0s"
+  [providers.market_config]
+    name = "huobi"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "atomusdt"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "avaxusdt"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "btcusdt"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+        ticker = "tiausdt"
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
+          Base = "CELESTIA"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "dydxusdt"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ethbtc"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ethusdt"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "solusdt"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
   name = "okx"
   [providers.api]
     enabled = false
