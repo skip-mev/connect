@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -190,6 +192,8 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg)
 	case cryptodotcom.Name:
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
+	case bybit.Name:
+		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	case okx.Name:
@@ -209,7 +213,7 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	// Create the web socket query handler which encapsulates all of the fetching and parsing logic.
+	// Create the web socket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,
