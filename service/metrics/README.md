@@ -36,6 +36,7 @@
     * `status`: The status of the request, if it's a failure, the label is an indication of what logic failed
 
 ## `oracle_message_size`
+
 * **purpose**
     * This prometheus histogram tracks the size of vote-extensions, and extended commits that slinky is transmitting 
 * **labels**
