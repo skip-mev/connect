@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -30,17 +31,62 @@ const (
 	DefaultWriteTimeout = 5 * time.Second
 )
 
-// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
-var DefaultWebSocketConfig = config.WebSocketConfig{
-	Enabled:             true,
-	Name:                Name,
-	MaxBufferSize:       config.DefaultMaxBufferSize,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	WSS:                 URL,
-	ReadBufferSize:      config.DefaultReadBufferSize,
-	WriteBufferSize:     config.DefaultWriteBufferSize,
-	HandshakeTimeout:    config.DefaultHandshakeTimeout,
-	EnableCompression:   DefaultEnabledCompression,
-	WriteTimeout:        DefaultWriteTimeout,
-	ReadTimeout:         config.DefaultReadTimeout,
-}
+var (
+	// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
+	DefaultWebSocketConfig = config.WebSocketConfig{
+		Enabled:             true,
+		Name:                Name,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		WSS:                 URL,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   DefaultEnabledCompression,
+		WriteTimeout:        DefaultWriteTimeout,
+		ReadTimeout:         config.DefaultReadTimeout,
+	}
+
+	// DefaultMarketConfig is the default market configuration for Coinbase.
+	DefaultMarketConfig = config.MarketConfig{
+		Name: Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTC-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETH-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				Ticker:       "ATOM-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOL-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIA-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"AVAX/USD": {
+				Ticker:       "AVAX-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"DYDX/USD": {
+				Ticker:       "DYDX-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETH-BTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"OSMOSIS/USD": {
+				Ticker:       "OSMO-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+		},
+	}
+)
