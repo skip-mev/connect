@@ -2,7 +2,6 @@ package proposals
 
 import (
 	"bytes"
-	"fmt"
 	"time"
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -91,10 +91,9 @@ func NewProposalHandler(
 // will first fill the proposal with transactions. Then, if vote extensions are
 // enabled, the handler will inject the extended commit info into the proposal.
 func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
-	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (resp *cometabci.ResponsePrepareProposal, err error) {
 		var (
 			extInfoBz                     []byte
-			err                           error
 			wrappedPrepareProposalLatency time.Duration
 		)
 		startTime := time.Now()
@@ -108,12 +107,16 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				"wrapped prepare proposal latency", wrappedPrepareProposalLatency.Seconds(),
 				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
 			)
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.PrepareProposal, totalLatency-wrappedPrepareProposalLatency)
+
+			types.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
 		}()
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
-			return nil, fmt.Errorf("PrepareProposalHandler received a nil request")
+			err = types.NilRequestError{
+				Handler: servicemetrics.PrepareProposal,
+			}
+			return nil, err
 		}
 
 		// If vote extensions are enabled, the current proposer must inject the extended commit
@@ -128,13 +131,16 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			)
 
 			extInfo := req.LocalLastCommit
-			if err := h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
+			if err = h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
 				h.logger.Error(
 					"failed to validate vote extensions",
 					"height", req.Height,
 					"commit_info", extInfo,
 					"err", err,
 				)
+				err = InvalidExtendedCommitInfoError{
+					Err: err,
+				}
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
@@ -148,6 +154,9 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
+				err = types.CodecError{
+					Err: err,
+				}
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
@@ -168,10 +177,15 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 		// Build the proposal. Get the duration that the wrapped prepare proposal handler executed for.
 		wrappedPrepareProposalStartTime := time.Now()
-		resp, err := h.prepareProposalHandler(ctx, req)
+		resp, err = h.prepareProposalHandler(ctx, req)
 		wrappedPrepareProposalLatency = time.Since(wrappedPrepareProposalStartTime)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
+			err = types.WrappedHandlerError{
+				Handler: servicemetrics.PrepareProposal,
+				Err:     err,
+			}
+
 			return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 		}
 		h.logger.Info("wrapped prepareProposalHandler produced response ", "txs", len(resp.Txs))
@@ -223,12 +237,13 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 // will verify that the vote extensions included in the proposal are valid and compose
 // a supermajority of signatures and vote extensions for the current block.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
-	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (resp *cometabci.ResponseProcessProposal, err error) {
 		start := time.Now()
 		var wrappedProcessProposalLatency time.Duration
 
 		// Defer a function to record the total time it took to process the proposal.
 		defer func() {
+			// record latency
 			totalLatency := time.Since(start)
 			h.logger.Info(
 				"recording handle time metrics of process-proposal (seconds)",
@@ -236,13 +251,16 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
 				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
 			)
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.ProcessProposal, totalLatency-wrappedProcessProposalLatency)
+			types.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
 		}()
 
 		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
-			return nil, fmt.Errorf("received a nil request")
+			err = types.NilRequestError{
+				Handler: servicemetrics.ProcessProposal,
+			}
+			return nil, err
 		}
 
 		voteExtensionsEnabled := ve.VoteExtensionsEnabled(ctx)
@@ -258,14 +276,19 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			// Ensure that the commit info was correctly injected into the proposal.
 			if len(req.Txs) < NumInjectedTxs {
 				h.logger.Error("failed to process proposal: missing commit info", "num_txs", len(req.Txs))
+				err = MissingCommitInfoError{}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
-					fmt.Errorf("missing commit info")
+					err
 			}
 
 			// Validate the vote extensions included in the proposal.
-			extInfo, err := h.extendedCommitCodec.Decode(req.Txs[OracleInfoIndex])
+			var extInfo cometabci.ExtendedCommitInfo
+			extInfo, err = h.extendedCommitCodec.Decode(req.Txs[OracleInfoIndex])
 			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
+				err = types.CodecError{
+					Err: err,
+				}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
@@ -277,6 +300,9 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
+				err = InvalidExtendedCommitInfoError{
+					Err: err,
+				}
 
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
@@ -288,7 +314,14 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		// call the wrapped process-proposal
 		wrappedProcessProposalStartTime := time.Now()
-		resp, err := h.processProposalHandler(ctx, req)
+		resp, err = h.processProposalHandler(ctx, req)
+		if err != nil {
+			err = types.WrappedHandlerError{
+				Handler: servicemetrics.ProcessProposal,
+				Err:     err,
+			}
+		}
+
 		wrappedProcessProposalLatency = time.Since(wrappedProcessProposalStartTime)
 		return resp, err
 	}

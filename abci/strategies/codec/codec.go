@@ -17,6 +17,8 @@ var (
 )
 
 // VoteExtensionCodec is the interface for encoding / decoding vote extensions.
+//
+//go:generate mockery --name VoteExtensionCodec --filename vote_extension_codec.go
 type VoteExtensionCodec interface {
 	// Encode encodes the vote extension into a byte array.
 	Encode(ve vetypes.OracleVoteExtension) ([]byte, error)
@@ -26,6 +28,8 @@ type VoteExtensionCodec interface {
 }
 
 // ExtendedCommitCodec is the interface for encoding / decoding extended commit info.
+//
+//go:generate mockery --name ExtendedCommitCodec --filename extended_commit_codec.go
 type ExtendedCommitCodec interface {
 	// Encode encodes the extended commit info into a byte array.
 	Encode(cometabci.ExtendedCommitInfo) ([]byte, error)
@@ -35,6 +39,7 @@ type ExtendedCommitCodec interface {
 }
 
 // NewDefaultVoteExtensionCodec returns a new DefaultVoteExtensionCodec.
+
 func NewDefaultVoteExtensionCodec() *DefaultVoteExtensionCodec {
 	return &DefaultVoteExtensionCodec{}
 }
