@@ -12,6 +12,7 @@ const (
 	ChainIDLabel          = "chain_id"
 	ABCIMethodStatusLabel = "abci_method_status"
 	MessageTypeLabel      = "message_type"
+	ValidatorLabel        = "validator"
 )
 
 // StatusFromError returns a Labeller that can be used to label metrics based on the error. This
@@ -67,6 +68,29 @@ func (a ABCIMethod) String() string {
 		return "verify_vote_extension"
 	case PreBlock:
 		return "pre_blocker"
+	default:
+		return "not_implemented"
+	}
+}
+
+// ReportStatus is an identifier for the status of a report, this is used to label what kind of report a validator has given, i.e
+// absent, missing_price, with_price
+type ReportStatus int
+
+const (
+	Absent ReportStatus = iota
+	MissingPrice
+	WithPrice
+)
+
+func (rs ReportStatus) String() string {
+	switch rs {
+	case Absent:
+		return "absent"
+	case MissingPrice:
+		return "missing_price"
+	case WithPrice:
+		return "with_price"
 	default:
 		return "not_implemented"
 	}
