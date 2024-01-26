@@ -68,7 +68,7 @@ func NewWebSocketDataHandler(
 }
 
 // HandleMessage is used to handle a message received from the data provider. The BitFinex
-// provider sends two types of messages:
+// provider sends four types of messages:
 //
 //  1. Subscribed response message. The subscribe response message is used to determine if
 //     the subscription was successful.  If successful, the channel ID is saved
