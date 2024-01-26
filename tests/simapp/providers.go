@@ -5,10 +5,6 @@ import (
 	"math/big"
 	"net/http"
 
-	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
-
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
-
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -24,6 +20,8 @@ import (
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
