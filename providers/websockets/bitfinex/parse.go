@@ -77,7 +77,7 @@ func (h *WebsocketDataHandler) handleStream(
 
 	// if it is not a string, it is a stream update
 	dataArr, ok := baseStream[1].([]interface{})
-	if !ok || len(dataArr) != ExpectedDataStreamLength {
+	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
 		unResolved[cp] = err
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err

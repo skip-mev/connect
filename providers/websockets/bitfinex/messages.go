@@ -30,8 +30,9 @@ const (
 	ChannelTicker Channel = "ticker"
 	// IDHeartbeat is the id always used for a heartbeat.
 	IDHeartbeat = "hb"
-
-	ExpectedDataStreamLength = 10
+	// ExpectedStreamPayloadLength is the expected length of the payload of a data stream.
+	ExpectedStreamPayloadLength = 10
+	// ExpectedBaseStreamLength is the expected length of a stream base message.
 	ExpectedBaseStreamLength = 2
 )
 
