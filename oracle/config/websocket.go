@@ -140,7 +140,7 @@ func (c *WebSocketConfig) ValidateBasic() error {
 	}
 
 	if c.PingInterval < 0 {
-		return fmt.Errorf("websocket ping interval must be greater than 0")
+		return fmt.Errorf("websocket ping interval cannot be negative")
 	}
 
 	return nil
