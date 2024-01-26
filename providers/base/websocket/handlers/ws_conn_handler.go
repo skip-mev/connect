@@ -14,6 +14,10 @@ import (
 // WebsocketEncodedMessage is a type alias for a websocket message encoded to bytes.
 type WebsocketEncodedMessage []byte
 
+// PreDialHook is a function that is called before the connection is established. This
+// is useful for dynamically generating the URL and token for the connection.
+type PreDialHook func(*WebSocketConnHandlerImpl) error
+
 // WebSocketConnHandler is an interface the encapsulates the functionality of a web socket
 // connection to a data provider. It provides the simple CRUD operations for a web socket
 // connection. The connection handler is responsible for managing the connection to the
@@ -45,17 +49,26 @@ type WebSocketConnHandlerImpl struct {
 
 	// conn is the connection to the data provider.
 	conn *websocket.Conn
+
+	// preDialHook is a function that is called before the connection is established.
+	preDialHook PreDialHook
 }
 
 // NewWebSocketHandlerImpl returns a new WebSocketConnHandlerImpl.
-func NewWebSocketHandlerImpl(cfg config.WebSocketConfig) (*WebSocketConnHandlerImpl, error) {
+func NewWebSocketHandlerImpl(cfg config.WebSocketConfig, opts ...Option) (*WebSocketConnHandlerImpl, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
 	}
 
-	return &WebSocketConnHandlerImpl{
+	h := &WebSocketConnHandlerImpl{
 		cfg: cfg,
-	}, nil
+	}
+
+	for _, opt := range opts {
+		opt(h)
+	}
+
+	return h, nil
 }
 
 // CreateDialer is a function that dynamically creates a new websocket dialer.
@@ -71,6 +84,12 @@ func (h *WebSocketConnHandlerImpl) CreateDialer() *websocket.Dialer {
 
 // Dial is used to create a new connection to the data provider with the given URL.
 func (h *WebSocketConnHandlerImpl) Dial(url string) error {
+	if h.preDialHook != nil {
+		if err := h.preDialHook(h); err != nil {
+			return err
+		}
+	}
+
 	conn, _, err := h.CreateDialer().Dial(url, nil)
 	if err != nil {
 		return err

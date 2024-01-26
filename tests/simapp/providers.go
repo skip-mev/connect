@@ -190,8 +190,9 @@ func webSocketProviderFromProviderConfig(
 	}
 
 	var (
-		wsDataHandler wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
-		connHandler   wshandlers.WebSocketConnHandler
+		requestHandler apihandlers.RequestHandler
+		wsDataHandler  wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
+		connHandler    wshandlers.WebSocketConnHandler
 	)
 
 	switch cfg.Name {
@@ -208,14 +209,20 @@ func webSocketProviderFromProviderConfig(
 			return nil, err
 		}
 
-		// The request handler requires POST requests.
-		requestHandler := apihandlers.NewRequestHandlerImpl(
+		// The request handler requires POST requests when first establishing the connection.
+		requestHandler, err = apihandlers.NewRequestHandlerImpl(
 			client,
 			apihandlers.WithHTTPMethod(http.MethodPost),
 		)
+		if err != nil {
+			return nil, err
+		}
 
 		// Create the kucoin web socket connection handler.
-		connHandler, err = kucoin.NewWebSocketHandler(cfg.WebSocket, requestHandler)
+		connHandler, err = wshandlers.NewWebSocketHandlerImpl(
+			cfg.WebSocket,
+			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
+		)
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	default:
