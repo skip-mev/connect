@@ -42,7 +42,7 @@ const (
 	ErrorNotSubscribed      ErrorCode = 104001
 )
 
-// Error returns the string representation of the ErrorCode.
+// Error returns the error representation of the ErrorCode.
 func (e ErrorCode) Error() error {
 	switch e {
 	case ErrorUnknownEvent:
