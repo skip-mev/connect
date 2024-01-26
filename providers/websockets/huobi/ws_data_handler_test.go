@@ -61,7 +61,6 @@ func TestHandlerMessage(t *testing.T) {
 					ID:     "test",
 					Status: "ok",
 					Subbed: "invalid",
-					Ts:     0,
 				}
 
 				bz, err := json.Marshal(msg)
@@ -78,7 +77,6 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				msg := huobi.TickerStream{
 					Channel: "market.btcusdt.ticker",
-					Ts:      0,
 					Tick:    huobi.Tick{LastPrice: 1},
 				}
 
@@ -103,7 +101,6 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				msg := huobi.TickerStream{
 					Channel: "unknown",
-					Ts:      0,
 					Tick:    huobi.Tick{LastPrice: 1},
 				}
 
@@ -126,7 +123,6 @@ func TestHandlerMessage(t *testing.T) {
 					ID:     "test",
 					Status: "ok",
 					Subbed: "market.btcusdt.ticker",
-					Ts:     0,
 				}
 
 				bz, err := json.Marshal(msg)
@@ -148,7 +144,6 @@ func TestHandlerMessage(t *testing.T) {
 					ID:     "test",
 					Status: "notok",
 					Subbed: "market.btcusdt.ticker",
-					Ts:     0,
 				}
 
 				bz, err := json.Marshal(msg)

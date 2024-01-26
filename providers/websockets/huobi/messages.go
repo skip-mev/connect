@@ -72,13 +72,11 @@ type SubscriptionResponse struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
 	Subbed string `json:"subbed"`
-	Ts     int    `json:"ts"`
 }
 
 // TickerStream is the stream for a given ticker sent every 100ms by the Huobi API.
 type TickerStream struct {
 	Channel string `json:"ch"`
-	Ts      int    `json:"ts"`
 	Tick    Tick   `json:"tick"`
 }
 

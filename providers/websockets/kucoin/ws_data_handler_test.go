@@ -8,11 +8,12 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 )
 
 var logger = zap.NewExample()
