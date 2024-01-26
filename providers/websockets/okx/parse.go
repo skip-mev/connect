@@ -82,7 +82,7 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 			fmt.Errorf("invalid channel %s", resp.Arguments.Channel)
 	}
 
-	// Iterate through all of the tickers and add them to the response.
+	// Iterate through all tickers and add them to the response.
 	for _, ticker := range resp.Data {
 		market, ok := h.cfg.Market.TickerToMarketConfigs[ticker.InstrumentID]
 		if !ok {

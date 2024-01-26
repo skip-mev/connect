@@ -215,7 +215,6 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			resp, updateMsg, err := handler.HandleMessage(tc.msg())
-			fmt.Println(err)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return

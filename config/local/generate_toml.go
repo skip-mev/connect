@@ -15,10 +15,12 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
+	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -191,6 +193,78 @@ var LocalConfig = config.OracleConfig{
 		// the provider supports fetching data for the currency pair.
 		{
 			// -----------------------------------------------------------	//
+			// ---------------------Start BitFinex WebSocket---------------	//
+			Name:      bitfinex.Name,
+			WebSocket: bitfinex.DefaultWebSocketConfig,
+			Market: config.MarketConfig{
+				Name: bitfinex.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "BTCUSD",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETHUSD",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOLUSD",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"CELESTIA/USD": {
+						Ticker:       "TIAUSD",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAXUSD",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDXUSD",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ETHBTC",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+				},
+			},
+		},
+		{
+			Name:      bybit.Name,
+			WebSocket: bybit.DefaultWebSocketConfig,
+			Market: config.MarketConfig{
+				Name: bybit.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "BTCUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETHUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "ATOMUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOLUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAXUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDXUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+				},
+			},
+		},
+		{
+			// -----------------------------------------------------------	//
 			// ---------------------Start Coinbase WebSocket--------------	//
 			Name:      coinbasews.Name,
 			WebSocket: coinbasews.DefaultWebSocketConfig,
@@ -327,34 +401,49 @@ var LocalConfig = config.OracleConfig{
 			},
 		},
 		{
-			Name:      bybit.Name,
-			WebSocket: bybit.DefaultWebSocketConfig,
+			// -----------------------------------------------------------	//
+			// ---------------------Start Kucoin WebSocket----------------	//
+			Name:      kucoin.Name,
+			WebSocket: kucoin.DefaultWebSocketConfig,
+			API:       kucoin.DefaultAPIConfig,
 			Market: config.MarketConfig{
-				Name: bybit.Name,
+				Name: kucoin.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
-						Ticker:       "BTCUSDT",
+						Ticker:       "BTC-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 					},
 					"ETHEREUM/USD": {
-						Ticker:       "ETHUSDT",
+						Ticker:       "ETH-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 					},
 					"ATOM/USD": {
-						Ticker:       "ATOMUSDT",
+						Ticker:       "ATOM-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 					},
 					"SOLANA/USD": {
-						Ticker:       "SOLUSDT",
+						Ticker:       "SOL-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
 					},
+					"CELESTIA/USD": {
+						Ticker:       "TIA-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
 					"AVAX/USD": {
-						Ticker:       "AVAXUSDT",
+						Ticker:       "AVAX-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
 					},
 					"DYDX/USD": {
-						Ticker:       "DYDXUSDT",
+						Ticker:       "DYDX-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ETH-BTC",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+					"OSMOSIS/USD": {
+						Ticker:       "OSMO-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
 					},
 				},
 			},

@@ -190,6 +190,12 @@ func TestHandleMessage(t *testing.T) {
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
 			if tc.expErr {
 				require.Error(t, err)
+
+				require.Equal(t, len(tc.resp.UnResolved), len(resp.UnResolved))
+				for cp := range tc.resp.UnResolved {
+					require.Contains(t, resp.UnResolved, cp)
+					require.Error(t, resp.UnResolved[cp])
+				}
 				return
 			}
 			require.NoError(t, err)

@@ -79,7 +79,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(fmt.Errorf("no rizz alert")).Once()
+				connHandler.On("Dial").Return(fmt.Errorf("no rizz alert")).Once()
 
 				return connHandler
 			},
@@ -108,7 +108,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 
 				return connHandler
 			},
@@ -141,7 +141,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(fmt.Errorf("no rizz alert")).Once()
 
 				return connHandler
@@ -176,7 +176,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 				connHandler.On("Read").Return(nil, fmt.Errorf("no rizz alert")).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
@@ -215,7 +215,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
@@ -260,7 +260,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
@@ -307,7 +307,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
@@ -356,7 +356,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(fmt.Errorf("no rizz alert")).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
@@ -403,7 +403,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
@@ -461,7 +461,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Maybe()
@@ -521,7 +521,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Read").Return(testMessage, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
@@ -608,7 +608,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", testMessage).Return(nil).Once()
 				connHandler.On("Read").Return(nil, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
@@ -665,7 +665,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", testMessage).Return(nil).Once()
 				connHandler.On("Read").Return(nil, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
@@ -719,7 +719,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			connHandler: func() handlers.WebSocketConnHandler {
 				connHandler := handlermocks.NewWebSocketConnHandler(t)
 
-				connHandler.On("Dial", mock.Anything).Return(nil).Once()
+				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", testMessage).Return(nil).Once()
 				connHandler.On("Read").Return(nil, nil).Maybe().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
