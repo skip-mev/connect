@@ -976,7 +976,6 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
 			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored the wrapped processProposal latency
 		}).Once()
-
 		metricsmocks.On("AddABCIRequest", servicemetrics.ProcessProposal, servicemetrics.Success{}).Once()
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
@@ -1075,7 +1074,6 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
 
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
-
 		// make vote-extensions not enabled to skip validate vote extensions
 		s.ctx = s.ctx.WithBlockHeight(1)
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 3)

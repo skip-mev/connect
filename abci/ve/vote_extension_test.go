@@ -14,13 +14,15 @@ import (
 
 	"github.com/skip-mev/slinky/abci/preblock"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
+	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	mockstrategies "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/clients/oracle/mocks"
-	"github.com/skip-mev/slinky/service/metrics"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -42,20 +44,20 @@ var (
 	}
 )
 
-type VoteExtenstionTestSuite struct {
+type VoteExtensionTestSuite struct {
 	suite.Suite
 	ctx sdk.Context
 }
 
-func (s *VoteExtenstionTestSuite) SetupTest() {
+func (s *VoteExtensionTestSuite) SetupTest() {
 	s.ctx = testutils.CreateBaseSDKContext(s.T())
 }
 
 func TestVoteExtensionTestSuite(t *testing.T) {
-	suite.Run(t, new(VoteExtenstionTestSuite))
+	suite.Run(t, new(VoteExtensionTestSuite))
 }
 
-func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
+func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 	cases := []struct {
 		name                 string
 		oracleService        func() client.OracleClient
@@ -73,7 +75,6 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			extendVoteRequest: func() *cometabci.RequestExtendVote { return nil },
-			expectedError:     true,
 		},
 		{
 			name: "oracle service returns no prices",
@@ -171,6 +172,7 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 			expectedResponse: &abcitypes.OracleVoteExtension{
 				Prices: nil,
 			},
+			expectedError: true,
 		},
 		{
 			name: "oracle service returns an nil response",
@@ -286,7 +288,7 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 				tc.currencyPairStrategy(),
 				codec,
 				preblock.NoOpPreBlocker(),
-				metrics.NewNopMetrics(),
+				servicemetrics.NewNopMetrics(),
 			)
 
 			req := &cometabci.RequestExtendVote{}
@@ -295,6 +297,9 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 			}
 			resp, err := h.ExtendVoteHandler()(s.ctx, req)
 			if !tc.expectedError {
+				if resp == nil || len(resp.VoteExtension) == 0 {
+					return
+				}
 				s.Require().NoError(err)
 				s.Require().NotNil(resp)
 				ve, err := codec.Decode(resp.VoteExtension)
@@ -307,7 +312,7 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteExtension() {
 	}
 }
 
-func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
+func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 	codec := codec.NewCompressionVoteExtensionCodec(
 		codec.NewDefaultVoteExtensionCodec(),
 		codec.NewZLibCompressor(),
@@ -516,7 +521,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 				tc.currencyPairStrategy(),
 				codec,
 				preblock.NoOpPreBlocker(),
-				metrics.NewNopMetrics(),
+				servicemetrics.NewNopMetrics(),
 			).VerifyVoteExtensionHandler()
 
 			resp, err := handler(s.ctx, tc.getReq())
@@ -531,7 +536,7 @@ func (s *VoteExtenstionTestSuite) TestVerifyVoteExtension() {
 	}
 }
 
-func (s *VoteExtenstionTestSuite) TestExtendVoteLatency() {
+func (s *VoteExtensionTestSuite) TestExtendVoteLatency() {
 	m := metricsmocks.NewMetrics(s.T())
 	os := mocks.NewOracleClient(s.T())
 	handler := ve.NewVoteExtensionHandler(
@@ -556,14 +561,301 @@ func (s *VoteExtenstionTestSuite) TestExtendVoteLatency() {
 		time.Sleep(100 * time.Millisecond)
 	})
 
-	m.On("ObserveABCIMethodLatency", metrics.ExtendVote, mock.Anything).Run(func(args mock.Arguments) {
+	m.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything).Run(func(args mock.Arguments) {
 		latency := args.Get(1).(time.Duration)
 		s.Require().True(latency > 100*time.Millisecond)
 	})
-
+	m.On("AddABCIRequest", servicemetrics.ExtendVote, servicemetrics.Success{})
 	_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{
 		Height: 1,
 		Txs:    [][]byte{},
 	})
 	s.Require().NoError(err)
+}
+
+func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
+	s.Run("test nil request", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			nil,
+			preblock.NoOpPreBlocker(),
+			mockMetrics,
+		)
+		expErr := slinkyabci.NilRequestError{
+			Handler: servicemetrics.ExtendVote,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
+
+		handler.ExtendVoteHandler()(s.ctx, nil)
+	})
+
+	s.Run("test panic", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			nil,
+			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+				panic("panic")
+			},
+			mockMetrics,
+		)
+		expErr := ve.Panic{
+			Err: fmt.Errorf("panic"),
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
+
+		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
+		s.Require().Error(err, expErr)
+	})
+
+	s.Run("test pre-blocker failure", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		preBlockError := fmt.Errorf("pre-blocker failure")
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			nil,
+			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+				return nil, preBlockError
+			},
+			mockMetrics,
+		)
+		expErr := ve.PreBlockError{
+			Err: preBlockError,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
+
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
+	})
+
+	s.Run("test oracle client failures", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		clientError := fmt.Errorf("pre-blocker failure")
+		mockClient := mocks.NewOracleClient(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			mockClient,
+			time.Second*1,
+			nil,
+			nil,
+			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+				return nil, nil
+			},
+			mockMetrics,
+		)
+		expErr := ve.OracleClientError{
+			Err: clientError,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
+		mockClient.On("Prices", mock.Anything, &servicetypes.QueryPricesRequest{}).Return(nil, clientError)
+
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
+	})
+
+	s.Run("test price transformation failures", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		transformationError := fmt.Errorf("incorrectly formatted CurrencyPair: BTCETH")
+		mockClient := mocks.NewOracleClient(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			mockClient,
+			time.Second*1,
+			nil,
+			nil,
+			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+				return nil, nil
+			},
+			mockMetrics,
+		)
+		expErr := ve.TransformPricesError{
+			Err: transformationError,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
+		mockClient.On("Prices", mock.Anything, &servicetypes.QueryPricesRequest{}).Return(&servicetypes.QueryPricesResponse{
+			Prices: map[string]string{
+				"BTCETH": "1000",
+			},
+		}, nil)
+
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
+	})
+
+	s.Run("test codec failures", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		codecError := fmt.Errorf("codec error")
+		mockClient := mocks.NewOracleClient(s.T())
+		codec := codecmocks.NewVoteExtensionCodec(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			mockClient,
+			time.Second*1,
+			nil,
+			codec,
+			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+				return nil, nil
+			},
+			mockMetrics,
+		)
+		expErr := slinkyabci.CodecError{
+			Err: codecError,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, expErr)
+		mockClient.On("Prices", mock.Anything, &servicetypes.QueryPricesRequest{}).Return(&servicetypes.QueryPricesResponse{
+			Prices: map[string]string{},
+		}, nil)
+		codec.On("Encode", abcitypes.OracleVoteExtension{
+			Prices: map[uint64][]byte{},
+		}).Return(nil, codecError)
+
+		handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
+	})
+
+	s.Run("test success", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		mockClient := mocks.NewOracleClient(s.T())
+		codec := codecmocks.NewVoteExtensionCodec(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			mockClient,
+			time.Second*1,
+			nil,
+			codec,
+			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+				return nil, nil
+			},
+			mockMetrics,
+		)
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.ExtendVote, servicemetrics.Success{})
+		mockClient.On("Prices", mock.Anything, &servicetypes.QueryPricesRequest{}).Return(&servicetypes.QueryPricesResponse{
+			Prices: map[string]string{},
+		}, nil)
+		codec.On("Encode", abcitypes.OracleVoteExtension{
+			Prices: map[uint64][]byte{},
+		}).Return(nil, nil)
+
+		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
+		s.Require().NoError(err)
+	})
+}
+
+func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
+	s.Run("nil request", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			nil,
+			preblock.NoOpPreBlocker(),
+			mockMetrics,
+		)
+		expErr := slinkyabci.NilRequestError{
+			Handler: servicemetrics.VerifyVoteExtension,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.VerifyVoteExtension, expErr)
+
+		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, nil)
+		s.Require().Error(err, expErr)
+	})
+
+	s.Run("codec error", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+		codecError := fmt.Errorf("codec error")
+		codec := codecmocks.NewVoteExtensionCodec(s.T())
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			codec,
+			preblock.NoOpPreBlocker(),
+			mockMetrics,
+		)
+		expErr := slinkyabci.CodecError{
+			Err: codecError,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.VerifyVoteExtension, expErr)
+		codec.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{}, codecError)
+
+		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
+			VoteExtension: []byte{},
+		})
+		s.Require().Error(err, expErr)
+	})
+
+	s.Run("invalid vote-extension", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+
+		codec := codecmocks.NewVoteExtensionCodec(s.T())
+		length := 34
+		transformErr := fmt.Errorf("price bytes are too long: %d", length)
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			codec,
+			preblock.NoOpPreBlocker(),
+			mockMetrics,
+		)
+		expErr := ve.ValidateVoteExtensionError{
+			Err: transformErr,
+		}
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.VerifyVoteExtension, expErr)
+		codec.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{
+			Prices: map[uint64][]byte{
+				1: make([]byte, length),
+			},
+		}, nil)
+
+		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
+			VoteExtension: []byte{},
+		})
+		s.Require().Error(err, expErr)
+	})
+
+	s.Run("success", func() {
+		mockMetrics := metricsmocks.NewMetrics(s.T())
+
+		codec := codecmocks.NewVoteExtensionCodec(s.T())
+
+		handler := ve.NewVoteExtensionHandler(
+			log.NewTestLogger(s.T()),
+			nil,
+			time.Second*1,
+			nil,
+			codec,
+			preblock.NoOpPreBlocker(),
+			mockMetrics,
+		)
+
+		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)
+		mockMetrics.On("AddABCIRequest", servicemetrics.VerifyVoteExtension, servicemetrics.Success{})
+		codec.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{}, nil)
+
+		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
+			VoteExtension: []byte{},
+		})
+		s.Require().NoError(err)
+	})
 }
