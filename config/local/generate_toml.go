@@ -360,6 +360,49 @@ var LocalConfig = config.OracleConfig{
 		},
 		{
 			// -----------------------------------------------------------	//
+			// ---------------------Start Huobi WebSocket----------------	//
+			Name:      huobi.Name,
+			WebSocket: huobi.DefaultWebSocketConfig,
+			Market: config.MarketConfig{
+				Name: huobi.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "btcusdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ethusdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "atomusdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "solusdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"CELESTIA/USD": {
+						Ticker:       "tiausdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "avaxusdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "dydxusdt",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ethbtc",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+				},
+			},
+		},
+		{
+			// -----------------------------------------------------------	//
 			// ---------------------Start Kraken WebSocket----------------	//
 			Name:      kraken.Name,
 			WebSocket: kraken.DefaultWebSocketConfig,
@@ -445,49 +488,6 @@ var LocalConfig = config.OracleConfig{
 					"OSMOSIS/USD": {
 						Ticker:       "OSMO-USDT",
 						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
-					},
-				},
-			},
-		},
-		{
-			// -----------------------------------------------------------	//
-			// ---------------------Start Huobi WebSocket----------------	//
-			Name:      huobi.Name,
-			WebSocket: huobi.DefaultWebSocketConfig,
-			Market: config.MarketConfig{
-				Name: huobi.Name,
-				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-					"BITCOIN/USD": {
-						Ticker:       "btcusdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-					},
-					"ETHEREUM/USD": {
-						Ticker:       "ethusdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-					},
-					"ATOM/USD": {
-						Ticker:       "atomusdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
-					},
-					"SOLANA/USD": {
-						Ticker:       "solusdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-					},
-					"CELESTIA/USD": {
-						Ticker:       "tiausdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-					},
-					"AVAX/USD": {
-						Ticker:       "avaxusdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
-					},
-					"DYDX/USD": {
-						Ticker:       "dydxusdt",
-						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
-					},
-					"ETHEREUM/BITCOIN": {
-						Ticker:       "ethbtc",
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 					},
 				},
 			},

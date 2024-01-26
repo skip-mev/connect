@@ -1,9 +1,13 @@
 package huobi
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/big"
+
+	"github.com/klauspost/compress/gzip"
 
 	"go.uber.org/zap"
 
@@ -66,15 +70,29 @@ func (h *WebsocketDataHandler) HandleMessage(
 		tickerStream         TickerStream
 	)
 
+	reader, err := gzip.NewReader(bytes.NewReader(message))
+	if err != nil {
+		h.logger.Error("error creating gzip reader", zap.Error(err))
+		return resp, nil, err
+	}
+	defer reader.Close()
+
+	var uncompressed bytes.Buffer
+	_, err = io.Copy(&uncompressed, reader)
+	if err != nil {
+		h.logger.Error("error reading gzip", zap.Error(err))
+		return resp, nil, err
+	}
+
 	// attempt to unmarshal to ping and check if field values are not nil
-	if err := json.Unmarshal(message, &pingMessage); err == nil && pingMessage.Ping != 0 {
+	if err := json.Unmarshal(uncompressed.Bytes(), &pingMessage); err == nil && pingMessage.Ping != 0 {
 		h.logger.Debug("received ping message")
 		updateMessage, err := NewPongMessage(pingMessage)
 		return resp, updateMessage, err
 	}
 
 	// attempt to unmarshal to subscription response message and check if field values are not nil
-	if err := json.Unmarshal(message, &subscriptionResponse); err == nil && subscriptionResponse.ID != "" {
+	if err := json.Unmarshal(uncompressed.Bytes(), &subscriptionResponse); err == nil && subscriptionResponse.ID != "" {
 		h.logger.Debug("received subscription response message")
 
 		updateMsg, err := h.parseSubscriptionResponse(subscriptionResponse)
@@ -86,7 +104,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 	}
 
 	// attempt to unmarshal to ticker stream message and check if field values are not nil
-	if err := json.Unmarshal(message, &tickerStream); err == nil && tickerStream.Channel != "" {
+	if err := json.Unmarshal(uncompressed.Bytes(), &tickerStream); err == nil && tickerStream.Channel != "" {
 		h.logger.Debug("received ticker stream message")
 
 		resp, err := h.parseTickerStream(tickerStream)
@@ -97,8 +115,8 @@ func (h *WebsocketDataHandler) HandleMessage(
 		return resp, nil, nil
 	}
 
-	h.logger.Error("received unknown message", zap.String("message", string(message)))
-	return resp, nil, fmt.Errorf("unknown message %s", string(message))
+	h.logger.Error("received unknown message", zap.String("message", uncompressed.String()))
+	return resp, nil, fmt.Errorf("unknown message %s", uncompressed.String())
 }
 
 // CreateMessages is used to create an initial subscription message to send to the data provider.

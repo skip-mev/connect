@@ -1,9 +1,12 @@
 package huobi_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"math/big"
 	"testing"
+
+	"github.com/klauspost/compress/gzip"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -66,7 +69,14 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
 			},
 			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
@@ -83,7 +93,14 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -107,7 +124,14 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
@@ -128,7 +152,14 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
@@ -149,7 +180,14 @@ func TestHandlerMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
