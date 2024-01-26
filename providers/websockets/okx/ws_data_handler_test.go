@@ -400,7 +400,6 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
-
 		{
 			name: "one currency pair not in config",
 			cps: []oracletypes.CurrencyPair{

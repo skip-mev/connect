@@ -27,7 +27,7 @@ Users can choose to subscribe to one or more channels, and the total length of m
 
 The exact channel that is used to subscribe to the ticker price is the [`Index Tickers Channel`](https://www.okx.com/docs-v5/en/?shell#public-data-websocket-index-tickers-channel). This pushes data every 100ms if there are any price updates, otherwise it will push updates once a minute.
 
-To retrieve all of the supported [spot markets](https://www.okx.com/docs-v5/en/?shell#public-data-rest-api-get-instruments), please run the following command:
+To retrieve all supported [spot markets](https://www.okx.com/docs-v5/en/?shell#public-data-rest-api-get-instruments), please run the following command
 
 ```bash
 curl https://www.okx.com/api/v5/public/instruments?instType=SPOT

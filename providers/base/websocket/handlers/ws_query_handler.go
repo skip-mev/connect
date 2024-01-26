@@ -156,7 +156,6 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	}
 
 	h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
-
 	for _, message := range messages {
 		h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
 
