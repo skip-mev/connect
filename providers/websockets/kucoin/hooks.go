@@ -84,9 +84,9 @@ type BulletPublicResponseInstanceServer struct {
 
 // PreDialHook is a function that is called before the connection is established.
 // This function is used to fetch the token and WSS URL from the Kucoin API.
-func PreDialHook(apiCfg config.APIConfig, requestHandler apihandlers.RequestHandler) wshandlers.PreDialHook {
+func PreDialHook(cfg config.APIConfig, requestHandler apihandlers.RequestHandler) wshandlers.PreDialHook {
 	return func(handler *wshandlers.WebSocketConnHandlerImpl) error {
-		resp, err := fetchCredentials(apiCfg, requestHandler)
+		resp, err := fetchCredentials(cfg, requestHandler)
 		if err != nil {
 			return err
 		}
@@ -99,7 +99,7 @@ func PreDialHook(apiCfg config.APIConfig, requestHandler apihandlers.RequestHand
 		// There must be at least one instance server that we can connect to. Otherwise,
 		// we cannot connect to the websocket feed.
 		if len(resp.Data.InstanceServers) == 0 {
-			return fmt.Errorf("no instance servers returned from %s", apiCfg.Name)
+			return fmt.Errorf("no instance servers returned from %s", cfg.Name)
 		}
 
 		// Determine if there is a server that supports the desired protocol.

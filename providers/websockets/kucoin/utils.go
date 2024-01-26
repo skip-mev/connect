@@ -39,7 +39,7 @@ var DefaultWebSocketConfig = config.WebSocketConfig{
 // DefaultAPIConfig defines the default API config for Kucoin. This is
 // only utilized on the initial connection to the websocket feed.
 var DefaultAPIConfig = config.APIConfig{
-	Enabled:    true,
+	Enabled:    false,
 	Timeout:    5 * time.Second, // Kucoin recommends a timeout of 5 seconds.
 	Interval:   1 * time.Minute, // This is not used.
 	MaxQueries: 1,               // This is not used.

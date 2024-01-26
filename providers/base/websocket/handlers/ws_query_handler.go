@@ -139,8 +139,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 // start is used to start the connection to the data provider.
 func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	// Start the connection.
-	h.logger.Debug("creating connection to data provider", zap.String("url", h.config.WSS))
-	if err := h.connHandler.Dial(h.config.WSS); err != nil {
+	h.logger.Debug("creating connection to data provider")
+	if err := h.connHandler.Dial(); err != nil {
 		h.logger.Error("failed to create connection with data provider", zap.Error(err))
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialErr)
 		return errors.ErrDialWithErr(err)

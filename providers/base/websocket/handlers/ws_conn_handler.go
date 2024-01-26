@@ -39,7 +39,7 @@ type WebSocketConnHandler interface {
 	Close() error
 
 	// Dial is used to create the connection to the data provider.
-	Dial(url string) error
+	Dial() error
 }
 
 // WebSocketConnHandlerImpl is a struct that implements the WebSocketConnHandler interface.
@@ -83,14 +83,14 @@ func (h *WebSocketConnHandlerImpl) CreateDialer() *websocket.Dialer {
 }
 
 // Dial is used to create a new connection to the data provider with the given URL.
-func (h *WebSocketConnHandlerImpl) Dial(url string) error {
+func (h *WebSocketConnHandlerImpl) Dial() error {
 	if h.preDialHook != nil {
 		if err := h.preDialHook(h); err != nil {
 			return err
 		}
 	}
 
-	conn, _, err := h.CreateDialer().Dial(url, nil)
+	conn, _, err := h.CreateDialer().Dial(h.cfg.WSS, nil)
 	if err != nil {
 		return err
 	}
@@ -104,10 +104,6 @@ func (h *WebSocketConnHandlerImpl) Dial(url string) error {
 func (h *WebSocketConnHandlerImpl) Read() ([]byte, error) {
 	h.Lock()
 	defer h.Unlock()
-
-	if h.conn == nil {
-		return nil, fmt.Errorf("connection has not been established")
-	}
 
 	if h.conn == nil {
 		return nil, fmt.Errorf("connection has not been established")
@@ -132,10 +128,6 @@ func (h *WebSocketConnHandlerImpl) Write(message []byte) error {
 		return fmt.Errorf("connection has not been established")
 	}
 
-	if h.conn == nil {
-		return fmt.Errorf("connection has not been established")
-	}
-
 	// Set the write deadline to the configured write timeout.
 	if err := h.conn.SetWriteDeadline(time.Now().Add(h.cfg.WriteTimeout)); err != nil {
 		return err
@@ -148,10 +140,6 @@ func (h *WebSocketConnHandlerImpl) Write(message []byte) error {
 func (h *WebSocketConnHandlerImpl) Close() error {
 	h.Lock()
 	defer h.Unlock()
-
-	if h.conn == nil {
-		return fmt.Errorf("connection has not been established")
-	}
 
 	if h.conn == nil {
 		return fmt.Errorf("connection has not been established")

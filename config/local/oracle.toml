@@ -407,17 +407,17 @@ production = false
   name = "kucoin"
   [providers.api]
     enabled = false
-    timeout = "0s"
-    interval = "0s"
-    max_queries = 0
+    timeout = "5s"
+    interval = "1m0s"
+    max_queries = 1
     atomic = false
-    url = ""
-    name = ""
+    url = "https://api.kucoin.com"
+    name = "kucoin"
   [providers.web_socket]
     enabled = true
     max_buffer_size = 1024
     reconnection_timeout = "10s"
-    wss = "https://api.kucoin.com"
+    wss = "wss://ws-api-spot.kucoin.com/"
     name = "kucoin"
     read_buffer_size = 0
     write_buffer_size = 0
