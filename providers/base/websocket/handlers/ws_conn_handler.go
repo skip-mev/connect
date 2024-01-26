@@ -20,9 +20,10 @@ type (
 	PreDialHook func(*WebSocketConnHandlerImpl) error
 )
 
-// PreDialHook is a function that is called before the connection is established. This
-// is useful for dynamically generating the URL and token for the connection.
-type PreDialHook func(*WebSocketConnHandlerImpl) error
+	// PreDialHook is a function that is called before the connection is established. This
+	// is useful for dynamically generating the URL and token for the connection.
+	PreDialHook func(*WebSocketConnHandlerImpl) error
+)
 
 // WebSocketConnHandler is an interface the encapsulates the functionality of a web socket
 // connection to a data provider. It provides the simple CRUD operations for a web socket
