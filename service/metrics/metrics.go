@@ -9,75 +9,13 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
-const (
-	TickerLabel     = "ticker"
-	InclusionLabel  = "included"
-	AppNamespace    = "app"
-	ProviderLabel   = "provider"
-	StatusLabel     = "status"
-	ABCIMethodLabel = "abci_method"
-	ChainIDLabel    = "chain_id"
-)
-
-type Status int
-
-const (
-	StatusFailure Status = iota
-	StatusSuccess
-)
-
-func (s Status) String() string {
-	switch s {
-	case StatusFailure:
-		return "failure"
-	case StatusSuccess:
-		return "success"
-	default:
-		return "unknown"
-	}
-}
-
-func StatusFromError(err error) Status {
-	if err == nil {
-		return StatusSuccess
-	}
-	return StatusFailure
-}
-
-type ABCIMethod int
-
-const (
-	PrepareProposal ABCIMethod = iota
-	ProcessProposal
-	ExtendVote
-	VerifyVoteExtension
-	PreBlock
-)
-
-func (a ABCIMethod) String() string {
-	switch a {
-	case PrepareProposal:
-		return "prepare_proposal"
-	case ProcessProposal:
-		return "process_proposal"
-	case ExtendVote:
-		return "extend_vote"
-	case VerifyVoteExtension:
-		return "verify_vote_extension"
-	case PreBlock:
-		return "pre_blocker"
-	default:
-		return "not_implemented"
-	}
-}
-
 //go:generate mockery --name Metrics --filename mock_metrics.go
 type Metrics interface {
 	// ObserveOracleResponseLatency records the time it took for the oracle to respond (this is a histogram)
 	ObserveOracleResponseLatency(duration time.Duration)
 
 	// AddOracleResponse increments the number of oracle responses, this can represent a liveness counter. This metric is paginated by status.
-	AddOracleResponse(status Status)
+	AddOracleResponse(status Labeller)
 
 	// AddVoteIncludedInLastCommit increments the number of votes included in the last commit
 	AddVoteIncludedInLastCommit(included bool)
@@ -87,6 +25,9 @@ type Metrics interface {
 
 	// ObserveABCIMethodLatency reports the given latency (as a duration), for the given ABCIMethod, and updates the ABCIMethodLatency histogram w/ that value.
 	ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration)
+
+	// AddABCIRequest updates a counter corresponding to the given ABCI method and status.
+	AddABCIRequest(method ABCIMethod, status Labeller)
 }
 
 type nopMetricsImpl struct{}
@@ -97,10 +38,11 @@ func NewNopMetrics() Metrics {
 }
 
 func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)           {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Status)                             {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                           {}
 func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                     {}
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)              {}
 func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration) {}
+func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                {}
 
 func NewMetrics(chainID string) Metrics {
 	m := &metricsImpl{
@@ -131,6 +73,11 @@ func NewMetrics(chainID string) Metrics {
 			Help:      "The time it took for an ABCI method to execute slinky specific logic (in seconds)",
 			Buckets:   []float64{.0001, .0004, .002, .009, .02, .1, .65, 2, 6, 25},
 		}, []string{ABCIMethodLabel, ChainIDLabel}),
+		abciRequests: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: AppNamespace,
+			Name:      "abci_requests",
+			Help:      "The number of requests made to the ABCI server",
+		}, []string{ABCIMethodLabel, StatusLabel, ChainIDLabel}),
 	}
 
 	// register the above metrics
@@ -151,6 +98,7 @@ type metricsImpl struct {
 	voteIncludedInLastCommit *prometheus.CounterVec
 	tickerInclusionStatus    *prometheus.CounterVec
 	abciMethodLatency        *prometheus.HistogramVec
+	abciRequests             *prometheus.CounterVec
 	chainID                  string
 }
 
@@ -167,9 +115,9 @@ func (m *metricsImpl) ObserveOracleResponseLatency(duration time.Duration) {
 	}).Observe(float64(duration.Milliseconds()))
 }
 
-func (m *metricsImpl) AddOracleResponse(status Status) {
+func (m *metricsImpl) AddOracleResponse(status Labeller) {
 	m.oracleResponseCounter.With(prometheus.Labels{
-		StatusLabel:  status.String(),
+		StatusLabel:  status.Label(),
 		ChainIDLabel: m.chainID,
 	}).Inc()
 }
@@ -186,6 +134,14 @@ func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
 		TickerLabel:    ticker,
 		InclusionLabel: strconv.FormatBool(included),
 		ChainIDLabel:   m.chainID,
+	}).Inc()
+}
+
+func (m *metricsImpl) AddABCIRequest(method ABCIMethod, status Labeller) {
+	m.abciRequests.With(prometheus.Labels{
+		ABCIMethodLabel: method.String(),
+		StatusLabel:     status.Label(),
+		ChainIDLabel:    m.chainID,
 	}).Inc()
 }
 
