@@ -35,7 +35,6 @@ var (
 	}
 
 	channelBTC = 111
-	channelETH = 222
 
 	logger = zap.NewExample()
 )
