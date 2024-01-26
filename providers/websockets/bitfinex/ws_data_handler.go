@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"time"
 
 	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/pkg/math"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -64,29 +67,30 @@ func NewWebSocketDataHandler(
 	}, nil
 }
 
-// HandleMessage is used to handle a message received from the data provider. The OKX
+// HandleMessage is used to handle a message received from the data provider. The BitFinex
 // provider sends two types of messages:
 //
-//  1. Subscribe response message. The subscribe response message is used to determine if
+//  1. Subscribed response message. The subscribe response message is used to determine if
 //     the subscription was successful.  If successful, the channel ID is saved
-//  2. Ticker stream message. This is sent when a ticker update is received from the
-//     BitFinex web socket API.
-//  3. Heartbeat messages.  These are sent every 15 seconds by the BitFinex API
+//  2. Error response messages.  These messages provide info about errors from requests
+//     sent to the BitFinex websocket API
+//  3. Ticker stream message. This is sent when a ticker update is received from the
+//     BitFinex websocket API.
+//  4. Heartbeat stream messages.  These are sent every 15 seconds by the BitFinex API
 func (h *WebsocketDataHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
 		resp              providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
 		baseMessage       BaseMessage
-		baseStream        BaseStreamMessage
 		subscribedMessage SubscribedMessage
-		tickerStream      TickerStream
 	)
 
 	// Attempt to unmarshal the message into a base message. This is used to determine the type
 	// of message that was received.
 	if err := json.Unmarshal(message, &baseMessage); err != nil {
-		h.logger.Debug("unable to unmarshal message into base message", zap.Error(err))
+		// if it is not a base json struct, we are receiving a stream
+		resp, err := h.handleStream(message)
 		return resp, nil, err
 	}
 
@@ -125,40 +129,72 @@ func (h *WebsocketDataHandler) HandleMessage(
 		}
 
 		return resp, updateMessage, nil
-
-		// otherwise, this is a stream message
-	case EventNil:
-		if err := json.Unmarshal(message, &baseStream); err != nil {
-			h.logger.Debug("unable to unmarshal message into stream message", zap.Error(err))
-			return resp, nil, err
-		}
-
-		// stream messages are defined by their channel ID
-		switch ChannelID(baseStream.ChannelID) {
-		case ChannelIdHeartbeat:
-			// handle incoming heartbeat
-			h.logger.Debug("received heartbeat message")
-			return resp, nil, nil
-
-		default:
-			if err := json.Unmarshal(message, &tickerStream); err != nil {
-				h.logger.Error("failed to unmarshal ticker stream message", zap.Error(err))
-				return resp, nil, fmt.Errorf("failed to unmarshal ticker stream message: %s", err)
-			}
-
-			resp, err := h.parseTickerStream(tickerStream)
-			if err != nil {
-				h.logger.Error("failed to parse ticker stream message", zap.Error(err))
-				return resp, nil, fmt.Errorf("failed to parse ticker stream message: %s", err)
-			}
-
-			return resp, nil, nil
-		}
-
 	default:
 		h.logger.Error("unknown message", zap.Binary("message", message))
 		return resp, nil, fmt.Errorf("unknown message: %x", message)
 	}
+}
+
+// handleStream handles a data stream sent from the peer.
+func (h *WebsocketDataHandler) handleStream(
+	message []byte,
+) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+	var (
+		baseStream []interface{}
+		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
+		unResolved = make(map[oracletypes.CurrencyPair]error)
+	)
+
+	// Attempt to unmarshal the message into a base message. This is used to determine the type
+	// of message that was received.
+	if err := json.Unmarshal(message, &baseStream); err != nil {
+		h.logger.Debug("unable to unmarshal message into base struct", zap.Error(err))
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+	}
+
+	if len(baseStream) != ExpectedBaseStreamLength {
+		h.logger.Error("invalid length of stream data received. must be 2", zap.Any("data", baseStream), zap.Int("len", len(baseStream)))
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), fmt.Errorf("invalid length of stream data received. must be %d.  stream: %v. len: %d",
+			ExpectedBaseStreamLength,
+			baseStream,
+			len(baseStream),
+		)
+	}
+
+	// first element is always channel id
+	channelID := int(baseStream[0].(float64))
+	market, ok := h.channelMap[channelID]
+	if !ok {
+		h.logger.Error("received stream for unknown channel id", zap.Int("channel_id", channelID))
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), fmt.Errorf("received stream for unknown channel id %v", channelID)
+	}
+
+	cp := market.CurrencyPair
+	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("market", cp.String()))
+
+	// check if it is a heartbeat
+	hbID, ok := baseStream[1].(string)
+	if ok && hbID == IDHeartbeat {
+
+		h.logger.Debug("received heartbeat", zap.Int("channel_id", channelID), zap.String("pair", market.Ticker))
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+
+	}
+
+	// if it is not a string, it is a stream update
+	dataArr, ok := baseStream[1].([]interface{})
+	if !ok || len(dataArr) != ExpectedDataStreamLength {
+		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
+		unResolved[cp] = err
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+	}
+
+	lastPrice := dataArr[6]
+	// Convert the price to a big int.
+	price := math.Float64ToBigInt(lastPrice.(float64), cp.Decimals())
+	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
+
+	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }
 
 // CreateMessages is used to create an initial subscription message to send to the data provider.

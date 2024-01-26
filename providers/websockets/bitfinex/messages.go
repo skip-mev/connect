@@ -16,7 +16,7 @@ type (
 	Channel string
 
 	// ChannelID is the id of a channel being communicated over the BitFinex websocket API.
-	ChannelID string
+	ChannelID int64
 )
 
 const (
@@ -26,12 +26,13 @@ const (
 	EventSubscribed Event = "subscribed"
 	// EventError indicates that an error occurred.
 	EventError Event = "error"
-	// EventNil represents an empty event field.
-	EventNil Event = ""
 	// ChannelTicker is the channel name for the ticker channel.
 	ChannelTicker Channel = "ticker"
-	// ChannelIdHeartbeat is the channelID always used for a heartbeat.
-	ChannelIdHeartbeat ChannelID = "hb"
+	// IDHeartbeat is the id always used for a heartbeat.
+	IDHeartbeat = "hb"
+
+	ExpectedDataStreamLength = 10
+	ExpectedBaseStreamLength = 2
 )
 
 type ErrorCode int64
@@ -152,28 +153,4 @@ type ErrorMessage struct {
 	BaseMessage
 	Msg  string `json:"msg" validate:"required"`
 	Code int64  `json:"code" validate:"required"`
-}
-
-// BaseStreamMessage is the base message for all stream messages received from a peer.
-type BaseStreamMessage struct {
-	ChannelID int `json:"chanId" validate:"required"`
-}
-
-// HeartbeatStream is the heartbeat message sent from the server every 15 seconds.
-type HeartbeatStream BaseStreamMessage
-
-// TickerStream is a stream message continually received after successfully
-// making a subscription.
-//
-// Ex:
-//
-//	{
-//	  chanId: CHANNEL_ID,
-//	  lastPrice: LAST_PRICE,
-//	}
-//
-// ref: https://docs.bitfinex.com/reference/ws-public-ticker
-type TickerStream struct {
-	BaseStreamMessage
-	LastPrice string `json:"lastPrice" validate:"required"`
 }

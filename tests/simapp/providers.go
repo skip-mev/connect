@@ -2,9 +2,10 @@ package simapp
 
 import (
 	"fmt"
-	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"math/big"
 	"net/http"
+
+	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 

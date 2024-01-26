@@ -384,7 +384,7 @@ func TestCreateMessage(t *testing.T) {
 					Arguments: []okx.SubscriptionTopic{
 						{
 							Channel:      string(okx.IndexTickersChannel),
-							InstrumentID: "BTCUSDT",
+							InstrumentID: "BTC-USDT",
 						},
 						{
 							Channel:      string(okx.IndexTickersChannel),

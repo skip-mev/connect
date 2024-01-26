@@ -23,24 +23,26 @@ var (
 			Name: bitfinex.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {
-					Ticker:       "BTC-USDT",
+					Ticker:       "BTCUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 				},
 				"ETHEREUM/USDT": {
-					Ticker:       "ETH-USDT",
+					Ticker:       "ETHUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
 				},
 			},
 		},
 	}
 
-	channelMap = map[string]config.CurrencyPairMarketConfig{
-		"btc-channel": providerCfg.Market.CurrencyPairToMarketConfigs["BITCOIN/USDT"],
-		"eth-channel": providerCfg.Market.CurrencyPairToMarketConfigs["ETHEREUM/USDT"],
-	}
+	channelBTC = 111
+	channelETH = 222
 
 	logger = zap.NewExample()
 )
+
+func rawStringToBz(raw string) []byte {
+	return []byte(raw)
+}
 
 func TestHandlerMessage(t *testing.T) {
 	testCases := []struct {
@@ -84,8 +86,8 @@ func TestHandlerMessage(t *testing.T) {
 				msg := bitfinex.SubscribedMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribed)},
 					Channel:     string(bitfinex.ChannelTicker),
-					ChannelID:   "btc-channel",
-					Pair:        "BTC-USDT",
+					ChannelID:   channelBTC,
+					Pair:        "BTCUSDT",
 				}
 
 				bz, err := json.Marshal(msg)
@@ -94,15 +96,7 @@ func TestHandlerMessage(t *testing.T) {
 				return bz
 			},
 			msg: func() []byte {
-				msg := bitfinex.TickerStream{
-					BaseStreamMessage: bitfinex.BaseStreamMessage{ChannelID: "btc-channel"},
-					LastPrice:         "1",
-				}
-
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return bz
+				return rawStringToBz(`[111,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -119,22 +113,14 @@ func TestHandlerMessage(t *testing.T) {
 			name:   "ticker price update with unknown channel ID",
 			preRun: func() []byte { return nil },
 			msg: func() []byte {
-				msg := bitfinex.TickerStream{
-					BaseStreamMessage: bitfinex.BaseStreamMessage{ChannelID: "unknown"},
-					LastPrice:         "",
-				}
-
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return bz
+				return rawStringToBz(`[0,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
-			expErr:        false,
+			expErr:        true,
 		},
 		{
 			name:   "successful subscription",
@@ -143,8 +129,8 @@ func TestHandlerMessage(t *testing.T) {
 				msg := bitfinex.SubscribedMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribed)},
 					Channel:     string(bitfinex.ChannelTicker),
-					ChannelID:   "btc-channel",
-					Pair:        "BTC-USDT",
+					ChannelID:   channelBTC,
+					Pair:        "BTCUSDT",
 				}
 
 				bz, err := json.Marshal(msg)
@@ -163,7 +149,6 @@ func TestHandlerMessage(t *testing.T) {
 			name:   "subscription error",
 			preRun: func() []byte { return nil },
 			msg: func() []byte {
-
 				msg := bitfinex.ErrorMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventError)},
 					Msg:         "error subscribing",
@@ -242,7 +227,7 @@ func TestCreateMessage(t *testing.T) {
 				msg := bitfinex.SubscribeMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribe)},
 					Channel:     string(bitfinex.ChannelTicker),
-					Symbol:      "BTC-USDT",
+					Symbol:      "BTCUSDT",
 				}
 
 				bz, err := json.Marshal(msg)
@@ -262,7 +247,7 @@ func TestCreateMessage(t *testing.T) {
 				msg := bitfinex.SubscribeMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribe)},
 					Channel:     string(bitfinex.ChannelTicker),
-					Symbol:      "BTC-USDT",
+					Symbol:      "BTCUSDT",
 				}
 				bz1, err := json.Marshal(msg)
 				require.NoError(t, err)
@@ -270,7 +255,7 @@ func TestCreateMessage(t *testing.T) {
 				msg = bitfinex.SubscribeMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribe)},
 					Channel:     string(bitfinex.ChannelTicker),
-					Symbol:      "ETH-USDT",
+					Symbol:      "ETHUSDT",
 				}
 				bz2, err := json.Marshal(msg)
 				require.NoError(t, err)
