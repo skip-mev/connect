@@ -1,1 +1,0 @@
-package kucoin_test
