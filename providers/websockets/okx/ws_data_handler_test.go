@@ -384,7 +384,7 @@ func TestCreateMessage(t *testing.T) {
 					Arguments: []okx.SubscriptionTopic{
 						{
 							Channel:      string(okx.IndexTickersChannel),
-							InstrumentID: "BTC-USDT",
+							InstrumentID: "BTCUSDT",
 						},
 						{
 							Channel:      string(okx.IndexTickersChannel),
@@ -400,7 +400,6 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
-
 		{
 			name: "one currency pair not in config",
 			cps: []oracletypes.CurrencyPair{

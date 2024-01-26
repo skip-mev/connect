@@ -37,7 +37,7 @@ func (h *WebsocketDataHandler) parseTickerStream(
 	// handle stream for one of the tickers
 	market, ok := h.channelMap[stream.ChannelID]
 	if !ok {
-		h.logger.Debug("currency pair not found for ticker channel ID", zap.String("channel_id", stream.ChannelID))
+		h.logger.Debug("currency pair not found for ticker channel ID", zap.Int("channel_id", stream.ChannelID))
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 	}
 

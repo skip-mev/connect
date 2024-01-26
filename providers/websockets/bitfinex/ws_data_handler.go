@@ -22,14 +22,14 @@ type WebsocketDataHandler struct {
 	logger *zap.Logger
 
 	// channelMap maps a given channel_id to the currency pair its subscription represents.
-	channelMap map[string]config.CurrencyPairMarketConfig
+	channelMap map[int]config.CurrencyPairMarketConfig
 
 	// config is the config for the BitFinex web socket API.
 	cfg config.ProviderConfig
 }
 
 // UpdateChannelMap updates the internal map from
-func (h *WebsocketDataHandler) UpdateChannelMap(channelID, ticker string) error {
+func (h *WebsocketDataHandler) UpdateChannelMap(channelID int, ticker string) error {
 	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
 	if !ok {
 		return fmt.Errorf("unable to find market for currency pair: %s", ticker)
@@ -59,7 +59,7 @@ func NewWebSocketDataHandler(
 
 	return &WebsocketDataHandler{
 		cfg:        cfg,
-		channelMap: make(map[string]config.CurrencyPairMarketConfig),
+		channelMap: make(map[int]config.CurrencyPairMarketConfig),
 		logger:     logger.With(zap.String("web_socket_data_handler", Name)),
 	}, nil
 }
@@ -104,6 +104,8 @@ func (h *WebsocketDataHandler) HandleMessage(
 			h.logger.Error("failed to parse subscribe response message", zap.Error(err))
 			return resp, nil, fmt.Errorf("failed to parse subscribe response message: %s", err)
 		}
+
+		h.logger.Debug("successfully subscribed", zap.String("pair", subscribedMessage.Pair), zap.Int("channel_id", subscribedMessage.ChannelID))
 
 		return resp, nil, nil
 
@@ -154,8 +156,8 @@ func (h *WebsocketDataHandler) HandleMessage(
 		}
 
 	default:
-		h.logger.Error("unknown message", zap.Any("message", message))
-		return resp, nil, fmt.Errorf("unknown message: %v", message)
+		h.logger.Error("unknown message", zap.Binary("message", message))
+		return resp, nil, fmt.Errorf("unknown message: %x", message)
 	}
 }
 

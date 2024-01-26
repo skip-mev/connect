@@ -23,3 +23,8 @@ func (s *StaticMockClient) Do(_ context.Context, _ string) (*http.Response, erro
 		StatusCode: http.StatusOK,
 	}, nil
 }
+
+// Type returns the HTTP method used to send requests.
+func (s *StaticMockClient) Type() string {
+	return http.MethodGet
+}

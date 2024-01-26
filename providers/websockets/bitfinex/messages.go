@@ -133,7 +133,7 @@ func NewSubscribeMessage(symbol string) (handlers.WebsocketEncodedMessage, error
 type SubscribedMessage struct {
 	BaseMessage
 	Channel   string `json:"channel" validate:"required"`
-	ChannelID string `json:"chanId" validate:"required"`
+	ChannelID int    `json:"chanId" validate:"required"`
 	Pair      string `json:"pair" validate:"required"`
 }
 
@@ -156,7 +156,7 @@ type ErrorMessage struct {
 
 // BaseStreamMessage is the base message for all stream messages received from a peer.
 type BaseStreamMessage struct {
-	ChannelID string `json:"chanId" validate:"required"`
+	ChannelID int `json:"chanId" validate:"required"`
 }
 
 // HeartbeatStream is the heartbeat message sent from the server every 15 seconds.
