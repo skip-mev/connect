@@ -404,21 +404,6 @@ production = false
           Quote = "USD"
 
 [[providers]]
-  name = "kucoin"
-  [providers.api]
-    enabled = false
-    timeout = "5s"
-    interval = "1m0s"
-    max_queries = 1
-    atomic = false
-    url = "https://api.kucoin.com"
-    name = "kucoin"
-  [providers.web_socket]
-    enabled = true
-    max_buffer_size = 1024
-    reconnection_timeout = "10s"
-    wss = "wss://ws-api-spot.kucoin.com/"
-    name = "kucoin"
   name = "bybit"
   [providers.api]
     enabled = false
@@ -440,35 +425,78 @@ production = false
     enable_compression = false
     read_deadline = "45s"
     write_deadline = "45s"
-<<<<<<< HEAD
-    ping_interval = "10s"
-  [providers.market_config]
-    name = "kucoin"
-    [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
-        ticker = "ATOM-USDT"
-=======
     ping_interval = "15s"
   [providers.market_config]
     name = "bybit"
     [providers.market_config.currency_pair_to_market_configs]
       [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSDT"
->>>>>>> main
         [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-<<<<<<< HEAD
-        ticker = "AVAX-USDT"
-=======
         ticker = "AVAXUSDT"
->>>>>>> main
         [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
-<<<<<<< HEAD
+        ticker = "BTCUSDT"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "DYDXUSDT"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETHUSDT"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOLUSDT"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
+  name = "kucoin"
+  [providers.api]
+    enabled = false
+    timeout = "5s"
+    interval = "1m0s"
+    max_queries = 1
+    atomic = false
+    url = "https://api.kucoin.com"
+    name = "kucoin"
+  [providers.web_socket]
+    enabled = true
+    max_buffer_size = 1024
+    reconnection_timeout = "10s"
+    wss = "wss://ws-api-spot.kucoin.com/"
+    name = "kucoin"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
+    ping_interval = "10s"
+  [providers.market_config]
+    name = "kucoin"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOM-USDT"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "AVAX-USDT"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTC-USDT"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
@@ -500,24 +528,6 @@ production = false
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USDT"
-=======
-        ticker = "BTCUSDT"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
-          Base = "BITCOIN"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "DYDXUSDT"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
-          Base = "DYDX"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
-        ticker = "ETHUSDT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
-        ticker = "SOLUSDT"
->>>>>>> main
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"

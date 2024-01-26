@@ -192,6 +192,41 @@ var LocalConfig = config.OracleConfig{
 		// the provider supports fetching data for the currency pair.
 		{
 			// -----------------------------------------------------------	//
+			// ---------------------Start Bybit WebSocket------------------	//
+			Name:      bybit.Name,
+			WebSocket: bybit.DefaultWebSocketConfig,
+			Market: config.MarketConfig{
+				Name: bybit.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "BTCUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETHUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "ATOMUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOLUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAXUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDXUSDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+				},
+			},
+		},
+		{
+			// -----------------------------------------------------------	//
 			// ---------------------Start Coinbase WebSocket--------------	//
 			Name:      coinbasews.Name,
 			WebSocket: coinbasews.DefaultWebSocketConfig,
@@ -323,39 +358,6 @@ var LocalConfig = config.OracleConfig{
 					"ETHEREUM/BITCOIN": {
 						Ticker:       "ETH/XBT",
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-					},
-				},
-			},
-		},
-		{
-			Name:      bybit.Name,
-			WebSocket: bybit.DefaultWebSocketConfig,
-			Market: config.MarketConfig{
-				Name: bybit.Name,
-				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-					"BITCOIN/USD": {
-						Ticker:       "BTCUSDT",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-					},
-					"ETHEREUM/USD": {
-						Ticker:       "ETHUSDT",
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-					},
-					"ATOM/USD": {
-						Ticker:       "ATOMUSDT",
-						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
-					},
-					"SOLANA/USD": {
-						Ticker:       "SOLUSDT",
-						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-					},
-					"AVAX/USD": {
-						Ticker:       "AVAXUSDT",
-						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
-					},
-					"DYDX/USD": {
-						Ticker:       "DYDXUSDT",
-						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
 					},
 				},
 			},
