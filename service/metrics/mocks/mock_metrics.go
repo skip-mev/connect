@@ -39,6 +39,11 @@ func (_m *Metrics) ObserveABCIMethodLatency(method metrics.ABCIMethod, duration 
 	_m.Called(method, duration)
 }
 
+// ObserveMessageSize provides a mock function with given fields: msg, size
+func (_m *Metrics) ObserveMessageSize(msg metrics.MessageType, size int) {
+	_m.Called(msg, size)
+}
+
 // ObserveOracleResponseLatency provides a mock function with given fields: duration
 func (_m *Metrics) ObserveOracleResponseLatency(duration time.Duration) {
 	_m.Called(duration)

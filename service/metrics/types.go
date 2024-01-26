@@ -11,6 +11,7 @@ const (
 	ABCIMethodLabel       = "abci_method"
 	ChainIDLabel          = "chain_id"
 	ABCIMethodStatusLabel = "abci_method_status"
+	MessageTypeLabel      = "message_type"
 )
 
 // StatusFromError returns a Labeller that can be used to label metrics based on the error. This
@@ -20,6 +21,26 @@ func StatusFromError(err error) Labeller {
 		return Success{}
 	}
 	return Failure{}
+}
+
+// MessageType is an identifier used to represent the different types of data that is transmitted between validators in Slinky.
+// This ID is used to paginate metrics corresponding to these messages
+type MessageType int
+
+const (
+	ExtendedCommit MessageType = iota
+	VoteExtension
+)
+
+func (m MessageType) String() string {
+	switch m {
+	case ExtendedCommit:
+		return "extended_commit"
+	case VoteExtension:
+		return "vote_extension"
+	default:
+		return "not_implemented"
+	}
 }
 
 // ABCIMethod is an identifier for ABCI methods, this is used to paginate latencies / responses in prometheus
