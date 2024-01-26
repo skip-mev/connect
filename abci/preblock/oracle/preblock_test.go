@@ -1,6 +1,7 @@
 package oracle_test
 
 import (
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -18,8 +19,12 @@ import (
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
+	codecmock "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	currencypairmock "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
+	"github.com/skip-mev/slinky/abci/types"
+	vetypes "github.com/skip-mev/slinky/abci/ve/types"
+	"github.com/skip-mev/slinky/aggregator"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -230,7 +235,118 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 			},
 		)
 		s.mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
+		s.mockMetrics.On("AddABCIRequest", servicemetrics.PreBlock, mock.Anything)
 		// run preblocker
 		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
+	})
+}
+
+func (s *PreBlockTestSuite) TestPreBlockStatus() {
+	s.Run("success", func() {
+		metrics := metricmock.NewMetrics(s.T())
+		handler := preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+					return nil
+				}
+			},
+			nil,
+			nil,
+			metrics,
+			nil,
+			nil,
+			nil,
+		)
+
+		metrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
+		metrics.On("AddABCIRequest", servicemetrics.PreBlock, servicemetrics.Success{}).Return()
+		// run preblocker
+		_, err := handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
+		s.Require().NoError(err)
+	})
+
+	s.Run("error in getting oracle votes", func() {
+		metrics := metricmock.NewMetrics(s.T())
+		handler := preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+					return nil
+				}
+			},
+			nil,
+			nil,
+			metrics,
+			nil,
+			nil,
+			nil,
+		)
+
+		expErr := types.MissingCommitInfoError{}
+		metrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
+		metrics.On("AddABCIRequest", servicemetrics.PreBlock, expErr).Return()
+
+		// make ves enabled
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
+		s.ctx = s.ctx.WithBlockHeight(4)
+		// run preblocker
+		_, err := handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{
+			Txs: [][]byte{},
+		})
+		s.Require().Error(err, expErr)
+	})
+
+	s.Run("error in aggregating oracle votes", func() {
+		metrics := metricmock.NewMetrics(s.T())
+		extCodec := codecmock.NewExtendedCommitCodec(s.T())
+		veCodec := codecmock.NewVoteExtensionCodec(s.T())
+		handler := preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+					return nil
+				}
+			},
+			nil,
+			nil,
+			metrics,
+			nil,
+			veCodec,
+			extCodec,
+		)
+
+		ca := sdk.ConsAddress([]byte("val"))
+		extCodec.On("Decode", mock.Anything).Return(cmtabci.ExtendedCommitInfo{
+			Votes: []cmtabci.ExtendedVoteInfo{
+				{
+					VoteExtension: []byte("ve"),
+					Validator: cmtabci.Validator{
+						Address: ca,
+					},
+				},
+			},
+		}, nil)
+		veCodec.On("Decode", []byte("ve")).Return(vetypes.OracleVoteExtension{
+			Prices: map[uint64][]byte{
+				1: make([]byte, 34),
+			},
+		}, nil)
+		expErr := preblock.PriceAggregationError{
+			Err: fmt.Errorf("price bytes are too long: %d", 34),
+		}
+
+		metrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
+		metrics.On("AddABCIRequest", servicemetrics.PreBlock, expErr).Return()
+		// make ves enabled
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
+		s.ctx = s.ctx.WithBlockHeight(4)
+		// run preblocker
+		_, err := handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{
+			Txs: [][]byte{
+				[]byte("abc"),
+			},
+		})
+		s.Require().Error(err, expErr)
 	})
 }
