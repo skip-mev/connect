@@ -82,23 +82,6 @@ type BaseMessage struct {
 	Type string `json:"type"`
 }
 
-// WelcomeResponseMessage represents the welcome message received when first
-// connecting to the websocket.
-//
-//	{
-//			"id": "hQvf8jkno",
-//			"type": "welcome"
-//	}
-//
-// ref: https://www.kucoin.com/docs/websocket/basic-info/create-connection
-type WelcomeResponseMessage struct {
-	// ID is the ID of the message.
-	ID string `json:"id"`
-
-	// Type is the type of message.
-	Type string `json:"type"`
-}
-
 // PingRequestMessage represents the ping message that must be sent to the
 // websocket server every ping interval.
 //
@@ -127,23 +110,6 @@ func NewHeartbeatMessage() ([]handlers.WebsocketEncodedMessage, error) {
 	}
 
 	return []handlers.WebsocketEncodedMessage{bz}, nil
-}
-
-// PongResponseMessage represents a pong / heartbeat message that is sent from
-// the server to the client in response to a ping message.
-//
-//	{
-//		"id": "1545910590801",
-//		"type": "pong"
-//	}
-//
-// ref: https://www.kucoin.com/docs/websocket/basic-info/ping
-type PongResponseMessage struct {
-	// ID is the ID of the message.
-	ID string `json:"id"`
-
-	// Type is the type of message.
-	Type string `json:"type"`
 }
 
 // SubscribeRequestMessage represents the subscribe message that must be sent
@@ -190,7 +156,7 @@ func NewSubscribeRequestMessage(
 	topic := fmt.Sprintf("%s%s", TickerTopic, tickers)
 
 	bz, err := json.Marshal(SubscribeRequestMessage{
-		ID:             time.Now().UnixNano(),
+		ID:             time.Now().UTC().UnixNano(),
 		Type:           string(SubscribeMessage),
 		Topic:          topic,
 		PrivateChannel: false,
@@ -201,24 +167,6 @@ func NewSubscribeRequestMessage(
 	}
 
 	return []handlers.WebsocketEncodedMessage{bz}, nil
-}
-
-// SubscribeResponseMessage represents the response message received from the
-// websocket server after sending a subscribe message.
-//
-//	{
-//			"id": "1545910660739",
-//			"type": "ack"
-//	}
-//
-// ref: https://www.kucoin.com/docs/websocket/basic-info/subscribe/introduction
-type SubscribeResponseMessage struct {
-	// ID is the ID of the message. This is a unique value that corresponds to the
-	// same ID that was sent in the subscribe request message.
-	ID string `json:"id"`
-
-	// Type is the type of message.
-	Type string `json:"type"`
 }
 
 // TickerResponseMessage represents the ticker response message received from
@@ -257,9 +205,6 @@ type TickerResponseMessage struct {
 
 // TickerResponseMessageData is the data field of the TickerResponseMessage.
 type TickerResponseMessageData struct {
-	// Sequence is the sequence number.
-	Sequence string `json:"sequence"`
-
 	// Price is the last traded price.
 	Price string `json:"price"`
 }

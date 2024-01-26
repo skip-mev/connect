@@ -108,6 +108,9 @@ func (h *WebSocketDataHandler) HandleMessage(
 	}
 }
 
+// CreateMessages is used to create the initial set of subscribe messages to send to the
+// kucoin web socket API. The subscribe messages are created based on the currency pairs
+// that are configured for the provider.
 func (h *WebSocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
 ) ([]handlers.WebsocketEncodedMessage, error) {
@@ -126,7 +129,11 @@ func (h *WebSocketDataHandler) CreateMessages(
 	return NewSubscribeRequestMessage(instruments)
 }
 
-// HeartBeatMessages is not used for Kraken.
+// HeartBeatMessages is used to create the set of heartbeat messages to send to the kucoin
+// web socket API. Per the kucoin web socket documentation, the interval between heartbeats
+// should be around 10 seconds, however, this is dynamic. As such, the web socket connection
+// handler will determine both the credentials and desired ping interval during the pre-dial
+// hook.
 func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return NewHeartbeatMessage()
 }

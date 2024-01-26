@@ -11,12 +11,14 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
-// WebsocketEncodedMessage is a type alias for a websocket message encoded to bytes.
-type WebsocketEncodedMessage []byte
+type (
+	// WebsocketEncodedMessage is a type alias for a websocket message encoded to bytes.
+	WebsocketEncodedMessage []byte
 
-// PreDialHook is a function that is called before the connection is established. This
-// is useful for dynamically generating the URL and token for the connection.
-type PreDialHook func(*WebSocketConnHandlerImpl) error
+	// PreDialHook is a function that is called before the connection is established. This
+	// is useful for dynamically generating the URL and token for the connection.
+	PreDialHook func(*WebSocketConnHandlerImpl) error
+)
 
 // WebSocketConnHandler is an interface the encapsulates the functionality of a web socket
 // connection to a data provider. It provides the simple CRUD operations for a web socket
@@ -90,12 +92,8 @@ func (h *WebSocketConnHandlerImpl) Dial() error {
 		}
 	}
 
-	conn, _, err := h.CreateDialer().Dial(h.cfg.WSS, nil)
-	if err != nil {
-		return err
-	}
-
-	h.SetConnection(conn)
+	var err error
+	h.conn, _, err = h.CreateDialer().Dial(h.cfg.WSS, nil)
 	return err
 }
 
@@ -158,18 +156,6 @@ func (h *WebSocketConnHandlerImpl) Close() error {
 	}
 
 	return h.conn.Close()
-}
-
-// SetConnection is used to set the connection to the data provider.
-func (h *WebSocketConnHandlerImpl) SetConnection(conn *websocket.Conn) {
-	h.Lock()
-	defer h.Unlock()
-
-	if h.conn != nil {
-		panic("connection has already been established")
-	}
-
-	h.conn = conn
 }
 
 // GetConfig is used to get the configuration for the connection handler.
