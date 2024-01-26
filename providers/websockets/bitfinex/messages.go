@@ -15,8 +15,8 @@ type (
 	// Channel is the channel of a message sent over the Bitfinex websocket API.
 	Channel string
 
-	// ChannelID is the id of a channel being communicated over the BitFinex websocket API.
-	ChannelID int64
+	// ErrorCode is a type alias for an error code sent from the Bitfinex websocket API.
+	ErrorCode int64
 )
 
 const (
@@ -34,11 +34,7 @@ const (
 	ExpectedStreamPayloadLength = 10
 	// ExpectedBaseStreamLength is the expected length of a stream base message.
 	ExpectedBaseStreamLength = 2
-)
 
-type ErrorCode int64
-
-const (
 	ErrorUnknownEvent       ErrorCode = 10000
 	ErrorUnknownPair        ErrorCode = 10001
 	ErrorLimitOpenChannels  ErrorCode = 10305
