@@ -35,11 +35,16 @@ const (
 	// ExpectedBaseStreamLength is the expected length of a stream base message.
 	ExpectedBaseStreamLength = 2
 
-	ErrorUnknownEvent       ErrorCode = 10000
-	ErrorUnknownPair        ErrorCode = 10001
-	ErrorLimitOpenChannels  ErrorCode = 10305
+	// ErrorUnknownEvent indicates an unknown event.
+	ErrorUnknownEvent ErrorCode = 10000
+	// ErrorUnknownPair indicates an unknown pari.
+	ErrorUnknownPair ErrorCode = 10001
+	// ErrorLimitOpenChannels indicates the limit of open channels has been exceeded.
+	ErrorLimitOpenChannels ErrorCode = 10305
+	// ErrorSubscriptionFailed indicates a subscription failed.
 	ErrorSubscriptionFailed ErrorCode = 10400
-	ErrorNotSubscribed      ErrorCode = 104001
+	// ErrorNotSubscribed indicates you are not subscribed to the given topic.
+	ErrorNotSubscribed ErrorCode = 104001
 )
 
 // Error returns the error representation of the ErrorCode.

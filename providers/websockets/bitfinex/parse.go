@@ -14,6 +14,13 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
+const (
+	// indexChannelID is the index of a data stream's channel ID.
+	indexChannelID = 0
+	// indexPayload is the index of a data stream's payload.
+	indexPayload = 1
+)
+
 // parseSubscribedMessage updates the channel map for a subscribed message.
 func (h *WebsocketDataHandler) parseSubscribedMessage(
 	msg SubscribedMessage,
@@ -30,6 +37,35 @@ func (h *WebsocketDataHandler) parseErrorMessage(
 }
 
 // handleStream handles a data stream sent from the peer.
+//
+// Data streams always start with the channelID associated, but
+// can have a different payload depending on the type of message.
+// This handler handles:
+// 1. Heartbeat messages.  These take the following form:
+//
+//	[ CHANNEL_ID, "hb" ]
+//
+// 2. Ticker update streams.  These take the following form:
+//
+// [
+//
+//	CHANNEL_ID,
+//	[
+//	  BID,
+//	  BID_SIZE,
+//	  ASK,
+//	  ASK_SIZE,
+//	  DAILY_CHANGE,
+//	  DAILY_CHANGE_RELATIVE,
+//	  LAST_PRICE,
+//	  VOLUME,
+//	  HIGH,
+//	  LOW
+//	]
+//
+// ]
+//
+// ref: https://docs.bitfinex.com/reference/ws-public-ticker
 func (h *WebsocketDataHandler) handleStream(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
@@ -56,7 +92,7 @@ func (h *WebsocketDataHandler) handleStream(
 	}
 
 	// first element is always channel id
-	channelID := int(baseStream[0].(float64))
+	channelID := int(baseStream[indexChannelID].(float64))
 	market, ok := h.channelMap[channelID]
 	if !ok {
 		h.logger.Error("received stream for unknown channel id", zap.Int("channel_id", channelID))
@@ -67,7 +103,7 @@ func (h *WebsocketDataHandler) handleStream(
 	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("market", cp.String()))
 
 	// check if it is a heartbeat
-	hbID, ok := baseStream[1].(string)
+	hbID, ok := baseStream[indexPayload].(string)
 	if ok && hbID == IDHeartbeat {
 		h.logger.Debug("received heartbeat", zap.Int("channel_id", channelID), zap.String("pair", market.Ticker))
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
@@ -75,7 +111,7 @@ func (h *WebsocketDataHandler) handleStream(
 	}
 
 	// if it is not a string, it is a stream update
-	dataArr, ok := baseStream[1].([]interface{})
+	dataArr, ok := baseStream[indexPayload].([]interface{})
 	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
 		unResolved[cp] = err
