@@ -39,8 +39,8 @@ const (
 	// connection.
 	DefaultWriteTimeout = 45 * time.Second
 
-	// DefaultPingInterval is the default interval to ping the server. Note that a
-	// ping interval of 0 disables pings.
+	// DefaultPingInterval is the default interval at which the provider should send
+	// ping messages to the server.
 	DefaultPingInterval = 0 * time.Second
 )
 

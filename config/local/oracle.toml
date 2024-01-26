@@ -193,6 +193,7 @@ production = false
           Quote = "USD"
 
 [[providers]]
+<<<<<<< HEAD
   name = "bitfinex"
   [providers.api]
     enabled = false
@@ -294,6 +295,9 @@ production = false
 =======
   name = "kraken"
 >>>>>>> 14850b7 (docs)
+=======
+  name = "bybit"
+>>>>>>> d5e6fd7 (bits)
   [providers.api]
     enabled = false
     timeout = "0s"
@@ -307,12 +311,17 @@ production = false
     max_buffer_size = 1000
     reconnection_timeout = "10s"
 <<<<<<< HEAD
+<<<<<<< HEAD
     wss = "wss://stream.bybit.com/v5/public/spot"
     name = "bybit"
 =======
     wss = "wss://ws.kraken.com"
     name = "kraken"
 >>>>>>> 14850b7 (docs)
+=======
+    wss = "wss://stream.bybit.com/v5/public/spot"
+    name = "bybit"
+>>>>>>> d5e6fd7 (bits)
     read_buffer_size = 0
     write_buffer_size = 0
     handshake_timeout = "45s"
@@ -320,12 +329,16 @@ production = false
     read_deadline = "45s"
     write_deadline = "45s"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d5e6fd7 (bits)
     ping_interval = "15s"
   [providers.market_config]
     name = "bybit"
     [providers.market_config.currency_pair_to_market_configs]
       [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSDT"
+<<<<<<< HEAD
 =======
     ping_interval = "0s"
   [providers.market_config]
@@ -334,20 +347,29 @@ production = false
       [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM/USD"
 >>>>>>> 14850b7 (docs)
+=======
+>>>>>>> d5e6fd7 (bits)
         [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
 <<<<<<< HEAD
+<<<<<<< HEAD
         ticker = "AVAXUSDT"
 =======
         ticker = "AVAX/USD"
 >>>>>>> 14850b7 (docs)
+=======
+        ticker = "AVAXUSDT"
+>>>>>>> d5e6fd7 (bits)
         [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d5e6fd7 (bits)
         ticker = "BTCUSDT"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
@@ -359,6 +381,7 @@ production = false
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSDT"
+<<<<<<< HEAD
 =======
         ticker = "XBT/USD"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
@@ -382,21 +405,30 @@ production = false
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH/USD"
 >>>>>>> 14850b7 (docs)
+=======
+>>>>>>> d5e6fd7 (bits)
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
 <<<<<<< HEAD
+<<<<<<< HEAD
         ticker = "SOLUSDT"
 =======
         ticker = "SOL/USD"
 >>>>>>> 14850b7 (docs)
+=======
+        ticker = "SOLUSDT"
+>>>>>>> d5e6fd7 (bits)
         [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
 
 [[providers]]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> d5e6fd7 (bits)
   name = "coinbase"
 =======
   name = "kucoin"
@@ -602,6 +634,7 @@ production = false
 
 [[providers]]
 <<<<<<< HEAD
+<<<<<<< HEAD
   name = "kucoin"
   [providers.api]
     enabled = false
@@ -691,6 +724,8 @@ production = false
           Quote = "USD"
 
 [[providers]]
+=======
+>>>>>>> d5e6fd7 (bits)
   name = "kucoin"
   [providers.api]
     enabled = false

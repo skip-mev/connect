@@ -202,6 +202,9 @@ type TickerResponseMessage struct {
 
 // TickerResponseMessageData is the data field of the TickerResponseMessage.
 type TickerResponseMessageData struct {
+	// Sequence is the sequence number.
+	Sequence string `json:"sequence"`
+
 	// Price is the last traded price.
 	Price string `json:"price"`
 }
