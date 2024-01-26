@@ -190,12 +190,12 @@ func webSocketProviderFromProviderConfig(
 	switch cfg.Name {
 	case bitfinex.Name:
 		wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, cfg)
+	case bybit.Name:
+		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
 	case coinbasews.Name:
 		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg)
 	case cryptodotcom.Name:
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
-	case bybit.Name:
-		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	case okx.Name:
