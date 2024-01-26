@@ -69,7 +69,6 @@ func (h *WebsocketDataHandler) handleStream(
 	// check if it is a heartbeat
 	hbID, ok := baseStream[1].(string)
 	if ok && hbID == IDHeartbeat {
-
 		h.logger.Debug("received heartbeat", zap.Int("channel_id", channelID), zap.String("pair", market.Ticker))
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 
