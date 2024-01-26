@@ -92,8 +92,8 @@ type WebSocketConfig struct {
 	// not time out.
 	WriteTimeout time.Duration `mapstructure:"write_deadline" toml:"write_deadline"`
 
-	// PingInterval is the interval at which the provider should send ping messages
-	// to the server. If this is 0, then no ping messages will be sent.
+	// PingInterval is the interval to ping the server. Note that a ping interval
+	// of 0 disables pings.
 	PingInterval time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
 }
 

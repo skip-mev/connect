@@ -25,6 +25,7 @@ import (
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
+	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -182,9 +183,18 @@ func webSocketProviderFromProviderConfig(
 		return nil, err
 	}
 
+	// Create the underlying client that can be utilized by web socket providers that need to
+	// interact with an API.
+	maxCons := math.Min(len(cps), cfg.API.MaxQueries)
+	client := &http.Client{
+		Transport: &http.Transport{MaxConnsPerHost: maxCons},
+		Timeout:   cfg.API.Timeout,
+	}
+
 	var (
-		wsDataHandler wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
-		connHandler   wshandlers.WebSocketConnHandler
+		requestHandler apihandlers.RequestHandler
+		wsDataHandler  wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
+		connHandler    wshandlers.WebSocketConnHandler
 	)
 
 	switch cfg.Name {
@@ -198,6 +208,27 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
+	case kucoin.Name:
+		// Create the kucoin web socket data handler.
+		wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, cfg)
+		if err != nil {
+			return nil, err
+		}
+
+		// The request handler requires POST requests when first establishing the connection.
+		requestHandler, err = apihandlers.NewRequestHandlerImpl(
+			client,
+			apihandlers.WithHTTPMethod(http.MethodPost),
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// Create the kucoin web socket connection handler.
+		connHandler, err = wshandlers.NewWebSocketHandlerImpl(
+			cfg.WebSocket,
+			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
+		)
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	default:

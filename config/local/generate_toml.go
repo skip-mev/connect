@@ -20,6 +20,7 @@ import (
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
+	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -395,6 +396,54 @@ var LocalConfig = config.OracleConfig{
 					"ETHEREUM/BITCOIN": {
 						Ticker:       "ETH/XBT",
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+				},
+			},
+		},
+		{
+			// -----------------------------------------------------------	//
+			// ---------------------Start Kucoin WebSocket----------------	//
+			Name:      kucoin.Name,
+			WebSocket: kucoin.DefaultWebSocketConfig,
+			API:       kucoin.DefaultAPIConfig,
+			Market: config.MarketConfig{
+				Name: kucoin.Name,
+				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+					"BITCOIN/USD": {
+						Ticker:       "BTC-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					},
+					"ETHEREUM/USD": {
+						Ticker:       "ETH-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					},
+					"ATOM/USD": {
+						Ticker:       "ATOM-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+					},
+					"SOLANA/USD": {
+						Ticker:       "SOL-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					},
+					"CELESTIA/USD": {
+						Ticker:       "TIA-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+					},
+					"AVAX/USD": {
+						Ticker:       "AVAX-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+					},
+					"DYDX/USD": {
+						Ticker:       "DYDX-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+					},
+					"ETHEREUM/BITCOIN": {
+						Ticker:       "ETH-BTC",
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					},
+					"OSMOSIS/USD": {
+						Ticker:       "OSMO-USDT",
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
 					},
 				},
 			},

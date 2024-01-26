@@ -1,8 +1,10 @@
-package coinbase
+package kucoin
 
 import (
 	"fmt"
 	"math/big"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/skip-mev/slinky/pkg/math"
@@ -10,11 +12,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// parseTickerResponseMessage is used to parse a ticker response message. Note
-// that each response will include a sequence number. This sequence number
-// should be used to determine if any messages were missed. If any previous
-// messages were missed, the client should ignore the previous messages if they
-// are received at a later time.
+// parseTickerResponseMessage is used to parse a ticker response message.
 func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	msg TickerResponseMessage,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
@@ -23,24 +21,44 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 		unResolved = make(map[oracletypes.CurrencyPair]error)
 	)
 
-	// Determine if the ticker is valid.
-	market, ok := h.cfg.Market.TickerToMarketConfigs[msg.Ticker]
-	if !ok {
+	// The response must be from a subscription to the ticker channel.
+	if subject := SubjectType(msg.Subject); subject != TickerSubject {
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
-			fmt.Errorf("got response for an unsupported market %s", msg.Ticker)
+			fmt.Errorf("received unsupported channel %s", subject)
 	}
 
-	// Determine if the sequence number is valid.
+	// Retrieve the ticker data from the message.
+	tickerData := strings.Split(msg.Topic, string(TickerTopic))
+	if len(tickerData) != ExpectedTopicLength {
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+			fmt.Errorf("invalid ticker data %s", tickerData)
+	}
+
+	// Parse the currency pair from the ticker data.
+	ticker := tickerData[TickerIndex]
+	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
+	if !ok {
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+			fmt.Errorf("market not found for ticker %s", ticker)
+	}
+
+	// Check the if the sequence number is valid.
 	cp := market.CurrencyPair
-	sequence, ok := h.sequence[cp]
+	sequence, err := strconv.ParseInt(msg.Data.Sequence, 10, 64)
+	if err != nil {
+		unResolved[cp] = err
+		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+	}
+
+	seenSequence, ok := h.sequences[cp]
 	switch {
-	case !ok || sequence < msg.Sequence:
+	case !ok || seenSequence < sequence:
 		// If the sequence number is not found, then this is the first message
 		// received for this currency pair. Set the sequence number to the
 		// sequence number received. Additionally, if the sequence number is
 		// greater than the sequence number currently stored, then this message
 		// was received in order.
-		h.sequence[cp] = msg.Sequence
+		h.sequences[cp] = sequence
 	default:
 		// If the sequence number is greater than the sequence number received,
 		// then this message was received out of order. Ignore the message.
@@ -49,16 +67,14 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
-	// Convert the price to a big int.
-	price, err := math.Float64StringToBigInt(msg.Price, cp.Decimals())
+	// Parse the price from the message.
+	price, err := math.Float64StringToBigInt(msg.Data.Price, cp.Decimals())
 	if err != nil {
+		err = fmt.Errorf("failed to parse price %s", err)
 		unResolved[cp] = err
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
-	// Convert the time to a time object and resolve the price into the response.
-	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-
-	h.logger.Debug("successfully parsed ticker response message")
+	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }

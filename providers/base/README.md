@@ -182,7 +182,7 @@ type WebSocketConnHandler interface {
 	Read() ([]byte, error)
 	Write(message []byte) error
 	Close() error
-	Dial(url string) error
+	Dial() error
 }
 ```
 
