@@ -154,7 +154,7 @@ func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedM
 	return nil, nil
 }
 
-// UpdateChannelMap updates the internal map from
+// UpdateChannelMap updates the internal map for the given channelID and ticker.
 func (h *WebsocketDataHandler) UpdateChannelMap(channelID int, ticker string) error {
 	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
 	if !ok {
