@@ -15,9 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	logger = zap.NewExample()
-)
+var logger = zap.NewExample()
 
 func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
