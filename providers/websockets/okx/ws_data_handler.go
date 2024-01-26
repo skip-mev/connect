@@ -120,7 +120,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 	}
 }
 
-// CreateMessages is used to create a an initial subscription message to send to the data provider.
+// CreateMessages is used to create an initial subscription message to send to the data provider.
 // Only the currency pairs that are specified in the config are subscribed to. The only channel
 // that is subscribed to is the index tickers channel - which supports spot markets.
 func (h *WebsocketDataHandler) CreateMessages(
