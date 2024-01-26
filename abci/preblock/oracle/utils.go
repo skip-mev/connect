@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/abci/proposals"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -94,28 +95,30 @@ func GetOracleVotes(
 	extCommitCodec compression.ExtendedCommitCodec,
 ) ([]Vote, error) {
 	if len(proposal) < proposals.NumInjectedTxs {
-		return nil, fmt.Errorf(
-			"block does not contain enough transactions. expected %d, got %d",
-			proposals.NumInjectedTxs,
-			len(proposal),
-		)
+		return nil, slinkyabci.MissingCommitInfoError{}
 	}
 
 	extendedCommitInfo, err := extCommitCodec.Decode(proposal[proposals.OracleInfoIndex])
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal extended commit info: %w", err)
+		return nil, slinkyabci.CodecError{
+			Err: fmt.Errorf("error decoding extended-commit-info: %v", err),
+		}
 	}
 
 	votes := make([]Vote, len(extendedCommitInfo.Votes))
 	for i, voteInfo := range extendedCommitInfo.Votes {
 		voteExtension, err := veCodec.Decode(voteInfo.VoteExtension)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get oracle data from vote extension: %w", err)
+			return nil, slinkyabci.CodecError{
+				Err: fmt.Errorf("error decoding vote-extension: %v", err),
+			}
 		}
 
 		address := sdk.ConsAddress{}
 		if err := address.Unmarshal(voteInfo.Validator.Address); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal validator address: %w", err)
+			return nil, slinkyabci.CodecError{
+				Err: fmt.Errorf("error decoding validator address: %v", err),
+			}
 		}
 
 		votes[i] = Vote{
