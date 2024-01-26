@@ -333,6 +333,7 @@ var LocalConfig = config.OracleConfig{
 			// ---------------------Start Kucoin WebSocket----------------	//
 			Name:      kucoin.Name,
 			WebSocket: kucoin.DefaultWebSocketConfig,
+			API:       kucoin.DefaultAPIConfig,
 			Market: config.MarketConfig{
 				Name: kucoin.Name,
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
