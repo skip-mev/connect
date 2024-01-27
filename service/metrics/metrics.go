@@ -44,14 +44,14 @@ func NewNopMetrics() Metrics {
 	return &nopMetricsImpl{}
 }
 
-func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)           {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                           {}
-func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                     {}
-func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)              {}
-func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration) {}
-func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                {}
-func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                {}
-func (m *nopMetricsImpl) ObservePriceForTicker(_ oracletypes.CurrencyPair, _ float64)              {}
+func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)                {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                                {}
+func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                          {}
+func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)                   {}
+func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration)      {}
+func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                     {}
+func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                     {}
+func (m *nopMetricsImpl) ObservePriceForTicker(_ oracletypes.CurrencyPair, _ float64) {}
 
 func NewMetrics(chainID string) Metrics {
 	m := &metricsImpl{
@@ -121,7 +121,7 @@ type metricsImpl struct {
 	abciMethodLatency        *prometheus.HistogramVec
 	abciRequests             *prometheus.CounterVec
 	messageSize              *prometheus.HistogramVec
-	prices 				 *prometheus.GaugeVec
+	prices                   *prometheus.GaugeVec
 	chainID                  string
 }
 
@@ -177,8 +177,8 @@ func (m *metricsImpl) ObserveMessageSize(messageType MessageType, size int) {
 
 func (m *metricsImpl) ObservePriceForTicker(ticker oracletypes.CurrencyPair, price float64) {
 	m.prices.With(prometheus.Labels{
-		ChainIDLabel:     m.chainID,
-		TickerLabel: ticker.String(),
+		ChainIDLabel: m.chainID,
+		TickerLabel:  ticker.String(),
 	}).Set(price)
 }
 

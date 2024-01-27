@@ -166,7 +166,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		prices := map[oracletypes.CurrencyPair]*big.Int{
 			s.currencyPairs[0]: big.NewInt(1),
 			s.currencyPairs[1]: big.NewInt(2),
-			s.currencyPairs[2]: bigIntPrice, // 
+			s.currencyPairs[2]: bigIntPrice,
 		}
 		s.mockMetrics.On("ObservePriceForTicker", s.currencyPairs[0], float64(1))
 		s.mockMetrics.On("ObservePriceForTicker", s.currencyPairs[1], float64(2))

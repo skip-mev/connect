@@ -11,8 +11,8 @@ import (
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // Vote encapsulates the validator and oracle data contained within a vote extension.
@@ -55,7 +55,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 
 			return err
 		}
-		
+
 		// observe prices
 		recordPrice(h.metrics, price, cp)
 
