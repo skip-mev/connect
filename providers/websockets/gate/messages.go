@@ -15,6 +15,8 @@ type (
 	Channel string
 	// Event is a type alias for an event identifier.
 	Event string
+	// Status is a type alias for an status identifier.
+	Status string
 )
 
 const (
@@ -26,6 +28,9 @@ const (
 
 	// EventUpdate is the event indicating an update.
 	EventUpdate Event = "update"
+
+	// StatusSuccess is the status indicating a subscription was successful.
+	StatusSuccess Status = "success"
 
 	// ErrorInvalidRequestBody is returned for an invalid body in the request.
 	ErrorInvalidRequestBody ErrorCode = 1
@@ -53,8 +58,6 @@ func (e ErrorCode) Error() error {
 type BaseMessage struct {
 	// Time is the time of the message.
 	Time int `json:"time"`
-	// ID is the optional ID for the message.
-	ID int `json:"id"`
 	// Channel is the channel to subscribe to.
 	Channel string `json:"channel"`
 	// Event is the event the request/response is taking.
@@ -78,6 +81,8 @@ type RequestResult struct {
 // SubscribeRequest is a subscription request sent to the Gate.io websocket API.
 type SubscribeRequest struct {
 	BaseMessage
+	// ID is the optional ID for the message.
+	ID int `json:"id"`
 	// Payload is the argument payload sent for the corresponding request.
 	Payload []string `json:"payload"`
 }
@@ -91,10 +96,10 @@ func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, 
 	bz, err := json.Marshal(SubscribeRequest{
 		BaseMessage: BaseMessage{
 			Time:    time.Now().UTC().Second(),
-			ID:      time.Now().UTC().Second(),
 			Channel: string(ChannelTickers),
 			Event:   string(EventSubscribe),
 		},
+		ID:      time.Now().UTC().Second(),
 		Payload: symbols,
 	})
 
@@ -104,6 +109,8 @@ func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, 
 // SubscribeResponse is a subscription response sent from the Gate.io websocket API.
 type SubscribeResponse struct {
 	BaseMessage
+	// ID is the optional ID for the message.
+	ID int `json:"id"`
 	// Error is the error message returned.  Will be empty if no error is returned.
 	Error ErrorMessage `json:"error"`
 	// Result is the result returned from the server.
@@ -112,12 +119,7 @@ type SubscribeResponse struct {
 
 // TickerStream is the data stream returned for a ticker subscription.
 type TickerStream struct {
-	// Time is the time of the message.
-	Time int `json:"time"`
-	// Channel is the channel to subscribe to.
-	Channel string `json:"channel"`
-	// Event is the event the request/response is taking.
-	Event string `json:"event"`
+	BaseMessage
 	// Result is the result body of the data stream.
 	Result TickerResult `json:"result"`
 }
