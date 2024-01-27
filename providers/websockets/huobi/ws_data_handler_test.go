@@ -201,6 +201,61 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			expErr: false,
 		},
+		{
+			name: "valid heartbeat",
+			msg: func() []byte {
+				msg := huobi.PingMessage{Ping: 123}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
+			},
+			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
+				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[oracletypes.CurrencyPair]error{},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage {
+				msg := huobi.PongMessage{Pong: 123}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return []handlers.WebsocketEncodedMessage{bz}
+			},
+			expErr: false,
+		},
+		{
+			name: "invalid empty heartbeat",
+			msg: func() []byte {
+				msg := huobi.PingMessage{}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				var buf bytes.Buffer
+				zw := gzip.NewWriter(&buf)
+
+				_, err = zw.Write(bz)
+				require.NoError(t, err)
+				require.NoError(t, zw.Close())
+
+				return buf.Bytes()
+			},
+			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
+				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[oracletypes.CurrencyPair]error{},
+			),
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
 	}
 
 	for _, tc := range testCases {
