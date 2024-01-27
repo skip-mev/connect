@@ -276,7 +276,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			// Ensure that the commit info was correctly injected into the proposal.
 			if len(req.Txs) < NumInjectedTxs {
 				h.logger.Error("failed to process proposal: missing commit info", "num_txs", len(req.Txs))
-				err = MissingCommitInfoError{}
+				err = types.MissingCommitInfoError{}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}

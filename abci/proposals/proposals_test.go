@@ -1280,7 +1280,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			metricsMocks,
 		)
-		expErr := proposals.MissingCommitInfoError{}
+		expErr := types.MissingCommitInfoError{}
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
 

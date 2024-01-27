@@ -46,3 +46,15 @@ func (e CodecError) Error() string {
 func (e CodecError) Label() string {
 	return "CodecError"
 }
+
+// MissingCommitInfoError is an error that is returned when a proposal is missing the CommitInfo from the previous
+// height.
+type MissingCommitInfoError struct{}
+
+func (e MissingCommitInfoError) Error() string {
+	return "missing commit info"
+}
+
+func (e MissingCommitInfoError) Label() string {
+	return "MissingCommitInfoError"
+}
