@@ -10,6 +10,7 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -89,7 +90,7 @@ func NewOraclePreBlockHandler(
 // is responsible for aggregating oracle data from each validator and writing
 // the oracle data to the store.
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
-	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
 		start := time.Now()
 		defer func() {
 			// only measure latency in Finalize
@@ -100,7 +101,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 					"height", ctx.BlockHeight(),
 					"latency (seconds)", latency.Seconds(),
 				)
-				h.metrics.ObserveABCIMethodLatency(servicemetrics.PreBlock, latency)
+				types.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
 			}
 		}()
 
@@ -142,6 +143,9 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 				"err", err,
 			)
 
+			err = PriceAggregationError{
+				Err: err,
+			}
 			return &sdk.ResponsePreBlock{}, err
 		}
 
@@ -152,6 +156,10 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 				"prices", prices,
 				"err", err,
 			)
+
+			err = CommitPricesError{
+				Err: err,
+			}
 
 			return &sdk.ResponsePreBlock{}, err
 		}

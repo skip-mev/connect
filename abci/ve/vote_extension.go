@@ -12,6 +12,7 @@ import (
 
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -76,32 +77,40 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestExtendVote) (resp *cometabci.ResponseExtendVote, err error) {
 		start := time.Now()
 
-		// measure latencies from invocation to return
+		// measure latencies from invocation to return, catch panics first
 		defer func() {
-			latency := time.Since(start)
-			h.logger.Info(
-				"extend vote handler",
-				"duration (seconds)", latency.Seconds(),
-				"err", err,
-			)
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.ExtendVote, latency)
-		}()
-
-		if req == nil {
-			h.logger.Error("extend vote handler received a nil request")
-			return nil, fmt.Errorf("ExtendVoteHandler received a nil request")
-		}
-		// Catch any panic that occurs in the oracle request.
-		defer func() {
+			// catch panics if possible
 			if r := recover(); r != nil {
 				h.logger.Error(
 					"recovered from panic in ExtendVoteHandler",
 					"err", r,
 				)
 
-				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, Panic{fmt.Errorf("%v", r)}
+			}
+
+			// measure latency
+			latency := time.Since(start)
+			h.logger.Info(
+				"extend vote handler",
+				"duration (seconds)", latency.Seconds(),
+				"err", err,
+			)
+			slinkyabci.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.ExtendVote)
+
+			// ignore all non-panic errors
+			if _, ok := err.(Panic); !ok {
+				err = nil
 			}
 		}()
+
+		if req == nil {
+			h.logger.Error("extend vote handler received a nil request")
+			err = slinkyabci.NilRequestError{
+				Handler: servicemetrics.ExtendVote,
+			}
+			return nil, err
+		}
 
 		// Update the latest on-chain prices with the vote extensions included in the current
 		// block proposal.
@@ -109,14 +118,15 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			Txs:    req.Txs,
 			Height: req.Height,
 		}
-		if _, err := h.preBlocker(ctx, reqFinalizeBlock); err != nil {
+		if _, err = h.preBlocker(ctx, reqFinalizeBlock); err != nil {
 			h.logger.Error(
 				"failed to aggregate oracle votes",
 				"height", req.Height,
 				"err", err,
 			)
+			err = PreBlockError{err}
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		// Create a context with a timeout to ensure we do not wait forever for the oracle
@@ -135,7 +145,11 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			err = OracleClientError{
+				Err: err,
+			}
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		// If we get no response, we return an empty vote extension.
@@ -145,7 +159,9 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"height", req.Height,
 			)
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			err = OracleClientError{fmt.Errorf("oracle returned nil prices")}
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		// Transform the response prices into a vote extension.
@@ -157,7 +173,11 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			err = TransformPricesError{
+				Err: err,
+			}
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		bz, err := h.voteExtensionCodec.Encode(voteExt)
@@ -168,19 +188,16 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 				"err", err,
 			)
 
-			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, nil
+			err = slinkyabci.CodecError{
+				Err: err,
+			}
+
+			return &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, err
 		}
 
 		h.logger.Info(
 			"extending vote with oracle prices",
 			"req_height", req.Height,
-		)
-
-		origBz, _ := voteExt.Marshal()
-		h.logger.Info(
-			"original vote extension",
-			"orig_bz_size", len(origBz),
-			"compressed_bz_size", len(bz),
 		)
 
 		return &cometabci.ResponseExtendVote{VoteExtension: bz}, nil
@@ -192,7 +209,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 // that the validator may have been unable to fetch prices from the oracle and is voting an empty vote extension.
 // We reject any vote extensions that are not empty and fail to unmarshal or contain invalid prices.
 func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtensionHandler {
-	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (*cometabci.ResponseVerifyVoteExtension, error) {
+	return func(ctx sdk.Context, req *cometabci.RequestVerifyVoteExtension) (_ *cometabci.ResponseVerifyVoteExtension, err error) {
 		start := time.Now()
 
 		// measure latencies from invocation to return
@@ -202,12 +219,16 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 				"verify vote extension handler",
 				"duration (seconds)", latency.Seconds(),
 			)
-			h.metrics.ObserveABCIMethodLatency(servicemetrics.VerifyVoteExtension, latency)
+
+			slinkyabci.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.VerifyVoteExtension)
 		}()
 
 		if req == nil {
+			err = slinkyabci.NilRequestError{
+				Handler: servicemetrics.VerifyVoteExtension,
+			}
 			h.logger.Error("VerifyVoteExtensionHandler received a nil request")
-			return nil, fmt.Errorf("VerifyVoteExtensionHandler received a nil request")
+			return nil, err
 		}
 		// decode the vote-extension bytes
 		voteExtension, err := h.voteExtensionCodec.Decode(req.VoteExtension)
@@ -217,6 +238,10 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 				"height", req.Height,
 				"err", err,
 			)
+			err = slinkyabci.CodecError{
+				Err: err,
+			}
+
 			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
 		}
 
@@ -226,6 +251,9 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 				"height", req.Height,
 				"err", err,
 			)
+			err = ValidateVoteExtensionError{
+				Err: err,
+			}
 
 			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
 		}
