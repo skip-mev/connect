@@ -2,13 +2,15 @@ package gate
 
 import (
 	"fmt"
+	"math/big"
+	"time"
+
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
-	"math/big"
-	"time"
 )
 
 // parseSubscribeResponse attempts to parse a SubscribeResponse to see if it was successful.
@@ -23,7 +25,7 @@ func (h *WebsocketDataHandler) parseSubscribeResponse(
 
 	if Status(msg.Result.Status) != StatusSuccess {
 		h.logger.Error("subscription was not successful", zap.String("status", msg.Result.Status), zap.String("pair", msg.Error.Message))
-		return nil, fmt.Errorf("subscription was not succesful: %s", msg.Result.Status)
+		return nil, fmt.Errorf("subscription was not successful: %s", msg.Result.Status)
 	}
 
 	h.logger.Debug("successfully subscribed", zap.Int("id", msg.ID))

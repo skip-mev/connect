@@ -1,8 +1,10 @@
 package gate
 
 import (
-	"github.com/skip-mev/slinky/oracle/config"
 	"time"
+
+	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -13,16 +15,57 @@ const (
 )
 
 // DefaultWebSocketConfig is the default configuration for the Gate.io Websocket.
-var DefaultWebSocketConfig = config.WebSocketConfig{
-	Name:                Name,
-	Enabled:             true,
-	MaxBufferSize:       1000,
-	ReconnectionTimeout: 10 * time.Second,
-	WSS:                 URL,
-	ReadBufferSize:      config.DefaultReadBufferSize,
-	WriteBufferSize:     config.DefaultWriteBufferSize,
-	HandshakeTimeout:    config.DefaultHandshakeTimeout,
-	EnableCompression:   config.DefaultEnableCompression,
-	ReadTimeout:         config.DefaultReadTimeout,
-	WriteTimeout:        config.DefaultWriteTimeout,
-}
+var (
+	DefaultWebSocketConfig = config.WebSocketConfig{
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       1000,
+		ReconnectionTimeout: 10 * time.Second,
+		WSS:                 URL,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+	}
+
+	// DefaultMarketConfig is the default market configuration for Gate.io.
+	DefaultMarketConfig = config.MarketConfig{
+		Name: Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTC_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETH_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				Ticker:       "ATOM_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOL_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIA_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"AVAX/USD": {
+				Ticker:       "AVAX_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"DYDX/USD": {
+				Ticker:       "DYDX_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETH_BTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+		},
+	}
+)

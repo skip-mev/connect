@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"time"
+
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
 type (

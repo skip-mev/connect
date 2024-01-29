@@ -97,8 +97,6 @@ func (h *WebsocketDataHandler) HandleMessage(
 		h.logger.Debug("received unknown message", zap.String("message", string(message)))
 		return resp, nil, fmt.Errorf("unknown message type %s", baseMessage.Event)
 	}
-
-	return resp, nil, nil
 }
 
 // CreateMessages is used to create an initial subscription message to send to the data provider.
