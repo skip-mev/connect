@@ -20,7 +20,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*Webs
 type WebsocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the OKX web socket API.
+	// config is the config for the Gate.io web socket API.
 	cfg config.ProviderConfig
 }
 
