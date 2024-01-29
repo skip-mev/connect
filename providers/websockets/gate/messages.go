@@ -16,7 +16,7 @@ type (
 	Channel string
 	// Event is a type alias for an event identifier.
 	Event string
-	// Status is a type alias for an status identifier.
+	// Status is a type alias for a status identifier.
 	Status string
 )
 
