@@ -255,6 +255,63 @@ production = false
           Quote = "USD"
 
 [[providers]]
+  name = "bitstamp"
+  [providers.api]
+    enabled = false
+    timeout = "0s"
+    interval = "0s"
+    max_queries = 0
+    atomic = false
+    url = ""
+    name = ""
+  [providers.web_socket]
+    enabled = true
+    max_buffer_size = 1024
+    reconnection_timeout = "10s"
+    wss = "wss://ws.bitstamp.net"
+    name = "bitstamp"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
+    ping_interval = "10s"
+  [providers.market_config]
+    name = "bitstamp"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "avaxusd"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "btcusd"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "dydxusd"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ethbtc"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ethusd"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "solusd"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
   name = "bybit"
   [providers.api]
     enabled = false

@@ -1,6 +1,9 @@
 package cryptodotcom
 
-import "github.com/skip-mev/slinky/oracle/config"
+import (
+	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+)
 
 const (
 	// URL is the URL used to connect to the Crypto.com websocket API. This can be found here
@@ -15,17 +18,62 @@ const (
 	URL_SANDBOX = "wss://uat-stream.3ona.co/exchange/v1/market" //nolint
 )
 
-// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
-var DefaultWebSocketConfig = config.WebSocketConfig{
-	Name:                Name,
-	Enabled:             true,
-	MaxBufferSize:       config.DefaultMaxBufferSize,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	WSS:                 URL_PROD,
-	ReadBufferSize:      config.DefaultReadBufferSize,
-	WriteBufferSize:     config.DefaultWriteBufferSize,
-	HandshakeTimeout:    config.DefaultHandshakeTimeout,
-	EnableCompression:   config.DefaultEnableCompression,
-	ReadTimeout:         config.DefaultReadTimeout,
-	WriteTimeout:        config.DefaultWriteTimeout,
-}
+var (
+	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
+	DefaultWebSocketConfig = config.WebSocketConfig{
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		WSS:                 URL_PROD,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+	}
+
+	// DefaultMarketConfig is the default market configuration for Crypto.com.
+	DefaultMarketConfig = config.MarketConfig{
+		Name: Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTCUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETHUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				Ticker:       "ATOMUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOLUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIAUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"AVAX/USD": {
+				Ticker:       "AVAXUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"DYDX/USD": {
+				Ticker:       "DYDXUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETH_BTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"OSMOSIS/USD": {
+				Ticker:       "OSMO_USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+		},
+	}
+)
