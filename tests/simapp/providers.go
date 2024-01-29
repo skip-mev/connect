@@ -29,6 +29,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -238,6 +239,8 @@ func webSocketProviderFromProviderConfig(
 			cfg.WebSocket,
 			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
 		)
+	case mexc.Name:
+		wsDataHandler, err = mexc.NewWebSocketDataHandler(logger, cfg)
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	default:
