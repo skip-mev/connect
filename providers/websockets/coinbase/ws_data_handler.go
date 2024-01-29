@@ -32,7 +32,7 @@ type WebSocketDataHandler struct {
 	sequence map[oracletypes.CurrencyPair]int64
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Crypto.com.
+// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Coinbase.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,

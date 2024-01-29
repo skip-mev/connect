@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // NOTE: All of the documentation for this file can be located on the Coinbase
@@ -16,16 +17,61 @@ const (
 	URL = "https://api.coinbase.com/v2/prices/%s/spot"
 )
 
-// DefaultAPIConfig is the default configuration for the Coinbase API.
-var DefaultAPIConfig = config.APIConfig{
-	Name:       Name,
-	Atomic:     false,
-	Enabled:    true,
-	Timeout:    500 * time.Millisecond,
-	Interval:   1 * time.Second,
-	MaxQueries: 5,
-	URL:        URL,
-}
+var (
+	// DefaultAPIConfig is the default configuration for the Coinbase API.
+	DefaultAPIConfig = config.APIConfig{
+		Name:       Name,
+		Atomic:     false,
+		Enabled:    true,
+		Timeout:    500 * time.Millisecond,
+		Interval:   1 * time.Second,
+		MaxQueries: 5,
+		URL:        URL,
+	}
+
+	// DefaultMarketConfig is the default market configuration for Coinbase.
+	DefaultMarketConfig = config.MarketConfig{
+		Name: Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTC-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETH-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				Ticker:       "ATOM-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOL-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIA-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"AVAX/USD": {
+				Ticker:       "AVAX-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"DYDX/USD": {
+				Ticker:       "DYDX-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETH-BTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"OSMOSIS/USD": {
+				Ticker:       "OSMO-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+		},
+	}
+)
 
 type (
 	// CoinBaseResponse is the expected response returned by the Coinbase API.

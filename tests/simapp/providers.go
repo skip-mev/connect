@@ -21,6 +21,7 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
+	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
@@ -200,6 +201,8 @@ func webSocketProviderFromProviderConfig(
 	switch cfg.Name {
 	case bitfinex.Name:
 		wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, cfg)
+	case bitstamp.Name:
+		wsDataHandler, err = bitstamp.NewWebSocketDataHandler(logger, cfg)
 	case bybit.Name:
 		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
 	case coinbasews.Name:
