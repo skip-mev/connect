@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // NOTE: All the documentation for this file can be located on the Binance github
@@ -51,6 +52,33 @@ var (
 		Interval:   1 * time.Second,
 		MaxQueries: 1,
 		URL:        URL,
+	}
+
+	// DefaultMarketConfig is the default market configuration for Binance.
+	DefaultMarketConfig = config.MarketConfig{
+		Name: Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTCUSDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETHUSDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				Ticker:       "ATOMUSDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOLUSDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETHBTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+		},
 	}
 )
 
