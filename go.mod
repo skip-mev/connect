@@ -51,7 +51,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20231212172506-995d672761c0
 	google.golang.org/grpc v1.61.0
 	google.golang.org/protobuf v1.32.0
-	mvdan.cc/gofumpt v0.5.0
+	mvdan.cc/gofumpt v0.6.0
 )
 
 require (
@@ -265,7 +265,7 @@ require (
 	github.com/quasilyte/stdinfo v0.0.0-20220114132959-f7386bf02567 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/rogpeppe/go-internal v1.11.0 // indirect
+	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/rs/zerolog v1.31.0 // indirect
 	github.com/ryancurrah/gomodguard v1.3.0 // indirect
@@ -324,7 +324,7 @@ require (
 	golang.org/x/term v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.16.0 // indirect
+	golang.org/x/tools v0.17.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.153.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect

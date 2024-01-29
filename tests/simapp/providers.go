@@ -26,6 +26,7 @@ import (
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 	"github.com/skip-mev/slinky/providers/websockets/gate"
+	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
@@ -212,6 +213,8 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
 	case gate.Name:
 		wsDataHandler, err = gate.NewWebSocketDataHandler(logger, cfg)
+	case huobi.Name:
+		wsDataHandler, err = huobi.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	case kucoin.Name:
