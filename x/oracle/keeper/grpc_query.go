@@ -55,7 +55,6 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	case *types.GetPriceRequest_CurrencyPairId:
 		// retrieve the currency pair from the stringified ID, and fail if incorrectly formatted
 		cp, err = types.CurrencyPairFromString(cpI.CurrencyPairId)
-
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %v", err)
 		}
@@ -107,7 +106,6 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
 	for _, cid := range req.CurrencyPairIds {
 		cp, err = types.CurrencyPairFromString(cid)
-
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %v", err)
 		}
