@@ -136,14 +136,14 @@ func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertyp
 			for id, result := range resolved {
 				p.logger.Debug(
 					"successfully fetched data",
-					zap.Any("id", id),
+					zap.String("id", id.String()),
 					zap.String("result", result.String()),
 				)
 
 				p.updateData(id, result)
 
 				// Update the metrics.
-				strID := strings.ToLower(fmt.Sprint(id))
+				strID := strings.ToLower(id.String())
 				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Success, p.Type())
 				p.metrics.AddProviderResponse(p.name, providermetrics.Success, p.Type())
 				p.metrics.LastUpdated(p.name, strID, p.Type())
@@ -158,7 +158,7 @@ func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertyp
 				)
 
 				// Update the metrics.
-				strID := strings.ToLower(fmt.Sprint(id))
+				strID := strings.ToLower(id.String())
 				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, p.Type())
 				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, p.Type())
 			}
