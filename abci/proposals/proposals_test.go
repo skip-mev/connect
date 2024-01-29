@@ -1392,4 +1392,3 @@ func (s *ProposalsTestSuite) createRequestProcessProposal(
 		Height: height,
 	}
 }
-
