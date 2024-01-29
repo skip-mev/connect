@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -200,7 +201,7 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 	timeFilteredPrices := make(map[oracletypes.CurrencyPair]*big.Int)
 	for pair, result := range prices {
 		// update price metric
-		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), pair.String(), float64(result.Value.Int64()))
+		o.metrics.UpdatePrice(provider.Name(), string(provider.Type()), strings.ToLower(pair.String()), float64(result.Value.Int64()))
 
 		// If the price is older than the update interval, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
@@ -229,7 +230,8 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 	o.logger.Info("provider returned prices",
 		zap.String("provider", provider.Name()),
 		zap.String("data handler type", string(provider.Type())),
-		zap.Int("prices", len(prices)))
+		zap.Int("prices", len(prices)),
+	)
 	o.priceAggregator.SetProviderData(provider.Name(), timeFilteredPrices)
 }
 
@@ -256,7 +258,7 @@ func (o *OracleImpl) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
 	// set metrics in background
 	go func() {
 		for cp, price := range prices {
-			o.metrics.UpdateAggregatePrice(cp.String(), float64(price.Int64()))
+			o.metrics.UpdateAggregatePrice(strings.ToLower(cp.String()), float64(price.Int64()))
 		}
 	}()
 

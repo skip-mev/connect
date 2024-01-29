@@ -35,7 +35,7 @@ func (cp *CurrencyPair) ValidateBasic() error {
 }
 
 // String returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
-func (cp *CurrencyPair) String() string {
+func (cp CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
