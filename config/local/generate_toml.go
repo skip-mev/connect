@@ -23,6 +23,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -127,6 +128,11 @@ var LocalConfig = config.OracleConfig{
 			WebSocket: kucoin.DefaultWebSocketConfig,
 			API:       kucoin.DefaultAPIConfig,
 			Market:    kucoin.DefaultMarketConfig,
+		},
+		{
+			Name:      mexc.Name,
+			WebSocket: mexc.DefaultWebSocketConfig,
+			Market:    mexc.DefaultMarketConfig,
 		},
 		{
 			Name:      okx.Name,
