@@ -30,7 +30,7 @@ The slinky repository is composed of the following core packages:
 
 ## Usage
 
-### Running the Oracle Side Car
+### Running the Oracle Sidecar
 
 To run the oracle, run the following command:
 
@@ -50,12 +50,6 @@ To see all network metrics, open a new terminal and run the following command an
 $ make run-prom-client
 ```
 
-To add a new provider, update the local config in [config/local/generate_toml.go](./config/local/generate_toml.go) and then run the following command:
-
-```bash
-$ make update-local-config
-```
-
 ### Running a Local Blockchain
 
 To run a local blockchain, first start the oracle server and then run the following command (in a separate window):
@@ -69,6 +63,7 @@ To see the prices that are being written to the blockchain, run the following co
 ```bash
 ./slinkyd q oracle price BITCOIN USD
 ```
+
 Result: 
 
 ```bash
