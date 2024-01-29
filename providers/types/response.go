@@ -8,6 +8,7 @@ import (
 // ResponseKey is a type restriction interface for the key of a GetResponse.
 type ResponseKey interface {
 	comparable
+	fmt.Stringer
 }
 
 // ResponseValue is a type restriction interface for the value of a GetResponse.
