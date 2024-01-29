@@ -150,6 +150,10 @@ test-integration: docker-build
 	@echo "Running integration tests..."
 	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race -timeout 30m
 
+test-petri-integ: docker-build
+	@echo "Running petri integration tests..."
+	@cd ./tests/petri && go mod tidy &&  go test -p 1 -v -race -timeout 30m
+
 test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
 
@@ -161,7 +165,7 @@ test-cover: tidy
 	@sed -i '/.proto/d' $(COVER_FILE)
 	@sed -i '/.pb.gw.go/d' $(COVER_FILE)
 
-.PHONY: test test-e2e
+.PHONY: test test-e2e test-petri-integ
 
 ###############################################################################
 ###                                Protobuf                                 ###

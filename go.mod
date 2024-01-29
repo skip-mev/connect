@@ -2,6 +2,8 @@ module github.com/skip-mev/slinky
 
 go 1.21
 
+replace github.com/cosmos/cosmos-sdk => github.com/Eric-Warehime/cosmos-sdk v0.50.3-0.20240129022645-0cc581697f7e
+
 require (
 	cosmossdk.io/api v0.7.2
 	cosmossdk.io/client/v2 v2.0.0-20230719143845-dff6b0e26aa4
@@ -20,7 +22,7 @@ require (
 	github.com/alecthomas/assert/v2 v2.5.0
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
-	github.com/cometbft/cometbft v0.38.2
+	github.com/cometbft/cometbft v0.38.5
 	github.com/cosmos/cosmos-db v1.0.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.50.3
