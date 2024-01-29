@@ -15,6 +15,7 @@ The current set of supported providers are:
 * [ByBit](./bybit/README.md) - ByBit is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. ByBit is a **primary data source** for the oracle.
 * [Coinbase](./coinbase/README.md) - Coinbase is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Coinbase is a **primary data source** for the oracle.
 * [Crypto.com](./cryptodotcom/README.md) - Crypto.com is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Crypto.com is a **primary data source** for the oracle.   
+* [Gate](./gate/README.md) - Gate.io is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Gate.io is a **primary data source** for the oracle.
 * [Kraken](./kraken/README.md) - Kraken is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Kraken is a **primary data source** for the oracle.
 * [Huobi](./huobi/README.md) - Huobi is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Huobi is a **primary data source** for the oracle.
 * [KuCoin](./kucoin/README.md) - KuCoin is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. KuCoin is a **primary data source** for the oracle.
