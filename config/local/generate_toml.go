@@ -20,6 +20,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
@@ -112,6 +113,11 @@ var LocalConfig = config.OracleConfig{
 			Name:      cryptodotcom.Name,
 			WebSocket: cryptodotcom.DefaultWebSocketConfig,
 			Market:    cryptodotcom.DefaultMarketConfig,
+		},
+		{
+			Name:      gate.Name,
+			WebSocket: gate.DefaultWebSocketConfig,
+			Market:    gate.DefaultMarketConfig,
 		},
 		{
 			Name:      huobi.Name,
