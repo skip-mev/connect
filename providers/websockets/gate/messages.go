@@ -80,6 +80,16 @@ type RequestResult struct {
 }
 
 // SubscribeRequest is a subscription request sent to the Gate.io websocket API.
+//
+// Ex.
+//
+//	{
+//	 "time": 1611541000,
+//	 "id": 123456789,
+//	 "channel": "spot.orders",
+//	 "event": "subscribe",
+//	 "payload": ["BTC_USDT", "GT_USDT"],
+//	}
 type SubscribeRequest struct {
 	BaseMessage
 	// ID is the optional ID for the message.
@@ -108,6 +118,19 @@ func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, 
 }
 
 // SubscribeResponse is a subscription response sent from the Gate.io websocket API.
+//
+// Ex.
+//
+//	{
+//	 "time": 1611541000,
+//	 "time_ms": 1611541000001,
+//	 "channel": "spot.orders",
+//	 "event": "subscribe",
+//	 "error": null,
+//	 "result": {
+//	   "status": "success"
+//	 }
+//	}
 type SubscribeResponse struct {
 	BaseMessage
 	// ID is the optional ID for the message.
@@ -119,6 +142,26 @@ type SubscribeResponse struct {
 }
 
 // TickerStream is the data stream returned for a ticker subscription.
+//
+// Ex.
+//
+//	{
+//	 "time": 1669107766,
+//	 "time_ms": 1669107766406,
+//	 "channel": "spot.tickers",
+//	 "event": "update",
+//	 "result": {
+//	   "currency_pair": "BTC_USDT",
+//	   "last": "15743.4",
+//	   "lowest_ask": "15744.4",
+//	   "highest_bid": "15743.5",
+//	   "change_percentage": "-1.8254",
+//	   "base_volume": "9110.473081735",
+//	   "quote_volume": "145082083.2535",
+//	   "high_24h": "16280.9",
+//	   "low_24h": "15468.5"
+//	 }
+//	}
 type TickerStream struct {
 	BaseMessage
 	// Result is the result body of the data stream.
