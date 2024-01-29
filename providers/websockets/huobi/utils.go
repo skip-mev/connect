@@ -1,4 +1,4 @@
-package cryptodotcom
+package huobi
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
@@ -6,26 +6,26 @@ import (
 )
 
 const (
-	// URL is the URL used to connect to the Crypto.com websocket API. This can be found here
-	// https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html?javascript#websocket-root-endpoints
-	// Note that Crypto.com offers a sandbox and production environment.
+	// Huobi provides the following URLS fro its Websocket API. More info can be found in the documentation
+	// here: https://huobiapi.github.io/docs/spot/v1/en/#websocket-market-data.
 
-	// URL_PROD is the URL used to connect to the Crypto.com production websocket API.
-	URL_PROD = "wss://stream.crypto.com/exchange/v1/market" //nolint
+	// URL is the public Huobi Websocket URL.
+	URL = "wss://api.huobi.pro/ws"
 
-	// URL_SANDBOX is the URL used to connect to the Crypto.com sandbox websocket API. This will
-	// return static prices.
-	URL_SANDBOX = "wss://uat-stream.3ona.co/exchange/v1/market" //nolint
+	// URLAws is the public Huobi Websocket URL hosted on AWS.
+	URLAws = "wss://api-aws.huobi.pro/ws"
+
+	Name = "huobi"
 )
 
 var (
-	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
+	// DefaultWebSocketConfig is the default configuration for the Huobi Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
 		Name:                Name,
 		Enabled:             true,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
+		MaxBufferSize:       1000,
 		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URL_PROD,
+		WSS:                 URL,
 		ReadBufferSize:      config.DefaultReadBufferSize,
 		WriteBufferSize:     config.DefaultWriteBufferSize,
 		HandshakeTimeout:    config.DefaultHandshakeTimeout,
@@ -34,45 +34,41 @@ var (
 		WriteTimeout:        config.DefaultWriteTimeout,
 	}
 
-	// DefaultMarketConfig is the default market configuration for Crypto.com.
+	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"BITCOIN/USD": {
-				Ticker:       "BTCUSD-PERP",
+				Ticker:       "btcusdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETHUSD-PERP",
+				Ticker:       "ethusdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			"ATOM/USD": {
-				Ticker:       "ATOMUSD-PERP",
+				Ticker:       "atomusdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			},
 			"SOLANA/USD": {
-				Ticker:       "SOLUSD-PERP",
+				Ticker:       "solusdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
 			},
 			"CELESTIA/USD": {
-				Ticker:       "TIAUSD-PERP",
+				Ticker:       "tiausdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
 			},
 			"AVAX/USD": {
-				Ticker:       "AVAXUSD-PERP",
+				Ticker:       "avaxusdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
 			},
 			"DYDX/USD": {
-				Ticker:       "DYDXUSD-PERP",
+				Ticker:       "dydxusdt",
 				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETH_BTC",
+				Ticker:       "ethbtc",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"OSMOSIS/USD": {
-				Ticker:       "OSMO_USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
 			},
 		},
 	}

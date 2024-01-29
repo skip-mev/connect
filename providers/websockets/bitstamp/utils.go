@@ -1,64 +1,60 @@
-package bitfinex
+package bitstamp
 
 import (
+	"time"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
-	// Name is the name of the BitFinex provider.
-	Name = "bitfinex"
-
-	// URLProd is the public BitFinex Websocket URL.
-	URLProd = "wss://api-pub.bitfinex.com/ws/2"
+	// WSS is the bitstamp websocket address.
+	WSS = "wss://ws.bitstamp.net"
 )
 
 var (
-	// DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
+	// DefaultWebSocketConfig returns the default websocket config for bitstamp.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
 		Enabled:             true,
-		MaxBufferSize:       1000,
+		Name:                Name,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
 		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URLProd,
+		WSS:                 WSS,
 		ReadBufferSize:      config.DefaultReadBufferSize,
 		WriteBufferSize:     config.DefaultWriteBufferSize,
 		HandshakeTimeout:    config.DefaultHandshakeTimeout,
 		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
+		ReadTimeout:         config.DefaultReadTimeout,
+		PingInterval:        10 * time.Second,
 	}
 
-	// DefaultMarketConfig is the default market configuration for BitFinex.
+	// DefaultMarketConfig returns the default market config for bitstamp.
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"BITCOIN/USD": {
-				Ticker:       "BTCUSD",
+				Ticker:       "btcusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETHUSD",
+				Ticker:       "ethusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			"SOLANA/USD": {
-				Ticker:       "SOLUSD",
+				Ticker:       "solusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
 			},
-			"CELESTIA/USD": {
-				Ticker:       "TIAUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-			},
 			"AVAX/USD": {
-				Ticker:       "AVAXUSD",
+				Ticker:       "avaxusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
 			},
 			"DYDX/USD": {
-				Ticker:       "DYDXUSD",
+				Ticker:       "dydxusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
+				Ticker:       "ethbtc",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 		},
