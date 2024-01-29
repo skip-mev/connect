@@ -13,6 +13,9 @@ const (
 	ABCIMethodStatusLabel = "abci_method_status"
 	MessageTypeLabel      = "message_type"
 	ValidatorLabel        = "validator"
+
+	// helpful constants
+	notImplemented = "not_implemented"
 )
 
 // StatusFromError returns a Labeller that can be used to label metrics based on the error. This
@@ -40,7 +43,7 @@ func (m MessageType) String() string {
 	case VoteExtension:
 		return "vote_extension"
 	default:
-		return "not_implemented"
+		return notImplemented
 	}
 }
 
@@ -69,7 +72,7 @@ func (a ABCIMethod) String() string {
 	case PreBlock:
 		return "pre_blocker"
 	default:
-		return "not_implemented"
+		return notImplemented
 	}
 }
 
@@ -92,7 +95,7 @@ func (rs ReportStatus) String() string {
 	case WithPrice:
 		return "with_price"
 	default:
-		return "not_implemented"
+		return notImplemented
 	}
 }
 

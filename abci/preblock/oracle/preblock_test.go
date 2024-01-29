@@ -13,13 +13,12 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	cmtabci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
-	"github.com/skip-mev/slinky/abci/strategies/codec"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmock "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	currencypairmock "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
@@ -31,12 +30,9 @@ import (
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
-var (
-	maxUint256, _ = new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10)
-)
+var maxUint256, _ = new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10)
 
 type PreBlockTestSuite struct {
 	suite.Suite
@@ -218,8 +214,8 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 		s.ctx = s.ctx.WithExecMode(sdk.ExecModePrepareProposal)
 		// ves are not enabled
 		s.ctx = s.ctx.WithConsensusParams(
-			cmtproto.ConsensusParams{
-				Abci: &cmtproto.ABCIParams{
+			cometproto.ConsensusParams{
+				Abci: &cometproto.ABCIParams{
 					VoteExtensionsEnableHeight: 2,
 				},
 			},
@@ -234,8 +230,8 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 		s.ctx = s.ctx.WithExecMode(sdk.ExecModeFinalize)
 		// ves are not enabled
 		s.ctx = s.ctx.WithConsensusParams(
-			cmtproto.ConsensusParams{
-				Abci: &cmtproto.ABCIParams{
+			cometproto.ConsensusParams{
+				Abci: &cometproto.ABCIParams{
 					VoteExtensionsEnableHeight: 2,
 				},
 			},
@@ -373,7 +369,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 			nil,
 			nil,
 		)
-		
+
 		// change exec mode to not be finalize
 		s.ctx = s.ctx.WithExecMode(sdk.ExecModeVoteExtension)
 
@@ -441,8 +437,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 			mockOracleKeeper,
 			metrics,
 			currencyPairStrategyMock,
-			codec.NewDefaultVoteExtensionCodec(),
-			codec.NewDefaultExtendedCommitCodec(),
+			compression.NewDefaultVoteExtensionCodec(),
+			compression.NewDefaultExtendedCommitCodec(),
 		)
 
 		// enable ves + set exec mode
@@ -466,17 +462,17 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		val1Vote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{
 			0: big.NewInt(1).Bytes(),
 			1: maxUint256.Bytes(),
-		}, codec.NewDefaultVoteExtensionCodec())
+		}, compression.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		val2Vote, err := testutils.CreateExtendedVoteInfo(val2, map[uint64][]byte{
 			0: big.NewInt(2).Bytes(),
-		}, codec.NewDefaultVoteExtensionCodec())
+		}, compression.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
-		_, extCommitBz, err := testutils.CreateExtendedCommitInfo([]cmtabci.ExtendedVoteInfo{val1Vote, val2Vote}, codec.NewDefaultExtendedCommitCodec())
+		_, extCommitBz, err := testutils.CreateExtendedCommitInfo([]cmtabci.ExtendedVoteInfo{val1Vote, val2Vote}, compression.NewDefaultExtendedCommitCodec())
 		s.Require().NoError(err)
-	
+
 		// expect metrics calls
 		metrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
 		metrics.On("AddABCIRequest", servicemetrics.PreBlock, servicemetrics.Success{}).Return()
@@ -485,7 +481,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics.On("ObservePriceForTicker", btcUsd, float)
 		float, _ = maxUint256.Float64()
 		metrics.On("ObservePriceForTicker", mogUsd, float)
-		
+
 		// expect per validator metrics
 		// val1
 		metrics.On("AddValidatorReportForTicker", val1.String(), btcUsd, servicemetrics.WithPrice)
