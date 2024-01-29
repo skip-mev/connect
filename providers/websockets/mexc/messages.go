@@ -2,6 +2,7 @@ package mexc
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
@@ -89,11 +90,14 @@ type SubscriptionRequestMessage struct {
 
 // NewSubscribeRequestMessage returns a new SubscriptionRequestMessage.
 func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncodedMessage, error) {
+	if len(instruments) == 0 {
+		return nil, fmt.Errorf("cannot subscribe to 0 instruments")
+	}
+
 	bz, err := json.Marshal(SubscriptionRequestMessage{
 		Method: string(SubscriptionMethod),
 		Params: instruments,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +137,6 @@ func NewPingRequestMessage() ([]handlers.WebsocketEncodedMessage, error) {
 			Message: string(PingMethod),
 		},
 	})
-
 	if err != nil {
 		return nil, err
 	}

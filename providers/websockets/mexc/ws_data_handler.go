@@ -85,17 +85,16 @@ func (h *WebSocketDataHandler) HandleMessage(
 	}
 
 	// Otherwise, we assume it is a subscription or pong message.
-	method := msg.Message
 	switch {
-	case strings.HasPrefix(method, string(MiniTickerChannel)):
-		h.logger.Debug("subscribed to ticker channel", zap.String("instrument", method))
+	case strings.HasPrefix(msg.Message, string(MiniTickerChannel)):
+		h.logger.Debug("subscribed to ticker channel", zap.String("instruments", msg.Message))
 		return resp, nil, nil
-	case MethodType(method) == PongMethod:
+	case MethodType(msg.Message) == PongMethod:
 		h.logger.Debug("received pong message")
 		return resp, nil, nil
 	default:
-		h.logger.Debug("received unknown message type", zap.String("type", method))
-		return resp, nil, fmt.Errorf("invalid message type %s", method)
+		h.logger.Debug("received unknown message type", zap.String("type", msg.Message))
+		return resp, nil, fmt.Errorf("invalid message type %s", msg.Message)
 	}
 }
 
@@ -110,7 +109,6 @@ func (h *WebSocketDataHandler) CreateMessages(
 	}
 
 	instruments := make([]string, 0)
-
 	for _, cp := range cps {
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {

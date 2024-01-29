@@ -49,6 +49,22 @@ var (
 				Ticker:       "ETHUSDT",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
+			"ATOM/USD": {
+				Ticker:       "ATOMUSDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOLUSDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"AVAX/USD": {
+				Ticker:       "AVAXUSDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETHBTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
 		},
 	}
 )
