@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -20,29 +21,74 @@ const (
 	URL = "https://api.kucoin.com"
 )
 
-// DefaultWebSocketConfig defines the default websocket config for Kucoin.
-var DefaultWebSocketConfig = config.WebSocketConfig{
-	Enabled:             true,
-	MaxBufferSize:       config.DefaultMaxBufferSize,
-	ReconnectionTimeout: config.DefaultReconnectionTimeout,
-	WSS:                 WSS, // Note that this may change as the URL is dynamically generated.
-	Name:                Name,
-	ReadBufferSize:      config.DefaultReadBufferSize,
-	WriteBufferSize:     config.DefaultWriteBufferSize,
-	HandshakeTimeout:    config.DefaultHandshakeTimeout,
-	EnableCompression:   config.DefaultEnableCompression,
-	ReadTimeout:         config.DefaultReadTimeout,
-	WriteTimeout:        config.DefaultWriteTimeout,
-	PingInterval:        10 * time.Second,
-}
+var (
+	// DefaultWebSocketConfig defines the default websocket config for Kucoin.
+	DefaultWebSocketConfig = config.WebSocketConfig{
+		Enabled:             true,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		WSS:                 WSS, // Note that this may change as the URL is dynamically generated.
+		Name:                Name,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+		PingInterval:        10 * time.Second,
+	}
 
-// DefaultAPIConfig defines the default API config for Kucoin. This is
-// only utilized on the initial connection to the websocket feed.
-var DefaultAPIConfig = config.APIConfig{
-	Enabled:    false,
-	Timeout:    5 * time.Second, // Kucoin recommends a timeout of 5 seconds.
-	Interval:   1 * time.Minute, // This is not used.
-	MaxQueries: 1,               // This is not used.
-	URL:        URL,
-	Name:       Name,
-}
+	// DefaultAPIConfig defines the default API config for Kucoin. This is
+	// only utilized on the initial connection to the websocket feed.
+	DefaultAPIConfig = config.APIConfig{
+		Enabled:    false,
+		Timeout:    5 * time.Second, // Kucoin recommends a timeout of 5 seconds.
+		Interval:   1 * time.Minute, // This is not used.
+		MaxQueries: 1,               // This is not used.
+		URL:        URL,
+		Name:       Name,
+	}
+
+	// DefaultMarketConfig defines the default market config for Kucoin.
+	DefaultMarketConfig = config.MarketConfig{
+		Name: Name,
+		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+			"BITCOIN/USD": {
+				Ticker:       "BTC-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETH-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				Ticker:       "ATOM-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOL-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIA-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"AVAX/USD": {
+				Ticker:       "AVAX-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"DYDX/USD": {
+				Ticker:       "DYDX-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETH-BTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"OSMOSIS/USD": {
+				Ticker:       "OSMO-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+		},
+	}
+)
