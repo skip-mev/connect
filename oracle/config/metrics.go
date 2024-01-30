@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"net/url"
 )
 
 // MetricsConfig is the metrics configurations for the oracle. This configuration object specifically
@@ -23,8 +22,8 @@ func (c *MetricsConfig) ValidateBasic() error {
 		return nil
 	}
 
-	if _, err := url.ParseRequestURI(c.PrometheusServerAddress); err != nil {
-		return fmt.Errorf("must supply a valid prometheus server address if metrics are enabled: %w", err)
+	if c.PrometheusServerAddress == "" {
+		return fmt.Errorf("must supply a non-empty prometheus server address if metrics are enabled")
 	}
 
 	return nil

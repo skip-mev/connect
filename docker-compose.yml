@@ -1,18 +1,27 @@
 version: '3.7'
 
+networks:
+  oracle_network:
+    driver: bridge
+
 services:
   oracle:
     build:
       context: .
       dockerfile: contrib/images/slinky.e2e.oracle.Dockerfile
+    volumes:
+      - ./config/local/oracle.toml:/oracle/config.toml
     ports:
       - "8080:8080"
       - "8000:8000"
+    networks:
+      - oracle_network
+
   prometheus:
-    links:
-      - "oracle:oracle"
     image: prom/prometheus
     ports:
       - "9090:9090"
     volumes:
       - ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - oracle_network
