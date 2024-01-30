@@ -12,4 +12,4 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-      - targets: ["host.docker.internal:8000"]
+      - targets: ["oracle:8000"]

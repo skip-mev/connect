@@ -50,7 +50,7 @@ var LocalConfig = config.OracleConfig{
 		oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 		oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
 	},
-	Production: false,
+	Production: true,
 	// -----------------------------------------------------------	//
 	// ----------------------Metrics Config-----------------------	//
 	// -----------------------------------------------------------	//

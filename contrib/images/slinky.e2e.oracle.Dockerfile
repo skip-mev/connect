@@ -11,7 +11,7 @@ RUN make build
 
 FROM ubuntu:rolling
 EXPOSE 8080
-EXPOSE 8081
+EXPOSE 8000
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
 COPY --from=builder /src/slinky/config/local/oracle.toml /oracle/config.toml

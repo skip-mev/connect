@@ -36,7 +36,16 @@ run-prom-client:
 		prom/prometheus
 
 update-local-config:
-	go generate ${CONFIG_DIR}
+	@echo "Updating local config..."
+	@go generate ${CONFIG_DIR}
+
+start-oracle: update-local-config
+	@echo "Starting oracle..."
+	@docker-compose -f docker-compose.yml up -d
+
+stop-oracle:
+	@echo "Stopping oracle..."
+	@docker-compose -f docker-compose.yml down
 
 install:
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
