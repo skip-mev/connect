@@ -58,7 +58,7 @@ func (h *APIHandler) CreateURL(
 		return "", err
 	}
 
-	// This creates the endpoint that needs to be requested regardless of whether or not
+	// This creates the endpoint that needs to be requested regardless of whether
 	// an API key is set.
 	pricesEndPoint := fmt.Sprintf(PairPriceEndpoint, bases, quotes)
 	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)

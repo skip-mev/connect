@@ -9,7 +9,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// NOTE: All documentation for this file can be located on the Binance github
+// NOTE: All documentation for this file can be located on the Binance GitHub
 // API documentation: https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#symbol-price-ticker. This
 // API does not require a subscription to use (i.e. No API key is required).
 
