@@ -30,38 +30,26 @@ The slinky repository is composed of the following core packages:
 
 ## Usage
 
-### Running the Oracle Sidecar
-
-To run the oracle, run the following command. Navigate to http://localhost:9090 to see all network traffic and oracle metrics.
+To run the oracle, run the following command.
 
 ```bash
 $ make start-oracle
 ```
 
-To check the current aggregated prices, run the following command:
+This will:
+
+1. Start a blockchain with a single validator node. It may take a few minutes to build and reach a point where vote extensions can be submitted.
+2. Start the oracle side-car that will aggregate prices from external data providers and broadcast them to the network. To check the current aggregated prices on the side-car, you can run `curl localhost:8080/slinky/oracle/v1/prices`.
+3. Host a prometheus instance that will scrape metrics from the oracle and side-car. Navigate to http://localhost:9090 to see all network traffic and oracle metrics.
+
+After a few minutes, run the following commands to see the prices written to the blockchain:
 
 ```bash
-$ curl localhost:8080/slinky/oracle/v1/prices
-```
+# access the blockchain container
+$ docker exec -it slinky-blockchain-1 bash
 
-To stop the oracle, run the following command:
-
-```bash
-$ make stop-oracle
-```
-
-### Running a Local Blockchain
-
-To run a local blockchain, first start the oracle server and then run the following command (in a separate window):
-
-```bash
-$ make build-and-start-app
-```
-
-To see the prices that are being written to the blockchain, run the following command (in a separate window) where you have the slinky binary built (e.g. `./slinky/build/slinkyd`):
-
-```bash
-./slinkyd q oracle price BITCOIN USD
+# query the price of bitcoin in USD on the node
+$ (slinky-blockchain-1) ./build/slinkyd q oracle price BITCOIN USD
 ```
 
 Result: 
@@ -74,6 +62,12 @@ price:
   block_height: "46"
   block_timestamp: "2024-01-29T01:43:48.735542Z"
   price: "4221100000000"
+```
+
+To stop the oracle, run the following command:
+
+```bash
+$ make stop-oracle
 ```
 
 ## Metrics
