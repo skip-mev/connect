@@ -40,11 +40,11 @@ update-local-config:
 	@go generate ${CONFIG_DIR}
 
 start-oracle: update-local-config
-	@echo "Starting oracle..."
+	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@docker-compose -f docker-compose.yml up -d
 
 stop-oracle:
-	@echo "Stopping oracle..."
+	@echo "Stopping network..."
 	@docker-compose -f docker-compose.yml down
 
 install:
