@@ -13,11 +13,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the OKX provider.
-	Name = "okx"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)
 
 // WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to
@@ -62,8 +57,8 @@ func NewWebSocketDataHandler(
 //     OKX web socket API.
 //
 // Heartbeat messages are NOT sent by the OKX web socket. The connection is only closed
-// iff no data is received within a 30 second interval or if all of the subscriptions
-// fail. In the case where no data is received within a 30 second interval, the OKX
+// iff no data is received within a 30-second interval or if all subscriptions
+// fail. In the case where no data is received within a 30-second interval, the OKX
 // will be restarted after the configured restart interval.
 func (h *WebsocketDataHandler) HandleMessage(
 	message []byte,

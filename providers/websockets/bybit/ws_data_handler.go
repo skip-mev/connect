@@ -14,11 +14,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the ByBit provider.
-	Name = "bybit"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)
 
 // WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to

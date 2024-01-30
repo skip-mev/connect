@@ -13,11 +13,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the exchange.
-	Name = "coinbase"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
@@ -58,7 +53,7 @@ func NewWebSocketDataHandler(
 
 // HandleMessage is used to handle a message received from the data provider. The Coinbase web
 // socket expects the client to send a subscribe message within 5 seconds of the initial connection.
-// Otherwise the connection will be closed. There are two types of messages that can be received
+// Otherwise, the connection will be closed. There are two types of messages that can be received
 // from the Coinbase web socket API:
 //
 //  1. SubscriptionsMessage: This is sent by the Coinbase web socket API after a subscribe message

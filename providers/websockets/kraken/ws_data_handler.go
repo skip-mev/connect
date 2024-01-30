@@ -13,11 +13,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the Kraken provider.
-	Name = "kraken"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to

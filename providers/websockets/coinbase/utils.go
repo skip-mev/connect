@@ -11,6 +11,9 @@ const (
 	// The following URLs are used for the Coinbase Websocket feed. These can be found
 	// in the Coinbase documentation at https://docs.cloud.coinbase.com/exchange/docs/websocket-overview.
 
+	// Name is the name of the Coinbase provider.
+	Name = "coinbase"
+
 	// URL is the production Coinbase Websocket URL.
 	URL = "wss://ws-feed.exchange.coinbase.com"
 

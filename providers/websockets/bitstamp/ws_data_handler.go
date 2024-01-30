@@ -13,11 +13,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the exchange.
-	Name = "bitstamp"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
@@ -88,12 +83,12 @@ func (h *WebSocketDataHandler) HandleMessage(
 	case SubscriptionSucceededEvent:
 		h.logger.Debug("received subscription succeeded event")
 
-		var subcriptionMsg SubscriptionResponseMessage
-		if err := json.Unmarshal(message, &subcriptionMsg); err != nil {
+		var subscriptionMsg SubscriptionResponseMessage
+		if err := json.Unmarshal(message, &subscriptionMsg); err != nil {
 			return resp, nil, fmt.Errorf("failed to unmarshal subscription message %s", err)
 		}
 
-		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subcriptionMsg.Channel))
+		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subscriptionMsg.Channel))
 		return resp, nil, nil
 	case TradeEvent:
 		h.logger.Debug("received trade event")

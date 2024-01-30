@@ -52,7 +52,7 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 			return nil, fmt.Errorf("failed to unmarshal subscription status response message: %s", err)
 		}
 
-		// If the subscription request was successful, return nil. Otherwise we will attempt to
+		// If the subscription request was successful, return nil. Otherwise, we will attempt to
 		// resubscribe to the market.
 		switch status := Status(resp.Status); status {
 		case SubscribedStatus:

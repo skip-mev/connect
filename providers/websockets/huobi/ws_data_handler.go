@@ -75,7 +75,10 @@ func (h *WebsocketDataHandler) HandleMessage(
 		h.logger.Error("error creating gzip reader", zap.Error(err))
 		return resp, nil, err
 	}
-	defer reader.Close()
+	defer func(reader *gzip.Reader) {
+		closeErr := reader.Close()
+		err = fmt.Errorf("error closing reader: %w. other errors: %w", closeErr, err)
+	}(reader)
 
 	var uncompressed bytes.Buffer
 	_, err = io.Copy(&uncompressed, reader)

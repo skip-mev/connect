@@ -9,13 +9,13 @@ import (
 )
 
 type (
-	// Event is the event type of a message sent over the Bitfinex websocket API.
+	// Event is the event type of message sent over the BitFinex websocket API.
 	Event string
 
-	// Channel is the channel of a message sent over the Bitfinex websocket API.
+	// Channel is the channel of a message sent over the BitFinex websocket API.
 	Channel string
 
-	// ErrorCode is a type alias for an error code sent from the Bitfinex websocket API.
+	// ErrorCode is a type alias for an error code sent from the BitFinex websocket API.
 	ErrorCode int64
 )
 
