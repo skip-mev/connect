@@ -16,17 +16,19 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URLProd,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
+		Name:                          Name,
+		Enabled:                       true,
+		MaxBufferSize:                 1000,
+		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+		WSS:                           URLProd,
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		PingInterval:                  config.DefaultPingInterval,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.

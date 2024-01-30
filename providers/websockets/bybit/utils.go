@@ -17,23 +17,27 @@ const (
 
 	// URLTest is the public testnet ByBit Websocket URL.
 	URLTest = "wss://stream-testnet.bybit.com/v5/public/spot"
+
+	// DefaultPingInterval is the default ping interval for the ByBit websocket.
+	DefaultPingInterval = 15 * time.Second
 )
 
 var (
 	// DefaultWebSocketConfig is the default configuration for the ByBit Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URLProd,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
-		PingInterval:        15 * time.Second,
+		Name:                          Name,
+		Enabled:                       true,
+		MaxBufferSize:                 1000,
+		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+		WSS:                           URLProd,
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		PingInterval:                  DefaultPingInterval,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for ByBit.
