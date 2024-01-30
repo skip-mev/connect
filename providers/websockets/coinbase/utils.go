@@ -22,7 +22,7 @@ const (
 )
 
 const (
-	// The following web socket configuration values were taken from the Coinbase documentation
+	// The following websocket configuration values were taken from the Coinbase documentation
 	// at https://docs.cloud.coinbase.com/exchange/docs/websocket-overview.
 
 	// DefaultEnabledCompression is the default enabled compression for the Coinbase Websocket.

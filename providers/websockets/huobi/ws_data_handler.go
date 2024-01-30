@@ -24,7 +24,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*Webs
 type WebsocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Huobi web socket API.
+	// config is the config for the Huobi websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -39,7 +39,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -58,7 +58,7 @@ func NewWebSocketDataHandler(
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
 //  2. Ticker response message. This is sent when a ticker update is received from the
-//     Huobi web socket API.
+//     Huobi websocket API.
 //  3. Heartbeat ping message.
 func (h *WebsocketDataHandler) HandleMessage(
 	message []byte,

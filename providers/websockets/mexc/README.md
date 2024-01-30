@@ -2,7 +2,7 @@
 
 ## Overview
 
-The MEXC provider is a web socket provider that fetches data from the MEXC exchange API. All documentation for the web socket can be found [here](https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams).
+The MEXC provider is a websocket provider that fetches data from the MEXC exchange API. All documentation for the websocket can be found [here](https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams).
 
 
 ## Considerations

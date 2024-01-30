@@ -11,7 +11,7 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// parseTickerResponseMessage parses a price update received from the MEXC web socket
+// parseTickerResponseMessage parses a price update received from the MEXC websocket
 // and returns a GetResponse.
 func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	msg TickerResponseMessage,

@@ -234,7 +234,7 @@ func webSocketProviderFromProviderConfig(
 			return nil, err
 		}
 
-		// Create the KuCoin web socket connection handler.
+		// Create the KuCoin websocket connection handler.
 		connHandler, err = wshandlers.NewWebSocketHandlerImpl(
 			cfg.WebSocket,
 			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
@@ -258,7 +258,7 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	// Create the web socket query handler which encapsulates all fetching and parsing logic.
+	// Create the websocket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,

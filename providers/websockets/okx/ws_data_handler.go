@@ -20,7 +20,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*Webs
 type WebsocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the OKX web socket API.
+	// config is the config for the OKX websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -35,7 +35,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -54,9 +54,9 @@ func NewWebSocketDataHandler(
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
 //  2. Ticker response message. This is sent when a ticker update is received from the
-//     OKX web socket API.
+//     OKX websocket API.
 //
-// Heartbeat messages are NOT sent by the OKX web socket. The connection is only closed
+// Heartbeat messages are NOT sent by the OKX websocket. The connection is only closed
 // iff no data is received within a 30-second interval or if all subscriptions
 // fail. In the case where no data is received within a 30-second interval, the OKX
 // will be restarted after the configured restart interval.

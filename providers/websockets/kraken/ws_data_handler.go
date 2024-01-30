@@ -20,7 +20,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebS
 type WebSocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Kraken web socket API.
+	// config is the config for the Kraken websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -34,7 +34,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {

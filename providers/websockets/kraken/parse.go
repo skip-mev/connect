@@ -19,7 +19,7 @@ import (
 // this function:
 //  1. System status response messages. This is used to check if the Kraken system is online.
 //     Usually this is the first message that is received after connecting to the websocket.
-//  2. Heartbeat response messages. This is used by the Kraken web socket server to notify
+//  2. Heartbeat response messages. This is used by the Kraken websocket server to notify
 //     the client that the connection is still alive.
 //  3. Subscription status response messages. This is used to check if the subscription request
 //     was successful. If the subscription request was not successful, the handler will attempt

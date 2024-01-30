@@ -121,7 +121,7 @@ func PreDialHook(cfg config.APIConfig, requestHandler apihandlers.RequestHandler
 		// Create the websocket URL.
 		wss := fmt.Sprintf(WSSEndpoint, server.Endpoint, resp.Data.Token)
 
-		// Update the web socket config with the new WSS and ping interval.
+		// Update the websocket config with the new WSS and ping interval.
 		cfg := handler.GetConfig()
 		cfg.WSS = wss
 		cfg.PingInterval = time.Duration(server.PingInterval) * time.Millisecond

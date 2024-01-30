@@ -34,7 +34,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -48,7 +48,7 @@ func NewWebSocketDataHandler(
 }
 
 // HandleMessage is used to handle a message received from the data provider. The Crypto.com
-// web socket API sends a heartbeat message every 30 seconds. If a heartbeat message is received,
+// websocket API sends a heartbeat message every 30 seconds. If a heartbeat message is received,
 // a heartbeat response message must be sent back to the Crypto.com websocket API, otherwise
 // the connection will be closed. If a subscribe message is received, the message must be parsed
 // and a response must be returned. No update message is required for subscribe messages.
@@ -106,7 +106,7 @@ func (h *WebSocketDataHandler) CreateMessages(
 	instruments := make([]string, 0)
 
 	// Iterate through each currency pair and get the instrument name. The instrument name
-	// corresponds to the perpetual contract name on the Crypto.com web socket API. This will
+	// corresponds to the perpetual contract name on the Crypto.com websocket API. This will
 	// only subscribe to price feeds that are configured in the config file.
 	for _, cp := range cps {
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]

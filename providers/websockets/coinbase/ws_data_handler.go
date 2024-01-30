@@ -20,10 +20,10 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebS
 type WebSocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Coinbase web socket API.
+	// config is the config for the Coinbase websocket API.
 	cfg config.ProviderConfig
 
-	// Sequence is the current sequence number for the Coinbase web socket API per currency pair.
+	// Sequence is the current sequence number for the Coinbase websocket API per currency pair.
 	sequence map[oracletypes.CurrencyPair]int64
 }
 
@@ -37,7 +37,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -54,11 +54,11 @@ func NewWebSocketDataHandler(
 // HandleMessage is used to handle a message received from the data provider. The Coinbase web
 // socket expects the client to send a subscribe message within 5 seconds of the initial connection.
 // Otherwise, the connection will be closed. There are two types of messages that can be received
-// from the Coinbase web socket API:
+// from the Coinbase websocket API:
 //
-//  1. SubscriptionsMessage: This is sent by the Coinbase web socket API after a subscribe message
+//  1. SubscriptionsMessage: This is sent by the Coinbase websocket API after a subscribe message
 //     is sent. This message contains the list of channels that were successfully subscribed to.
-//  2. TickerMessage: This is sent by the Coinbase web socket API when a match happens. This message
+//  2. TickerMessage: This is sent by the Coinbase websocket API when a match happens. This message
 //     contains the price of the currency pair.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,

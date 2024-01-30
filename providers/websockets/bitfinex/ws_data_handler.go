@@ -24,7 +24,7 @@ type WebsocketDataHandler struct {
 	// channelMap maps a given channel_id to the currency pair its subscription represents.
 	channelMap map[int]config.CurrencyPairMarketConfig
 
-	// config is the config for the BitFinex web socket API.
+	// config is the config for the BitFinex websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -39,7 +39,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {

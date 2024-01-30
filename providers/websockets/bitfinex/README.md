@@ -2,7 +2,7 @@
 
 ## Overview
 
-The BitFinex provider is used to fetch the ticker price from the [BitFinex web socket API](https://docs.bitfinex.com/docs/ws-general). The total amount of subscriptions per connection is [30](https://docs.bitfinex.com/docs/ws-general#how-to-connect).
+The BitFinex provider is used to fetch the ticker price from the [BitFinex websocket API](https://docs.bitfinex.com/docs/ws-general). The total amount of subscriptions per connection is [30](https://docs.bitfinex.com/docs/ws-general#how-to-connect).
 
 BitFinex provides [public](https://docs.bitfinex.com/docs/ws-public) and [private (authenticated)](https://docs.bitfinex.com/docs/ws-auth) channels.
 
