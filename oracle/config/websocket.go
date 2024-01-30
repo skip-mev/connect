@@ -49,6 +49,10 @@ const (
 	// 1000, but we set it to a lower value to allow the provider to reconnect
 	// faster.
 	DefaultMaxReadErrorCount = 100
+
+	// DefaultMaxSubscriptionsPerConnection is the default maximum subscriptions
+	// an provider can handle per-connection.
+	DefaultMaxSubscriptionsPerConnection = 0
 )
 
 // WebSocketConfig defines a config for a websocket based data provider.
@@ -106,6 +110,11 @@ type WebSocketConfig struct {
 	// MaxReadErrorCount is the maximum number of read errors that the provider
 	// will tolerate before closing the connection and attempting to reconnect.
 	MaxReadErrorCount int `mapstructure:"max_read_error_count" toml:"max_read_error_count"`
+
+	// MaxSubscriptionsPerConnection is the maximum amount of subscriptions that
+	// can be assigned to a single connection for this provider.  The null value (0),
+	// indicates that there is no limit per connection.
+	MaxSubscriptionsPerConnection int `mapstructure:"max_subscriptions_per_connection" toml:"max_subscriptions_per_connection"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.
@@ -156,6 +165,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.MaxReadErrorCount < 0 {
 		return fmt.Errorf("websocket max read error count cannot be negative")
+	}
+
+	if c.MaxSubscriptionsPerConnection < 0 {
+		return fmt.Errorf("websocket max subscriptions per connection cannot be negative")
 	}
 
 	return nil
