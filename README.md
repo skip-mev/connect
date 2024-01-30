@@ -32,22 +32,22 @@ The slinky repository is composed of the following core packages:
 
 ### Running the Oracle Sidecar
 
-To run the oracle, run the following command:
+To run the oracle, run the following command. Navigate to http://localhost:9090 to see all network traffic and oracle metrics.
 
 ```bash
-$ make run-oracle-server
+$ make start-oracle
 ```
 
-To check the current aggregated prices, open a new terminal and run the following command:
+To check the current aggregated prices, run the following command:
 
 ```bash
 $ curl localhost:8080/slinky/oracle/v1/prices
 ```
 
-To see all network metrics, open a new terminal and run the following command and then navigate to http://localhost:9090:
+To stop the oracle, run the following command:
 
 ```bash
-$ make run-prom-client
+$ make stop-oracle
 ```
 
 ### Running a Local Blockchain

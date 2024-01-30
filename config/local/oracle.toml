@@ -946,5 +946,5 @@ production = true
   Quote = "USD"
 
 [metrics]
-  prometheus_server_address = "0.0.0.0:8000"
+  prometheus_server_address = "0.0.0.0:8002"
   enabled = true

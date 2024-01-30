@@ -12,16 +12,30 @@ services:
     volumes:
       - ./config/local/oracle.toml:/oracle/config.toml
     ports:
-      - "8080:8080"
-      - "8000:8000"
+      - "8080:8080" # main oracle port
+      - "8002:8002" # oracle metrics port
     networks:
       - oracle_network
 
   prometheus:
     image: prom/prometheus
     ports:
-      - "9090:9090"
+      - "9090:9091"
     volumes:
       - ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - oracle_network
+  
+  blockchain:
+    build:
+      context: .
+      dockerfile: contrib/images/slinky.local.Dockerfile
+    ports:
+      - "26656:26656"
+      - "26657:26657"
+      - "1317:1317"
+      - "7171:7171"
+      - "26655:26655"
+      - "8001:8001" # app side oracle metrics
     networks:
       - oracle_network

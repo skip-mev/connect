@@ -11,7 +11,7 @@ RUN make build
 
 FROM ubuntu:rolling
 EXPOSE 8080
-EXPOSE 8000
+EXPOSE 8002
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
 RUN apt-get update && apt-get install ca-certificates -y

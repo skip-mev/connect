@@ -56,7 +56,7 @@ var LocalConfig = config.OracleConfig{
 	// -----------------------------------------------------------	//
 	Metrics: config.MetricsConfig{
 		Enabled:                 true,
-		PrometheusServerAddress: "0.0.0.0:8000",
+		PrometheusServerAddress: "0.0.0.0:8002",
 	},
 	UpdateInterval: 1 * time.Second,
 	Providers: []config.ProviderConfig{
