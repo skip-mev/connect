@@ -22,7 +22,7 @@ func (c *MetricsConfig) ValidateBasic() error {
 		return nil
 	}
 
-	if c.PrometheusServerAddress == "" {
+	if len(c.PrometheusServerAddress) == 0 {
 		return fmt.Errorf("must supply a non-empty prometheus server address if metrics are enabled")
 	}
 
