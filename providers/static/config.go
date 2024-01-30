@@ -4,15 +4,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-// StaticMockProviderConfig is a map of token names to their metadata.
-type StaticMockProviderConfig struct { //nolint
+// MockProviderConfig is a map of token names to their metadata.
+type MockProviderConfig struct { //nolint
 	// TokenPrices is a map of token names to their metadata.
 	TokenPrices map[string]string `json:"tokenPrices" validate:"required"`
 }
 
 // ReadStaticMockProviderConfigFromFile reads the static mock provider config from the given file.
-func ReadStaticMockProviderConfigFromFile(path string) (StaticMockProviderConfig, error) {
-	var config StaticMockProviderConfig
+func ReadStaticMockProviderConfigFromFile(path string) (MockProviderConfig, error) {
+	var config MockProviderConfig
 
 	// read in the config file
 	viper.SetConfigFile(path)
