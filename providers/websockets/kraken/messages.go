@@ -110,7 +110,7 @@ type SystemStatusResponseMessage struct {
 // HeartbeatResponseMessage is the message that is sent to the client
 // periodically to ensure that the connection is still alive. In particular,
 // the server will send a heartbeat if no subscription traffic is received
-// within a 60 second period.
+// within a 60-second period.
 //
 //	{
 //			"event": "heartbeat",

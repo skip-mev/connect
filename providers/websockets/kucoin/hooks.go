@@ -18,15 +18,15 @@ const (
 	// connect to.
 	BulletPublicEndpoint = "/api/v1/bullet-public"
 
-	// SuccessCode is the success code returned from the Kucoin API.
+	// SuccessCode is the success code returned from the KuCoin API.
 	SuccessCode = "200000"
 
-	// WebSocketProtocol is the expected protocol type for the Kucoin websocket feed.
+	// WebSocketProtocol is the expected protocol type for the KuCoin websocket feed.
 	WebSocketProtocol = "websocket"
 )
 
 // BulletPublicResponse represents the response from the bullet-public endpoint
-// for the Kucoin exchange. This response is utilized when initially connecting
+// for the KuCoin exchange. This response is utilized when initially connecting
 // to the websocket feed. Specifically, the response is utilized to determine the
 // token and endpoints to connect to.
 //
@@ -83,7 +83,7 @@ type BulletPublicResponseInstanceServer struct {
 }
 
 // PreDialHook is a function that is called before the connection is established.
-// This function is used to fetch the token and WSS URL from the Kucoin API.
+// This function is used to fetch the token and WSS URL from the KuCoin API.
 func PreDialHook(cfg config.APIConfig, requestHandler apihandlers.RequestHandler) wshandlers.PreDialHook {
 	return func(handler *wshandlers.WebSocketConnHandlerImpl) error {
 		resp, err := fetchCredentials(cfg, requestHandler)
@@ -121,7 +121,7 @@ func PreDialHook(cfg config.APIConfig, requestHandler apihandlers.RequestHandler
 		// Create the websocket URL.
 		wss := fmt.Sprintf(WSSEndpoint, server.Endpoint, resp.Data.Token)
 
-		// Update the web socket config with the new WSS and ping interval.
+		// Update the websocket config with the new WSS and ping interval.
 		cfg := handler.GetConfig()
 		cfg.WSS = wss
 		cfg.PingInterval = time.Duration(server.PingInterval) * time.Millisecond
@@ -133,7 +133,7 @@ func PreDialHook(cfg config.APIConfig, requestHandler apihandlers.RequestHandler
 	}
 }
 
-// fetchCredentials is used to fetch the token and WSS URL from the Kucoin API.
+// fetchCredentials is used to fetch the token and WSS URL from the KuCoin API.
 func fetchCredentials(cfg config.APIConfig, requestHandler apihandlers.RequestHandler) (*BulletPublicResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()

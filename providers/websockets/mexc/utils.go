@@ -11,6 +11,9 @@ const (
 	// Please refer to the following link for the MEXC websocket documentation:
 	// https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams.
 
+	// Name is the name of the MEXC provider.
+	Name = "mexc"
+
 	// WSS is the public MEXC Websocket URL.
 	WSS = "wss://wbs.mexc.com/ws"
 

@@ -7,24 +7,24 @@ import (
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 )
 
-var _ handlers.RequestHandler = (*StaticMockClient)(nil)
+var _ handlers.RequestHandler = (*MockClient)(nil)
 
-// StaticMockClient is meant to be paired with the StaticMockAPIHandler. It
+// MockClient is meant to be paired with the MockAPIHandler. It
 // should only be used for testing.
-type StaticMockClient struct{} //nolint
+type MockClient struct{}
 
-func NewStaticMockClient() *StaticMockClient {
-	return &StaticMockClient{}
+func NewStaticMockClient() *MockClient {
+	return &MockClient{}
 }
 
 // Do is a no-op.
-func (s *StaticMockClient) Do(_ context.Context, _ string) (*http.Response, error) {
+func (s *MockClient) Do(_ context.Context, _ string) (*http.Response, error) {
 	return &http.Response{
 		StatusCode: http.StatusOK,
 	}, nil
 }
 
 // Type returns the HTTP method used to send requests.
-func (s *StaticMockClient) Type() string {
+func (s *MockClient) Type() string {
 	return http.MethodGet
 }

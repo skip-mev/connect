@@ -15,11 +15,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the provider.
-	Name = "binance"
-)
-
 var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
 // APIHandler implements the APIHandler interface for Binance.

@@ -90,7 +90,7 @@ type SubscriptionRequestMessageData struct {
 	Channel string `json:"channel"`
 }
 
-// NewSubscriptionRequestMessage returns a new subscription request message
+// NewSubscriptionRequestMessages returns a new subscription request message
 // for a given set of channels.
 func NewSubscriptionRequestMessages(channels []string) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(channels) == 0 {

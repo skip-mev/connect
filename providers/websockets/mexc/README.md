@@ -2,7 +2,7 @@
 
 ## Overview
 
-The MEXC provider is a web socket provider that fetches data from the MEXC exchange API. All documentation for the web socket can be found [here](https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams).
+The MEXC provider is a websocket provider that fetches data from the MEXC exchange API. All documentation for the websocket can be found [here](https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams).
 
 
 ## Considerations
@@ -12,7 +12,7 @@ The MEXC provider is a web socket provider that fetches data from the MEXC excha
 * If there is no valid websocket subscription, the server will disconnect in 30 seconds. If the subscription is successful but there is no streams, the server will disconnect in 1 minute. The client can send PING to maintain the connection.
 * Every websocket connection can support a maximum of 30 subscriptions. If the client needs to subscribe to more than 30 streams, it needs to connect multiple websocket connections.
 
-To determine all of the supported markets, you can run the following command:
+To determine all supported markets, you can run the following command:
 
 ```bash
 curl https://api.mexc.com/api/v3/defaultSymbols 
