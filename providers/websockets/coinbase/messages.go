@@ -20,7 +20,7 @@ type (
 const (
 	// SubscribeMessage represents a subscribe message. This must be sent as the
 	// first message when connecting to the websocket feed and must be sent within
-	// 5 seconds of the initial connection. Otherwise the connection will be
+	// 5 seconds of the initial connection. Otherwise, the connection will be
 	// closed.
 	//
 	// ref: https://docs.cloud.coinbase.com/exchange/docs/websocket-overview#subscribe
@@ -40,7 +40,7 @@ const (
 )
 
 const (
-	// Ticker represents the ticker channel. The ticker channel providers real-time price
+	// TickerChannel represents the ticker channel. The ticker channel providers real-time price
 	// updates everytime a match happens. It batches updates in case of cascading matches,
 	// greatly reducing bandwidth requirements.
 	//

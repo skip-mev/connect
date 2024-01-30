@@ -67,11 +67,11 @@ func WithAPIConfig[K providertypes.ResponseKey, V providertypes.ResponseValue](c
 func WithWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](ws wshandlers.WebSocketQueryHandler[K, V]) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if p.ws != nil {
-			panic("cannot set web socket query handler twice")
+			panic("cannot set websocket query handler twice")
 		}
 
 		if ws == nil {
-			panic("cannot set nil web socket query handler")
+			panic("cannot set nil websocket query handler")
 		}
 
 		p.ws = ws
@@ -82,7 +82,7 @@ func WithWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Resp
 func WithWebSocketConfig[K providertypes.ResponseKey, V providertypes.ResponseValue](cfg config.WebSocketConfig) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if cfg.ValidateBasic() != nil {
-			panic("invalid web socket config")
+			panic("invalid websocket config")
 		}
 
 		p.wsCfg = cfg

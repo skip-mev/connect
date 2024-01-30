@@ -32,7 +32,7 @@ const (
 
 // ProviderMetrics is an interface that defines the API for metrics collection for providers. The
 // base provider utilizes this interface to collect metrics, whether the underlying implementation
-// is API or web socket based.
+// is API or websocket based.
 //
 //go:generate mockery --name ProviderMetrics --filename mock_metrics.go
 type ProviderMetrics interface {

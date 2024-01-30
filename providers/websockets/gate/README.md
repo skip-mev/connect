@@ -11,7 +11,7 @@ The Gate.io provider uses _protocol-level_ ping-pong, so no handlers need to be 
 [Application level ping messages](https://www.gate.io/docs/developers/apiv4/ws/en/#application-ping-pong) can be sent which should be responded to with pong messages.
 
 * Public channels -- No authentication is required, include tickers topic, K-Line topic, limit price topic, order book topic, and mark price topic etc.
-* Private channels -- including account topic, order topic, and position topic, etc -- require log in.
+* Private channels -- including account topic, order topic, and position topic, etc. -- require log in.
 
 Users can choose to subscribe to one or more topic. This provider is implemented assuming that the user is only subscribing to public topics.
 

@@ -9,11 +9,14 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// NOTE: All of the documentation for this file can be located on the CoinGecko
+// NOTE: All documentation for this file can be located on the CoinGecko
 // API documentation: https://www.coingecko.com/api/documentation. The CoinGecko
 // API can be configured to be API based or not.
 
 const (
+	// Name is the name of the Coingecko provider.
+	Name = "coingecko"
+
 	// URL is the base URL for the CoinGecko API. This URL does not require
 	// an API key but may be rate limited.
 	URL = "https://api.coingecko.com/api/v3"

@@ -34,7 +34,7 @@ const (
 const (
 	// EventSubscribe is the event denoting that we have successfully subscribed to a channel.
 	EventSubscribe EventType = "subscribe"
-	// EventTickers is the event for tickers. By default this field will not be populated
+	// EventTickers is the event for tickers. By default, this field will not be populated
 	// in a properly formatted message. So we set the default value to an empty string.
 	EventTickers EventType = ""
 	// EventError is the event for an error.
@@ -151,7 +151,7 @@ type SubscribeResponseMessage struct {
 
 // IndexTickersResponseMessage is the response message for index ticker updates. This message
 // type is sent when the index price changes. Price changes are pushed every 100ms if there
-// is a change in price. Otherwise the message is sent every second. The format of the message
+// is a change in price. Otherwise, the message is sent every second. The format of the message
 // is:
 //
 //	{

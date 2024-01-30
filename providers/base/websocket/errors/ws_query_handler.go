@@ -6,24 +6,24 @@ var (
 	// ErrHandleMessage is returned when the WebSocketDataHandler cannot handle a
 	// message. This can occur if the handler is not configured to handle the given
 	// message. Handlers must be able to handle heartbeat messages.
-	ErrHandleMessage = errors.New("web socket data handler failed to handle message")
+	ErrHandleMessage = errors.New("websocket data handler failed to handle message")
 
 	// ErrCreateMessages is returned when the WebSocketDataHandler cannot create a
 	// subscription messages. This can occur if the handler is not configured to
 	// handle the given ids.
-	ErrCreateMessages = errors.New("web socket data handler failed to create messages")
+	ErrCreateMessages = errors.New("websocket data handler failed to create messages")
 
 	// ErrRead is returned when the WebSocketConnHandler cannot read a message.
-	ErrRead = errors.New("web socket connection handler failed to read message")
+	ErrRead = errors.New("websocket connection handler failed to read message")
 
 	// ErrWrite is returned when the WebSocketConnHandler cannot write a message.
-	ErrWrite = errors.New("web socket connection handler failed to write message")
+	ErrWrite = errors.New("websocket connection handler failed to write message")
 
 	// ErrClose is returned when the WebSocketConnHandler cannot close the connection.
-	ErrClose = errors.New("web socket connection handler failed to close connection")
+	ErrClose = errors.New("websocket connection handler failed to close connection")
 
 	// ErrDial is returned when the WebSocketConnHandler cannot create a connection.
-	ErrDial = errors.New("web socket connection handler failed to create connection")
+	ErrDial = errors.New("websocket connection handler failed to create connection")
 )
 
 // ErrHandleMessageWithErr is used to create a new ErrHandleMessage with the given error.
