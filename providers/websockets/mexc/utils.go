@@ -26,19 +26,20 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the MEXC Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 WSS,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
-		PingInterval:        DefaultPingInterval,
-		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
+		Name:                          Name,
+		Enabled:                       true,
+		MaxBufferSize:                 1000,
+		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+		WSS:                           WSS,
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		PingInterval:                  DefaultPingInterval,
+		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.

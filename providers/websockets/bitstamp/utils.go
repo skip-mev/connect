@@ -13,24 +13,28 @@ const (
 
 	// WSS is the bitstamp websocket address.
 	WSS = "wss://ws.bitstamp.net"
+
+	// DefaultPingInterval is the default ping interval for the bitstamp websocket.
+	DefaultPingInterval = 10 * time.Second
 )
 
 var (
 	// DefaultWebSocketConfig returns the default websocket config for bitstamp.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:             true,
-		Name:                Name,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 WSS,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		WriteTimeout:        config.DefaultWriteTimeout,
-		ReadTimeout:         config.DefaultReadTimeout,
-		PingInterval:        10 * time.Second,
-		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
+		Enabled:                       true,
+		Name:                          Name,
+		MaxBufferSize:                 config.DefaultMaxBufferSize,
+		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+		WSS:                           WSS,
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		PingInterval:                  DefaultPingInterval,
+		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig returns the default market config for bitstamp.
