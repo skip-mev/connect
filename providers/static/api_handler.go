@@ -20,7 +20,7 @@ const (
 )
 
 // MockAPIHandler implements a mock API handler that returns static data.
-type MockAPIHandler struct { //nolint
+type MockAPIHandler struct {
 	exchangeRates map[oracletypes.CurrencyPair]*big.Int
 	currencyPairs []oracletypes.CurrencyPair
 }

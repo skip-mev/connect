@@ -5,7 +5,7 @@ import (
 )
 
 // WebSocketDataHandler defines an interface that must be implemented by all providers that
-// want to fetch data from a web socket. This interface is meant to be paired with the
+// want to fetch data from a websocket. This interface is meant to be paired with the
 // WebSocketQueryHandler. The WebSocketQueryHandler will use the WebSocketDataHandler to
 // create establish a connection to the correct host, create subscription messages to be sent
 // to the data provider, and handle incoming events accordingly.
@@ -13,7 +13,7 @@ import (
 //go:generate mockery --name WebSocketDataHandler --output ./mocks/ --case underscore
 type WebSocketDataHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	// HandleMessage is used to handle a message received from the data provider. Message parsing
-	// and response creation should be handled by this data handler. Given a message from the web socket
+	// and response creation should be handled by this data handler. Given a message from the websocket
 	// the handler should either return a response or a set of update messages.
 	HandleMessage(message []byte) (response providertypes.GetResponse[K, V], updateMessages []WebsocketEncodedMessage, err error)
 

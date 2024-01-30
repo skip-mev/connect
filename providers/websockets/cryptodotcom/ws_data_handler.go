@@ -20,7 +20,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebS
 type WebSocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Crypto.com web socket API.
+	// config is the config for the Crypto.com websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -49,7 +49,7 @@ func NewWebSocketDataHandler(
 
 // HandleMessage is used to handle a message received from the data provider. The Crypto.com
 // web socket API sends a heartbeat message every 30 seconds. If a heartbeat message is received,
-// a heartbeat response message must be sent back to the Crypto.com web socket API, otherwise
+// a heartbeat response message must be sent back to the Crypto.com websocket API, otherwise
 // the connection will be closed. If a subscribe message is received, the message must be parsed
 // and a response must be returned. No update message is required for subscribe messages.
 func (h *WebSocketDataHandler) HandleMessage(

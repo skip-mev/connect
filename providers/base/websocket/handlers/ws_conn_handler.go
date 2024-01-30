@@ -20,8 +20,8 @@ type (
 	PreDialHook func(*WebSocketConnHandlerImpl) error
 )
 
-// WebSocketConnHandler is an interface the encapsulates the functionality of a web socket
-// connection to a data provider. It provides the simple CRUD operations for a web socket
+// WebSocketConnHandler is an interface the encapsulates the functionality of a websocket
+// connection to a data provider. It provides the simple CRUD operations for a websocket
 // connection. The connection handler is responsible for managing the connection to the
 // data provider. This includes creating the connection, reading messages, writing messages,
 // and closing the connection.
@@ -97,7 +97,7 @@ func (h *WebSocketConnHandlerImpl) Dial() error {
 	return err
 }
 
-// Read is used to read data from the data provider. Each web socket data handler is responsible
+// Read is used to read data from the data provider. Each websocket data handler is responsible
 // for determining how to parse the data and being aware of the data format (text, json, etc.).
 func (h *WebSocketConnHandlerImpl) Read() ([]byte, error) {
 	h.Lock()

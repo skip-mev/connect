@@ -13,20 +13,20 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// WebSocketQueryHandler is an interface that encapsulates querying a web socket
+// WebSocketQueryHandler is an interface that encapsulates querying a websocket
 // data provider for info. The handler must respect the context timeout and close
 // the connection if the context is cancelled. All responses must be sent to the
 // response channel. These are processed asynchronously by the provider.
 //
 //go:generate mockery --name WebSocketQueryHandler --output ./mocks/ --case underscore
 type WebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
-	// Start should initialize the web socket connection and start listening for
-	// the data (i.e. ids). All web socket responses should be sent to the response
+	// Start should initialize the websocket connection and start listening for
+	// the data (i.e. ids). All websocket responses should be sent to the response
 	// channel.
 	Start(ctx context.Context, ids []K, responseCh chan<- providertypes.GetResponse[K, V]) error
 }
 
-// WebSocketQueryHandlerImpl is the default web socket implementation of the
+// WebSocketQueryHandlerImpl is the default websocket implementation of the
 // WebSocketQueryHandler interface. This is used to establish a connection to the data
 // provider and subscribe to events for a given set of IDs. It runs in a separate go
 // routine and will send all responses to the response channel as they are received.
@@ -47,7 +47,7 @@ type WebSocketQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.Resp
 	ids []K
 }
 
-// NewWebSocketQueryHandler creates a new web socket query handler.
+// NewWebSocketQueryHandler creates a new websocket query handler.
 func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	logger *zap.Logger,
 	config config.WebSocketConfig,
@@ -60,7 +60,7 @@ func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Respo
 	}
 
 	if !config.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled")
+		return nil, fmt.Errorf("websocket is not enabled")
 	}
 
 	if logger == nil {
@@ -68,7 +68,7 @@ func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Respo
 	}
 
 	if dataHandler == nil {
-		return nil, fmt.Errorf("web socket data handler is nil")
+		return nil, fmt.Errorf("websocket data handler is nil")
 	}
 
 	if connHandler == nil {
@@ -76,7 +76,7 @@ func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Respo
 	}
 
 	if m == nil {
-		return nil, fmt.Errorf("web socket metrics is nil")
+		return nil, fmt.Errorf("websocket metrics is nil")
 	}
 
 	return &WebSocketQueryHandlerImpl[K, V]{
@@ -89,7 +89,7 @@ func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Respo
 }
 
 // Start is used to start the connection to the data provider and start listening for
-// the data (i.e. ids). All web socket responses should be sent to the response channel.
+// the data (i.e. ids). All websocket responses should be sent to the response channel.
 // Start will first:
 //  1. Create the initial set of events that the channel will subscribe to using the data
 //     handler.
@@ -161,13 +161,13 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 
 		// Send the initial payload to the data provider.
 		if err := h.connHandler.Write(message); err != nil {
-			h.logger.Error("failed to write message to web socket connection handler", zap.Error(err))
+			h.logger.Error("failed to write message to websocket connection handler", zap.Error(err))
 			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
 			return errors.ErrWriteWithErr(err)
 		}
 	}
 
-	h.logger.Debug("initial payload sent; web socket connection successfully started")
+	h.logger.Debug("initial payload sent; websocket connection successfully started")
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 	return nil
 }
@@ -228,7 +228,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		// Case 2: The context is not cancelled. Wait for a message from the data provider.
 		select {
 		case <-ctx.Done():
-			h.logger.Debug("context finished; closing connection to web socket handler")
+			h.logger.Debug("context finished; closing connection to websocket handler")
 			if err := h.connHandler.Close(); err != nil {
 				h.logger.Error("failed to close connection", zap.Error(err))
 				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
@@ -242,7 +242,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
-				h.logger.Error("failed to read message from web socket handler", zap.Error(err))
+				h.logger.Error("failed to read message from websocket handler", zap.Error(err))
 				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadErr)
 				continue
 			}
@@ -253,7 +253,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Handle the message.
 			response, updateMessage, err := h.dataHandler.HandleMessage(message)
 			if err != nil {
-				h.logger.Error("failed to handle web socket message", zap.Error(err))
+				h.logger.Error("failed to handle websocket message", zap.Error(err))
 				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageErr)
 				continue
 			}

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The OKX provider is used to fetch the ticker price from the [OKX web socket API](https://www.okx.com/docs-v5/en/#overview-websocket-overview). The web socket request size for data transmission between the client and server is only 2 bytes. The total number of requests to subscribe to new markets is limited to 3 requests per second. The total number of 'subscribe'/'unsubscribe'/'login' requests per connection is limited to 480 times per hour. WebSocket login and subscription rate limits are based on connection.
+The OKX provider is used to fetch the ticker price from the [OKX websocket API](https://www.okx.com/docs-v5/en/#overview-websocket-overview). The websocket request size for data transmission between the client and server is only 2 bytes. The total number of requests to subscribe to new markets is limited to 3 requests per second. The total number of 'subscribe'/'unsubscribe'/'login' requests per connection is limited to 480 times per hour. WebSocket login and subscription rate limits are based on connection.
 
 Connections will break automatically if the subscription is not established or data has not been pushed for more than 30 seconds. [Per OKX documentation](https://www.okx.com/docs-v5/en/#overview-websocket-overview),
 

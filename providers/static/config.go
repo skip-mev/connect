@@ -5,7 +5,7 @@ import (
 )
 
 // MockProviderConfig is a map of token names to their metadata.
-type MockProviderConfig struct { //nolint
+type MockProviderConfig struct {
 	// TokenPrices is a map of token names to their metadata.
 	TokenPrices map[string]string `json:"tokenPrices" validate:"required"`
 }

@@ -11,7 +11,7 @@ var _ handlers.RequestHandler = (*MockClient)(nil)
 
 // MockClient is meant to be paired with the MockAPIHandler. It
 // should only be used for testing.
-type MockClient struct{} //nolint
+type MockClient struct{}
 
 func NewStaticMockClient() *MockClient {
 	return &MockClient{}
