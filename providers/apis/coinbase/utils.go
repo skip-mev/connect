@@ -7,11 +7,14 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// NOTE: All of the documentation for this file can be located on the Coinbase
+// NOTE: All documentation for this file can be located on the Coinbase
 // API documentation: https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-prices#get-spot-price. This
 // API does not require a subscription to use (i.e. No API key is required).
 
 const (
+	// Name is the name of the Coinbase provider.
+	Name = "coinbase"
+
 	// URL is the base URL of the Coinbase API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
 	URL = "https://api.coinbase.com/v2/prices/%s/spot"

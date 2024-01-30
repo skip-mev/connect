@@ -20,9 +20,11 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -63,7 +65,7 @@ var LocalConfig = config.OracleConfig{
 		// -----------------------------------------------------------	//
 		//
 		// NOTE: Some of the provider's are only capable of fetching data for a subset of
-		// all of the currency pairs. Before adding a new market to the oracle, ensure that
+		// all currency pairs. Before adding a new market to the oracle, ensure that
 		// the provider supports fetching data for the currency pair.
 		{
 			Name:   binance.Name,
@@ -100,7 +102,7 @@ var LocalConfig = config.OracleConfig{
 		{
 			Name:      bybit.Name,
 			WebSocket: bybit.DefaultWebSocketConfig,
-			Market:    bybit.DefaultMarketCOnfig,
+			Market:    bybit.DefaultMarketConfig,
 		},
 		{
 			Name:      coinbasews.Name,
@@ -111,6 +113,11 @@ var LocalConfig = config.OracleConfig{
 			Name:      cryptodotcom.Name,
 			WebSocket: cryptodotcom.DefaultWebSocketConfig,
 			Market:    cryptodotcom.DefaultMarketConfig,
+		},
+		{
+			Name:      gate.Name,
+			WebSocket: gate.DefaultWebSocketConfig,
+			Market:    gate.DefaultMarketConfig,
 		},
 		{
 			Name:      huobi.Name,
@@ -127,6 +134,11 @@ var LocalConfig = config.OracleConfig{
 			WebSocket: kucoin.DefaultWebSocketConfig,
 			API:       kucoin.DefaultAPIConfig,
 			Market:    kucoin.DefaultMarketConfig,
+		},
+		{
+			Name:      mexc.Name,
+			WebSocket: mexc.DefaultWebSocketConfig,
+			Market:    mexc.DefaultMarketConfig,
 		},
 		{
 			Name:      okx.Name,

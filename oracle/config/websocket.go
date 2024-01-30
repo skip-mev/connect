@@ -46,7 +46,7 @@ const (
 
 // WebSocketConfig defines a config for a websocket based data provider.
 type WebSocketConfig struct {
-	// Enabled is a flag that indicates whether the provider is web socket based.
+	// Enabled is a flag that indicates whether the provider is websocket based.
 	Enabled bool `mapstructure:"enabled" toml:"enabled"`
 
 	// MaxBufferSize is the maximum number of messages that the provider will buffer

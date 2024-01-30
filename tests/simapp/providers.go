@@ -25,15 +25,17 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // DefaultProviderFactory returns a sample implementation of the provider factory. This provider
-// factory function returns providers that are API & web socket based.
+// factory function returns providers that are API & websocket based.
 func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
@@ -185,7 +187,7 @@ func webSocketProviderFromProviderConfig(
 		return nil, err
 	}
 
-	// Create the underlying client that can be utilized by web socket providers that need to
+	// Create the underlying client that can be utilized by websocket providers that need to
 	// interact with an API.
 	maxCons := math.Min(len(cps), cfg.API.MaxQueries)
 	client := &http.Client{
@@ -210,12 +212,14 @@ func webSocketProviderFromProviderConfig(
 		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg)
 	case cryptodotcom.Name:
 		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
+	case gate.Name:
+		wsDataHandler, err = gate.NewWebSocketDataHandler(logger, cfg)
 	case huobi.Name:
 		wsDataHandler, err = huobi.NewWebSocketDataHandler(logger, cfg)
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	case kucoin.Name:
-		// Create the kucoin web socket data handler.
+		// Create the KuCoin websocket data handler.
 		wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, cfg)
 		if err != nil {
 			return nil, err
@@ -230,11 +234,13 @@ func webSocketProviderFromProviderConfig(
 			return nil, err
 		}
 
-		// Create the kucoin web socket connection handler.
+		// Create the KuCoin websocket connection handler.
 		connHandler, err = wshandlers.NewWebSocketHandlerImpl(
 			cfg.WebSocket,
 			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
 		)
+	case mexc.Name:
+		wsDataHandler, err = mexc.NewWebSocketDataHandler(logger, cfg)
 	case okx.Name:
 		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
 	default:
@@ -252,7 +258,7 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	// Create the web socket query handler which encapsulates all fetching and parsing logic.
+	// Create the websocket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,

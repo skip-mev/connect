@@ -6,16 +6,17 @@ import (
 )
 
 const (
-	// Huobi provides the following URLS fro its Websocket API. More info can be found in the documentation
+	// Huobi provides the following URLs for its Websocket API. More info can be found in the documentation
 	// here: https://huobiapi.github.io/docs/spot/v1/en/#websocket-market-data.
+
+	// Name is the name of the Huobi provider.
+	Name = "huobi"
 
 	// URL is the public Huobi Websocket URL.
 	URL = "wss://api.huobi.pro/ws"
 
 	// URLAws is the public Huobi Websocket URL hosted on AWS.
 	URLAws = "wss://api-aws.huobi.pro/ws"
-
-	Name = "huobi"
 )
 
 var (

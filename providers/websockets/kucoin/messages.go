@@ -10,14 +10,14 @@ import (
 )
 
 type (
-	// MessageType represents the type of message received from the Kucoin websocket.
+	// MessageType represents the type of message received from the KuCoin websocket.
 	MessageType string
 
 	// TopicType represents the type of topic to subscribe to i.e. spot for this
 	// implementation.
 	TopicType string
 
-	// SubjectType represents the type of subject that was subscribe to i.e. ticker.
+	// SubjectType represents the type of subject that was subscribed to i.e. ticker.
 	SubjectType string
 )
 
@@ -115,9 +115,9 @@ func NewHeartbeatMessage() ([]handlers.WebsocketEncodedMessage, error) {
 // Spot Demo
 //
 //	{
-//		"id": 1545910660739, // The id should be an unique value
+//		"id": 1545910660739, // The id should be a unique value
 //		"type": "subscribe",
-//		"topic": "/market/ticker:BTC-USDT,ETH-USDT", // Topic needs to be subscribed. Some topics support to divisional subscribe the informations of multiple trading pairs through ",".
+//		"topic": "/market/ticker:BTC-USDT,ETH-USDT", // Topic needs to be subscribed. Some topics support to divisional subscribe the information of multiple trading pairs through ",".
 //		"privateChannel": false, // Adopted the private channel or not. Set as false by default.
 //		"response": true // Whether the server needs to return the receipt information of this subscription or not. Set as false by default.
 //	}
