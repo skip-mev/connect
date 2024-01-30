@@ -42,6 +42,10 @@ const (
 	// DefaultPingInterval is the default interval at which the provider should send
 	// ping messages to the server.
 	DefaultPingInterval = 0 * time.Second
+
+	// DefaultMaxSubscriptionsPerConnection is the default maximum subscriptions
+	// an provider can handle per-connection.
+	DefaultMaxSubscriptionsPerConnection = 0
 )
 
 // WebSocketConfig defines a config for a websocket based data provider.
@@ -95,6 +99,11 @@ type WebSocketConfig struct {
 	// PingInterval is the interval to ping the server. Note that a ping interval
 	// of 0 disables pings.
 	PingInterval time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
+
+	// MaxSubscriptionsPerConnection is the maximum amount of subscriptions that
+	// can be assigned to a single connection for this provider.  The null value (0),
+	// indicates that there is no limit per connection.
+	MaxSubscriptionsPerConnection int `mapstructure:"max_subscriptions_per_connection" toml:"max_subscriptions_per_connection"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.
@@ -141,6 +150,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.PingInterval < 0 {
 		return fmt.Errorf("websocket ping interval cannot be negative")
+	}
+
+	if c.MaxSubscriptionsPerConnection < 0 {
+		return fmt.Errorf("websocket max subscriptions per connection cannot be negative")
 	}
 
 	return nil
