@@ -10,7 +10,10 @@ import (
 const (
 	// ByBit provides a few different URLs for its Websocket API. The URLs can be found
 	// in the documentation here: https://bybit-exchange.github.io/docs/v5/ws/connect
-	// The two production URLs are defined in ProductionURL and TestnetURL. The
+	// The two production URLs are defined in ProductionURL and TestnetURL.
+
+	// Name is the name of the ByBit provider.
+	Name = "bybit"
 
 	// URLProd is the public ByBit Websocket URL.
 	URLProd = "wss://stream.bybit.com/v5/public/spot"
@@ -37,7 +40,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for ByBit.
-	DefaultMarketCOnfig = config.MarketConfig{
+	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"BITCOIN/USD": {

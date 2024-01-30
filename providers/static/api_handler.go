@@ -12,31 +12,31 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*StaticMockAPIHandler)(nil)
+var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*MockAPIHandler)(nil)
 
 const (
 	// Name is the name of the provider.
 	Name = "static-mock-provider"
 )
 
-// StaticMockAPIHandler implements a mock API handler that returns static data.
-type StaticMockAPIHandler struct { //nolint
+// MockAPIHandler implements a mock API handler that returns static data.
+type MockAPIHandler struct {
 	exchangeRates map[oracletypes.CurrencyPair]*big.Int
 	currencyPairs []oracletypes.CurrencyPair
 }
 
-// NewAPIHandler returns a new StaticMockAPIHandler. This constructs a
+// NewAPIHandler returns a new MockAPIHandler. This constructs a
 // new static mock provider from the config. Notice this method expects the
 // market configuration map to be populated w/ entries of the form CurrencyPair.ToString():
 // big.NewInt(price).
 func NewAPIHandler(
 	cfg config.ProviderConfig,
-) (*StaticMockAPIHandler, error) {
+) (*MockAPIHandler, error) {
 	if cfg.Name != Name {
 		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", cfg.Name)
 	}
 
-	s := StaticMockAPIHandler{
+	s := MockAPIHandler{
 		exchangeRates: make(map[oracletypes.CurrencyPair]*big.Int),
 		currencyPairs: make([]oracletypes.CurrencyPair, 0),
 	}
@@ -60,13 +60,13 @@ func NewAPIHandler(
 }
 
 // CreateURL is a no-op.
-func (s *StaticMockAPIHandler) CreateURL(_ []oracletypes.CurrencyPair) (string, error) {
+func (s *MockAPIHandler) CreateURL(_ []oracletypes.CurrencyPair) (string, error) {
 	return "static-url", nil
 }
 
 // ParseResponse is a no-op. This simply returns the price of the currency pairs configured
 // timestamped with the current time.
-func (s *StaticMockAPIHandler) ParseResponse(
+func (s *MockAPIHandler) ParseResponse(
 	cps []oracletypes.CurrencyPair,
 	_ *http.Response,
 ) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {

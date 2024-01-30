@@ -65,7 +65,7 @@ var LocalConfig = config.OracleConfig{
 		// -----------------------------------------------------------	//
 		//
 		// NOTE: Some of the provider's are only capable of fetching data for a subset of
-		// all of the currency pairs. Before adding a new market to the oracle, ensure that
+		// all currency pairs. Before adding a new market to the oracle, ensure that
 		// the provider supports fetching data for the currency pair.
 		{
 			Name:   binance.Name,
@@ -102,7 +102,7 @@ var LocalConfig = config.OracleConfig{
 		{
 			Name:      bybit.Name,
 			WebSocket: bybit.DefaultWebSocketConfig,
-			Market:    bybit.DefaultMarketCOnfig,
+			Market:    bybit.DefaultMarketConfig,
 		},
 		{
 			Name:      coinbasews.Name,

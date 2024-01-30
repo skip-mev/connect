@@ -40,7 +40,7 @@ func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeRespo
 	// Attempt to re-subscribe to the channel.
 	// Format of the message is:
 	//  ...
-	//	"msg": "Invalid request: {\"op\": \"subscribe\", \"argss\":[{ \"channel\" : \"index-tickers\", \"instId\" : \"BTC-USDT\"}]}",
+	//	"msg": "Invalid request: {\"op\": \"subscribe\", \"args\":[{ \"channel\" : \"index-tickers\", \"instId\" : \"BTC-USDT\"}]}",
 	//  ...
 	//
 	// The message is an exact copy of the request message, so we can just unmarshal it and re-subscribe.

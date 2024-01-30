@@ -54,7 +54,7 @@ func CreateWebSocketQueryHandlerWithResponseFn[K providertypes.ResponseKey, V pr
 	return handler
 }
 
-// CreateWebSocketProviderWithGetResponses creates a new web socket provider with the given responses.
+// CreateWebSocketProviderWithGetResponses creates a new websocket provider with the given responses.
 func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	timeout time.Duration,
@@ -80,7 +80,7 @@ func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V prov
 	return p
 }
 
-// CreateWebSocketProviderWithResponseFn creates a new web socket provider with the given response function.
+// CreateWebSocketProviderWithResponseFn creates a new websocket provider with the given response function.
 func CreateWebSocketProviderWithResponseFn[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	cfg config.ProviderConfig,

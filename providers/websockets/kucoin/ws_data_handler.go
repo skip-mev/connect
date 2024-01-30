@@ -13,26 +13,21 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the kucoin provider.
-	Name = "kucoin"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
-// handle messages received from the Kucoin websocket API.
+// handle messages received from the KuCoin websocket API.
 type WebSocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Kucoin web socket API.
+	// config is the config for the KuCoin websocket API.
 	cfg config.ProviderConfig
 
 	// sequences is a map of currency pair to sequence number.
 	sequences map[oracletypes.CurrencyPair]int64
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Kraken.
+// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for KuCoin.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
@@ -42,7 +37,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -56,17 +51,17 @@ func NewWebSocketDataHandler(
 	}, nil
 }
 
-// HandleMessage is used to handle a message received from the data provider. The Kucoin web
+// HandleMessage is used to handle a message received from the data provider. The KuCoin web
 // socket expects the client to send a subscribe message within 10 seconds of the
 // connection, with a ping message sent every 10 seconds. There are 4 types of messages
-// that can be received from the Kucoin web socket:
+// that can be received from the KuCoin websocket:
 //
-//  1. WelcomeMessage: This is sent by the Kucoin web socket when the connection is
+//  1. WelcomeMessage: This is sent by the KuCoin websocket when the connection is
 //     established.
-//  2. PongMessage: This is sent by the Kucoin web socket in response to a ping message.
-//  3. AckMessage: This is sent by the Kucoin web socket in response to a subscribe
+//  2. PongMessage: This is sent by the KuCoin websocket in response to a ping message.
+//  3. AckMessage: This is sent by the KuCoin websocket in response to a subscribe
 //     message.
-//  4. Message: This is sent by the Kucoin web socket when a match happens.
+//  4. Message: This is sent by the KuCoin websocket when a match happens.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
@@ -113,7 +108,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 }
 
 // CreateMessages is used to create the initial set of subscribe messages to send to the
-// kucoin web socket API. The subscribe messages are created based on the currency pairs
+// KuCoin websocket API. The subscribe messages are created based on the currency pairs
 // that are configured for the provider.
 func (h *WebSocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
@@ -133,9 +128,9 @@ func (h *WebSocketDataHandler) CreateMessages(
 	return NewSubscribeRequestMessage(instruments)
 }
 
-// HeartBeatMessages is used to create the set of heartbeat messages to send to the kucoin
-// web socket API. Per the kucoin web socket documentation, the interval between heartbeats
-// should be around 10 seconds, however, this is dynamic. As such, the web socket connection
+// HeartBeatMessages is used to create the set of heartbeat messages to send to the KuCoin
+// websocket API. Per the KuCoin websocket documentation, the interval between heartbeats
+// should be around 10 seconds, however, this is dynamic. As such, the websocket connection
 // handler will determine both the credentials and desired ping interval during the pre-dial
 // hook.
 func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {

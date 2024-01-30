@@ -10,6 +10,9 @@ const (
 	// https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html?javascript#websocket-root-endpoints
 	// Note that Crypto.com offers a sandbox and production environment.
 
+	// Name is the name of the Crypto.com provider.
+	Name = "crypto_dot_com"
+
 	// URL_PROD is the URL used to connect to the Crypto.com production websocket API.
 	URL_PROD = "wss://stream.crypto.com/exchange/v1/market" //nolint
 

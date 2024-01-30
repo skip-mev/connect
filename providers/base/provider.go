@@ -32,13 +32,13 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	// apiCfg is the API configuration for the provider.
 	apiCfg config.APIConfig
 
-	// ws is the handler for the web socket data. Developers implement this interface to extend
+	// ws is the handler for the websocket data. Developers implement this interface to extend
 	// the provider's functionality. For example, this could be used to fetch prices from a
 	// websocket, where K is the currency pair and V is the price. For more information on how
 	// to implement a custom handler, please see the providers/base/README.md file.
 	ws wshandlers.WebSocketQueryHandler[K, V]
 
-	// wsCfg is the web socket configuration for the provider.
+	// wsCfg is the websocket configuration for the provider.
 	wsCfg config.WebSocketConfig
 
 	// data is the latest set of key -> value pairs for the provider i.e. the latest prices
@@ -66,13 +66,13 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 
 	switch {
 	case p.api != nil && p.ws != nil:
-		return nil, fmt.Errorf("cannot configure both api and web socket")
+		return nil, fmt.Errorf("cannot configure both api and websocket")
 	case p.api == nil && p.ws == nil:
-		return nil, fmt.Errorf("must configure either api or web socket")
+		return nil, fmt.Errorf("must configure either api or websocket")
 	case p.apiCfg.ValidateBasic() != nil:
 		return nil, fmt.Errorf("invalid api config")
 	case p.wsCfg.ValidateBasic() != nil:
-		return nil, fmt.Errorf("invalid web socket config")
+		return nil, fmt.Errorf("invalid websocket config")
 	}
 
 	if p.metrics == nil {

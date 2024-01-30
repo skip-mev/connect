@@ -20,7 +20,7 @@ Real-time market data updates provide the fastest insight into order flow and tr
 
 ### Other Considerations
 
-* Connected clients should increase their web socket receive buffer to the largest configurable amount possible (given any client library or infrastructure limitations), due to the potential volume of data for any given product.
+* Connected clients should increase their websocket receive buffer to the largest configurable amount possible (given any client library or infrastructure limitations), due to the potential volume of data for any given product.
 * Space out websocket requests to adhere to the above rate limits.
 
-To determine all of the markets available, you can use the [Get Products](https://docs.pro.coinbase.com/#get-products) API call.
+To determine all markets available, you can use the [Get Products](https://docs.pro.coinbase.com/#get-products) API call.
