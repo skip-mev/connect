@@ -27,17 +27,19 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the Kraken Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: 10 * time.Second,
-		WSS:                 URL,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
+		Name:                          Name,
+		Enabled:                       true,
+		MaxBufferSize:                 1000,
+		ReconnectionTimeout:           10 * time.Second,
+		WSS:                           URL,
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		PingInterval:                  config.DefaultPingInterval,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.

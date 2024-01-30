@@ -24,17 +24,19 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URL_PROD,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
+		Name:                          Name,
+		Enabled:                       true,
+		MaxBufferSize:                 config.DefaultMaxBufferSize,
+		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
+		WSS:                           URL_PROD,
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		PingInterval:                  config.DefaultPingInterval,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Crypto.com.
