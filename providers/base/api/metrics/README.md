@@ -30,3 +30,15 @@ The `AddProviderResponse` metric is used to track the number of ticks with a ful
 ### ObserveProviderResponseTime
 
 The `ObserveProviderResponseTime` metric is used to track the time it took for a provider to respond. Specifically, provider's must return a response within the configured interval. If the response time is very close to the configured interval, this could indicate that the provider is taking too long to respond, may be timing out, and consuming more resources than necessary.
+
+## Usage
+
+Below we overview some of the more useful prometheus queries that can be used to get insight into the health of a provider.
+
+### Total number of responses by status (success, rate limit, etc.)
+
+> ```promql
+> sum(increase(oracle_provider_status_responses[1h]))
+> ```
+
+This will return the total number of provider responses over the last hour (failures and successes across all providers).

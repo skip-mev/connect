@@ -63,6 +63,10 @@ func NewAPIMetrics() APIMetrics {
 		}, []string{providermetrics.ProviderLabel}),
 	}
 
+	// register the above metrics
+	prometheus.MustRegister(m.responseStatusPerProvider)
+	prometheus.MustRegister(m.responseStatusPerProvider)
+
 	return m
 }
 

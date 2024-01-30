@@ -87,6 +87,28 @@ price:
 
 * metrics relevant to the network's (that is running the instance slinky) performance are [here](./service/metrics/README.md)
 
+## Basic Perfomance Analysis
+
+> Note: These are numbers based on **14 providers** and **9 currency pairs** over a 24 hour period.
+
+* ~**7 milliseconds** between price updates across all providers and price feeds.
+* ~**12.5 million** total price updates.
+* ~**70 go routines** are running at any given time.
+* **~6x** improvement in performance of websocket providers over API providers.
+
+To test these numbers yourself, spin up the the oracle server by running the following command:
+
+```bash
+$ make start-oracle
+```
+
+Then open the following URL in your browser: http://localhost:9090. This will open the Prometheus UI. From here, you can run the prometheus queries below to get insight into the oracle's performance.
+
+* [Data Provider Statistics](./providers/base/metrics/README.md#usage): Provides insight into how often price feeds are updated by status (success/failure), provider (binance, coinbase, etc.), price feed (BTC/USD, ETH/USD), and provider type (api/websocket).
+* 
+
+
+
 ## Future Work
 
 The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).
