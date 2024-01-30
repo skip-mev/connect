@@ -36,3 +36,37 @@ The `AddProviderResponse` metric is used to track the number of ticks with a ful
 ### LastUpdated
 
 The `LastUpdated` metric is used to track the last time a given ID (i.e. currency pair) was updated. This metric provides direct introspection into every data source (i.e. price feed) that the provider is responsible for managing.
+
+## Usage
+
+Below we overview some of the more useful prometheus queries that can be used to get insight into the health of a provider.
+
+### Total number of responses within a time window
+
+> ```promql
+> sum(increase(oracle_provider_status_responses[1h]))
+> ```
+
+This will return the total number of provider responses over the last hour (failures and successes across all providers).
+
+
+### Number of Provider Responses by status (i.e. success or failure) within a time window
+
+> ```promql
+> sum by (status) (increase(oracle_provider_status_responses[1h]))
+> ```
+
+This will return the total number of provider responses by status (i.e. success or failure) over the last hour. This provides introspection into how often providers are successfully updating their data.
+
+### Number of Provider Response by ID (i.e. price feed) and status (i.e. success or failure) within a time window
+
+> ```promql
+> sum by (status, id) (increase(oracle_provider_status_responses_per_id[1h]))
+> ```
+
+This will return the number of provider responses by ID (i.e. price feed) and status (i.e. success or failure) over the last hour. This provides introspection into how often each price feed is being updated successfully.
+
+
+
+
+
