@@ -14,6 +14,9 @@ import (
 // API does not require a subscription to use (i.e. No API key is required).
 
 const (
+	// Name is the name of the Binance provider.
+	Name = "binance"
+
 	// URL is the base URL of the Binance API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
 	// by Non-US users.
