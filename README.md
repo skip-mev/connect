@@ -40,7 +40,7 @@ This will:
 
 1. Start a blockchain with a single validator node. It may take a few minutes to build and reach a point where vote extensions can be submitted.
 2. Start the oracle side-car that will aggregate prices from external data providers and broadcast them to the network. To check the current aggregated prices on the side-car, you can run `curl localhost:8080/slinky/oracle/v1/prices`.
-3. Host a prometheus instance that will scrape metrics from the oracle and side-car. Navigate to http://localhost:9090 to see all network traffic and oracle metrics.
+3. Host a prometheus instance that will scrape metrics from the oracle side-car. Navigate to http://localhost:9090 to see all network traffic and metrics pertaining to the oracle sidecar. Navigate to http://localhost:8001 to see all application-side oracle metrics.
 
 After a few minutes, run the following commands to see the prices written to the blockchain:
 
