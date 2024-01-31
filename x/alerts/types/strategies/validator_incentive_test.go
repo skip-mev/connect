@@ -303,8 +303,9 @@ func TestDefaultHandler(t *testing.T) {
 				Signer: sdk.AccAddress("test").String(),
 				Height: 1,
 				CurrencyPair: oracletypes.CurrencyPair{
-					Base:  "A",
-					Quote: "B",
+					Base:     "A",
+					Quote:    "B",
+					Decimals: oracletypes.DefaultDecimals,
 				},
 			},
 			cmtabci.Validator{
@@ -327,8 +328,9 @@ func TestDefaultHandler(t *testing.T) {
 				Signer: sdk.AccAddress("test").String(),
 				Height: 1,
 				CurrencyPair: oracletypes.CurrencyPair{
-					Base:  "A",
-					Quote: "B",
+					Base:     "A",
+					Quote:    "B",
+					Decimals: oracletypes.DefaultDecimals,
 				},
 			},
 			cmtabci.Validator{
@@ -353,8 +355,9 @@ func TestDefaultHandler(t *testing.T) {
 				Signer: sdk.AccAddress("signer").String(),
 				Height: 1,
 				CurrencyPair: oracletypes.CurrencyPair{
-					Base:  "A",
-					Quote: "B",
+					Base:     "A",
+					Quote:    "B",
+					Decimals: oracletypes.DefaultDecimals,
 				},
 			},
 			cmtabci.Validator{
@@ -385,8 +388,9 @@ func TestDefaultHandler(t *testing.T) {
 				Signer: sdk.AccAddress("signer").String(),
 				Height: 1,
 				CurrencyPair: oracletypes.CurrencyPair{
-					Base:  "A",
-					Quote: "B",
+					Base:     "A",
+					Quote:    "B",
+					Decimals: oracletypes.DefaultDecimals,
 				},
 			},
 			cmtabci.Validator{
@@ -417,8 +421,9 @@ func TestDefaultHandler(t *testing.T) {
 				Signer: sdk.AccAddress("signer").String(),
 				Height: 1,
 				CurrencyPair: oracletypes.CurrencyPair{
-					Base:  "A",
-					Quote: "B",
+					Base:     "A",
+					Quote:    "B",
+					Decimals: oracletypes.DefaultDecimals,
 				},
 			},
 			cmtabci.Validator{

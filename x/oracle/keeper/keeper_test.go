@@ -200,13 +200,15 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 
 func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	cp1 := types.CurrencyPair{
-		Base:  "PAIR",
-		Quote: "1",
+		Base:     "PAIR",
+		Quote:    "1",
+		Decimals: types.DefaultDecimals,
 	}
 
 	cp2 := types.CurrencyPair{
-		Base:  "PAIR",
-		Quote: "2",
+		Base:     "PAIR",
+		Quote:    "2",
+		Decimals: types.DefaultDecimals,
 	}
 
 	s.Run("test setting ids for currency pairs", func() {
@@ -267,8 +269,9 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 
 	s.Run("insert another currency-pair, and expect that unusedID + 1 is used", func() {
 		cp3 := types.CurrencyPair{
-			Base:  "PAIR",
-			Quote: "3",
+			Base:     "PAIR",
+			Quote:    "3",
+			Decimals: types.DefaultDecimals,
 		}
 
 		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp3))

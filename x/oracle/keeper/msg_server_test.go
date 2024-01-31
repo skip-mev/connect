@@ -35,8 +35,9 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				Authority: sdk.AccAddress([]byte("not-authority")).String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{
-						Base:  "A",
-						Quote: "B",
+						Base:     "A",
+						Quote:    "B",
+						Decimals: types.DefaultDecimals,
 					},
 				},
 			},
@@ -48,12 +49,14 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{
-						Base:  "A",
-						Quote: "B",
+						Base:     "A",
+						Quote:    "B",
+						Decimals: types.DefaultDecimals,
 					},
 					{
-						Base:  "C",
-						Quote: "D",
+						Base:     "C",
+						Quote:    "D",
+						Decimals: types.DefaultDecimals,
 					},
 				},
 			},
@@ -65,16 +68,19 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{
-						Base:  "A",
-						Quote: "B",
+						Base:     "A",
+						Quote:    "B",
+						Decimals: types.DefaultDecimals,
 					},
 					{
-						Base:  "C",
-						Quote: "D",
+						Base:     "C",
+						Quote:    "D",
+						Decimals: types.DefaultDecimals,
 					},
 					{
-						Base:  "E",
-						Quote: "F",
+						Base:     "E",
+						Quote:    "F",
+						Decimals: types.DefaultDecimals,
 					},
 				},
 			},
@@ -83,8 +89,9 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 	}
 
 	initCP := types.CurrencyPair{
-		Base:  "E",
-		Quote: "F",
+		Base:     "E",
+		Quote:    "F",
+		Decimals: types.DefaultDecimals,
 	}
 
 	// set genesis quote price for E/F
@@ -139,12 +146,14 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 	// insert CurrencyPairs that will be deleted in the test-cases
 	cp1 := types.CurrencyPair{
-		Base:  "AA",
-		Quote: "BB",
+		Base:     "AA",
+		Quote:    "BB",
+		Decimals: types.DefaultDecimals,
 	}
 	cp2 := types.CurrencyPair{
-		Base:  "CC",
-		Quote: "DD",
+		Base:     "CC",
+		Quote:    "DD",
+		Decimals: types.DefaultDecimals,
 	}
 	gs := types.GenesisState{
 		CurrencyPairGenesis: []types.CurrencyPairGenesis{

@@ -40,15 +40,15 @@ var LocalConfig = config.OracleConfig{
 	// --------------------All Currency Pairs---------------------	//
 	// -----------------------------------------------------------	//
 	CurrencyPairs: []oracletypes.CurrencyPair{
-		oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-		oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-		oracletypes.NewCurrencyPair("ATOM", "USD"),
-		oracletypes.NewCurrencyPair("SOLANA", "USD"),
-		oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-		oracletypes.NewCurrencyPair("AVAX", "USD"),
-		oracletypes.NewCurrencyPair("DYDX", "USD"),
-		oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-		oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+		oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
 	},
 	Production: true,
 	// -----------------------------------------------------------	//

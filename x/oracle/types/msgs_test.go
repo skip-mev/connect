@@ -55,8 +55,8 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 			types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress([]byte("abc")).String(),
 				CurrencyPairs: []types.CurrencyPair{
-					{Base: "A", Quote: "B"},
-					{Base: "C", Quote: "D"},
+					{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
+					{Base: "C", Quote: "D", Decimals: types.DefaultDecimals},
 				},
 			},
 			true,

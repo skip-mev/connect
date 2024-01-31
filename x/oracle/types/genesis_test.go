@@ -20,14 +20,29 @@ func TestGenesisValidation(t *testing.T) {
 			[]types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 				},
 				{
 					// invalid CurrencyPairGenesis
 					CurrencyPair: types.CurrencyPair{
-						Base: "BB",
+						Base:     "BB",
+						Decimals: types.DefaultDecimals},
+				},
+			},
+			0,
+			false,
+		},
+		{
+			"if any of the currency-pair geneses have invalid decimals - fail",
+			[]types.CurrencyPairGenesis{
+				{
+					CurrencyPair: types.CurrencyPair{
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: 0,
 					},
 				},
 			},
@@ -39,8 +54,9 @@ func TestGenesisValidation(t *testing.T) {
 			[]types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 					Nonce: 10,
 				},
@@ -53,16 +69,18 @@ func TestGenesisValidation(t *testing.T) {
 			[]types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 					Id: 0,
 				},
 				{
 					// invalid CurrencyPairGenesis
 					CurrencyPair: types.CurrencyPair{
-						Base:  "BB",
-						Quote: "CC",
+						Base:     "BB",
+						Quote:    "CC",
+						Decimals: types.DefaultDecimals,
 					},
 					Id: 1,
 				},
@@ -75,15 +93,17 @@ func TestGenesisValidation(t *testing.T) {
 			[]types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 					Id: 1,
 				},
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "BB",
-						Quote: "CC",
+						Base:     "BB",
+						Quote:    "CC",
+						Decimals: types.DefaultDecimals,
 					},
 					Id: 1,
 				},
@@ -96,15 +116,17 @@ func TestGenesisValidation(t *testing.T) {
 			[]types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 					Id: 1,
 				},
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 					Id: 2,
 				},

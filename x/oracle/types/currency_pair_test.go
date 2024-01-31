@@ -101,13 +101,13 @@ func TestToFromString(t *testing.T) {
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
 			types.CurrencyPairString("A", "B"),
-			types.CurrencyPair{Base: "A", Quote: "B"},
+			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case, return the original CurrencyPair",
 			"a/B",
-			types.CurrencyPair{Base: "A", Quote: "B"},
+			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
 			true,
 		},
 	}
@@ -121,31 +121,6 @@ func TestToFromString(t *testing.T) {
 			} else {
 				assert.NotNil(t, err)
 			}
-		})
-	}
-}
-
-func TestDecimals(t *testing.T) {
-	tcs := []struct {
-		name string
-		cp   types.CurrencyPair
-		dec  int
-	}{
-		{
-			name: "return 18",
-			cp:   types.CurrencyPair{Base: "A", Quote: "ETHEREUM", Decimals: 18},
-			dec:  18,
-		},
-		{
-			"return default value",
-			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
-			8,
-		},
-	}
-
-	for _, tc := range tcs {
-		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.cp.Decimals, tc.dec)
 		})
 	}
 }

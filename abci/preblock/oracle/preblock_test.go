@@ -61,16 +61,19 @@ func (s *PreBlockTestSuite) SetupTest() {
 
 	s.currencyPairs = []oracletypes.CurrencyPair{
 		{
-			Base:  "BTC",
-			Quote: "ETH",
+			Base:     "BTC",
+			Quote:    "ETH",
+			Decimals: oracletypes.DefaultDecimals,
 		},
 		{
-			Base:  "BTC",
-			Quote: "USD",
+			Base:     "BTC",
+			Quote:    "USD",
+			Decimals: oracletypes.DefaultDecimals,
 		},
 		{
-			Base:  "ETH",
-			Quote: "USD",
+			Base:     "ETH",
+			Quote:    "USD",
+			Decimals: oracletypes.DefaultDecimals,
 		},
 	}
 	genesisCPs := []oracletypes.CurrencyPairGenesis{

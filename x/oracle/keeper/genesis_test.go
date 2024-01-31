@@ -23,14 +23,16 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 				CurrencyPairGenesis: []types.CurrencyPairGenesis{
 					{
 						CurrencyPair: types.CurrencyPair{
-							Base:  "AA",
-							Quote: "BB",
+							Base:     "AA",
+							Quote:    "BB",
+							Decimals: types.DefaultDecimals,
 						},
 					},
 					{
 						// invalid CurrencyPairGenesis
 						CurrencyPair: types.CurrencyPair{
-							Base: "BB",
+							Base:     "BB",
+							Decimals: types.DefaultDecimals,
 						},
 					},
 				},
@@ -43,15 +45,17 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 				CurrencyPairGenesis: []types.CurrencyPairGenesis{
 					{
 						CurrencyPair: types.CurrencyPair{
-							Base:  "AA",
-							Quote: "BB",
+							Base:     "AA",
+							Quote:    "BB",
+							Decimals: types.DefaultDecimals,
 						},
 						Id: 0,
 					},
 					{
 						CurrencyPair: types.CurrencyPair{
-							Base:  "BB",
-							Quote: "CC",
+							Base:     "BB",
+							Quote:    "CC",
+							Decimals: types.DefaultDecimals,
 						},
 						CurrencyPairPrice: &types.QuotePrice{
 							Price: sdkmath.NewInt(100),
@@ -121,15 +125,17 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 	s.T().Run("ExportGenesis with all valid QuotePrices", func(t *testing.T) {
 		// insert multiple currency pairs
 		cp1 := types.CurrencyPair{
-			Base:  "AA",
-			Quote: "BB",
+			Base:     "AA",
+			Quote:    "BB",
+			Decimals: types.DefaultDecimals,
 		}
 		qp1 := types.QuotePrice{
 			Price: sdkmath.NewInt(100),
 		}
 		cp2 := types.CurrencyPair{
-			Base:  "CC",
-			Quote: "DD",
+			Base:     "CC",
+			Quote:    "DD",
+			Decimals: types.DefaultDecimals,
 		}
 		qp2 := types.QuotePrice{
 			Price: sdkmath.NewInt(120),
@@ -169,8 +175,9 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			CurrencyPairGenesis: []types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:     "AA",
+						Quote:    "BB",
+						Decimals: types.DefaultDecimals,
 					},
 					CurrencyPairPrice: &types.QuotePrice{
 						Price: sdkmath.NewInt(100),
@@ -180,8 +187,9 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 				},
 				{
 					CurrencyPair: types.CurrencyPair{
-						Base:  "CC",
-						Quote: "DD",
+						Base:     "CC",
+						Quote:    "DD",
+						Decimals: types.DefaultDecimals,
 					},
 					CurrencyPairPrice: &types.QuotePrice{
 						Price: sdkmath.NewInt(101),
@@ -201,12 +209,14 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			Authority: moduleAuthAddr.String(),
 			CurrencyPairs: []types.CurrencyPair{
 				{
-					Base:  "EE",
-					Quote: "FF",
+					Base:     "EE",
+					Quote:    "FF",
+					Decimals: types.DefaultDecimals,
 				},
 				{
-					Base:  "GG",
-					Quote: "HH",
+					Base:     "GG",
+					Quote:    "HH",
+					Decimals: types.DefaultDecimals,
 				},
 			},
 		})
@@ -252,9 +262,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 
 			// check IDs
 			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
-
 			assert.True(s.T(), ok)
-
 			assert.Equal(s.T(), id, cpg.Id)
 		}
 	})

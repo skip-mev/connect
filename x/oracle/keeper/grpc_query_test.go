@@ -70,8 +70,9 @@ func (s *KeeperTestSuite) TestGetPrice() {
 	cpg := []types.CurrencyPairGenesis{
 		{
 			CurrencyPair: types.CurrencyPair{
-				Base:  "AA",
-				Quote: "ETHEREUM",
+				Base:     "AA",
+				Quote:    "ETHEREUM",
+				Decimals: types.DefaultDecimals,
 			},
 			CurrencyPairPrice: &types.QuotePrice{
 				Price: sdkmath.NewInt(100),
@@ -81,8 +82,9 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		},
 		{
 			CurrencyPair: types.CurrencyPair{
-				Base:  "CC",
-				Quote: "BB",
+				Base:     "CC",
+				Quote:    "BB",
+				Decimals: types.DefaultDecimals,
 			},
 			Id: 1,
 		},
