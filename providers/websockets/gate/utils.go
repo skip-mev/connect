@@ -29,6 +29,7 @@ var (
 		ReadTimeout:                   config.DefaultReadTimeout,
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		PingInterval:                  config.DefaultPingInterval,
+		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 

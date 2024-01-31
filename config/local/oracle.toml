@@ -24,6 +24,7 @@ production = true
     read_deadline = "0s"
     write_deadline = "0s"
     ping_interval = "0s"
+    max_read_error_count = 0
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "binance"
@@ -77,6 +78,7 @@ production = true
     read_deadline = "0s"
     write_deadline = "0s"
     ping_interval = "0s"
+    max_read_error_count = 0
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "coinbase"
@@ -150,6 +152,7 @@ production = true
     read_deadline = "0s"
     write_deadline = "0s"
     ping_interval = "0s"
+    max_read_error_count = 0
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "coingecko"
@@ -218,7 +221,8 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "0s"
-    max_subscriptions_per_connection = 30
+    max_read_error_count = 100
+    max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "bitfinex"
     [providers.market_config.currency_pair_to_market_configs]
@@ -281,6 +285,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "10s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "bitstamp"
@@ -339,6 +344,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "15s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "bybit"
@@ -397,6 +403,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "5s"
     ping_interval = "0s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "coinbase"
@@ -470,6 +477,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "0s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "crypto_dot_com"
@@ -543,6 +551,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "0s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "gate.io"
@@ -611,6 +620,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "0s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "huobi"
@@ -679,6 +689,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "0s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "kraken"
@@ -747,6 +758,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "10s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "kucoin"
@@ -820,7 +832,8 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "20s"
-    max_subscriptions_per_connection = 30
+    max_read_error_count = 100
+    max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "mexc"
     [providers.market_config.currency_pair_to_market_configs]
@@ -878,6 +891,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "0s"
+    max_read_error_count = 100
     max_subscriptions_per_connection = 0
   [providers.market_config]
     name = "okx"

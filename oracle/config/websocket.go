@@ -43,9 +43,16 @@ const (
 	// ping messages to the server.
 	DefaultPingInterval = 0 * time.Second
 
+	// DefaultMaxReadErrorCount is the default maximum number of read errors that
+	// the provider will tolerate before closing the connection and attempting to
+	// reconnect. This default value utilized by the gorilla/websocket package is
+	// 1000, but we set it to a lower value to allow the provider to reconnect
+	// faster.
+	DefaultMaxReadErrorCount = 100
+
 	// DefaultMaxSubscriptionsPerConnection is the default maximum subscriptions
-	// an provider can handle per-connection.  When this value is 0, one connection
-	// will handle
+	// a provider can handle per-connection.  When this value is 0, one connection
+	// will handle all subscriptions.
 	DefaultMaxSubscriptionsPerConnection = 0
 )
 
@@ -101,6 +108,10 @@ type WebSocketConfig struct {
 	// of 0 disables pings.
 	PingInterval time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
 
+	// MaxReadErrorCount is the maximum number of read errors that the provider
+	// will tolerate before closing the connection and attempting to reconnect.
+	MaxReadErrorCount int `mapstructure:"max_read_error_count" toml:"max_read_error_count"`
+
 	// MaxSubscriptionsPerConnection is the maximum amount of subscriptions that
 	// can be assigned to a single connection for this provider.  The null value (0),
 	// indicates that there is no limit per connection.
@@ -151,6 +162,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.PingInterval < 0 {
 		return fmt.Errorf("websocket ping interval cannot be negative")
+	}
+
+	if c.MaxReadErrorCount < 0 {
+		return fmt.Errorf("websocket max read error count cannot be negative")
 	}
 
 	if c.MaxSubscriptionsPerConnection < 0 {
