@@ -11,6 +11,11 @@ const (
 	ABCIMethodLabel       = "abci_method"
 	ChainIDLabel          = "chain_id"
 	ABCIMethodStatusLabel = "abci_method_status"
+	MessageTypeLabel      = "message_type"
+	ValidatorLabel        = "validator"
+
+	// helpful constants
+	notImplemented = "not_implemented"
 )
 
 // StatusFromError returns a Labeller that can be used to label metrics based on the error. This
@@ -20,6 +25,26 @@ func StatusFromError(err error) Labeller {
 		return Success{}
 	}
 	return Failure{}
+}
+
+// MessageType is an identifier used to represent the different types of data that is transmitted between validators in Slinky.
+// This ID is used to paginate metrics corresponding to these messages
+type MessageType int
+
+const (
+	ExtendedCommit MessageType = iota
+	VoteExtension
+)
+
+func (m MessageType) String() string {
+	switch m {
+	case ExtendedCommit:
+		return "extended_commit"
+	case VoteExtension:
+		return "vote_extension"
+	default:
+		return notImplemented
+	}
 }
 
 // ABCIMethod is an identifier for ABCI methods, this is used to paginate latencies / responses in prometheus
@@ -47,7 +72,30 @@ func (a ABCIMethod) String() string {
 	case PreBlock:
 		return "pre_blocker"
 	default:
-		return "not_implemented"
+		return notImplemented
+	}
+}
+
+// ReportStatus is an identifier for the status of a report, this is used to label what kind of report a validator has given, i.e
+// absent, missing_price, with_price
+type ReportStatus int
+
+const (
+	Absent ReportStatus = iota
+	MissingPrice
+	WithPrice
+)
+
+func (rs ReportStatus) String() string {
+	switch rs {
+	case Absent:
+		return "absent"
+	case MissingPrice:
+		return "missing_price"
+	case WithPrice:
+		return "with_price"
+	default:
+		return notImplemented
 	}
 }
 

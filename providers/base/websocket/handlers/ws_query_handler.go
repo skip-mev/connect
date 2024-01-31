@@ -40,6 +40,9 @@ type WebSocketQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.Resp
 	ids []K
 }
 
+// WebSocketSubHandler encompasses the connection and data management of a subset of the total data to be handled.
+// Multiple SubHandlers are used in the case where multiple connections must be used to manage the full set
+// of data for a given provider.
 type WebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	// The connection handler is used to manage the connection to the data provider. This
 	// establishes the connection and sends/receives messages to/from the data provider.
@@ -53,10 +56,12 @@ type WebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseVa
 	subIDs []K
 }
 
+// SetIDs sets the sub IDs to be used by a WebSocketSubHandler.
 func (sh *WebSocketSubHandler[K, V]) SetIDs(subIDs []K) {
 	sh.subIDs = subIDs
 }
 
+// NewWebSocketSubHandler creates a new WebSocketSubHandler with the given connection and data handlers.
 func NewWebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	connHandler WebSocketConnHandler,
 	dataHandler WebSocketDataHandler[K, V],

@@ -35,10 +35,6 @@ type PreBlockHandler struct { //golint:ignore
 	// metrics for this validator.
 	metrics servicemetrics.Metrics
 
-	// validatorAddress is the consensus address of the validator running this
-	// oracle.
-	validatorAddress sdk.ConsAddress
-
 	// keeper is the keeper for the oracle module. This is utilized to write
 	// oracle data to state.
 	keeper Keeper
@@ -63,7 +59,6 @@ func NewOraclePreBlockHandler(
 	logger log.Logger,
 	aggregateFn aggregator.AggregateFnFromContext[string, map[oracletypes.CurrencyPair]*big.Int],
 	oracleKeeper Keeper,
-	validatorConsAddress sdk.ConsAddress,
 	metrics servicemetrics.Metrics,
 	strategy currencypair.CurrencyPairStrategy,
 	veCodec codec.VoteExtensionCodec,
@@ -78,7 +73,6 @@ func NewOraclePreBlockHandler(
 		priceAggregator:      priceAggregator,
 		aggregateFnWithCtx:   aggregateFn,
 		keeper:               oracleKeeper,
-		validatorAddress:     validatorConsAddress,
 		metrics:              metrics,
 		currencyPairStrategy: strategy,
 		voteExtensionCodec:   veCodec,
@@ -92,6 +86,7 @@ func NewOraclePreBlockHandler(
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
 		start := time.Now()
+		var prices map[oracletypes.CurrencyPair]*big.Int
 		defer func() {
 			// only measure latency in Finalize
 			if ctx.ExecMode() == sdk.ExecModeFinalize {
@@ -102,6 +97,15 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 					"latency (seconds)", latency.Seconds(),
 				)
 				types.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.PreBlock)
+
+				// record prices + ticker metrics per validator (only do so if there was no error writing the prices)
+				if err == nil && prices != nil {
+					// record price metrics
+					h.recordPrices(prices)
+
+					// record validator report metrics
+					h.recordValidatorReports(ctx, req.DecidedLastCommit)
+				}
 			}
 		}()
 
@@ -135,7 +139,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 		}
 
 		// Aggregate all of the oracle vote extensions into a single set of prices.
-		prices, err := h.AggregateOracleVotes(ctx, votes)
+		prices, err = h.AggregateOracleVotes(ctx, votes)
 		if err != nil {
 			h.logger.Error(
 				"failed to aggregate oracle votes",

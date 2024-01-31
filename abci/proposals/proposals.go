@@ -281,9 +281,11 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 					err
 			}
 
+			extCommitBz := req.Txs[OracleInfoIndex]
+
 			// Validate the vote extensions included in the proposal.
 			var extInfo cometabci.ExtendedCommitInfo
-			extInfo, err = h.extendedCommitCodec.Decode(req.Txs[OracleInfoIndex])
+			extInfo, err = h.extendedCommitCodec.Decode(extCommitBz)
 			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
 				err = types.CodecError{
@@ -307,6 +309,9 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
+
+			// observe the size of the extended commit info
+			h.metrics.ObserveMessageSize(servicemetrics.ExtendedCommit, len(extCommitBz))
 
 			// Process the transactions in the proposal with the oracle data removed.
 			req.Txs = req.Txs[NumInjectedTxs:]
