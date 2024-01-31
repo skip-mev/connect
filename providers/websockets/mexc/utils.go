@@ -38,7 +38,7 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		PingInterval:        DefaultPingInterval,
-		MaxReadErrorCount:   config.DefaultReadBufferSize,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.

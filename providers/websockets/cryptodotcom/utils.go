@@ -35,7 +35,7 @@ var (
 		EnableCompression:   config.DefaultEnableCompression,
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
-		MaxReadErrorCount:   config.DefaultReadBufferSize,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Crypto.com.
