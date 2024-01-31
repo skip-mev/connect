@@ -7,10 +7,13 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	cometabci "github.com/cometbft/cometbft/abci/types"
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/skip-mev/slinky/abci/proposals"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -65,24 +68,49 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 	return nil
 }
 
-// recordMetrics reports whether the validator's vote-extension was included in the last commit, and
-// the number of tickers for which the validator reported a price.
-func (h *PreBlockHandler) recordMetrics(validatorVotePresent bool) {
-	// determine which tickers this validator reported prices for
-	validatorPrices := h.priceAggregator.GetDataByProvider(h.validatorAddress.String())
+// recordPrice records all the given prices per ticker, and reports them as a float64
+func (h *PreBlockHandler) recordPrices(prices map[oracletypes.CurrencyPair]*big.Int) {
+	for ticker, price := range prices {
+		floatPrice, _ := price.Float64()
+		h.metrics.ObservePriceForTicker(ticker, floatPrice)
+	}
+}
 
-	h.logger.Info(
-		"recording metrics for validator",
-		"validator", h.validatorAddress.String(),
-		"is_vote_present_in_commit", validatorVotePresent,
-		"num_tickers", len(validatorPrices),
-	)
+// recordValidatorReports takes the commit decided for this block, and for each validator in the commit, records
+// whether their vote was included in the commit, whether they reported a price for each currency-pair, and if so
+// the price they reported.
+func (h *PreBlockHandler) recordValidatorReports(ctx sdk.Context, decidedCommit cometabci.CommitInfo) {
+	pricesToReport := h.keeper.GetAllCurrencyPairs(ctx)
 
-	// determine if the validator's vote was included in the last commit
-	h.metrics.AddVoteIncludedInLastCommit(validatorVotePresent)
+	// iterate over each validator in the commit
+	for _, vote := range decidedCommit.Votes {
+		var nilVote bool
+		validator := sdk.ConsAddress(vote.Validator.Address).String()
+		// if the validator voted nil, record that status
+		if vote.BlockIdFlag != cometproto.BlockIDFlagCommit {
+			nilVote = true
+		}
+		// iterate over each currency-pair, and record whether the validator reported a price for it
+		validatorPrices := h.priceAggregator.GetDataByProvider(validator)
+		for _, cp := range pricesToReport {
+			// if the validator reported a nil-vote, record that and skip
+			if nilVote {
+				h.metrics.AddValidatorReportForTicker(validator, cp, servicemetrics.Absent)
+				continue
+			}
 
-	for ticker := range validatorPrices {
-		h.metrics.AddTickerInclusionStatus(ticker.String(), true)
+			// otherwise, check if the validator reported a price for the currency-pair
+			price, ok := validatorPrices[cp]
+			if !ok || price == nil {
+				h.metrics.AddValidatorReportForTicker(validator, cp, servicemetrics.MissingPrice)
+				continue
+			}
+
+			// if the validator reported a price, record that price
+			floatPrice, _ := price.Float64()
+			h.metrics.AddValidatorReportForTicker(validator, cp, servicemetrics.WithPrice)
+			h.metrics.AddValidatorPriceForTicker(validator, cp, floatPrice)
+		}
 	}
 }
 
