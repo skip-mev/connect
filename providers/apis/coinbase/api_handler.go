@@ -97,7 +97,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Convert the float64 price into a big.Int.
-	price, err := math.Float64StringToBigInt(result.Data.Amount, cp.Decimals())
+	price, err := math.Float64StringToBigInt(result.Data.Amount, cp.Decimals)
 	if err != nil {
 		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
 	}

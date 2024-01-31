@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracle_types "github.com/skip-mev/slinky/x/oracle/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestAlertUnmarshal(t *testing.T) {
@@ -24,7 +24,7 @@ func TestAlertUnmarshal(t *testing.T) {
 	alert := types.Alert{
 		Height: 1,
 		Signer: "signer",
-		CurrencyPair: oracle_types.CurrencyPair{
+		CurrencyPair: oracletypes.CurrencyPair{
 			Base:  "base",
 			Quote: "quote",
 		},
@@ -55,7 +55,7 @@ func TestAlertValidateBasic(t *testing.T) {
 			types.Alert{
 				Height: 1,
 				Signer: "",
-				CurrencyPair: oracle_types.CurrencyPair{
+				CurrencyPair: oracletypes.CurrencyPair{
 					Base:  "BASE",
 					Quote: "QUOTE",
 				},
@@ -67,7 +67,7 @@ func TestAlertValidateBasic(t *testing.T) {
 			types.Alert{
 				Height: 1,
 				Signer: sdk.AccAddress("signer").String(),
-				CurrencyPair: oracle_types.CurrencyPair{
+				CurrencyPair: oracletypes.CurrencyPair{
 					Base:  "",
 					Quote: "",
 				},
@@ -79,7 +79,7 @@ func TestAlertValidateBasic(t *testing.T) {
 			alert: types.Alert{
 				Height: 1,
 				Signer: sdk.AccAddress("signer").String(),
-				CurrencyPair: oracle_types.CurrencyPair{
+				CurrencyPair: oracletypes.CurrencyPair{
 					Base:  "BASE",
 					Quote: "QUOTE",
 				},
@@ -105,7 +105,7 @@ func TestAlertUID(t *testing.T) {
 	alert1 := types.Alert{
 		Height: 1,
 		Signer: "signer",
-		CurrencyPair: oracle_types.CurrencyPair{
+		CurrencyPair: oracletypes.CurrencyPair{
 			Base:  "base",
 			Quote: "quote",
 		},
@@ -114,7 +114,7 @@ func TestAlertUID(t *testing.T) {
 	alert2 := types.Alert{
 		Height: 2,
 		Signer: "signer",
-		CurrencyPair: oracle_types.CurrencyPair{
+		CurrencyPair: oracletypes.CurrencyPair{
 			Base:  "base",
 			Quote: "quote",
 		},
@@ -196,7 +196,7 @@ func TestAlertWithStatus(t *testing.T) {
 				Alert: types.Alert{
 					Height: 1,
 					Signer: "",
-					CurrencyPair: oracle_types.CurrencyPair{
+					CurrencyPair: oracletypes.CurrencyPair{
 						Base:  "BASE",
 						Quote: "QUOTE",
 					},
@@ -208,7 +208,7 @@ func TestAlertWithStatus(t *testing.T) {
 		{
 			"invalid alert-status",
 			types.AlertWithStatus{
-				Alert: types.NewAlert(1, sdk.AccAddress("signer"), oracle_types.NewCurrencyPair("BASE", "QUOTE")),
+				Alert: types.NewAlert(1, sdk.AccAddress("signer"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 				Status: types.AlertStatus{
 					SubmissionHeight: 3,
 					PurgeHeight:      2,
@@ -219,7 +219,7 @@ func TestAlertWithStatus(t *testing.T) {
 		{
 			"valid alert with status",
 			types.NewAlertWithStatus(
-				types.NewAlert(1, sdk.AccAddress("signer"), oracle_types.NewCurrencyPair("BASE", "QUOTE")),
+				types.NewAlert(1, sdk.AccAddress("signer"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 				types.NewAlertStatus(1, 2, time.Now(), 1),
 			),
 			true,

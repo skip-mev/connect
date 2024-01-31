@@ -18,19 +18,19 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 
 	// set three alerts (this shld be purged first)
 	alert1 := types.NewAlertWithStatus(
-		types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(10, 10, time.Time{}, types.Concluded),
 	)
 
 	// this will be purged next
 	alert2 := types.NewAlertWithStatus(
-		types.NewAlert(2, sdk.AccAddress("abc2"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		types.NewAlert(2, sdk.AccAddress("abc2"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(10, 11, time.Time{}, types.Concluded),
 	)
 
 	// this will be purged last
 	alert3 := types.NewAlertWithStatus(
-		types.NewAlert(3, sdk.AccAddress("abc3"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		types.NewAlert(3, sdk.AccAddress("abc3"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(10, 12, time.Time{}, types.Unconcluded),
 	)
 

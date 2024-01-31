@@ -134,7 +134,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,
-				Decimals: uint64(8),
+				Decimals: 8,
 				Id:       1,
 			},
 			true,
@@ -142,14 +142,14 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &types.CurrencyPair{Base: "AA", Quote: "ETHEREUM"}},
+				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &types.CurrencyPair{Base: "AA", Quote: "ETHEREUM", Decimals: types.EthereumDecimals}},
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
 				Price: &types.QuotePrice{
 					Price: sdkmath.NewInt(100),
 				},
-				Decimals: uint64(18),
+				Decimals: 18,
 				Id:       2,
 			},
 			true,

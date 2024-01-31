@@ -120,7 +120,7 @@ func (h *WebsocketDataHandler) handleStream(
 
 	lastPrice := dataArr[6]
 	// Convert the price to a big int.
-	price := math.Float64ToBigInt(lastPrice.(float64), cp.Decimals())
+	price := math.Float64ToBigInt(lastPrice.(float64), cp.Decimals)
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil

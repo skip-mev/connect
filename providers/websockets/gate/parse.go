@@ -59,7 +59,7 @@ func (h *WebsocketDataHandler) parseTickerStream(
 	// Parse the price update.
 	cp := market.CurrencyPair
 	priceStr := stream.Result.Last
-	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals())
+	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals)
 	if err != nil {
 		unresolved[cp] = fmt.Errorf("failed to parse price %s: %s", priceStr, err)
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), unresolved[cp]

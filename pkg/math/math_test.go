@@ -53,7 +53,7 @@ func TestFloat64ToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    float64
-		base     int
+		decimals int64
 		expected *big.Int
 	}{
 		{
@@ -90,7 +90,7 @@ func TestFloat64ToBigInt(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := math.Float64ToBigInt(tc.input, tc.base)
+			result := math.Float64ToBigInt(tc.input, tc.decimals)
 			require.Equal(t, tc.expected, result)
 		})
 	}

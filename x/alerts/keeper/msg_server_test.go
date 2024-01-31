@@ -30,7 +30,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 		valid bool
 	}
 
-	validAlert := types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD"))
+	validAlert := types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals))
 
 	s.ctx = s.ctx.WithBlockHeight(10)
 	s.ctx = s.ctx.WithBlockTime(time.Now())
@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				Alert: types.Alert{
 					Height:       1,
 					Signer:       "",
-					CurrencyPair: oracletypes.NewCurrencyPair("base", "quote"),
+					CurrencyPair: oracletypes.NewCurrencyPair("base", "quote", oracletypes.DefaultDecimals),
 				},
 			},
 			valid: false,
@@ -65,7 +65,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				s.Require().NoError(err)
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("base", "quote")),
+				Alert: types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("base", "quote", oracletypes.DefaultDecimals)),
 			},
 			valid: false,
 		},
@@ -82,7 +82,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(7, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+				Alert: types.NewAlert(7, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 			},
 			valid: false,
 		},
@@ -100,13 +100,13 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 
 				// set the alert to state
 				alert := types.NewAlertWithStatus(
-					types.NewAlert(9, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(9, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 					types.NewAlertStatus(9, 11, s.ctx.BlockTime(), types.Unconcluded),
 				)
 				s.Require().NoError(s.alertKeeper.SetAlert(ctx, alert))
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(9, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+				Alert: types.NewAlert(9, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 			},
 			valid: false,
 		},
@@ -123,10 +123,10 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a failed response from the oracle keeper (no currency pair)
-				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD")).Return(false).Once()
+				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)).Return(false).Once()
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
+				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 			},
 			valid: false,
 		},
@@ -143,7 +143,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD")).Return(true).Once()
+				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)).Return(true).Once()
 
 				// expect a failed response from the bank keeper
 				s.bk.On("SendCoinsFromAccountToModule",
@@ -154,7 +154,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				).Return(fmt.Errorf("bank error")).Once()
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
+				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 			},
 			valid: false,
 		},
@@ -176,7 +176,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				// expect a correct response from the oracle keeper
 				s.ok.On("HasCurrencyPair",
 					mock.Anything,
-					oracletypes.NewCurrencyPair("BTC", "USD"),
+					oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals),
 				).Return(true).Once()
 
 				// expect a correct response from the bank keeper
@@ -229,7 +229,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 	alert := types.Alert{
 		Height:       1,
 		Signer:       sdk.AccAddress("cosmos1").String(),
-		CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
+		CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals),
 	}
 
 	conclusion := &types.MultiSigConclusion{

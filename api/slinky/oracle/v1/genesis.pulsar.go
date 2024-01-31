@@ -107,8 +107,8 @@ func (x *fastReflection_CurrencyPair) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if x.Decimals != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Decimals)
+	if x.Decimals != int64(0) {
+		value := protoreflect.ValueOfInt64(x.Decimals)
 		if !f(fd_CurrencyPair_decimals, value) {
 			return
 		}
@@ -133,7 +133,7 @@ func (x *fastReflection_CurrencyPair) Has(fd protoreflect.FieldDescriptor) bool 
 	case "slinky.oracle.v1.CurrencyPair.quote":
 		return x.Quote != ""
 	case "slinky.oracle.v1.CurrencyPair.decimals":
-		return x.Decimals != uint64(0)
+		return x.Decimals != int64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
@@ -155,7 +155,7 @@ func (x *fastReflection_CurrencyPair) Clear(fd protoreflect.FieldDescriptor) {
 	case "slinky.oracle.v1.CurrencyPair.quote":
 		x.Quote = ""
 	case "slinky.oracle.v1.CurrencyPair.decimals":
-		x.Decimals = uint64(0)
+		x.Decimals = int64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
@@ -180,7 +180,7 @@ func (x *fastReflection_CurrencyPair) Get(descriptor protoreflect.FieldDescripto
 		return protoreflect.ValueOfString(value)
 	case "slinky.oracle.v1.CurrencyPair.decimals":
 		value := x.Decimals
-		return protoreflect.ValueOfUint64(value)
+		return protoreflect.ValueOfInt64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
@@ -206,7 +206,7 @@ func (x *fastReflection_CurrencyPair) Set(fd protoreflect.FieldDescriptor, value
 	case "slinky.oracle.v1.CurrencyPair.quote":
 		x.Quote = value.Interface().(string)
 	case "slinky.oracle.v1.CurrencyPair.decimals":
-		x.Decimals = value.Uint()
+		x.Decimals = value.Int()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
@@ -251,7 +251,7 @@ func (x *fastReflection_CurrencyPair) NewField(fd protoreflect.FieldDescriptor) 
 	case "slinky.oracle.v1.CurrencyPair.quote":
 		return protoreflect.ValueOfString("")
 	case "slinky.oracle.v1.CurrencyPair.decimals":
-		return protoreflect.ValueOfUint64(uint64(0))
+		return protoreflect.ValueOfInt64(int64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
@@ -507,7 +507,7 @@ func (x *fastReflection_CurrencyPair) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Decimals |= uint64(b&0x7F) << shift
+					x.Decimals |= int64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -2802,7 +2802,7 @@ type CurrencyPair struct {
 	// Quote is the quote symbol for the asset pair.
 	Quote string `protobuf:"bytes,2,opt,name=quote,proto3" json:"quote,omitempty"`
 	// Decimals is the number of precision decimals to use for this pair.
-	Decimals uint64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
+	Decimals int64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
 }
 
 func (x *CurrencyPair) Reset() {
@@ -2839,7 +2839,7 @@ func (x *CurrencyPair) GetQuote() string {
 	return ""
 }
 
-func (x *CurrencyPair) GetDecimals() uint64 {
+func (x *CurrencyPair) GetDecimals() int64 {
 	if x != nil {
 		return x.Decimals
 	}
@@ -3091,7 +3091,7 @@ var file_slinky_oracle_v1_genesis_proto_rawDesc = []byte{
 	0x50, 0x61, 0x69, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x62, 0x61, 0x73, 0x65, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x04, 0x62, 0x61, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x71, 0x75, 0x6f, 0x74,
 	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x12, 0x1a,
-	0x0a, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x0a, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03,
 	0x52, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73, 0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00,
 	0x80, 0xdc, 0x20, 0x00, 0x22, 0xc1, 0x01, 0x0a, 0x0a, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x50, 0x72,
 	0x69, 0x63, 0x65, 0x12, 0x41, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01,

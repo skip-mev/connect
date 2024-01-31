@@ -36,7 +36,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	}
 
 	// Convert the price.
-	price, err := math.Float64StringToBigInt(msg.Data.Price, cp.Decimals())
+	price, err := math.Float64StringToBigInt(msg.Data.Price, cp.Decimals)
 	if err != nil {
 		unResolved[cp] = err
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err

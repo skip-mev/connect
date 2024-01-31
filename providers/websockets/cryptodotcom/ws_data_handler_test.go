@@ -26,23 +26,23 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {
 					Ticker:       "BTCUSD-PERP",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
 				"ETHEREUM/USD": {
 					Ticker:       "ETHUSD-PERP",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},
 				"SOLANA/USD": {
 					Ticker:       "SOLUSD-PERP",
-					CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
 				},
 			},
 		},
 	}
 
-	btcusd = oracletypes.NewCurrencyPair("BITCOIN", "USD")
-	ethusd = oracletypes.NewCurrencyPair("ETHEREUM", "USD")
-	solusd = oracletypes.NewCurrencyPair("SOLANA", "USD")
+	btcusd = oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals)
+	ethusd = oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals)
+	solusd = oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals)
 
 	logger = zap.NewExample()
 )
@@ -345,7 +345,7 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one found and one not found",
-			cps:  []oracletypes.CurrencyPair{btcusd, oracletypes.NewCurrencyPair("MOG", "USD")},
+			cps:  []oracletypes.CurrencyPair{btcusd, oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals)},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
 				Params: cryptodotcom.InstrumentParams{

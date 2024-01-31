@@ -6,14 +6,16 @@ import (
 )
 
 const (
-	ethereum = "ETHEREUM"
+	DefaultDecimals  = 8
+	EthereumDecimals = 18
 )
 
 // NewCurrencyPair returns a new CurrencyPair with the given base and quote strings.
-func NewCurrencyPair(base, quote string) CurrencyPair {
+func NewCurrencyPair(base, quote string, decimals int64) CurrencyPair {
 	return CurrencyPair{
-		Base:  base,
-		Quote: quote,
+		Base:     base,
+		Quote:    quote,
+		Decimals: decimals,
 	}
 }
 
@@ -31,6 +33,11 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	if strings.ToUpper(cp.Quote) != cp.Quote {
 		return fmt.Errorf("incorrectly formatted quote string, expected: %s got: %s", strings.ToUpper(cp.Quote), cp.Quote)
 	}
+
+	if cp.Decimals <= 0 {
+		return fmt.Errorf("decimals must be greater than 0")
+	}
+
 	return nil
 }
 
@@ -41,7 +48,7 @@ func (cp CurrencyPair) String() string {
 
 // CurrencyPairString constructs and returns the string representation of a currency pair.
 func CurrencyPairString(base, quote string) string {
-	cp := NewCurrencyPair(base, quote)
+	cp := NewCurrencyPair(base, quote, DefaultDecimals)
 	return cp.String()
 }
 
@@ -51,20 +58,12 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)
 	}
 	cp := CurrencyPair{
-		Base:  strings.ToUpper(split[0]),
-		Quote: strings.ToUpper(split[1]),
+		Base:     strings.ToUpper(split[0]),
+		Quote:    strings.ToUpper(split[1]),
+		Decimals: DefaultDecimals,
 	}
 
 	return cp, cp.ValidateBasic()
-}
-
-// Decimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
-// the number of decimals is 18. Otherwise, the decimals will be reorted to 8.
-func (cp *CurrencyPair) Decimals() int {
-	if strings.ToUpper(cp.Quote) == ethereum {
-		return 18
-	}
-	return 8
 }
 
 // NewCurrencyPairState returns a new CurrencyPairState given an Id, nonce, and QuotePrice.

@@ -29,8 +29,8 @@ import (
 )
 
 var (
-	btcUSD     = oracletypes.NewCurrencyPair("BTC", "USD")
-	ethUSD     = oracletypes.NewCurrencyPair("ETH", "USD")
+	btcUSD     = oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
+	ethUSD     = oracletypes.NewCurrencyPair("ETH", "USD", oracletypes.DefaultDecimals)
 	oneHundred = big.NewInt(100)
 	twoHundred = big.NewInt(200)
 

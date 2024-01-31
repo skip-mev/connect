@@ -15,7 +15,7 @@ func (s *KeeperTestSuite) TestUpdatePriceFeeds() {
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 
-	cp := oracletypes.NewCurrencyPair("btc", "usd")
+	cp := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
 
 	priceFeedUpdates := slakeeper.NewPriceFeedUpdates()
 	priceFeedUpdates.CurrencyPairs[cp] = struct{}{}
@@ -144,8 +144,8 @@ func (s *KeeperTestSuite) TestUpdatePriceFeedsForSLA() {
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
 
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
-	cp2 := oracletypes.NewCurrencyPair("eth", "usd")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
+	cp2 := oracletypes.NewCurrencyPair("eth", "usd", oracletypes.DefaultDecimals)
 
 	s.Run("correctly updates price feeds with no updates", func() {
 		updates := slakeeper.NewPriceFeedUpdates()

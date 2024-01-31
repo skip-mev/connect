@@ -27,13 +27,13 @@ func TestMsgAlertValidateBasic(t *testing.T) {
 			*types.NewMsgAlert(types.Alert{
 				Height:       0,
 				Signer:       "",
-				CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals),
 			}),
 			false,
 		},
 		{
 			"if the alert is valid, the message is valid",
-			*types.NewMsgAlert(types.NewAlert(0, sdk.AccAddress("cosmos1"), oracletypes.NewCurrencyPair("BTC", "USD"))),
+			*types.NewMsgAlert(types.NewAlert(0, sdk.AccAddress("cosmos1"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals))),
 			true,
 		},
 	}
@@ -55,7 +55,7 @@ func TestMsgAlertGetSigners(t *testing.T) {
 	signer := sdk.AccAddress("cosmos1")
 
 	// create a message with signer
-	msg := types.NewMsgAlert(types.NewAlert(0, signer, oracletypes.NewCurrencyPair("BTC", "USD")))
+	msg := types.NewMsgAlert(types.NewAlert(0, signer, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)))
 	signers := msg.GetSigners()
 	assert.Equal(t, []sdk.AccAddress{signer}, signers)
 }
@@ -69,7 +69,7 @@ func TestMsgConclusion(t *testing.T) {
 		Alert: types.Alert{
 			Height:       1,
 			Signer:       sdk.AccAddress("cosmos1").String(),
-			CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
+			CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals),
 		},
 		PriceBound: types.PriceBound{
 			High: big.NewInt(1).String(),

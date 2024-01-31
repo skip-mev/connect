@@ -105,7 +105,7 @@ func (h *APIHandler) ParseResponse(
 		}
 
 		cp := market.CurrencyPair
-		price, err := math.Float64StringToBigInt(data.Price, cp.Decimals())
+		price, err := math.Float64StringToBigInt(data.Price, cp.Decimals)
 		if err != nil {
 			return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
 		}

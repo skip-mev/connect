@@ -38,7 +38,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 		5,
 	)
 
-	cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
+	cp1 := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
@@ -239,7 +239,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		5,
 	)
 
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))

@@ -231,7 +231,7 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 	)
 
 	consAddress := sdk.ConsAddress([]byte("validator"))
-	cp := oracletypes.NewCurrencyPair("blud", "bds")
+	cp := oracletypes.NewCurrencyPair("blud", "bds", oracletypes.DefaultDecimals)
 	feed, err := slatypes.NewPriceFeed(
 		uint(20),
 		consAddress,

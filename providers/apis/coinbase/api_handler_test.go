@@ -24,11 +24,11 @@ var providerCfg = config.ProviderConfig{
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"BITCOIN/USD": {
 				Ticker:       "BTC-USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
 			"ETHEREUM/USD": {
 				Ticker:       "ETH-USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
 		},
 	},
@@ -44,7 +44,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
 			url:         "https://api.coinbase.com/v2/prices/BTC-USD/spot",
 			expectedErr: false,
@@ -52,8 +52,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -61,7 +61,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "unknown base currency",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -69,7 +69,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "unknown quote currency",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -101,7 +101,7 @@ func TestParseResponse(t *testing.T) {
 	}{
 		{
 			name: "valid",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
+			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals)},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -114,7 +114,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(102025000000),
 					},
 				},
@@ -123,7 +123,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "malformed response",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
+			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals)},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -137,13 +137,13 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("bad format"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): fmt.Errorf("bad format"),
 				},
 			),
 		},
 		{
 			name: "unable to parse float",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
+			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals)},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -157,13 +157,13 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("bad format"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): fmt.Errorf("bad format"),
 				},
 			),
 		},
 		{
 			name: "unable to parse json",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
+			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals)},
 			response: testutils.CreateResponseFromJSON(
 				`
 toms obvious but not minimal language
@@ -172,15 +172,15 @@ toms obvious but not minimal language
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("bad format"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): fmt.Errorf("bad format"),
 				},
 			),
 		},
 		{
 			name: "multiple currency pairs to parse response for",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -195,8 +195,8 @@ toms obvious but not minimal language
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"):  fmt.Errorf("multiple cps"),
-					oracletypes.NewCurrencyPair("ETHEREUM", "USD"): fmt.Errorf("multiple cps"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals):  fmt.Errorf("multiple cps"),
+					oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals): fmt.Errorf("multiple cps"),
 				},
 			),
 		},

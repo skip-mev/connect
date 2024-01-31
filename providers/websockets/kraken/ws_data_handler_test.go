@@ -27,11 +27,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {
 					Ticker:       "XBT/USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
 				"ETHEREUM/USD": {
 					Ticker:       "ETH/USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},
 			},
 		},
@@ -53,7 +53,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(4259641907000),
 					},
 				},
@@ -259,7 +259,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "single currency pair",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -280,8 +280,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -302,8 +302,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one known and one unknown currency pair",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{

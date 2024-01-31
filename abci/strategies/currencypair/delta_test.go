@@ -15,7 +15,7 @@ import (
 )
 
 func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
-	cp := oracletypes.NewCurrencyPair("BTC", "USD")
+	cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 	t.Run("price does not exist in state, delta is final price", func(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
@@ -196,7 +196,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		ok.On(
 			"GetPriceForCurrencyPair",
@@ -218,7 +218,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -243,7 +243,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -268,7 +268,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -293,7 +293,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -314,7 +314,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		onChainPrice := math.NewInt(100)
 		ok.On(
@@ -343,7 +343,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok := mocks.NewOracleKeeper(t)
 		ctx := testutils.CreateBaseSDKContext(t)
 		strategy := currencypair.NewDeltaCurrencyPairStrategy(ok)
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		onChainPrice := math.NewInt(100)
 		ok.On(

@@ -16,7 +16,7 @@ const (
 )
 
 func (s *KeeperTestSuite) TestSetPriceFeed() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
@@ -90,7 +90,7 @@ func (s *KeeperTestSuite) TestSetPriceFeed() {
 }
 
 func (s *KeeperTestSuite) TestRemovePriceFeeds() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
@@ -186,7 +186,7 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		s.Require().False(contains)
 	})
 
-	cp2 := oracletypes.NewCurrencyPair("blud", "crip")
+	cp2 := oracletypes.NewCurrencyPair("blud", "crip", oracletypes.DefaultDecimals)
 	priceFeed3, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,
@@ -238,7 +238,7 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		checkEquality(s.T(), priceFeed3, feeds[0])
 	})
 
-	cp3 := oracletypes.NewCurrencyPair("gds", "4L")
+	cp3 := oracletypes.NewCurrencyPair("gds", "4L", oracletypes.DefaultDecimals)
 
 	s.Run("different currency pairs are not affected", func() {
 		priceFeed1 := priceFeed1

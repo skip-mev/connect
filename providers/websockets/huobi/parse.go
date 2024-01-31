@@ -54,7 +54,7 @@ func (h *WebsocketDataHandler) parseTickerStream(stream TickerStream) (providert
 	}
 
 	cp := market.CurrencyPair
-	price := math.Float64ToBigInt(stream.Tick.LastPrice, cp.Decimals())
+	price := math.Float64ToBigInt(stream.Tick.LastPrice, cp.Decimals)
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil

@@ -6,15 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
-
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -41,11 +39,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {
 					Ticker:       "BTCUSD",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
 				"ETHEREUM/USD": {
 					Ticker:       "ETHUSD",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},
 			},
 		},
@@ -103,7 +101,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(100000000),
 					},
 				},
@@ -236,7 +234,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []byte {
 				msg := bybit.SubscriptionRequest{
@@ -256,8 +254,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []byte {
 				msg := bybit.SubscriptionRequest{
@@ -277,7 +275,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair not in config",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []byte {
 				return nil

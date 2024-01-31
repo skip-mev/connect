@@ -52,12 +52,11 @@ message GetPriceResponse {
   // QuotePrice represents the quote-price for the CurrencyPair given in
   // GetPriceRequest (possibly nil if no update has been made)
   QuotePrice price = 1 [ (gogoproto.nullable) = true ];
-  // nonce represents the nonce for the CurrencyPair if it exists in state
+  // Nonce represents the nonce for the CurrencyPair if it exists in state
   uint64 nonce = 2;
-  // decimals represents the number of decimals that the quote-price is
-  // represented in. For Pairs where ETHEREUM is the quote this will be 18,
-  // otherwise it will be 8.
-  uint64 decimals = 3;
+  // Decimals represents the number of decimals that the quote-price is
+  // represented in.
+  int64 decimals = 3;
   // ID represents the identifier for the CurrencyPair.
   uint64 id = 4;
 }

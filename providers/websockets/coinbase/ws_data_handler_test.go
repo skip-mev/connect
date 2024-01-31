@@ -26,11 +26,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {
 					Ticker:       "BTC-USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
 				"ETHEREUM/USD": {
 					Ticker:       "ETH-USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},
 			},
 		},
@@ -73,7 +73,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(1000000000000),
 					},
 				},
@@ -121,7 +121,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 				UnResolved: map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("failed to convert price to big int"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): fmt.Errorf("failed to convert price to big int"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -146,7 +146,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 				UnResolved: map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("received out of order ticker response message"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals): fmt.Errorf("received out of order ticker response message"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -235,7 +235,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "one currency pair to subscribe to",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
@@ -258,8 +258,8 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs to subscribe to",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
@@ -283,9 +283,9 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs to subscribe to with one not supported",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{

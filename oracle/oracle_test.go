@@ -70,9 +70,9 @@ func (s *OracleTestSuite) SetupTest() {
 	s.logger = zap.NewExample()
 
 	s.currencyPairs = []oracletypes.CurrencyPair{
-		oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-		oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-		oracletypes.NewCurrencyPair("COSMOS", "USD"),
+		oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
+		oracletypes.NewCurrencyPair("COSMOS", "USD", oracletypes.DefaultDecimals),
 	}
 	s.aggregationFn = aggregator.ComputeMedian()
 }

@@ -28,7 +28,7 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 								"BITCOIN/USD": {
 									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 								},
 							},
 						},
@@ -48,7 +48,7 @@ func TestOracleConfig(t *testing.T) {
 					},
 				},
 				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
 			},
 			expectedErr: false,
@@ -70,7 +70,7 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 								"BITCOIN/USD": {
 									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 								},
 							},
 						},
@@ -84,7 +84,7 @@ func TestOracleConfig(t *testing.T) {
 					},
 				},
 				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOINUSD", ""),
+					oracletypes.NewCurrencyPair("BITCOINUSD", "", oracletypes.DefaultDecimals),
 				},
 			},
 			expectedErr: true,
@@ -101,7 +101,7 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 								"BITCOIN/USD": {
 									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 								},
 							},
 						},
@@ -115,7 +115,7 @@ func TestOracleConfig(t *testing.T) {
 					},
 				},
 				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
 				Metrics: config.MetricsConfig{
 					Enabled: true,

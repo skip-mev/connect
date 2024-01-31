@@ -95,9 +95,9 @@ func (s *SLAPreBlockerHandlerTestSuite) SetupTest() {
 	s.consAddr3, err = s.val3.GetConsAddr()
 	s.Require().NoError(err)
 
-	s.cp1 = oracletypes.NewCurrencyPair("btc", "usd")
-	s.cp2 = oracletypes.NewCurrencyPair("eth", "usd")
-	s.cp3 = oracletypes.NewCurrencyPair("btc", "eth")
+	s.cp1 = oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
+	s.cp2 = oracletypes.NewCurrencyPair("eth", "usd", oracletypes.DefaultDecimals)
+	s.cp3 = oracletypes.NewCurrencyPair("btc", "eth", oracletypes.DefaultDecimals)
 
 	s.currencyPairIDStrategy = currencypairmocks.NewCurrencyPairStrategy(s.T())
 

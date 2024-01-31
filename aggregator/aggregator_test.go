@@ -9,11 +9,11 @@ import (
 )
 
 var (
-	btcusd = oracletypes.NewCurrencyPair("btc", "usd")
+	btcusd = oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
 
-	ethusd = oracletypes.NewCurrencyPair("eth", "usd")
+	ethusd = oracletypes.NewCurrencyPair("eth", "usd", oracletypes.DefaultDecimals)
 
-	usdtusd = oracletypes.NewCurrencyPair("usdt", "usd")
+	usdtusd = oracletypes.NewCurrencyPair("usdt", "usd", oracletypes.DefaultDecimals)
 )
 
 func TestComputeMedian(t *testing.T) {

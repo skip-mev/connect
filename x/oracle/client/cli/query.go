@@ -44,7 +44,7 @@ func GetPriceCmd() *cobra.Command {
 			}
 
 			// retrieve CurrencyPair from arguments
-			cp := types.NewCurrencyPair(args[0], args[1])
+			cp := types.NewCurrencyPair(args[0], args[1], types.DefaultDecimals)
 
 			// create client
 			qc := types.NewQueryClient(clientCtx)

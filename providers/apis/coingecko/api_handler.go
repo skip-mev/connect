@@ -111,7 +111,7 @@ func (h *APIHandler) ParseResponse(
 
 			// Resolve the price.
 			cp := market.CurrencyPair
-			price := math.Float64ToBigInt(price, cp.Decimals())
+			price := math.Float64ToBigInt(price, cp.Decimals)
 			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
 			delete(configCPs.CurrencyPairToMarketConfigs, cp.String())
 		}

@@ -139,7 +139,7 @@ func (s *KeeperTestSuite) TestMsgRemoveSLAs() {
 	s.Run("removes a sla single sla with some feeds in state", func() {
 		cons1 := sdk.ConsAddress([]byte("cons1"))
 		cons2 := sdk.ConsAddress([]byte("cons2"))
-		cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp1 := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		feed1, err := slatypes.NewPriceFeed(10, cons1, cp1, sla1.ID)
 		s.Require().NoError(err)

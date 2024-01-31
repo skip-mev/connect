@@ -43,7 +43,7 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 
 	// Get the price from the message.
 	cp := market.CurrencyPair
-	price, err := math.Float64StringToBigInt(msg.Data.PriceStr, cp.Decimals())
+	price, err := math.Float64StringToBigInt(msg.Data.PriceStr, cp.Decimals)
 	if err != nil {
 		unResolved[cp] = err
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err

@@ -64,8 +64,8 @@ func (s *KeeperTestSuite) TestSetParams() {
 }
 
 func (s *KeeperTestSuite) TestSetCurrencyPairs() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
-	cp2 := oracletypes.NewCurrencyPair("eth", "usd")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
+	cp2 := oracletypes.NewCurrencyPair("eth", "usd", oracletypes.DefaultDecimals)
 
 	testCPs := map[oracletypes.CurrencyPair]struct{}{
 		cp1: {},

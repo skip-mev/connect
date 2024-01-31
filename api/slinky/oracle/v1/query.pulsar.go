@@ -1511,8 +1511,8 @@ func (x *fastReflection_GetPriceResponse) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.Decimals != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Decimals)
+	if x.Decimals != int64(0) {
+		value := protoreflect.ValueOfInt64(x.Decimals)
 		if !f(fd_GetPriceResponse_decimals, value) {
 			return
 		}
@@ -1543,7 +1543,7 @@ func (x *fastReflection_GetPriceResponse) Has(fd protoreflect.FieldDescriptor) b
 	case "slinky.oracle.v1.GetPriceResponse.nonce":
 		return x.Nonce != uint64(0)
 	case "slinky.oracle.v1.GetPriceResponse.decimals":
-		return x.Decimals != uint64(0)
+		return x.Decimals != int64(0)
 	case "slinky.oracle.v1.GetPriceResponse.id":
 		return x.Id != uint64(0)
 	default:
@@ -1567,7 +1567,7 @@ func (x *fastReflection_GetPriceResponse) Clear(fd protoreflect.FieldDescriptor)
 	case "slinky.oracle.v1.GetPriceResponse.nonce":
 		x.Nonce = uint64(0)
 	case "slinky.oracle.v1.GetPriceResponse.decimals":
-		x.Decimals = uint64(0)
+		x.Decimals = int64(0)
 	case "slinky.oracle.v1.GetPriceResponse.id":
 		x.Id = uint64(0)
 	default:
@@ -1594,7 +1594,7 @@ func (x *fastReflection_GetPriceResponse) Get(descriptor protoreflect.FieldDescr
 		return protoreflect.ValueOfUint64(value)
 	case "slinky.oracle.v1.GetPriceResponse.decimals":
 		value := x.Decimals
-		return protoreflect.ValueOfUint64(value)
+		return protoreflect.ValueOfInt64(value)
 	case "slinky.oracle.v1.GetPriceResponse.id":
 		value := x.Id
 		return protoreflect.ValueOfUint64(value)
@@ -1623,7 +1623,7 @@ func (x *fastReflection_GetPriceResponse) Set(fd protoreflect.FieldDescriptor, v
 	case "slinky.oracle.v1.GetPriceResponse.nonce":
 		x.Nonce = value.Uint()
 	case "slinky.oracle.v1.GetPriceResponse.decimals":
-		x.Decimals = value.Uint()
+		x.Decimals = value.Int()
 	case "slinky.oracle.v1.GetPriceResponse.id":
 		x.Id = value.Uint()
 	default:
@@ -1676,7 +1676,7 @@ func (x *fastReflection_GetPriceResponse) NewField(fd protoreflect.FieldDescript
 	case "slinky.oracle.v1.GetPriceResponse.nonce":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "slinky.oracle.v1.GetPriceResponse.decimals":
-		return protoreflect.ValueOfUint64(uint64(0))
+		return protoreflect.ValueOfInt64(int64(0))
 	case "slinky.oracle.v1.GetPriceResponse.id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
@@ -1937,7 +1937,7 @@ func (x *fastReflection_GetPriceResponse) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Decimals |= uint64(b&0x7F) << shift
+					x.Decimals |= int64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -3135,9 +3135,8 @@ type GetPriceResponse struct {
 	// nonce represents the nonce for the CurrencyPair if it exists in state
 	Nonce uint64 `protobuf:"varint,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
 	// decimals represents the number of decimals that the quote-price is
-	// represented in. For Pairs where ETHEREUM is the quote this will be 18,
-	// otherwise it will be 8.
-	Decimals uint64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
+	// represented in.
+	Decimals int64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
 	// ID represents the identifier for the CurrencyPair.
 	Id uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty"`
 }
@@ -3176,7 +3175,7 @@ func (x *GetPriceResponse) GetNonce() uint64 {
 	return 0
 }
 
-func (x *GetPriceResponse) GetDecimals() uint64 {
+func (x *GetPriceResponse) GetDecimals() int64 {
 	if x != nil {
 		return x.Decimals
 	}
@@ -3301,7 +3300,7 @@ var file_slinky_oracle_v1_query_proto_rawDesc = []byte{
 	0x65, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x01, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x14,
 	0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x6e,
 	0x6f, 0x6e, 0x63, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73,
 	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64,
 	0x22, 0x3e, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x0a, 0x11, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,

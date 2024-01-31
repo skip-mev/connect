@@ -68,7 +68,7 @@ func (s *KeeperTestSuite) TestGetAllSLAsRequest() {
 }
 
 func (s *KeeperTestSuite) TestGetPriceFeedsRequest() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := oracletypes.NewCurrencyPair("btc", "usd", oracletypes.DefaultDecimals)
 
 	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
 	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))

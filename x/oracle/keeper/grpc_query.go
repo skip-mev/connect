@@ -89,12 +89,12 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	return &types.GetPriceResponse{
 		Price:    &qpn.QuotePrice,
 		Nonce:    qpn.Nonce(),
-		Decimals: uint64(cp.Decimals()),
+		Decimals: cp.Decimals,
 		Id:       id,
 	}, nil
 }
 
-// GetPrice gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
+// GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
 func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
 	var cp types.CurrencyPair
 
@@ -127,7 +127,7 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 		prices = append(prices, types.GetPriceResponse{
 			Price:    &qpn.QuotePrice,
 			Nonce:    qpn.Nonce(),
-			Decimals: uint64(cp.Decimals()),
+			Decimals: cp.Decimals,
 			Id:       id,
 		})
 	}

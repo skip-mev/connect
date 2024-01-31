@@ -36,17 +36,17 @@ func (s *KeeperTestSuite) TestInitGenesisValidGenesis() {
 		MaxBlockAge: 1,
 	}, nil, types.PruningParams{})
 	alert2 := types.NewAlertWithStatus(
-		types.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 
 	alert1 := types.NewAlertWithStatus(
-		types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 
 	alert3 := types.NewAlertWithStatus(
-		types.NewAlert(3, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(3, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 
@@ -94,22 +94,22 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		MaxBlockAge: 0,
 	}, nil, types.PruningParams{})
 	alert2 := types.NewAlertWithStatus(
-		types.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 
 	alert1 := types.NewAlertWithStatus(
-		types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 
 	alert3 := types.NewAlertWithStatus(
-		types.NewAlert(3, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(3, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 
 	alert4 := types.NewAlertWithStatus(
-		types.NewAlert(4, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+		types.NewAlert(4, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE", oracletypes.DefaultDecimals)),
 		types.NewAlertStatus(1, 2, time.Now(), 1),
 	)
 

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/klauspost/compress/gzip"
-
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
@@ -27,11 +26,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {
 					Ticker:       "btcusdt",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 				},
 				"ETHEREUM/USDT": {
 					Ticker:       "ethusdt",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT", oracletypes.DefaultDecimals),
 				},
 			},
 		},
@@ -104,7 +103,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(100000000),
 					},
 				},
@@ -305,7 +304,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg, err := huobi.NewSubscriptionRequest("btcusdt")
@@ -318,8 +317,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USDT", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				bz1, err := huobi.NewSubscriptionRequest("btcusdt")
@@ -334,7 +333,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair not in config",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USDT"),
+				oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil

@@ -18,40 +18,54 @@ func TestValidateBasic(t *testing.T) {
 		{
 			"if the Base is not upper-case - fail",
 			types.CurrencyPair{
-				Base:  "aB",
-				Quote: "BB",
+				Base:     "aB",
+				Quote:    "BB",
+				Decimals: types.DefaultDecimals,
 			},
 			false,
 		},
 		{
 			"if the Quote is not upper-case - fail",
 			types.CurrencyPair{
-				Base:  "BB",
-				Quote: "aB",
+				Base:     "BB",
+				Quote:    "aB",
+				Decimals: types.DefaultDecimals,
 			},
 			false,
 		},
 		{
 			"if the base string is empty - fail",
 			types.CurrencyPair{
-				Base:  "",
-				Quote: "BB",
+				Base:     "",
+				Quote:    "BB",
+				Decimals: types.DefaultDecimals,
 			},
 			false,
 		},
 		{
 			"if the quote string is empty - fail",
 			types.CurrencyPair{
-				Base:  "AA",
-				Quote: "",
+				Base:     "AA",
+				Quote:    "",
+				Decimals: types.DefaultDecimals,
+			},
+			false,
+		},
+		{
+			"invalid decimals - fail",
+			types.CurrencyPair{
+				Base:     "BB",
+				Quote:    "AA",
+				Decimals: 0,
 			},
 			false,
 		},
 		{
 			"if both Quote + Base are formatted correctly - pass",
 			types.CurrencyPair{
-				Base:  "BB",
-				Quote: "AA",
+				Base:     "BB",
+				Quote:    "AA",
+				Decimals: types.DefaultDecimals,
 			},
 			true,
 		},
@@ -118,20 +132,20 @@ func TestDecimals(t *testing.T) {
 		dec  int
 	}{
 		{
-			"if the quote is ethereum, return 18",
-			types.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
-			18,
+			name: "return 18",
+			cp:   types.CurrencyPair{Base: "A", Quote: "ETHEREUM", Decimals: 18},
+			dec:  18,
 		},
 		{
-			"if the quote is not ethereum or eth, return 8",
-			types.CurrencyPair{Base: "A", Quote: "B"},
+			"return default value",
+			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
 			8,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.cp.Decimals(), tc.dec)
+			assert.Equal(t, tc.cp.Decimals, tc.dec)
 		})
 	}
 }

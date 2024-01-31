@@ -421,8 +421,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		mockOracleKeeper := preblockmock.NewKeeper(s.T())
 		currencyPairStrategyMock := currencypairmock.NewCurrencyPairStrategy(s.T())
 
-		btcUsd := oracletypes.NewCurrencyPair("BTC", "USD")
-		mogUsd := oracletypes.NewCurrencyPair("MOG", "USD")
+		btcUsd := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
+		mogUsd := oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals)
 
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),

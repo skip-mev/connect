@@ -28,11 +28,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {
 					Ticker:       "BTCUSDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 				},
 				"BINANCE/USDT": {
 					Ticker:       "BNBUSDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT", oracletypes.DefaultDecimals),
 				},
 			},
 		},
@@ -46,11 +46,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USDT": {
 					Ticker:       "BTCUSDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 				},
 				"BINANCE/USDT": {
 					Ticker:       "BNBUSDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+					CurrencyPair: oracletypes.NewCurrencyPair("BINANCE", "USDT", oracletypes.DefaultDecimals),
 				},
 			},
 		},
@@ -67,7 +67,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
@@ -75,8 +75,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("BINANCE", "USDT", oracletypes.DefaultDecimals),
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22BNBUSDT%22%5D",
 			expectedErr: false,
@@ -84,7 +84,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "unknown base currency",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -92,7 +92,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "unknown quote currency",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -125,7 +125,7 @@ func TestCreateURL_US(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
@@ -133,8 +133,8 @@ func TestCreateURL_US(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("BINANCE", "USDT", oracletypes.DefaultDecimals),
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22BNBUSDT%22%5D",
 			expectedErr: false,
@@ -142,7 +142,7 @@ func TestCreateURL_US(t *testing.T) {
 		{
 			name: "unknown base currency",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -150,7 +150,7 @@ func TestCreateURL_US(t *testing.T) {
 		{
 			name: "unknown quote currency",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
 			},
 			url:         "",
 			expectedErr: true,
@@ -182,13 +182,13 @@ func TestParseResponse(t *testing.T) {
 	}{
 		{
 			name: "valid single",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USDT")},
+			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals)},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"}]`,
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(4670703000000),
 					},
 				},
@@ -198,18 +198,18 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				oracletypes.NewCurrencyPair("BINANCE", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
+				oracletypes.NewCurrencyPair("BINANCE", "USDT", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"BNBUSDT","price":"297.50000000"}]`,
 			),
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): {
+					oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(4670703000000),
 					},
-					oracletypes.NewCurrencyPair("BINANCE", "USDT"): {
+					oracletypes.NewCurrencyPair("BINANCE", "USDT", oracletypes.DefaultDecimals): {
 						Value: big.NewInt(29750000000),
 					},
 				},
@@ -219,7 +219,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "unknown base",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"MOGUSDT","price":"46707.03000000"}]`,
@@ -227,14 +227,14 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("no response"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals): fmt.Errorf("no response"),
 				},
 			),
 		},
 		{
 			name: "unknown quote",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCMOG","price":"46707.03000000"}]`,
@@ -242,14 +242,14 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("no response"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals): fmt.Errorf("no response"),
 				},
 			),
 		},
 		{
 			name: "unsupported base",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USDT"),
+				oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"MOGUSDT","price":"46707.03000000"}]`,
@@ -262,7 +262,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "unsupported quote",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("USDT", "MOG"),
+				oracletypes.NewCurrencyPair("USDT", "MOG", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"USDTMOG","price":"46707.03000000"}]`,
@@ -275,7 +275,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad response",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`shout out my label thats me`,
@@ -283,14 +283,14 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("no response"),
+					oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals): fmt.Errorf("no response"),
 				},
 			),
 		},
 		{
 			name: "bad price response",
 			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"$46707.03000000"}]`,
@@ -298,7 +298,7 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("invalid syntax"),
+					oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals): fmt.Errorf("invalid syntax"),
 				},
 			),
 		},

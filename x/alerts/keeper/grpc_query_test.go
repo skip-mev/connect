@@ -12,13 +12,13 @@ func (s *KeeperTestSuite) TestQueryServer() {
 	s.Run("Alerts", func() {
 		// add a concluded alert to state
 		concludedAlert := types.NewAlertWithStatus(
-			types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD")),
+			types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 			types.NewAlertStatus(1, 1, s.ctx.BlockTime(), types.Concluded),
 		)
 
 		// add an unconcluded alert to state
 		unconcludedAlert := types.NewAlertWithStatus(
-			types.NewAlert(2, sdk.AccAddress("abc2"), oracletypes.NewCurrencyPair("BTC", "USD")),
+			types.NewAlert(2, sdk.AccAddress("abc2"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
 			types.NewAlertStatus(1, 1, s.ctx.BlockTime(), types.Unconcluded),
 		)
 

@@ -24,9 +24,9 @@ import (
 
 var (
 	logger  = zap.NewExample()
-	btcusd  = oracletypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = oracletypes.NewCurrencyPair("ETH", "USD")
-	atomusd = oracletypes.NewCurrencyPair("ATOM", "USD")
+	btcusd  = oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
+	ethusd  = oracletypes.NewCurrencyPair("ETH", "USD", oracletypes.DefaultDecimals)
+	atomusd = oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals)
 
 	name        = "sirmoggintonwebsocket"
 	testMessage = []byte("gib me money")

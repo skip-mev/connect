@@ -141,7 +141,7 @@ func (s *MultiSigConclusionTestSuite) TestConclusion() {
 		High: high.String(),
 	}
 	s.Run("test ValidateBasic()", func() {
-		alert := types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("A", "B"))
+		alert := types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("A", "B", oracletypes.DefaultDecimals))
 
 		cases := []struct {
 			name       string
@@ -223,7 +223,7 @@ func (s *MultiSigConclusionTestSuite) TestConclusion() {
 	s.Run("test Verify()", func() {
 		params, err := types.NewMultiSigVerificationParams(s.pks)
 		s.Require().NoError(err)
-		alert := types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("A", "B"))
+		alert := types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("A", "B", oracletypes.DefaultDecimals))
 
 		s.Run("invalid params - fail", func() {
 			msc := types.MultiSigConclusion{}
