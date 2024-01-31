@@ -42,3 +42,11 @@
 * **labels**
     * `chain_id`: the chain-id of this oracle deployment
     * `message_type`: the message-type whose size is being measured
+
+## `oracle_prices`
+
+* **purpose**
+    * This prometheus gauge tracks the price written to state for each currency-pair
+* **labels**
+    * `chain_id`: the chain-id of this oracle deployment
+    * `ticker`: the ticker for which the price was written to state
