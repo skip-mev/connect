@@ -227,8 +227,8 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	})
 
 	s.Run("Add multiple Currency Pairs and remove 1", func() {
-		cp1 := oracletypes.NewCurrencyPair("ETH", "USD")
-		cp2 := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp1 := oracletypes.NewCurrencyPair("ETH", "USD", oracletypes.DefaultDecimals)
+		cp2 := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
 			cp1, cp2,
 		}...))
@@ -457,9 +457,9 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
-	cp1 := oracletypes.NewCurrencyPair("ETHEREUM", "USDC")
-	cp2 := oracletypes.NewCurrencyPair("ETHEREUM", "USDT")
-	cp3 := oracletypes.NewCurrencyPair("ETHEREUM", "USD")
+	cp1 := oracletypes.NewCurrencyPair("ETHEREUM", "USDC", oracletypes.DefaultDecimals)
+	cp2 := oracletypes.NewCurrencyPair("ETHEREUM", "USDT", oracletypes.DefaultDecimals)
+	cp3 := oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals)
 
 	// add multiple currency pairs
 	cps := []oracletypes.CurrencyPair{
