@@ -2,8 +2,6 @@ module github.com/skip-mev/slinky
 
 go 1.21
 
-replace github.com/cosmos/cosmos-sdk => github.com/Eric-Warehime/cosmos-sdk v0.50.3-0.20240129022645-0cc581697f7e
-
 require (
 	cosmossdk.io/api v0.7.2
 	cosmossdk.io/client/v2 v2.0.0-20230719143845-dff6b0e26aa4
