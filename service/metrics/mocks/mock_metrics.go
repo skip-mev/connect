@@ -26,14 +26,14 @@ func (_m *Metrics) AddOracleResponse(status metrics.Labeller) {
 	_m.Called(status)
 }
 
-// AddTickerInclusionStatus provides a mock function with given fields: ticker, included
-func (_m *Metrics) AddTickerInclusionStatus(ticker string, included bool) {
-	_m.Called(ticker, included)
+// AddValidatorPriceForTicker provides a mock function with given fields: validator, ticker, price
+func (_m *Metrics) AddValidatorPriceForTicker(validator string, ticker types.CurrencyPair, price float64) {
+	_m.Called(validator, ticker, price)
 }
 
-// AddVoteIncludedInLastCommit provides a mock function with given fields: included
-func (_m *Metrics) AddVoteIncludedInLastCommit(included bool) {
-	_m.Called(included)
+// AddValidatorReportForTicker provides a mock function with given fields: validator, ticker, status
+func (_m *Metrics) AddValidatorReportForTicker(validator string, ticker types.CurrencyPair, status metrics.ReportStatus) {
+	_m.Called(validator, ticker, status)
 }
 
 // ObserveABCIMethodLatency provides a mock function with given fields: method, duration

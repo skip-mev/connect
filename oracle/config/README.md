@@ -194,18 +194,12 @@ The oracle's `VoteExtensionHandler` and `PreBlockHandler` both utilize the `Orac
 type Config struct {
 	// Enabled indicates whether metrics should be enabled
 	Enabled bool `mapstructure:"enabled" toml:"enabled"`
-	// ValidatorConsAddress is the validator's consensus address
-	ValidatorConsAddress string `mapstructure:"validator_cons_address" toml:"validator_cons_address"`
 }
 ```
 
 ### Enabled
 
 This flag is utilized to note whether the app-side oracle metrics should be enabled.
-
-### ValidatorConsAddress
-
-Each validator that is running the oracle side-car will have a unique consensus address. This field is utilized to set the validator's consensus address.
 
 ## Oracle Metrics
 
@@ -244,7 +238,4 @@ enabled = true
 [app_metrics]
 # Enabled indicates whether metrics should be enabled
 enabled = true
-
-# ValidatorConsAddress is the validator's consensus address
-validator_cons_address = "cosmosvalcons1weskc6tyv96x7u33p3mx9v" # Replace with your validator's consensus address.
 ```
