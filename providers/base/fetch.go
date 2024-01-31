@@ -124,7 +124,6 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- p
 					end := maxSubsPerConn * (i + 1)
 					if i+1 == numSubHandlers {
 						subIDs = p.ids[start:]
-
 					} else {
 						subIDs = p.ids[start:end]
 					}
