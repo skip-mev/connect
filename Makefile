@@ -9,6 +9,7 @@ BUILD_DIR ?= $(CURDIR)/build
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
+DOCKER_COMPOSE := $(shell which docker-compose)
 ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.toml
 CONFIG_DIR ?= $(CURDIR)/config
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
@@ -41,11 +42,11 @@ update-local-config:
 
 start-oracle: update-local-config
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
-	@docker-compose -f docker-compose.yml up -d
+	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
 
 stop-oracle:
 	@echo "Stopping network..."
-	@docker-compose -f docker-compose.yml down
+	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
 install:
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
@@ -58,8 +59,8 @@ install:
 
 docker-build:
 	@echo "Building E2E Docker image..."
-	@DOCKER_BUILDKIT=1 docker build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
-	@DOCKER_BUILDKIT=1 docker build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.e2e.oracle.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.e2e.oracle.Dockerfile .
 
 .PHONY: docker-build
 
