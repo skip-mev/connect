@@ -11,6 +11,9 @@ const (
 	// The following URLs are used for the Coinbase Websocket feed. These can be found
 	// in the Coinbase documentation at https://docs.cloud.coinbase.com/exchange/docs/websocket-overview.
 
+	// Name is the name of the Coinbase provider.
+	Name = "coinbase"
+
 	// URL is the production Coinbase Websocket URL.
 	URL = "wss://ws-feed.exchange.coinbase.com"
 
@@ -19,7 +22,7 @@ const (
 )
 
 const (
-	// The following web socket configuration values were taken from the Coinbase documentation
+	// The following websocket configuration values were taken from the Coinbase documentation
 	// at https://docs.cloud.coinbase.com/exchange/docs/websocket-overview.
 
 	// DefaultEnabledCompression is the default enabled compression for the Coinbase Websocket.

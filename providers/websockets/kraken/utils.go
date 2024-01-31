@@ -11,8 +11,11 @@ import (
 
 const (
 	// URL is the websocket URL for Kraken. You can find the documentation here:
-	// https://docs.kraken.com/websockets/. Kraken provides a authenticated and
+	// https://docs.kraken.com/websockets/. Kraken provides an authenticated and
 	// unauthenticated websocket. The URLs defined below are all unauthenticated.
+
+	// Name is the name of the Kraken provider.
+	Name = "kraken"
 
 	// URL is the production websocket URL for Kraken.
 	URL = "wss://ws.kraken.com"

@@ -82,8 +82,8 @@ func NewResult[V ResponseValue](value V, timestamp time.Time) Result[V] {
 // and testing purposes.
 func (r Result[V]) String() string {
 	return fmt.Sprintf(
-		"(value: %s, timestamp: %v)",
+		"(value: %s, timestamp: %s)",
 		r.Value.String(),
-		r.Timestamp,
+		r.Timestamp.String(),
 	)
 }

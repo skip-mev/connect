@@ -11,7 +11,7 @@ The following metrics are provided by the Base Provider Metrics package:
 ```golang
 // ProviderMetrics is an interface that defines the API for metrics collection for providers. The
 // base provider utilizes this interface to collect metrics, whether the underlying implementation
-// is API or web socket based.
+// is API or websocket based.
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
 	// for a given provider and ID (i.e. currency pair).

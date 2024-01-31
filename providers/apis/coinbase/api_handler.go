@@ -14,11 +14,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the provider.
-	Name = "coinbase"
-)
-
 var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
 // APIHandler implements the APIDataHandler interface for Coinbase, which can be used

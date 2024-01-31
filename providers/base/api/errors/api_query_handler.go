@@ -26,7 +26,7 @@ var (
 	ErrUnexpectedStatusCode = errors.New("api query handler encountered an unexpected status code")
 )
 
-// ErrCreateRequestWithErr is used to create a new ErrCreateRequest with the given error.
+// ErrCreateURLWithErr is used to create a new ErrCreateRequest with the given error.
 // Provider's that implement the APIDataHandler interface should use this function to
 // create the error.
 func ErrCreateURLWithErr(err error) error {

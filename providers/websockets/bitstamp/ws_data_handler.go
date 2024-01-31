@@ -13,11 +13,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the exchange.
-	Name = "bitstamp"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
@@ -25,7 +20,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebS
 type WebSocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Coinbase web socket API.
+	// config is the config for the Coinbase websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -39,7 +34,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -88,12 +83,12 @@ func (h *WebSocketDataHandler) HandleMessage(
 	case SubscriptionSucceededEvent:
 		h.logger.Debug("received subscription succeeded event")
 
-		var subcriptionMsg SubscriptionResponseMessage
-		if err := json.Unmarshal(message, &subcriptionMsg); err != nil {
+		var subscriptionMsg SubscriptionResponseMessage
+		if err := json.Unmarshal(message, &subscriptionMsg); err != nil {
 			return resp, nil, fmt.Errorf("failed to unmarshal subscription message %s", err)
 		}
 
-		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subcriptionMsg.Channel))
+		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subscriptionMsg.Channel))
 		return resp, nil, nil
 	case TradeEvent:
 		h.logger.Debug("received trade event")

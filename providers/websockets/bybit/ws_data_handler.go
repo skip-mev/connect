@@ -14,11 +14,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the ByBit provider.
-	Name = "bybit"
-)
-
 var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)
 
 // WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to
@@ -26,7 +21,7 @@ var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*Webs
 type WebsocketDataHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the ByBit web socket API.
+	// config is the config for the ByBit websocket API.
 	cfg config.ProviderConfig
 }
 
@@ -40,7 +35,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("web socket is not enabled for provider %s", cfg.Name)
+		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
 	}
 
 	if cfg.Name != Name {
@@ -59,7 +54,7 @@ func NewWebSocketDataHandler(
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
 //  2. Ticker update message. This is sent when a ticker update is received from the
-//     ByBit web socket API.
+//     ByBit websocket API.
 //  3. Heartbeat update messages.  This should be sent every 20 seconds to ensure the
 //     connection remains open.
 func (h *WebsocketDataHandler) HandleMessage(

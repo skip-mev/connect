@@ -35,7 +35,7 @@ import (
 )
 
 // DefaultProviderFactory returns a sample implementation of the provider factory. This provider
-// factory function returns providers that are API & web socket based.
+// factory function returns providers that are API & websocket based.
 func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
@@ -187,7 +187,7 @@ func webSocketProviderFromProviderConfig(
 		return nil, err
 	}
 
-	// Create the underlying client that can be utilized by web socket providers that need to
+	// Create the underlying client that can be utilized by websocket providers that need to
 	// interact with an API.
 	maxCons := math.Min(len(cps), cfg.API.MaxQueries)
 	client := &http.Client{
@@ -219,7 +219,7 @@ func webSocketProviderFromProviderConfig(
 	case kraken.Name:
 		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
 	case kucoin.Name:
-		// Create the kucoin web socket data handler.
+		// Create the KuCoin websocket data handler.
 		wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, cfg)
 		if err != nil {
 			return nil, err
@@ -234,7 +234,7 @@ func webSocketProviderFromProviderConfig(
 			return nil, err
 		}
 
-		// Create the kucoin web socket connection handler.
+		// Create the KuCoin websocket connection handler.
 		connHandler, err = wshandlers.NewWebSocketHandlerImpl(
 			cfg.WebSocket,
 			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
@@ -258,7 +258,7 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	// Create the web socket query handler which encapsulates all fetching and parsing logic.
+	// Create the websocket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,

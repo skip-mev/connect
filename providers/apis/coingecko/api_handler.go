@@ -14,11 +14,6 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-const (
-	// Name is the name of the provider.
-	Name = "coingecko"
-)
-
 var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
 // APIHandler implements the Base Provider API handler interface for CoinGecko.
@@ -63,7 +58,7 @@ func (h *APIHandler) CreateURL(
 		return "", err
 	}
 
-	// This creates the endpoint that needs to be requested regardless of whether or not
+	// This creates the endpoint that needs to be requested regardless of whether
 	// an API key is set.
 	pricesEndPoint := fmt.Sprintf(PairPriceEndpoint, bases, quotes)
 	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)

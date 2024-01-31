@@ -85,6 +85,10 @@ func (_m *WebSocketDataHandler[K, V]) HandleMessage(message []byte) (types.GetRe
 func (_m *WebSocketDataHandler[K, V]) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for HeartBeatMessages")
+	}
+
 	var r0 []handlers.WebsocketEncodedMessage
 	var r1 error
 	if rf, ok := ret.Get(0).(func() ([]handlers.WebsocketEncodedMessage, error)); ok {

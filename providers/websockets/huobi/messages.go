@@ -14,6 +14,7 @@ type Status string
 const (
 	marketTickerFormatString = "market.%s.ticker"
 
+	// StatusOk is a status indicating a request was successful.
 	StatusOk Status = "ok"
 )
 

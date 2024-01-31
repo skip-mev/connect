@@ -42,7 +42,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 			fmt.Errorf("market not found for ticker %s", ticker)
 	}
 
-	// Check the if the sequence number is valid.
+	// Check if the sequence number is valid.
 	cp := market.CurrencyPair
 	sequence, err := strconv.ParseInt(msg.Data.Sequence, 10, 64)
 	if err != nil {
