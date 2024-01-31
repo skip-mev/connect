@@ -15,7 +15,6 @@ import (
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
 	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"

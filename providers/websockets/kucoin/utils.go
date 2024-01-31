@@ -22,35 +22,31 @@ const (
 	// URL is the Kucoin websocket URL. This URL specifically points to the public
 	// spot and maring REST API.
 	URL = "https://api.kucoin.com"
-
-	// DefaultPingInterval is the default ping interval for the KuCoin websocket.
-	DefaultPingInterval = 10 * time.Second
 )
 
 var (
 	// DefaultWebSocketConfig defines the default websocket config for Kucoin.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:                       true,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           WSS, // Note that this may change as the URL is dynamically generated.
-		Name:                          Name,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		Enabled:             true,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		WSS:                 WSS, // Note that this may change as the URL is dynamically generated.
+		Name:                Name,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+		PingInterval:        10 * time.Second,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
-	// DefaultAPIConfig defines the default API config for KuCoin. This is
+	// DefaultAPIConfig defines the default API config for Kucoin. This is
 	// only utilized on the initial connection to the websocket feed.
 	DefaultAPIConfig = config.APIConfig{
 		Enabled:    false,
-		Timeout:    5 * time.Second, // KuCoin recommends a timeout of 5 seconds.
+		Timeout:    5 * time.Second, // Kucoin recommends a timeout of 5 seconds.
 		Interval:   1 * time.Minute, // This is not used.
 		MaxQueries: 1,               // This is not used.
 		URL:        URL,
