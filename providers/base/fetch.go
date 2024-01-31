@@ -70,14 +70,14 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 				zap.Int("buffer_size", len(responseCh)),
 			)
 
-			p.attemptDataUpdate(ctx, responseCh)
+			p.attemptAPIDataUpdate(ctx, responseCh)
 		}
 	}
 }
 
-// attemptDataUpdate tries to update data by fetching and parsing API data.
+// attemptAPIDataUpdate tries to update data by fetching and parsing API data.
 // It logs any errors encountered during the process.
-func (p *Provider[K, V]) attemptDataUpdate(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) {
+func (p *Provider[K, V]) attemptAPIDataUpdate(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) {
 	if len(p.ids) == 0 {
 		p.logger.Debug("no ids to fetch")
 		return
