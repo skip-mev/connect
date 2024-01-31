@@ -50,3 +50,21 @@
 * **labels**
     * `chain_id`: the chain-id of this oracle deployment
     * `ticker`: the ticker for which the price was written to state
+
+## `oracle_reports_per_validator`
+
+* **purpose**
+    * This prometheus gauge tracks the prices that each validator has reported for any block per ticker
+* **labels**
+    * `chain_id`: the chain-id of this oracle deployment
+    * `ticker`: the ticker for which the price was written to state
+    * `validator`: the consensus address of the validator that made the report
+
+## `oracle_report_status_per_validator`
+
+* **purpose**
+    * This prometheus counter tracks the # of reports per validator and their status (absent: nil-vote, missing_price: the validator's vote was included but w/o a price, and with_price: validator's vote was included with a price)
+* **labels**
+    * `chain_id`: the chain-id of this oracle deployment
+    * `ticker`: the ticker for which the price was written to state
+    * `validator`: the consensus address of the validator that made the report

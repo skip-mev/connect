@@ -34,13 +34,8 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 
 	// Iterate through all vote extensions and consolidate all price info before
 	// aggregating.
-	isVotePresentInCommit := false
-	valAddrStr := h.validatorAddress.String()
 	for _, vote := range votes {
 		consAddrStr := vote.ConsAddress.String()
-		if consAddrStr == valAddrStr {
-			isVotePresentInCommit = true
-		}
 
 		if err := h.addVoteToAggregator(ctx, consAddrStr, vote.OracleVoteExtension); err != nil {
 			h.logger.Error(
@@ -56,11 +51,6 @@ func (h *PreBlockHandler) AggregateOracleVotes(
 	// Compute the final prices for each currency pair.
 	h.priceAggregator.AggregateDataFromContext(ctx)
 	prices := h.priceAggregator.GetAggregatedData()
-
-	// Record metrics for this validator.
-	if ctx.ExecMode() == sdk.ExecModeFinalize {
-		h.recordMetrics(isVotePresentInCommit)
-	}
 
 	h.logger.Info(
 		"aggregated oracle data",

@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -18,12 +17,6 @@ type Metrics interface {
 	// AddOracleResponse increments the number of oracle responses, this can represent a liveness counter. This metric is paginated by status.
 	AddOracleResponse(status Labeller)
 
-	// AddVoteIncludedInLastCommit increments the number of votes included in the last commit
-	AddVoteIncludedInLastCommit(included bool)
-
-	// AddTickerInclusionStatus increments the counter representing the number of times a ticker was included (or not included) in the last commit.
-	AddTickerInclusionStatus(ticker string, included bool)
-
 	// ObserveABCIMethodLatency reports the given latency (as a duration), for the given ABCIMethod, and updates the ABCIMethodLatency histogram w/ that value.
 	ObserveABCIMethodLatency(method ABCIMethod, duration time.Duration)
 
@@ -35,6 +28,14 @@ type Metrics interface {
 
 	// ObservePriceForTicker updates a gauge with the price for the given ticker, this is updated each time a price is written to state
 	ObservePriceForTicker(ticker oracletypes.CurrencyPair, price float64)
+
+	// AddValidatorPriceForTicker updates a gauge per validator with the price they observed for a given ticker, this is updated when prices
+	// to be written to state are aggregated
+	AddValidatorPriceForTicker(validator string, ticker oracletypes.CurrencyPair, price float64)
+
+	// AddValidatorReportForTicker updates a counter per validator + status. This counter represents the number of times a validator
+	// for a ticker with a price, w/o a price, or w/ an absent.
+	AddValidatorReportForTicker(validator string, ticker oracletypes.CurrencyPair, status ReportStatus)
 }
 
 type nopMetricsImpl struct{}
@@ -46,12 +47,15 @@ func NewNopMetrics() Metrics {
 
 func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)                {}
 func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                                {}
-func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                          {}
-func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)                   {}
 func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration)      {}
 func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                     {}
 func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                     {}
 func (m *nopMetricsImpl) ObservePriceForTicker(_ oracletypes.CurrencyPair, _ float64) {}
+func (m *nopMetricsImpl) AddValidatorReportForTicker(_ string, _ oracletypes.CurrencyPair, _ ReportStatus) {
+}
+
+func (m *nopMetricsImpl) AddValidatorPriceForTicker(_ string, _ oracletypes.CurrencyPair, _ float64) {
+}
 
 func NewMetrics(chainID string) Metrics {
 	m := &metricsImpl{
@@ -66,16 +70,6 @@ func NewMetrics(chainID string) Metrics {
 			Name:      "oracle_responses",
 			Help:      "The number of oracle responses",
 		}, []string{StatusLabel, ChainIDLabel}),
-		voteIncludedInLastCommit: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: AppNamespace,
-			Name:      "vote_included_in_last_commit",
-			Help:      "The number of times this validator's vote was included in the last commit",
-		}, []string{InclusionLabel, ChainIDLabel}),
-		tickerInclusionStatus: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: AppNamespace,
-			Name:      "ticker_inclusion_status",
-			Help:      "The number of times a ticker was included (or not included) in this validator's vote",
-		}, []string{TickerLabel, InclusionLabel, ChainIDLabel}),
 		abciMethodLatency: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: AppNamespace,
 			Name:      "abci_method_latency",
@@ -98,13 +92,21 @@ func NewMetrics(chainID string) Metrics {
 			Name:      "prices",
 			Help:      "The price of the ticker that is written to state",
 		}, []string{ChainIDLabel, TickerLabel}),
+		reportsPerValidator: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: AppNamespace,
+			Name:      "reports_per_validator",
+			Help:      "The price reported for a specific validator and ticker",
+		}, []string{ChainIDLabel, ValidatorLabel, TickerLabel}),
+		reportStatusPerValidator: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: AppNamespace,
+			Name:      "report_status_per_validator",
+			Help:      "The status of the report for a specific validator and ticker",
+		}, []string{ChainIDLabel, ValidatorLabel, TickerLabel, StatusLabel}),
 	}
 
 	// register the above metrics
 	prometheus.MustRegister(m.oracleResponseLatency)
 	prometheus.MustRegister(m.oracleResponseCounter)
-	prometheus.MustRegister(m.voteIncludedInLastCommit)
-	prometheus.MustRegister(m.tickerInclusionStatus)
 	prometheus.MustRegister(m.abciMethodLatency)
 	prometheus.MustRegister(m.abciRequests)
 
@@ -116,8 +118,8 @@ func NewMetrics(chainID string) Metrics {
 type metricsImpl struct {
 	oracleResponseLatency    *prometheus.HistogramVec
 	oracleResponseCounter    *prometheus.CounterVec
-	voteIncludedInLastCommit *prometheus.CounterVec
-	tickerInclusionStatus    *prometheus.CounterVec
+	reportsPerValidator      *prometheus.GaugeVec
+	reportStatusPerValidator *prometheus.CounterVec
 	abciMethodLatency        *prometheus.HistogramVec
 	abciRequests             *prometheus.CounterVec
 	messageSize              *prometheus.HistogramVec
@@ -145,21 +147,6 @@ func (m *metricsImpl) AddOracleResponse(status Labeller) {
 	}).Inc()
 }
 
-func (m *metricsImpl) AddVoteIncludedInLastCommit(included bool) {
-	m.voteIncludedInLastCommit.With(prometheus.Labels{
-		InclusionLabel: strconv.FormatBool(included),
-		ChainIDLabel:   m.chainID,
-	}).Inc()
-}
-
-func (m *metricsImpl) AddTickerInclusionStatus(ticker string, included bool) {
-	m.tickerInclusionStatus.With(prometheus.Labels{
-		TickerLabel:    ticker,
-		InclusionLabel: strconv.FormatBool(included),
-		ChainIDLabel:   m.chainID,
-	}).Inc()
-}
-
 func (m *metricsImpl) AddABCIRequest(method ABCIMethod, status Labeller) {
 	m.abciRequests.With(prometheus.Labels{
 		ABCIMethodLabel: method.String(),
@@ -180,6 +167,23 @@ func (m *metricsImpl) ObservePriceForTicker(ticker oracletypes.CurrencyPair, pri
 		ChainIDLabel: m.chainID,
 		TickerLabel:  ticker.String(),
 	}).Set(price)
+}
+
+func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker oracletypes.CurrencyPair, price float64) {
+	m.reportsPerValidator.With(prometheus.Labels{
+		ChainIDLabel:   m.chainID,
+		TickerLabel:    ticker.String(),
+		ValidatorLabel: validator,
+	}).Set(price)
+}
+
+func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker oracletypes.CurrencyPair, rs ReportStatus) {
+	m.reportStatusPerValidator.With(prometheus.Labels{
+		ChainIDLabel:   m.chainID,
+		ValidatorLabel: validator,
+		TickerLabel:    ticker.String(),
+		StatusLabel:    rs.String(),
+	}).Inc()
 }
 
 // NewMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
