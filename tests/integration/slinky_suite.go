@@ -203,8 +203,9 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add a currency-pair and check Prices", func() {
 		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
 			{
-				Base:  "BTC",
-				Quote: "USD",
+				Base:     "BTC",
+				Quote:    "USD",
+				Decimals: oracletypes.DefaultDecimals,
 			},
 		}...))
 
@@ -214,6 +215,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 1)
 		s.Require().Equal(resp.CurrencyPairs[0].Base, "BTC")
 		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
+		s.Require().Equal(resp.CurrencyPairs[0].Decimals, oracletypes.DefaultDecimals)
 	})
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
@@ -251,8 +253,9 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	cp := oracletypes.CurrencyPair{
-		Base:  "ETHEREUM",
-		Quote: "USDC",
+		Base:     "ETHEREUM",
+		Quote:    "USDC",
+		Decimals: oracletypes.DefaultDecimals,
 	}
 
 	s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
