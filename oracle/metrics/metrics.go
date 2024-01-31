@@ -25,8 +25,6 @@ type Metrics interface {
 	// AddTick increments the number of ticks, this can represent a liveness counter. This
 	// is incremented once every interval (which is defined by the oracle config).
 	AddTick()
-	//
-	// TODO: Add more metrics here in later PRs.
 
 	// UpdatePrice price updates the price for the given pairID for the provider.
 	UpdatePrice(name, handlerType, pairID string, price float64)

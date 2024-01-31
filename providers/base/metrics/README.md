@@ -66,6 +66,12 @@ This will return the total number of provider responses by status (i.e. success 
 
 This will return the number of provider responses by ID (i.e. price feed) and status (i.e. success or failure) over the last hour. This provides introspection into how often each price feed is being updated successfully. If a provider is not returning an expected amount of successful responses for a given price feed, this could be an indication that the provider is not properly configured.
 
+### Average number of responses within a time window
+
+> ```promql
+> sum(increase(oracle_provider_status_responses[1h])) / (60 * 60)
+> ```
+
 ### Average number of responses per provider and status (success/failure) within a time window
 
 > ```promql
