@@ -50,13 +50,13 @@ var LocalConfig = config.OracleConfig{
 		oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 		oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
 	},
-	Production: false,
+	Production: true,
 	// -----------------------------------------------------------	//
 	// ----------------------Metrics Config-----------------------	//
 	// -----------------------------------------------------------	//
 	Metrics: config.MetricsConfig{
 		Enabled:                 true,
-		PrometheusServerAddress: "localhost:8000",
+		PrometheusServerAddress: "0.0.0.0:8002",
 	},
 	UpdateInterval: 1 * time.Second,
 	Providers: []config.ProviderConfig{
