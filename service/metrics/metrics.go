@@ -28,6 +28,9 @@ type Metrics interface {
 
 	// AddABCIRequest updates a counter corresponding to the given ABCI method and status.
 	AddABCIRequest(method ABCIMethod, status Labeller)
+
+	// ObserveMessageSize updates a histogram per slinky message type with the size of that message
+	ObserveMessageSize(msg MessageType, size int)
 }
 
 type nopMetricsImpl struct{}
@@ -43,6 +46,7 @@ func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                    
 func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)              {}
 func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration) {}
 func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                {}
+func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                {}
 
 func NewMetrics(chainID string) Metrics {
 	m := &metricsImpl{
@@ -78,6 +82,12 @@ func NewMetrics(chainID string) Metrics {
 			Name:      "abci_requests",
 			Help:      "The number of requests made to the ABCI server",
 		}, []string{ABCIMethodLabel, StatusLabel, ChainIDLabel}),
+		messageSize: prometheus.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: AppNamespace,
+			Name:      "message_size",
+			Help:      "The size of the message in bytes",
+			Buckets:   []float64{100, 500, 1000, 2000, 3000, 4000, 5000, 10000},
+		}, []string{ChainIDLabel, MessageTypeLabel}),
 	}
 
 	// register the above metrics
@@ -86,6 +96,7 @@ func NewMetrics(chainID string) Metrics {
 	prometheus.MustRegister(m.voteIncludedInLastCommit)
 	prometheus.MustRegister(m.tickerInclusionStatus)
 	prometheus.MustRegister(m.abciMethodLatency)
+	prometheus.MustRegister(m.abciRequests)
 
 	m.chainID = chainID
 
@@ -99,6 +110,7 @@ type metricsImpl struct {
 	tickerInclusionStatus    *prometheus.CounterVec
 	abciMethodLatency        *prometheus.HistogramVec
 	abciRequests             *prometheus.CounterVec
+	messageSize              *prometheus.HistogramVec
 	chainID                  string
 }
 
@@ -143,6 +155,13 @@ func (m *metricsImpl) AddABCIRequest(method ABCIMethod, status Labeller) {
 		StatusLabel:     status.Label(),
 		ChainIDLabel:    m.chainID,
 	}).Inc()
+}
+
+func (m *metricsImpl) ObserveMessageSize(messageType MessageType, size int) {
+	m.messageSize.With(prometheus.Labels{
+		ChainIDLabel:     m.chainID,
+		MessageTypeLabel: messageType.String(),
+	}).Observe(float64(size))
 }
 
 // NewMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics
