@@ -118,27 +118,27 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- p
 				// case where we will split ID's across sub handlers
 				numSubHandlers := (len(p.ids) / maxSubsPerConn) + 1
 				// split ids
+				var subIDs []K
 				for i := 0; i < numSubHandlers; i++ {
 					start := i
 					end := maxSubsPerConn * (i + 1)
 					if i+1 == numSubHandlers {
-						subIDs := p.ids[start:]
-						if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
-							p.logger.Error("websocket query handler returned error", zap.Error(err))
-						}
+						subIDs = p.ids[start:]
 
 					} else {
-						subIDs := p.ids[start:end]
-						if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
-							p.logger.Error("websocket query handler returned error", zap.Error(err))
-						}
+						subIDs = p.ids[start:end]
 					}
 
+					// spin up a goroutine for parallel handlers
+					go func(ids []K) {
+						if err := p.ws.Start(ctx, ids, responseCh); err != nil {
+							p.logger.Error("websocket query handler returned error", zap.Error(err))
+						}
+					}(subIDs)
 				}
 			} else {
 				// case where there is 1 sub handler
-				subIDs := p.ids
-				if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
+				if err := p.ws.Start(ctx, p.ids, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
 			}
