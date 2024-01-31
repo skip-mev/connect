@@ -11,6 +11,8 @@ const (
 
 	// URLProd is the public BitFinex Websocket URL.
 	URLProd = "wss://api-pub.bitfinex.com/ws/2"
+
+	MaxSubscriptionsPerConnection = 30
 )
 
 var (
@@ -28,7 +30,7 @@ var (
 		ReadTimeout:                   config.DefaultReadTimeout,
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		PingInterval:                  config.DefaultPingInterval,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		MaxSubscriptionsPerConnection: MaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.
