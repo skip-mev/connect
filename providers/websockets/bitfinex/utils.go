@@ -27,6 +27,7 @@ var (
 		EnableCompression:   config.DefaultEnableCompression,
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.

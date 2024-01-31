@@ -90,8 +90,8 @@ func (c *AppConfig) ValidateBasic() error {
 	}
 
 	if c.MetricsEnabled {
-		if _, err := url.ParseRequestURI(c.PrometheusServerAddress); err != nil {
-			return fmt.Errorf("must supply a valid prometheus server address if metrics are enabled: %w", err)
+		if c.PrometheusServerAddress == "" {
+			return fmt.Errorf("must supply a non-empty prometheus server address if metrics are enabled")
 		}
 	}
 

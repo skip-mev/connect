@@ -36,7 +36,16 @@ run-prom-client:
 		prom/prometheus
 
 update-local-config:
-	go generate ${CONFIG_DIR}
+	@echo "Updating local config..."
+	@go generate ${CONFIG_DIR}
+
+start-oracle: update-local-config
+	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
+	@docker-compose -f docker-compose.yml up -d
+
+stop-oracle:
+	@echo "Stopping network..."
+	@docker-compose -f docker-compose.yml down
 
 install:
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
@@ -116,8 +125,6 @@ $(BUILD_DIR)/:
 
 # build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
 build-configs: build-test-app
-	rm -rf $(HOMEDIR)
-
 	./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
 	./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
 	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test

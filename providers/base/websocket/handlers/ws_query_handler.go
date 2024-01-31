@@ -220,6 +220,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 
 	h.logger.Debug("starting recv", zap.Int("buffer_size", cap(responseCh)))
 
+	// Track the number of read errors. If this exceeds the max read error count,
+	// we will close the connection and return. Read errors can occur if the data
+	// provider closes the connection or if the connection is interrupted.
+	readErrCount := 0
+
 	for {
 		// Track the time it takes to receive a message from the data provider.
 		now := time.Now().UTC()
@@ -228,15 +233,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		// Case 2: The context is not cancelled. Wait for a message from the data provider.
 		select {
 		case <-ctx.Done():
-			h.logger.Debug("context finished; closing connection to websocket handler")
-			if err := h.connHandler.Close(); err != nil {
-				h.logger.Error("failed to close connection", zap.Error(err))
-				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
-				return errors.ErrCloseWithErr(err)
+			h.logger.Debug("context finished")
+			if err := h.close(); err != nil {
+				return err
 			}
 
-			h.logger.Debug("connection closed")
-			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
 			return ctx.Err()
 		default:
 			// Wait for a message from the data provider.
@@ -244,7 +245,20 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			if err != nil {
 				h.logger.Error("failed to read message from websocket handler", zap.Error(err))
 				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadErr)
-				continue
+
+				// If the read error count is greater than the max read error count, close the
+				// connection and return.
+				readErrCount++
+				if readErrCount < h.config.MaxReadErrorCount {
+					continue
+				}
+
+				h.logger.Error("max read errors reached")
+				if err := h.close(); err != nil {
+					return err
+				}
+
+				return errors.ErrReadWithErr(err)
 			}
 
 			h.logger.Debug("message received; attempting to handle message", zap.Binary("message", message))
@@ -284,4 +298,18 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		// Record the time it took to receive the message.
 		h.metrics.ObserveWebSocketLatency(h.config.Name, time.Since(now))
 	}
+}
+
+// close is used to close the connection to the data provider.
+func (h *WebSocketQueryHandlerImpl[K, V]) close() error {
+	h.logger.Debug("closing connection to websocket handler")
+	if err := h.connHandler.Close(); err != nil {
+		h.logger.Error("failed to close connection", zap.Error(err))
+		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
+		return errors.ErrCloseWithErr(err)
+	}
+
+	h.logger.Debug("connection closed")
+	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
+	return nil
 }
