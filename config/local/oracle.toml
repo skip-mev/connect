@@ -820,7 +820,7 @@ production = true
     read_deadline = "45s"
     write_deadline = "45s"
     ping_interval = "20s"
-    max_subscriptions_per_connection = 0
+    max_subscriptions_per_connection = 30
   [providers.market_config]
     name = "mexc"
     [providers.market_config.currency_pair_to_market_configs]

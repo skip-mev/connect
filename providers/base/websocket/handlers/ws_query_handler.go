@@ -166,7 +166,15 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		numSubHandlers = (len(h.ids) / h.config.MaxSubscriptionsPerConnection) + 1
 		// split ids
 		for i := range h.subHandlers {
-			h.subHandlers[i].SetIDs(h.ids[i : h.config.MaxSubscriptionsPerConnection*(i+1)])
+			start := i
+			end := h.config.MaxSubscriptionsPerConnection * (i + 1)
+			if i+1 == len(h.subHandlers) {
+				h.subHandlers[i].SetIDs(h.ids[start:])
+
+			} else {
+				h.subHandlers[i].SetIDs(h.ids[start:end])
+			}
+
 		}
 	} else {
 		// case where there is 1 sub handler
