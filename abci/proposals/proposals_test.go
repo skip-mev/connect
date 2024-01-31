@@ -20,6 +20,7 @@ import (
 
 	"github.com/skip-mev/slinky/abci/proposals"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
+	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
@@ -977,6 +978,8 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored the wrapped processProposal latency
 		}).Once()
 		metricsmocks.On("AddABCIRequest", servicemetrics.ProcessProposal, servicemetrics.Success{}).Once()
+		metricsmocks.On("ObserveMessageSize", servicemetrics.ExtendedCommit, mock.Anything)
+
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
 	})
@@ -1002,18 +1005,19 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		)
 		s.Require().NoError(err)
 
+		experr := proposals.InvalidExtendedCommitInfoError{
+			Err: fmt.Errorf("error in validate vote extensions"),
+		}
+
 		req := s.createRequestProcessProposal([][]byte{extInfoBz}, 4)
 		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
 			// the second arg shld be a duration
 			latency := args.Get(1).(time.Duration)
 			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
 		}).Once()
-
-		experr := proposals.InvalidExtendedCommitInfoError{
-			Err: fmt.Errorf("error in validate vote extensions"),
-		}
-
 		metricsmocks.On("AddABCIRequest", servicemetrics.ProcessProposal, experr).Once()
+		metricsmocks.On("ObserveMessageSize", servicemetrics.ExtendedCommit, mock.Anything)
+
 		_, err = propHandler.ProcessProposalHandler()(s.ctx, req)
 		s.Require().Error(err, experr)
 	})
@@ -1119,6 +1123,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 	s.Run("test invalid extended commit", func() {
 		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
 		codecErr := fmt.Errorf("error in codec")
+		c := codecmocks.NewExtendedCommitCodec(s.T())
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
@@ -1129,9 +1134,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
-			fakeExtendedCommitCodec{
-				codecErr,
-			},
+			c,
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
 			metricsMocks,
 		)
@@ -1140,6 +1143,8 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return()
+
+		c.On("Encode", mock.Anything).Return(nil, codecErr)
 
 		// make vote-extensions enabled
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 1)
@@ -1295,6 +1300,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 	s.Run("test codec failure", func() {
 		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
 		codecErr := fmt.Errorf("error in codec")
+		c := codecmocks.NewExtendedCommitCodec(s.T())
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			nil,
@@ -1303,7 +1309,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			},
 			nil,
 			nil,
-			fakeExtendedCommitCodec{codecErr},
+			c,
 			nil,
 			metricsMocks,
 		)
@@ -1312,6 +1318,8 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
+
+		c.On("Decode", mock.Anything).Return(cometabci.ExtendedCommitInfo{}, codecErr)
 
 		// make vote-extensions disabled
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
@@ -1326,6 +1334,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 	s.Run("test invalid extended commit", func() {
 		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
 		validateErr := fmt.Errorf("error in validateExtendedCommit")
+		c := codecmocks.NewExtendedCommitCodec(s.T())
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			nil,
@@ -1336,7 +1345,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 				return validateErr
 			},
 			nil,
-			fakeExtendedCommitCodec{nil},
+			c,
 			nil,
 			metricsMocks,
 		)
@@ -1345,6 +1354,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 		}
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, expErr).Once()
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
+		c.On("Decode", mock.Anything).Return(cometabci.ExtendedCommitInfo{}, nil)
 
 		// make vote-extensions disabled
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
@@ -1357,16 +1367,44 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 	})
 }
 
-type fakeExtendedCommitCodec struct {
-	toReturn error
-}
+func (s *ProposalsTestSuite) TestExtendedCommitSize() {
+	metricsMocks := servicemetricsmocks.NewMetrics(s.T())
+	codec := codecmocks.NewExtendedCommitCodec(s.T())
 
-func (f fakeExtendedCommitCodec) Encode(cometabci.ExtendedCommitInfo) ([]byte, error) {
-	return nil, f.toReturn
-}
+	propHandler := proposals.NewProposalHandler(
+		log.NewTestLogger(s.T()),
+		nil,
+		func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+			return nil, nil
+		},
+		func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+			return nil
+		},
+		nil,
+		codec,
+		nil,
+		metricsMocks,
+	)
 
-func (f fakeExtendedCommitCodec) Decode([]byte) (cometabci.ExtendedCommitInfo, error) {
-	return cometabci.ExtendedCommitInfo{}, f.toReturn
+	extendedCommit := make([]byte, 100)
+
+	metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, servicemetrics.Success{}).Once()
+	metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return()
+	metricsMocks.On("ObserveMessageSize", servicemetrics.ExtendedCommit, 100)
+
+	// mock codec
+	codec.On("Decode", extendedCommit).Return(cometabci.ExtendedCommitInfo{
+		Votes: []cometabci.ExtendedVoteInfo{},
+	}, nil)
+
+	// make vote-extensions enabled
+	s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 2)
+	s.ctx = s.ctx.WithBlockHeight(3)
+
+	_, err := propHandler.ProcessProposalHandler()(s.ctx, &cometabci.RequestProcessProposal{
+		Txs: [][]byte{extendedCommit},
+	})
+	s.Require().NoError(err)
 }
 
 func (s *ProposalsTestSuite) createRequestPrepareProposal(
