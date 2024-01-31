@@ -17,7 +17,7 @@
 > | Non-Validator | **Optional**     |    **Optional**   | **Optional** |
 > </div>
 
-The entire oracle configuration is broken down into two files:
+All oracle configurations are broken down into two files:
 
 1. **Oracle side-car configuration (`oracle.toml`):** This contains the data provider's that are utilized, the desired markets to be requested, metrics instrumentation, and more.
 2. **Oracle configuration in the application (`app.toml`):** A few additional lines of code that must be added to the application's `app.toml` file to configure the oracle side car into the application.
