@@ -113,11 +113,10 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- p
 			// create sub handlers
 			// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
 			// 30 / 45 = 0 -> need one sub handler
-			numSubHandlers := 1
 			maxSubsPerConn := p.wsCfg.MaxSubscriptionsPerConnection
-			if maxSubsPerConn != 0 {
+			if maxSubsPerConn > 0 {
 				// case where we will split ID's across sub handlers
-				numSubHandlers = (len(p.ids) / maxSubsPerConn) + 1
+				numSubHandlers := (len(p.ids) / maxSubsPerConn) + 1
 				// split ids
 				for i := 0; i < numSubHandlers; i++ {
 					start := i
