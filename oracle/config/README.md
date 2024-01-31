@@ -126,7 +126,7 @@ type OracleConfig struct {
 
 ## UpdateInterval
 
-This field is utilized to set the interval at which the oracle will fetch prices from providers. In the case where a provider fails to respond, the oracle will wait until the next update interval to fetch prices from the provider again.
+This field is utilized to set the interval at which the oracle will fetch prices from providers.
 
 ## Providers
 
@@ -181,7 +181,7 @@ This field is utilized to set the interval at which the provider should update t
 
 #### MaxQueries
 
-This field is utilized to set the maximum number of queries that the provider will make within the interval. If the provider makes more queries than this, it will stop making queries until the next interval.
+This field is utilized to set the maximum number of queries that the provider will make within the interval.
 
 #### Atomic
 
@@ -189,7 +189,7 @@ This field is utilized to set whether the provider can fulfill its queries in a 
 
 #### URL
 
-This field is utilized to set the URL that is used to fetch data from the API. This URL should be the same exact URL that the oracle module (`x/oracle`) is currently configured to accept.
+This field is utilized to set the URL that is used to fetch data from the API.
 
 #### Name (Should be the same as the provider's name)
 
