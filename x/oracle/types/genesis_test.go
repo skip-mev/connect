@@ -29,7 +29,8 @@ func TestGenesisValidation(t *testing.T) {
 					// invalid CurrencyPairGenesis
 					CurrencyPair: types.CurrencyPair{
 						Base:     "BB",
-						Decimals: types.DefaultDecimals},
+						Decimals: types.DefaultDecimals,
+					},
 				},
 			},
 			0,
