@@ -45,9 +45,6 @@ type WebSocketQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.Resp
 
 	// ids is the set of IDs that the provider will fetch data for.
 	ids []K
-
-	// readErrCount is the number of read errors that have occurred.
-	readErrCount int
 }
 
 // NewWebSocketQueryHandler creates a new websocket query handler.
@@ -125,7 +122,6 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
-	h.readErrCount = 0
 	if err := h.start(); err != nil {
 		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids, err)
 		return fmt.Errorf("failed to start connection: %w", err)
@@ -224,6 +220,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 
 	h.logger.Debug("starting recv", zap.Int("buffer_size", cap(responseCh)))
 
+	// Track the number of read errors. If this exceeds the max read error count,
+	// we will close the connection and return. Read errors can occur if the data
+	// provider closes the connection or if the connection is interrupted.
+	readErrCount := 0
+
 	for {
 		// Track the time it takes to receive a message from the data provider.
 		now := time.Now().UTC()
@@ -247,8 +248,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 
 				// If the read error count is greater than the max read error count, close the
 				// connection and return.
-				h.readErrCount++
-				if h.readErrCount < h.config.MaxReadErrorCount {
+				readErrCount++
+				if readErrCount < h.config.MaxReadErrorCount {
 					continue
 				}
 
