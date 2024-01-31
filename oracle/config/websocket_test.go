@@ -204,6 +204,24 @@ func TestWebSocketConfig(t *testing.T) {
 			},
 			expectedErr: true,
 		},
+		{
+			name: "bad config with negative max read error count",
+			config: config.WebSocketConfig{
+				Enabled:             true,
+				MaxBufferSize:       1,
+				ReconnectionTimeout: config.DefaultReconnectionTimeout,
+				Name:                "test",
+				WSS:                 "wss://test.com",
+				ReadBufferSize:      config.DefaultReadBufferSize,
+				WriteBufferSize:     config.DefaultWriteBufferSize,
+				HandshakeTimeout:    config.DefaultHandshakeTimeout,
+				EnableCompression:   config.DefaultEnableCompression,
+				ReadTimeout:         config.DefaultReadTimeout,
+				WriteTimeout:        config.DefaultWriteTimeout,
+				MaxReadErrorCount:   -1,
+			},
+			expectedErr: true,
+		},
 	}
 
 	for _, tc := range testCases {

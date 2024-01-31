@@ -45,6 +45,7 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		PingInterval:        config.DefaultPingInterval,
+		MaxReadErrorCount:   2,
 	}
 
 	heartbeatCfg = config.WebSocketConfig{
@@ -60,6 +61,7 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		PingInterval:        1 * time.Second,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 )
 
@@ -178,7 +180,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				connHandler.On("Dial").Return(nil).Once()
 				connHandler.On("Write", mock.Anything).Return(nil).Once()
-				connHandler.On("Read").Return(nil, fmt.Errorf("no rizz alert")).Maybe().After(time.Second)
+				connHandler.On("Read").Return(nil, fmt.Errorf("no rizz alert")).Twice().After(time.Second)
 				connHandler.On("Close").Return(nil).Once()
 
 				return connHandler
@@ -198,7 +200,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				m.On("AddWebSocketConnectionStatus", name, metrics.WriteSuccess).Return().Once()
 				m.On("AddWebSocketConnectionStatus", name, metrics.Healthy).Return().Once()
 
-				m.On("AddWebSocketConnectionStatus", name, metrics.ReadErr).Return().Maybe()
+				m.On("AddWebSocketConnectionStatus", name, metrics.ReadErr).Return().Twice()
 				m.On("ObserveWebSocketLatency", name, mock.Anything).Return().Maybe()
 
 				m.On("AddWebSocketConnectionStatus", name, metrics.CloseSuccess).Return().Once()

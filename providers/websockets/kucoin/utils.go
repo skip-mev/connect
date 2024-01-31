@@ -39,6 +39,7 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		PingInterval:        10 * time.Second,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
 	// DefaultAPIConfig defines the default API config for Kucoin. This is
