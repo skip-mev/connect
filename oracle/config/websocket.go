@@ -42,6 +42,13 @@ const (
 	// DefaultPingInterval is the default interval at which the provider should send
 	// ping messages to the server.
 	DefaultPingInterval = 0 * time.Second
+
+	// DefaultMaxReadErrorCount is the default maximum number of read errors that
+	// the provider will tolerate before closing the connection and attempting to
+	// reconnect. This default value utilized by the gorilla/websocket package is
+	// 1000, but we set it to a lower value to allow the provider to reconnect
+	// faster.
+	DefaultMaxReadErrorCount = 100
 )
 
 // WebSocketConfig defines a config for a websocket based data provider.
@@ -95,6 +102,10 @@ type WebSocketConfig struct {
 	// PingInterval is the interval to ping the server. Note that a ping interval
 	// of 0 disables pings.
 	PingInterval time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
+
+	// MaxReadErrorCount is the maximum number of read errors that the provider
+	// will tolerate before closing the connection and attempting to reconnect.
+	MaxReadErrorCount int `mapstructure:"max_read_error_count" toml:"max_read_error_count"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.
@@ -141,6 +152,10 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.PingInterval < 0 {
 		return fmt.Errorf("websocket ping interval cannot be negative")
+	}
+
+	if c.MaxReadErrorCount < 0 {
+		return fmt.Errorf("websocket max read error count cannot be negative")
 	}
 
 	return nil

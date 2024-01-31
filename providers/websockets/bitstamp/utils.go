@@ -30,6 +30,7 @@ var (
 		WriteTimeout:        config.DefaultWriteTimeout,
 		ReadTimeout:         config.DefaultReadTimeout,
 		PingInterval:        10 * time.Second,
+		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
 	// DefaultMarketConfig returns the default market config for bitstamp.
