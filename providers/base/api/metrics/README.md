@@ -49,7 +49,7 @@ This will return the total number of provider responses over the last hour (fail
 > sum by (status) (increase(oracle_api_response_status_per_provider[1h]))
 > ```
 
-This will return the total number of provider responses by status over the last hour (failures and successes across all providers).
+This will return the total number of provider responses by status over the last hour.
 
 ### Total number of responses by ID (i.e. price feed) and status
 
@@ -57,7 +57,7 @@ This will return the total number of provider responses by status over the last 
 > sum by (id, status) (increase(oracle_api_response_status_per_provider[1h]))
 > ```
 
-This will return the total number of provider responses by ID and status over the last hour (failures and successes across all providers).
+This will return the total number of provider responses by ID and status over the last hour.
 
 ### Average number of responses by provider
 

@@ -29,7 +29,7 @@ type Metrics interface {
 	// UpdatePrice price updates the price for the given pairID for the provider.
 	UpdatePrice(name, handlerType, pairID string, price float64)
 
-	// UpdateAggregatePrice rice updates the aggregated price for the given pairID.
+	// UpdateAggregatePrice updates the aggregated price for the given pairID.
 	UpdateAggregatePrice(pairID string, price float64)
 }
 
