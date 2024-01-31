@@ -7,6 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 //go:generate mockery --name Metrics --filename mock_metrics.go
@@ -28,6 +29,12 @@ type Metrics interface {
 
 	// AddABCIRequest updates a counter corresponding to the given ABCI method and status.
 	AddABCIRequest(method ABCIMethod, status Labeller)
+
+	// ObserveMessageSize updates a histogram per slinky message type with the size of that message
+	ObserveMessageSize(msg MessageType, size int)
+
+	// ObservePriceForTicker updates a gauge with the price for the given ticker, this is updated each time a price is written to state
+	ObservePriceForTicker(ticker oracletypes.CurrencyPair, price float64)
 }
 
 type nopMetricsImpl struct{}
@@ -37,12 +44,14 @@ func NewNopMetrics() Metrics {
 	return &nopMetricsImpl{}
 }
 
-func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)           {}
-func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                           {}
-func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                     {}
-func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)              {}
-func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration) {}
-func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                {}
+func (m *nopMetricsImpl) ObserveOracleResponseLatency(_ time.Duration)                {}
+func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                                {}
+func (m *nopMetricsImpl) AddVoteIncludedInLastCommit(_ bool)                          {}
+func (m *nopMetricsImpl) AddTickerInclusionStatus(_ string, _ bool)                   {}
+func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration)      {}
+func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                     {}
+func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                     {}
+func (m *nopMetricsImpl) ObservePriceForTicker(_ oracletypes.CurrencyPair, _ float64) {}
 
 func NewMetrics(chainID string) Metrics {
 	m := &metricsImpl{
@@ -78,6 +87,17 @@ func NewMetrics(chainID string) Metrics {
 			Name:      "abci_requests",
 			Help:      "The number of requests made to the ABCI server",
 		}, []string{ABCIMethodLabel, StatusLabel, ChainIDLabel}),
+		messageSize: prometheus.NewHistogramVec(prometheus.HistogramOpts{
+			Namespace: AppNamespace,
+			Name:      "message_size",
+			Help:      "The size of the message in bytes",
+			Buckets:   []float64{100, 500, 1000, 2000, 3000, 4000, 5000, 10000},
+		}, []string{ChainIDLabel, MessageTypeLabel}),
+		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: AppNamespace,
+			Name:      "prices",
+			Help:      "The price of the ticker that is written to state",
+		}, []string{ChainIDLabel, TickerLabel}),
 	}
 
 	// register the above metrics
@@ -86,6 +106,7 @@ func NewMetrics(chainID string) Metrics {
 	prometheus.MustRegister(m.voteIncludedInLastCommit)
 	prometheus.MustRegister(m.tickerInclusionStatus)
 	prometheus.MustRegister(m.abciMethodLatency)
+	prometheus.MustRegister(m.abciRequests)
 
 	m.chainID = chainID
 
@@ -99,6 +120,8 @@ type metricsImpl struct {
 	tickerInclusionStatus    *prometheus.CounterVec
 	abciMethodLatency        *prometheus.HistogramVec
 	abciRequests             *prometheus.CounterVec
+	messageSize              *prometheus.HistogramVec
+	prices                   *prometheus.GaugeVec
 	chainID                  string
 }
 
@@ -143,6 +166,20 @@ func (m *metricsImpl) AddABCIRequest(method ABCIMethod, status Labeller) {
 		StatusLabel:     status.Label(),
 		ChainIDLabel:    m.chainID,
 	}).Inc()
+}
+
+func (m *metricsImpl) ObserveMessageSize(messageType MessageType, size int) {
+	m.messageSize.With(prometheus.Labels{
+		ChainIDLabel:     m.chainID,
+		MessageTypeLabel: messageType.String(),
+	}).Observe(float64(size))
+}
+
+func (m *metricsImpl) ObservePriceForTicker(ticker oracletypes.CurrencyPair, price float64) {
+	m.prices.With(prometheus.Labels{
+		ChainIDLabel: m.chainID,
+		TickerLabel:  ticker.String(),
+	}).Set(price)
 }
 
 // NewMetricsFromConfig returns a new Metrics implementation based on the config. The Metrics

@@ -148,6 +148,9 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 			s.currencyPairs[0]: big.NewInt(1),
 		}
 
+		// expect metrics call
+		s.mockMetrics.On("ObservePriceForTicker", s.currencyPairs[0], float64(1))
+
 		err := s.handler.WritePrices(s.ctx, prices)
 		s.Require().NoError(err)
 
@@ -158,11 +161,16 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 	})
 
 	s.Run("multiple price updates", func() {
+		bigIntPrice, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10) // use a non-uint64 price
+
 		prices := map[oracletypes.CurrencyPair]*big.Int{
 			s.currencyPairs[0]: big.NewInt(1),
 			s.currencyPairs[1]: big.NewInt(2),
-			s.currencyPairs[2]: big.NewInt(3),
+			s.currencyPairs[2]: bigIntPrice,
 		}
+		s.mockMetrics.On("ObservePriceForTicker", s.currencyPairs[0], float64(1))
+		s.mockMetrics.On("ObservePriceForTicker", s.currencyPairs[1], float64(2))
+		s.mockMetrics.On("ObservePriceForTicker", s.currencyPairs[2], float64(1.157920892373162e+77)) // we can represent 256 bit ints
 
 		err := s.handler.WritePrices(s.ctx, prices)
 		s.Require().NoError(err)

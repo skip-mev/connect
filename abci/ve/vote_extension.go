@@ -261,7 +261,11 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 		h.logger.Info(
 			"validated vote extension",
 			"height", req.Height,
+			"size (bytes)", len(req.VoteExtension),
 		)
+
+		// observe message size
+		h.metrics.ObserveMessageSize(servicemetrics.VoteExtension, len(req.VoteExtension))
 
 		return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_ACCEPT}, nil
 	}

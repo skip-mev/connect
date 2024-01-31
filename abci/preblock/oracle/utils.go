@@ -11,6 +11,7 @@ import (
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -55,6 +56,9 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 			return err
 		}
 
+		// observe prices
+		recordPrice(h.metrics, price, cp)
+
 		h.logger.Info(
 			"set price for currency pair",
 			"currency_pair", cp.String(),
@@ -63,6 +67,12 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 	}
 
 	return nil
+}
+
+// recordPrice takes the given metrics + big.Int value and reports the price as a float64
+func recordPrice(metrics servicemetrics.Metrics, value *big.Int, ticker oracletypes.CurrencyPair) {
+	float, _ := value.Float64()
+	metrics.ObservePriceForTicker(ticker, float)
 }
 
 // recordMetrics reports whether the validator's vote-extension was included in the last commit, and
