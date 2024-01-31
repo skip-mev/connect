@@ -258,16 +258,12 @@ func webSocketProviderFromProviderConfig(
 		}
 	}
 
-	sh, err := wshandlers.NewWebSocketSubHandler[oracletypes.CurrencyPair, *big.Int](connHandler, wsDataHandler)
-	if err != nil {
-		return nil, err
-	}
-
 	// Create the websocket query handler which encapsulates all fetching and parsing logic.
 	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,
-		[]wshandlers.WebSocketSubHandler[oracletypes.CurrencyPair, *big.Int]{sh},
+		wsDataHandler,
+		connHandler,
 		wsMetrics,
 	)
 	if err != nil {

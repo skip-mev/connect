@@ -44,7 +44,8 @@ const (
 	DefaultPingInterval = 0 * time.Second
 
 	// DefaultMaxSubscriptionsPerConnection is the default maximum subscriptions
-	// an provider can handle per-connection.
+	// an provider can handle per-connection.  When this value is 0, one connection
+	// will handle
 	DefaultMaxSubscriptionsPerConnection = 0
 )
 

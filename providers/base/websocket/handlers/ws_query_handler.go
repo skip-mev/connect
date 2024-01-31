@@ -35,15 +35,6 @@ type WebSocketQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.Resp
 	metrics metrics.WebSocketMetrics
 	config  config.WebSocketConfig
 
-	subHandlers []WebSocketSubHandler[K, V]
-
-	ids []K
-}
-
-// WebSocketSubHandler encompasses the connection and data management of a subset of the total data to be handled.
-// Multiple SubHandlers are used in the case where multiple connections must be used to manage the full set
-// of data for a given provider.
-type WebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	// The connection handler is used to manage the connection to the data provider. This
 	// establishes the connection and sends/receives messages to/from the data provider.
 	connHandler WebSocketConnHandler
@@ -53,38 +44,15 @@ type WebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseVa
 	dataHandler WebSocketDataHandler[K, V]
 
 	// ids is the set of IDs that the provider will fetch data for.
-	subIDs []K
-}
-
-// SetIDs sets the sub IDs to be used by a WebSocketSubHandler.
-func (sh *WebSocketSubHandler[K, V]) SetIDs(subIDs []K) {
-	sh.subIDs = subIDs
-}
-
-// NewWebSocketSubHandler creates a new WebSocketSubHandler with the given connection and data handlers.
-func NewWebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
-	connHandler WebSocketConnHandler,
-	dataHandler WebSocketDataHandler[K, V],
-) (WebSocketSubHandler[K, V], error) {
-	if connHandler == nil {
-		return WebSocketSubHandler[K, V]{}, fmt.Errorf(" datahandler is nil")
-	}
-
-	if dataHandler == nil {
-		return WebSocketSubHandler[K, V]{}, fmt.Errorf("datahandler is nil")
-	}
-
-	return WebSocketSubHandler[K, V]{
-		connHandler: connHandler,
-		dataHandler: dataHandler,
-	}, nil
+	ids []K
 }
 
 // NewWebSocketQueryHandler creates a new websocket query handler.
 func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	logger *zap.Logger,
 	config config.WebSocketConfig,
-	subHandlers []WebSocketSubHandler[K, V],
+	dataHandler WebSocketDataHandler[K, V],
+	connHandler WebSocketConnHandler,
 	m metrics.WebSocketMetrics,
 ) (WebSocketQueryHandler[K, V], error) {
 	if err := config.ValidateBasic(); err != nil {
@@ -99,28 +67,23 @@ func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Respo
 		return nil, fmt.Errorf("logger is nil")
 	}
 
+	if dataHandler == nil {
+		return nil, fmt.Errorf("websocket data handler is nil")
+	}
+
+	if connHandler == nil {
+		return nil, fmt.Errorf("connection handler is nil")
+	}
+
 	if m == nil {
 		return nil, fmt.Errorf("websocket metrics is nil")
-	}
-
-	if len(subHandlers) == 0 {
-		return nil, fmt.Errorf("must provide sub handlers")
-	}
-
-	for _, sh := range subHandlers {
-		if sh.dataHandler == nil {
-			return nil, fmt.Errorf("subhandler datahandler is nil")
-		}
-
-		if sh.connHandler == nil {
-			return nil, fmt.Errorf("subhandler connhandler is nil")
-		}
 	}
 
 	return &WebSocketQueryHandlerImpl[K, V]{
 		logger:      logger.With(zap.String("web_socket_data_handler", config.Name)),
 		config:      config,
-		subHandlers: subHandlers,
+		dataHandler: dataHandler,
+		connHandler: connHandler,
 		metrics:     m,
 	}, nil
 }
@@ -157,41 +120,10 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		return nil
 	}
 
-	// create sub handlers
-	// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
-	// 30 / 45 = 0 -> need one sub handler
-	numSubHandlers := 1
-	if h.config.MaxSubscriptionsPerConnection != 0 {
-		// case where we will split ID's across sub handlers
-		numSubHandlers = (len(h.ids) / h.config.MaxSubscriptionsPerConnection) + 1
-		// split ids
-		for i := range h.subHandlers {
-			start := i
-			end := h.config.MaxSubscriptionsPerConnection * (i + 1)
-			if i+1 == len(h.subHandlers) {
-				h.subHandlers[i].SetIDs(h.ids[start:])
-
-			} else {
-				h.subHandlers[i].SetIDs(h.ids[start:end])
-			}
-
-		}
-	} else {
-		// case where there is 1 sub handler
-		for i := range h.subHandlers {
-			h.subHandlers[i].SetIDs(h.ids)
-		}
-	}
-
-	if len(h.subHandlers) != numSubHandlers {
-		h.logger.Error("invalid amount of sub handlers", zap.Int("expected", numSubHandlers), zap.Int("got", len(h.subHandlers)))
-		return fmt.Errorf("invalid amount of sub handlers. expected %d, got %d", numSubHandlers, len(h.subHandlers))
-	}
-
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
 	if err := h.start(); err != nil {
-		responseCh <- providertypes.NewGetResponseWithErr[K, V](h.ids, err)
+		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids, err)
 		return fmt.Errorf("failed to start connection: %w", err)
 	}
 
@@ -206,40 +138,37 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 
 // start is used to start the connection to the data provider.
 func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
-	for _, sh := range h.subHandlers {
-		// Start the connection.
-		h.logger.Debug("creating connection to data provider")
-		if err := sh.connHandler.Dial(); err != nil {
-			h.logger.Error("failed to create connection with data provider", zap.Error(err))
-			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialErr)
-			return errors.ErrDialWithErr(err)
-		}
-
-		// Create the initial set of events that the channel will subscribe to.
-		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
-		messages, err := sh.dataHandler.CreateMessages(sh.subIDs)
-		if err != nil {
-			h.logger.Error("failed to create subscription messages", zap.Error(err))
-			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageErr)
-			return errors.ErrCreateMessageWithErr(err)
-		}
-
-		h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
-		for _, message := range messages {
-			h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
-
-			// Send the initial payload to the data provider.
-			if err := sh.connHandler.Write(message); err != nil {
-				h.logger.Error("failed to write message to websocket connection handler", zap.Error(err))
-				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
-				return errors.ErrWriteWithErr(err)
-			}
-		}
-
-		h.logger.Debug("initial payload sent; websocket connection successfully started")
-		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+	// Start the connection.
+	h.logger.Debug("creating connection to data provider")
+	if err := h.connHandler.Dial(); err != nil {
+		h.logger.Error("failed to create connection with data provider", zap.Error(err))
+		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialErr)
+		return errors.ErrDialWithErr(err)
 	}
 
+	// Create the initial set of events that the channel will subscribe to.
+	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
+	messages, err := h.dataHandler.CreateMessages(h.ids)
+	if err != nil {
+		h.logger.Error("failed to create subscription messages", zap.Error(err))
+		h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageErr)
+		return errors.ErrCreateMessageWithErr(err)
+	}
+
+	h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
+	for _, message := range messages {
+		h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
+
+		// Send the initial payload to the data provider.
+		if err := h.connHandler.Write(message); err != nil {
+			h.logger.Error("failed to write message to websocket connection handler", zap.Error(err))
+			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
+			return errors.ErrWriteWithErr(err)
+		}
+	}
+
+	h.logger.Debug("initial payload sent; websocket connection successfully started")
+	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 	return nil
 }
 
@@ -257,26 +186,24 @@ func (h *WebSocketQueryHandlerImpl[K, V]) heartBeat(ctx context.Context) {
 			h.logger.Debug("context finished; stopping heartbeat")
 			return
 		case <-ticker.C:
-			for _, sh := range h.subHandlers {
-				h.logger.Debug("creating heartbeat messages")
-				msgs, err := sh.dataHandler.HeartBeatMessages()
-				if err != nil {
-					h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatErr)
-					h.logger.Error("failed to create heartbeat messages", zap.Error(err))
-					continue
-				}
+			h.logger.Debug("creating heartbeat messages")
+			msgs, err := h.dataHandler.HeartBeatMessages()
+			if err != nil {
+				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatErr)
+				h.logger.Error("failed to create heartbeat messages", zap.Error(err))
+				continue
+			}
 
-				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatSuccess)
-				h.logger.Debug("sending heartbeat messages to data provider", zap.Int("num_msgs", len(msgs)))
+			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatSuccess)
+			h.logger.Debug("sending heartbeat messages to data provider", zap.Int("num_msgs", len(msgs)))
 
-				for _, msg := range msgs {
-					if err := sh.connHandler.Write(msg); err != nil {
-						h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
-						h.logger.Error("failed to write heartbeat message", zap.Error(err))
-					} else {
-						h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
-						h.logger.Debug("heartbeat message sent")
-					}
+			for _, msg := range msgs {
+				if err := h.connHandler.Write(msg); err != nil {
+					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
+					h.logger.Error("failed to write heartbeat message", zap.Error(err))
+				} else {
+					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
+					h.logger.Debug("heartbeat message sent")
 				}
 			}
 		}
@@ -301,60 +228,54 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		// Case 2: The context is not cancelled. Wait for a message from the data provider.
 		select {
 		case <-ctx.Done():
-			for _, sh := range h.subHandlers {
-				h.logger.Debug("context finished; closing connection to websocket handler")
-				if err := sh.connHandler.Close(); err != nil {
-					h.logger.Error("failed to close connection", zap.Error(err))
-					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
-					return errors.ErrCloseWithErr(err)
-				}
-
-				h.logger.Debug("connection closed")
-				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
+			h.logger.Debug("context finished; closing connection to websocket handler")
+			if err := h.connHandler.Close(); err != nil {
+				h.logger.Error("failed to close connection", zap.Error(err))
+				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
+				return errors.ErrCloseWithErr(err)
 			}
 
+			h.logger.Debug("connection closed")
+			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
 			return ctx.Err()
 		default:
-			for _, sh := range h.subHandlers {
+			// Wait for a message from the data provider.
+			message, err := h.connHandler.Read()
+			if err != nil {
+				h.logger.Error("failed to read message from websocket handler", zap.Error(err))
+				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadErr)
+				continue
+			}
 
-				// Wait for a message from the data provider.
-				message, err := sh.connHandler.Read()
-				if err != nil {
-					h.logger.Error("failed to read message from websocket handler", zap.Error(err))
-					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadErr)
-					continue
-				}
+			h.logger.Debug("message received; attempting to handle message", zap.Binary("message", message))
+			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadSuccess)
 
-				h.logger.Debug("message received; attempting to handle message", zap.Binary("message", message))
-				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadSuccess)
+			// Handle the message.
+			response, updateMessage, err := h.dataHandler.HandleMessage(message)
+			if err != nil {
+				h.logger.Error("failed to handle websocket message", zap.Error(err))
+				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageErr)
+				continue
+			}
 
-				// Handle the message.
-				response, updateMessage, err := sh.dataHandler.HandleMessage(message)
-				if err != nil {
-					h.logger.Error("failed to handle websocket message", zap.Error(err))
-					h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageErr)
-					continue
-				}
+			// Immediately send the response to the response channel. Even if this is
+			// empty, it will be handled by the provider.
+			responseCh <- response
+			h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
 
-				// Immediately send the response to the response channel. Even if this is
-				// empty, it will be handled by the provider.
-				responseCh <- response
-				h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
-				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
+			// If the update messages are not nil, send it to the data provider.
+			if len(updateMessage) != 0 {
+				for _, msg := range updateMessage {
+					h.logger.Debug("sending update message to data provider", zap.Binary("update_message", msg))
+					h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
 
-				// If the update messages are not nil, send it to the data provider.
-				if len(updateMessage) != 0 {
-					for _, msg := range updateMessage {
-						h.logger.Debug("sending update message to data provider", zap.Binary("update_message", msg))
-						h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
-
-						if err := sh.connHandler.Write(msg); err != nil {
-							h.logger.Error("failed to write update message", zap.Error(err))
-							h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
-						} else {
-							h.logger.Debug("update message sent")
-							h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
-						}
+					if err := h.connHandler.Write(msg); err != nil {
+						h.logger.Error("failed to write update message", zap.Error(err))
+						h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
+					} else {
+						h.logger.Debug("update message sent")
+						h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 					}
 				}
 			}

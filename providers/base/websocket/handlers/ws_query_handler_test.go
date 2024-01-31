@@ -33,35 +33,33 @@ var (
 	heartbeat   = []byte("heartbeat")
 
 	cfg = config.WebSocketConfig{
-		Name:                          "sirmoggintonwebsocket",
-		WSS:                           "ws://localhost:8080",
-		Enabled:                       true,
-		MaxBufferSize:                 1024,
-		ReconnectionTimeout:           5 * time.Second,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		Name:                "sirmoggintonwebsocket",
+		WSS:                 "ws://localhost:8080",
+		Enabled:             true,
+		MaxBufferSize:       1024,
+		ReconnectionTimeout: 5 * time.Second,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+		PingInterval:        config.DefaultPingInterval,
 	}
 
 	heartbeatCfg = config.WebSocketConfig{
-		Name:                          "sirmoggintonwebsocket",
-		WSS:                           "ws://localhost:8080",
-		Enabled:                       true,
-		MaxBufferSize:                 1024,
-		ReconnectionTimeout:           5 * time.Second,
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  1 * time.Second,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		Name:                "sirmoggintonwebsocket",
+		WSS:                 "ws://localhost:8080",
+		Enabled:             true,
+		MaxBufferSize:       1024,
+		ReconnectionTimeout: 5 * time.Second,
+		ReadBufferSize:      config.DefaultReadBufferSize,
+		WriteBufferSize:     config.DefaultWriteBufferSize,
+		HandshakeTimeout:    config.DefaultHandshakeTimeout,
+		EnableCompression:   config.DefaultEnableCompression,
+		ReadTimeout:         config.DefaultReadTimeout,
+		WriteTimeout:        config.DefaultWriteTimeout,
+		PingInterval:        1 * time.Second,
 	}
 )
 
@@ -776,16 +774,11 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			sh, err := handlers.NewWebSocketSubHandler[oracletypes.CurrencyPair, *big.Int](
-				tc.connHandler(),
-				tc.dataHandler(),
-			)
-			require.NoError(t, err)
-
 			handler, err := handlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
 				logger,
 				tc.cfg,
-				[]handlers.WebSocketSubHandler[oracletypes.CurrencyPair, *big.Int]{sh},
+				tc.dataHandler(),
+				tc.connHandler(),
 				tc.metrics(),
 			)
 			require.NoError(t, err)

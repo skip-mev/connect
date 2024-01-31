@@ -110,8 +110,38 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- p
 			return ctx.Err()
 		default:
 			p.logger.Debug("starting websocket query handler")
-			if err := p.ws.Start(ctx, p.ids, responseCh); err != nil {
-				p.logger.Error("websocket query handler returned error", zap.Error(err))
+			// create sub handlers
+			// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
+			// 30 / 45 = 0 -> need one sub handler
+			numSubHandlers := 1
+			maxSubsPerConn := p.wsCfg.MaxSubscriptionsPerConnection
+			if maxSubsPerConn != 0 {
+				// case where we will split ID's across sub handlers
+				numSubHandlers = (len(p.ids) / maxSubsPerConn) + 1
+				// split ids
+				for i := 0; i < numSubHandlers; i++ {
+					start := i
+					end := maxSubsPerConn * (i + 1)
+					if i+1 == numSubHandlers {
+						subIDs := p.ids[start:]
+						if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
+							p.logger.Error("websocket query handler returned error", zap.Error(err))
+						}
+
+					} else {
+						subIDs := p.ids[start:end]
+						if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
+							p.logger.Error("websocket query handler returned error", zap.Error(err))
+						}
+					}
+
+				}
+			} else {
+				// case where there is 1 sub handler
+				subIDs := p.ids
+				if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
+					p.logger.Error("websocket query handler returned error", zap.Error(err))
+				}
 			}
 
 			// If the websocket query handler returns, then the connection was closed. Wait for
