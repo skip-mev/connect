@@ -366,18 +366,12 @@ func NewSimApp(
 		oraclepreblockmath.DefaultPowerThreshold,
 	)
 
-	consAddress, err := cfg.ConsAddress()
-	if err != nil {
-		panic(err)
-	}
-
 	// Create the pre-finalize block hook that will be used to apply oracle data
 	// to the state before any transactions are executed (in finalize block).
 	oraclePreBlockHandler := oraclepreblock.NewOraclePreBlockHandler(
 		app.Logger(),
 		aggregatorFn,
 		app.OracleKeeper,
-		consAddress,
 		oracleMetrics,
 		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 		compression.NewCompressionVoteExtensionCodec(

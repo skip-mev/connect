@@ -6,7 +6,6 @@ import (
 	"time"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 )
@@ -43,11 +42,6 @@ metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
 # PrometheusServerAddress is the address of the prometheus server that metrics will be
 # exposed to.
 prometheus_server_address = "{{ .Oracle.PrometheusServerAddress }}"
-
-# ValidatorConsAddress is the validator's consensus address. This is optional. If supplied,
-# the oracle will expose metrics for how often the validator's vote extensions are included
-# in blocks and more.
-validator_cons_address = "{{ .Oracle.ValidatorConsAddress }}"
 `
 )
 
@@ -57,7 +51,6 @@ const (
 	flagClientTimeout           = "oracle.client_timeout"
 	flagMetricsEnabled          = "oracle.metrics_enabled"
 	flagPrometheusServerAddress = "oracle.prometheus_server_address"
-	flagValidatorConsAddress    = "oracle.validator_cons_address"
 )
 
 // AppConfig contains the application side oracle configurations that must
@@ -80,18 +73,6 @@ type AppConfig struct {
 	// PrometheusServerAddress is the address of the prometheus server that the oracle
 	// will expose metrics to.
 	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
-
-	// ValidatorConsAddress is the validator's consensus address.
-	ValidatorConsAddress string `mapstructure:"validator_cons_address" toml:"validator_cons_address"`
-}
-
-// ConsAddress returns the validator's consensus address.
-func (c *AppConfig) ConsAddress() (sdk.ConsAddress, error) {
-	if len(c.ValidatorConsAddress) != 0 {
-		return sdk.ConsAddressFromBech32(c.ValidatorConsAddress)
-	}
-
-	return nil, nil
 }
 
 // ValidateBasic performs basic validation of the app config.
@@ -112,10 +93,6 @@ func (c *AppConfig) ValidateBasic() error {
 		if c.PrometheusServerAddress == "" {
 			return fmt.Errorf("must supply a non-empty prometheus server address if metrics are enabled")
 		}
-	}
-
-	if _, err := c.ConsAddress(); err != nil {
-		return err
 	}
 
 	return nil
@@ -183,13 +160,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	// get the prometheus server address
 	if v := opts.Get(flagPrometheusServerAddress); v != nil {
 		if cfg.PrometheusServerAddress, err = cast.ToStringE(v); err != nil {
-			return cfg, err
-		}
-	}
-
-	// get the validator consensus address
-	if v := opts.Get(flagValidatorConsAddress); v != nil {
-		if cfg.ValidatorConsAddress, err = cast.ToStringE(v); err != nil {
 			return cfg, err
 		}
 	}
