@@ -27,7 +27,8 @@ enabled = "{{ .Oracle.Enabled }}"
 # Oracle Address is the URL of the out of process oracle sidecar. This is used to
 # connect to the oracle sidecar when the application boots up. Note that the address
 # can be modified at any point, but will only take effect after the application is
-# restarted.
+# restarted. This can be the address of an oracle container running on the same
+# machine or a remote machine.
 oracle_address = "{{ .Oracle.OracleAddress }}"
 
 # Client Timeout is the time that the client is willing to wait for responses from 
