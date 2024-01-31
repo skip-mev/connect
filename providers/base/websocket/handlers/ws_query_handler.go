@@ -35,6 +35,12 @@ type WebSocketQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.Resp
 	metrics metrics.WebSocketMetrics
 	config  config.WebSocketConfig
 
+	subHandlers []WebSocketSubHandler[K, V]
+
+	ids []K
+}
+
+type WebSocketSubHandler[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	// The connection handler is used to manage the connection to the data provider. This
 	// establishes the connection and sends/receives messages to/from the data provider.
 	connHandler WebSocketConnHandler
@@ -44,15 +50,18 @@ type WebSocketQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.Resp
 	dataHandler WebSocketDataHandler[K, V]
 
 	// ids is the set of IDs that the provider will fetch data for.
-	ids []K
+	subIDs []K
+}
+
+func (sh *WebSocketSubHandler[K, V]) AddIDs(subIDs []K) {
+	sh.subIDs = subIDs
 }
 
 // NewWebSocketQueryHandler creates a new websocket query handler.
 func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	logger *zap.Logger,
 	config config.WebSocketConfig,
-	dataHandler WebSocketDataHandler[K, V],
-	connHandler WebSocketConnHandler,
+	subHandlers []WebSocketSubHandler[K, V],
 	m metrics.WebSocketMetrics,
 ) (WebSocketQueryHandler[K, V], error) {
 	if err := config.ValidateBasic(); err != nil {
@@ -67,23 +76,28 @@ func NewWebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Respo
 		return nil, fmt.Errorf("logger is nil")
 	}
 
-	if dataHandler == nil {
-		return nil, fmt.Errorf("websocket data handler is nil")
-	}
-
-	if connHandler == nil {
-		return nil, fmt.Errorf("connection handler is nil")
-	}
-
 	if m == nil {
 		return nil, fmt.Errorf("websocket metrics is nil")
+	}
+
+	if len(subHandlers) == 0 {
+		return nil, fmt.Errorf("must provide sub handlers")
+	}
+
+	for _, sh := range subHandlers {
+		if sh.dataHandler == nil {
+			return nil, fmt.Errorf("subhandler datahandler is nil")
+		}
+
+		if sh.connHandler == nil {
+			return nil, fmt.Errorf("subhandler connhandler is nil")
+		}
 	}
 
 	return &WebSocketQueryHandlerImpl[K, V]{
 		logger:      logger.With(zap.String("web_socket_data_handler", config.Name)),
 		config:      config,
-		dataHandler: dataHandler,
-		connHandler: connHandler,
+		subHandlers: subHandlers,
 		metrics:     m,
 	}, nil
 }
@@ -119,6 +133,10 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		h.logger.Debug("no ids to query")
 		return nil
 	}
+
+	// create sub handlers
+
+	if len(ids) / h.config.M<
 
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
