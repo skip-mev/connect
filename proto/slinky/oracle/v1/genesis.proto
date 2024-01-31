@@ -13,8 +13,12 @@ message CurrencyPair {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
 
-  string Base = 1;
-  string Quote = 2;
+  // Base is the base symbol for the asset pair.
+  string base = 1;
+  // Quote is the quote symbol for the asset pair.
+  string quote = 2;
+  // Decimals is the number of precision decimals to use for this pair.
+  uint64 decimals = 3;
 }
 
 // QuotePrice is the representation of the aggregated prices for a CurrencyPair,
