@@ -130,11 +130,11 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, responseCh chan<- p
 					}
 
 					// spin up a goroutine for parallel handlers
-					go func(ids []K) {
-						if err := p.ws.Start(ctx, ids, responseCh); err != nil {
+					go func(ids []K, ch chan<- providertypes.GetResponse[K, V]) {
+						if err := p.ws.Start(ctx, ids, ch); err != nil {
 							p.logger.Error("websocket query handler returned error", zap.Error(err))
 						}
-					}(subIDs)
+					}(subIDs, responseCh)
 				}
 			} else {
 				// case where there is 1 sub handler
