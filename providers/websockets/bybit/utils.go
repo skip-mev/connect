@@ -37,6 +37,7 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		PingInterval:        15 * time.Second,
+		MaxReadErrorCount:   config.DefaultReadBufferSize,
 	}
 
 	// DefaultMarketConfig is the default market configuration for ByBit.

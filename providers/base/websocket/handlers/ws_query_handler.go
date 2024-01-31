@@ -232,7 +232,16 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		// Case 2: The context is not cancelled. Wait for a message from the data provider.
 		select {
 		case <-ctx.Done():
-			return h.close(ctx)
+			h.logger.Debug("context finished; closing connection to websocket handler")
+			if err := h.connHandler.Close(); err != nil {
+				h.logger.Error("failed to close connection", zap.Error(err))
+				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
+				return errors.ErrCloseWithErr(err)
+			}
+
+			h.logger.Debug("connection closed")
+			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
+			return ctx.Err()
 		default:
 			// Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
@@ -247,7 +256,16 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 					continue
 				}
 
-				return h.close(ctx)
+				h.logger.Error("max read errors reached; closing connection", zap.Error(err))
+				if err := h.connHandler.Close(); err != nil {
+					h.logger.Error("failed to close connection", zap.Error(err))
+					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
+					return errors.ErrCloseWithErr(err)
+				}
+
+				h.logger.Debug("connection closed")
+				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
+				return errors.ErrReadWithErr(err)
 			}
 
 			h.logger.Debug("message received; attempting to handle message", zap.Binary("message", message))
@@ -290,7 +308,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 }
 
 // close is used to close the connection to the data provider.
-func (h *WebSocketQueryHandlerImpl[K, V]) close(ctx context.Context) error {
+func (h *WebSocketQueryHandlerImpl[K, V]) close() error {
 	h.logger.Error("max read errors reached; closing connection")
 	if err := h.connHandler.Close(); err != nil {
 		h.logger.Error("failed to close connection", zap.Error(err))
@@ -300,5 +318,5 @@ func (h *WebSocketQueryHandlerImpl[K, V]) close(ctx context.Context) error {
 
 	h.logger.Debug("connection closed")
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
-	return ctx.Err()
+	return nil
 }

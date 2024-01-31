@@ -45,9 +45,10 @@ const (
 
 	// DefaultMaxReadErrorCount is the default maximum number of read errors that
 	// the provider will tolerate before closing the connection and attempting to
-	// reconnect. This default is taken from the default value for the websocket
-	// library (gorilla/websocket).
-	DefaultMaxReadErrorCount = 1000
+	// reconnect. This default value utilized by the gorilla/websocket package is
+	// 1000, but we set it to a lower value to allow the provider to reconnect
+	// faster.
+	DefaultMaxReadErrorCount = 100
 )
 
 // WebSocketConfig defines a config for a websocket based data provider.

@@ -48,6 +48,7 @@ var (
 		EnableCompression:   DefaultEnabledCompression,
 		WriteTimeout:        DefaultWriteTimeout,
 		ReadTimeout:         config.DefaultReadTimeout,
+		MaxReadErrorCount:   config.DefaultReadBufferSize,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.
