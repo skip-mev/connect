@@ -37,8 +37,6 @@ The `AddWebSocketDataHandlerStatus` metric is used to track the number of data h
 ### ObserveWebSocketLatency
 
 The `ObserveWebSocketLatency` metric is used to track the time it took for a provider to respond. Specifically, this tracks how long it takes to successfully receive and process data from the Websocket API. If the response time is very large, this could mean that the provider is not sending data frequently enough or that the data handler is taking too long to process the data.
-<<<<<<< HEAD
-=======
 
 ## Usage
 
@@ -75,4 +73,3 @@ This will return the total number of successfully handled messages, heartbeats, 
 > ```
 
 This will return the total number of successfully handled messages, heartbeats, subscriptions, and errors pertaining to the data handler for a given provider. This provides insight into how reliable the data handler is for a given provider.
->>>>>>> main
