@@ -25,6 +25,8 @@ var _ types.MsgServer = (*msgServer)(nil)
 // currency-pairs fail to be set, if the message is invalid, or if the signer is not the authority account of the module. If any of the CurrencyPairs
 // to be added already exist in the module, they will be skipped.
 func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCurrencyPairs) (*types.MsgAddCurrencyPairsResponse, error) {
+	var err error
+
 	// check the validity of the message
 	if req == nil {
 		return nil, fmt.Errorf("message cannot be empty")
@@ -41,11 +43,11 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 		// only set the currency-pair if it does not already exist in state
 		if !m.k.HasCurrencyPair(ctx, cp) {
 			// set to state, initial nonce will be zero (no price updates have been made for this CurrencyPair)
-			m.k.CreateCurrencyPair(ctx, cp)
+			err = m.k.CreateCurrencyPair(ctx, cp)
 		}
 	}
 
-	return &types.MsgAddCurrencyPairsResponse{}, nil
+	return &types.MsgAddCurrencyPairsResponse{}, err
 }
 
 // RemoveCurrencyPairs takes a set of CurrencyPairs to remove. CurrencyPairs given are represented by string identifiers of CurrencyPairs
