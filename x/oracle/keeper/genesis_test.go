@@ -5,7 +5,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -87,25 +87,25 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 					// check equality of quote-price if one is given
 					if cpg.CurrencyPairPrice != nil {
 						// check equality
-						assert.Nil(s.T(), err)
+						require.Nil(s.T(), err)
 						checkQuotePriceEqual(s.T(), qp, *cpg.CurrencyPairPrice)
 					} else {
 						// assert that no price exists for the currency-pair
-						assert.NotNil(s.T(), err)
+						require.NotNil(s.T(), err)
 					}
 
 					// get nonce, and check equality
 					nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cpg.CurrencyPair)
-					assert.Nil(s.T(), err)
+					require.Nil(s.T(), err)
 
 					// check equality of nonces
-					assert.Equal(s.T(), nonce, cpg.Nonce)
+					require.Equal(s.T(), nonce, cpg.Nonce)
 
 					// check equality of ids
 					id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
-					assert.True(s.T(), ok)
+					require.True(s.T(), ok)
 
-					assert.Equal(s.T(), id, cpg.Id)
+					require.Equal(s.T(), id, cpg.Id)
 				}
 			}
 		})
@@ -115,7 +115,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 func catchPanic(t *testing.T, k keeper.Keeper, ctx sdk.Context, gs types.GenesisState) {
 	defer func() {
 		err := recover()
-		assert.NotNil(t, err)
+		require.NotNil(t, err)
 	}()
 	// call init-genesis
 	k.InitGenesis(ctx, gs)
@@ -142,30 +142,30 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		}
 
 		// insert
-		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
-		assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
+		require.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
+		require.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
 
-		assert.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
-		assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
+		require.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
+		require.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
 
 		// insert
-		assert.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
+		require.Nil(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp1, qp1))
 
 		// export genesis
 		gs := s.oracleKeeper.ExportGenesis(s.ctx)
-		assert.Equal(s.T(), len(gs.CurrencyPairGenesis), 2)
-		expectedCurrencyPairs := map[string]types.QuotePrice{"AA/BB": qp1, "CC/DD": qp2}
-		expectedNonces := map[string]uint64{"AA/BB": 2, "CC/DD": 1}
+		require.Equal(s.T(), len(gs.CurrencyPairGenesis), 2)
+		expectedCurrencyPairs := map[string]types.QuotePrice{"AA/BB/8": qp1, "CC/DD/8": qp2}
+		expectedNonces := map[string]uint64{"AA/BB/8": 2, "CC/DD/8": 1}
 
 		for _, cpg := range gs.CurrencyPairGenesis {
 			qp, ok := expectedCurrencyPairs[cpg.CurrencyPair.String()]
-			assert.True(s.T(), ok)
+			require.True(s.T(), ok)
 			// check equality for quote-prices
 			checkQuotePriceEqual(s.T(), qp, *cpg.CurrencyPairPrice)
 			// check equality of nonces
 			nonce, ok := expectedNonces[cpg.CurrencyPair.String()]
-			assert.True(s.T(), ok)
-			assert.Equal(s.T(), nonce, cpg.Nonce)
+			require.True(s.T(), ok)
+			require.Equal(s.T(), nonce, cpg.Nonce)
 		}
 	})
 
@@ -220,19 +220,19 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 				},
 			},
 		})
-		assert.Nil(s.T(), err)
+		require.Nil(s.T(), err)
 
 		// setup expected values
-		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
+		expectedCurrencyPairs := map[string]struct{}{"AA/BB/8": {}, "CC/DD/8": {}, "EE/FF/8": {}, "GG/HH/8": {}}
 		expectedQuotePrices := map[string]types.QuotePrice{
-			"AA/BB": {
+			"AA/BB/8": {
 				Price: sdkmath.NewInt(100),
 			},
-			"CC/DD": {
+			"CC/DD/8": {
 				Price: sdkmath.NewInt(101),
 			},
 		}
-		expectedNonces := map[string]uint64{"AA/BB": 100, "CC/DD": 101}
+		expectedNonces := map[string]uint64{"AA/BB/8": 100, "CC/DD/8": 101}
 
 		// ExportGenesis
 		egs := s.oracleKeeper.ExportGenesis(s.ctx)
@@ -242,28 +242,28 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			// expect that all currency-pairs in gen-state are expected
 			cps := cpg.CurrencyPair.String()
 			_, ok := expectedCurrencyPairs[cps]
-			assert.True(s.T(), ok)
+			require.True(s.T(), ok)
 
 			// expect that if a CurrencyPrice exists, that it is expected
 			if cpg.CurrencyPairPrice != nil {
 				qp, ok := expectedQuotePrices[cps]
-				assert.True(s.T(), ok)
+				require.True(s.T(), ok)
 
 				// assert equality of QuotePrice
 				checkQuotePriceEqual(s.T(), qp, *cpg.CurrencyPairPrice)
 
 				nonce, ok := expectedNonces[cps]
-				assert.True(s.T(), ok)
+				require.True(s.T(), ok)
 				// assert equality of Nonce
-				assert.Equal(s.T(), cpg.Nonce, nonce)
+				require.Equal(s.T(), cpg.Nonce, nonce)
 			} else {
-				assert.Equal(s.T(), cpg.Nonce, uint64(0))
+				require.Equal(s.T(), cpg.Nonce, uint64(0))
 			}
 
 			// check IDs
 			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
-			assert.True(s.T(), ok)
-			assert.Equal(s.T(), id, cpg.Id)
+			require.True(s.T(), ok)
+			require.Equal(s.T(), id, cpg.Id)
 		}
 	})
 }

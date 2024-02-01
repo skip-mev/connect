@@ -99,14 +99,20 @@ func TestToFromString(t *testing.T) {
 			false,
 		},
 		{
+			"if string is incorrectly formatted, return an empty CurrencyPair",
+			"a/a/a",
+			types.CurrencyPair{},
+			false,
+		},
+		{
 			"if the string is correctly formatted, return the original CurrencyPair",
-			types.CurrencyPairString("A", "B"),
+			types.CurrencyPairString("A", "B", types.DefaultDecimals),
 			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case, return the original CurrencyPair",
-			"a/B",
+			"a/B/8",
 			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
 			true,
 		},

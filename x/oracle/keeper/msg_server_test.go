@@ -5,7 +5,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -119,24 +119,24 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 
 			// expect failure if necessary
 			if !tc.expectPass {
-				assert.NotNil(s.T(), err)
+				require.NotNil(s.T(), err)
 				return
 			}
 
 			// otherwise, check that insertions executed faithfully
-			assert.Nil(s.T(), err)
+			require.Nil(s.T(), err)
 
 			// check all currency pairs were inserted
 			for _, cp := range tc.req.CurrencyPairs {
 				// get nonce for cpg.CurrencyPair
 				nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
-				assert.Nil(s.T(), err)
+				require.Nil(s.T(), err)
 
 				// check the nonce is correct (if the cp had already existed in state, check that it was not overwritten)
-				if cp.String() == "E/F" {
-					assert.Equal(s.T(), nonce, uint64(100))
+				if cp.String() == "E/F/8" {
+					require.Equal(s.T(), nonce, uint64(100))
 				} else {
-					assert.Equal(s.T(), nonce, uint64(0))
+					require.Equal(s.T(), nonce, uint64(0))
 				}
 			}
 		})
@@ -182,15 +182,15 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 	// sanity check, assert existence of cps
 	// cp1
 	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp1)
-	assert.Nil(s.T(), err)
-	assert.Equal(s.T(), qpn.Nonce(), uint64(100))
-	assert.Equal(s.T(), qpn.Price.Int64(), int64(100))
+	require.Nil(s.T(), err)
+	require.Equal(s.T(), qpn.Nonce(), uint64(100))
+	require.Equal(s.T(), qpn.Price.Int64(), int64(100))
 
 	// cp2
 	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp2)
-	assert.Nil(s.T(), err)
-	assert.Equal(s.T(), qpn.Nonce(), uint64(101))
-	assert.Equal(s.T(), qpn.Price.Int64(), int64(100))
+	require.Nil(s.T(), err)
+	require.Equal(s.T(), qpn.Nonce(), uint64(101))
+	require.Equal(s.T(), qpn.Price.Int64(), int64(100))
 
 	// define test-cases
 	tcs := []struct {
@@ -213,9 +213,9 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 		{
 			"if the authority is correct + formatted, and the currency pairs are valid - pass",
 			&types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
+				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairIds: []string{
-					"AA/BB", "CC/DD",
+					"AA/BB/8", "CC/DD/8",
 				},
 			},
 			true,
@@ -229,21 +229,21 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			_, err := ms.RemoveCurrencyPairs(s.ctx, tc.req)
 
 			if !tc.expectPass {
-				assert.NotNil(s.T(), err)
+				require.NotNil(s.T(), err)
 				return
 			}
 
 			// otherwise, assert no error
-			assert.Nil(s.T(), err)
+			require.Nil(s.T(), err)
 
 			// check that all currency-pairs were removed
 			for _, cps := range tc.req.CurrencyPairIds {
 				// get currency pair from request
 				cp, err := types.CurrencyPairFromString(cps)
-				assert.Nil(s.T(), err)
+				require.Nil(s.T(), err)
 
 				// assert that currency-pair was removed
-				assert.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cp))
+				require.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cp))
 			}
 		})
 	}

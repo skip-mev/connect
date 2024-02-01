@@ -220,7 +220,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
 	s.Run("Remove a currency-pair and check Prices", func() {
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.CurrencyPairString("BTC", "USD")}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.CurrencyPairString("BTC", "USD", oracletypes.EthereumDecimals)}...))
 
 		// check that the currency-pair is added to state
 		resp, err := QueryCurrencyPairs(s.chain)

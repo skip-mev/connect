@@ -33,15 +33,16 @@ var (
 			EnableCompression:   config.DefaultEnableCompression,
 			ReadTimeout:         config.DefaultReadTimeout,
 			WriteTimeout:        config.DefaultWriteTimeout,
+			MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 		},
 		Market: config.MarketConfig{
 			Name: bybit.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
+				"BITCOIN/USD/8": {
 					Ticker:       "BTCUSD",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USD": {
+				"ETHEREUM/USD/8": {
 					Ticker:       "ETHUSD",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},

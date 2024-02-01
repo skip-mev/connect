@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -41,32 +42,38 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	return nil
 }
 
-// String returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
+// String returns a string representation of the CurrencyPair, in the following form "ETH/BTC/8" where 8 is the number of decimals.
 func (cp CurrencyPair) String() string {
-	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
+	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote, cp.Decimals)
 }
 
 // CurrencyPairString constructs and returns the string representation of a currency pair.
-func CurrencyPairString(base, quote string) string {
-	cp := NewCurrencyPair(base, quote, DefaultDecimals)
+func CurrencyPairString(base, quote string, decimals int64) string {
+	cp := NewCurrencyPair(base, quote, decimals)
 	return cp.String()
 }
 
 func CurrencyPairFromString(s string) (CurrencyPair, error) {
 	split := strings.Split(s, "/")
-	if len(split) != 2 {
+	if len(split) != 3 {
 		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)
 	}
+
+	decimals, err := strconv.ParseInt(split[2], 10, 64)
+	if err != nil {
+		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)
+	}
+
 	cp := CurrencyPair{
 		Base:     strings.ToUpper(split[0]),
 		Quote:    strings.ToUpper(split[1]),
-		Decimals: DefaultDecimals,
+		Decimals: decimals,
 	}
 
 	return cp, cp.ValidateBasic()
 }
 
-// NewCurrencyPairState returns a new CurrencyPairState given an Id, nonce, and QuotePrice.
+// NewCurrencyPairState returns a new CurrencyPairState given an ID, nonce, and QuotePrice.
 func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) CurrencyPairState {
 	return CurrencyPairState{
 		Id:    id,

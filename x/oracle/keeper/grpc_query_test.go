@@ -7,6 +7,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -49,13 +50,13 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 		require.Nil(s.T(), err)
 
 		// manually insert a new CurrencyPair as well
-		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
+		require.NoError(s.T(), s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
 			Base:     "GG",
 			Quote:    "HH",
 			Decimals: types.DefaultDecimals,
-		}, types.QuotePrice{Price: sdkmath.NewInt(100)})
+		}, types.QuotePrice{Price: sdkmath.NewInt(100)}))
 
-		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
+		expectedCurrencyPairs := map[string]struct{}{"AA/BB/8": {}, "CC/DD/8": {}, "EE/FF/8": {}, "GG/HH/8": {}}
 
 		// query for pairs
 		res, err := qs.GetAllCurrencyPairs(s.ctx, nil)
@@ -128,7 +129,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that does not exist fail - fail",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "DD/EE"},
+				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "DD/EE/8"},
 			},
 			nil,
 			false,
@@ -136,7 +137,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency-pair with no price, only the nonce (0) is returned - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "CC/BB"},
+				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "CC/BB/8"},
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,

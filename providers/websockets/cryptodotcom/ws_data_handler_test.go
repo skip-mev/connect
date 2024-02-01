@@ -24,15 +24,15 @@ var (
 		Market: config.MarketConfig{
 			Name: cryptodotcom.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
+				"BITCOIN/USD/8": {
 					Ticker:       "BTCUSD-PERP",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USD": {
+				"ETHEREUM/USD/8": {
 					Ticker:       "ETHUSD-PERP",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},
-				"SOLANA/USD": {
+				"SOLANA/USD/8": {
 					Ticker:       "SOLUSD-PERP",
 					CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
 				},

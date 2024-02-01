@@ -36,39 +36,39 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
+			"BITCOIN/USD/8": {
 				Ticker:       "BTC-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
-			"ETHEREUM/USD": {
+			"ETHEREUM/USD/8": {
 				Ticker:       "ETH-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
-			"ATOM/USD": {
+			"ATOM/USD/8": {
 				Ticker:       "ATOM-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
 			},
-			"SOLANA/USD": {
+			"SOLANA/USD/8": {
 				Ticker:       "SOL-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
 			},
-			"CELESTIA/USD": {
+			"CELESTIA/USD/8": {
 				Ticker:       "TIA-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
 			},
-			"AVAX/USD": {
+			"AVAX/USD/8": {
 				Ticker:       "AVAX-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
 			},
-			"DYDX/USD": {
+			"DYDX/USD/8": {
 				Ticker:       "DYDX-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
 			},
-			"ETHEREUM/BITCOIN": {
+			"ETHEREUM/BITCOIN/8": {
 				Ticker:       "ETH-BTC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
 			},
-			"OSMOSIS/USD": {
+			"OSMOSIS/USD/8": {
 				Ticker:       "OSMO-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
 			},

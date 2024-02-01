@@ -3,28 +3,29 @@ package types_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
 	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress([]byte("abc")).String()
+	auth := sdk.AccAddress("abc").String()
 	msg := types.NewMsgAddCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
-	assert.Equal(t, signer[0].String(), auth)
+	require.Equal(t, signer[0].String(), auth)
 }
 
 func TestGetSignersMsgRemoveCurrencyPairs(t *testing.T) {
 	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress([]byte("abc")).String()
+	auth := sdk.AccAddress("abc").String()
 	msg := types.NewMsgRemoveCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
-	assert.Equal(t, signer[0].String(), auth)
+	require.Equal(t, signer[0].String(), auth)
 }
 
 func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
@@ -67,9 +68,9 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.msg.ValidateBasic()
 			if !tc.expectPass {
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			}
 		})
 	}
@@ -91,7 +92,7 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		{
 			"if any of the currency pairs are invalid - fail",
 			types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairIds: []string{
 					"AA",
 				},
@@ -103,8 +104,8 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 			types.MsgRemoveCurrencyPairs{
 				Authority: sdk.AccAddress([]byte("abc")).String(),
 				CurrencyPairIds: []string{
-					types.CurrencyPairString("A", "B"),
-					types.CurrencyPairString("C", "D"),
+					types.CurrencyPairString("A", "B", types.DefaultDecimals),
+					types.CurrencyPairString("C", "D", types.DefaultDecimals),
 				},
 			},
 			true,
@@ -115,9 +116,9 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.msg.ValidateBasic()
 			if !tc.expectPass {
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			}
 		})
 	}

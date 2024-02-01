@@ -23,11 +23,11 @@ var (
 		Market: config.MarketConfig{
 			Name: gate.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USDT": {
+				"BITCOIN/USDT/8": {
 					Ticker:       "BTC_USDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USDT": {
+				"ETHEREUM/USDT/8": {
 					Ticker:       "ETH_USDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT", oracletypes.DefaultDecimals),
 				},

@@ -26,7 +26,7 @@ func TestOracleConfig(t *testing.T) {
 						Market: config.MarketConfig{
 							Name: "test",
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
+								"BITCOIN/USD/8": {
 									Ticker:       "BTC/USD",
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 								},
@@ -44,6 +44,7 @@ func TestOracleConfig(t *testing.T) {
 							EnableCompression:   config.DefaultEnableCompression,
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
+							MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 						},
 					},
 				},
@@ -68,7 +69,7 @@ func TestOracleConfig(t *testing.T) {
 						Market: config.MarketConfig{
 							Name: "test",
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
+								"BITCOIN/USD/8": {
 									Ticker:       "BTC/USD",
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 								},
@@ -99,7 +100,7 @@ func TestOracleConfig(t *testing.T) {
 						Market: config.MarketConfig{
 							Name: "test",
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
+								"BITCOIN/USD/8": {
 									Ticker:       "BTC/USD",
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 								},
