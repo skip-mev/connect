@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
-	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/aggregator"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
+	"github.com/skip-mev/slinky/pkg/math/vote-weighted"
+	"github.com/skip-mev/slinky/pkg/math/vote-weighted/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -83,10 +83,10 @@ func TestVoteAggregatorTestSuite(t *testing.T) {
 func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 	// Use the default aggregation function for testing
 	mockValidatorStore := mocks.NewValidatorStore(s.T())
-	aggregationFn := preblockmath.VoteWeightedMedianFromContext(
+	aggregationFn := voteweighted.VoteWeightedMedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
-		preblockmath.DefaultPowerThreshold,
+		voteweighted.DefaultPowerThreshold,
 	)
 	mockValidatorStore.On("TotalBondedTokens", mock.Anything).Return(math.NewInt(100), nil)
 

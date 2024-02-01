@@ -1,4 +1,4 @@
-package math_test
+package voteweighted_test
 
 import (
 	"crypto"
@@ -13,10 +13,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
-	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/aggregator"
+	"github.com/skip-mev/slinky/pkg/math/vote-weighted"
+	"github.com/skip-mev/slinky/pkg/math/vote-weighted/mocks"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -273,7 +273,7 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 			mockValidatorStore := s.createMockValidatorStore(tc.validators, tc.totalBondedTokens)
 
 			// Compute the stake weighted median.
-			aggregateFn := preblockmath.VoteWeightedMedian(s.ctx, log.NewTestLogger(s.T()), mockValidatorStore, preblockmath.DefaultPowerThreshold)
+			aggregateFn := voteweighted.VoteWeightedMedian(s.ctx, log.NewTestLogger(s.T()), mockValidatorStore, voteweighted.DefaultPowerThreshold)
 			result := aggregateFn(tc.providerPrices)
 
 			// Verify the result.
@@ -288,13 +288,13 @@ func (s *MathTestSuite) TestVoteWeightedMedian() {
 func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 	cases := []struct {
 		name      string
-		priceInfo preblockmath.VoteWeightedPriceInfo
+		priceInfo voteweighted.VoteWeightedPriceInfo
 		expected  *big.Int
 	}{
 		{
 			name: "single price",
-			priceInfo: preblockmath.VoteWeightedPriceInfo{
-				Prices: []preblockmath.VoteWeightedPricePerValidator{
+			priceInfo: voteweighted.VoteWeightedPriceInfo{
+				Prices: []voteweighted.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
 						Price:      big.NewInt(100),
@@ -306,8 +306,8 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "two prices that are equal",
-			priceInfo: preblockmath.VoteWeightedPriceInfo{
-				Prices: []preblockmath.VoteWeightedPricePerValidator{
+			priceInfo: voteweighted.VoteWeightedPriceInfo{
+				Prices: []voteweighted.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
 						Price:      big.NewInt(100),
@@ -323,8 +323,8 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "two prices that are not equal",
-			priceInfo: preblockmath.VoteWeightedPriceInfo{
-				Prices: []preblockmath.VoteWeightedPricePerValidator{
+			priceInfo: voteweighted.VoteWeightedPriceInfo{
+				Prices: []voteweighted.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(1),
 						Price:      big.NewInt(100),
@@ -340,8 +340,8 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "two prices that are not equal with different weights",
-			priceInfo: preblockmath.VoteWeightedPriceInfo{
-				Prices: []preblockmath.VoteWeightedPricePerValidator{
+			priceInfo: voteweighted.VoteWeightedPriceInfo{
+				Prices: []voteweighted.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(10),
 						Price:      big.NewInt(100),
@@ -357,8 +357,8 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 		},
 		{
 			name: "three prices that are not equal with different weights",
-			priceInfo: preblockmath.VoteWeightedPriceInfo{
-				Prices: []preblockmath.VoteWeightedPricePerValidator{
+			priceInfo: voteweighted.VoteWeightedPriceInfo{
+				Prices: []voteweighted.VoteWeightedPricePerValidator{
 					{
 						VoteWeight: sdkmath.NewInt(10),
 						Price:      big.NewInt(100),
@@ -380,7 +380,7 @@ func (s *MathTestSuite) TestComputeVoteWeightedMedian() {
 
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
-			result := preblockmath.ComputeVoteWeightedMedian(tc.priceInfo)
+			result := voteweighted.ComputeVoteWeightedMedian(tc.priceInfo)
 			s.Require().Equal(tc.expected, result)
 		})
 	}
