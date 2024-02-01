@@ -12,7 +12,7 @@ import (
 // of currency pairs (i.e. BTC/USD, ETH/USD, etc.). The oracle will fetch prices from the
 // data providers for the currency pairs at the specified update interval.
 type OracleConfig struct {
-	// UpdateInterval is the interval at which the oracle will fetch prices from providers
+	// UpdateInterval is the interval at which the oracle will fetch prices from providers.
 	UpdateInterval time.Duration `mapstructure:"update_interval" toml:"update_interval"`
 
 	// Providers is the list of providers that the oracle will fetch prices from.
