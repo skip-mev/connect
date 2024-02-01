@@ -8,13 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
-)
-
-const (
-	// MaximumPriceSize defines the maximum size of a price in bytes. This allows
-	// up to 32 bytes for the price and 1 byte for the sign (positive/negative).
-	MaximumPriceSize = 33
 )
 
 // ValidateOracleVoteExtension validates the vote extension provided by a validator.
@@ -26,7 +21,7 @@ func ValidateOracleVoteExtension(
 	// Verify prices are valid.
 	for id, bz := range ve.Prices {
 		// Ensure that the price bytes are not too long.
-		if len(bz) > MaximumPriceSize {
+		if len(bz) > slinkyabci.MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(bz))
 		}
 
