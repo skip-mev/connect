@@ -22,15 +22,15 @@ func CreateTestOracleKeeperWithGenesis(ctx sdk.Context, key *storetypes.KVStoreK
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
-	keeper := keeper.NewKeeper(
+	k := keeper.NewKeeper(
 		ss,
 		encCfg.Codec,
-		sdk.AccAddress([]byte("authority")),
+		sdk.AccAddress("authority"),
 	)
 
-	keeper.InitGenesis(ctx, genesis)
+	k.InitGenesis(ctx, genesis)
 
-	return keeper
+	return k
 }
 
 // CreateExtendedCommitInfo creates an extended commit info with the given commit info.

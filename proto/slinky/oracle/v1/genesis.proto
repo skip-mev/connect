@@ -44,20 +44,23 @@ message QuotePrice {
 // module per-currency-pair.
 message CurrencyPairState {
   // QuotePrice is the latest price for a currency-pair, notice this value can
-  // be null in the case that no price exists for the currency-pair
+  // be null in the case that no price exists for the currency-pair.
   QuotePrice price = 1 [ (gogoproto.nullable) = true ];
 
-  // Nonce is the number of updates this currency-pair has received
+  // Nonce is the number of updates this currency-pair has received.
   uint64 nonce = 2;
 
-  // ID is the ID of the CurrencyPair
+  // ID is the ID of the CurrencyPair.
   uint64 id = 3;
+
+  // Decimals is the number of precision decimals to use for this pair.
+  int64 decimals = 4;
 }
 
 // CurrencyPairGenesis is the information necessary for initialization of a
 // CurrencyPair.
 message CurrencyPairGenesis {
-  // The CurrencyPair to be added to module state
+  // The CurrencyPair to be added to module state.
   CurrencyPair currency_pair = 1 [ (gogoproto.nullable) = false ];
   // A genesis price if one exists (note this will be empty, unless it results
   // from forking the state of this module)
@@ -65,7 +68,7 @@ message CurrencyPairGenesis {
   // nonce is the nonce (number of updates) for the CP (same case as above,
   // likely 0 unless it results from fork of module)
   uint64 nonce = 3;
-  // id is the ID of the CurrencyPair
+  // Id is the ID of the CurrencyPair.
   uint64 id = 4;
 }
 

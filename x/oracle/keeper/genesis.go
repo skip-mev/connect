@@ -18,9 +18,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 
 	// initialize all CurrencyPairs + genesis prices
 	for _, cpg := range gs.CurrencyPairGenesis {
-		state := types.NewCurrencyPairState(cpg.Id, cpg.Nonce, cpg.CurrencyPairPrice)
+		state := types.NewCurrencyPairState(cpg.Id, cpg.Nonce, cpg.CurrencyPairPrice, cpg.CurrencyPair.Decimals)
 
-		if err := k.currencyPairs.Set(ctx, cpg.CurrencyPair.String(), state); err != nil {
+		if err := k.currencyPairs.Set(ctx, cpg.CurrencyPair.ID(), state); err != nil {
 			panic(fmt.Errorf("error in genesis: %v", err))
 		}
 	}

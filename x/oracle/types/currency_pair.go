@@ -50,7 +50,22 @@ func (cp CurrencyPair) String() string {
 // ID returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
 // This function differs from String() which also includes the decimal information.
 func (cp *CurrencyPair) ID() string {
-	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote)
+	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
+}
+
+// CurrencyPairStringToID takes a CurrencyPair string and returns the ID representation of it.
+func CurrencyPairStringToID(cpStr string) (string, error) {
+	cp, err := CurrencyPairFromString(cpStr)
+	if err != nil {
+		split := strings.Split(cpStr, "/")
+		if len(split) == 2 {
+			return cpStr, nil
+		}
+
+		return "", fmt.Errorf("invalid string provided: %w", err)
+	}
+
+	return cp.ID(), nil
 }
 
 // CurrencyPairString constructs and returns the string representation of a currency pair.
@@ -79,12 +94,28 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 	return cp, cp.ValidateBasic()
 }
 
+func CurrencyPairFromID(s string, decimals int64) (CurrencyPair, error) {
+	split := strings.Split(s, "/")
+	if len(split) != 2 {
+		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)
+	}
+
+	cp := CurrencyPair{
+		Base:     strings.ToUpper(split[0]),
+		Quote:    strings.ToUpper(split[1]),
+		Decimals: decimals,
+	}
+
+	return cp, cp.ValidateBasic()
+}
+
 // NewCurrencyPairState returns a new CurrencyPairState given an ID, nonce, and QuotePrice.
-func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) CurrencyPairState {
+func NewCurrencyPairState(id, nonce uint64, quotePrice *QuotePrice, decimals int64) CurrencyPairState {
 	return CurrencyPairState{
-		Id:    id,
-		Nonce: nonce,
-		Price: quotePrice,
+		Id:       id,
+		Nonce:    nonce,
+		Price:    quotePrice,
+		Decimals: decimals,
 	}
 }
 
@@ -99,6 +130,10 @@ func (cps *CurrencyPairState) ValidateBasic() error {
 	// check that the nonce is non-zero if the QuotePrice is non-nil
 	if cps.Price != nil && cps.Nonce == 0 {
 		return fmt.Errorf("invalid nonce, price update but zero nonce: %v", cps.Nonce)
+	}
+
+	if cps.Decimals <= 0 {
+		return fmt.Errorf("decimals must be greater than 0")
 	}
 
 	return nil

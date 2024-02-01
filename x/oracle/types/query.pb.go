@@ -207,9 +207,9 @@ type GetPriceResponse struct {
 	// QuotePrice represents the quote-price for the CurrencyPair given in
 	// GetPriceRequest (possibly nil if no update has been made)
 	Price *QuotePrice `protobuf:"bytes,1,opt,name=price,proto3" json:"price,omitempty"`
-	// nonce represents the nonce for the CurrencyPair if it exists in state
+	// Nonce represents the nonce for the CurrencyPair if it exists in state
 	Nonce uint64 `protobuf:"varint,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	// decimals represents the number of decimals that the quote-price is
+	// Decimals represents the number of decimals that the quote-price is
 	// represented in.
 	Decimals int64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
 	// ID represents the identifier for the CurrencyPair.

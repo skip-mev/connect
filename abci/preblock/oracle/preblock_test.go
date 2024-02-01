@@ -57,7 +57,7 @@ func TestPreBlockTestSuite(t *testing.T) {
 }
 
 func (s *PreBlockTestSuite) SetupTest() {
-	s.myVal = sdk.ConsAddress([]byte("myVal"))
+	s.myVal = sdk.ConsAddress("myVal")
 
 	s.currencyPairs = []oracletypes.CurrencyPair{
 		{

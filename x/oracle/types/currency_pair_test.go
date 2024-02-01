@@ -140,8 +140,20 @@ func TestCurrencyPairState(t *testing.T) {
 		{
 			"non-zero nonce, and nil price - invalid",
 			types.CurrencyPairState{
+				Nonce:    1,
+				Price:    nil,
+				Decimals: types.DefaultDecimals,
+			},
+			false,
+		},
+		{
+			"0 decimals - invalid",
+			types.CurrencyPairState{
 				Nonce: 1,
-				Price: nil,
+				Price: &types.QuotePrice{
+					Price: math.NewInt(1),
+				},
+				Decimals: 0,
 			},
 			false,
 		},
@@ -152,14 +164,16 @@ func TestCurrencyPairState(t *testing.T) {
 				Price: &types.QuotePrice{
 					Price: math.NewInt(1),
 				},
+				Decimals: types.DefaultDecimals,
 			},
 			false,
 		},
 		{
 			"zero nonce, and nil price - valid",
 			types.CurrencyPairState{
-				Nonce: 0,
-				Price: nil,
+				Nonce:    0,
+				Price:    nil,
+				Decimals: types.DefaultDecimals,
 			},
 			true,
 		},
@@ -170,6 +184,7 @@ func TestCurrencyPairState(t *testing.T) {
 				Price: &types.QuotePrice{
 					Price: math.NewInt(1),
 				},
+				Decimals: types.DefaultDecimals,
 			},
 			true,
 		},

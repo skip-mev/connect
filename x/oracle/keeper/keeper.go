@@ -1,9 +1,12 @@
 package keeper
 
 import (
+	"errors"
+
 	"cosmossdk.io/collections"
 	"cosmossdk.io/collections/indexes"
 	"cosmossdk.io/core/store"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -11,10 +14,10 @@ import (
 )
 
 type oracleIndices struct {
-	// idUnique is a uniqueness constraint on the IDs of CurrencyPairs. i.e id -> CurrencyPair.String() -> CurrencyPairState
+	// idUnique is a uniqueness constraint on the IDs of CurrencyPairs. i.e id -> CurrencyPair.ID() -> CurrencyPairState
 	idUnique *indexes.Unique[uint64, string, types.CurrencyPairState]
 
-	// idMulti is a multi-index on the IDs of CurrencyPairs, i.e id -> CurrencyPair.String() -> CurrencyPairState
+	// idMulti is a multi-index on the IDs of CurrencyPairs, i.e. id -> CurrencyPair.ID() -> CurrencyPairState
 	idMulti *indexes.Multi[uint64, string, types.CurrencyPairState]
 }
 
@@ -94,7 +97,7 @@ func NewKeeper(
 	return k
 }
 
-// RemoveCurrencyPair removes a given CurrencyPair from state, i.e removes its nonce + QuotePrice from the module's store.
+// RemoveCurrencyPair removes a given CurrencyPair from state, i.e. removes its nonce + QuotePrice from the module's store.
 func (k Keeper) RemoveCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
 	k.currencyPairs.Remove(ctx, cp.ID())
 }
@@ -116,7 +119,8 @@ func (k Keeper) GetPriceWithNonceForCurrencyPair(ctx sdk.Context, cp types.Curre
 	qp, err := k.GetPriceForCurrencyPair(ctx, cp)
 	if err != nil {
 		// only fail if the Price Query failed for a reason other than there being no QuotePrice for cp
-		if _, ok := err.(types.QuotePriceNotExistError); !ok {
+		var quotePriceNotExistError types.QuotePriceNotExistError
+		if !errors.As(err, &quotePriceNotExistError) {
 			return types.QuotePriceWithNonce{}, err
 		}
 	}
@@ -135,7 +139,7 @@ func (k Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
 	return k.nextCurrencyPairID.Peek(ctx)
 }
 
-// GetNonceForCurrency Pair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
+// GetNonceForCurrencyPair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
 func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (uint64, error) {
 	cps, err := k.currencyPairs.Get(ctx, cp.ID())
 	if err != nil {
@@ -174,7 +178,7 @@ func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, 
 			return err
 		}
 
-		cps = types.NewCurrencyPairState(id, 0, &qp)
+		cps = types.NewCurrencyPairState(id, 0, &qp, cp.Decimals)
 	} else {
 		// update the nonce
 		cps.Nonce++
@@ -198,7 +202,7 @@ func (k Keeper) CreateCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) error
 		return err
 	}
 
-	state := types.NewCurrencyPairState(id, 0, nil)
+	state := types.NewCurrencyPairState(id, 0, nil, cp.Decimals)
 
 	return k.currencyPairs.Set(ctx, cp.ID(), state)
 }
@@ -228,17 +232,18 @@ func (k Keeper) GetCurrencyPairFromID(ctx sdk.Context, id uint64) (types.Currenc
 		return types.CurrencyPair{}, false
 	}
 
-	cps, err := ids.PrimaryKey()
+	cpStr, err := ids.PrimaryKey()
 	if err != nil {
 		return types.CurrencyPair{}, false
 	}
 
-	cp, err := types.CurrencyPairFromString(cps)
+	cps, err := k.currencyPairs.Get(ctx, cpStr)
 	if err != nil {
 		return types.CurrencyPair{}, false
 	}
 
-	return cp, true
+	cp, err := types.CurrencyPairFromID(cpStr, cps.Decimals)
+	return cp, err == nil
 }
 
 // GetAllCurrencyPairs returns all CurrencyPairs that have currently been stored to state.
@@ -267,12 +272,12 @@ func (k Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp types.CurrencyP
 			return err
 		}
 
-		cp, err := types.CurrencyPairFromString(primaryKey)
+		cps, err := it.Value()
 		if err != nil {
 			return err
 		}
 
-		cps, err := it.Value()
+		cp, err := types.CurrencyPairFromID(primaryKey, cps.Decimals)
 		if err != nil {
 			return err
 		}
