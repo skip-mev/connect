@@ -47,6 +47,12 @@ func (cp CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote, cp.Decimals)
 }
 
+// ID returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
+// This function differs from String() which also includes the decimal information.
+func (cp *CurrencyPair) ID() string {
+	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote)
+}
+
 // CurrencyPairString constructs and returns the string representation of a currency pair.
 func CurrencyPairString(base, quote string, decimals int64) string {
 	cp := NewCurrencyPair(base, quote, decimals)
