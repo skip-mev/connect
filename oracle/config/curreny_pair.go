@@ -6,12 +6,12 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// AggregateMarketConfig represents the configurations for the conversion market. Specifically,
-// this allows the oracle to convert prices between different currency pairs to resolve to a
-// common currency pair. For example, if the oracle receives a price for BTC/USDT and USDT/USD,
-// it can use the conversion market to convert the BTC/USDT price to BTC/USD.
+// AggregateMarketConfig represents the market configurations for how currency pairs will
+// be resolved to a final price. Each currency pair can have a list of convertable markets
+// that will be used to convert the price of the currency pair to a common currency pair.
 type AggregateMarketConfig struct {
-	// CurrencyPairs is the list of currency pairs that the oracle will fetch prices for.
+	// CurrencyPairs is the list of currency pairs that the oracle will fetch aggregate prices
+	// for.
 	CurrencyPairs map[string]AggregateCurrencyPairConfig `mapstructure:"currency_pair_config" toml:"currency_pair_config"`
 }
 
@@ -33,7 +33,8 @@ type ConvertableMarket struct {
 	// CurrencyPair is the feed that will be used in the conversion.
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"order" toml:"order"`
 
-	// Invert is a flag that indicates if the conversion should be inverted.
+	// Invert is a flag that indicates if the feed should be inverted
+	// prior to being used in the conversion.
 	Invert bool `mapstructure:"invert" toml:"invert"`
 }
 
