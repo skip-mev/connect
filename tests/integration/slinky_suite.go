@@ -215,7 +215,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 1)
 		s.Require().Equal(resp.CurrencyPairs[0].Base, "BTC")
 		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
-		s.Require().Equal(resp.CurrencyPairs[0].Decimals, oracletypes.DefaultDecimals)
+		s.Require().EqualValues(resp.CurrencyPairs[0].Decimals, oracletypes.DefaultDecimals)
 	})
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
