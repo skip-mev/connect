@@ -3,10 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -18,7 +18,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	s.T().Run("an error is returned if no CurrencyPairs have been registered in the module", func(t *testing.T) {
 		// execute query
 		_, err := qs.GetAllCurrencyPairs(s.ctx, nil)
-		assert.Nil(s.T(), err)
+		require.Nil(s.T(), err)
 	})
 
 	// test that after CurrencyPairs are registered, all of them are returned from the query
@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 			CurrencyPairs: []types.CurrencyPair{cp1, cp2, cp3},
 			Authority:     sdk.AccAddress(moduleAuth).String(),
 		})
-		assert.Nil(s.T(), err)
+		require.Nil(s.T(), err)
 
 		// manually insert a new CurrencyPair as well
 		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
@@ -59,12 +59,12 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 
 		// query for pairs
 		res, err := qs.GetAllCurrencyPairs(s.ctx, nil)
-		assert.Nil(s.T(), err)
+		require.Nil(s.T(), err)
 
 		// assert that currency-pairs are correctly returned
 		for _, cp := range res.CurrencyPairs {
 			_, ok := expectedCurrencyPairs[cp.String()]
-			assert.True(t, ok)
+			require.True(t, ok)
 		}
 	})
 }
@@ -169,15 +169,15 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			// get the response + error from the query
 			res, err := qs.GetPrice(s.ctx, tc.req)
 			if !tc.expectPass {
-				assert.NotNil(s.T(), err)
+				require.NotNil(s.T(), err)
 				return
 			}
 
 			// otherwise, assert no error, and check response
-			assert.Nil(s.T(), err)
+			require.Nil(s.T(), err)
 
 			// check response
-			assert.Equal(s.T(), res.Nonce, tc.res.Nonce)
+			require.Equal(s.T(), res.Nonce, tc.res.Nonce)
 
 			// check price if possible
 			if tc.res.Price != nil {
@@ -185,10 +185,10 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			}
 
 			// check decimals
-			assert.Equal(s.T(), tc.res.Decimals, res.Decimals)
+			require.Equal(s.T(), tc.res.Decimals, res.Decimals)
 
 			// check id
-			assert.Equal(s.T(), tc.res.Id, res.Id)
+			require.Equal(s.T(), tc.res.Id, res.Id)
 		})
 	}
 }
