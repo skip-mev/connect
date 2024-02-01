@@ -12,7 +12,7 @@ import (
 type AggregateMarketConfig struct {
 	// CurrencyPairs is the list of currency pairs that the oracle will fetch aggregate prices
 	// for.
-	CurrencyPairs map[string]AggregateCurrencyPairConfig `mapstructure:"currency_pair_config" toml:"currency_pair_config"`
+	CurrencyPairs map[string]AggregateCurrencyPairConfig `mapstructure:"currency_pairs" toml:"currency_pairs"`
 }
 
 // AggregateCurrencyPairConfig represents the configurations for a single currency pair.
@@ -31,7 +31,7 @@ type AggregateCurrencyPairConfig struct {
 // CovertableMarket returns the list of convertable markets for the currency pair.
 type ConvertableMarket struct {
 	// CurrencyPair is the feed that will be used in the conversion.
-	CurrencyPair oracletypes.CurrencyPair `mapstructure:"order" toml:"order"`
+	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 
 	// Invert is a flag that indicates if the feed should be inverted
 	// prior to being used in the conversion.

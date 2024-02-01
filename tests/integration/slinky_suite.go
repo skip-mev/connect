@@ -299,7 +299,13 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 					},
 				},
 			})
-			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
+			oracleConfig.Market = oracleconfig.AggregateMarketConfig{
+				CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+					cp.String(): {
+						CurrencyPair: cp,
+					},
+				},
+			}
 
 			SetOracleConfigsOnOracle(oracle, oracleConfig)
 			s.Require().NoError(RestartOracle(node))
@@ -526,9 +532,19 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			},
 		})
 
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp1)
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp2)
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
+		oracleConfig.Market = oracleconfig.AggregateMarketConfig{
+			CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+				cp1.String(): {
+					CurrencyPair: cp1,
+				},
+				cp2.String(): {
+					CurrencyPair: cp2,
+				},
+				cp3.String(): {
+					CurrencyPair: cp3,
+				},
+			},
+		}
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
 		s.Require().NoError(RestartOracle(node))
@@ -610,9 +626,19 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			},
 		})
 
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp1)
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp2)
-		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
+		oracleConfig.Market = oracleconfig.AggregateMarketConfig{
+			CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+				cp1.String(): {
+					CurrencyPair: cp1,
+				},
+				cp2.String(): {
+					CurrencyPair: cp2,
+				},
+				cp3.String(): {
+					CurrencyPair: cp3,
+				},
+			},
+		}
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
 		s.Require().NoError(RestartOracle(node))
