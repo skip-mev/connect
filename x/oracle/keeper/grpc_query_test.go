@@ -25,30 +25,34 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	s.T().Run("after CurrencyPairs are registered, all of them are returned from the query", func(t *testing.T) {
 		// insert multiple currency Pairs
 		cp1 := types.CurrencyPair{
-			Base:  "AA",
-			Quote: "BB",
+			Base:     "AA",
+			Quote:    "BB",
+			Decimals: types.DefaultDecimals,
 		}
 		cp2 := types.CurrencyPair{
-			Base:  "CC",
-			Quote: "DD",
+			Base:     "CC",
+			Quote:    "DD",
+			Decimals: types.DefaultDecimals,
 		}
 		cp3 := types.CurrencyPair{
-			Base:  "EE",
-			Quote: "FF",
+			Base:     "EE",
+			Quote:    "FF",
+			Decimals: types.DefaultDecimals,
 		}
 
 		// insert into module
 		ms := keeper.NewMsgServer(s.oracleKeeper)
 		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
 			CurrencyPairs: []types.CurrencyPair{cp1, cp2, cp3},
-			Authority:     sdk.AccAddress([]byte(moduleAuth)).String(),
+			Authority:     sdk.AccAddress(moduleAuth).String(),
 		})
 		assert.Nil(s.T(), err)
 
 		// manually insert a new CurrencyPair as well
 		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
-			Base:  "GG",
-			Quote: "HH",
+			Base:     "GG",
+			Quote:    "HH",
+			Decimals: types.DefaultDecimals,
 		}, types.QuotePrice{Price: sdkmath.NewInt(100)})
 
 		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
@@ -72,7 +76,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			CurrencyPair: types.CurrencyPair{
 				Base:     "AA",
 				Quote:    "ETHEREUM",
-				Decimals: types.DefaultDecimals,
+				Decimals: types.EthereumDecimals,
 			},
 			CurrencyPairPrice: &types.QuotePrice{
 				Price: sdkmath.NewInt(100),
