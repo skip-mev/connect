@@ -3,26 +3,9 @@ package petri
 import (
 	"context"
 
-	"cosmossdk.io/x/upgrade"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
-	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/consensus"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/petri/chain/v2"
@@ -31,9 +14,7 @@ import (
 	"github.com/skip-mev/petri/provider/v2/docker"
 	"github.com/skip-mev/petri/types/v2"
 
-	"github.com/skip-mev/slinky/x/alerts"
-	"github.com/skip-mev/slinky/x/incentives"
-	"github.com/skip-mev/slinky/x/oracle"
+	"github.com/skip-mev/slinky/tests/simapp"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -77,29 +58,15 @@ func GetChainConfig() types.ChainConfig {
 }
 
 func GetEncodingConfig() testutil.TestEncodingConfig {
+	moduleBasics := make([]module.AppModuleBasic, len(simapp.ModuleBasics))
+	i := 0
+	for _, mb := range simapp.ModuleBasics {
+		moduleBasics[i] = mb
+		i++
+	}
 	return testutil.MakeTestEncodingConfig(
-		auth.AppModuleBasic{},
-		genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-		bank.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			[]govclient.ProposalHandler{
-				paramsclient.ProposalHandler,
-			},
-		),
-		params.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
-		authzmodule.AppModuleBasic{},
-		groupmodule.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		consensus.AppModuleBasic{},
-		oracle.AppModuleBasic{},
-		incentives.AppModuleBasic{},
-		alerts.AppModuleBasic{})
+		moduleBasics...,
+	)
 }
 
 func GetProvider(ctx context.Context, logger *zap.Logger) (provider.Provider, error) {
