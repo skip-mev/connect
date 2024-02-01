@@ -26,8 +26,8 @@ import (
 	"github.com/skip-mev/slinky/abci/types"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/pkg/math/vote-weighted"
-	"github.com/skip-mev/slinky/pkg/math/vote-weighted/mocks"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -114,7 +114,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 
 	// Use the default aggregation function for testing
 	mockValidatorStore := mocks.NewValidatorStore(s.T())
-	aggregationFn := voteweighted.VoteWeightedMedianFromContext(
+	aggregationFn := voteweighted.MedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
 		voteweighted.DefaultPowerThreshold,

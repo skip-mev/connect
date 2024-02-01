@@ -68,7 +68,7 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/pkg/math/vote-weighted"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted"
 	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
@@ -360,7 +360,7 @@ func NewSimApp(
 
 	// Create the aggregation function that will be used to aggregate oracle data
 	// from each validator.
-	aggregatorFn := voteweighted.VoteWeightedMedianFromContext(
+	aggregatorFn := voteweighted.MedianFromContext(
 		app.Logger(),
 		app.StakingKeeper,
 		voteweighted.DefaultPowerThreshold,
