@@ -45,6 +45,17 @@ func NewAggregateMarketConfig() AggregateMarketConfig {
 	}
 }
 
+// GetCurrencyPairs returns the set of currency pairs in the aggregate market config.
+func (c AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
+	var currencyPairs []oracletypes.CurrencyPair
+
+	for _, cpConfig := range c.CurrencyPairs {
+		currencyPairs = append(currencyPairs, cpConfig.CurrencyPair)
+	}
+
+	return currencyPairs
+}
+
 // ValidateBasic performs basic validation on the AggregateMarketConfig.
 func (c AggregateMarketConfig) ValidateBasic() error {
 	for cpString, cpConfig := range c.CurrencyPairs {

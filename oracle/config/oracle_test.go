@@ -47,8 +47,12 @@ func TestOracleConfig(t *testing.T) {
 						},
 					},
 				},
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				Market: config.AggregateMarketConfig{
+					CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+						"BITCOIN/USD": {
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
 				},
 			},
 			expectedErr: false,
@@ -83,8 +87,12 @@ func TestOracleConfig(t *testing.T) {
 						},
 					},
 				},
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOINUSD", ""),
+				Market: config.AggregateMarketConfig{
+					CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+						"BITCOINUSD": {
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
 				},
 			},
 			expectedErr: true,
@@ -114,8 +122,12 @@ func TestOracleConfig(t *testing.T) {
 						},
 					},
 				},
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				Market: config.AggregateMarketConfig{
+					CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+						"BITCOIN/USD": {
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
 				},
 				Metrics: config.MetricsConfig{
 					Enabled: true,
