@@ -265,7 +265,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		require.True(s.T(), ok)
 
 		// remove the currency-pair
-		s.oracleKeeper.RemoveCurrencyPair(s.ctx, cp2)
+		s.oracleKeeper.RemoveCurrencyPair(s.ctx, cp2.ID())
 
 		// check that the id is no longer in use
 		_, ok = s.oracleKeeper.GetCurrencyPairFromID(s.ctx, unusedID)

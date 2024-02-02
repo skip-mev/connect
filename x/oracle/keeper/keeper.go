@@ -98,13 +98,13 @@ func NewKeeper(
 }
 
 // RemoveCurrencyPair removes a given CurrencyPair from state, i.e. removes its nonce + QuotePrice from the module's store.
-func (k Keeper) RemoveCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
-	k.currencyPairs.Remove(ctx, cp.ID())
+func (k Keeper) RemoveCurrencyPair(ctx sdk.Context, cpID string) {
+	k.currencyPairs.Remove(ctx, cpID)
 }
 
 // HasCurrencyPair returns true if a given CurrencyPair is stored in state, false otherwise.
-func (k Keeper) HasCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) bool {
-	ok, err := k.currencyPairs.Has(ctx, cp.ID())
+func (k Keeper) HasCurrencyPair(ctx sdk.Context, cpID string) bool {
+	ok, err := k.currencyPairs.Has(ctx, cpID)
 	if err != nil || !ok {
 		return false
 	}
@@ -193,7 +193,7 @@ func (k Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair, 
 // the nonce for the CurrencyPair is set to 0.
 func (k Keeper) CreateCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) error {
 	// check if the currency pair already exists
-	if k.HasCurrencyPair(ctx, cp) {
+	if k.HasCurrencyPair(ctx, cp.ID()) {
 		return types.NewCurrencyPairAlreadyExistsError(cp)
 	}
 

@@ -215,7 +215,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			&types.MsgRemoveCurrencyPairs{
 				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairIds: []string{
-					"AA/BB/8", "CC/DD/8",
+					"AA/BB", "CC/DD",
 				},
 			},
 			true,
@@ -238,12 +238,8 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 
 			// check that all currency-pairs were removed
 			for _, cps := range tc.req.CurrencyPairIds {
-				// get currency pair from request
-				cp, err := types.CurrencyPairFromString(cps)
-				require.Nil(s.T(), err)
-
 				// assert that currency-pair was removed
-				require.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cp))
+				require.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cps))
 			}
 		})
 	}

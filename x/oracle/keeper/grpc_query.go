@@ -42,47 +42,31 @@ func (q queryServer) GetAllCurrencyPairs(ctx context.Context, _ *types.GetAllCur
 // GetPrice gets the QuotePrice and the nonce for the QuotePrice for a given CurrencyPair. The request contains a
 // CurrencyPairSelector (either the stringified CurrencyPair, or the CurrencyPair itself). If the request is nil this method fails.
 // If the selector is an incorrectly formatted string this method fails. If the QuotePrice / Nonce do not exist for this CurrencyPair, this method fails.
-func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest) (_ *types.GetPriceResponse, err error) {
-	var cp types.CurrencyPair
-
+func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest) (*types.GetPriceResponse, error) {
 	// fail on nil requests
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
 	}
 
-	// retrieve the currency pair from the stringified ID, and fail if incorrectly formatted
-	cp, err = types.CurrencyPairFromString(req.CurrencyPairId)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %v", err)
-	}
-
 	// unwrap ctx
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// get the QuotePrice + nonce for the given CurrencyPair
-	qpn, err := q.k.GetPriceWithNonceForCurrencyPair(ctx, cp)
+	cps, err := q.k.currencyPairs.Get(ctx, req.CurrencyPairId)
 	if err != nil {
-		return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %v, the module is not tracking this CurrencyPair", cp)
-	}
-
-	id, ok := q.k.GetIDForCurrencyPair(ctx, cp)
-	if !ok {
-		return nil, fmt.Errorf("no ID found for CurrencyPair: %v", cp)
+		return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %s, the module is not tracking this CurrencyPair", req.CurrencyPairId)
 	}
 
 	// return the QuotePrice + Nonce
 	return &types.GetPriceResponse{
-		Price:    &qpn.QuotePrice,
-		Nonce:    qpn.Nonce(),
-		Decimals: cp.Decimals,
-		Id:       id,
+		Price:    cps.Price,
+		Nonce:    cps.Nonce,
+		Decimals: cps.Decimals,
+		Id:       cps.Id,
 	}, nil
 }
 
 // GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
-func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
-	var cp types.CurrencyPair
-
+func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (*types.GetPricesResponse, error) {
 	// fail on nil requests
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
@@ -90,7 +74,7 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
 	for _, cid := range req.CurrencyPairIds {
-		cp, err = types.CurrencyPairFromString(cid)
+		cp, err := types.CurrencyPairFromString(cid)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %v", err)
 		}

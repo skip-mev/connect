@@ -121,7 +121,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that does not exist fail - fail",
 			&types.GetPriceRequest{
-				CurrencyPairId: "DD/EE/8",
+				CurrencyPairId: "DD/EE",
 			},
 			nil,
 			false,
@@ -129,7 +129,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency-pair with no price, only the nonce (0) is returned - pass",
 			&types.GetPriceRequest{
-				CurrencyPairId: "CC/BB/8",
+				CurrencyPairId: "CC/BB",
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,
@@ -141,7 +141,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairId: testCP.String(),
+				CurrencyPairId: testCP.ID(),
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
