@@ -2963,7 +2963,7 @@ type CurrencyPairState struct {
 	Price *QuotePrice `protobuf:"bytes,1,opt,name=price,proto3" json:"price,omitempty"`
 	// Nonce is the number of updates this currency-pair has received.
 	Nonce uint64 `protobuf:"varint,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	// ID is the ID of the CurrencyPair.
+	// Ticker is the Ticker of the CurrencyPair.
 	Id uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	// Decimals is the number of precision decimals to use for this pair.
 	Decimals int64 `protobuf:"varint,4,opt,name=decimals,proto3" json:"decimals,omitempty"`
@@ -3032,7 +3032,7 @@ type CurrencyPairGenesis struct {
 	// nonce is the nonce (number of updates) for the CP (same case as above,
 	// likely 0 unless it results from fork of module)
 	Nonce uint64 `protobuf:"varint,3,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	// Id is the ID of the CurrencyPair.
+	// Id is the Ticker of the CurrencyPair.
 	Id uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -3095,7 +3095,7 @@ type GenesisState struct {
 	// the starting set of CurrencyPairs for the module + information regarding
 	// their latest update.
 	CurrencyPairGenesis []*CurrencyPairGenesis `protobuf:"bytes,1,rep,name=currency_pair_genesis,json=currencyPairGenesis,proto3" json:"currency_pair_genesis,omitempty"`
-	// NextID is the next ID to be used for a CurrencyPair
+	// NextID is the next Ticker to be used for a CurrencyPair
 	NextId uint64 `protobuf:"varint,2,opt,name=next_id,json=nextId,proto3" json:"next_id,omitempty"`
 }
 

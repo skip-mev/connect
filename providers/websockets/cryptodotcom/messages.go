@@ -27,7 +27,7 @@ const (
 
 	// HeartBeatResponseMethod is the method used to respond to a heartbeat message
 	// from the Crypto.com websocket API. Any heartbeat message received from the Crypto.com
-	// websocket API must be responded to with a heartbeat response message with the same ID.
+	// websocket API must be responded to with a heartbeat response message with the same Ticker.
 	HeartBeatResponseMethod Method = "public/respond-heartbeat"
 )
 

@@ -23,11 +23,11 @@ type Keeper struct {
 	storeService store.KVStoreService
 	schema       collections.Schema
 
-	// slas is a map of (sla ID -> SLA) that is used to track the SLAs that are
+	// slas is a map of (sla Ticker -> SLA) that is used to track the SLAs that are
 	// currently in the x/sla module's state.
 	slas collections.Map[string, slatypes.PriceFeedSLA]
 
-	// priceFeeds is a map of (sla ID, currency pair, consensus address -> price feed)
+	// priceFeeds is a map of (sla Ticker, currency pair, consensus address -> price feed)
 	priceFeeds collections.Map[collections.Triple[string, string, []byte], slatypes.PriceFeed]
 
 	// currencyPairs is a map of (currency pair string -> currency pair) that is used to

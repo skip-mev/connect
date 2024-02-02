@@ -57,7 +57,7 @@ func NewWebSocketDataHandler(
 // provider sends four types of messages:
 //
 //  1. Subscribed response message. The subscribe response message is used to determine if
-//     the subscription was successful.  If successful, the channel ID is saved
+//     the subscription was successful.  If successful, the channel Ticker is saved
 //  2. Error response messages.  These messages provide info about errors from requests
 //     sent to the BitFinex websocket API
 //  3. Ticker stream message. This is sent when a ticker update is received from the
@@ -132,7 +132,7 @@ func (h *WebsocketDataHandler) CreateMessages(
 	for _, cp := range cps {
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
+			h.logger.Debug("instrument Ticker not found for currency pair", zap.String("currency_pair", cp.String()))
 			return nil, fmt.Errorf("currency pair %s not in config", cp.String())
 		}
 

@@ -22,9 +22,9 @@ type GetResponse[K ResponseKey, V ResponseValue] struct {
 	UnResolved map[K]error
 }
 
-// Result is the result of a single requested ID.
+// Result is the result of a single requested Ticker.
 type Result[V ResponseValue] struct {
-	// Value is the value of the requested ID.
+	// Value is the value of the requested Ticker.
 	Value V
 	// Timestamp is the timestamp of the value.
 	Timestamp time.Time

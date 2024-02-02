@@ -193,7 +193,7 @@ func (feed *PriceFeed) Stringify() string {
 	Update Map: %s
 	Inclusion Map: %s
 	Index: %d
-	ID: %s`,
+	Ticker: %s`,
 		feed.MaximumViableWindow,
 		feed.Validator,
 		feed.CurrencyPair,

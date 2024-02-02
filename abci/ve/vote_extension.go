@@ -273,7 +273,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 
 // transformOracleServicePrices transforms the oracle service prices into a vote extension. It
 // does this by iterating over the the prices submitted by the oracle service and determining the
-// correct decoded price / ID based on the currency pair strategy.
+// correct decoded price / Ticker based on the currency pair strategy.
 func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, prices map[string]string) (types.OracleVoteExtension, error) {
 	strategyPrices := make(map[uint64][]byte)
 
@@ -293,7 +293,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 		cpID, err := h.currencyPairStrategy.ID(ctx, cp)
 		if err != nil {
 			h.logger.Debug(
-				"failed to get currency pair ID",
+				"failed to get currency pair Ticker",
 				"currency_pair", cp,
 				"err", err,
 			)

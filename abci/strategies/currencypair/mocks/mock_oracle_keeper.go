@@ -42,9 +42,9 @@ func (_m *OracleKeeper) GetCurrencyPairFromID(ctx types.Context, id uint64) (ora
 	return r0, r1
 }
 
-// GetIDForCurrencyPair provides a mock function with given fields: ctx, cp
-func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp oracletypes.CurrencyPair) (uint64, bool) {
-	ret := _m.Called(ctx, cp)
+// GetIDForCurrencyPair provides a mock function with given fields: ctx, cpID
+func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cpID string) (uint64, bool) {
+	ret := _m.Called(ctx, cpID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetIDForCurrencyPair")
@@ -52,17 +52,17 @@ func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp oracletypes.C
 
 	var r0 uint64
 	var r1 bool
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) (uint64, bool)); ok {
-		return rf(ctx, cp)
+	if rf, ok := ret.Get(0).(func(types.Context, string) (uint64, bool)); ok {
+		return rf(ctx, cpID)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) uint64); ok {
-		r0 = rf(ctx, cp)
+	if rf, ok := ret.Get(0).(func(types.Context, string) uint64); ok {
+		r0 = rf(ctx, cpID)
 	} else {
 		r0 = ret.Get(0).(uint64)
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair) bool); ok {
-		r1 = rf(ctx, cp)
+	if rf, ok := ret.Get(1).(func(types.Context, string) bool); ok {
+		r1 = rf(ctx, cpID)
 	} else {
 		r1 = ret.Get(1).(bool)
 	}
@@ -70,9 +70,9 @@ func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp oracletypes.C
 	return r0, r1
 }
 
-// GetPriceForCurrencyPair provides a mock function with given fields: ctx, cp
-func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cp oracletypes.CurrencyPair) (oracletypes.QuotePrice, error) {
-	ret := _m.Called(ctx, cp)
+// GetPriceForCurrencyPair provides a mock function with given fields: ctx, cpID
+func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cpID string) (oracletypes.QuotePrice, error) {
+	ret := _m.Called(ctx, cpID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetPriceForCurrencyPair")
@@ -80,17 +80,17 @@ func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cp oracletype
 
 	var r0 oracletypes.QuotePrice
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) (oracletypes.QuotePrice, error)); ok {
-		return rf(ctx, cp)
+	if rf, ok := ret.Get(0).(func(types.Context, string) (oracletypes.QuotePrice, error)); ok {
+		return rf(ctx, cpID)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) oracletypes.QuotePrice); ok {
-		r0 = rf(ctx, cp)
+	if rf, ok := ret.Get(0).(func(types.Context, string) oracletypes.QuotePrice); ok {
+		r0 = rf(ctx, cpID)
 	} else {
 		r0 = ret.Get(0).(oracletypes.QuotePrice)
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair) error); ok {
-		r1 = rf(ctx, cp)
+	if rf, ok := ret.Get(1).(func(types.Context, string) error); ok {
+		r1 = rf(ctx, cpID)
 	} else {
 		r1 = ret.Error(1)
 	}

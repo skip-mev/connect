@@ -129,7 +129,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			// check all currency pairs were inserted
 			for _, cp := range tc.req.CurrencyPairs {
 				// get nonce for cpg.CurrencyPair
-				nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+				nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp.Ticker())
 				require.Nil(s.T(), err)
 
 				// check the nonce is correct (if the cp had already existed in state, check that it was not overwritten)
@@ -181,13 +181,13 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 
 	// sanity check, assert existence of cps
 	// cp1
-	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp1)
+	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp1.Ticker())
 	require.Nil(s.T(), err)
 	require.Equal(s.T(), qpn.Nonce(), uint64(100))
 	require.Equal(s.T(), qpn.Price.Int64(), int64(100))
 
 	// cp2
-	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp2)
+	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp2.Ticker())
 	require.Nil(s.T(), err)
 	require.Equal(s.T(), qpn.Nonce(), uint64(101))
 	require.Equal(s.T(), qpn.Price.Int64(), int64(100))

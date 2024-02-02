@@ -71,7 +71,7 @@ func (m MsgRemoveSLAs) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic determines whether or not the information in the message is formatted correctly, specifically
-// whether the authority is a valid acc-address, and that each SLA ID in the message is not empty.
+// whether the authority is a valid acc-address, and that each SLA Ticker in the message is not empty.
 func (m MsgRemoveSLAs) ValidateBasic() error {
 	// validate authority address
 	_, err := sdk.AccAddressFromBech32(m.Authority)

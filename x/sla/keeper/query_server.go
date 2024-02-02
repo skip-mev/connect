@@ -32,7 +32,7 @@ func (s *QueryServer) GetAllSLAs(goCtx context.Context, _ *slatypes.GetAllSLAsRe
 	return &slatypes.GetAllSLAsResponse{SLAs: slas}, nil
 }
 
-// GetPriceFeeds defines a method that returns all price feeds in the store with the given SLA ID.
+// GetPriceFeeds defines a method that returns all price feeds in the store with the given SLA Ticker.
 func (s *QueryServer) GetPriceFeeds(goCtx context.Context, req *slatypes.GetPriceFeedsRequest) (*slatypes.GetPriceFeedsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

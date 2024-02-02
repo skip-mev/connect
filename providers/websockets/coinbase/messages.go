@@ -205,7 +205,7 @@ type TickerResponseMessage struct {
 	// Sequence is the sequence number of the message.
 	Sequence int64 `json:"sequence"`
 
-	// Ticker is the product ID of the ticker.
+	// Ticker is the product Ticker of the ticker.
 	Ticker string `json:"product_id"`
 
 	// Price is the price of the ticker.

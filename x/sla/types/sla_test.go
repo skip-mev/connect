@@ -160,7 +160,7 @@ func TestQualifies(t *testing.T) {
 		5,
 	)
 
-	t.Run("does not qualify when the SLA ID is different from price feed ID", func(t *testing.T) {
+	t.Run("does not qualify when the SLA Ticker is different from price feed Ticker", func(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(10, val, cp, "differentID")
 		require.NoError(t, err)
 

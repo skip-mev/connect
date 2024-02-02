@@ -4177,7 +4177,7 @@ type MultiSigConclusion struct {
 	PriceBound *PriceBound `protobuf:"bytes,4,opt,name=price_bound,json=priceBound,proto3" json:"price_bound,omitempty"`
 	// status is the status of the conclusion.
 	Status bool `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
-	// CurrencyPairID is the ID of the currency-pair that this conclusion
+	// CurrencyPairID is the Ticker of the currency-pair that this conclusion
 	// corresponds to.
 	CurrencyPairID uint64 `protobuf:"varint,6,opt,name=currency_pair_i_d,json=currencyPairID,proto3" json:"currency_pair_i_d,omitempty"`
 }

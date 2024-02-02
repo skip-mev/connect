@@ -73,31 +73,20 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 	}
 
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
-	for _, cid := range req.CurrencyPairIds {
-		cp, err := types.CurrencyPairFromString(cid)
-		if err != nil {
-			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %v", err)
-		}
-
+	for _, cpID := range req.CurrencyPairIds {
 		// unwrap ctx
 		ctx := sdk.UnwrapSDKContext(goCtx)
 
-		// get the QuotePrice + nonce for the given CurrencyPair
-		qpn, err := q.k.GetPriceWithNonceForCurrencyPair(ctx, cp)
+		cps, err := q.k.currencyPairs.Get(ctx, cpID)
 		if err != nil {
-			return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %v, the module is not tracking this CurrencyPair", cp)
-		}
-
-		id, ok := q.k.GetIDForCurrencyPair(ctx, cp)
-		if !ok {
-			return nil, fmt.Errorf("no ID found for CurrencyPair: %v", cp)
+			return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %s, the module is not tracking this CurrencyPair", cpID)
 		}
 
 		prices = append(prices, types.GetPriceResponse{
-			Price:    &qpn.QuotePrice,
-			Nonce:    qpn.Nonce(),
-			Decimals: cp.Decimals,
-			Id:       id,
+			Price:    cps.Price,
+			Nonce:    cps.Nonce,
+			Decimals: cps.Decimals,
+			Id:       cps.Id,
 		})
 	}
 

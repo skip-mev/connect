@@ -360,7 +360,7 @@ func TestDecodeTickerResponseMessage(t *testing.T) {
 			},
 		},
 		{
-			name:     "invalid response with missing channel ID",
+			name:     "invalid response with missing channel Ticker",
 			response: `[{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"c":["42694.60000","0.00455773"],"v":["2068.49653432","2075.61202911"],"p":["42596.41907","42598.31137"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"ticker","XBT/USD"]`,
 			expected: kraken.TickerResponseMessage{},
 			expErr:   true,

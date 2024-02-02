@@ -10,7 +10,7 @@ import (
 // x/sla module's state.
 type PriceFeedSLACB func(sla slatypes.PriceFeedSLA) error
 
-// GetSLA returns the SLA with the given ID from the x/sla module's state.
+// GetSLA returns the SLA with the given Ticker from the x/sla module's state.
 func (k Keeper) GetSLA(ctx sdk.Context, slaID string) (slatypes.PriceFeedSLA, error) {
 	return k.slas.Get(ctx, slaID)
 }
@@ -31,7 +31,7 @@ func (k Keeper) GetSLAs(ctx sdk.Context) ([]slatypes.PriceFeedSLA, error) {
 }
 
 // AddSLAs adds a set of SLAs to the x/sla module's state. Note, this will
-// overwrite any existing SLA with the same ID.
+// overwrite any existing SLA with the same Ticker.
 func (k Keeper) AddSLAs(ctx sdk.Context, slas []slatypes.PriceFeedSLA) error {
 	for _, sla := range slas {
 		if err := k.SetSLA(ctx, sla); err != nil {
@@ -43,7 +43,7 @@ func (k Keeper) AddSLAs(ctx sdk.Context, slas []slatypes.PriceFeedSLA) error {
 }
 
 // SetSLA sets a SLA to the x/sla module's state. Note, this will overwrite any
-// existing SLA with the same ID.
+// existing SLA with the same Ticker.
 func (k Keeper) SetSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
 	return k.slas.Set(ctx, sla.ID, sla)
 }

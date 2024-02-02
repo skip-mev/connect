@@ -13,7 +13,7 @@ import (
 const (
 	// ProviderLabel is a label for the provider name.
 	ProviderLabel = "provider"
-	// IDLabel is a label for the ID of a provider response.
+	// IDLabel is a label for the Ticker of a provider response.
 	IDLabel = "id"
 	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
 	ProviderTypeLabel = "type"
@@ -37,25 +37,25 @@ const (
 //go:generate mockery --name ProviderMetrics --filename mock_metrics.go
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
-	// for a given provider and ID (i.e. currency pair).
+	// for a given provider and Ticker (i.e. currency pair).
 	AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType)
 
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
 	AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType)
 
-	// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
+	// LastUpdated updates the last time a given Ticker (i.e. currency pair) was updated.
 	LastUpdated(providerName, id string, providerType providertypes.ProviderType)
 }
 
 // ProviderMetricsImpl contains metrics exposed by this package.
 type ProviderMetricsImpl struct {
-	// Number of provider successes by ID.
+	// Number of provider successes by Ticker.
 	responseStatusPerProviderByID *prometheus.CounterVec
 
 	// Number of provider successes.
 	responseStatusPerProvider *prometheus.CounterVec
 
-	// Last time a given ID (i.e. currency pair) was updated.
+	// Last time a given Ticker (i.e. currency pair) was updated.
 	lastUpdatedPerProvider *prometheus.GaugeVec
 }
 
@@ -73,7 +73,7 @@ func NewProviderMetrics() ProviderMetrics {
 		responseStatusPerProviderByID: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses_per_id",
-			Help:      "Number of provider successes with a given ID.",
+			Help:      "Number of provider successes with a given Ticker.",
 		}, []string{ProviderLabel, IDLabel, StatusLabel, ProviderTypeLabel}),
 		responseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
@@ -83,7 +83,7 @@ func NewProviderMetrics() ProviderMetrics {
 		lastUpdatedPerProvider: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_last_updated_id",
-			Help:      "Last time a given ID (i.e. currency pair) was updated.",
+			Help:      "Last time a given Ticker (i.e. currency pair) was updated.",
 		}, []string{ProviderLabel, IDLabel, ProviderTypeLabel}),
 	}
 
@@ -110,7 +110,7 @@ func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ prov
 func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.ProviderType) {}
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
-// for a given provider and ID (i.e. currency pair).
+// for a given provider and Ticker (i.e. currency pair).
 func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType) {
 	m.responseStatusPerProviderByID.With(prometheus.Labels{
 		ProviderLabel:     providerName,
@@ -131,7 +131,7 @@ func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status St
 	).Add(1)
 }
 
-// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
+// LastUpdated updates the last time a given Ticker (i.e. currency pair) was updated.
 func (m *ProviderMetricsImpl) LastUpdated(providerName, id string, providerType providertypes.ProviderType) {
 	now := time.Now().UTC()
 	m.lastUpdatedPerProvider.With(prometheus.Labels{

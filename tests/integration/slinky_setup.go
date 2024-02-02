@@ -281,7 +281,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 
 	// query the currency pairs
 	res, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairId: cp.ID(),
+		CurrencyPairId: cp.Ticker(),
 	})
 	if err != nil {
 		return nil, 0, err

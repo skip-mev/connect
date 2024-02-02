@@ -143,7 +143,7 @@ func TestHandlerMessage(t *testing.T) {
 			expErr:        false,
 		},
 		{
-			name: "instrument price update with unknown instrument ID",
+			name: "instrument price update with unknown instrument Ticker",
 			msg: func() []byte {
 				msg := okx.IndexTickersResponseMessage{
 					Arguments: okx.SubscriptionTopic{

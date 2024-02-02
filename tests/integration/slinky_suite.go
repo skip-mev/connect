@@ -174,7 +174,7 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 
 	ids := make([]string, len(resp.CurrencyPairs))
 	for i, cp := range resp.CurrencyPairs {
-		ids[i] = cp.ID()
+		ids[i] = cp.Ticker()
 	}
 
 	// remove all currency-pairs
@@ -295,7 +295,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 				Market: oracleconfig.MarketConfig{
 					Name: "static-mock-provider",
 					CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-						cp.ID(): {
+						cp.Ticker(): {
 							Ticker:       "1140",
 							CurrencyPair: cp,
 						},
@@ -663,7 +663,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp oracletypes.CurrencyPair) (uint64, error) {
 	// query for the given currency pair
 	resp, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairId: cp.ID(),
+		CurrencyPairId: cp.Ticker(),
 	})
 	if err != nil {
 		return 0, err

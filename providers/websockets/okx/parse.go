@@ -86,7 +86,7 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 	for _, ticker := range resp.Data {
 		market, ok := h.cfg.Market.TickerToMarketConfigs[ticker.InstrumentID]
 		if !ok {
-			h.logger.Debug("currency pair not found for instrument ID", zap.String("instrument_id", ticker.InstrumentID))
+			h.logger.Debug("currency pair not found for instrument Ticker", zap.String("instrument_id", ticker.InstrumentID))
 			continue
 		}
 

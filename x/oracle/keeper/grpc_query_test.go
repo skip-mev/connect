@@ -141,7 +141,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairId: testCP.ID(),
+				CurrencyPairId: testCP.Ticker(),
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
