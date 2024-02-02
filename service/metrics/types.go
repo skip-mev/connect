@@ -28,7 +28,7 @@ func StatusFromError(err error) Labeller {
 }
 
 // MessageType is an identifier used to represent the different types of data that is transmitted between validators in Slinky.
-// This Ticker is used to paginate metrics corresponding to these messages
+// This ID is used to paginate metrics corresponding to these messages
 type MessageType int
 
 const (

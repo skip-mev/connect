@@ -109,7 +109,7 @@ func TestHandlerMessage(t *testing.T) {
 			expErr:        false,
 		},
 		{
-			name:   "ticker price update with unknown channel Ticker",
+			name:   "ticker price update with unknown channel ID",
 			preRun: func() []byte { return nil },
 			msg: func() []byte {
 				return rawStringToBz(`[0,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)

@@ -85,7 +85,7 @@ type SubscriptionTopic struct {
 	// Channel is the channel to subscribe to.
 	Channel string `json:"channel" validate:"required"`
 
-	// InstrumentID is the instrument Ticker to subscribe to.
+	// InstrumentID is the instrument ID to subscribe to.
 	InstrumentID string `json:"instId" validate:"required"`
 }
 
@@ -138,7 +138,7 @@ type SubscribeResponseMessage struct {
 	// Event is the event that occurred.
 	Event string `json:"event" validate:"required"`
 
-	// ConnectionID is the connection Ticker.
+	// ConnectionID is the connection ID.
 	ConnectionID string `json:"connId" validate:"required"`
 
 	// Code is the error code.
@@ -184,7 +184,7 @@ type IndexTickersResponseMessage struct {
 
 // IndexTicker is the index ticker data.
 type IndexTicker struct {
-	// InstrumentID is the instrument Ticker.
+	// InstrumentID is the instrument ID.
 	InstrumentID string `json:"instId" validate:"required"`
 
 	// IndexPrice is the index price.

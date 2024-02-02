@@ -58,7 +58,7 @@ func (h *WebsocketDataHandler) parseTickerUpdate(
 	// Iterate through all the tickers and add them to the response.
 	market, ok := h.cfg.Market.TickerToMarketConfigs[data.Symbol]
 	if !ok {
-		h.logger.Debug("currency pair not found for symbol Ticker", zap.String("symbol", data.Symbol))
+		h.logger.Debug("currency pair not found for symbol ID", zap.String("symbol", data.Symbol))
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 	}
 

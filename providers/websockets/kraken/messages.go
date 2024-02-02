@@ -209,7 +209,7 @@ func NewSubscribeRequestMessage(
 //
 // ref: https://docs.kraken.com/websockets/#message-subscriptionStatus
 type SubscribeResponseMessage struct {
-	// ChannelID is the channel Ticker.
+	// ChannelID is the channel ID.
 	ChannelID uint64 `json:"channelID"`
 
 	// ChannelName is the channel name.
@@ -287,7 +287,7 @@ type SubscribeResponseMessage struct {
 //
 // ref: https://docs.kraken.com/websockets/#message-ticker
 type TickerResponseMessage struct {
-	// ChannelID is the channel Ticker.
+	// ChannelID is the channel ID.
 	ChannelID int
 
 	// TickerData is the ticker data corresponding to the asset pair.
@@ -305,7 +305,7 @@ const (
 	// response message.
 	ExpectedTickerResponseMessageLength = 4
 
-	// ChannelIDIndex is the index of the channel Ticker in the ticker response
+	// ChannelIDIndex is the index of the channel ID in the ticker response
 	// message.
 	ChannelIDIndex = iota - 1
 

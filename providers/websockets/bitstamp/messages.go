@@ -149,7 +149,7 @@ type SubscriptionResponseMessage struct {
 // received after a subscription request is made to the ticker channel. It contains
 // the relevant ticker data.
 //
-// id:				Trade unique Ticker.
+// id:				Trade unique ID.
 // amount:			Trade amount.
 // amount_str:		Trade amount represented in string format.
 // price:			Trade price.
@@ -157,8 +157,8 @@ type SubscriptionResponseMessage struct {
 // type:			Trade type (0 - buy; 1 - sell).
 // timestamp:		Trade timestamp.
 // microtimestamp:	Trade microtimestamp.
-// buy_order_id:	Trade buy order Ticker.
-// sell_order_id:	Trade sell order Ticker.
+// buy_order_id:	Trade buy order ID.
+// sell_order_id:	Trade sell order ID.
 //
 // example:
 //
@@ -200,15 +200,15 @@ type TickerData struct {
 }
 
 const (
-	// ExpectedTickerLength is the expected length of the Ticker field.
+	// ExpectedTickerLength is the expected length of the ID field.
 	// This field contains the channel name and the currency pair.
 	ExpectedTickerLength = 2
 
-	// TickerChannelIndex is the index of the ticker channel in the Ticker field.
+	// TickerChannelIndex is the index of the ticker channel in the ID field.
 	TickerChannelIndex = 0
 
 	// TickerCurrencyPairIndex is the index of the ticker currency pair in the
-	// Ticker field.
+	// ID field.
 	TickerCurrencyPairIndex = 1
 )
 

@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	// indexChannelID is the index of a data stream's channel Ticker.
+	// indexChannelID is the index of a data stream's channel ID.
 	indexChannelID = 0
 	// indexPayload is the index of a data stream's payload.
 	indexPayload = 1

@@ -113,7 +113,7 @@ func TestHandlerMessage(t *testing.T) {
 			expErr:        false,
 		},
 		{
-			name: "ticker price update with unknown ticker Ticker",
+			name: "ticker price update with unknown ticker ID",
 			msg: func() []byte {
 				msg := huobi.TickerStream{
 					Channel: "unknown",
