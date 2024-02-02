@@ -30,10 +30,10 @@ func ValidateOracleVoteExtension(
 			return fmt.Errorf("price bytes are too long: %d", len(bz))
 		}
 
-		// Ensure that the currency pair Ticker is valid.
+		// Ensure that the currency pair ID is valid.
 		cp, err := strategy.FromID(ctx, id)
 		if err != nil {
-			return fmt.Errorf("invalid currency pair Ticker: %d", id)
+			return fmt.Errorf("invalid currency pair ID: %d", id)
 		}
 
 		// Ensure that the price bytes are valid.
