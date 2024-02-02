@@ -5,12 +5,14 @@ go 1.21.6
 require (
 	github.com/cosmos/cosmos-sdk v0.50.3
 	github.com/skip-mev/petri/chain/v2 v2.0.1
+	github.com/skip-mev/petri/loadtest/v2 v2.0.0
 	github.com/skip-mev/petri/node/v2 v2.0.1
 	github.com/skip-mev/petri/provider/v2 v2.0.0
-	github.com/skip-mev/petri/types/v2 v2.0.1
+	github.com/skip-mev/petri/types/v2 v2.0.2
 	github.com/skip-mev/slinky v0.1.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.26.0
+	github.com/informalsystems/tm-load-test v1.3.0
 )
 
 require (
@@ -160,7 +162,10 @@ require (
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
-	github.com/skip-mev/petri/util/v2 v2.0.1 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/skip-mev/petri/cosmosutil/v2 v2.1.0 // indirect
+	github.com/skip-mev/petri/util/v2 v2.0.2 // indirect
 	github.com/skip-mev/petri/wallet/v2 v2.0.1 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
