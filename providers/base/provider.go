@@ -113,7 +113,7 @@ func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
 	return cpy
 }
 
-// Type returns the type of data handler the provider uses
+// Type returns the type of data handler the provider uses.
 func (p *Provider[K, V]) Type() providertypes.ProviderType {
 	switch {
 	case p.apiCfg.Enabled && p.api != nil:

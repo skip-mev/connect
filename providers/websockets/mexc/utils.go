@@ -21,6 +21,12 @@ const (
 	// specifies that this should be done every 30 seconds, however, the actual threshold should be
 	// slightly lower than this to account for network latency.
 	DefaultPingInterval = 20 * time.Second
+
+	// MaxSubscriptionsPerConnection is the maximum number of subscriptions that can be made
+	// per connection.
+	//
+	// ref: https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams
+	MaxSubscriptionsPerConnection = 30
 )
 
 var (

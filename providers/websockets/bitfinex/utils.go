@@ -11,6 +11,8 @@ const (
 
 	// URLProd is the public BitFinex Websocket URL.
 	URLProd = "wss://api-pub.bitfinex.com/ws/2"
+
+	MaxSubscriptionsPerConnection = 30
 )
 
 var (

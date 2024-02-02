@@ -51,7 +51,8 @@ const (
 	DefaultMaxReadErrorCount = 100
 
 	// DefaultMaxSubscriptionsPerConnection is the default maximum subscriptions
-	// an provider can handle per-connection.
+	// a provider can handle per-connection.  When this value is 0, one connection
+	// will handle all subscriptions.
 	DefaultMaxSubscriptionsPerConnection = 0
 )
 

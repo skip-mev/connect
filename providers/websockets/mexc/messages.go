@@ -16,12 +16,6 @@ type (
 )
 
 const (
-	// MaxSubscriptionsPerConnection is the maximum number of subscriptions that can be made
-	// per connection.
-	//
-	// ref: https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams
-	MaxSubscriptionsPerConnection = 30
-
 	// SubscriptionMethod is the method that is sent to the MEXC websocket to subscribe to a
 	// currency pair i.e. market.
 	//
