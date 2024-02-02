@@ -25,7 +25,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 		}
 	}
 
-	// set the next Ticker to state
+	// set the next ID to state
 	k.nextCurrencyPairID.Set(ctx, gs.NextId)
 }
 

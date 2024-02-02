@@ -90,7 +90,7 @@ func TestGenesisValidation(t *testing.T) {
 			true,
 		},
 		{
-			"if any of the CurrencyPairGenesis Ticker's are duplicated - fail",
+			"if any of the CurrencyPairGenesis ID's are duplicated - fail",
 			[]types.CurrencyPairGenesis{
 				{
 					CurrencyPair: types.CurrencyPair{

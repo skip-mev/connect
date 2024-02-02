@@ -112,7 +112,7 @@ func TestHandlerMessage(t *testing.T) {
 			expErr:    false,
 		},
 		{
-			name: "price update with unknown pair Ticker",
+			name: "price update with unknown pair ID",
 			msg: func() []byte {
 				msg := bybit.TickerUpdateMessage{
 					Topic: "tickers.MOGUSDT",

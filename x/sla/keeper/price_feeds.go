@@ -21,7 +21,7 @@ func (k Keeper) SetPriceFeed(
 	return k.priceFeeds.Set(ctx, key, priceFeed)
 }
 
-// GetPriceFeed returns the price feed with the given Ticker from the x/sla module's
+// GetPriceFeed returns the price feed with the given ID from the x/sla module's
 // state.
 func (k Keeper) GetPriceFeed(
 	ctx sdk.Context,
@@ -80,7 +80,7 @@ func (k Keeper) RemovePriceFeedsBySLA(ctx sdk.Context, slaID string) error {
 }
 
 // ContainsPriceFeed returns true if the x/sla module's state contains
-// a price feed with the given sla Ticker, currency pair, and validator.
+// a price feed with the given sla ID, currency pair, and validator.
 func (k Keeper) ContainsPriceFeed(
 	ctx sdk.Context,
 	slaID string,
