@@ -38,18 +38,37 @@ var (
 		Name:       "api",
 	}
 	wsCfg = config.WebSocketConfig{
-		Enabled:             true,
-		MaxBufferSize:       10,
-		ReconnectionTimeout: time.Millisecond * 500,
-		WSS:                 "wss:localhost:8080",
-		Name:                "websocket",
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
+		Enabled:                       true,
+		MaxBufferSize:                 10,
+		ReconnectionTimeout:           time.Millisecond * 500,
+		WSS:                           "wss:localhost:8080",
+		Name:                          "websocket",
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
+
+	wsCfgMultiplex = config.WebSocketConfig{
+		Enabled:                       true,
+		MaxBufferSize:                 10,
+		ReconnectionTimeout:           time.Millisecond * 500,
+		WSS:                           "wss:localhost:8080",
+		Name:                          "websocket",
+		ReadBufferSize:                config.DefaultReadBufferSize,
+		WriteBufferSize:               config.DefaultWriteBufferSize,
+		HandshakeTimeout:              config.DefaultHandshakeTimeout,
+		EnableCompression:             config.DefaultEnableCompression,
+		ReadTimeout:                   config.DefaultReadTimeout,
+		WriteTimeout:                  config.DefaultWriteTimeout,
+		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+		MaxSubscriptionsPerConnection: 1,
+	}
+
 	pairs = []oracletypes.CurrencyPair{
 		{
 			Base:  "BTC",
@@ -125,6 +144,25 @@ func TestStart(t *testing.T) {
 		require.Equal(t, context.Canceled, err)
 	})
 
+	t.Run("closes on cancel with websocket multiplex", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+
+		handler := wshandlermocks.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+		provider, err := base.NewProvider(
+			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
+			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfgMultiplex),
+			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+		)
+		require.NoError(t, err)
+
+		err = provider.Start(ctx)
+		require.Equal(t, context.Canceled, err)
+	})
+
 	t.Run("closes with deadline with websocket", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
@@ -147,6 +185,29 @@ func TestStart(t *testing.T) {
 		err = provider.Start(ctx)
 		require.Equal(t, context.DeadlineExceeded, err)
 	})
+
+	t.Run("closes with deadline with websocket multiplex", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
+		defer cancel()
+
+		handler := wshandlermocks.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
+			<-ctx.Done()
+			return ctx.Err()
+		}()).Maybe()
+
+		provider, err := base.NewProvider(
+			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
+			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfgMultiplex),
+			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+		)
+		require.NoError(t, err)
+
+		err = provider.Start(ctx)
+		require.Equal(t, context.DeadlineExceeded, err)
+	})
 }
 
 func TestWebSocketProvider(t *testing.T) {
@@ -154,6 +215,7 @@ func TestWebSocketProvider(t *testing.T) {
 		name           string
 		handler        func() wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int]
 		pairs          []oracletypes.CurrencyPair
+		cfg            config.WebSocketConfig
 		expectedPrices map[oracletypes.CurrencyPair]*big.Int
 	}{
 		{
@@ -167,6 +229,7 @@ func TestWebSocketProvider(t *testing.T) {
 				)
 			},
 			pairs:          []oracletypes.CurrencyPair{},
+			cfg:            wsCfg,
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
 		{
@@ -192,6 +255,7 @@ func TestWebSocketProvider(t *testing.T) {
 			pairs: []oracletypes.CurrencyPair{
 				pairs[0],
 			},
+			cfg: wsCfg,
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
@@ -233,6 +297,7 @@ func TestWebSocketProvider(t *testing.T) {
 			pairs: []oracletypes.CurrencyPair{
 				pairs[0],
 			},
+			cfg: wsCfg,
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
@@ -266,6 +331,42 @@ func TestWebSocketProvider(t *testing.T) {
 				pairs[0],
 				pairs[1],
 			},
+			cfg: wsCfg,
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+				pairs[0]: big.NewInt(100),
+				pairs[1]: big.NewInt(200),
+			},
+		},
+		{
+			name: "can fetch multiple prices multiplexed",
+			handler: func() wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: respTime,
+					},
+					pairs[1]: {
+						Value:     big.NewInt(200),
+						Timestamp: respTime,
+					},
+				}
+
+				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse(resolved, nil),
+				}
+
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+					t,
+					time.Second,
+					logger,
+					responses,
+				)
+			},
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+				pairs[1],
+			},
+			cfg: wsCfgMultiplex,
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 				pairs[1]: big.NewInt(200),
@@ -292,6 +393,7 @@ func TestWebSocketProvider(t *testing.T) {
 			pairs: []oracletypes.CurrencyPair{
 				pairs[0],
 			},
+			cfg:            wsCfg,
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
 		{
@@ -306,6 +408,22 @@ func TestWebSocketProvider(t *testing.T) {
 			pairs: []oracletypes.CurrencyPair{
 				pairs[0],
 			},
+			cfg:            wsCfg,
+			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
+		},
+		{
+			name: "continues restarting if the query handler returns multiplexed",
+			handler: func() wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int] {
+				handler := wshandlermocks.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+				handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("no gib price updates")).Maybe()
+
+				return handler
+			},
+			pairs: []oracletypes.CurrencyPair{
+				pairs[0],
+			},
+			cfg:            wsCfgMultiplex,
 			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
 		},
 	}
@@ -313,9 +431,9 @@ func TestWebSocketProvider(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-				base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
+				base.WithName[oracletypes.CurrencyPair, *big.Int](tc.cfg.Name),
 				base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
-				base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
+				base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](tc.cfg),
 				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
 				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
 			)
