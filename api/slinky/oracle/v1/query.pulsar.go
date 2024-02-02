@@ -2966,7 +2966,7 @@ type GetPriceResponse struct {
 	// Decimals represents the number of decimals that the quote-price is
 	// represented in.
 	Decimals int64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
-	// Ticker represents the identifier for the CurrencyPair.
+	// ID represents the identifier for the CurrencyPair.
 	Id uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty"`
 }
 

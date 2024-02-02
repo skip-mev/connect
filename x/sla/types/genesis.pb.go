@@ -1094,7 +1094,7 @@ func (m *PriceFeedSLA) Unmarshal(dAtA []byte) error {
 			}
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1349,7 +1349,7 @@ func (m *PriceFeed) Unmarshal(dAtA []byte) error {
 			}
 		case 7:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {

@@ -347,7 +347,7 @@ type QueryClient interface {
 	// GetAllSLAs returns all SLAs that the module is currently enforcing.
 	GetAllSLAs(ctx context.Context, in *GetAllSLAsRequest, opts ...grpc.CallOption) (*GetAllSLAsResponse, error)
 	// GetPriceFeeds returns all price feeds that the module is currently
-	// tracking. This request type inputs the SLA Ticker to query price feeds for.
+	// tracking. This request type inputs the SLA ID to query price feeds for.
 	GetPriceFeeds(ctx context.Context, in *GetPriceFeedsRequest, opts ...grpc.CallOption) (*GetPriceFeedsResponse, error)
 	// Params returns the current SLA module parameters.
 	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
@@ -393,7 +393,7 @@ type QueryServer interface {
 	// GetAllSLAs returns all SLAs that the module is currently enforcing.
 	GetAllSLAs(context.Context, *GetAllSLAsRequest) (*GetAllSLAsResponse, error)
 	// GetPriceFeeds returns all price feeds that the module is currently
-	// tracking. This request type inputs the SLA Ticker to query price feeds for.
+	// tracking. This request type inputs the SLA ID to query price feeds for.
 	GetPriceFeeds(context.Context, *GetPriceFeedsRequest) (*GetPriceFeedsResponse, error)
 	// Params returns the current SLA module parameters.
 	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
@@ -929,7 +929,7 @@ func (m *GetPriceFeedsRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {

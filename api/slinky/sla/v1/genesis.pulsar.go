@@ -2,11 +2,11 @@
 package slav1
 
 import (
+	v1 "github.com/skip-mev/slinky/api/slinky/oracle/v1"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	v1 "github.com/skip-mev/slinky/api/slinky/oracle/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -2750,7 +2750,7 @@ type PriceFeedSLA struct {
 	MinimumBlockUpdates uint64 `protobuf:"varint,4,opt,name=minimum_block_updates,json=minimumBlockUpdates,proto3" json:"minimum_block_updates,omitempty"`
 	// Frequency is the frequency at which we will check the SLA.
 	Frequency uint64 `protobuf:"varint,5,opt,name=frequency,proto3" json:"frequency,omitempty"`
-	// Ticker is the unique identifier for the SLA.
+	// ID is the unique identifier for the SLA.
 	Id string `protobuf:"bytes,6,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -2837,7 +2837,7 @@ type PriceFeed struct {
 	// MaximumViableWindow represents the maximum number of blocks that can be
 	// represented by the bit map.
 	MaximumViableWindow uint64 `protobuf:"varint,6,opt,name=maximum_viable_window,json=maximumViableWindow,proto3" json:"maximum_viable_window,omitempty"`
-	// Ticker corresponds to the SLA Ticker that this price feed corresponds to.
+	// ID corresponds to the SLA ID that this price feed corresponds to.
 	Id string `protobuf:"bytes,7,opt,name=id,proto3" json:"id,omitempty"`
 }
 

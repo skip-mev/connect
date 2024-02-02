@@ -29,7 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
 	// AddSLA defines a method for adding a new SLAs to the store. Note, this will
-	// overwrite any existing SLA with the same Ticker.
+	// overwrite any existing SLA with the same ID.
 	AddSLAs(ctx context.Context, in *MsgAddSLAs, opts ...grpc.CallOption) (*MsgAddSLAsResponse, error)
 	// RemoveSLA defines a method for removing existing SLAs from the store. Note,
 	// this will not panic if the SLA does not exist.
@@ -78,7 +78,7 @@ func (c *msgClient) Params(ctx context.Context, in *MsgParams, opts ...grpc.Call
 // for forward compatibility
 type MsgServer interface {
 	// AddSLA defines a method for adding a new SLAs to the store. Note, this will
-	// overwrite any existing SLA with the same Ticker.
+	// overwrite any existing SLA with the same ID.
 	AddSLAs(context.Context, *MsgAddSLAs) (*MsgAddSLAsResponse, error)
 	// RemoveSLA defines a method for removing existing SLAs from the store. Note,
 	// this will not panic if the SLA does not exist.
