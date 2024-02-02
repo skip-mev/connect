@@ -98,6 +98,8 @@ func (s *KeeperTestSuite) TestGetPrice() {
 	// init genesis
 	s.oracleKeeper.InitGenesis(s.ctx, *types.NewGenesisState(cpg, 3))
 
+	testCP := types.CurrencyPair{Base: "AA", Quote: "ETHEREUM", Decimals: types.EthereumDecimals}
+
 	tcs := []struct {
 		name       string
 		req        *types.GetPriceRequest
@@ -112,24 +114,14 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		},
 		{
 			"if the currency pair selector is nil, expect failure - fail",
-			&types.GetPriceRequest{
-				CurrencyPairSelector: nil,
-			},
 			nil,
-			false,
-		},
-		{
-			"if the currency pair selector's currency pair is nil, expect failure - fail",
-			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: nil},
-			},
 			nil,
 			false,
 		},
 		{
 			"if the query is for a currency pair that does not exist fail - fail",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "DD/EE/8"},
+				CurrencyPairId: "DD/EE/8",
 			},
 			nil,
 			false,
@@ -137,7 +129,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency-pair with no price, only the nonce (0) is returned - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "CC/BB/8"},
+				CurrencyPairId: "CC/BB/8",
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,
@@ -149,7 +141,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &types.CurrencyPair{Base: "AA", Quote: "ETHEREUM", Decimals: types.EthereumDecimals}},
+				CurrencyPairId: testCP.String(),
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
