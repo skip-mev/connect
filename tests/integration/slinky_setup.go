@@ -296,12 +296,12 @@ func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter strin
 	randStr := rand.Str(10)
 	prop, err := chain.BuildProposal(msgs, randStr, randStr, randStr, deposit.String(), submitter, false)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error building proposal: %w", err)
 	}
 
 	// submit the proposal
 	tx, err := chain.SubmitProposal(context.Background(), submitter, prop)
-	return tx.ProposalID, err
+	return tx.ProposalID, fmt.Errorf("error submitting proposal: %w", err)
 }
 
 // PassProposal given a proposal id, vote for the proposal and wait for it to pass

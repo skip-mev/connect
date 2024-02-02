@@ -116,7 +116,7 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 	// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
 	// 30 / 45 = 0 -> need one sub handler
 	if maxSubsPerConn > 0 {
-		// case where we will split Ticker's across sub handlers
+		// case where we will split ID's across sub handlers
 		numSubHandlers := (len(p.ids) / maxSubsPerConn) + 1
 		wg.SetLimit(numSubHandlers)
 

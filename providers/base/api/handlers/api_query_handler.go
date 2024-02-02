@@ -36,7 +36,7 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 // by using the APIDataHandler and RequestHandler. All responses are sent to the
 // response channel. In the case where the APIQueryHandler is atomic, the handler
 // will make a single request for all IDs. If the APIQueryHandler is not
-// atomic, the handler will make a request for each Ticker in a separate go routine.
+// atomic, the handler will make a request for each ID in a separate go routine.
 type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
@@ -126,7 +126,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	h.logger.Debug("setting concurrency limit", zap.Int("limit", cap(responseCh)))
 
 	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
-	// we need to make a request for each Ticker.
+	// we need to make a request for each ID.
 	var tasks []func() error
 	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
