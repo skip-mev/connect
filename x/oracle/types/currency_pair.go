@@ -53,7 +53,7 @@ func (cp CurrencyPair) Ticker() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
-// CurrencyPairStringToID takes a CurrencyPair string and returns the Ticker representation of it.
+// CurrencyPairStringToID takes a CurrencyPair string and returns the ID representation of it.
 func CurrencyPairStringToID(cpStr string) (string, error) {
 	cp, err := CurrencyPairFromString(cpStr)
 	if err != nil {
@@ -109,7 +109,7 @@ func CurrencyPairFromID(s string, decimals int64) (CurrencyPair, error) {
 	return cp, cp.ValidateBasic()
 }
 
-// NewCurrencyPairState returns a new CurrencyPairState given an Ticker, nonce, and QuotePrice.
+// NewCurrencyPairState returns a new CurrencyPairState given an ID, nonce, and QuotePrice.
 func NewCurrencyPairState(id, nonce uint64, quotePrice *QuotePrice, decimals int64) CurrencyPairState {
 	return CurrencyPairState{
 		Id:       id,

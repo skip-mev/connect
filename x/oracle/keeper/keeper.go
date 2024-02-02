@@ -207,8 +207,8 @@ func (k Keeper) CreateCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) error
 	return k.currencyPairs.Set(ctx, cp.Ticker(), state)
 }
 
-// GetIDForCurrencyPair returns the Ticker for a given CurrencyPair. If the CurrencyPair does not exist, return 0, false, if
-// it does, return true and the Ticker.
+// GetIDForCurrencyPair returns the ID for a given CurrencyPair. If the CurrencyPair does not exist, return 0, false, if
+// it does, return true and the ID.
 func (k Keeper) GetIDForCurrencyPair(ctx sdk.Context, cpID string) (uint64, bool) {
 	cps, err := k.currencyPairs.Get(ctx, cpID)
 	if err != nil {
@@ -221,7 +221,7 @@ func (k Keeper) GetIDForCurrencyPair(ctx sdk.Context, cpID string) (uint64, bool
 // GetCurrencyPairFromID returns the CurrencyPair for a given ID. If the ID does not exist, return an error and an empty CurrencyPair.
 // Otherwise, return the currency pair and no error.
 func (k Keeper) GetCurrencyPairFromID(ctx sdk.Context, id uint64) (types.CurrencyPair, bool) {
-	// use the Ticker index to match the given ID
+	// use the ID index to match the given ID
 	ids, err := k.idIndex.MatchExact(ctx, id)
 	if err != nil {
 		return types.CurrencyPair{}, false

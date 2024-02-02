@@ -259,7 +259,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	})
 
 	var unusedID uint64
-	s.Run("test that removing a currency-pair removes the Ticker for that currency-pair", func() {
+	s.Run("test that removing a currency-pair removes the ID for that currency-pair", func() {
 		var ok bool
 		unusedID, ok = s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2.Ticker())
 		require.True(s.T(), ok)
