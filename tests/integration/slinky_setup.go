@@ -281,9 +281,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 
 	// query the currency pairs
 	res, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{
-			CurrencyPair: &cp,
-		},
+		CurrencyPairId: cp.String(),
 	})
 	if err != nil {
 		return nil, 0, err
@@ -292,11 +290,11 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 	return res.Price, int64(res.Nonce), nil
 }
 
-// Submit proposal creates and submits a proposal to the chain
+// SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
-	rand := rand.Str(10)
-	prop, err := chain.BuildProposal(msgs, rand, rand, rand, deposit.String(), submitter, false)
+	randStr := rand.Str(10)
+	prop, err := chain.BuildProposal(msgs, randStr, randStr, randStr, deposit.String(), submitter, false)
 	if err != nil {
 		return "", err
 	}

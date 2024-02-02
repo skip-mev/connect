@@ -47,7 +47,7 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 	}
 }
 
-func DefaultOracleConfig(node *cosmos.ChainNode) oracleconfig.OracleConfig {
+func DefaultOracleConfig(_ *cosmos.ChainNode) oracleconfig.OracleConfig {
 	// Create the oracle config
 	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
@@ -165,7 +165,7 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 		oCfg := DefaultOracleConfig(node)
 
 		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg)
-		s.Require().NoError(RestartOracle(node))
+		RestartOracle(node)
 	}
 
 	if len(resp.CurrencyPairs) == 0 {
@@ -305,7 +305,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp)
 
 			SetOracleConfigsOnOracle(oracle, oracleConfig)
-			s.Require().NoError(RestartOracle(node))
+			RestartOracle(node)
 		}
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
@@ -534,7 +534,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
-		s.Require().NoError(RestartOracle(node))
+		RestartOracle(node)
 	}
 
 	s.Run("all oracles running for multiple price feeds", func() {
@@ -618,7 +618,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.CurrencyPairs = append(oracleConfig.CurrencyPairs, cp3)
 
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
-		s.Require().NoError(RestartOracle(node))
+		RestartOracle(node)
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
@@ -663,9 +663,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp oracletypes.CurrencyPair) (uint64, error) {
 	// query for the given currency pair
 	resp, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{
-			CurrencyPair: &cp,
-		},
+		CurrencyPairId: cp.String(),
 	})
 	if err != nil {
 		return 0, err
