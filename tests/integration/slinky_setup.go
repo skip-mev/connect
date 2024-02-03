@@ -52,6 +52,7 @@ var (
 )
 
 // construct the network from a spec
+
 // ChainBuilderFromChainSpec creates an interchaintest chain builder factory given a ChainSpec
 // and returns the associated chain
 func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *cosmos.CosmosChain {
@@ -72,7 +73,7 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 	return cosmosChain
 }
 
-// SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
+// SetOracleConfigsOnApp writes the oracle configuration to the given node's application config.
 func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.OracleConfig) {
 	oracle := GetOracleSideCar(node)
 
@@ -143,8 +144,9 @@ func AddSidecarToNode(node *cosmos.ChainNode, conf ibc.SidecarConfig) {
 }
 
 // spin up the network (with side-cars enabled)
-// BuildPOBInterchain creates a new Interchain testing env with the configured POB CosmosChain
-func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *interchaintest.Interchain {
+
+// BuildSlinkyInterchain creates a new Interchain testing env with the configured Slinky CosmosChain
+func BuildSlinkyInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *interchaintest.Interchain {
 	ic := interchaintest.NewInterchain()
 	ic.AddChain(chain)
 

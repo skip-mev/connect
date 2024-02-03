@@ -136,7 +136,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	})
 
 	// start the chain
-	BuildPOBInterchain(s.T(), context.Background(), s.chain)
+	BuildSlinkyInterchain(s.T(), context.Background(), s.chain)
 	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), math.NewInt(genesisAmount), s.chain)
 	s.user = users[0]
 }
@@ -220,7 +220,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
 	s.Run("Remove a currency-pair and check Prices", func() {
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.CurrencyPairString("BTC", "USD", oracletypes.DefaultDecimals)}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{"BTC/USD"}...))
 
 		// check that the currency-pair is added to state
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -240,7 +240,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 2)
 
 		// remove btc from state
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.String()}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.Ticker()}...))
 
 		// check that the currency-pair is removed from state
 		resp, err = QueryCurrencyPairs(s.chain)
