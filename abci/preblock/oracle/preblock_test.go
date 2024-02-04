@@ -17,8 +17,7 @@ import (
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
-	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
+
 	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmock "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
@@ -27,6 +26,8 @@ import (
 	"github.com/skip-mev/slinky/abci/types"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricmock "github.com/skip-mev/slinky/service/metrics/mocks"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -113,10 +114,10 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 
 	// Use the default aggregation function for testing
 	mockValidatorStore := mocks.NewValidatorStore(s.T())
-	aggregationFn := preblockmath.VoteWeightedMedianFromContext(
+	aggregationFn := voteweighted.MedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
-		preblockmath.DefaultPowerThreshold,
+		voteweighted.DefaultPowerThreshold,
 	)
 
 	// Use mock metrics

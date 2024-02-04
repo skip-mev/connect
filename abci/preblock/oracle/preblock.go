@@ -8,6 +8,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	voteaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/types"
@@ -23,14 +24,6 @@ import (
 type PreBlockHandler struct { //golint:ignore
 	logger log.Logger
 
-	// priceAggregator is responsible for aggregating prices from each validator
-	// and computing the final oracle price for each asset.
-	priceAggregator *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]
-
-	// aggregateFnWithCtx is the aggregate function parametrized by the latest
-	// state of the application.
-	aggregateFnWithCtx aggregator.AggregateFnFromContext[string, map[oracletypes.CurrencyPair]*big.Int]
-
 	// metrics is responsible for reporting / aggregating consensus-specific
 	// metrics for this validator.
 	metrics servicemetrics.Metrics
@@ -38,10 +31,6 @@ type PreBlockHandler struct { //golint:ignore
 	// keeper is the keeper for the oracle module. This is utilized to write
 	// oracle data to state.
 	keeper Keeper
-
-	// currencyPairStrategy is the strategy used for generating / retrieving
-	// price information for currency pairs.
-	currencyPairStrategy currencypair.CurrencyPairStrategy
 
 	// voteExtensionCodec is the codec used for encoding / decoding vote extensions.
 	// This is used to decode vote extensions included in transactions.
@@ -51,6 +40,9 @@ type PreBlockHandler struct { //golint:ignore
 	// commit messages. This is used to decode extended commit messages included
 	// in transactions.
 	extendedCommitCodec codec.ExtendedCommitCodec
+
+	// voteAggregator is responsible for aggregating votes from an extended commit into the canonical prices
+	voteAggregator voteaggregator.VoteAggregator
 }
 
 // NewOraclePreBlockHandler returns a new PreBlockHandler. The handler
@@ -64,19 +56,19 @@ func NewOraclePreBlockHandler(
 	veCodec codec.VoteExtensionCodec,
 	ecCodec codec.ExtendedCommitCodec,
 ) *PreBlockHandler {
-	priceAggregator := aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
-		aggregator.WithAggregateFnFromContext(aggregateFn),
+	va := voteaggregator.NewDefaultVoteAggregator(
+		logger,
+		aggregateFn,
+		strategy,
 	)
 
 	return &PreBlockHandler{
-		logger:               logger,
-		priceAggregator:      priceAggregator,
-		aggregateFnWithCtx:   aggregateFn,
-		keeper:               oracleKeeper,
-		metrics:              metrics,
-		currencyPairStrategy: strategy,
-		voteExtensionCodec:   veCodec,
-		extendedCommitCodec:  ecCodec,
+		logger:              logger,
+		keeper:              oracleKeeper,
+		metrics:             metrics,
+		voteExtensionCodec:  veCodec,
+		extendedCommitCodec: ecCodec,
+		voteAggregator:      va,
 	}
 }
 
@@ -126,7 +118,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 		// If vote extensions have been enabled, the extended commit info - which
 		// contains the vote extensions - must be included in the request.
-		votes, err := GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
+		votes, err := voteaggregator.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
 		if err != nil {
 			h.logger.Error(
 				"failed to get extended commit info from proposal",
@@ -139,7 +131,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 		}
 
 		// Aggregate all of the oracle vote extensions into a single set of prices.
-		prices, err = h.AggregateOracleVotes(ctx, votes)
+		prices, err = h.voteAggregator.AggregateOracleVotes(ctx, votes)
 		if err != nil {
 			h.logger.Error(
 				"failed to aggregate oracle votes",

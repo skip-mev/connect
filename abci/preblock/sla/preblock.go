@@ -4,7 +4,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
+	voteaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
@@ -80,7 +80,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 
 		// Retrieve all of the vote extensions that were included in the block. This
 		// returns a list of validators and the price updates that they made.
-		votes, err := oraclepreblock.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
+		votes, err := voteaggregator.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
 		if err != nil {
 			ctx.Logger().Error(
 				"failed to get extended commit info from proposal",
@@ -123,7 +123,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 // will iterate through the active set of validators, determine which currency pairs they
 // included prices for via their vote extensions, and return a mapping of each validator's
 // status updates.
-func (h *PreBlockHandler) GetUpdates(ctx sdk.Context, votes []oraclepreblock.Vote) (slakeeper.PriceFeedUpdates, error) {
+func (h *PreBlockHandler) GetUpdates(ctx sdk.Context, votes []voteaggregator.Vote) (slakeeper.PriceFeedUpdates, error) {
 	updates := slakeeper.NewPriceFeedUpdates()
 
 	// Retrieve all bonded validators which will be considered for updates.
