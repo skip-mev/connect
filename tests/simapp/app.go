@@ -87,7 +87,7 @@ const (
 var (
 	BondDenom = sdk.DefaultBondDenom
 
-	// DefaultNodeHome default home directories for the application daemon
+	// DefaultNodeHome default home directories for the application daemon.
 	DefaultNodeHome string
 
 	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -443,7 +443,7 @@ func NewSimApp(
 }
 
 // Close closes the underlying baseapp, the oracle service, and the prometheus server if required.
-// This method blocks on the closure of both the prometheus server, and the oracle-service
+// This method blocks on the closure of both the prometheus server, and the oracle-service.
 func (app *SimApp) Close() error {
 	if err := app.App.Close(); err != nil {
 		return err
@@ -462,7 +462,7 @@ func (app *SimApp) Close() error {
 	return nil
 }
 
-// Name returns the name of the App
+// Name returns the name of the App.
 func (app *SimApp) Name() string { return app.BaseApp.Name() }
 
 // LegacyAmino returns SimApp's amino codec.
@@ -486,7 +486,7 @@ func (app *SimApp) InterfaceRegistry() codectypes.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
-// TxConfig returns SimApp's TxConfig
+// TxConfig returns SimApp's TxConfig.
 func (app *SimApp) TxConfig() client.TxConfig {
 	return app.txConfig
 }
@@ -522,7 +522,7 @@ func (app *SimApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
-// SimulationManager implements the SimulationApp interface
+// SimulationManager implements the SimulationApp interface.
 func (app *SimApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }

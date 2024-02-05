@@ -24,7 +24,7 @@ import (
 const DefaultServerShutdownTimeout = 3 * time.Second
 
 // OracleServer is the base implementation of the service.OracleServer interface, this is meant to
-// serve requests from a remote OracleClient
+// serve requests from a remote OracleClient.
 type OracleServer struct { //nolint
 	types.UnimplementedOracleServer
 
@@ -68,7 +68,7 @@ func NewOracleServer(o oracle.Oracle, logger *zap.Logger) *OracleServer {
 	return os
 }
 
-// routeRequest determines if the incoming http request is a grpc or http request and routes to the proper handler
+// routeRequest determines if the incoming http request is a grpc or http request and routes to the proper handler.
 func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
 	if r.ProtoMajor == 2 && strings.HasPrefix(
 		r.Header.Get("Content-Type"), "application/grpc") {
@@ -154,7 +154,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 }
 
 // Prices calls the underlying oracle's implementation of GetPrices. It defers to the ctx in the request, and errors if the context is cancelled
-// for any reason, or if the oracle errors
+// for any reason, or if the oracle errors.
 func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesRequest) (*types.QueryPricesResponse, error) {
 	// check that the request is non-nil
 	if req == nil {
@@ -195,14 +195,14 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 	}
 }
 
-// Close closes the underlying oracle server, and blocks until all open requests have been satisfied
+// Close closes the underlying oracle server, and blocks until all open requests have been satisfied.
 func (os *OracleServer) Close() error {
 	// close + close server if necessary
 	os.Closer.Close()
 	return nil
 }
 
-// Done returns a channel that is closed when the oracle server is closed
+// Done returns a channel that is closed when the oracle server is closed.
 func (os *OracleServer) Done() <-chan struct{} {
 	return os.Closer.Done()
 }

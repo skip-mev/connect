@@ -11,7 +11,7 @@ const (
 	ProviderLabel = "provider"
 	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
 	ProviderTypeLabel = "type"
-	// PairIDLabel is the
+	// PairIDLabel is the.
 	PairIDLabel = "pair"
 	// OracleSubsystem is a subsystem shared by all metrics exposed by this
 	// package.

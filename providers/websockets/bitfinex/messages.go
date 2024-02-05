@@ -109,7 +109,7 @@ func NewSubscribeMessages(symbols []string) ([]handlers.WebsocketEncodedMessage,
 	return msgs, nil
 }
 
-// NewSubscribeMessage creates a new subscribe message given the ticker symbol
+// NewSubscribeMessage creates a new subscribe message given the ticker symbol.
 func NewSubscribeMessage(symbol string) (handlers.WebsocketEncodedMessage, error) {
 	return json.Marshal(SubscribeMessage{
 		BaseMessage: BaseMessage{

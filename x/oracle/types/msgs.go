@@ -9,7 +9,7 @@ var (
 	_ sdk.Msg = &MsgRemoveCurrencyPairs{}
 )
 
-// NewMsgAddCurrencyPairs returns a new message from a set of currency-pairs and an authority
+// NewMsgAddCurrencyPairs returns a new message from a set of currency-pairs and an authority.
 func NewMsgAddCurrencyPairs(authority string, cps []CurrencyPair) MsgAddCurrencyPairs {
 	return MsgAddCurrencyPairs{
 		Authority:     authority,
@@ -26,7 +26,7 @@ func (m MsgAddCurrencyPairs) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic determines whether or not the information in the message is formatted correctly, specifically
-// whether the authority is a valid acc-address, and that each CurrencyPair in the message is formatted correctly
+// whether the authority is a valid acc-address, and that each CurrencyPair in the message is formatted correctly.
 func (m MsgAddCurrencyPairs) ValidateBasic() error {
 	// validate authority address
 	_, err := sdk.AccAddressFromBech32(m.Authority)
@@ -44,7 +44,7 @@ func (m MsgAddCurrencyPairs) ValidateBasic() error {
 	return nil
 }
 
-// NewMsgRemoveCurrencyPairs returns a new message to remove a set of currency-pairs from the x/oracle module's state
+// NewMsgRemoveCurrencyPairs returns a new message to remove a set of currency-pairs from the x/oracle module's state.
 func NewMsgRemoveCurrencyPairs(authority string, currencyPairIds []string) MsgRemoveCurrencyPairs {
 	return MsgRemoveCurrencyPairs{
 		Authority:       authority,
@@ -61,7 +61,7 @@ func (m MsgRemoveCurrencyPairs) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic determines whether or not the information in the message is valid, specifically
-// whether the authority is a valid acc-address, and that each CurrencyPairID in the message is formatted correctly
+// whether the authority is a valid acc-address, and that each CurrencyPairID in the message is formatted correctly.
 func (m MsgRemoveCurrencyPairs) ValidateBasic() error {
 	// validate authority address
 	_, err := sdk.AccAddressFromBech32(m.Authority)

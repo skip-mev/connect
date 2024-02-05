@@ -15,6 +15,7 @@ linters:
     - gosec
     - gosimple
     - govet
+    - godot
     - ineffassign
     - misspell
     - nakedret

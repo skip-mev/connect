@@ -11,7 +11,7 @@ import (
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 )
 
-// msgServer is the default implementation of the x/alerts MsgService
+// msgServer is the default implementation of the x/alerts MsgService.
 type msgServer struct {
 	k Keeper
 }
@@ -191,7 +191,7 @@ func boolToConclusionStatus(status bool) ConclusionStatus {
 }
 
 // UpdateParams is the handler for the UpdateParams RPC. This method expects a MsgUpdateParams message. This method fails if the msg fails validation
-// or if the provided signer is not the authority of this module. Otherwise, the given params are set to state
+// or if the provided signer is not the authority of this module. Otherwise, the given params are set to state.
 func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	// fail for nil requests
 	if req == nil {

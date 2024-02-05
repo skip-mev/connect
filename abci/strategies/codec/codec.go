@@ -45,7 +45,7 @@ func NewDefaultVoteExtensionCodec() *DefaultVoteExtensionCodec {
 }
 
 // DefaultVoteExtensionCodec is the default implementation of VoteExtensionCodec. It uses the
-// vanilla implementations of Unmarshal / Marshal under the hood
+// vanilla implementations of Unmarshal / Marshal under the hood.
 type DefaultVoteExtensionCodec struct{}
 
 func (codec *DefaultVoteExtensionCodec) Encode(ve vetypes.OracleVoteExtension) ([]byte, error) {
@@ -158,7 +158,7 @@ func (codec *CompressionVoteExtensionCodec) Decode(bz []byte) (vetypes.OracleVot
 }
 
 // DefaultExtendedCommitCodec is the default implementation of ExtendedCommitCodec. It uses the
-// vanilla implementations of Unmarshal / Marshal under the hood
+// vanilla implementations of Unmarshal / Marshal under the hood.
 type DefaultExtendedCommitCodec struct{}
 
 // NewDefaultExtendedCommitCodec returns a new DefaultExtendedCommitCodec.
