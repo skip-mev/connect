@@ -37,20 +37,114 @@ var oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to wr
 // as they are made to this file.
 var LocalConfig = config.OracleConfig{
 	// -----------------------------------------------------------	//
-	// --------------------All Currency Pairs---------------------	//
+	// -----------------Aggregate Market Config-------------------	//
 	// -----------------------------------------------------------	//
-	CurrencyPairs: []oracletypes.CurrencyPair{
-		oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-		oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-		oracletypes.NewCurrencyPair("ATOM", "USD"),
-		oracletypes.NewCurrencyPair("SOLANA", "USD"),
-		oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-		oracletypes.NewCurrencyPair("AVAX", "USD"),
-		oracletypes.NewCurrencyPair("DYDX", "USD"),
-		oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-		oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+	Market: config.AggregateMarketConfig{
+		Feeds: map[string]config.FeedConfig{
+			"BITCOIN/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"ETHEREUM/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ATOM/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+			},
+			"SOLANA/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"CELESTIA/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"AVAX/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+			},
+			"DYDX/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"OSMOSIS/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+		},
+		AggregatedFeeds: map[string][][]config.Conversion{
+			"BITCOIN/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"ETHEREUM/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"ATOM/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"SOLANA/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"CELESTIA/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"AVAX/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"DYDX/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"ETHEREUM/BITCOIN": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+						Invert:       false,
+					},
+				},
+			},
+			"OSMOSIS/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+		},
 	},
-	Production: true,
+	Production: false,
 	// -----------------------------------------------------------	//
 	// ----------------------Metrics Config-----------------------	//
 	// -----------------------------------------------------------	//
