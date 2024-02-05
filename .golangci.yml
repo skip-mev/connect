@@ -1,7 +1,6 @@
 run:
   tests: true
   timeout: 10m
-  sort-results: true
   allow-parallel-runners: true
   concurrency: 4
 
@@ -54,6 +53,5 @@ linters-settings:
     suggest-new: true
   nolintlint:
     allow-unused: false
-    allow-leading-space: true
     require-explanation: false
     require-specific: false
