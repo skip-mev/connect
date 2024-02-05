@@ -17,6 +17,17 @@ import (
 //     AggregatedFeeds field. If there are multiple convertable feeds for a given currency
 //     pair, calculate a median price for each final currency pair, weighted by the
 //     weights of the convertable feeds.
+//
+// For example, the oracle may be configured with the feeds:
+//   - BTC/USDT
+//   - USDT/USD
+//   - BTC/USDC
+//   - USDC/USD
+//
+// The aggregated feeds may be:
+//   - BTC/USD: (calculate a median price from the following convertable markets)
+//     1. BTC/USDT -> USDT/USD = BTC/USD
+//     2. BTC/USDC -> USDC/USD = BTC/USD
 type AggregateMarketConfig struct {
 	// Feeds is a map of all of the price feeds that the oracle will fetch prices for along
 	// with the resolution configurations for each feed.
@@ -50,7 +61,7 @@ type Conversion struct {
 }
 
 // GetCurrencyPairs returns the set of currency pairs in the aggregate market config.
-func (c AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
+func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
 	var currencyPairs []oracletypes.CurrencyPair
 
 	for _, cpConfig := range c.Feeds {
@@ -61,7 +72,7 @@ func (c AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
 }
 
 // ValidateBasic performs basic validation on the AggregateMarketConfig.
-func (c AggregateMarketConfig) ValidateBasic() error {
+func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Ensure that the feeds are not empty.
 	if len(c.Feeds) == 0 {
 		return fmt.Errorf("no price feeds provided")
@@ -122,7 +133,7 @@ func (c AggregateMarketConfig) ValidateBasic() error {
 }
 
 // ValidateBasic performs basic validation on the FeedConfig.
-func (c FeedConfig) ValidateBasic() error {
+func (c *FeedConfig) ValidateBasic() error {
 	if err := c.CurrencyPair.ValidateBasic(); err != nil {
 		return err
 	}

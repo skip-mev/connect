@@ -37,7 +37,7 @@ var oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to wr
 // as they are made to this file.
 var LocalConfig = config.OracleConfig{
 	// -----------------------------------------------------------	//
-	// --------------------Agg Market Config---------------------	//
+	// -----------------Aggregate Market Config-------------------	//
 	// -----------------------------------------------------------	//
 	Market: config.AggregateMarketConfig{
 		Feeds: map[string]config.FeedConfig{
