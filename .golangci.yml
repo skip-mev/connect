@@ -23,6 +23,8 @@ linters:
     - revive
     - stylecheck
     - typecheck
+    - thelper
+    - tenv
     - unconvert
     - unused
     # - errcheck

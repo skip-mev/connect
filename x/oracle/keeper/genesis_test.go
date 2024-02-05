@@ -109,6 +109,8 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 }
 
 func catchPanic(t *testing.T, k keeper.Keeper, ctx sdk.Context, gs types.GenesisState) {
+	t.Helper()
+
 	defer func() {
 		err := recover()
 		assert.NotNil(t, err)
