@@ -167,7 +167,7 @@ test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
 
 test-bench: tidy
-	@go test -run  ^$ -bench -count=$(BENCHMARK_ITERS)
+		@go test $(shell go list ./... | grep -v tests/)  -run ^$ -bench -count=$(BENCHMARK_ITERS)
 
 test-cover: tidy
 	@echo Running unit tests and creating coverage report...
