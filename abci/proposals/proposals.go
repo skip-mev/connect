@@ -9,21 +9,11 @@ import (
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
-	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
-)
-
-const (
-	// NumInjectedTxs is the number of transactions that were injected into
-	// the proposal but are not actual transactions. In this case, the oracle
-	// info is injected into the proposal but should be ignored by the application.
-	NumInjectedTxs = 1
-
-	// OracleInfoIndex is the index of the oracle info in the proposal.
-	OracleInfoIndex = 0
 )
 
 // The proposalhandler is responsible primarily for:
@@ -108,12 +98,12 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				"slinky prepare proposal latency", (totalLatency - wrappedPrepareProposalLatency).Seconds(),
 			)
 
-			types.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
+			slinkyabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedPrepareProposalLatency, err, servicemetrics.PrepareProposal)
 		}()
 
 		if req == nil {
 			h.logger.Error("PrepareProposalHandler received a nil request")
-			err = types.NilRequestError{
+			err = slinkyabci.NilRequestError{
 				Handler: servicemetrics.PrepareProposal,
 			}
 			return nil, err
@@ -154,7 +144,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"commit_info", extInfo,
 					"err", err,
 				)
-				err = types.CodecError{
+				err = slinkyabci.CodecError{
 					Err: err,
 				}
 
@@ -181,7 +171,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 		wrappedPrepareProposalLatency = time.Since(wrappedPrepareProposalStartTime)
 		if err != nil {
 			h.logger.Error("failed to prepare proposal", "err", err)
-			err = types.WrappedHandlerError{
+			err = slinkyabci.WrappedHandlerError{
 				Handler: servicemetrics.PrepareProposal,
 				Err:     err,
 			}
@@ -251,13 +241,13 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				"wrapped prepare proposal latency", wrappedProcessProposalLatency.Seconds(),
 				"slinky prepare proposal latency", (totalLatency - wrappedProcessProposalLatency).Seconds(),
 			)
-			types.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
+			slinkyabci.RecordLatencyAndStatus(h.metrics, totalLatency-wrappedProcessProposalLatency, err, servicemetrics.ProcessProposal)
 		}()
 
 		// this should never happen, but just in case
 		if req == nil {
 			h.logger.Error("ProcessProposalHandler received a nil request")
-			err = types.NilRequestError{
+			err = slinkyabci.NilRequestError{
 				Handler: servicemetrics.ProcessProposal,
 			}
 			return nil, err
@@ -274,21 +264,21 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 
 		if voteExtensionsEnabled {
 			// Ensure that the commit info was correctly injected into the proposal.
-			if len(req.Txs) < NumInjectedTxs {
+			if len(req.Txs) < slinkyabci.NumInjectedTxs {
 				h.logger.Error("failed to process proposal: missing commit info", "num_txs", len(req.Txs))
-				err = types.MissingCommitInfoError{}
+				err = slinkyabci.MissingCommitInfoError{}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
 
-			extCommitBz := req.Txs[OracleInfoIndex]
+			extCommitBz := req.Txs[slinkyabci.OracleInfoIndex]
 
 			// Validate the vote extensions included in the proposal.
 			var extInfo cometabci.ExtendedCommitInfo
 			extInfo, err = h.extendedCommitCodec.Decode(extCommitBz)
 			if err != nil {
 				h.logger.Error("failed to unmarshal commit info", "err", err)
-				err = types.CodecError{
+				err = slinkyabci.CodecError{
 					Err: err,
 				}
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
@@ -314,14 +304,14 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			h.metrics.ObserveMessageSize(servicemetrics.ExtendedCommit, len(extCommitBz))
 
 			// Process the transactions in the proposal with the oracle data removed.
-			req.Txs = req.Txs[NumInjectedTxs:]
+			req.Txs = req.Txs[slinkyabci.NumInjectedTxs:]
 		}
 
 		// call the wrapped process-proposal
 		wrappedProcessProposalStartTime := time.Now()
 		resp, err = h.processProposalHandler(ctx, req)
 		if err != nil {
-			err = types.WrappedHandlerError{
+			err = slinkyabci.WrappedHandlerError{
 				Handler: servicemetrics.ProcessProposal,
 				Err:     err,
 			}
