@@ -69,7 +69,7 @@ func GetOracleVotes(
 // VoteAggregator is an interface that defines the methods for aggregating oracle votes into a set of prices.
 // This object holds both the aggregated price resulting from a given set of votes, as well as the prices
 // reported by each validator.
-// 
+//
 //go:generate mockery --name VoteAggregator --filename mock_vote_aggregator.go
 type VoteAggregator interface {
 	// AggregateOracleVotes ingresses vote information which contains all of the
