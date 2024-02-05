@@ -37,6 +37,7 @@ linters:
     - typecheck
     - thelper
     - tenv
+    - tparallel
     - unconvert
     - unused
     # Detect the possibility to use variables/constants from stdlib.
