@@ -16,7 +16,7 @@ HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
 COVER_FILE ?= cover.out
-BENCHMARK_ITERS ?= 1000
+BENCHMARK_ITERS ?= 10
 
 ###############################################################################
 ###                               build                                     ###
@@ -167,7 +167,7 @@ test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
 
 test-bench: tidy
-		@go test $(shell go list ./... | grep -v tests/)  -run ^$ -bench -count=$(BENCHMARK_ITERS)
+	@go test -count=$(BENCHMARK_ITERS) -benchmem -run notest -bench . ./... | grep Benchmark
 
 test-cover: tidy
 	@echo Running unit tests and creating coverage report...
