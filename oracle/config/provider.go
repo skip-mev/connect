@@ -38,7 +38,7 @@ func (c *ProviderConfig) ValidateBasic() error {
 
 	if c.API.Enabled {
 		if err := c.API.ValidateBasic(); err != nil {
-			return fmt.Errorf("api config for %s is not formatted correctly %w", c.Name, err)
+			return fmt.Errorf("api config for %s is not formatted correctly: %w", c.Name, err)
 		}
 
 		if c.API.Name != c.Name {
@@ -48,7 +48,7 @@ func (c *ProviderConfig) ValidateBasic() error {
 
 	if c.WebSocket.Enabled {
 		if err := c.WebSocket.ValidateBasic(); err != nil {
-			return fmt.Errorf("websocket config for %s is not formatted correctly %w", c.Name, err)
+			return fmt.Errorf("websocket config for %s is not formatted correctly: %w", c.Name, err)
 		}
 
 		if c.WebSocket.Name != c.Name {
@@ -57,7 +57,7 @@ func (c *ProviderConfig) ValidateBasic() error {
 	}
 
 	if err := c.Market.ValidateBasic(); err != nil {
-		return fmt.Errorf("market config for %s is not formatted correctly %w", c.Name, err)
+		return fmt.Errorf("market config for %s is not formatted correctly: %w", c.Name, err)
 	}
 
 	if c.Name != c.Market.Name {
