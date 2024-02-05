@@ -128,6 +128,10 @@ func (h *WebsocketDataHandler) HandleMessage(
 func (h *WebsocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
 ) ([]handlers.WebsocketEncodedMessage, error) {
+	if len(cps) == 0 {
+		return nil, nil
+	}
+
 	msgs := make([]handlers.WebsocketEncodedMessage, len(cps))
 
 	for i, cp := range cps {

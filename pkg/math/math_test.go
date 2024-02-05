@@ -40,7 +40,11 @@ func TestMin(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
 			min := math.Min(tc.vals...)
 			if min != tc.min {
 				t.Errorf("expected %d, got %d", tc.min, min)
