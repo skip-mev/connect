@@ -297,21 +297,21 @@ This field is utilized to set the mappings between on-chain and off-chain curren
 
 ```go
 type AggregateMarketConfig struct {
-	CurrencyPairs map[string]AggregateCurrencyPairConfig `mapstructure:"currency_pairs" toml:"currency_pairs"`
+	Feeds           map[string]FeedConfig     `mapstructure:"currency_pairs" toml:"currency_pairs"`
+	AggregatedFeeds map[string][][]Conversion `mapstructure:"aggregated_feeds" toml:"aggregated_feeds"`
 }
 
-type AggregateCurrencyPairConfig struct {
-	CurrencyPair       oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
-	ConvertableMarkets [][]ConvertableMarket    `mapstructure:"convertable_markets" toml:"convertable_markets"`
+type FeedConfig struct {
+	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
 
-type ConvertableMarket struct {
+type Conversion struct {
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 	Invert       bool                     `mapstructure:"invert" toml:"invert"`
 }
 ```
 
-This field represents the market configurations for how currency pairs will be resolved to a final price. Each currency pair can have a list of convertable markets that will be used to convert the price of the currency pair to a common currency pair.
+This field represents the market configurations for how currency pairs will be resolved to a final price. At a high level, the feeds field represents all of the price feeds that are currently being processed by the oracle. The aggregated feeds field represents how the oracle will aggregate the feeds to produce final prices for currency pairs.
 
 ## Production
 
@@ -525,6 +525,16 @@ production = true
       [market.currency_pairs."SOLANA/USD".currency_pair]
         Base = "SOLANA"
         Quote = "USD"
+  [market.aggregated_feeds]
+    "ATOM/USD" = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
+    "AVAX/USD" = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
+    "BITCOIN/USD" = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
+    "CELESTIA/USD" = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
+    "DYDX/USD" = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
+    "ETHEREUM/BITCOIN" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN"}}]]
+    "ETHEREUM/USD" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
+    "OSMOSIS/USD" = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
+    "SOLANA/USD" = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
 
 [metrics]
   prometheus_server_address = "0.0.0.0:8002"

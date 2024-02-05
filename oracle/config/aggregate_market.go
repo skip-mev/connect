@@ -15,7 +15,7 @@ import (
 //  2. Calculate the provider-weighted median price for each currency pair.
 //  3. Convert the price of each currency pair to a common currency pair using the
 //     AggregatedFeeds field. If there are multiple convertable feeds for a given currency
-//     pair, the calculate a median price for each final currency pair, weighted by the
+//     pair, calculate a median price for each final currency pair, weighted by the
 //     weights of the convertable feeds.
 type AggregateMarketConfig struct {
 	// Feeds is a map of all of the price feeds that the oracle will fetch prices for along
@@ -31,19 +31,21 @@ type AggregateMarketConfig struct {
 	AggregatedFeeds map[string][][]Conversion `mapstructure:"aggregated_feeds" toml:"aggregated_feeds"`
 }
 
-// FeedConfig represents the configurations for how to resolve the price of a currency pair.
+// FeedConfig represents the configurations for a given price feed. Each currency pair
+// will have its own feed configuration.
 type FeedConfig struct {
 	// CurrencyPair is the currency pair that the oracle will fetch prices for.
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
 
-// Conversion represents a price feed that can be used in the conversion of a currency pair.
+// Conversion represents a price feed that can be used to convert to a final common
+// currency pair.
 type Conversion struct {
 	// CurrencyPair is the feed that will be used in the conversion.
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 
-	// Invert is a flag that indicates if the feed should be inverted
-	// prior to being used in the conversion.
+	// Invert is a flag that indicates if the feed should be inverted prior to being used
+	// in the conversion.
 	Invert bool `mapstructure:"invert" toml:"invert"`
 }
 
@@ -135,7 +137,7 @@ func checkSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
 	// Alternatively, if the oracle receives a price for BTC/USDT and USD/USDT, the order must
 	// be BTC/USDT -> USD/USDT (inverted == true).
 	if len(feeds) == 0 {
-		return fmt.Errorf("at least two markets must be provided in order for a viable conversion to occur")
+		return fmt.Errorf("at least one markets must be provided in order for a viable conversion to occur")
 	}
 
 	if err := feeds[0].CurrencyPair.ValidateBasic(); err != nil {
