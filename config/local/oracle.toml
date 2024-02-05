@@ -975,6 +975,16 @@ production = false
       [market.currency_pairs."SOLANA/USD".currency_pair]
         Base = "SOLANA"
         Quote = "USD"
+  [market.aggregated_feeds]
+    "ATOM/USD" = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
+    "AVAX/USD" = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
+    "BITCOIN/USD" = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
+    "CELESTIA/USD" = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
+    "DYDX/USD" = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
+    "ETHEREUM/BITCOIN" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN"}}]]
+    "ETHEREUM/USD" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
+    "OSMOSIS/USD" = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
+    "SOLANA/USD" = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
 
 [metrics]
   prometheus_server_address = "0.0.0.0:8002"

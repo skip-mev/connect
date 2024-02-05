@@ -300,9 +300,19 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 				},
 			})
 			oracleConfig.Market = oracleconfig.AggregateMarketConfig{
-				CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+				Feeds: map[string]oracleconfig.FeedConfig{
 					cp.String(): {
 						CurrencyPair: cp,
+					},
+				},
+				AggregatedFeeds: map[string][][]oracleconfig.Conversion{
+					cp.String(): {
+						{
+							{
+								CurrencyPair: cp,
+								Invert:       false,
+							},
+						},
 					},
 				},
 			}
@@ -533,7 +543,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		oracleConfig.Market = oracleconfig.AggregateMarketConfig{
-			CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+			Feeds: map[string]oracleconfig.FeedConfig{
 				cp1.String(): {
 					CurrencyPair: cp1,
 				},
@@ -542,6 +552,32 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				cp3.String(): {
 					CurrencyPair: cp3,
+				},
+			},
+			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
+				cp1.String(): {
+					{
+						{
+							CurrencyPair: cp1,
+							Invert:       false,
+						},
+					},
+				},
+				cp2.String(): {
+					{
+						{
+							CurrencyPair: cp2,
+							Invert:       false,
+						},
+					},
+				},
+				cp3.String(): {
+					{
+						{
+							CurrencyPair: cp3,
+							Invert:       false,
+						},
+					},
 				},
 			},
 		}
@@ -627,7 +663,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		oracleConfig.Market = oracleconfig.AggregateMarketConfig{
-			CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+			Feeds: map[string]oracleconfig.FeedConfig{
 				cp1.String(): {
 					CurrencyPair: cp1,
 				},
@@ -636,6 +672,32 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				cp3.String(): {
 					CurrencyPair: cp3,
+				},
+			},
+			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
+				cp1.String(): {
+					{
+						{
+							CurrencyPair: cp1,
+							Invert:       false,
+						},
+					},
+				},
+				cp2.String(): {
+					{
+						{
+							CurrencyPair: cp2,
+							Invert:       false,
+						},
+					},
+				},
+				cp3.String(): {
+					{
+						{
+							CurrencyPair: cp3,
+							Invert:       false,
+						},
+					},
 				},
 			},
 		}

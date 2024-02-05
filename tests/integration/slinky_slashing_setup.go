@@ -188,9 +188,19 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, p
 	})
 
 	oracleConfig.Market = oracleconfig.AggregateMarketConfig{
-		CurrencyPairs: map[string]oracleconfig.AggregateCurrencyPairConfig{
+		Feeds: map[string]oracleconfig.FeedConfig{
 			ticker.String(): {
 				CurrencyPair: ticker,
+			},
+		},
+		AggregatedFeeds: map[string][][]oracleconfig.Conversion{
+			ticker.String(): {
+				{
+					{
+						CurrencyPair: ticker,
+						Invert:       false,
+					},
+				},
 			},
 		},
 	}

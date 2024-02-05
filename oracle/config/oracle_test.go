@@ -48,9 +48,19 @@ func TestOracleConfig(t *testing.T) {
 					},
 				},
 				Market: config.AggregateMarketConfig{
-					CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+					Feeds: map[string]config.FeedConfig{
 						"BITCOIN/USD": {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+					AggregatedFeeds: map[string][][]config.Conversion{
+						"BITCOIN/USD": {
+							{
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									Invert:       false,
+								},
+							},
 						},
 					},
 				},
@@ -84,11 +94,17 @@ func TestOracleConfig(t *testing.T) {
 							ReconnectionTimeout: time.Second,
 							WSS:                 "wss://test.com",
 							Name:                "test",
+							ReadBufferSize:      config.DefaultReadBufferSize,
+							WriteBufferSize:     config.DefaultWriteBufferSize,
+							HandshakeTimeout:    config.DefaultHandshakeTimeout,
+							EnableCompression:   config.DefaultEnableCompression,
+							ReadTimeout:         config.DefaultReadTimeout,
+							WriteTimeout:        config.DefaultWriteTimeout,
 						},
 					},
 				},
 				Market: config.AggregateMarketConfig{
-					CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+					Feeds: map[string]config.FeedConfig{
 						"BITCOINUSD": {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
@@ -119,13 +135,29 @@ func TestOracleConfig(t *testing.T) {
 							ReconnectionTimeout: time.Second,
 							WSS:                 "wss://test.com",
 							Name:                "test",
+							ReadBufferSize:      config.DefaultReadBufferSize,
+							WriteBufferSize:     config.DefaultWriteBufferSize,
+							HandshakeTimeout:    config.DefaultHandshakeTimeout,
+							EnableCompression:   config.DefaultEnableCompression,
+							ReadTimeout:         config.DefaultReadTimeout,
+							WriteTimeout:        config.DefaultWriteTimeout,
 						},
 					},
 				},
 				Market: config.AggregateMarketConfig{
-					CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+					Feeds: map[string]config.FeedConfig{
 						"BITCOIN/USD": {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						},
+					},
+					AggregatedFeeds: map[string][][]config.Conversion{
+						"BITCOIN/USD": {
+							{
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									Invert:       false,
+								},
+							},
 						},
 					},
 				},

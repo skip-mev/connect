@@ -44,7 +44,7 @@ func (c *OracleConfig) ValidateBasic() error {
 	}
 
 	if err := c.Market.ValidateBasic(); err != nil {
-		return fmt.Errorf("metrics is not formatted correctly %w", err)
+		return fmt.Errorf("market is not formatted correctly %w", err)
 	}
 
 	return c.Metrics.ValidateBasic()

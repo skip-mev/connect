@@ -40,7 +40,7 @@ var LocalConfig = config.OracleConfig{
 	// --------------------Agg Market Config---------------------	//
 	// -----------------------------------------------------------	//
 	Market: config.AggregateMarketConfig{
-		CurrencyPairs: map[string]config.AggregateCurrencyPairConfig{
+		Feeds: map[string]config.FeedConfig{
 			"BITCOIN/USD": {
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
@@ -67,6 +67,80 @@ var LocalConfig = config.OracleConfig{
 			},
 			"OSMOSIS/USD": {
 				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+		},
+		AggregatedFeeds: map[string][][]config.Conversion{
+			"BITCOIN/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"ETHEREUM/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"ATOM/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"SOLANA/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"CELESTIA/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"AVAX/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"DYDX/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+			"ETHEREUM/BITCOIN": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+						Invert:       false,
+					},
+				},
+			},
+			"OSMOSIS/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+						Invert:       false,
+					},
+				},
 			},
 		},
 	},
