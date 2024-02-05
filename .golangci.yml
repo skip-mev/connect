@@ -20,7 +20,14 @@ linters:
     - misspell
     - nakedret
     - errorlint
+    # Checks for pointers to enclosing loop variables.
+    - exportloopref
     - nolintlint
+    # Finds slices that could potentially be pre-allocated.
+    # Small performance win + cleaner code.
+    - prealloc
+    # Lint your Prometheus metrics name.
+    - promlinter
     - staticcheck
     - revive
     - stylecheck

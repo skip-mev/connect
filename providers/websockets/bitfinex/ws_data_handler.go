@@ -127,9 +127,9 @@ func (h *WebsocketDataHandler) HandleMessage(
 func (h *WebsocketDataHandler) CreateMessages(
 	cps []oracletypes.CurrencyPair,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	var msgs []handlers.WebsocketEncodedMessage
+	msgs := make([]handlers.WebsocketEncodedMessage, len(cps))
 
-	for _, cp := range cps {
+	for i, cp := range cps {
 		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
@@ -141,7 +141,7 @@ func (h *WebsocketDataHandler) CreateMessages(
 			return nil, fmt.Errorf("error marshalling subscription message: %w", err)
 		}
 
-		msgs = append(msgs, msg)
+		msgs[i] = msg
 
 	}
 

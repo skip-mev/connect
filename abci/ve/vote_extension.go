@@ -87,7 +87,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 					"err", r,
 				)
 
-				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, Panic{fmt.Errorf("%v", r)}
+				resp, err = &cometabci.ResponseExtendVote{VoteExtension: []byte{}}, ErrPanic{fmt.Errorf("%v", r)}
 			}
 
 			// measure latency
@@ -100,7 +100,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			slinkyabci.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.ExtendVote)
 
 			// ignore all non-panic errors
-			var p Panic
+			var p ErrPanic
 			if !errors.As(err, &p) {
 				err = nil
 			}

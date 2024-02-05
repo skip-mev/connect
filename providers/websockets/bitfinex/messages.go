@@ -91,19 +91,19 @@ type SubscribeMessage struct {
 
 // NewSubscribeMessages creates subscription messages for the given tickers.
 func NewSubscribeMessages(symbols []string) ([]handlers.WebsocketEncodedMessage, error) {
-	var msgs []handlers.WebsocketEncodedMessage
+	msgs := make([]handlers.WebsocketEncodedMessage, len(symbols))
 
 	if len(symbols) == 0 {
 		return nil, fmt.Errorf("symbols cannot be empty")
 	}
 
-	for _, symbol := range symbols {
+	for i, symbol := range symbols {
 		msg, err := NewSubscribeMessage(symbol)
 		if err != nil {
 			return nil, fmt.Errorf("error marshalling subscription message: %w", err)
 		}
 
-		msgs = append(msgs, msg)
+		msgs[i] = msg
 	}
 
 	return msgs, nil
