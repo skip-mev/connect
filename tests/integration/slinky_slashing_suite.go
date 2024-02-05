@@ -1202,7 +1202,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		negativeTwoBz, err := negativeTwo.GobEncode()
 		s.Require().NoError(err)
 
-		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*10, []slinkyabci.OracleVoteExtension{
+		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*10 , []slinkyabci.OracleVoteExtension{
 			{
 				Prices: map[uint64][]byte{
 					id: negativeTwoBz, // 148
