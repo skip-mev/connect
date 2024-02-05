@@ -28,6 +28,9 @@ linters:
     - prealloc
     # Lint your Prometheus metrics name.
     - promlinter
+      # Checks that package variables are not reassigned.
+      # Super rare case but can catch bad things (like `io.EOF = nil`)
+    - reassign
     - staticcheck
     - revive
     - stylecheck
@@ -36,6 +39,10 @@ linters:
     - tenv
     - unconvert
     - unused
+    # Detect the possibility to use variables/constants from stdlib.
+    - usestdlibvars
+    # Finds wasted assignment statements.
+    - wastedassign
     # - errcheck
 
 issues:

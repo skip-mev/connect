@@ -54,7 +54,7 @@ func NewMetrics() Metrics {
 	m := &OracleMetricsImpl{
 		ticks: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "ticks",
+			Name:      "ticks_total",
 			Help:      "Number of ticks with a successful oracle update.",
 		}),
 		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
