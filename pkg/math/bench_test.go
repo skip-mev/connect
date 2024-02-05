@@ -150,6 +150,5 @@ func BenchmarkBigFloatToBigInt(b *testing.B) {
 				_ = math.BigFloatToBigInt(tc.input, tc.base)
 			}
 		})
-
 	}
 }
