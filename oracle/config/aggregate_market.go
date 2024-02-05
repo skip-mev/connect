@@ -75,7 +75,7 @@ func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
 func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Ensure that the feeds are not empty.
 	if len(c.Feeds) == 0 {
-		return fmt.Errorf("no price feeds provided")
+		return fmt.Errorf("no price feeds provided for aggregate market config")
 	}
 
 	// Verify the configurations of all price feeds.
@@ -194,4 +194,47 @@ func checkSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
 	}
 
 	return nil
+}
+
+type CreateOperation struct {
+	// CurrencyPair defines the market that will be created on dYdX
+	CurrencyPair oracletypes.CurrencyPair
+
+	// Feeds defines a map of provider -> ticker representation.
+	Feeds map[string][]string
+
+	// AggregateFeeds defines a way to convert all of the feeds into a
+	// final price.
+	AggregateFeeds map[string][][]Conversion
+}
+
+var operation = CreateOperation{
+	CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USD"),
+	Feeds: map[string][]string{
+		"uniswap": {"MOG/WETH", "MOG/ETH"},
+		"okx":     {"MOG/ETH"},
+	},
+	AggregateFeeds: map[string][][]Conversion{
+		"MOG/USD": {
+			{
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("MOG", "ETH"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("ETH", "USD"),
+				},
+			},
+			{
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("MOG", "WETH"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("WETH", "ETH"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("ETH", "USD"),
+				},
+			},
+		},
+	},
 }
