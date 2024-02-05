@@ -2,6 +2,7 @@ package ve
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
 	"time"
@@ -99,7 +100,8 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 			slinkyabci.RecordLatencyAndStatus(h.metrics, latency, err, servicemetrics.ExtendVote)
 
 			// ignore all non-panic errors
-			if _, ok := err.(Panic); !ok {
+			var p Panic
+			if !errors.As(err, &p) {
 				err = nil
 			}
 		}()

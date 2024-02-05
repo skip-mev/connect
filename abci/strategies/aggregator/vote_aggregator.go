@@ -38,7 +38,7 @@ func GetOracleVotes(
 	extendedCommitInfo, err := extCommitCodec.Decode(proposal[slinkyabci.OracleInfoIndex])
 	if err != nil {
 		return nil, slinkyabci.CodecError{
-			Err: fmt.Errorf("error decoding extended-commit-info: %v", err),
+			Err: fmt.Errorf("error decoding extended-commit-info: %w", err),
 		}
 	}
 
@@ -47,14 +47,14 @@ func GetOracleVotes(
 		voteExtension, err := veCodec.Decode(voteInfo.VoteExtension)
 		if err != nil {
 			return nil, slinkyabci.CodecError{
-				Err: fmt.Errorf("error decoding vote-extension: %v", err),
+				Err: fmt.Errorf("error decoding vote-extension: %w", err),
 			}
 		}
 
 		address := sdk.ConsAddress{}
 		if err := address.Unmarshal(voteInfo.Validator.Address); err != nil {
 			return nil, slinkyabci.CodecError{
-				Err: fmt.Errorf("error decoding validator address: %v", err),
+				Err: fmt.Errorf("error decoding validator address: %w", err),
 			}
 		}
 

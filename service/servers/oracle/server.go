@@ -143,7 +143,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 
 		err = os.httpSrv.ListenAndServe()
 		if err != nil {
-			return fmt.Errorf("[grpc server]: error serving: %v", err)
+			return fmt.Errorf("[grpc server]: error serving: %w", err)
 		}
 
 		return nil

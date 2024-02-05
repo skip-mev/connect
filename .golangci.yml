@@ -18,6 +18,7 @@ linters:
     - ineffassign
     - misspell
     - nakedret
+    - errorlint
     - nolintlint
     - staticcheck
     - revive

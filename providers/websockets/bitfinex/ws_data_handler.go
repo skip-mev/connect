@@ -35,7 +35,7 @@ func NewWebSocketDataHandler(
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
+		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
 	if !cfg.WebSocket.Enabled {
@@ -86,13 +86,13 @@ func (h *WebsocketDataHandler) HandleMessage(
 
 		if err := json.Unmarshal(message, &subscribedMessage); err != nil {
 			h.logger.Error("failed to unmarshal subscription response message", zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %s", err)
+			return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %w", err)
 		}
 
 		err := h.parseSubscribedMessage(subscribedMessage)
 		if err != nil {
 			h.logger.Error("failed to parse subscribe response message", zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to parse subscribe response message: %s", err)
+			return resp, nil, fmt.Errorf("failed to parse subscribe response message: %w", err)
 		}
 
 		h.logger.Debug("successfully subscribed", zap.String("pair", subscribedMessage.Pair), zap.Int("channel_id", subscribedMessage.ChannelID))
@@ -105,13 +105,13 @@ func (h *WebsocketDataHandler) HandleMessage(
 		var errorMessage ErrorMessage
 		if err := json.Unmarshal(message, &errorMessage); err != nil {
 			h.logger.Error("failed to unmarshal error message", zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to unmarshal error message: %s", err)
+			return resp, nil, fmt.Errorf("failed to unmarshal error message: %w", err)
 		}
 
 		updateMessage, err := h.parseErrorMessage(errorMessage)
 		if err != nil {
 			h.logger.Error("failed to parse error message", zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to parse error message: %s", err)
+			return resp, nil, fmt.Errorf("failed to parse error message: %w", err)
 		}
 
 		return resp, updateMessage, nil

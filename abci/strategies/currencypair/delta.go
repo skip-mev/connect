@@ -1,6 +1,7 @@
 package currencypair
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 
@@ -100,10 +101,11 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp oraclety
 	var currentPrice *big.Int
 	quote, err := s.oracleKeeper.GetPriceForCurrencyPair(ctx, cp)
 	if err != nil {
-		_, noPriceErr := err.(oracletypes.QuotePriceNotExistError)
+		var quotePriceNotExistError oracletypes.QuotePriceNotExistError
+		noPriceErr := errors.As(err, &quotePriceNotExistError)
 		if !noPriceErr {
 			return nil, fmt.Errorf(
-				"error getting price for currency pair (%s): %s",
+				"error getting price for currency pair (%s): %w",
 				cp.String(),
 				err,
 			)

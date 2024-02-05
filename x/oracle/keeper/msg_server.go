@@ -69,7 +69,7 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 		// get cp from identifier string
 		cp, err := types.CurrencyPairFromString(id)
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %v", err)
+			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %w", err)
 		}
 
 		// delete the currency pair from state

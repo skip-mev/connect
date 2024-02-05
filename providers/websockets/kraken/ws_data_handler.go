@@ -30,7 +30,7 @@ func NewWebSocketDataHandler(
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
+		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
 	if !cfg.WebSocket.Enabled {
@@ -73,20 +73,20 @@ func (h *WebSocketDataHandler) HandleMessage(
 	tickerResponse, err := DecodeTickerResponseMessage(message)
 	if err != nil {
 		return resp, nil, fmt.Errorf(
-			"failed to decode ticker response message; an unexpected message type was likely received: %s", err,
+			"failed to decode ticker response message; an unexpected message type was likely received: %w", err,
 		)
 	}
 
 	// Parse the ticker response message and extract the price.
 	resp, err = h.parseTickerMessage(tickerResponse)
 	if err != nil {
-		return resp, nil, fmt.Errorf("failed to parse ticker message: %s", err)
+		return resp, nil, fmt.Errorf("failed to parse ticker message: %w", err)
 	}
 
 	return resp, nil, nil
 }
 
-// CreateMessage is used to create a message to send to the data provider. This is used to
+// CreateMessages is used to create a message to send to the data provider. This is used to
 // subscribe to the given currency pairs. This is called when the connection to the data
 // provider is first established.
 func (h *WebSocketDataHandler) CreateMessages(

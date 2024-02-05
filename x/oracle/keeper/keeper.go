@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"errors"
+
 	"cosmossdk.io/collections"
 	"cosmossdk.io/collections/indexes"
 	"cosmossdk.io/core/store"
@@ -116,7 +118,8 @@ func (k Keeper) GetPriceWithNonceForCurrencyPair(ctx sdk.Context, cp types.Curre
 	qp, err := k.GetPriceForCurrencyPair(ctx, cp)
 	if err != nil {
 		// only fail if the Price Query failed for a reason other than there being no QuotePrice for cp
-		if _, ok := err.(types.QuotePriceNotExistError); !ok {
+		var quotePriceNotExistError types.QuotePriceNotExistError
+		if !errors.As(err, &quotePriceNotExistError) {
 			return types.QuotePriceWithNonce{}, err
 		}
 	}

@@ -37,7 +37,7 @@ func (m msgServer) Alert(goCtx context.Context, req *types.MsgAlert) (*types.Msg
 
 	// check that the message is valid
 	if err := req.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("message validation failed: %v", err)
+		return nil, fmt.Errorf("message validation failed: %w", err)
 	}
 
 	// unwrap the context
@@ -67,7 +67,7 @@ func (m msgServer) Alert(goCtx context.Context, req *types.MsgAlert) (*types.Msg
 
 	// escrow the bond amount
 	if err := m.k.escrowBondAmount(ctx, req.Alert.Signer, params.AlertParams.BondAmount); err != nil {
-		return nil, fmt.Errorf("failed to escrow bond amount: %v", err)
+		return nil, fmt.Errorf("failed to escrow bond amount: %w", err)
 	}
 
 	// add the alert + alert-status to the module's state
@@ -80,7 +80,7 @@ func (m msgServer) Alert(goCtx context.Context, req *types.MsgAlert) (*types.Msg
 			types.Unconcluded,
 		),
 	)); err != nil {
-		return nil, fmt.Errorf("failed to set alert: %v", err)
+		return nil, fmt.Errorf("failed to set alert: %w", err)
 	}
 
 	// return the response
@@ -92,12 +92,12 @@ func (k Keeper) escrowBondAmount(ctx sdk.Context, signer string, bondAmount sdk.
 	// get the sdk address for the signer
 	addr, err := sdk.AccAddressFromBech32(signer)
 	if err != nil {
-		return fmt.Errorf("failed to get sdk address for signer: %v", err)
+		return fmt.Errorf("failed to get sdk address for signer: %w", err)
 	}
 
 	// send coins to the module account
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, addr, types.ModuleName, sdk.NewCoins(bondAmount)); err != nil {
-		return fmt.Errorf("failed to escrow bond amount: %v", err)
+		return fmt.Errorf("failed to escrow bond amount: %w", err)
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 
 	// check that the message is valid
 	if err := req.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("message validation failed: %v", err)
+		return nil, fmt.Errorf("message validation failed: %w", err)
 	}
 
 	// unwrap the context
@@ -136,19 +136,19 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 	// unmarshal the conclusion verification params, this should never error
 	var verificationParams types.ConclusionVerificationParams
 	if err := m.k.cdc.UnpackAny(params.ConclusionVerificationParams, &verificationParams); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal conclusion verification params: %v", err)
+		return nil, fmt.Errorf("failed to unmarshal conclusion verification params: %w", err)
 	}
 
 	// verify the conclusion in accordance with the ConclusionVerificationParams
 	if err := conclusion.Verify(verificationParams); err != nil {
-		return nil, fmt.Errorf("failed to verify conclusion: %v", err)
+		return nil, fmt.Errorf("failed to verify conclusion: %w", err)
 	}
 
 	m.k.Logger(ctx).Info("conclusion verified", "conclusion", conclusion.String(), "params", verificationParams.String())
 
 	// conclusion has been verified, mark the alert as concluded
 	if err := m.k.ConcludeAlert(ctx, conclusion.GetAlert(), boolToConclusionStatus(conclusion.GetStatus())); err != nil {
-		return nil, fmt.Errorf("failed to conclude alert: %v", err)
+		return nil, fmt.Errorf("failed to conclude alert: %w", err)
 	}
 
 	// finally, if the conclusion was positive, issue incentives to all validators referenced in the conclusion
@@ -164,7 +164,7 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 			// execute the ValidatorIncentiveHandler to determine if validator should be issued an incentive
 			incentive, err := m.k.validatorIncentiveHandler(vote, conclusion.GetPriceBound(), conclusion.GetAlert(), conclusion.GetCurrencyPairID())
 			if err != nil {
-				return nil, fmt.Errorf("failed to determine incentive: %v", err)
+				return nil, fmt.Errorf("failed to determine incentive: %w", err)
 			}
 
 			// if the incentive is non-nil, then add it to the list of incentives to issue
@@ -176,7 +176,7 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 
 		// finally, issue the incentives
 		if err := m.k.incentiveKeeper.AddIncentives(ctx, incentives); err != nil {
-			return nil, fmt.Errorf("failed to issue incentives: %v", err)
+			return nil, fmt.Errorf("failed to issue incentives: %w", err)
 		}
 	}
 
@@ -200,7 +200,7 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParam
 
 	// validate the message
 	if err := req.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("message validation failed: %v", err)
+		return nil, fmt.Errorf("message validation failed: %w", err)
 	}
 
 	// check that the signer (authority) of the message is the authority of this module
@@ -210,12 +210,12 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParam
 			return nil, fmt.Errorf("signer is not the authority of this module: signer %v, authority %v", req.Authority, m.k.authority.String())
 		}
 	} else {
-		return nil, fmt.Errorf("failed to get sdk address for authority: %v", err)
+		return nil, fmt.Errorf("failed to get sdk address for authority: %w", err)
 	}
 
 	// signer is the authority of the module, update params
 	if err := m.k.SetParams(sdk.UnwrapSDKContext(goCtx), req.Params); err != nil {
-		return nil, fmt.Errorf("failed to set params: %v", err)
+		return nil, fmt.Errorf("failed to set params: %w", err)
 	}
 
 	return &types.MsgUpdateParamsResponse{}, nil
