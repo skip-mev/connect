@@ -18,9 +18,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/preblock/sla"
 	"github.com/skip-mev/slinky/abci/preblock/sla/mocks"
+	voteaggregator "github.com/skip-mev/slinky/abci/strategies/aggregator"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
@@ -569,7 +569,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -602,7 +602,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -633,7 +633,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -679,7 +679,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -724,7 +724,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -774,7 +774,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -816,7 +816,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
@@ -886,7 +886,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2, s.val3}, nil)
 		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
-		votes := []oraclepreblock.Vote{
+		votes := []voteaggregator.Vote{
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
