@@ -1,4 +1,4 @@
-package math
+package voteweighted
 
 import (
 	"context"

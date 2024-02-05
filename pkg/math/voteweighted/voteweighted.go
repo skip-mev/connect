@@ -1,4 +1,4 @@
-package math
+package voteweighted
 
 import (
 	"math/big"
@@ -20,31 +20,31 @@ var DefaultPowerThreshold = math.LegacyNewDecWithPrec(667, 3)
 
 type (
 	// VoteWeightPriceInfo tracks the stake weight(s) + price(s) for a given currency pair.
-	VoteWeightedPriceInfo struct {
-		Prices      []VoteWeightedPricePerValidator
+	PriceInfo struct {
+		Prices      []PricePerValidator
 		TotalWeight math.Int
 	}
 
 	// VoteWeightPrice defines a price update that includes the stake weight of the validator.
-	VoteWeightedPricePerValidator struct {
+	PricePerValidator struct {
 		VoteWeight math.Int
 		Price      *big.Int
 	}
 )
 
-// VoteWeightedMedianFromContext returns a new VoteWeightedMedian aggregate function that is parametrized by the
+// MedianFromContext returns a new Median aggregate function that is parametrized by the
 // latest state of the application.
-func VoteWeightedMedianFromContext(
+func MedianFromContext(
 	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) aggregator.AggregateFnFromContext[string, map[types.CurrencyPair]*big.Int] {
 	return func(ctx sdk.Context) aggregator.AggregateFn[string, map[types.CurrencyPair]*big.Int] {
-		return VoteWeightedMedian(ctx, logger, validatorStore, threshold)
+		return Median(ctx, logger, validatorStore, threshold)
 	}
 }
 
-// VoteWeightedMedian returns an aggregation function that computes the stake weighted median price as the
+// Median returns an aggregation function that computes the stake weighted median price as the
 // final deterministic oracle price for any qualifying currency pair (base, quote). There are a few things to
 // note about the implementation:
 //
@@ -56,14 +56,14 @@ func VoteWeightedMedianFromContext(
 //     price will not be included in the final set of oracle prices.
 //  3. Given the threshold is met, the final oracle price for a given currency pair is the
 //     median price weighted by the stake of each validator that submitted a price.
-func VoteWeightedMedian(
+func Median(
 	ctx sdk.Context,
 	logger log.Logger,
 	validatorStore ValidatorStore,
 	threshold math.LegacyDec,
 ) aggregator.AggregateFn[string, map[types.CurrencyPair]*big.Int] {
 	return func(providers aggregator.AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]) map[types.CurrencyPair]*big.Int {
-		priceInfo := make(map[types.CurrencyPair]VoteWeightedPriceInfo)
+		priceInfo := make(map[types.CurrencyPair]PriceInfo)
 
 		// Iterate through all providers and store stake weight + price for each currency pair.
 		for valAddress, validatorPrices := range providers {
@@ -107,16 +107,16 @@ func VoteWeightedMedian(
 
 				// Initialize the price info if it does not exist for the given currency pair.
 				if _, ok := priceInfo[currencyPair]; !ok {
-					priceInfo[currencyPair] = VoteWeightedPriceInfo{
-						Prices:      make([]VoteWeightedPricePerValidator, 0),
+					priceInfo[currencyPair] = PriceInfo{
+						Prices:      make([]PricePerValidator, 0),
 						TotalWeight: math.ZeroInt(),
 					}
 				}
 
 				// Update the price info.
 				cpInfo := priceInfo[currencyPair]
-				priceInfo[currencyPair] = VoteWeightedPriceInfo{
-					Prices: append(cpInfo.Prices, VoteWeightedPricePerValidator{
+				priceInfo[currencyPair] = PriceInfo{
+					Prices: append(cpInfo.Prices, PricePerValidator{
 						VoteWeight: voteWeight,
 						Price:      price,
 					}),
@@ -137,7 +137,7 @@ func VoteWeightedMedian(
 			// The total voting power % that submitted a price update for the given currency pair must be
 			// greater than the threshold to be included in the final oracle price.
 			if percentSubmitted := math.LegacyNewDecFromInt(info.TotalWeight).Quo(math.LegacyNewDecFromInt(totalBondedTokens)); percentSubmitted.GTE(threshold) {
-				prices[currencyPair] = ComputeVoteWeightedMedian(info)
+				prices[currencyPair] = ComputeMedian(info)
 
 				logger.Info(
 					"computed stake-weighted median price for currency pair",
@@ -160,8 +160,8 @@ func VoteWeightedMedian(
 	}
 }
 
-// ComputeVoteWeightedMedian computes the stake-weighted median price for a given asset.
-func ComputeVoteWeightedMedian(priceInfo VoteWeightedPriceInfo) *big.Int {
+// ComputeMedian computes the stake-weighted median price for a given asset.
+func ComputeMedian(priceInfo PriceInfo) *big.Int {
 	// Sort the prices by price.
 	sort.SliceStable(priceInfo.Prices, func(i, j int) bool {
 		switch priceInfo.Prices[i].Price.Cmp(priceInfo.Prices[j].Price) {
