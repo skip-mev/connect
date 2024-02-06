@@ -73,11 +73,6 @@ func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
 
 // ValidateBasic performs basic validation on the AggregateMarketConfig.
 func (c *AggregateMarketConfig) ValidateBasic() error {
-	// Ensure that the feeds are not empty.
-	if len(c.Feeds) == 0 {
-		return fmt.Errorf("no price feeds provided for aggregate market config")
-	}
-
 	// Verify the configurations of all price feeds.
 	for marketString, feedConfig := range c.Feeds {
 		cp, err := oracletypes.CurrencyPairFromID(marketString, feedConfig.CurrencyPair.Decimals)
@@ -97,10 +92,6 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 		// Upper case the currency pair string since toml may not preserve the case.
 		delete(c.Feeds, marketString)
 		c.Feeds[cp.Ticker()] = feedConfig
-	}
-
-	if len(c.AggregatedFeeds) == 0 {
-		return fmt.Errorf("no aggregated markets provided; oracle feeds will not resolve any final prices")
 	}
 
 	// Ensure that all convertable feeds are valid. We consider it valid if the
