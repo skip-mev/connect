@@ -16,6 +16,7 @@ HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
 COVER_FILE ?= cover.out
+BENCHMARK_ITERS ?= 10
 
 ###############################################################################
 ###                               build                                     ###
@@ -165,6 +166,9 @@ test-petri-integ: docker-build
 test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
 
+test-bench: tidy
+	@go test -count=$(BENCHMARK_ITERS) -benchmem -run notest -bench . ./... | grep Benchmark
+
 test-cover: tidy
 	@echo Running unit tests and creating coverage report...
 	@go test -mod=readonly -v -timeout 30m -coverprofile=$(COVER_FILE) -covermode=atomic $(shell go list ./... | grep -v tests/)
@@ -214,7 +218,7 @@ proto-update-deps:
 ###############################################################################
 
 tidy:
-	go mod tidy
+	@go mod tidy
 
 .PHONY: tidy
 

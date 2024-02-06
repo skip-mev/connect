@@ -9,6 +9,7 @@ import (
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
