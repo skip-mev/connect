@@ -39,12 +39,12 @@ func (c *OracleConfig) ValidateBasic() error {
 
 	for _, p := range c.Providers {
 		if err := p.ValidateBasic(); err != nil {
-			return fmt.Errorf("provider is not formatted correctly %w", err)
+			return fmt.Errorf("provider is not formatted correctly: %w", err)
 		}
 	}
 
 	if err := c.Market.ValidateBasic(); err != nil {
-		return fmt.Errorf("market is not formatted correctly %w", err)
+		return fmt.Errorf("market is not formatted correctly: %w", err)
 	}
 
 	return c.Metrics.ValidateBasic()
