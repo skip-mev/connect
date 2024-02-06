@@ -5,52 +5,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/skip-mev/slinky/pkg/math"
 )
 
-func TestMin(t *testing.T) {
-	t.Parallel()
-
-	testCases := []struct {
-		name     string
-		vals     []int
-		expected int
-	}{
-		{
-			name:     "one value",
-			vals:     []int{1},
-			expected: 1,
-		},
-		{
-			name:     "two values",
-			vals:     []int{1, 2},
-			expected: 1,
-		},
-		{
-			name:     "three values",
-			vals:     []int{1, 2, 3},
-			expected: 1,
-		},
-		{
-			name:     "five values, negative",
-			vals:     []int{1, 2, 3, 4, -5},
-			expected: -5,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			got := math.Min(tc.vals...)
-			if got != tc.expected {
-				t.Errorf("expected %d, got %d", tc.expected, got)
-			}
-		})
-	}
-}
-
-func TestFloat64StringToBigInt(t *testing.T) {
+func BenchmarkFloat64StringToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    string
@@ -90,19 +48,19 @@ func TestFloat64StringToBigInt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result, err := math.Float64StringToBigInt(tc.input, tc.base)
-			require.NoError(t, err)
-			require.Equal(t, tc.expected, result)
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				_, _ = math.Float64StringToBigInt(tc.input, tc.base)
+			}
 		})
 	}
 }
 
-func TestFloat64ToBigInt(t *testing.T) {
+func BenchmarkFloat64ToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    float64
-		decimals int64
+		base     int
 		expected *big.Int
 	}{
 		{
@@ -138,14 +96,15 @@ func TestFloat64ToBigInt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result := math.Float64ToBigInt(tc.input, tc.decimals)
-			require.Equal(t, tc.expected, result)
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				_ = math.Float64ToBigInt(tc.input, tc.base)
+			}
 		})
 	}
 }
 
-func TestBigFloatToBigInt(t *testing.T) {
+func BenchmarkBigFloatToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    *big.Float
@@ -186,9 +145,10 @@ func TestBigFloatToBigInt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result := math.BigFloatToBigInt(tc.input, tc.base)
-			require.Equal(t, tc.expected, result)
+		b.Run(tc.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				_ = math.BigFloatToBigInt(tc.input, tc.base)
+			}
 		})
 	}
 }
