@@ -14,7 +14,7 @@ type oracleIndices struct {
 	// idUnique is a uniqueness constraint on the IDs of CurrencyPairs. i.e id -> CurrencyPair.String() -> CurrencyPairState
 	idUnique *indexes.Unique[uint64, string, types.CurrencyPairState]
 
-	// idMulti is a multi-index on the IDs of CurrencyPairs, i.e id -> CurrencyPair.String() -> CurrencyPairState
+	// idMulti is a multi-index on the IDs of CurrencyPairs, i.e. id -> CurrencyPair.String() -> CurrencyPairState
 	idMulti *indexes.Multi[uint64, string, types.CurrencyPairState]
 }
 
@@ -94,7 +94,7 @@ func NewKeeper(
 	return k
 }
 
-// RemoveCurrencyPair removes a given CurrencyPair from state, i.e removes its nonce + QuotePrice from the module's store.
+// RemoveCurrencyPair removes a given CurrencyPair from state, i.e. removes its nonce + QuotePrice from the module's store.
 func (k Keeper) RemoveCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) {
 	k.currencyPairs.Remove(ctx, cp.String())
 }
@@ -135,7 +135,7 @@ func (k Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
 	return k.nextCurrencyPairID.Peek(ctx)
 }
 
-// GetNonceForCurrency Pair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
+// GetNonceForCurrencyPair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
 func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp types.CurrencyPair) (uint64, error) {
 	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {

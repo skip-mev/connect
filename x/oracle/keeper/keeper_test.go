@@ -21,7 +21,7 @@ const (
 	moduleAuth = "authority"
 )
 
-var moduleAuthAddr = sdk.AccAddress([]byte(moduleAuth))
+var moduleAuthAddr = sdk.AccAddress(moduleAuth)
 
 type KeeperTestSuite struct {
 	suite.Suite

@@ -9,7 +9,7 @@ import (
 )
 
 // InitGenesis initializes the set of CurrencyPairs + their genesis prices (if any) for the x/oracle module.
-// this function panics on any errors, i.e if the genesis state is invalid, or any state-modifications fail.
+// this function panics on any errors, i.e. if the genesis state is invalid, or any state-modifications fail.
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	// validate the genesis
 	if err := gs.Validate(); err != nil {

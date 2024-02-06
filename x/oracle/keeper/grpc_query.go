@@ -94,7 +94,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	}, nil
 }
 
-// GetPrice gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
+// GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
 func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
 	var cp types.CurrencyPair
 

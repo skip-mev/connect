@@ -17,7 +17,7 @@ func NewCurrencyPair(base, quote string) CurrencyPair {
 	}
 }
 
-// ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e
+// ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e.
 // Base + Quote are non-empty, and are in upper-case.
 func (cp *CurrencyPair) ValidateBasic() error {
 	// strings must be valid
@@ -67,7 +67,7 @@ func (cp *CurrencyPair) Decimals() int {
 	return 8
 }
 
-// NewCurrencyPairState returns a new CurrencyPairState given an Id, nonce, and QuotePrice.
+// NewCurrencyPairState returns a new CurrencyPairState given an ID, nonce, and QuotePrice.
 func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) CurrencyPairState {
 	return CurrencyPairState{
 		Id:    id,
@@ -76,7 +76,7 @@ func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) Curre
 	}
 }
 
-// ValidateBasic checks that the CurrencyPairState is valid, i.e the nonce is zero if the QuotePrice is nil, and non-zero
+// ValidateBasic checks that the CurrencyPairState is valid, i.e. the nonce is zero if the QuotePrice is nil, and non-zero
 // otherwise.
 func (cps *CurrencyPairState) ValidateBasic() error {
 	// check that the nonce is zero if the QuotePrice is nil

@@ -31,7 +31,6 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ module.AppModule      = AppModule{}
 	_ appmodule.AppModule   = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
 )
@@ -126,7 +125,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	return gs.Validate()
 }
 
-// No RESTful routes exist for the oracle module (outside of those served via the grpc-gateway).
+// RegisterRESTRoutes returns nothing as no REST-ful routes exist for the oracle module
+// (outside of those served via the grpc-gateway).
 func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // RegisterInvariants registers the invariants of the oracle module. If an invariant

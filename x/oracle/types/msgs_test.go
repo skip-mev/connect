@@ -11,7 +11,7 @@ import (
 
 func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
 	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress([]byte("abc")).String()
+	auth := sdk.AccAddress("abc").String()
 	msg := types.NewMsgAddCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
@@ -20,7 +20,7 @@ func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
 
 func TestGetSignersMsgRemoveCurrencyPairs(t *testing.T) {
 	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress([]byte("abc")).String()
+	auth := sdk.AccAddress("abc").String()
 	msg := types.NewMsgRemoveCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
@@ -43,7 +43,7 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 		{
 			"if any of the currency pairs are invalid - fail",
 			types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{Base: "A"},
 				},
@@ -53,7 +53,7 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 		{
 			"if all currency pairs are valid + authority is valid - pass",
 			types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{Base: "A", Quote: "B"},
 					{Base: "C", Quote: "D"},
@@ -91,7 +91,7 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		{
 			"if any of the currency pairs are invalid - fail",
 			types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairIds: []string{
 					"AA",
 				},
@@ -101,7 +101,7 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		{
 			"if all currency pairs are valid + authority is valid - pass",
 			types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairIds: []string{
 					types.CurrencyPairString("A", "B"),
 					types.CurrencyPairString("C", "D"),

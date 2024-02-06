@@ -41,7 +41,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 		ms := keeper.NewMsgServer(s.oracleKeeper)
 		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
 			CurrencyPairs: []types.CurrencyPair{cp1, cp2, cp3},
-			Authority:     sdk.AccAddress([]byte(moduleAuth)).String(),
+			Authority:     sdk.AccAddress(moduleAuth).String(),
 		})
 		assert.Nil(s.T(), err)
 

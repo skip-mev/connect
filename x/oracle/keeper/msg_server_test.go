@@ -32,7 +32,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 		{
 			"if the authority is not the authority of the module - fail",
 			&types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("not-authority")).String(),
+				Authority: sdk.AccAddress("not-authority").String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{
 						Base:  "A",
@@ -45,7 +45,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 		{
 			"if the authority is correct + formatted, and the currency pairs are valid - pass",
 			&types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
+				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{
 						Base:  "A",
@@ -62,7 +62,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 		{
 			"if there is a CurrencyPair that already exists in module, it is not overwritten",
 			&types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
+				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairs: []types.CurrencyPair{
 					{
 						Base:  "A",
@@ -204,7 +204,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 		{
 			"if the authority is correct + formatted, and the currency pairs are valid - pass",
 			&types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
+				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairIds: []string{
 					"AA/BB", "CC/DD",
 				},
