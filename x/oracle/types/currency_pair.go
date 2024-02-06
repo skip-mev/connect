@@ -47,9 +47,9 @@ func (cp CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote, cp.Decimals)
 }
 
-// ID returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
+// Ticker returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
 // This function differs from String() which also includes the decimal information.
-func (cp *CurrencyPair) ID() string {
+func (cp CurrencyPair) Ticker() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
@@ -65,7 +65,7 @@ func CurrencyPairStringToID(cpStr string) (string, error) {
 		return "", fmt.Errorf("invalid string provided: %w", err)
 	}
 
-	return cp.ID(), nil
+	return cp.Ticker(), nil
 }
 
 // CurrencyPairString constructs and returns the string representation of a currency pair.

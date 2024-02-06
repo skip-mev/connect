@@ -82,7 +82,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 				// expect all the currency-pairs to be stored in state
 				for _, cpg := range tc.gs.CurrencyPairGenesis {
 					// get the quote-price
-					qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cpg.CurrencyPair)
+					qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
 
 					// check equality of quote-price if one is given
 					if cpg.CurrencyPairPrice != nil {
@@ -95,14 +95,14 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 					}
 
 					// get nonce, and check equality
-					nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cpg.CurrencyPair)
+					nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
 					require.Nil(s.T(), err)
 
 					// check equality of nonces
 					require.Equal(s.T(), nonce, cpg.Nonce)
 
 					// check equality of ids
-					id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
+					id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
 					require.True(s.T(), ok)
 
 					require.Equal(s.T(), id, cpg.Id)
@@ -261,7 +261,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			}
 
 			// check IDs
-			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
+			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
 			require.True(s.T(), ok)
 			require.Equal(s.T(), id, cpg.Id)
 		}

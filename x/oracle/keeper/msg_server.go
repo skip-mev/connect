@@ -41,7 +41,7 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	for _, cp := range req.CurrencyPairs {
 		// only set the currency-pair if it does not already exist in state
-		if !m.k.HasCurrencyPair(ctx, cp) {
+		if !m.k.HasCurrencyPair(ctx, cp.Ticker()) {
 			// set to state, initial nonce will be zero (no price updates have been made for this CurrencyPair)
 			err = m.k.CreateCurrencyPair(ctx, cp)
 		}
@@ -68,14 +68,8 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	for _, id := range req.CurrencyPairIds {
-		// get cp from identifier string
-		cp, err := types.CurrencyPairFromString(id)
-		if err != nil {
-			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %v", err)
-		}
-
 		// delete the currency pair from state
-		m.k.RemoveCurrencyPair(ctx, cp)
+		m.k.RemoveCurrencyPair(ctx, id)
 	}
 
 	return nil, nil

@@ -54,7 +54,7 @@ func TestFloat64StringToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    string
-		base     int
+		decimals int64
 		expected *big.Int
 	}{
 		{
@@ -91,7 +91,7 @@ func TestFloat64StringToBigInt(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := math.Float64StringToBigInt(tc.input, tc.base)
+			result, err := math.Float64StringToBigInt(tc.input, tc.decimals)
 			require.NoError(t, err)
 			require.Equal(t, tc.expected, result)
 		})
@@ -149,7 +149,7 @@ func TestBigFloatToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    *big.Float
-		base     int
+		decimals int64
 		expected *big.Int
 	}{
 		{
@@ -187,7 +187,7 @@ func TestBigFloatToBigInt(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := math.BigFloatToBigInt(tc.input, tc.base)
+			result := math.BigFloatToBigInt(tc.input, tc.decimals)
 			require.Equal(t, tc.expected, result)
 		})
 	}

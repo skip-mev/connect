@@ -36,14 +36,8 @@ message GetAllCurrencyPairsResponse {
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
 // CurrencyPair in the format base/quote
 message GetPriceRequest {
-  // CurrencyPairSelector represents the types that the user may provide to the
-  // request to identify a CurrencyPair
-  oneof currency_pair_selector {
-    // CurrencyPair type
-    CurrencyPair currency_pair = 1;
-    // string representation of the CurrencyPair
-    string currency_pair_id = 2;
-  }
+  // CurrencyPairID is the string representation of the CurrencyPair.
+  string currency_pair_id = 2;
 }
 
 // GetPriceResponse is the response from the GetPrice grpc method exposed from
@@ -63,10 +57,15 @@ message GetPriceResponse {
 
 // GetPricesRequest takes an identifier for the CurrencyPair
 // in the format base/quote
-message GetPricesRequest { repeated string currency_pair_ids = 1; }
+message GetPricesRequest {
+  // CurrencyPairIDs is a list of the string representations of the
+  // CurrencyPairs.
+  repeated string currency_pair_ids = 1;
+}
 
 // GetPricesResponse is the response from the GetPrices grpc method exposed from
 // the x/oracle query service
 message GetPricesResponse {
+  // Prices is the list of price information for the query.
   repeated GetPriceResponse prices = 1 [ (gogoproto.nullable) = false ];
 }

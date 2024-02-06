@@ -235,13 +235,11 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		// check if the BTC/USD currency pair exists
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: oracletypes.CurrencyPairString("BTC", "USD", oracletypes.DefaultDecimals),
-			},
+			CurrencyPairId: oracletypes.CurrencyPairString("BTC", "USD", oracletypes.DefaultDecimals),
 		})
 		if err == nil {
 			// remove the currency-pair
-			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.String()}...))
+			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.Ticker()}...))
 		}
 
 		// get the current height
@@ -273,18 +271,16 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 
 	s.Run("test submitting an alert and check for bond deposit - pass", func() {
 		// add the BTC/USD currency pair
-		cc, close, err := GetChainGRPC(s.chain)
+		cc, closeFn, err := GetChainGRPC(s.chain)
 		s.Require().NoError(err)
-		defer close()
+		defer closeFn()
 
 		cp := oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)
 
 		// check if the BTC/USD currency pair exists
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: cp.String(),
-			},
+			CurrencyPairId: cp.Ticker(),
 		})
 		if err != nil {
 			// remove the currency-pair
@@ -393,9 +389,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	// expect that the above currency-pair is in state, so we can submit alerts that reference it
 	oraclesClient := oracletypes.NewQueryClient(cc)
 	_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-			CurrencyPairId: cp.String(),
-		},
+		CurrencyPairId: cp.Ticker(),
 	})
 	if err != nil {
 		// remove the currency-pair
@@ -839,9 +833,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	oraclesClient := oracletypes.NewQueryClient(cc)
 	ctx := context.Background()
 	_, err = oraclesClient.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-			CurrencyPairId: cp.String(),
-		},
+		CurrencyPairId: cp.Ticker(),
 	})
 	if err != nil {
 		// add the currency-pair

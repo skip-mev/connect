@@ -62,7 +62,7 @@ func NewMsgRemoveSLAs(authority string, slaIDs []string) MsgRemoveSLAs {
 	}
 }
 
-// GetSigners, get the addresses that must sign this message. In this case, the signer
+// GetSigners gets the addresses that must sign this message. In this case, the signer
 // must be the module authority.
 func (m MsgRemoveSLAs) GetSigners() []sdk.AccAddress {
 	// convert from string to acc address
@@ -70,7 +70,7 @@ func (m MsgRemoveSLAs) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-// ValidateBasic determines whether or not the information in the message is formatted correctly, specifically
+// ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the authority is a valid acc-address, and that each SLA ID in the message is not empty.
 func (m MsgRemoveSLAs) ValidateBasic() error {
 	// validate authority address

@@ -52,6 +52,7 @@ var (
 )
 
 // construct the network from a spec
+
 // ChainBuilderFromChainSpec creates an interchaintest chain builder factory given a ChainSpec
 // and returns the associated chain
 func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *cosmos.CosmosChain {
@@ -72,7 +73,7 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 	return cosmosChain
 }
 
-// SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
+// SetOracleConfigsOnApp writes the oracle configuration to the given node's application config.
 func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.OracleConfig) {
 	oracle := GetOracleSideCar(node)
 
@@ -143,8 +144,9 @@ func AddSidecarToNode(node *cosmos.ChainNode, conf ibc.SidecarConfig) {
 }
 
 // spin up the network (with side-cars enabled)
-// BuildPOBInterchain creates a new Interchain testing env with the configured POB CosmosChain
-func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *interchaintest.Interchain {
+
+// BuildSlinkyInterchain creates a new Interchain testing env with the configured Slinky CosmosChain
+func BuildSlinkyInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *interchaintest.Interchain {
 	ic := interchaintest.NewInterchain()
 	ic.AddChain(chain)
 
@@ -281,9 +283,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 
 	// query the currency pairs
 	res, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{
-			CurrencyPair: &cp,
-		},
+		CurrencyPairId: cp.Ticker(),
 	})
 	if err != nil {
 		return nil, 0, err
@@ -292,18 +292,22 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, h
 	return res.Price, int64(res.Nonce), nil
 }
 
-// Submit proposal creates and submits a proposal to the chain
+// SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
-	rand := rand.Str(10)
-	prop, err := chain.BuildProposal(msgs, rand, rand, rand, deposit.String(), submitter, false)
+	randStr := rand.Str(10)
+	prop, err := chain.BuildProposal(msgs, randStr, randStr, randStr, deposit.String(), submitter, false)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error building proposal: %w", err)
 	}
 
 	// submit the proposal
 	tx, err := chain.SubmitProposal(context.Background(), submitter, prop)
-	return tx.ProposalID, err
+	if err != nil {
+		return "", fmt.Errorf("error submitting proposal: %w", err)
+	}
+
+	return tx.ProposalID, nil
 }
 
 // PassProposal given a proposal id, vote for the proposal and wait for it to pass
@@ -383,7 +387,7 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryP
 	})
 }
 
-// WaitForVotingPeriod, waits for the deposit period for the proposal to end
+// WaitForProposalStatus waits for the deposit period for the proposal to end
 func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
 	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)

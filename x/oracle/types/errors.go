@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func NewCurrencyPairNotExistError(cp CurrencyPair) CurrencyPairNotExistError {
-	return CurrencyPairNotExistError{cp.String()}
+func NewCurrencyPairNotExistError(cpID string) CurrencyPairNotExistError {
+	return CurrencyPairNotExistError{cpID}
 }
 
 type CurrencyPairNotExistError struct {
@@ -16,8 +16,8 @@ func (e CurrencyPairNotExistError) Error() string {
 	return fmt.Sprintf("nonce is not stored for CurrencyPair: %s", e.cp)
 }
 
-func NewQuotePriceNotExistError(cp CurrencyPair) QuotePriceNotExistError {
-	return QuotePriceNotExistError{cp.String()}
+func NewQuotePriceNotExistError(cpID string) QuotePriceNotExistError {
+	return QuotePriceNotExistError{cpID}
 }
 
 type QuotePriceNotExistError struct {

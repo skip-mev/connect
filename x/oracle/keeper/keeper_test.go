@@ -75,7 +75,7 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 				// expect the quote price to be written to state for the currency pair
 				require.Nil(s.T(), err)
 				// expect that we can retrieve the QuotePrice for the currency pair
-				qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, tc.cp)
+				qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, tc.cp.Ticker())
 				require.Nil(s.T(), err)
 				// check equality
 				checkQuotePriceEqual(s.T(), qp, tc.price)
@@ -98,11 +98,11 @@ func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 		Price: sdkmath.NewInt(100),
 	}
 	// attempt to get the qp for cp (should fail)
-	_, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	_, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp.Ticker())
 	require.NotNil(s.T(), err)
 
 	// attempt to get the nonce for the cp (should fail)
-	_, err = s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+	_, err = s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp.Ticker())
 	require.NotNil(s.T(), err)
 
 	// set the qp
@@ -110,7 +110,7 @@ func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	require.Nil(s.T(), err)
 
 	// check that the nonce is zero for the cp
-	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp.Ticker())
 	require.Nil(s.T(), err)
 	require.Equal(s.T(), qpn.Nonce(), uint64(0))
 
@@ -120,7 +120,7 @@ func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	require.Nil(s.T(), err)
 
 	// get the nonce again, and expect it to have incremented
-	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp)
+	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp.Ticker())
 	require.Nil(s.T(), err)
 	require.Equal(s.T(), qpn.Nonce(), uint64(1))
 }
@@ -180,7 +180,7 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 		require.Nil(s.T(), err)
 
 		// check that the currency pair exists
-		nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
+		nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp.Ticker())
 		require.Nil(s.T(), err)
 		require.Equal(s.T(), nonce, uint64(0))
 
@@ -220,14 +220,14 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		require.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp1))
 
 		// get the id for the currency-pair
-		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp1)
+		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp1.Ticker())
 		require.True(s.T(), ok)
 
 		// set the next currency-pair
 		require.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp2))
 
 		// get the id for the currency-pair
-		id2, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		id2, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2.Ticker())
 		require.True(s.T(), ok)
 
 		// check that the ids are different
@@ -236,7 +236,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 
 	s.Run("test getting ids for currency-pairs", func() {
 		// get the id for the currency-pair
-		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp1)
+		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp1.Ticker())
 		require.True(s.T(), ok)
 
 		// get the currency-pair for the id
@@ -247,7 +247,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		require.Equal(s.T(), cp1, cp)
 
 		// get the id for the currency-pair
-		id2, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		id2, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2.Ticker())
 		require.True(s.T(), ok)
 
 		// get the currency-pair for the id
@@ -261,11 +261,11 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	var unusedID uint64
 	s.Run("test that removing a currency-pair removes the ID for that currency-pair", func() {
 		var ok bool
-		unusedID, ok = s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		unusedID, ok = s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2.Ticker())
 		require.True(s.T(), ok)
 
 		// remove the currency-pair
-		s.oracleKeeper.RemoveCurrencyPair(s.ctx, cp2)
+		s.oracleKeeper.RemoveCurrencyPair(s.ctx, cp2.Ticker())
 
 		// check that the id is no longer in use
 		_, ok = s.oracleKeeper.GetCurrencyPairFromID(s.ctx, unusedID)
@@ -282,7 +282,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		require.Nil(s.T(), s.oracleKeeper.CreateCurrencyPair(s.ctx, cp3))
 
 		// get the id for the currency-pair
-		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp3)
+		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp3.Ticker())
 		require.True(s.T(), ok)
 
 		// check that the id is unusedID + 1

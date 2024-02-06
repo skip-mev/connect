@@ -13,8 +13,8 @@ import (
 //go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface {
 	GetCurrencyPairFromID(ctx sdk.Context, id uint64) (cp oracletypes.CurrencyPair, found bool)
-	GetIDForCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair) (uint64, bool)
-	GetPriceForCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair) (oracletypes.QuotePrice, error)
+	GetIDForCurrencyPair(ctx sdk.Context, cpID string) (uint64, bool)
+	GetPriceForCurrencyPair(ctx sdk.Context, cpID string) (oracletypes.QuotePrice, error)
 }
 
 // CurrencyPairStrategy is a strategy for generating a unique ID and price representation for a given currency pair.
