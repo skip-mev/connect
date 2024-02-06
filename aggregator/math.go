@@ -52,20 +52,29 @@ func ComputeMedian() AggregateFn[string, map[types.CurrencyPair]*big.Int] {
 
 // CalculateMedian calculates the median price from a list of prices. Returns an
 // average of the two middle prices if the number of prices is even.
-func CalculateMedian(prices []*big.Int) *big.Int {
+func CalculateMedian(values []*big.Int) *big.Int {
 	// Sort the prices.
-	sort.SliceStable(prices, func(i, j int) bool {
-		return prices[i].Cmp(prices[j]) < 0
+	sort.SliceStable(values, func(i, j int) bool {
+		switch values[i].Cmp(values[j]) {
+		case -1:
+			return true
+		case 1:
+			return false
+		default:
+			return true
+		}
 	})
 
-	// Calculate the median price.
-	middle := len(prices) / 2
-	median := new(big.Int).Set(prices[middle])
+	middle := len(values) / 2
 
-	// If the number of prices is even, compute the average of the two middle prices.
-	if len(prices)%2 == 0 {
-		median = median.Add(median, prices[middle-1])
-		median = median.Div(median, big.NewInt(2))
+	// Calculate the median price.
+	numValues := len(values)
+	var median *big.Int
+	if numValues%2 == 0 {
+		median = new(big.Int).Add(values[middle-1], values[middle])
+		median = median.Div(median, new(big.Int).SetUint64(2))
+	} else {
+		median = values[middle]
 	}
 
 	return median

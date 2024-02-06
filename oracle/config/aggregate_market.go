@@ -138,7 +138,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 				}
 			}
 
-			if err := checkSort(cp, feeds); err != nil {
+			if err := CheckSort(cp, feeds); err != nil {
 				return err
 			}
 		}
@@ -157,7 +157,7 @@ func (c *FeedConfig) ValidateBasic() error {
 }
 
 // checkSort checks if the given list of convertable markets is topologically sorted.
-func checkSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
+func CheckSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
 	// Check that order is topologically sorted for each market. For example, if the oracle
 	// receives a price for BTC/USDT and USDT/USD, the order must be BTC/USDT -> USDT/USD.
 	// Alternatively, if the oracle receives a price for BTC/USDT and USD/USDT, the order must

@@ -62,16 +62,21 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 		m.logger.Debug("calculated median prices for raw price feeds", zap.Any("num_prices", len(feedMedians)))
 
 		// Scale all of the medians to a common number of decimals. This does not lose precision.
-		scaledMedians := make(map[oracletypes.CurrencyPair]*big.Int)
 		for cp, price := range feedMedians {
-			scaledMedians[cp] = ScaleUpCurrencyPairPrice(int64(cp.Decimals()), price)
+			scaledPrice, err := ScaleUpCurrencyPairPrice(int64(cp.Decimals()), price)
+			if err != nil {
+				m.logger.Error("failed to scale price", zap.Error(err), zap.String("currency_pair", cp.String()), zap.String("price", price.String()))
+				continue
+			}
+
+			feedMedians[cp] = scaledPrice
 		}
 
 		// Determine the final aggregated price for each currency pair.
 		aggregatedMedians := make(map[oracletypes.CurrencyPair]*big.Int)
 		for _, cfg := range m.cfg.AggregatedFeeds {
 			// Get the converted price for each convertable feed.
-			convertedPrices := m.CalculateConvertedPrices(cfg, scaledMedians)
+			convertedPrices := m.CalculateConvertedPrices(cfg, feedMedians)
 
 			// If there were no converted prices, log an error and continue.
 			cp := cfg.CurrencyPair
@@ -82,6 +87,18 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 
 			// Take the median of the converted prices.
 			aggregatedMedians[cp] = aggregator.CalculateMedian(convertedPrices)
+			m.logger.Debug("calculated median price", zap.String("currency_pair", cp.String()), zap.String("price", aggregatedMedians[cp].String()), zap.Any("converted_prices", convertedPrices))
+		}
+
+		// Scale all of the aggregated medians back to the original number of decimals.
+		for cp, price := range aggregatedMedians {
+			unscaledPrice, err := ScaleDownCurrencyPair(int64(cp.Decimals()), price)
+			if err != nil {
+				m.logger.Error("failed to scale price", zap.Error(err), zap.String("currency_pair", cp.String()), zap.String("price", price.String()))
+				continue
+			}
+
+			aggregatedMedians[cp] = unscaledPrice
 		}
 
 		return aggregatedMedians
@@ -102,8 +119,14 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 	convertedPrices := make([]*big.Int, 0)
 	cp := cfg.CurrencyPair
 
-	// Calculate the converted price for each set of conversions.
 	for _, conversion := range cfg.Conversions {
+		// Ensure that the conversion is valid.
+		if err := config.CheckSort(cp, conversion); err != nil {
+			m.logger.Error("invalid conversion", zap.Error(err), zap.Any("conversions", conversion))
+			continue
+		}
+
+		// Calculate the converted price.
 		convertedPrice, err := m.CalculateConvertedPrice(cp, conversion, medians)
 		if err != nil {
 			m.logger.Debug("failed to calculate converted price", zap.Error(err), zap.Any("conversions", conversion))
@@ -128,6 +151,10 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		return nil, fmt.Errorf("no conversion operations")
 	}
 
+	// Scalers for the number of decimals.
+	one := ScaledOne(ScaledDecimals)
+	zero := big.NewInt(0)
+
 	first := operations[0]
 	cp := first.CurrencyPair
 
@@ -137,10 +164,13 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		return nil, fmt.Errorf("missing median price for feed %s", first.CurrencyPair.String())
 	}
 
+	if price.Cmp(zero) == 0 {
+		return zero, nil
+	}
+
 	// If the first feed is inverted, invert the price scaled to the number of decimals.
 	if first.Invert {
-		scaledOne := ScaleUpCurrencyPair(int64(cp.Decimals()), big.NewInt(1))
-		price = new(big.Int).Div(scaledOne, price)
+		price = InvertCurrencyPairPrice(price, ScaledDecimals)
 	}
 
 	m.logger.Debug(
@@ -148,6 +178,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		zap.String("target_currency_pair", outcome.String()),
 		zap.String("current_currency_pair", cp.String()),
 		zap.String("tracking_price", price.String()),
+		zap.String("median_price", price.String()),
 	)
 
 	for _, feed := range operations[1:] {
@@ -158,12 +189,18 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 			return nil, fmt.Errorf("missing median price for feed %s", feed.CurrencyPair.String())
 		}
 
-		// Invert the price if necessary.
-		if !feed.Invert {
-			price = price.Mul(price, median)
-		} else {
-			price = price.Quo(price, median)
+		if median.Cmp(zero) == 0 {
+			return zero, nil
 		}
+
+		// Invert the price if necessary.
+		if feed.Invert {
+			median = InvertCurrencyPairPrice(median, ScaledDecimals)
+		}
+
+		// Scale the median price to the number of decimals.
+		price = price.Mul(price, median)
+		price = price.Div(price, one)
 
 		m.logger.Debug(
 			"got median price",
