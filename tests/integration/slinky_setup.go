@@ -387,7 +387,7 @@ func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryP
 	})
 }
 
-// WaitForVotingPeriod, waits for the deposit period for the proposal to end
+// WaitForProposalStatus waits for the deposit period for the proposal to end
 func WaitForProposalStatus(chain *cosmos.CosmosChain, propID string, timeout time.Duration, status govtypesv1.ProposalStatus) error {
 	return testutil.WaitForCondition(timeout, 1*time.Second, func() (bool, error) {
 		prop, err := QueryProposal(chain, propID)

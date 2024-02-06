@@ -304,12 +304,12 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			})
 			oracleConfig.Market = oracleconfig.AggregateMarketConfig{
 				Feeds: map[string]oracleconfig.FeedConfig{
-					cp.String(): {
+					cp.Ticker(): {
 						CurrencyPair: cp,
 					},
 				},
 				AggregatedFeeds: map[string][][]oracleconfig.Conversion{
-					cp.String(): {
+					cp.Ticker(): {
 						{
 							{
 								CurrencyPair: cp,
@@ -529,15 +529,15 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			Market: oracleconfig.MarketConfig{
 				Name: "static-mock-provider",
 				CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-					cp1.String(): {
+					cp1.Ticker(): {
 						Ticker:       "1140",
 						CurrencyPair: cp1,
 					},
-					cp2.String(): {
+					cp2.Ticker(): {
 						Ticker:       "1141",
 						CurrencyPair: cp2,
 					},
-					cp3.String(): {
+					cp3.Ticker(): {
 						Ticker:       "1142",
 						CurrencyPair: cp3,
 					},
@@ -547,18 +547,18 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracleConfig.Market = oracleconfig.AggregateMarketConfig{
 			Feeds: map[string]oracleconfig.FeedConfig{
-				cp1.String(): {
+				cp1.Ticker(): {
 					CurrencyPair: cp1,
 				},
-				cp2.String(): {
+				cp2.Ticker(): {
 					CurrencyPair: cp2,
 				},
-				cp3.String(): {
+				cp3.Ticker(): {
 					CurrencyPair: cp3,
 				},
 			},
 			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
-				cp1.String(): {
+				cp1.Ticker(): {
 					{
 						{
 							CurrencyPair: cp1,
@@ -566,7 +566,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-				cp2.String(): {
+				cp2.Ticker(): {
 					{
 						{
 							CurrencyPair: cp2,
@@ -574,7 +574,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-				cp3.String(): {
+				cp3.Ticker(): {
 					{
 						{
 							CurrencyPair: cp3,
@@ -653,11 +653,11 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			Market: oracleconfig.MarketConfig{
 				Name: "static-mock-provider",
 				CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-					cp1.String(): {
+					cp1.Ticker(): {
 						Ticker:       "1140",
 						CurrencyPair: cp1,
 					},
-					cp2.String(): {
+					cp2.Ticker(): {
 						Ticker:       "1141",
 						CurrencyPair: cp2,
 					},
@@ -667,18 +667,18 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		oracleConfig.Market = oracleconfig.AggregateMarketConfig{
 			Feeds: map[string]oracleconfig.FeedConfig{
-				cp1.String(): {
+				cp1.Ticker(): {
 					CurrencyPair: cp1,
 				},
-				cp2.String(): {
+				cp2.Ticker(): {
 					CurrencyPair: cp2,
 				},
-				cp3.String(): {
+				cp3.Ticker(): {
 					CurrencyPair: cp3,
 				},
 			},
 			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
-				cp1.String(): {
+				cp1.Ticker(): {
 					{
 						{
 							CurrencyPair: cp1,
@@ -686,7 +686,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-				cp2.String(): {
+				cp2.Ticker(): {
 					{
 						{
 							CurrencyPair: cp2,
@@ -694,7 +694,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-				cp3.String(): {
+				cp3.Ticker(): {
 					{
 						{
 							CurrencyPair: cp3,
