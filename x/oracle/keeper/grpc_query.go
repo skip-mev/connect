@@ -72,11 +72,11 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 		return nil, fmt.Errorf("request cannot be nil")
 	}
 
+	// unwrap ctx
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
 	for _, cpID := range req.CurrencyPairIds {
-		// unwrap ctx
-		ctx := sdk.UnwrapSDKContext(goCtx)
-
 		cps, err := q.k.currencyPairs.Get(ctx, cpID)
 		if err != nil {
 			return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %s, the module is not tracking this CurrencyPair", cpID)
