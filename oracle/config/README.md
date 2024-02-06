@@ -526,15 +526,51 @@ production = true
         Base = "SOLANA"
         Quote = "USD"
   [market.aggregated_feeds]
-    "ATOM/USD" = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
-    "AVAX/USD" = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
-    "BITCOIN/USD" = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
-    "CELESTIA/USD" = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
-    "DYDX/USD" = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
-    "ETHEREUM/BITCOIN" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN"}}]]
-    "ETHEREUM/USD" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
-    "OSMOSIS/USD" = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
-    "SOLANA/USD" = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
+    [market.aggregated_feeds."ATOM/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
+      [market.aggregated_feeds."ATOM/USD".currency_pair]
+        Base = "ATOM"
+        Quote = "USD"
+    [market.aggregated_feeds."AVAX/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
+      [market.aggregated_feeds."AVAX/USD".currency_pair]
+        Base = "AVAX"
+        Quote = "USD"
+    [market.aggregated_feeds."BITCOIN/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
+      [market.aggregated_feeds."BITCOIN/USD".currency_pair]
+        Base = "BITCOIN"
+        Quote = "USD"
+    [market.aggregated_feeds."CELESTIA/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
+      [market.aggregated_feeds."CELESTIA/USD".currency_pair]
+        Base = "CELESTIA"
+        Quote = "USD"
+    [market.aggregated_feeds."DYDX/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
+      [market.aggregated_feeds."DYDX/USD".currency_pair]
+        Base = "DYDX"
+        Quote = "USD"
+    [market.aggregated_feeds."ETHEREUM/BITCOIN"]
+      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN"}}]]
+      [market.aggregated_feeds."ETHEREUM/BITCOIN".currency_pair]
+        Base = "ETHEREUM"
+        Quote = "BITCOIN"
+    [market.aggregated_feeds."ETHEREUM/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
+      [market.aggregated_feeds."ETHEREUM/USD".currency_pair]
+        Base = "ETHEREUM"
+        Quote = "USD"
+    [market.aggregated_feeds."OSMOSIS/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
+      [market.aggregated_feeds."OSMOSIS/USD".currency_pair]
+        Base = "OSMOSIS"
+        Quote = "USD"
+    [market.aggregated_feeds."SOLANA/USD"]
+      conversions = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
+      [market.aggregated_feeds."SOLANA/USD".currency_pair]
+        Base = "SOLANA"
+        Quote = "USD"
 
 [metrics]
   prometheus_server_address = "0.0.0.0:8002"

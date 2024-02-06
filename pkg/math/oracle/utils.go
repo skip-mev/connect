@@ -7,7 +7,7 @@ import (
 
 // ScaledDecimals is the standard number of decimal places each price will be converted to
 // during the conversion process.
-const ScaledDecimals = 40
+const ScaledDecimals = 36
 
 // ScaleUpCurrencyPairPrice scales a price up to the standard number of decimals by performing the
 // following operation:

@@ -57,8 +57,11 @@ type AggregateFeedConfig struct {
 
 	// Conversions is a list of conversion operations that will be used to convert the price
 	// of the currency pair to the common currency pair.
-	Conversions [][]Conversion `mapstructure:"operations" toml:"operations"`
+	Conversions []Conversions `mapstructure:"conversions" toml:"conversions"`
 }
+
+// Conversions is a type alias for a list of conversion operations.
+type Conversions []Conversion
 
 // Conversion represents a price feed that can be used to convert to a final common
 // currency pair.

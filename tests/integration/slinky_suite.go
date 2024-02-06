@@ -308,7 +308,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 				AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
 					cp.String(): {
 						CurrencyPair: cp,
-						Conversions: [][]oracleconfig.Conversion{
+						Conversions: []oracleconfig.Conversions{
 							{
 								{
 									CurrencyPair: cp,
@@ -560,7 +560,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
 				cp1.String(): {
 					CurrencyPair: cp1,
-					Conversions: [][]oracleconfig.Conversion{
+					Conversions: []oracleconfig.Conversions{
 						{
 							{
 								CurrencyPair: cp1,
@@ -571,7 +571,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				cp2.String(): {
 					CurrencyPair: cp2,
-					Conversions: [][]oracleconfig.Conversion{
+					Conversions: []oracleconfig.Conversions{
 						{
 							{
 								CurrencyPair: cp2,
@@ -582,7 +582,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				cp3.String(): {
 					CurrencyPair: cp3,
-					Conversions: [][]oracleconfig.Conversion{
+					Conversions: []oracleconfig.Conversions{
 						{
 							{
 								CurrencyPair: cp3,
@@ -689,7 +689,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 			AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
 				cp1.String(): {
 					CurrencyPair: cp1,
-					Conversions: [][]oracleconfig.Conversion{
+					Conversions: []oracleconfig.Conversions{
 						{
 							{
 								CurrencyPair: cp1,
@@ -700,7 +700,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				cp2.String(): {
 					CurrencyPair: cp2,
-					Conversions: [][]oracleconfig.Conversion{
+					Conversions: []oracleconfig.Conversions{
 						{
 							{
 								CurrencyPair: cp2,
@@ -711,7 +711,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				cp3.String(): {
 					CurrencyPair: cp3,
-					Conversions: [][]oracleconfig.Conversion{
+					Conversions: []oracleconfig.Conversions{
 						{
 							{
 								CurrencyPair: cp3,

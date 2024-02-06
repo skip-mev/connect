@@ -30,7 +30,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
@@ -57,7 +57,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
@@ -88,7 +88,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
@@ -119,7 +119,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN"),
@@ -153,7 +153,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
@@ -197,7 +197,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
@@ -246,7 +246,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN"),
@@ -310,7 +310,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN"),
@@ -352,7 +352,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions:  [][]config.Conversion{},
+						Conversions:  []config.Conversions{},
 					},
 				},
 			},
@@ -372,7 +372,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", ""),
@@ -400,7 +400,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Conversions: [][]config.Conversion{
+						Conversions: []config.Conversions{
 							{
 								{
 									CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),

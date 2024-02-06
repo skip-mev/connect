@@ -45,7 +45,7 @@ var (
 		AggregatedFeeds: map[string]config.AggregateFeedConfig{
 			"BITCOIN/USD": {
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				Conversions: [][]config.Conversion{
+				Conversions: []config.Conversions{
 					{
 						{
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
@@ -85,7 +85,7 @@ var (
 			},
 			"ETHEREUM/USD": {
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				Conversions: [][]config.Conversion{
+				Conversions: []config.Conversions{
 					{
 						{
 							CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
@@ -301,7 +301,8 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				oracletypes.NewCurrencyPair("USDT", "BITCOIN"): createPrice(0.000025, oracle.ScaledDecimals),
 				oracletypes.NewCurrencyPair("USDT", "USD"):     createPrice(1.2, oracle.ScaledDecimals),
 			},
-			expected: createPrice(48_000, oracle.ScaledDecimals),
+			expected:      createPrice(48_000, oracle.ScaledDecimals),
+			expectedError: false,
 		},
 		{
 			name:    "successful conversion from with reasonably small numbers",
@@ -315,10 +316,11 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				},
 			},
 			medians: map[oracletypes.CurrencyPair]*big.Int{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(0.0000000000000004, oracle.ScaledDecimals), // 4e-16
-				oracletypes.NewCurrencyPair("USDT", "USD"):     createPrice(0.0000000000012, oracle.ScaledDecimals),    // 1.2e-12
+				oracletypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(0.0000000000004, oracle.ScaledDecimals), // 4e-13
+				oracletypes.NewCurrencyPair("USDT", "USD"):     createPrice(0.0000000000012, oracle.ScaledDecimals), // 1.2e-12
 			},
-			expected: createPrice(0.00000000000000000000000000048, oracle.ScaledDecimals),
+			expected:      createPrice(0.00000000000000000000000048, oracle.ScaledDecimals),
+			expectedError: false,
 		},
 		{
 			name:    "successful conversion from with reasonably large numbers",
@@ -335,7 +337,8 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				oracletypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(40_000_000_000_000_000, oracle.ScaledDecimals), // 4e16 + scaled to 40 decimals
 				oracletypes.NewCurrencyPair("USDT", "USD"):     createPrice(1_200_000, oracle.ScaledDecimals),
 			},
-			expected: createPrice(48_000_000_000_000_000_000_000, oracle.ScaledDecimals),
+			expected:      createPrice(48_000_000_000_000_000_000_000, oracle.ScaledDecimals),
+			expectedError: false,
 		},
 		{
 			name:    "successful conversion with 3 conversion operations",
@@ -356,7 +359,8 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
 				oracletypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
 			},
-			expected: createPrice(48_000, oracle.ScaledDecimals),
+			expected:      createPrice(48_000, oracle.ScaledDecimals),
+			expectedError: false,
 		},
 		{
 			name:    "path contains a price of 0 at the start",
@@ -377,7 +381,8 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
 				oracletypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
 			},
-			expected: big.NewInt(0),
+			expected:      big.NewInt(0),
+			expectedError: false,
 		},
 		{
 			name:    "path contains a price of 0 in the middle",
@@ -398,7 +403,26 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(0, oracle.ScaledDecimals),
 				oracletypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
 			},
-			expected: big.NewInt(0),
+			expected:      big.NewInt(0),
+			expectedError: false,
+		},
+		{
+			name:    "conversion path is invalid",
+			outcome: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			operations: []config.Conversion{
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				},
+			},
+			medians: map[oracletypes.CurrencyPair]*big.Int{
+				oracletypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(20, oracle.ScaledDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
+			},
+			expected:      nil,
+			expectedError: true,
 		},
 	}
 	for _, tc := range testCases {

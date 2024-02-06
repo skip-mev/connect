@@ -56,7 +56,7 @@ func TestOracleConfig(t *testing.T) {
 					AggregatedFeeds: map[string]config.AggregateFeedConfig{
 						"BITCOIN/USD": {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-							Conversions: [][]config.Conversion{
+							Conversions: []config.Conversions{
 								{
 									{
 										CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
@@ -156,7 +156,7 @@ func TestOracleConfig(t *testing.T) {
 					AggregatedFeeds: map[string]config.AggregateFeedConfig{
 						"BITCOIN/USD": {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-							Conversions: [][]config.Conversion{
+							Conversions: []config.Conversions{
 								{
 									{
 										CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),

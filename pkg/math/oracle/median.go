@@ -142,17 +142,6 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 	cp := cfg.CurrencyPair
 
 	for _, conversion := range cfg.Conversions {
-		// Ensure that the conversion is valid.
-		if err := config.CheckSort(cp, conversion); err != nil {
-			m.logger.Error(
-				"invalid conversion",
-				zap.Error(err),
-				zap.Any("conversions", conversion),
-			)
-
-			continue
-		}
-
 		// Calculate the converted price.
 		convertedPrice, err := m.CalculateConvertedPrice(cp, conversion, medians)
 		if err != nil {
@@ -180,6 +169,11 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 ) (*big.Int, error) {
 	if len(operations) == 0 {
 		return nil, fmt.Errorf("no conversion operations")
+	}
+
+	// Ensure that the conversion is valid.
+	if err := config.CheckSort(target, operations); err != nil {
+		return nil, err
 	}
 
 	// Scalers for the number of decimals.
