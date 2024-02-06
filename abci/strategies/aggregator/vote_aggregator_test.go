@@ -1,7 +1,8 @@
-package oracle_test
+package aggregator_test
 
 import (
 	"math/big"
+	"testing"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -9,14 +10,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
 
-	preblock "github.com/skip-mev/slinky/abci/preblock/oracle"
-	preblockmath "github.com/skip-mev/slinky/abci/preblock/oracle/math"
-	"github.com/skip-mev/slinky/abci/preblock/oracle/math/mocks"
-	preblockmock "github.com/skip-mev/slinky/abci/preblock/oracle/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/aggregator"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
-	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted"
+	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -49,29 +50,52 @@ var (
 	ongodhecappin = append([]byte("ongodhecappin"), make([]byte, 32)...)
 )
 
-func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
+type VoteAggregatorTestSuite struct {
+	suite.Suite
+
+	commitCodec codec.ExtendedCommitCodec
+
+	ctx sdk.Context
+
+	veCodec codec.VoteExtensionCodec
+
+	myVal sdk.ConsAddress
+}
+
+func (s *VoteAggregatorTestSuite) SetupTest() {
+	s.myVal = sdk.ConsAddress([]byte("myVal"))
+
+	s.veCodec = codec.NewCompressionVoteExtensionCodec(
+		codec.NewDefaultVoteExtensionCodec(),
+		codec.NewZLibCompressor(),
+	)
+
+	s.commitCodec = codec.NewCompressionExtendedCommitCodec(
+		codec.NewDefaultExtendedCommitCodec(),
+		codec.NewZLibCompressor(),
+	)
+}
+
+func TestVoteAggregatorTestSuite(t *testing.T) {
+	suite.Run(t, new(VoteAggregatorTestSuite))
+}
+
+func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 	// Use the default aggregation function for testing
 	mockValidatorStore := mocks.NewValidatorStore(s.T())
-	aggregationFn := preblockmath.VoteWeightedMedianFromContext(
+	aggregationFn := voteweighted.MedianFromContext(
 		log.NewTestLogger(s.T()),
 		mockValidatorStore,
-		preblockmath.DefaultPowerThreshold,
+		voteweighted.DefaultPowerThreshold,
 	)
 	mockValidatorStore.On("TotalBondedTokens", mock.Anything).Return(math.NewInt(100), nil)
 
-	mockOracleKeeper := preblockmock.NewKeeper(s.T())
-	nopMetrics := servicemetrics.NewNopMetrics()
-
 	cpID := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
-	handler := preblock.NewOraclePreBlockHandler(
+	handler := aggregator.NewDefaultVoteAggregator(
 		log.NewTestLogger(s.T()),
 		aggregationFn,
-		mockOracleKeeper,
-		nopMetrics,
 		cpID,
-		s.veCodec,
-		s.commitCodec,
 	)
 
 	s.Run("no oracle data", func() {
@@ -79,7 +103,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Aggregate oracle data
@@ -101,7 +125,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		cpID.On("FromID", s.ctx, uint64(0)).Return(btcUSD, nil).Once()
@@ -139,7 +163,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Assume the validator takes up all of the voting power
@@ -187,7 +211,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Assume the validators have an equal stake
@@ -239,7 +263,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Assume the validators have an equal stake
@@ -290,7 +314,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Assume the validators have an unequal stake
@@ -357,7 +381,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Assume the validators have an unequal stake
@@ -421,7 +445,7 @@ func (s *PreBlockTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
-		votes, err := preblock.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
+		votes, err := aggregator.GetOracleVotes(proposal, s.veCodec, s.commitCodec)
 		s.Require().NoError(err)
 
 		// Aggregate oracle data

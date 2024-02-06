@@ -118,7 +118,7 @@ The main oracle configuration object is located in [oracle.go](oracle.go). This 
 type OracleConfig struct {
 	UpdateInterval time.Duration              `mapstructure:"update_interval" toml:"update_interval"`
 	Providers      []ProviderConfig           `mapstructure:"providers" toml:"providers"`
-	CurrencyPairs  []oracletypes.CurrencyPair `mapstructure:"currency_pairs" toml:"currency_pairs"`
+	Market         AggregateMarketConfig      `mapstructure:"market" toml:"market"`
 	Production     bool                       `mapstructure:"production" toml:"production"`
 	Metrics        MetricsConfig              `mapstructure:"metrics" toml:"metrics"`
 }
@@ -293,9 +293,25 @@ This field is utilized to set the name of the provider. Mostly used as a sanity 
 
 This field is utilized to set the mappings between on-chain and off-chain currency pairs. In particular, this config maps the on-chain currency pair representation (i.e. BITCOIN/USD) to the off-chain currency pair representation (i.e. BTC/USD).
 
-## CurrencyPairs
+## Aggregate Market Configurations
 
-This field is utilized to set the list of currency pairs that the oracle will fetch prices for. These should be the same exact currency pairs that the oracle module (`x/oracle`) is currently configured to accept.
+```go
+type AggregateMarketConfig struct {
+	Feeds           map[string]FeedConfig     `mapstructure:"currency_pairs" toml:"currency_pairs"`
+	AggregatedFeeds map[string][][]Conversion `mapstructure:"aggregated_feeds" toml:"aggregated_feeds"`
+}
+
+type FeedConfig struct {
+	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+}
+
+type Conversion struct {
+	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+	Invert       bool                     `mapstructure:"invert" toml:"invert"`
+}
+```
+
+This field represents the market configurations for how currency pairs will be resolved to a final price. At a high level, the feeds field represents all of the price feeds that are currently being processed by the oracle. The aggregated feeds field represents how the oracle will aggregate the feeds to produce final prices for currency pairs.
 
 ## Production
 
@@ -471,41 +487,54 @@ production = true
           Base = "SOLANA"
           Quote = "USD"
 
-[[currency_pairs]]
-  Base = "BITCOIN"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "ETHEREUM"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "ATOM"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "SOLANA"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "CELESTIA"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "AVAX"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "DYDX"
-  Quote = "USD"
-
-[[currency_pairs]]
-  Base = "ETHEREUM"
-  Quote = "BITCOIN"
-
-[[currency_pairs]]
-  Base = "OSMOSIS"
-  Quote = "USD"
+[market]
+  [market.currency_pairs]
+    [market.currency_pairs."ATOM/USD"]
+      [market.currency_pairs."ATOM/USD".currency_pair]
+        Base = "ATOM"
+        Quote = "USD"
+    [market.currency_pairs."AVAX/USD"]
+      [market.currency_pairs."AVAX/USD".currency_pair]
+        Base = "AVAX"
+        Quote = "USD"
+    [market.currency_pairs."BITCOIN/USD"]
+      [market.currency_pairs."BITCOIN/USD".currency_pair]
+        Base = "BITCOIN"
+        Quote = "USD"
+    [market.currency_pairs."CELESTIA/USD"]
+      [market.currency_pairs."CELESTIA/USD".currency_pair]
+        Base = "CELESTIA"
+        Quote = "USD"
+    [market.currency_pairs."DYDX/USD"]
+      [market.currency_pairs."DYDX/USD".currency_pair]
+        Base = "DYDX"
+        Quote = "USD"
+    [market.currency_pairs."ETHEREUM/BITCOIN"]
+      [market.currency_pairs."ETHEREUM/BITCOIN".currency_pair]
+        Base = "ETHEREUM"
+        Quote = "BITCOIN"
+    [market.currency_pairs."ETHEREUM/USD"]
+      [market.currency_pairs."ETHEREUM/USD".currency_pair]
+        Base = "ETHEREUM"
+        Quote = "USD"
+    [market.currency_pairs."OSMOSIS/USD"]
+      [market.currency_pairs."OSMOSIS/USD".currency_pair]
+        Base = "OSMOSIS"
+        Quote = "USD"
+    [market.currency_pairs."SOLANA/USD"]
+      [market.currency_pairs."SOLANA/USD".currency_pair]
+        Base = "SOLANA"
+        Quote = "USD"
+  [market.aggregated_feeds]
+    "ATOM/USD" = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
+    "AVAX/USD" = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
+    "BITCOIN/USD" = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
+    "CELESTIA/USD" = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
+    "DYDX/USD" = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
+    "ETHEREUM/BITCOIN" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN"}}]]
+    "ETHEREUM/USD" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
+    "OSMOSIS/USD" = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
+    "SOLANA/USD" = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
 
 [metrics]
   prometheus_server_address = "0.0.0.0:8002"
