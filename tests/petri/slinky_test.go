@@ -1,9 +1,11 @@
 package petri_test
 
 import (
-	"github.com/skip-mev/slinky/tests/petri"
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
+
+	"github.com/skip-mev/slinky/tests/petri"
 )
 
 // TestSlinkyIntegration runs all of the petri slinky testapp tests
