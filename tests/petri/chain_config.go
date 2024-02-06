@@ -91,7 +91,7 @@ func GetChain(ctx context.Context, logger *zap.Logger) (types.ChainI, error) {
 }
 
 func GetGenesisModifier() types.GenesisModifier {
-	var genKVs = []chain.GenesisKV{
+	genKVs := []chain.GenesisKV{
 		{
 			Key:   "app_state.gov.params.voting_period",
 			Value: "10s",

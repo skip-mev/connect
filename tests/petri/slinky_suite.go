@@ -2,6 +2,7 @@ package petri
 
 import (
 	"context"
+
 	petritypes "github.com/skip-mev/petri/types/v2"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
@@ -34,7 +35,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.chain, err = GetChain(context.Background(), s.logger)
 	s.Require().NoError(err)
 
-	//initialize the chain
+	// initialize the chain
 	err = s.chain.Init(context.Background())
 	s.Require().NoError(err)
 }
