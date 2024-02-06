@@ -2,7 +2,6 @@ package math
 
 import (
 	"math/big"
-	"strconv"
 )
 
 // Min returns the minimum of two values.
@@ -11,40 +10,44 @@ func Min[V int | int64 | uint64 | int32 | uint32](vals ...V) V {
 		panic("cannot find minimum of empty slice")
 	}
 
-	min := vals[0]
+	minimum := vals[0]
 	for _, val := range vals[1:] {
-		if val < min {
-			min = val
+		if val < minimum {
+			minimum = val
 		}
 	}
-	return min
+	return minimum
 }
 
 // Float64StringToBigInt converts a float64 string to a big.Int.
-func Float64StringToBigInt(s string, decimals int64) (*big.Int, error) {
-	floatNum, err := strconv.ParseFloat(s, 64)
+func Float64StringToBigInt(s string, decimals int) (*big.Int, error) {
+	bigFloat := new(big.Float)
+	_, _, err := bigFloat.Parse(s, 10)
 	if err != nil {
 		return nil, err
 	}
 
-	return Float64ToBigInt(floatNum, decimals), nil
+	return BigFloatToBigInt(bigFloat, decimals), nil
 }
 
 // Float64ToBigInt converts a float64 to a big.Int.
-//
-// TODO: Is there a better approach to this?
-func Float64ToBigInt(val float64, decimals int64) *big.Int {
-	bigval := new(big.Float)
-	bigval.SetFloat64(val)
+func Float64ToBigInt(val float64, decimals int) *big.Int {
+	bigVal := new(big.Float)
+	bigVal.SetFloat64(val)
 
-	coin := new(big.Float)
-	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(decimals), nil)
-	coin.SetInt(factor)
+	return BigFloatToBigInt(bigVal, decimals)
+}
 
-	bigval.Mul(bigval, coin)
+// BigFloatToBigInt converts a big.Float to a big.Int.
+func BigFloatToBigInt(f *big.Float, decimals int) *big.Int {
+	bigFloat := new(big.Float)
+	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	bigFloat.SetInt(factor)
+
+	f.Mul(f, bigFloat)
 
 	result := new(big.Int)
-	bigval.Int(result) // store converted number in result
+	f.Int(result) // store converted number in result
 
 	return result
 }
