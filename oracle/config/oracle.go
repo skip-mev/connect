@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // OracleConfig is the over-arching config for the oracle sidecar and instrumentation. The
@@ -20,8 +18,10 @@ type OracleConfig struct {
 	// Providers is the list of providers that the oracle will fetch prices from.
 	Providers []ProviderConfig `mapstructure:"providers" toml:"providers"`
 
-	// CurrencyPairs is the list of currency pairs that the oracle will fetch prices for.
-	CurrencyPairs []oracletypes.CurrencyPair `mapstructure:"currency_pairs" toml:"currency_pairs"`
+	// Market defines the market configurations for how currency pairs will be resolved to a
+	// final price. Each currency pair can have a list of convertable markets that will be used
+	// to convert the price of the currency pair to a common currency pair.
+	Market AggregateMarketConfig `mapstructure:"market" toml:"market"`
 
 	// Production specifies whether the oracle is running in production mode. This is used to
 	// determine whether the oracle should be run in debug mode or not.
@@ -43,11 +43,10 @@ func (c *OracleConfig) ValidateBasic() error {
 		}
 	}
 
-	for _, cp := range c.CurrencyPairs {
-		if err := cp.ValidateBasic(); err != nil {
-			return fmt.Errorf("currency pair is not formatted correctly %w", err)
-		}
+	if err := c.Market.ValidateBasic(); err != nil {
+		return fmt.Errorf("market is not formatted correctly %w", err)
 	}
+
 	return c.Metrics.ValidateBasic()
 }
 
