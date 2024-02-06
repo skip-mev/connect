@@ -12,7 +12,7 @@ func BenchmarkFloat64StringToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    string
-		base     int
+		decimals int64
 		expected *big.Int
 	}{
 		{
@@ -50,7 +50,7 @@ func BenchmarkFloat64StringToBigInt(b *testing.B) {
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				_, _ = math.Float64StringToBigInt(tc.input, tc.base)
+				_, _ = math.Float64StringToBigInt(tc.input, tc.decimals)
 			}
 		})
 	}
@@ -60,7 +60,7 @@ func BenchmarkFloat64ToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    float64
-		base     int
+		decimals int64
 		expected *big.Int
 	}{
 		{
@@ -98,7 +98,7 @@ func BenchmarkFloat64ToBigInt(b *testing.B) {
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				_ = math.Float64ToBigInt(tc.input, tc.base)
+				_ = math.Float64ToBigInt(tc.input, tc.decimals)
 			}
 		})
 	}
@@ -108,7 +108,7 @@ func BenchmarkBigFloatToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    *big.Float
-		base     int
+		decimals int64
 		expected *big.Int
 	}{
 		{
@@ -147,7 +147,7 @@ func BenchmarkBigFloatToBigInt(b *testing.B) {
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
 			for n := 0; n < b.N; n++ {
-				_ = math.BigFloatToBigInt(tc.input, tc.base)
+				_ = math.BigFloatToBigInt(tc.input, tc.decimals)
 			}
 		})
 	}
