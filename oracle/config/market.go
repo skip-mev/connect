@@ -67,7 +67,7 @@ func (c *MarketConfig) ValidateBasic() error {
 	for cpStr, marketConfig := range c.CurrencyPairToMarketConfigs {
 		cp, err := oracletypes.CurrencyPairFromString(cpStr)
 		if err != nil {
-			return fmt.Errorf("currency pair is not formatted correctly %w", err)
+			return err
 		}
 
 		if cp != marketConfig.CurrencyPair {
@@ -75,7 +75,7 @@ func (c *MarketConfig) ValidateBasic() error {
 		}
 
 		if err := marketConfig.ValidateBasic(); err != nil {
-			return fmt.Errorf("market config is not formatted correctly %w", err)
+			return err
 		}
 
 		delete(c.CurrencyPairToMarketConfigs, cpStr)
