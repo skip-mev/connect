@@ -147,7 +147,7 @@ func (c *FeedConfig) ValidateBasic() error {
 	return nil
 }
 
-// checkSort checks if the given list of convertable markets is topologically sorted.
+// CheckSort checks if the given list of convertable markets is topologically sorted.
 func CheckSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
 	// Check that order is topologically sorted for each market. For example, if the oracle
 	// receives a price for BTC/USDT and USDT/USD, the order must be BTC/USDT -> USDT/USD.

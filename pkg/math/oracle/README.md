@@ -26,13 +26,12 @@ We care about calculating the price of BITCOIN and ETHEREUM in USD. To do this, 
 
 ## Aggregation
 
-The main oracle contains a [list of valid price conversions per desired price feed](./../../../oracle/config/README.md#aggregate-market-configurations). For example, to calculate the price of BITCOIN in USD, we need to convert the price of BITCOIN/USDT to USD, and the price of BITCOIN/USDC to USD. If the list contains multiple valid conversions, the aggregation function will return the median of the prices - where an average is taken if the number of prices is even.
+The main oracle configuration contains a [list of valid price conversions per desired price feed](./../../../oracle/config/README.md#aggregate-market-configurations). For example, to calculate the price of BITCOIN in USD, we need to convert the price of BITCOIN/USDT to USD, and the price of BITCOIN/USDC to USD. If the list contains multiple valid conversions, the aggregation function will return the median of the prices - where an average is taken if the number of prices is even.
 
 Following the example above, the aggregation function will return the median of the following prices:
 
 * BITCOIN/USDT * USDT/USD -> BITCOIN/USD
 * BITCOIN/USDC * USDC/USD -> BITCOIN/USD
+
 * ETHEREUM/USDT * USDT/USD -> ETHEREUM/USD
 * ETHEREUM/USDC * USDC/USD -> ETHEREUM/USD
-
-It will then return the median of the two prices to get the final price of BITCOIN in USD.

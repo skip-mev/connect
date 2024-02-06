@@ -187,6 +187,17 @@ func TestMedian(t *testing.T) {
 				oracletypes.NewCurrencyPair("ETHEREUM", "USD"): createPrice(2_200, 8),
 			},
 		},
+		{
+			name: "calculates median price with a price of 0",
+			pricesPerProvider: map[string]map[oracletypes.CurrencyPair]*big.Int{
+				"coinbase": {
+					oracletypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(0, 8),
+				},
+			},
+			expected: map[oracletypes.CurrencyPair]*big.Int{
+				oracletypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(0, 8),
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -200,7 +211,6 @@ func TestMedian(t *testing.T) {
 			for cp, expectedPrice := range tc.expected {
 				actualPrice, ok := prices[cp]
 				require.True(t, ok)
-
 				verifyPrice(t, expectedPrice, actualPrice)
 			}
 		})
@@ -348,6 +358,48 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			expected: createPrice(48_000, oracle.ScaledDecimals),
 		},
+		{
+			name:    "path contains a price of 0 at the start",
+			outcome: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			operations: []config.Conversion{
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+				},
+			},
+			medians: map[oracletypes.CurrencyPair]*big.Int{
+				oracletypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(0, oracle.ScaledDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
+				oracletypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
+			},
+			expected: big.NewInt(0),
+		},
+		{
+			name:    "path contains a price of 0 in the middle",
+			outcome: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			operations: []config.Conversion{
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				},
+				{
+					CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+				},
+			},
+			medians: map[oracletypes.CurrencyPair]*big.Int{
+				oracletypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(20, oracle.ScaledDecimals),
+				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(0, oracle.ScaledDecimals),
+				oracletypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
+			},
+			expected: big.NewInt(0),
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -368,6 +420,12 @@ func TestCalculateConvertedPrices(t *testing.T) {
 
 // verifyPrice verifies that the expected price matches the actual price within an acceptable delta.
 func verifyPrice(t *testing.T, expected, actual *big.Int) {
+	zero := big.NewInt(0)
+	if expected.Cmp(zero) == 0 {
+		require.Equal(t, zero, actual)
+		return
+	}
+
 	var diff *big.Float
 	if expected.Cmp(actual) > 0 {
 		diff = new(big.Float).Sub(new(big.Float).SetInt(expected), new(big.Float).SetInt(actual))
