@@ -65,7 +65,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 	return nil
 }
 
-// recordPrice records all the given prices per ticker, and reports them as a float64
+// recordPrice records all the given prices per ticker, and reports them as a float64.
 func (h *PreBlockHandler) recordPrices(prices map[oracletypes.CurrencyPair]*big.Int) {
 	for ticker, price := range prices {
 		floatPrice, _ := price.Float64()

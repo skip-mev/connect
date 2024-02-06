@@ -12,17 +12,17 @@ import (
 
 const AlertUIDLen = 20
 
-// ConclusionStatus wraps the status of an alert
+// ConclusionStatus wraps the status of an alert.
 type ConclusionStatus uint64
 
 const (
-	// Unconcluded is the default status of an alert (no conclusion has been submitted for it yet)
+	// Unconcluded is the default status of an alert (no conclusion has been submitted for it yet).
 	Unconcluded ConclusionStatus = iota
-	// Concluded is the status of an alert that has been concluded
+	// Concluded is the status of an alert that has been concluded.
 	Concluded
 )
 
-// String implements fmt.Stringer
+// String implements fmt.Stringer.
 func (cs ConclusionStatus) String() string {
 	switch cs {
 	case Unconcluded:

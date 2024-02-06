@@ -1,14 +1,21 @@
 run:
   tests: true
   timeout: 10m
-  sort-results: true
   allow-parallel-runners: true
   concurrency: 4
 
 linters:
   disable-all: true
   enable:
+    # Check for pass []any as any in variadic func(...any).
+    - asasalint
+    - asciicheck
+    # Checks for dangerous unicode character sequences.
+    # Super rare but why not to be a bit paranoid?
+    - bidichk
     - dogsled
+    # Check for two durations multiplied together.
+    - durationcheck
     - exportloopref
     - goconst
     - gocritic
@@ -16,16 +23,39 @@ linters:
     - gosec
     - gosimple
     - govet
+    - godot
     - ineffassign
     - misspell
     - nakedret
+    - errorlint
+    # Checks for pointers to enclosing loop variables.
+    - exportloopref
     - nolintlint
+    # Finds shadowing of Go's predeclared identifiers.
+    # I hear a lot of complaints from junior developers.
+    # But after some time they find it very useful.
+    - predeclared
+    # Finds slices that could potentially be pre-allocated.
+    # Small performance win + cleaner code.
+    - prealloc
+    # Lint your Prometheus metrics name.
+    - promlinter
+      # Checks that package variables are not reassigned.
+      # Super rare case but can catch bad things (like `io.EOF = nil`)
+    - reassign
     - staticcheck
     - revive
     - stylecheck
     - typecheck
+    - thelper
+    - tenv
+    - tparallel
     - unconvert
     - unused
+    # Detect the possibility to use variables/constants from stdlib.
+    - usestdlibvars
+    # Finds wasted assignment statements.
+    - wastedassign
     # - errcheck
 
 issues:
@@ -54,6 +84,5 @@ linters-settings:
     suggest-new: true
   nolintlint:
     allow-unused: false
-    allow-leading-space: true
     require-explanation: false
     require-specific: false

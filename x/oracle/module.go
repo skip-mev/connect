@@ -41,7 +41,7 @@ type AppModuleBasic struct {
 	cdc codec.Codec
 }
 
-// Name returns the name of this module
+// Name returns the name of this module.
 func (amb AppModuleBasic) Name() string { return types.ModuleName }
 
 // RegisterLegacyAminoCodec registers the necessary types from the x/oracle module for amino serialization.
@@ -55,7 +55,7 @@ func (amb AppModuleBasic) RegisterInterfaces(ir codectypes.InterfaceRegistry) {
 }
 
 // RegisterGRPCGatewayRoutes registers the necessary REST routes for the GRPC-gateway to the x/oracle module QueryService on mux. This method
-// panics on failure
+// panics on failure.
 func (amb AppModuleBasic) RegisterGRPCGatewayRoutes(cliCtx client.Context, mux *runtime.ServeMux) {
 	// register the gate-way routes w/ the provided mux
 	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(cliCtx)); err != nil {
@@ -63,24 +63,24 @@ func (amb AppModuleBasic) RegisterGRPCGatewayRoutes(cliCtx client.Context, mux *
 	}
 }
 
-// GetTxCmd is a no-op, as no txs are registered for submission (apart from messages that can only be executed by governance)
+// GetTxCmd is a no-op, as no txs are registered for submission (apart from messages that can only be executed by governance).
 func (amb AppModuleBasic) GetTxCmd() *cobra.Command {
 	return nil
 }
 
-// GetQueryCmd returns the x/oracle module base query cli-command
+// GetQueryCmd returns the x/oracle module base query cli-command.
 func (amb AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-// AppModule represents an application module for the x/oracle module
+// AppModule represents an application module for the x/oracle module.
 type AppModule struct {
 	AppModuleBasic
 
 	k keeper.Keeper
 }
 
-// NewAppModule returns an application module for the x/oracle module
+// NewAppModule returns an application module for the x/oracle module.
 func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{
@@ -99,7 +99,7 @@ func (am AppModule) IsOnePerModuleType() {}
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
-// RegisterServices registers the module's services with the app's module configurator
+// RegisterServices registers the module's services with the app's module configurator.
 func (am AppModule) RegisterServices(cfc module.Configurator) {
 	// register MsgServer
 	types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(am.k))
@@ -136,7 +136,7 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // InitGenesis performs the genesis initialization for the x/oracle module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
-// This method panics on any errors
+// This method panics on any errors.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
 	// unmarshal genesis-state (panic on errors)
 	var gs types.GenesisState

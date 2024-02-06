@@ -47,7 +47,7 @@ func (b ValidatorAlertIncentive) ValidateBasic() error {
 
 	// check signer validity
 	if _, err := sdk.AccAddressFromBech32(b.AlertSigner); err != nil {
-		return fmt.Errorf("validator address is invalid: %s", err)
+		return fmt.Errorf("validator address is invalid: %w", err)
 	}
 
 	return nil

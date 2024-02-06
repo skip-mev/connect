@@ -344,7 +344,7 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 		s.Require().Len(incentives, 0)
 	})
 
-	updateBadPriceStrategy := func(ctx sdk.Context, incentive types.Incentive) (types.Incentive, error) {
+	updateBadPriceStrategy := func(_ sdk.Context, incentive types.Incentive) (types.Incentive, error) {
 		badPrice, ok := incentive.(*badprice.BadPriceIncentive)
 		s.Require().True(ok)
 
@@ -402,7 +402,7 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 		s.Require().Equal(math.NewInt(300).String(), i.Amount)
 	})
 
-	updateGoodPriceStrategy := func(ctx sdk.Context, incentive types.Incentive) (types.Incentive, error) {
+	updateGoodPriceStrategy := func(_ sdk.Context, incentive types.Incentive) (types.Incentive, error) {
 		goodPrice, ok := incentive.(*goodprice.GoodPriceIncentive)
 		s.Require().True(ok)
 

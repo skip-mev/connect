@@ -9,12 +9,12 @@ import (
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// msgServer is the default implementation of the x/oracle MsgService
+// msgServer is the default implementation of the x/oracle MsgService.
 type msgServer struct {
 	k Keeper
 }
 
-// NewMsgServer returns the default implementation of the x/oracle message service
+// NewMsgServer returns the default implementation of the x/oracle message service.
 func NewMsgServer(k Keeper) types.MsgServer {
 	return &msgServer{k}
 }
@@ -69,7 +69,7 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 		// get cp from identifier string
 		cp, err := types.CurrencyPairFromString(id)
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %v", err)
+			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %w", err)
 		}
 
 		// delete the currency pair from state
