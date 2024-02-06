@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -18,7 +17,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 		{
 			name:      "empty config",
 			cfg:       config.AggregateMarketConfig{},
-			expectErr: true,
+			expectErr: false,
 		},
 		{
 			name: "valid config where we have the exact feed that we want",
@@ -301,17 +300,6 @@ func TestAggregateMarketConfig(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name: "invalid config with insufficient aggregations",
-			cfg: config.AggregateMarketConfig{
-				Feeds: map[string]config.FeedConfig{
-					"BITCOIN/USD": {
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-					},
-				},
-			},
-			expectErr: true,
-		},
-		{
 			name: "invalid config where feed in conversions is not supported",
 			cfg: config.AggregateMarketConfig{
 				Feeds: map[string]config.FeedConfig{
@@ -430,7 +418,6 @@ func TestAggregateMarketConfig(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.cfg.ValidateBasic()
-			fmt.Println(err)
 			if tc.expectErr {
 				require.Error(t, err)
 			} else {
