@@ -53,12 +53,15 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
-					AggregatedFeeds: map[string][][]config.Conversion{
+					AggregatedFeeds: map[string]config.AggregateFeedConfig{
 						"BITCOIN/USD": {
-							{
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							Conversions: []config.Conversions{
 								{
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-									Invert:       false,
+									{
+										CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+										Invert:       false,
+									},
 								},
 							},
 						},
@@ -150,12 +153,15 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
-					AggregatedFeeds: map[string][][]config.Conversion{
+					AggregatedFeeds: map[string]config.AggregateFeedConfig{
 						"BITCOIN/USD": {
-							{
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							Conversions: []config.Conversions{
 								{
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-									Invert:       false,
+									{
+										CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+										Invert:       false,
+									},
 								},
 							},
 						},
