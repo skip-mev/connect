@@ -199,8 +199,11 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 // injectTx will only appear once regardless of how many times you attempt to inject it.
 // If injectTx is large enough, all originalTxs may end up being excluded from the returned tx array.
 func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxSizeBytes int64) [][]byte {
-	returnedTxs := make([][]byte, 0, len(appTxs)) // init with initial capacity
-	var consumedBytes int64
+	var (
+		returnedTxs   [][]byte
+		consumedBytes int64
+	)
+
 	// If VEs are enabled and our VE Tx isn't already in the appTxs, inject it here
 	if len(injectTx) != 0 && (len(appTxs) < 1 || !bytes.Equal(appTxs[0], injectTx)) {
 		injectBytes := int64(len(injectTx))
