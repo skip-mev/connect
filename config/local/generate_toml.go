@@ -69,76 +69,148 @@ var LocalConfig = config.OracleConfig{
 				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
 			},
 		},
-		AggregatedFeeds: map[string][][]config.Conversion{
+		AggregatedFeeds: map[string]config.AggregateFeedConfig{
 			"BITCOIN/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"ETHEREUM/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"ATOM/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"SOLANA/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"CELESTIA/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"AVAX/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"DYDX/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"ETHEREUM/BITCOIN": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
 			"OSMOSIS/USD": {
-				{
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+				Conversions: []config.Conversions{
 					{
+<<<<<<< HEAD
 						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
 						Invert:       false,
+=======
+						{
+							CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+							Invert:       false,
+						},
+>>>>>>> main
 					},
 				},
 			},
@@ -254,6 +326,11 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error creating local config file: %v\n", err)
 	}
 	defer f.Close()
+
+	if err := LocalConfig.ValidateBasic(); err != nil {
+		fmt.Fprintf(os.Stderr, "error validating local config: %v\n", err)
+		return
+	}
 
 	// Encode the local config file.
 	encoder := toml.NewEncoder(f)

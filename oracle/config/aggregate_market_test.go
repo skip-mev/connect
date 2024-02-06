@@ -28,12 +28,15 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -52,16 +55,19 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -80,16 +86,19 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("USD", "USDT", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USD", "USDT", oracletypes.DefaultDecimals),
-								Invert:       true,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USD", "USDT", oracletypes.DefaultDecimals),
+									Invert:       true,
+								},
 							},
 						},
 					},
@@ -108,16 +117,19 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN", oracletypes.DefaultDecimals),
-								Invert:       true,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN", oracletypes.DefaultDecimals),
+									Invert:       true,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -139,20 +151,23 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -180,28 +195,31 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("MOG", "PEPE", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("SKIP", "PEPE", oracletypes.DefaultDecimals),
-								Invert:       true,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("SKIP", "USDT", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("MOG", "PEPE", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("SKIP", "PEPE", oracletypes.DefaultDecimals),
+									Invert:       true,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("SKIP", "USDT", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -226,30 +244,33 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN", oracletypes.DefaultDecimals),
-								Invert:       true,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN", oracletypes.DefaultDecimals),
+									Invert:       true,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-						},
-						{
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -287,16 +308,33 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "BITCOIN", oracletypes.DefaultDecimals),
+									Invert:       true,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "MOG", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USDT", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -312,8 +350,11 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
-					"BITCOIN/USD": {},
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
+					"BITCOIN/USD": {
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions:  []config.Conversions{},
+					},
 				},
 			},
 			expectErr: true,
@@ -329,16 +370,19 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "", oracletypes.DefaultDecimals),
-								Invert:       false,
-							},
-							{
-								CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -354,12 +398,15 @@ func TestAggregateMarketConfig(t *testing.T) {
 						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 					},
 				},
-				AggregatedFeeds: map[string][][]config.Conversion{
+				AggregatedFeeds: map[string]config.AggregateFeedConfig{
 					"BITCOIN/USD": {
-						{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Conversions: []config.Conversions{
 							{
-								CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
-								Invert:       false,
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
 							},
 						},
 					},

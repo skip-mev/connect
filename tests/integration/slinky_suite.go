@@ -308,12 +308,21 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 						CurrencyPair: cp,
 					},
 				},
+<<<<<<< HEAD
 				AggregatedFeeds: map[string][][]oracleconfig.Conversion{
 					cp.Ticker(): {
 						{
+=======
+				AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
+					cp.String(): {
+						CurrencyPair: cp,
+						Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 							{
-								CurrencyPair: cp,
-								Invert:       false,
+								{
+									CurrencyPair: cp,
+									Invert:       false,
+								},
 							},
 						},
 					},
@@ -557,28 +566,53 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					CurrencyPair: cp3,
 				},
 			},
+<<<<<<< HEAD
 			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
 				cp1.Ticker(): {
 					{
+=======
+			AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
+				cp1.String(): {
+					CurrencyPair: cp1,
+					Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 						{
-							CurrencyPair: cp1,
-							Invert:       false,
+							{
+								CurrencyPair: cp1,
+								Invert:       false,
+							},
 						},
 					},
 				},
+<<<<<<< HEAD
 				cp2.Ticker(): {
 					{
+=======
+				cp2.String(): {
+					CurrencyPair: cp2,
+					Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 						{
-							CurrencyPair: cp2,
-							Invert:       false,
+							{
+								CurrencyPair: cp2,
+								Invert:       false,
+							},
 						},
 					},
 				},
+<<<<<<< HEAD
 				cp3.Ticker(): {
 					{
+=======
+				cp3.String(): {
+					CurrencyPair: cp3,
+					Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 						{
-							CurrencyPair: cp3,
-							Invert:       false,
+							{
+								CurrencyPair: cp3,
+								Invert:       false,
+							},
 						},
 					},
 				},
@@ -677,28 +711,53 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					CurrencyPair: cp3,
 				},
 			},
+<<<<<<< HEAD
 			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
 				cp1.Ticker(): {
 					{
+=======
+			AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
+				cp1.String(): {
+					CurrencyPair: cp1,
+					Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 						{
-							CurrencyPair: cp1,
-							Invert:       false,
+							{
+								CurrencyPair: cp1,
+								Invert:       false,
+							},
 						},
 					},
 				},
+<<<<<<< HEAD
 				cp2.Ticker(): {
 					{
+=======
+				cp2.String(): {
+					CurrencyPair: cp2,
+					Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 						{
-							CurrencyPair: cp2,
-							Invert:       false,
+							{
+								CurrencyPair: cp2,
+								Invert:       false,
+							},
 						},
 					},
 				},
+<<<<<<< HEAD
 				cp3.Ticker(): {
 					{
+=======
+				cp3.String(): {
+					CurrencyPair: cp3,
+					Conversions: []oracleconfig.Conversions{
+>>>>>>> main
 						{
-							CurrencyPair: cp3,
-							Invert:       false,
+							{
+								CurrencyPair: cp3,
+								Invert:       false,
+							},
 						},
 					},
 				},
