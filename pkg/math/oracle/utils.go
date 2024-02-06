@@ -27,14 +27,14 @@ func ScaleUpCurrencyPairPrice(decimals int64, price *big.Int) (*big.Int, error) 
 	return new(big.Int).Mul(price, exp), nil
 }
 
-// ScaleDownCurrencyPair scales a price down to the standard number of decimals by performing the
+// ScaleDownCurrencyPairPrice scales a price down to the standard number of decimals by performing the
 // following operation:
 // 1. price / 10^(ScaledDecimals - decimals)
 // 2. Convert the result to a big.Int
 //
 // NOTE: This function should only be used on prices that have already been scaled to the standard
 // number of decimals. The output of this returns the price to its expected number of decimals.
-func ScaleDownCurrencyPair(decimals int64, price *big.Int) (*big.Int, error) {
+func ScaleDownCurrencyPairPrice(decimals int64, price *big.Int) (*big.Int, error) {
 	diff := int64(ScaledDecimals - decimals)
 	if diff < 0 {
 		return nil, fmt.Errorf("cannot scale down price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)

@@ -92,7 +92,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 
 		// Scale all of the aggregated medians back to the original number of decimals.
 		for cp, price := range aggregatedMedians {
-			unscaledPrice, err := ScaleDownCurrencyPair(int64(cp.Decimals()), price)
+			unscaledPrice, err := ScaleDownCurrencyPairPrice(int64(cp.Decimals()), price)
 			if err != nil {
 				m.logger.Error("failed to scale price", zap.Error(err), zap.String("currency_pair", cp.String()), zap.String("price", price.String()))
 				continue

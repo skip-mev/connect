@@ -179,7 +179,7 @@ func TestMedian(t *testing.T) {
 			pricesPerProvider: map[string]map[oracletypes.CurrencyPair]*big.Int{
 				"coinbase": {
 					oracletypes.NewCurrencyPair("USDT", "ETHEREUM"): createPrice(0.0005, 18),
-					oracletypes.NewCurrencyPair("USDT", "USD"):      createPrice(1.1, 
+					oracletypes.NewCurrencyPair("USDT", "USD"): createPrice(1.1,
 						8),
 				},
 			},
@@ -378,7 +378,7 @@ func verifyPrice(t *testing.T, expected, actual *big.Int) {
 	scaledDiff := new(big.Float).Quo(diff, new(big.Float).SetInt(expected))
 	delta, _ := scaledDiff.Float64()
 	t.Logf("expected price: %s; actual price: %s; diff %s", expected.String(), actual.String(), diff.String())
-	t.Logf("acceptable delta: %f; actual delta: %f", acceptableDelta, delta)
+	t.Logf("acceptable delta: %.25f; actual delta: %.25f", acceptableDelta, delta)
 
 	switch {
 	case delta == 0:
