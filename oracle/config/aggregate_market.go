@@ -39,7 +39,7 @@ type AggregateMarketConfig struct {
 	// the conversion market to convert the BTC/USDT price to BTC/USD. These must be
 	// provided in a topologically sorted order that resolve to the same currency pair
 	// defined in the CurrencyPair field.
-	AggregatedFeeds map[string][][]Conversion `mapstructure:"aggregated_feeds" toml:"aggregated_feeds"`
+	AggregatedFeeds map[string]AggregateFeedConfig `mapstructure:"aggregated_feeds" toml:"aggregated_feeds"`
 }
 
 // FeedConfig represents the configurations for a given price feed. Each currency pair
@@ -48,6 +48,20 @@ type FeedConfig struct {
 	// CurrencyPair is the currency pair that the oracle will fetch prices for.
 	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
+
+// AggregateFeedConfig represents all of the conversion markets that can be used to convert the
+// price of a currency pair to a common currency pair.
+type AggregateFeedConfig struct {
+	// CurrencyPair is the currency pair that the oracle will convert to.
+	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+
+	// Conversions is a list of conversion operations that will be used to convert the price
+	// of the currency pair to the common currency pair.
+	Conversions []Conversions `mapstructure:"conversions" toml:"conversions"`
+}
+
+// Conversions is a type alias for a list of conversion operations.
+type Conversions []Conversion
 
 // Conversion represents a price feed that can be used to convert to a final common
 // currency pair.
@@ -97,24 +111,28 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Ensure that all of the convertable feeds are valid. We consider it valid if the
 	// currency pair can be found in the feeds map and the convertable market is topologically
 	// sorted.
-	for cpString, convertableFeedsForCP := range c.AggregatedFeeds {
+	for cpString, conversions := range c.AggregatedFeeds {
 		cp, err := oracletypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			return err
 		}
 
-		if len(convertableFeedsForCP) == 0 {
-			return fmt.Errorf("no convertable markets provided for %s", cp)
+		if cp != conversions.CurrencyPair {
+			return fmt.Errorf("currency pair %s does not match the currency pair in the config", cpString)
 		}
 
-		for _, feeds := range convertableFeedsForCP {
+		if len(conversions.Conversions) == 0 {
+			return fmt.Errorf("no operations provided for %s", cp)
+		}
+
+		for _, feeds := range conversions.Conversions {
 			for _, conversion := range feeds {
 				if _, ok := c.Feeds[conversion.CurrencyPair.String()]; !ok {
 					return fmt.Errorf("convertable market %s does not exist in the feeds", conversion.CurrencyPair)
 				}
 			}
 
-			if err := checkSort(cp, feeds); err != nil {
+			if err := CheckSort(cp, feeds); err != nil {
 				return err
 			}
 		}
@@ -132,8 +150,8 @@ func (c *FeedConfig) ValidateBasic() error {
 	return nil
 }
 
-// checkSort checks if the given list of convertable markets is topologically sorted.
-func checkSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
+// CheckSort checks if the given list of convertable markets is topologically sorted.
+func CheckSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
 	// Check that order is topologically sorted for each market. For example, if the oracle
 	// receives a price for BTC/USDT and USDT/USD, the order must be BTC/USDT -> USDT/USD.
 	// Alternatively, if the oracle receives a price for BTC/USDT and USD/USDT, the order must
