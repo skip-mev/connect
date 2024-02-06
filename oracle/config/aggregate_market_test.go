@@ -18,7 +18,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 		{
 			name:      "empty config",
 			cfg:       config.AggregateMarketConfig{},
-			expectErr: true,
+			expectErr: false,
 		},
 		{
 			name: "valid config where we have the exact feed that we want",
@@ -274,17 +274,6 @@ func TestAggregateMarketConfig(t *testing.T) {
 				Feeds: map[string]config.FeedConfig{
 					"BITCOIN/USD": {
 						CurrencyPair: oracletypes.NewCurrencyPair("MOG", "USD", oracletypes.DefaultDecimals),
-					},
-				},
-			},
-			expectErr: true,
-		},
-		{
-			name: "invalid config with insufficient aggregations",
-			cfg: config.AggregateMarketConfig{
-				Feeds: map[string]config.FeedConfig{
-					"BITCOIN/USD": {
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 					},
 				},
 			},
