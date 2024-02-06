@@ -48,8 +48,22 @@ func TestOracleConfig(t *testing.T) {
 						},
 					},
 				},
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				Market: config.AggregateMarketConfig{
+					Feeds: map[string]config.FeedConfig{
+						"BITCOIN/USD": {
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						},
+					},
+					AggregatedFeeds: map[string][][]config.Conversion{
+						"BITCOIN/USD": {
+							{
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+							},
+						},
+					},
 				},
 			},
 			expectedErr: false,
@@ -81,11 +95,21 @@ func TestOracleConfig(t *testing.T) {
 							ReconnectionTimeout: time.Second,
 							WSS:                 "wss://test.com",
 							Name:                "test",
+							ReadBufferSize:      config.DefaultReadBufferSize,
+							WriteBufferSize:     config.DefaultWriteBufferSize,
+							HandshakeTimeout:    config.DefaultHandshakeTimeout,
+							EnableCompression:   config.DefaultEnableCompression,
+							ReadTimeout:         config.DefaultReadTimeout,
+							WriteTimeout:        config.DefaultWriteTimeout,
 						},
 					},
 				},
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOINUSD", "", oracletypes.DefaultDecimals),
+				Market: config.AggregateMarketConfig{
+					Feeds: map[string]config.FeedConfig{
+						"BITCOINUSD": {
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						},
+					},
 				},
 			},
 			expectedErr: true,
@@ -112,11 +136,31 @@ func TestOracleConfig(t *testing.T) {
 							ReconnectionTimeout: time.Second,
 							WSS:                 "wss://test.com",
 							Name:                "test",
+							ReadBufferSize:      config.DefaultReadBufferSize,
+							WriteBufferSize:     config.DefaultWriteBufferSize,
+							HandshakeTimeout:    config.DefaultHandshakeTimeout,
+							EnableCompression:   config.DefaultEnableCompression,
+							ReadTimeout:         config.DefaultReadTimeout,
+							WriteTimeout:        config.DefaultWriteTimeout,
 						},
 					},
 				},
-				CurrencyPairs: []oracletypes.CurrencyPair{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+				Market: config.AggregateMarketConfig{
+					Feeds: map[string]config.FeedConfig{
+						"BITCOIN/USD": {
+							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						},
+					},
+					AggregatedFeeds: map[string][][]config.Conversion{
+						"BITCOIN/USD": {
+							{
+								{
+									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+									Invert:       false,
+								},
+							},
+						},
+					},
 				},
 				Metrics: config.MetricsConfig{
 					Enabled: true,

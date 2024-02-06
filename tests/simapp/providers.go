@@ -42,7 +42,7 @@ func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.Currency
 			return nil, err
 		}
 
-		cps := cfg.CurrencyPairs
+		cps := cfg.Market.GetCurrencyPairs()
 
 		// Create the metrics that are used by the providers.
 		mWebSocket := wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics)

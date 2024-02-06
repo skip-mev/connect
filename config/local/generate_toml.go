@@ -37,20 +37,114 @@ var oracleCfgPath = flag.String("oracle-config-path", "oracle.toml", "path to wr
 // as they are made to this file.
 var LocalConfig = config.OracleConfig{
 	// -----------------------------------------------------------	//
-	// --------------------All Currency Pairs---------------------	//
+	// -----------------Aggregate Market Config-------------------	//
 	// -----------------------------------------------------------	//
-	CurrencyPairs: []oracletypes.CurrencyPair{
-		oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
-		oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
+	Market: config.AggregateMarketConfig{
+		Feeds: map[string]config.FeedConfig{
+			"BITCOIN/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+			},
+			"ETHEREUM/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
+			},
+			"ATOM/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
+			},
+			"SOLANA/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
+			},
+			"CELESTIA/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
+			},
+			"AVAX/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
+			},
+			"DYDX/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
+			},
+			"ETHEREUM/BITCOIN": {
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
+			},
+			"OSMOSIS/USD": {
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
+			},
+		},
+		AggregatedFeeds: map[string][][]config.Conversion{
+			"BITCOIN/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"ETHEREUM/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"ATOM/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"SOLANA/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"CELESTIA/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"AVAX/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"DYDX/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"ETHEREUM/BITCOIN": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+			"OSMOSIS/USD": {
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
+						Invert:       false,
+					},
+				},
+			},
+		},
 	},
-	Production: true,
+	Production: false,
 	// -----------------------------------------------------------	//
 	// ----------------------Metrics Config-----------------------	//
 	// -----------------------------------------------------------	//
