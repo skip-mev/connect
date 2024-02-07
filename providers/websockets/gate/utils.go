@@ -37,37 +37,49 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
+			"BITCOIN/USDT": {
 				Ticker:       "BTC_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 			},
-			"ETHEREUM/USD": {
+			"ETHEREUM/USDT": {
 				Ticker:       "ETH_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
 			},
-			"ATOM/USD": {
+			"ATOM/USDT": {
 				Ticker:       "ATOM_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 			},
-			"SOLANA/USD": {
+			"SOLANA/USDT": {
 				Ticker:       "SOL_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
 			},
-			"CELESTIA/USD": {
+			"SOLANA/USDC": {
+				Ticker:       "SOL_USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
+			},
+			"CELESTIA/USDT": {
 				Ticker:       "TIA_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
 			},
-			"AVAX/USD": {
+			"AVAX/USDT": {
 				Ticker:       "AVAX_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
 			},
-			"DYDX/USD": {
+			"DYDX/USDT": {
 				Ticker:       "DYDX_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ETH_BTC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"USDC/USDT": {
+				Ticker:       "USDC_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
+			},
+			"USDT/USD": {
+				Ticker:       "USDT_USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 			},
 		},
 	}

@@ -943,22 +943,62 @@ production = false
       [market.currency_pairs."ATOM/USD".currency_pair]
         Base = "ATOM"
         Quote = "USD"
+    [market.currency_pairs."ATOM/USDC"]
+      [market.currency_pairs."ATOM/USDC".currency_pair]
+        Base = "ATOM"
+        Quote = "USDC"
+    [market.currency_pairs."ATOM/USDT"]
+      [market.currency_pairs."ATOM/USDT".currency_pair]
+        Base = "ATOM"
+        Quote = "USDT"
     [market.currency_pairs."AVAX/USD"]
       [market.currency_pairs."AVAX/USD".currency_pair]
         Base = "AVAX"
         Quote = "USD"
+    [market.currency_pairs."AVAX/USDC"]
+      [market.currency_pairs."AVAX/USDC".currency_pair]
+        Base = "AVAX"
+        Quote = "USDC"
+    [market.currency_pairs."AVAX/USDT"]
+      [market.currency_pairs."AVAX/USDT".currency_pair]
+        Base = "AVAX"
+        Quote = "USDT"
     [market.currency_pairs."BITCOIN/USD"]
       [market.currency_pairs."BITCOIN/USD".currency_pair]
         Base = "BITCOIN"
         Quote = "USD"
+    [market.currency_pairs."BITCOIN/USDC"]
+      [market.currency_pairs."BITCOIN/USDC".currency_pair]
+        Base = "BITCOIN"
+        Quote = "USDC"
+    [market.currency_pairs."BITCOIN/USDT"]
+      [market.currency_pairs."BITCOIN/USDT".currency_pair]
+        Base = "BITCOIN"
+        Quote = "USDT"
     [market.currency_pairs."CELESTIA/USD"]
       [market.currency_pairs."CELESTIA/USD".currency_pair]
         Base = "CELESTIA"
         Quote = "USD"
+    [market.currency_pairs."CELESTIA/USDC"]
+      [market.currency_pairs."CELESTIA/USDC".currency_pair]
+        Base = "CELESTIA"
+        Quote = "USDC"
+    [market.currency_pairs."CELESTIA/USDT"]
+      [market.currency_pairs."CELESTIA/USDT".currency_pair]
+        Base = "CELESTIA"
+        Quote = "USDT"
     [market.currency_pairs."DYDX/USD"]
       [market.currency_pairs."DYDX/USD".currency_pair]
         Base = "DYDX"
         Quote = "USD"
+    [market.currency_pairs."DYDX/USDC"]
+      [market.currency_pairs."DYDX/USDC".currency_pair]
+        Base = "DYDX"
+        Quote = "USDC"
+    [market.currency_pairs."DYDX/USDT"]
+      [market.currency_pairs."DYDX/USDT".currency_pair]
+        Base = "DYDX"
+        Quote = "USDT"
     [market.currency_pairs."ETHEREUM/BITCOIN"]
       [market.currency_pairs."ETHEREUM/BITCOIN".currency_pair]
         Base = "ETHEREUM"
@@ -967,37 +1007,69 @@ production = false
       [market.currency_pairs."ETHEREUM/USD".currency_pair]
         Base = "ETHEREUM"
         Quote = "USD"
+    [market.currency_pairs."ETHEREUM/USDC"]
+      [market.currency_pairs."ETHEREUM/USDC".currency_pair]
+        Base = "ETHEREUM"
+        Quote = "USDC"
+    [market.currency_pairs."ETHEREUM/USDT"]
+      [market.currency_pairs."ETHEREUM/USDT".currency_pair]
+        Base = "ETHEREUM"
+        Quote = "USDT"
     [market.currency_pairs."OSMOSIS/USD"]
       [market.currency_pairs."OSMOSIS/USD".currency_pair]
         Base = "OSMOSIS"
         Quote = "USD"
+    [market.currency_pairs."OSMOSIS/USDC"]
+      [market.currency_pairs."OSMOSIS/USDC".currency_pair]
+        Base = "OSMOSIS"
+        Quote = "USDC"
+    [market.currency_pairs."OSMOSIS/USDT"]
+      [market.currency_pairs."OSMOSIS/USDT".currency_pair]
+        Base = "OSMOSIS"
+        Quote = "USDT"
     [market.currency_pairs."SOLANA/USD"]
       [market.currency_pairs."SOLANA/USD".currency_pair]
         Base = "SOLANA"
         Quote = "USD"
+    [market.currency_pairs."SOLANA/USDC"]
+      [market.currency_pairs."SOLANA/USDC".currency_pair]
+        Base = "SOLANA"
+        Quote = "USDC"
+    [market.currency_pairs."SOLANA/USDT"]
+      [market.currency_pairs."SOLANA/USDT".currency_pair]
+        Base = "SOLANA"
+        Quote = "USDT"
+    [market.currency_pairs."USDC/USD"]
+      [market.currency_pairs."USDC/USD".currency_pair]
+        Base = "USDC"
+        Quote = "USD"
+    [market.currency_pairs."USDT/USD"]
+      [market.currency_pairs."USDT/USD".currency_pair]
+        Base = "USDT"
+        Quote = "USD"
   [market.aggregated_feeds]
     [market.aggregated_feeds."ATOM/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "ATOM", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "ATOM", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."ATOM/USD".currency_pair]
         Base = "ATOM"
         Quote = "USD"
     [market.aggregated_feeds."AVAX/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "AVAX", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "AVAX", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."AVAX/USD".currency_pair]
         Base = "AVAX"
         Quote = "USD"
     [market.aggregated_feeds."BITCOIN/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."BITCOIN/USD".currency_pair]
         Base = "BITCOIN"
         Quote = "USD"
     [market.aggregated_feeds."CELESTIA/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."CELESTIA/USD".currency_pair]
         Base = "CELESTIA"
         Quote = "USD"
     [market.aggregated_feeds."DYDX/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "DYDX", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "DYDX", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."DYDX/USD".currency_pair]
         Base = "DYDX"
         Quote = "USD"
@@ -1007,17 +1079,17 @@ production = false
         Base = "ETHEREUM"
         Quote = "BITCOIN"
     [market.aggregated_feeds."ETHEREUM/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."ETHEREUM/USD".currency_pair]
         Base = "ETHEREUM"
         Quote = "USD"
     [market.aggregated_feeds."OSMOSIS/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."OSMOSIS/USD".currency_pair]
         Base = "OSMOSIS"
         Quote = "USD"
     [market.aggregated_feeds."SOLANA/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "SOLANA", Quote = "USDT"}}, {invert = false, currency_pair = {Base = "USDT", Quote = "USD"}}], [{invert = false, currency_pair = {Base = "SOLANA", Quote = "USDC"}}, {invert = false, currency_pair = {Base = "USDC", Quote = "USD"}}]]
       [market.aggregated_feeds."SOLANA/USD".currency_pair]
         Base = "SOLANA"
         Quote = "USD"

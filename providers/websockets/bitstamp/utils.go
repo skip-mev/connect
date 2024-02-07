@@ -65,6 +65,14 @@ var (
 				Ticker:       "ethbtc",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
+			"USDT/USD": {
+				Ticker:       "usdtusd",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+			},
+			"USDC/USD": {
+				Ticker:       "usdcusd",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+			},
 		},
 	}
 )
