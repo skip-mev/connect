@@ -54,7 +54,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.
-	
+
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
