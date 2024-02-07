@@ -1512,12 +1512,6 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 	s.Require().NoError(err)
 }
 
-func (s *ProposalsTestSuite) TestRetainExtendedCommitInfo() {
-	// test that if option is given the extended commit info is passed to wrapped proposal handler (prepare / process)
-	s.Run("test that if retain-extended-commit is given, extended commit info is retained in wrapped handlers", func() {
-	})
-}
-
 func (s *ProposalsTestSuite) createRequestPrepareProposal(
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 	txs [][]byte,
