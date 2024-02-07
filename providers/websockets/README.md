@@ -10,7 +10,7 @@ Websockets are preferred over REST APIs for real-time data as they only require 
 
 The current set of supported providers are:
 
-> Note: The URLs provided are endpoints that can be used to determine the set of available currency pairs and their respective symbols. The `jq` command is used to format the JSON response for readability.
+> Note: The URLs provided are endpoints that can be used to determine the set of available currency pairs and their respective symbols. The `jq` command is used to format the JSON response for readability. Note that some of these may require a VPN to access.
 
 * [BitFinex](./bitfinex/README.md) - BitFinex is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. BitFinex is a **primary data source** for the oracle.
     * Check all supported markets: 
@@ -25,7 +25,9 @@ The current set of supported providers are:
 * [ByBit](./bybit/README.md) - ByBit is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. ByBit is a **primary data source** for the oracle.
     * Check all supported markets:
         * `curl https://api.bybit.com/v5/market/tickers?category=spot | jq`
+        * `curl https://api.bybit.com/v5/market/instruments-info | jq`
     * Check if a given market is supported:
+        *  `curl https://api.bybit.com/v5/market/tickers?category=spot&symbol=BTCUSDT | jq`
 * [Coinbase](./coinbase/README.md) - Coinbase is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Coinbase is a **primary data source** for the oracle.
     * Check all supported markets: 
         * `curl https://api.exchange.coinbase.com/currencies | jq`
