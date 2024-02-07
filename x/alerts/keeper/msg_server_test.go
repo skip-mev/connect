@@ -591,6 +591,10 @@ func (s *KeeperTestSuite) TestConclusion() {
 }
 
 func (s *KeeperTestSuite) TestUpdateParams() {
+	invalidParams := types.MsgUpdateParams{
+		Authority: "invalid",
+	}
+
 	cases := []struct {
 		name      string
 		msg       *types.MsgUpdateParams
@@ -606,9 +610,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 			&types.MsgUpdateParams{
 				Authority: "invalid",
 			},
-			fmt.Errorf("message validation failed: %w", types.MsgUpdateParams{
-				Authority: "invalid",
-			}.ValidateBasic()),
+			fmt.Errorf("message validation failed: %w", invalidParams.ValidateBasic()),
 		},
 		{
 			"signer is not the authority - fail",

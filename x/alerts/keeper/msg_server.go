@@ -157,9 +157,10 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 
 		incentives := make([]incentivetypes.Incentive, 0)
 
-		// determine whether or not to issue an incentive to each validator who signed a vote in the Commit referenced
+		// determine whether to issue an incentive to each validator who signed a vote in the Commit referenced
 		for _, vote := range extCommit.Votes {
-			m.k.Logger(ctx).Info("issuing incentive to validator", "validator", sdk.ConsAddress(vote.Validator.Address).String(), "alert", fmt.Sprintf("%X", conclusion.GetAlert().UID()))
+			alert := conclusion.GetAlert()
+			m.k.Logger(ctx).Info("issuing incentive to validator", "validator", sdk.ConsAddress(vote.Validator.Address).String(), "alert", fmt.Sprintf("%X", alert.UID()))
 
 			// execute the ValidatorIncentiveHandler to determine if validator should be issued an incentive
 			incentive, err := m.k.validatorIncentiveHandler(vote, conclusion.GetPriceBound(), conclusion.GetAlert(), conclusion.GetCurrencyPairID())
@@ -169,7 +170,8 @@ func (m msgServer) Conclusion(goCtx context.Context, req *types.MsgConclusion) (
 
 			// if the incentive is non-nil, then add it to the list of incentives to issue
 			if incentive != nil {
-				m.k.Logger(ctx).Info("incentive issued to validator", "validator", vote.Validator.Address, "incentive", incentive.String(), "alert", fmt.Sprintf("%X", conclusion.GetAlert().UID()))
+				getAlert := conclusion.GetAlert()
+				m.k.Logger(ctx).Info("incentive issued to validator", "validator", vote.Validator.Address, "incentive", incentive.String(), "alert", fmt.Sprintf("%X", getAlert.UID()))
 				incentives = append(incentives, incentive)
 			}
 		}
