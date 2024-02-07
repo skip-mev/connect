@@ -4,11 +4,12 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 var (
@@ -444,6 +445,8 @@ func TestCalculateConvertedPrices(t *testing.T) {
 
 // verifyPrice verifies that the expected price matches the actual price within an acceptable delta.
 func verifyPrice(t *testing.T, expected, actual *big.Int) {
+	t.Helper()
+
 	zero := big.NewInt(0)
 	if expected.Cmp(zero) == 0 {
 		require.Equal(t, zero, actual)

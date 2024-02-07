@@ -31,7 +31,7 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 
 		var resp SystemStatusResponseMessage
 		if err := json.Unmarshal(message, &resp); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal system status response message: %s", err)
+			return nil, fmt.Errorf("failed to unmarshal system status response message: %w", err)
 		}
 
 		// If the Kraken system is not online, return an error.
@@ -49,7 +49,7 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 
 		var resp SubscribeResponseMessage
 		if err := json.Unmarshal(message, &resp); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal subscription status response message: %s", err)
+			return nil, fmt.Errorf("failed to unmarshal subscription status response message: %w", err)
 		}
 
 		// If the subscription request was successful, return nil. Otherwise, we will attempt to
@@ -113,7 +113,7 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
 	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals)
 	if err != nil {
-		unResolved[cp] = fmt.Errorf("failed to parse price %s: %s", priceStr, err)
+		unResolved[cp] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), unResolved[cp]
 	}
 

@@ -72,7 +72,7 @@ func (s *OracleMetricsTestSuite) TearDownTest(_ *testing.T) {
 	s.Eventually(checkFn, 5*time.Second, 100*time.Millisecond)
 }
 
-// test Tick metrics are updated correctly
+// test Tick metrics are updated correctly.
 func (s *OracleMetricsTestSuite) TestTickMetric() {
 	// expect tick to be called
 	s.mockMetrics.On("AddTick").Return()

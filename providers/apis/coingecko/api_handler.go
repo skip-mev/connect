@@ -29,7 +29,7 @@ func NewAPIHandler(
 	cfg config.ProviderConfig,
 ) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
+		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
 	if !cfg.API.Enabled {

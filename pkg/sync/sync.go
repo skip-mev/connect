@@ -19,7 +19,7 @@ func NewCloser() *Closer {
 	return &Closer{doneCh: make(chan struct{})}
 }
 
-// WithCallback adds additional logic to be triggered on the closure of the Closer
+// WithCallback adds additional logic to be triggered on the closure of the Closer.
 func (c *Closer) WithCallback(cb func()) *Closer {
 	c.cb = cb
 	return c

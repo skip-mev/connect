@@ -9,12 +9,12 @@ import (
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// queryServer is the default implementation of the x/oracle QueryService
+// queryServer is the default implementation of the x/oracle QueryService.
 type queryServer struct {
 	k Keeper
 }
 
-// NewQueryServer returns an implementation of the x/oracle QueryServer
+// NewQueryServer returns an implementation of the x/oracle QueryServer.
 func NewQueryServer(k Keeper) types.QueryServer {
 	return queryServer{
 		k,
@@ -24,7 +24,7 @@ func NewQueryServer(k Keeper) types.QueryServer {
 var _ types.QueryServer = queryServer{}
 
 // GetAllCurrencyPairs returns the set of all currency pairs that the module is tracking QuotePrices for.
-// It returns an error to the caller if there are no CurrencyPairs being tracked by the module
+// It returns an error to the caller if there are no CurrencyPairs being tracked by the module.
 func (q queryServer) GetAllCurrencyPairs(ctx context.Context, _ *types.GetAllCurrencyPairsRequest) (*types.GetAllCurrencyPairsResponse, error) {
 	// get all currency pairs from state
 	cps := q.k.GetAllCurrencyPairs(sdk.UnwrapSDKContext(ctx))

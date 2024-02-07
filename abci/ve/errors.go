@@ -17,16 +17,16 @@ func (e PreBlockError) Label() string {
 	return "PreBlockError"
 }
 
-// Panic is an error that is returned when a panic occurs in the ABCI handler.
-type Panic struct {
+// ErrPanic is an error that is returned when a panic occurs in the ABCI handler.
+type ErrPanic struct {
 	Err error
 }
 
-func (e Panic) Error() string {
+func (e ErrPanic) Error() string {
 	return fmt.Sprintf("panic: %s", e.Err.Error())
 }
 
-func (e Panic) Label() string {
+func (e ErrPanic) Label() string {
 	return "Panic"
 }
 

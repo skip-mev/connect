@@ -21,7 +21,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 		state := types.NewCurrencyPairState(cpg.Id, cpg.Nonce, cpg.CurrencyPairPrice, cpg.CurrencyPair.Decimals)
 
 		if err := k.currencyPairs.Set(ctx, cpg.CurrencyPair.Ticker(), state); err != nil {
-			panic(fmt.Errorf("error in genesis: %v", err))
+			panic(fmt.Errorf("error in genesis: %w", err))
 		}
 	}
 
@@ -35,7 +35,7 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	// get the current next Ticker
 	id, err := k.nextCurrencyPairID.Peek(ctx)
 	if err != nil {
-		panic(fmt.Errorf("error in genesis: %v", err))
+		panic(fmt.Errorf("error in genesis: %w", err))
 	}
 
 	// instantiate genesis-state w/ empty array

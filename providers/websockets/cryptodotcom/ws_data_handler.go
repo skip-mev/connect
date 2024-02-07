@@ -30,7 +30,7 @@ func NewWebSocketDataHandler(
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
+		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
 	if !cfg.WebSocket.Enabled {
@@ -61,7 +61,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 	)
 
 	if err := json.Unmarshal(message, &msg); err != nil {
-		return resp, nil, fmt.Errorf("failed to unmarshal message: %s", err)
+		return resp, nil, fmt.Errorf("failed to unmarshal message: %w", err)
 	}
 
 	// The status code of the message must be 0 for success.

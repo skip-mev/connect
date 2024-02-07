@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"math/big"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 // MedianAggregator is an aggregator that calculates the median price for each currency pair,

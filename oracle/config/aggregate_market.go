@@ -76,10 +76,12 @@ type Conversion struct {
 
 // GetCurrencyPairs returns the set of currency pairs in the aggregate market config.
 func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
-	var currencyPairs []oracletypes.CurrencyPair
+	currencyPairs := make([]oracletypes.CurrencyPair, len(c.Feeds))
 
+	i := 0
 	for _, cpConfig := range c.Feeds {
-		currencyPairs = append(currencyPairs, cpConfig.CurrencyPair)
+		currencyPairs[i] = cpConfig.CurrencyPair
+		i++
 	}
 
 	return currencyPairs

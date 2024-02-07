@@ -308,16 +308,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 						CurrencyPair: cp,
 					},
 				},
-<<<<<<< HEAD
-				AggregatedFeeds: map[string][][]oracleconfig.Conversion{
-					cp.Ticker(): {
-						{
-=======
 				AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
 					cp.String(): {
 						CurrencyPair: cp,
 						Conversions: []oracleconfig.Conversions{
->>>>>>> main
 							{
 								{
 									CurrencyPair: cp,
@@ -566,16 +560,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					CurrencyPair: cp3,
 				},
 			},
-<<<<<<< HEAD
-			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
-				cp1.Ticker(): {
-					{
-=======
 			AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
 				cp1.String(): {
 					CurrencyPair: cp1,
 					Conversions: []oracleconfig.Conversions{
->>>>>>> main
 						{
 							{
 								CurrencyPair: cp1,
@@ -584,14 +572,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-<<<<<<< HEAD
 				cp2.Ticker(): {
-					{
-=======
-				cp2.String(): {
 					CurrencyPair: cp2,
 					Conversions: []oracleconfig.Conversions{
->>>>>>> main
 						{
 							{
 								CurrencyPair: cp2,
@@ -600,14 +583,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-<<<<<<< HEAD
 				cp3.Ticker(): {
-					{
-=======
-				cp3.String(): {
 					CurrencyPair: cp3,
 					Conversions: []oracleconfig.Conversions{
->>>>>>> main
 						{
 							{
 								CurrencyPair: cp3,
@@ -711,16 +689,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					CurrencyPair: cp3,
 				},
 			},
-<<<<<<< HEAD
-			AggregatedFeeds: map[string][][]oracleconfig.Conversion{
-				cp1.Ticker(): {
-					{
-=======
 			AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
-				cp1.String(): {
+				cp1.Ticker(): {
 					CurrencyPair: cp1,
 					Conversions: []oracleconfig.Conversions{
->>>>>>> main
 						{
 							{
 								CurrencyPair: cp1,
@@ -729,14 +701,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-<<<<<<< HEAD
 				cp2.Ticker(): {
-					{
-=======
-				cp2.String(): {
 					CurrencyPair: cp2,
 					Conversions: []oracleconfig.Conversions{
->>>>>>> main
 						{
 							{
 								CurrencyPair: cp2,
@@ -745,14 +712,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-<<<<<<< HEAD
 				cp3.Ticker(): {
-					{
-=======
-				cp3.String(): {
 					CurrencyPair: cp3,
 					Conversions: []oracleconfig.Conversions{
->>>>>>> main
 						{
 							{
 								CurrencyPair: cp3,

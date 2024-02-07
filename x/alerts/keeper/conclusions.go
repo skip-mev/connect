@@ -76,7 +76,7 @@ func (k Keeper) unescrowBond(ctx sdk.Context, a types.Alert, bond sdk.Coin) erro
 	)
 }
 
-// burnBond burns the bond stored at the module account's address
+// burnBond burns the bond stored at the module account's address.
 func (k Keeper) burnBond(ctx sdk.Context, bond sdk.Coin) error {
 	// burn the coins
 	return k.bankKeeper.BurnCoins(

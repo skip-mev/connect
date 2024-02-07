@@ -33,7 +33,7 @@ func ValidateOracleVoteExtension(
 
 		// Ensure that the price bytes are valid.
 		if _, err := strategy.GetDecodedPrice(ctx, cp, bz); err != nil {
-			return fmt.Errorf("invalid price bytes: %s", err)
+			return fmt.Errorf("invalid price bytes: %w", err)
 		}
 	}
 

@@ -344,6 +344,8 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 }
 
 func checkEquality(t *testing.T, sla1, sla2 slatypes.PriceFeed) {
+	t.Helper()
+
 	require.Equal(t, sla1.ID, sla2.ID)
 	require.Equal(t, sla1.MaximumViableWindow, sla2.MaximumViableWindow)
 	require.Equal(t, sla1.Index, sla2.Index)

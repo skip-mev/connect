@@ -30,7 +30,7 @@ func NewWebSocketDataHandler(
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
+		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
 	if !cfg.WebSocket.Enabled {
@@ -69,7 +69,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 	)
 
 	if err := json.Unmarshal(message, &msg); err != nil {
-		return resp, nil, fmt.Errorf("failed to unmarshal message %s", err)
+		return resp, nil, fmt.Errorf("failed to unmarshal message %w", err)
 	}
 
 	switch event := EventType(msg.Event); event {
@@ -85,7 +85,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 
 		var subscriptionMsg SubscriptionResponseMessage
 		if err := json.Unmarshal(message, &subscriptionMsg); err != nil {
-			return resp, nil, fmt.Errorf("failed to unmarshal subscription message %s", err)
+			return resp, nil, fmt.Errorf("failed to unmarshal subscription message %w", err)
 		}
 
 		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subscriptionMsg.Channel))
@@ -95,7 +95,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 
 		var tickerMsg TickerResponseMessage
 		if err := json.Unmarshal(message, &tickerMsg); err != nil {
-			return resp, nil, fmt.Errorf("failed to unmarshal ticker message %s", err)
+			return resp, nil, fmt.Errorf("failed to unmarshal ticker message %w", err)
 		}
 
 		// Parse the price information.

@@ -67,7 +67,7 @@ func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
 }
 
-// test that we can set / remove / get alerts from the keeper
+// test that we can set / remove / get alerts from the keeper.
 func (s *KeeperTestSuite) TestAlerts() {
 	alert := alerttypes.NewAlertWithStatus(
 		alerttypes.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),

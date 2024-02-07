@@ -80,7 +80,7 @@ func (s *ServerTestSuite) SetupTest() {
 	s.Require().NoError(s.client.Start(dialCtx))
 }
 
-// teardown test suite
+// teardown test suite.
 func (s *ServerTestSuite) TearDownTest() {
 	// close server
 	s.srv.Close()
@@ -162,7 +162,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.String(), cp2.String()))
 }
 
-// test that the oracle server closes when expected
+// test that the oracle server closes when expected.
 func (s *ServerTestSuite) TestOracleServerClose() {
 	// close the server, and check that no requests are received
 	s.cancel()

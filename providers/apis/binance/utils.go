@@ -99,7 +99,7 @@ type (
 	//    "symbol": "ETHBTC",
 	//    "price": "0.07946600"
 	//  }
-	//]
+	// ].
 	Response []Data
 
 	// Data BinanceData is the data returned by the Binance API.

@@ -607,7 +607,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			},
 			mockMetrics,
 		)
-		expErr := ve.Panic{
+		expErr := ve.ErrPanic{
 			Err: fmt.Errorf("panic"),
 		}
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.ExtendVote, mock.Anything)

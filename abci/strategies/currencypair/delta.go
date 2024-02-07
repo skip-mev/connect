@@ -105,7 +105,7 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp oraclety
 		noPriceErr := errors.As(err, &quotePriceNotExistError)
 		if !noPriceErr {
 			return nil, fmt.Errorf(
-				"error getting price for currency pair (%s): %s",
+				"error getting price for currency pair (%s): %w",
 				cp.String(),
 				err,
 			)

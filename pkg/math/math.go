@@ -41,7 +41,7 @@ func Float64ToBigInt(val float64, decimals int64) *big.Int {
 // BigFloatToBigInt converts a big.Float to a big.Int.
 func BigFloatToBigInt(f *big.Float, decimals int64) *big.Int {
 	bigFloat := new(big.Float)
-	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(decimals), nil)
 	bigFloat.SetInt(factor)
 
 	f.Mul(f, bigFloat)

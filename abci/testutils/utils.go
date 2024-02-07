@@ -83,6 +83,8 @@ func UpdateContextWithVEHeight(ctx sdk.Context, height int64) sdk.Context {
 
 // CreateBaseSDKContextWithKeys creates a base sdk context with the given store key and transient key.
 func CreateBaseSDKContextWithKeys(t *testing.T, storekey storetypes.StoreKey, transientkey *storetypes.TransientStoreKey) sdk.Context {
+	t.Helper()
+
 	testCtx := testutil.DefaultContextWithDB(
 		t,
 		storekey,
@@ -94,6 +96,8 @@ func CreateBaseSDKContextWithKeys(t *testing.T, storekey storetypes.StoreKey, tr
 
 // CreateBaseSDKContext creates a base sdk context with the default store key and transient key.
 func CreateBaseSDKContext(t *testing.T) sdk.Context {
+	t.Helper()
+
 	key := storetypes.NewKVStoreKey(oracletypes.StoreKey)
 
 	testCtx := testutil.DefaultContextWithDB(

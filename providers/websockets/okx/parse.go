@@ -53,14 +53,14 @@ func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeRespo
 	// Attempt to unmarshal the request.
 	var request SubscribeRequestMessage
 	if err := json.Unmarshal([]byte(jsonString[1]), &request); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal request: %s", err)
+		return nil, fmt.Errorf("failed to unmarshal request: %w", err)
 	}
 
 	// Re-subscribe to the channel.
 	h.logger.Debug("re-subscribing to channel", zap.Any("instrument", request.Arguments))
 	bz, err := json.Marshal(request)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %s", err)
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
 	return []handlers.WebsocketEncodedMessage{bz}, nil

@@ -45,7 +45,7 @@ func newOracleIndices(sb *collections.SchemaBuilder) *oracleIndices {
 	}
 }
 
-// Keeper is the base keeper for the x/oracle module
+// Keeper is the base keeper for the x/oracle module.
 type Keeper struct {
 	storeService store.KVStoreService
 	cdc          codec.BinaryCodec
@@ -62,7 +62,7 @@ type Keeper struct {
 	authority sdk.AccAddress
 }
 
-// NewKeeper constructs a new keeper from a store-key + authority account address
+// NewKeeper constructs a new keeper from a store-key + authority account address.
 func NewKeeper(
 	ss store.KVStoreService,
 	cdc codec.BinaryCodec,
@@ -134,7 +134,7 @@ func (k Keeper) GetPriceWithNonceForCurrencyPair(ctx sdk.Context, cpID string) (
 	return types.NewQuotePriceWithNonce(qp, nonce), nil
 }
 
-// NextCurrencyPairID returns the next Ticker to be assigned to a currency-pair
+// NextCurrencyPairID returns the next Ticker to be assigned to a currency-pair.
 func (k Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
 	return k.nextCurrencyPairID.Peek(ctx)
 }
@@ -150,7 +150,7 @@ func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cpID string) (uint64, e
 }
 
 // GetPriceForCurrencyPair retrieves the QuotePrice for a given CurrencyPair. if a QuotePrice does not
-// exist for the given CurrencyPair, this function errors and returns an empty QuotePrice
+// exist for the given CurrencyPair, this function errors and returns an empty QuotePrice.
 func (k Keeper) GetPriceForCurrencyPair(ctx sdk.Context, cpID string) (types.QuotePrice, error) {
 	cps, err := k.currencyPairs.Get(ctx, cpID)
 	if err != nil {
