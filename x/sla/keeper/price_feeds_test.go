@@ -18,8 +18,8 @@ const (
 func (s *KeeperTestSuite) TestSetPriceFeed() {
 	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
-	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
+	consAddress2 := sdk.ConsAddress("consAddress2")
 
 	priceFeed1, err := slatypes.NewPriceFeed(
 		10,
@@ -92,8 +92,8 @@ func (s *KeeperTestSuite) TestSetPriceFeed() {
 func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
-	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
+	consAddress2 := sdk.ConsAddress("consAddress2")
 
 	priceFeed1, err := slatypes.NewPriceFeed(
 		10,
@@ -186,7 +186,7 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		s.Require().False(contains)
 	})
 
-	cp2 := oracletypes.NewCurrencyPair("blud", "crip")
+	cp2 := oracletypes.NewCurrencyPair("BTC", "USD")
 	priceFeed3, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,
