@@ -13,8 +13,8 @@ import (
 // incentive, or nil if the incentive should be deleted.
 type ExecuteByIncentiveTypeCB func(incentive types.Incentive) (types.Incentive, error)
 
-// ExecuteStrategies executes all of the strategies with the stored incentives.
-func (k Keeper) ExecuteStrategies(ctx sdk.Context) error {
+// ExecuteStrategies executes all the strategies with the stored incentives.
+func (k *Keeper) ExecuteStrategies(ctx sdk.Context) error {
 	for incentive, strategy := range k.incentiveStrategies {
 		if err := k.ExecuteIncentiveStrategy(ctx, incentive, strategy); err != nil {
 			return err
@@ -26,9 +26,9 @@ func (k Keeper) ExecuteStrategies(ctx sdk.Context) error {
 
 // ExecuteIncentiveStrategy executes a given strategy for all incentives of a given type.
 // Note that the strategy may mutate the incentive, and return a new incentive to be
-// stored. Stategies must return nil if the incentive should be deleted. Otherwise, the
+// stored. Strategies must return nil if the incentive should be deleted. Otherwise, the
 // incentive will be updated.
-func (k Keeper) ExecuteIncentiveStrategy(
+func (k *Keeper) ExecuteIncentiveStrategy(
 	ctx sdk.Context,
 	incentive types.Incentive,
 	strategy types.Strategy,
@@ -41,7 +41,7 @@ func (k Keeper) ExecuteIncentiveStrategy(
 }
 
 // ExecuteByIncentiveType updates all incentives of a given type.
-func (k Keeper) ExecuteByIncentiveType(
+func (k *Keeper) ExecuteByIncentiveType(
 	ctx sdk.Context,
 	incentive types.Incentive,
 	cb ExecuteByIncentiveTypeCB,

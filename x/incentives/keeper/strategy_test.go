@@ -37,7 +37,7 @@ func (s *KeeperTestSuite) TestExecuteByIncentiveType() {
 	})
 
 	s.Run("can run a no-op on a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -57,7 +57,7 @@ func (s *KeeperTestSuite) TestExecuteByIncentiveType() {
 	})
 
 	s.Run("can run a valid update on a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -92,8 +92,8 @@ func (s *KeeperTestSuite) TestExecuteByIncentiveType() {
 	})
 
 	s.Run("can update multiple incentives", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -142,9 +142,9 @@ func (s *KeeperTestSuite) TestExecuteByIncentiveType() {
 	})
 
 	s.Run("can update some incentives and remove others", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
-		validator3 := sdk.ValAddress([]byte("validator3"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
+		validator3 := sdk.ValAddress("validator3")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -221,7 +221,7 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 	})
 
 	s.Run("can execute a strategy on a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -245,7 +245,7 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 	})
 
 	s.Run("stores the incentive if the strategy returns an error", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -269,8 +269,8 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 	})
 
 	s.Run("can execute a strategy on multiple of the same incentive types", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -301,8 +301,8 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 	})
 
 	s.Run("can execute a strategy on multiple different incentive types", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -358,7 +358,7 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 	}
 
 	s.Run("can run an update strategy on a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -416,8 +416,8 @@ func (s *KeeperTestSuite) TestExecuteStrategies() {
 	}
 
 	s.Run("can run an update strategy on multiple different incentive types", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)

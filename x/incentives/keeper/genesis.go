@@ -9,7 +9,7 @@ import (
 // InitGenesis initializes the store state from a genesis state. Note that
 // all incentive types (e.g. badprice, goodprice) must be registered
 // with the keeper in order for this to execute successfully.
-func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
+func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	// Validate the genesis state.
 	if err := gs.ValidateBasic(); err != nil {
 		panic(err)
@@ -56,7 +56,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 // ExportGenesis returns the current store state as a genesis state. Note, that
 // if any of the incentive types have no entries in the store, they will not
 // be included in the genesis state.
-func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
+func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	incentiveGenesis := make([]types.IncentivesByType, 0)
 
 	// Get all incentive types and sort them by name.

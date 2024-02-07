@@ -9,7 +9,7 @@ import (
 )
 
 // GetIncentivesByType returns all incentives of a given type.
-func (k Keeper) GetIncentivesByType(ctx sdk.Context, incentive types.Incentive) ([]types.Incentive, error) {
+func (k *Keeper) GetIncentivesByType(ctx sdk.Context, incentive types.Incentive) ([]types.Incentive, error) {
 	key := types.GetIncentiveKey(incentive)
 
 	// Create a callback to unmarshal the incentives.
@@ -34,7 +34,7 @@ func (k Keeper) GetIncentivesByType(ctx sdk.Context, incentive types.Incentive) 
 }
 
 // AddIncentives adds a set of incentives to the module's state.
-func (k Keeper) AddIncentives(ctx sdk.Context, incentives []types.Incentive) error {
+func (k *Keeper) AddIncentives(ctx sdk.Context, incentives []types.Incentive) error {
 	for _, incentive := range incentives {
 		if err := k.addIncentive(ctx, incentive); err != nil {
 			return err
@@ -45,7 +45,7 @@ func (k Keeper) AddIncentives(ctx sdk.Context, incentives []types.Incentive) err
 }
 
 // addIncentive adds a single incentive to the module's state.
-func (k Keeper) addIncentive(ctx sdk.Context, incentive types.Incentive) error {
+func (k *Keeper) addIncentive(ctx sdk.Context, incentive types.Incentive) error {
 	// Get the next incentive index.
 	index, err := k.getIncentiveCount(ctx, incentive)
 	if err != nil {
@@ -70,7 +70,7 @@ func (k Keeper) addIncentive(ctx sdk.Context, incentive types.Incentive) error {
 }
 
 // RemoveIncentivesByType removes all incentives of a given type from the module's state.
-func (k Keeper) RemoveIncentivesByType(ctx sdk.Context, incentive types.Incentive) error {
+func (k *Keeper) RemoveIncentivesByType(ctx sdk.Context, incentive types.Incentive) error {
 	key := types.GetIncentiveKey(incentive)
 
 	// Create a callback to delete the incentives.
@@ -87,7 +87,7 @@ func (k Keeper) RemoveIncentivesByType(ctx sdk.Context, incentive types.Incentiv
 // getIncentiveCount returns the number of incentives of a given type. Note that this
 // is the number of incentives that have been added to the module's state, not the
 // number of incentives that are currently active.
-func (k Keeper) getIncentiveCount(ctx sdk.Context, incentive types.Incentive) (uint64, error) {
+func (k *Keeper) getIncentiveCount(ctx sdk.Context, incentive types.Incentive) (uint64, error) {
 	key := types.GetIncentiveCountKey(incentive)
 
 	store := ctx.KVStore(k.storeKey)
@@ -102,7 +102,7 @@ func (k Keeper) getIncentiveCount(ctx sdk.Context, incentive types.Incentive) (u
 // setIncentiveCount updates the number of incentives of a given type. Note that this
 // is the number of incentives that have been added to the module's state, not the
 // number of incentives that are currently active.
-func (k Keeper) setIncentiveCount(ctx sdk.Context, incentive types.Incentive, count uint64) {
+func (k *Keeper) setIncentiveCount(ctx sdk.Context, incentive types.Incentive, count uint64) {
 	key := types.GetIncentiveCountKey(incentive)
 
 	store := ctx.KVStore(k.storeKey)
@@ -112,7 +112,7 @@ func (k Keeper) setIncentiveCount(ctx sdk.Context, incentive types.Incentive, co
 
 // iteratorFunc is a helper function that will create an iterator for a given
 // store, and execute a call-back for each key/value pair.
-func (k Keeper) iteratorFunc(ctx sdk.Context, prefix []byte, f func(db.Iterator) error) error {
+func (k *Keeper) iteratorFunc(ctx sdk.Context, prefix []byte, f func(db.Iterator) error) error {
 	// get iterator for store w/ prefix
 	store := ctx.KVStore(k.storeKey)
 	it := storetypes.KVStorePrefixIterator(store, prefix)
