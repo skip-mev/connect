@@ -70,7 +70,7 @@ func NewKeeper(
 	return k
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger()
 }
 
@@ -100,7 +100,7 @@ func (k *Keeper) GetAllAlerts(ctx sdk.Context) ([]types.AlertWithStatus, error) 
 }
 
 // GetAllAlertsWithCondition returns all alerts for which the Condition evaluates to true.
-func (k Keeper) GetAllAlertsWithCondition(ctx sdk.Context, c Condition) ([]types.AlertWithStatus, error) {
+func (k *Keeper) GetAllAlertsWithCondition(ctx sdk.Context, c Condition) ([]types.AlertWithStatus, error) {
 	if c == nil {
 		return nil, fmt.Errorf("condition cannot be nil")
 	}

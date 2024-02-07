@@ -88,7 +88,7 @@ func (m msgServer) Alert(goCtx context.Context, req *types.MsgAlert) (*types.Msg
 }
 
 // escrowBondAmount is a helper function that will escrow the bond amount at the module address.
-func (k Keeper) escrowBondAmount(ctx sdk.Context, signer string, bondAmount sdk.Coin) error {
+func (k *Keeper) escrowBondAmount(ctx sdk.Context, signer string, bondAmount sdk.Coin) error {
 	// get the sdk address for the signer
 	addr, err := sdk.AccAddressFromBech32(signer)
 	if err != nil {

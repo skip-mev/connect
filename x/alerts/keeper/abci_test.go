@@ -16,7 +16,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 	// set context
 	s.ctx = s.ctx.WithBlockHeight(10)
 
-	// set three alerts (this shld be purged first)
+	// set three alerts (this should be purged first)
 	alert1 := types.NewAlertWithStatus(
 		types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD")),
 		types.NewAlertStatus(10, 10, time.Time{}, types.Concluded),
