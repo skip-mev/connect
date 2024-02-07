@@ -53,6 +53,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
+	// DefaultMarketConfig is the default market configuration for Coinbase.
+	
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
@@ -60,13 +62,13 @@ var (
 				Ticker:       "ATOM-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			},
-			"ATOM/USDT": {
-				Ticker:       "ATOM-USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
-			},
 			"ATOM/USDC": {
 				Ticker:       "ATOM-USDC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDC"),
+			},
+			"ATOM/USDT": {
+				Ticker:       "ATOM-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 			},
 			"AVAX/USD": {
 				Ticker:       "AVAX-USD",

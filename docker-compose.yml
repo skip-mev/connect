@@ -26,16 +26,16 @@ services:
     networks:
       - oracle_network
   
-  # blockchain:
-  #   build:
-  #     context: .
-  #     dockerfile: contrib/images/slinky.local.Dockerfile
-  #   ports:
-  #     - "26656:26656"
-  #     - "26657:26657"
-  #     - "1317:1317" # used to query the blockchain
-  #     - "7171:7171"
-  #     - "26655:26655"
-  #     - "8001:8001" # app side oracle metrics
-  #   networks:
-  #     - oracle_network
+  blockchain:
+    build:
+      context: .
+      dockerfile: contrib/images/slinky.local.Dockerfile
+    ports:
+      - "26656:26656"
+      - "26657:26657"
+      - "1317:1317" # used to query the blockchain
+      - "7171:7171"
+      - "26655:26655"
+      - "8001:8001" # app side oracle metrics
+    networks:
+      - oracle_network

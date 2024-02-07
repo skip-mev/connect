@@ -235,84 +235,12 @@ var (
 	// AggregatedFeeds is a map of all of the conversion markets that will be used to convert
 	// all of the price feeds into a common set of currency pairs.
 	AggregatedFeeds = map[string]config.AggregateFeedConfig{
-		"BITCOIN/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			Conversions: []config.Conversions{
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
-						Invert:       false,
-					},
-				},
-			},
-		},
-		"ETHEREUM/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-			Conversions: []config.Conversions{
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
-						Invert:       false,
-					},
-				},
-			},
-		},
 		"ATOM/USD": {
 			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			Conversions: []config.Conversions{
 				{
 					{
 						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 						Invert:       false,
 					},
 				},
@@ -326,65 +254,13 @@ var (
 						Invert:       false,
 					},
 				},
-			},
-		},
-		"SOLANA/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-			Conversions: []config.Conversions{
 				{
 					{
-						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
+						CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 						Invert:       false,
 					},
 					{
 						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
-						Invert:       false,
-					},
-				},
-			},
-		},
-		"CELESTIA/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-			Conversions: []config.Conversions{
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDC"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
 						Invert:       false,
 					},
 				},
@@ -401,6 +277,16 @@ var (
 				},
 				{
 					{
+						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDC"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
 						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
 						Invert:       false,
 					},
@@ -409,13 +295,65 @@ var (
 						Invert:       false,
 					},
 				},
+			},
+		},
+		"BITCOIN/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			Conversions: []config.Conversions{
 				{
 					{
-						CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDC"),
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
 						Invert:       false,
 					},
 					{
 						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+		},
+		"CELESTIA/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			Conversions: []config.Conversions{
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDC"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 						Invert:       false,
 					},
 				},
@@ -432,21 +370,21 @@ var (
 				},
 				{
 					{
-						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
-						Invert:       false,
-					},
-					{
-						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
-						Invert:       false,
-					},
-				},
-				{
-					{
 						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDC"),
 						Invert:       false,
 					},
 					{
 						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 						Invert:       false,
 					},
 				},
@@ -463,12 +401,53 @@ var (
 				},
 			},
 		},
+		"ETHEREUM/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			Conversions: []config.Conversions{
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+						Invert:       false,
+					},
+				},
+			},
+		},
 		"OSMOSIS/USD": {
 			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
 			Conversions: []config.Conversions{
 				{
 					{
 						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDC"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
 						Invert:       false,
 					},
 				},
@@ -482,13 +461,34 @@ var (
 						Invert:       false,
 					},
 				},
+			},
+		},
+		"SOLANA/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			Conversions: []config.Conversions{
 				{
 					{
-						CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDC"),
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
 						Invert:       false,
 					},
 					{
 						CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+						Invert:       false,
+					},
+				},
+				{
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
+						Invert:       false,
+					},
+					{
+						CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 						Invert:       false,
 					},
 				},

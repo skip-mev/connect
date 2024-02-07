@@ -40,13 +40,13 @@ var (
 				Ticker:       "ATOM-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			},
-			"ATOM/USDT": {
-				Ticker:       "ATOM-USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
-			},
 			"ATOM/USDC": {
 				Ticker:       "ATOM-USDC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDC"),
+			},
+			"ATOM/USDT": {
+				Ticker:       "ATOM-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 			},
 			"AVAX/USD": {
 				Ticker:       "AVAX-USD",
