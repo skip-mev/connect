@@ -72,3 +72,8 @@ The current set of supported providers are:
     * Check if a given market is supported:
         * `curl https://www.mexc.com/open/api/v2/market/ticker?symbol={BTC_USDT} | jq`
 * [OKX](./okx/README.md) - OKX is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. OKX is a **primary data source** for the oracle.
+    * Check all supported markets:
+        * `curl https://www.okx.com/api/v5/market/index-tickers?quoteCcy={USD} | jq`
+        
+    * Check if a given market is supported:
+        * `curl https://www.okx.com/api/v5/market/index-tickers?instId={BTC-USDT} | jq`
