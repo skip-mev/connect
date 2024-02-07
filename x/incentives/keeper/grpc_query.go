@@ -69,7 +69,7 @@ func (q QueryServer) GetAllIncentives(
 ) (*types.GetAllIncentivesResponse, error) {
 	incentives := make([]types.IncentivesByType, 0)
 
-	// Get all of the incentive types and sort them by name.
+	// Get all incentive types and sort them by name.
 	sortedIncentives := types.SortIncentivesStrategiesMap(q.k.incentiveStrategies)
 
 	for _, incentive := range sortedIncentives {

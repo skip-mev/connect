@@ -29,7 +29,7 @@ func (s *KeeperTestSuite) TestGetIncentivesByType() {
 	})
 
 	s.Run("returns a single incentive stored in the module", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -51,8 +51,8 @@ func (s *KeeperTestSuite) TestGetIncentivesByType() {
 	})
 
 	s.Run("returns multiple incentives stored in the module", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
 
@@ -90,7 +90,7 @@ func (s *KeeperTestSuite) TestGetAllIncentives() {
 	})
 
 	s.Run("returns a single incentive stored in the module", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -115,8 +115,8 @@ func (s *KeeperTestSuite) TestGetAllIncentives() {
 	})
 
 	s.Run("returns multiple incentives stored in the module", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
 
@@ -148,8 +148,8 @@ func (s *KeeperTestSuite) TestGetAllIncentives() {
 	})
 
 	s.Run("returns a single incentive for each type", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
 

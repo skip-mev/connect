@@ -6,8 +6,8 @@ import (
 	"github.com/skip-mev/slinky/x/incentives/types"
 )
 
-// InitGenesis initializes the store state from a genesis state. Note, that
-// all of the incentive types (e.g. badprice, goodprice) must be registered
+// InitGenesis initializes the store state from a genesis state. Note that
+// all incentive types (e.g. badprice, goodprice) must be registered
 // with the keeper in order for this to execute successfully.
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	// Validate the genesis state.
@@ -59,7 +59,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	incentiveGenesis := make([]types.IncentivesByType, 0)
 
-	// Get all of the incentive types and sort them by name.
+	// Get all incentive types and sort them by name.
 	sortedIncentives := types.SortIncentivesStrategiesMap(k.incentiveStrategies)
 
 	// Iterate over each incentive type.

@@ -21,7 +21,7 @@ func (s *KeeperTestSuite) TestAddIncentives() {
 	})
 
 	s.Run("can add a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -43,8 +43,8 @@ func (s *KeeperTestSuite) TestAddIncentives() {
 	})
 
 	s.Run("can add multiple incentives", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
 
@@ -74,11 +74,11 @@ func (s *KeeperTestSuite) TestAddIncentives() {
 	})
 
 	s.Run("can add single incentive of different types", func() {
-		goodValidator := sdk.ValAddress([]byte("good_validator"))
+		goodValidator := sdk.ValAddress("good_validator")
 		goodAmount := math.NewInt(100)
 		goodPrice := goodprice.NewGoodPriceIncentive(goodValidator, goodAmount)
 
-		badValidator := sdk.ValAddress([]byte("bad_validator"))
+		badValidator := sdk.ValAddress("bad_validator")
 		badAmount := math.NewInt(200)
 		badPrice := badprice.NewBadPriceIncentive(badValidator, badAmount)
 
@@ -108,19 +108,19 @@ func (s *KeeperTestSuite) TestAddIncentives() {
 	})
 
 	s.Run("can add multiple incentives of different types", func() {
-		goodValidator1 := sdk.ValAddress([]byte("good_validator1"))
+		goodValidator1 := sdk.ValAddress("good_validator1")
 		goodAmount1 := math.NewInt(100)
 		goodPrice1 := goodprice.NewGoodPriceIncentive(goodValidator1, goodAmount1)
 
-		goodValidator2 := sdk.ValAddress([]byte("good_validator2"))
+		goodValidator2 := sdk.ValAddress("good_validator2")
 		goodAmount2 := math.NewInt(200)
 		goodPrice2 := goodprice.NewGoodPriceIncentive(goodValidator2, goodAmount2)
 
-		badValidator1 := sdk.ValAddress([]byte("bad_validator1"))
+		badValidator1 := sdk.ValAddress("bad_validator1")
 		badAmount1 := math.NewInt(300)
 		badPrice1 := badprice.NewBadPriceIncentive(badValidator1, badAmount1)
 
-		badValidator2 := sdk.ValAddress([]byte("bad_validator2"))
+		badValidator2 := sdk.ValAddress("bad_validator2")
 		badAmount2 := math.NewInt(400)
 		badPrice2 := badprice.NewBadPriceIncentive(badValidator2, badAmount2)
 

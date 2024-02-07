@@ -16,7 +16,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 	})
 
 	s.Run("can initialize genesis with a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -43,8 +43,8 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 	})
 
 	s.Run("can initialize genesis with multiple incentives", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -83,8 +83,8 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 	})
 
 	s.Run("can initialize genesis with multiple incentive types", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -140,7 +140,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 	})
 
 	s.Run("errors when initializing genesis with invalid incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -179,7 +179,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 	})
 
 	s.Run("can export genesis with a single incentive", func() {
-		validator := sdk.ValAddress([]byte("validator"))
+		validator := sdk.ValAddress("validator")
 		amount := math.NewInt(100)
 		badPrice := badprice.NewBadPriceIncentive(validator, amount)
 
@@ -206,8 +206,8 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 	})
 
 	s.Run("can export genesis with multiple incentives", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
@@ -243,8 +243,8 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 	})
 
 	s.Run("can export genesis with multiple incentive types", func() {
-		validator1 := sdk.ValAddress([]byte("validator1"))
-		validator2 := sdk.ValAddress([]byte("validator2"))
+		validator1 := sdk.ValAddress("validator1")
+		validator2 := sdk.ValAddress("validator2")
 
 		amount1 := math.NewInt(100)
 		amount2 := math.NewInt(200)
