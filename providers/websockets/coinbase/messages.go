@@ -117,7 +117,7 @@ func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncod
 		Channels:   []string{string(TickerChannel)},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal subscribe request message %s", err)
+		return nil, fmt.Errorf("failed to marshal subscribe request message %w", err)
 	}
 
 	return []handlers.WebsocketEncodedMessage{bz}, nil

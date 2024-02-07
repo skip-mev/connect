@@ -30,6 +30,8 @@ func CreateAPIQueryHandlerWithGetResponses[K providertypes.ResponseKey, V provid
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
 ) handlers.APIQueryHandler[K, V] {
+	t.Helper()
+
 	handler := handlermocks.NewQueryHandler[K, V](t)
 
 	handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
@@ -50,6 +52,8 @@ func CreateAPIQueryHandlerWithResponseFn[K providertypes.ResponseKey, V provider
 	t *testing.T,
 	fn func(chan<- providertypes.GetResponse[K, V]),
 ) handlers.APIQueryHandler[K, V] {
+	t.Helper()
+
 	handler := handlermocks.NewQueryHandler[K, V](t)
 
 	handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
@@ -68,6 +72,8 @@ func CreateAPIProviderWithGetResponses[K providertypes.ResponseKey, V providerty
 	ids []K,
 	responses []providertypes.GetResponse[K, V],
 ) providertypes.Provider[K, V] {
+	t.Helper()
+
 	handler := CreateAPIQueryHandlerWithGetResponses[K, V](
 		t,
 		logger,
@@ -94,6 +100,8 @@ func CreateAPIProviderWithResponseFn[K providertypes.ResponseKey, V providertype
 	ids []K,
 	fn func(chan<- providertypes.GetResponse[K, V]),
 ) providertypes.Provider[K, V] {
+	t.Helper()
+
 	handler := CreateAPIQueryHandlerWithResponseFn[K, V](
 		t,
 		fn,

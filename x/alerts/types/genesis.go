@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// DefaultGenesisState returns a default genesis state, with default params
+// DefaultGenesisState returns a default genesis state, with default params.
 func DefaultGenesisState() GenesisState {
 	return NewGenesisState(DefaultParams(sdk.DefaultBondDenom, nil), nil)
 }

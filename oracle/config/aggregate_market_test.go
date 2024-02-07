@@ -3,9 +3,10 @@ package config_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAggregateMarketConfig(t *testing.T) {

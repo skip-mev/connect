@@ -31,7 +31,7 @@ func NewWebSocketDataHandler(
 	cfg config.ProviderConfig,
 ) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %s", err)
+		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
 	if !cfg.WebSocket.Enabled {
@@ -70,7 +70,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 	// of message that was received.
 	if err := json.Unmarshal(message, &baseResponse); err != nil {
 		h.logger.Error("failed to unmarshal subscribe response message", zap.Error(err))
-		return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %s", err)
+		return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %w", err)
 
 	}
 
@@ -82,13 +82,13 @@ func (h *WebsocketDataHandler) HandleMessage(
 		var subscribeMessage SubscriptionResponse
 		if err := json.Unmarshal(message, &subscribeMessage); err != nil {
 			h.logger.Error("failed to unmarshal subscribe response message", zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %s", err)
+			return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %w", err)
 		}
 
 		updateMessage, err := h.parseSubscriptionResponse(subscribeMessage)
 		if err != nil {
 			h.logger.Error("failed to parse subscribe response message", zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to parse subscribe response message: %s", err)
+			return resp, nil, fmt.Errorf("failed to parse subscribe response message: %w", err)
 		}
 
 		return resp, updateMessage, nil
@@ -107,7 +107,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 		resp, err := h.parseTickerUpdate(update)
 		if err != nil {
 			h.logger.Error("failed to parse ticker update message", zap.Any("base", baseResponse), zap.Any("message", update), zap.Error(err))
-			return resp, nil, fmt.Errorf("failed to parse ticker update message: %s", err)
+			return resp, nil, fmt.Errorf("failed to parse ticker update message: %w", err)
 		}
 
 		return resp, nil, nil

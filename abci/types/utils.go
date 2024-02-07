@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	"time"
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -17,7 +18,7 @@ func RecordLatencyAndStatus(
 	// increment the number of extend vote requests
 	var label servicemetrics.Labeller
 	if err != nil {
-		label, _ = err.(servicemetrics.Labeller)
+		_ = errors.As(err, &label)
 	} else {
 		label = servicemetrics.Success{}
 	}

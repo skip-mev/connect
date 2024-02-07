@@ -23,6 +23,8 @@ func CreateWebSocketQueryHandlerWithGetResponses[K providertypes.ResponseKey, V 
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
 ) handlers.WebSocketQueryHandler[K, V] {
+	t.Helper()
+
 	handler := handlermocks.NewWebSocketQueryHandler[K, V](t)
 
 	handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
@@ -44,6 +46,8 @@ func CreateWebSocketQueryHandlerWithResponseFn[K providertypes.ResponseKey, V pr
 	t *testing.T,
 	fn func(chan<- providertypes.GetResponse[K, V]),
 ) handlers.WebSocketQueryHandler[K, V] {
+	t.Helper()
+
 	handler := handlermocks.NewWebSocketQueryHandler[K, V](t)
 
 	handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
@@ -62,6 +66,8 @@ func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V prov
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
 ) providertypes.Provider[K, V] {
+	t.Helper()
+
 	handler := CreateWebSocketQueryHandlerWithGetResponses[K, V](
 		t,
 		timeout,
@@ -87,6 +93,8 @@ func CreateWebSocketProviderWithResponseFn[K providertypes.ResponseKey, V provid
 	logger *zap.Logger,
 	fn func(chan<- providertypes.GetResponse[K, V]),
 ) providertypes.Provider[K, V] {
+	t.Helper()
+
 	handler := CreateWebSocketQueryHandlerWithResponseFn[K, V](
 		t,
 		fn,

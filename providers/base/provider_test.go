@@ -87,6 +87,8 @@ func TestStart(t *testing.T) {
 	t.Parallel()
 
 	t.Run("closes on cancel with api", func(t *testing.T) {
+		t.Parallel()
+
 		handler := apihandlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
 
 		provider, err := base.NewProvider(
@@ -106,6 +108,8 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes with deadline with api", func(t *testing.T) {
+		t.Parallel()
+
 		handler := apihandlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
 		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return()
 
@@ -126,6 +130,8 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes on cancel with websocket", func(t *testing.T) {
+		t.Parallel()
+
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 
@@ -145,6 +151,8 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes on cancel with websocket multiplex", func(t *testing.T) {
+		t.Parallel()
+
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 
@@ -164,6 +172,8 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes with deadline with websocket", func(t *testing.T) {
+		t.Parallel()
+
 		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
 
@@ -187,6 +197,8 @@ func TestStart(t *testing.T) {
 	})
 
 	t.Run("closes with deadline with websocket multiplex", func(t *testing.T) {
+		t.Parallel()
+
 		ctx, cancel := context.WithTimeout(context.Background(), apiCfg.Interval*2)
 		defer cancel()
 

@@ -9,20 +9,20 @@ import (
 )
 
 var (
-	// DefaultEnabled is the default value for the enabled flag
+	// DefaultEnabled is the default value for the enabled flag.
 	DefaultEnabled = true
 
-	// DefaultPruningEnabled is the default value for the pruning enabled flag
+	// DefaultPruningEnabled is the default value for the pruning enabled flag.
 	DefaultPruningEnabled = true
 
-	// DefaultBondAmount is the default value for the bond amount
+	// DefaultBondAmount is the default value for the bond amount.
 	DefaultBondAmount = math.NewInt(1000000)
 
-	// DefaultAlertExpiry is the maximum age of an alert
+	// DefaultAlertExpiry is the maximum age of an alert.
 	DefaultAlertExpiry = uint64(10000)
 
 	// DefaultBlocksToPrune is the default number of blocks an alert is kept in state
-	// until it is pruned
+	// until it is pruned.
 	DefaultBlocksToPrune = uint64(1000)
 )
 

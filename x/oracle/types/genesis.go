@@ -24,7 +24,7 @@ func (cpg *CurrencyPairGenesis) ValidateBasic() error {
 	return nil
 }
 
-// NewGenesisState returns a new genesis-state from a set of CurrencyPairGeneses
+// NewGenesisState returns a new genesis-state from a set of CurrencyPairGeneses.
 func NewGenesisState(cpgs []CurrencyPairGenesis, nextID uint64) *GenesisState {
 	return &GenesisState{
 		CurrencyPairGenesis: cpgs,
@@ -32,7 +32,7 @@ func NewGenesisState(cpgs []CurrencyPairGenesis, nextID uint64) *GenesisState {
 	}
 }
 
-// DefaultGenesisState returns a default genesis state for the oracle module
+// DefaultGenesisState returns a default genesis state for the oracle module.
 func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(nil, 0)
 }

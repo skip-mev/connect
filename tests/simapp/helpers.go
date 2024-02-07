@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 )
 
-// NewTestNetworkFixture returns a new simapp AppConstructor for network simulation tests
+// NewTestNetworkFixture returns a new simapp AppConstructor for network simulation tests.
 func NewTestNetworkFixture() network.TestFixture {
 	dir, err := os.MkdirTemp("", "simapp")
 	if err != nil {

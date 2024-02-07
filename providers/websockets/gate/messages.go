@@ -98,7 +98,7 @@ type SubscribeRequest struct {
 	Payload []string `json:"payload"`
 }
 
-// NewSubscribeRequest returns a new SubscribeRequest encoded message for the given symbols
+// NewSubscribeRequest returns a new SubscribeRequest encoded message for the given symbols.
 func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(symbols) == 0 {
 		return nil, fmt.Errorf("cannot attach payload of 0 length")
