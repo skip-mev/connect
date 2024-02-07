@@ -11,7 +11,7 @@ import (
 
 // GetQueryCmd returns the parent command for all x/incentives cli query commands. The
 // provided clientCtx should have, at a minimum, a verifier, CometBFT RPC client,
-// and marshaler set.
+// and marshaller set.
 func GetQueryCmd() *cobra.Command {
 	// create base-command
 	cmd := &cobra.Command{
