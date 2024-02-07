@@ -47,7 +47,9 @@ The current set of supported providers are:
         * `curl https://api.gateio.ws/api/v4/spot/currency_pairs/{ETH_USDT} | jq`
 * [Huobi](./huobi/README.md) - Huobi is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Huobi is a **primary data source** for the oracle.
     * Check all supported markets:
-        * `curl "https://api.huobi.pro/market/tickers" | jq`
+        * `curl https://api.huobi.pro/market/tickers | jq`
+    * Check if a given market is supported:
+        * `curl https://api.huobi.pro/market/trade?symbol=ethusdt |jq`
 * [Kraken](./kraken/README.md) - Kraken is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Kraken is a **primary data source** for the oracle.
     * Check all supported markets:
         * `curl "https://api.kraken.com/0/public/Assets"` 
@@ -56,5 +58,10 @@ The current set of supported providers are:
     * Check if a given market is supported:
         * `curl https://api.kraken.com/0/public/Ticker?pair={XBTUSD} | jq`
 * [KuCoin](./kucoin/README.md) - KuCoin is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. KuCoin is a **primary data source** for the oracle.
+    * Check all supported markets:
+        * `curl https://api.kucoin.com/api/v1/symbols | jq`
+        * `curl https://api.kucoin.com/api/v3/currencies | jq`
+    * Check if a given market is supported:
+        * `curl https://api.kucoin.com/api/v1/market/orderbook/level1?symbol={BTC-USDT} | jq`
 * [MEXC](./mexc/README.md) - MEXC is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. MEXC is a **primary data source** for the oracle.
 * [OKX](./okx/README.md) - OKX is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. OKX is a **primary data source** for the oracle.
