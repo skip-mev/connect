@@ -66,7 +66,7 @@ var (
 			{
 				Name:   binance.Name,
 				API:    binance.DefaultUSAPIConfig,
-				Market: binance.DefaultMarketConfig,
+				Market: binance.DefaultUSMarketConfig,
 			},
 			{
 				Name:   coinbaseapi.Name,
