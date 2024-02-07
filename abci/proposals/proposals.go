@@ -49,9 +49,15 @@ type ProposalHandler struct {
 	// currencyPairStrategy is the strategy used to determine the price information
 	// from a given oracle vote extension.
 	currencyPairStrategy currencypair.CurrencyPairStrategy
+
 	// metrics is responsible for reporting / aggregating consensus-specific
 	// metrics for this validator.
 	metrics servicemetrics.Metrics
+
+	// retainOracleDataInWrappedHandler is a flag that determines whether the
+	// proposal handler should pass the injected extended commit info to the
+	// wrapped proposal handler.
+	retainOracleDataInWrappedHandler bool
 }
 
 // NewProposalHandler returns a new ProposalHandler.
@@ -64,8 +70,9 @@ func NewProposalHandler(
 	extendedCommitInfoCodec codec.ExtendedCommitCodec,
 	currencyPairStrategy currencypair.CurrencyPairStrategy,
 	metrics servicemetrics.Metrics,
+	opts ...Option,
 ) *ProposalHandler {
-	return &ProposalHandler{
+	handler := &ProposalHandler{
 		logger:                   logger,
 		prepareProposalHandler:   prepareProposalHandler,
 		processProposalHandler:   processProposalHandler,
@@ -75,6 +82,13 @@ func NewProposalHandler(
 		currencyPairStrategy:     currencyPairStrategy,
 		metrics:                  metrics,
 	}
+
+	// apply options
+	for _, opt := range opts {
+		opt(handler)
+	}
+
+	return handler
 }
 
 // PrepareProposalHandler returns a PrepareProposalHandler that will be called
@@ -151,11 +165,9 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
-			// Inject our VE Tx to the req Txs, we want to do this before h.prepareProposalHandler(ctx, req) so that
-			// the wrapped application can have access to the injected VE tx.
+			// Adjust req.MaxTxBytes to account for extInfoBzSize so that the wrapped-proposal handler does not reap too many txs from the mempool
 			extInfoBzSize := int64(len(extInfoBz))
 			if extInfoBzSize < req.MaxTxBytes {
-				req.Txs = append([][]byte{extInfoBz}, req.Txs...)
 				// Reserve bytes for our VE Tx
 				req.MaxTxBytes -= extInfoBzSize
 			} else {
@@ -163,6 +175,11 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 					"extInfoBzSize", extInfoBzSize,
 					"MaxTxBytes", req.MaxTxBytes)
 				extInfoBz = []byte{}
+			}
+
+			// determine whether the wrapped prepare proposal handler should retain the extended commit info
+			if h.retainOracleDataInWrappedHandler {
+				req.Txs = append(req.Txs, extInfoBz)
 			}
 		}
 
@@ -308,8 +325,10 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 			// observe the size of the extended commit info
 			h.metrics.ObserveMessageSize(servicemetrics.ExtendedCommit, len(extCommitBz))
 
-			// Process the transactions in the proposal with the oracle data removed.
-			req.Txs = req.Txs[slinkyabci.NumInjectedTxs:]
+			// Remove the extended commit info from the proposal if required
+			if !h.retainOracleDataInWrappedHandler {
+				req.Txs = req.Txs[slinkyabci.NumInjectedTxs:]
+			}
 		}
 
 		// call the wrapped process-proposal

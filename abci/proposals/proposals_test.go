@@ -529,6 +529,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 	}
 }
 
+func (s *ProposalsTestSuite)
+
 func (s *ProposalsTestSuite) TestProcessProposal() {
 	testCases := []struct {
 		name                 string
