@@ -179,7 +179,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 
 			// determine whether the wrapped prepare proposal handler should retain the extended commit info
 			if h.retainOracleDataInWrappedHandler {
-				req.Txs = append(req.Txs, extInfoBz)
+				req.Txs = append([][]byte{extInfoBz}, req.Txs...) // prepend the VE Tx
 			}
 		}
 

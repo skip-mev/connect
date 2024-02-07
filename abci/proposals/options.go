@@ -4,7 +4,7 @@ package proposals
 type Option func(*ProposalHandler)
 
 // RetainOracleDataInWrappedProposalHandler returns an Option that configs the ProposalHandler
-// to pass the injected extend-commit-info to the wrapped proposal handler.\.
+// to pass the injected extend-commit-info to the wrapped proposal handler.
 func RetainOracleDataInWrappedProposalHandler() Option {
 	return func(p *ProposalHandler) {
 		p.retainOracleDataInWrappedHandler = true
