@@ -45,9 +45,25 @@ var (
 				Ticker:       "btcusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
+			"BITCOIN/USDT": {
+				Ticker:       "btcusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+			},
+			"BITCOIN/USDC": {
+				Ticker:       "btcusdc",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
+			},
 			"ETHEREUM/USD": {
 				Ticker:       "ethusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ETHEREUM/USDT": {
+				Ticker:       "ethusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			},
+			"ETHEREUM/USDC": {
+				Ticker:       "ethusdc",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
 			},
 			"SOLANA/USD": {
 				Ticker:       "solusd",
@@ -72,6 +88,10 @@ var (
 			"USDC/USD": {
 				Ticker:       "usdcusd",
 				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+			},
+			"USDC/USDT": {
+				Ticker:       "usdcusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
 			},
 		},
 	}

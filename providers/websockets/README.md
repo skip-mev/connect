@@ -13,15 +13,24 @@ The current set of supported providers are:
 > Note: The URLs provided are endpoints that can be used to determine the set of available currency pairs and their respective symbols. The `jq` command is used to format the JSON response for readability.
 
 * [BitFinex](./bitfinex/README.md) - BitFinex is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. BitFinex is a **primary data source** for the oracle.
-    * `curl https://api-pub.bitfinex.com/v2/conf/pub:list:currency | jq`
+    * Check all supported markets: 
+        * `curl https://api-pub.bitfinex.com/v2/conf/pub:list:currency | jq`
+    * Check if a given market is supported: 
+        * `curl https://api-pub.bitfinex.com/v2/ticker/t{BTCUSD} | jq`
 * [Bitstamp](./bitstamp/README.md) - Bitstamp is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Bitstamp is a **primary data source** for the oracle.
-     * `curl https://www.bitstamp.net/api/v2/currencies/ | jq`
+    * Check all supported markets:
+        * `curl https://www.bitstamp.net/api/v2/currencies/ | jq`
+    * Check if a given market is supported:
+        * `curl https://www.bitstamp.net/api/v2/ticker/{btcusd}/ | jq`
 * [ByBit](./bybit/README.md) - ByBit is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. ByBit is a **primary data source** for the oracle.
-    * `curl https://api.bybit.com/v5/market/tickers?category=spot | jq`
+    * Check all supported markets:
+        * `curl https://api.bybit.com/v5/market/tickers?category=spot | jq`
+    * Check if a given market is supported:
 * [Coinbase](./coinbase/README.md) - Coinbase is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Coinbase is a **primary data source** for the oracle.
-    * `curl https://api.exchange.coinbase.com/currencies | jq`
-    * `curl https://api.exchange.coinbase.com/products | jq`
-    * `curl https://api.coinbase.com/v2/prices/DYDX-USDC/spot | jq`
+    * Check all supported markets: 
+        * `curl https://api.exchange.coinbase.com/currencies | jq`
+        * `curl https://api.exchange.coinbase.com/products | jq`
+    * Check if a given market is supported: `curl https://api.coinbase.com/v2/prices/DYDX-USDC/spot | jq`
 * [Crypto.com](./cryptodotcom/README.md) - Crypto.com is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Crypto.com is a **primary data source** for the oracle.  
     * `curl https://api.crypto.com/v2/public/get-instruments | jq`
 * [Gate](./gate/README.md) - Gate.io is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Gate.io is a **primary data source** for the oracle.
