@@ -260,7 +260,7 @@ func (o *OracleImpl) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
 	// set metrics in background
 	go func() {
 		for cp, price := range prices {
-			o.metrics.UpdateAggregatePrice(strings.ToLower(cp.Ticker()), float64(price.Int64()))
+			o.metrics.UpdateAggregatePrice(strings.ToLower(cp.String()), float64(price.Int64()))
 		}
 	}()
 

@@ -64,7 +64,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 
 		// assert that currency-pairs are correctly returned
 		for _, cp := range res.CurrencyPairs {
-			_, ok := expectedCurrencyPairs[cp.Ticker()]
+			_, ok := expectedCurrencyPairs[cp.String()]
 			require.True(t, ok)
 		}
 	})
@@ -141,7 +141,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairId: testCP.Ticker(),
+				CurrencyPairId: testCP.String(),
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,

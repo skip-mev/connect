@@ -47,7 +47,7 @@ func (s *DeltaCurrencyPairStrategy) GetEncodedPrice(
 
 	ctx.Logger().Info(
 		"encoded oracle price",
-		"currency_pair", cp.Ticker(),
+		"currency_pair", cp.String(),
 		"price", deltaPrice.String(),
 	)
 
@@ -99,14 +99,14 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp oraclety
 
 	// Fetch the current price for the currency pair.
 	var currentPrice *big.Int
-	quote, err := s.oracleKeeper.GetPriceForCurrencyPair(ctx, cp.Ticker())
+	quote, err := s.oracleKeeper.GetPriceForCurrencyPair(ctx, cp.String())
 	if err != nil {
 		var quotePriceNotExistError oracletypes.QuotePriceNotExistError
 		noPriceErr := errors.As(err, &quotePriceNotExistError)
 		if !noPriceErr {
 			return nil, fmt.Errorf(
 				"error getting price for currency pair (%s): %w",
-				cp.Ticker(),
+				cp.String(),
 				err,
 			)
 		}

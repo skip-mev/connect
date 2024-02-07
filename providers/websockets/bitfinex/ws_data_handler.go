@@ -60,7 +60,7 @@ func NewWebSocketDataHandler(
 //     the subscription was successful.  If successful, the channel ID is saved
 //  2. Error response messages.  These messages provide info about errors from requests
 //     sent to the BitFinex websocket API
-//  3. Ticker stream message. This is sent when a ticker update is received from the
+//  3. String stream message. This is sent when a ticker update is received from the
 //     BitFinex websocket API.
 //  4. Heartbeat stream messages.  These are sent every 15 seconds by the BitFinex API
 func (h *WebsocketDataHandler) HandleMessage(
@@ -134,10 +134,10 @@ func (h *WebsocketDataHandler) CreateMessages(
 	msgs := make([]handlers.WebsocketEncodedMessage, len(cps))
 
 	for i, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.Ticker()))
-			return nil, fmt.Errorf("currency pair %s not in config", cp.Ticker())
+			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
+			return nil, fmt.Errorf("currency pair %s not in config", cp.String())
 		}
 
 		msg, err := NewSubscribeMessage(market.Ticker)

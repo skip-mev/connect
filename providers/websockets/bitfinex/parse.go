@@ -45,7 +45,7 @@ func (h *WebsocketDataHandler) parseErrorMessage(
 //
 //	[ CHANNEL_ID, "hb" ]
 //
-// 2. Ticker update streams.  These take the following form:
+// 2. String update streams.  These take the following form:
 //
 // [
 //
@@ -100,7 +100,7 @@ func (h *WebsocketDataHandler) handleStream(
 	}
 
 	cp := market.CurrencyPair
-	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("market", cp.Ticker()))
+	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("market", cp.String()))
 
 	// check if it is a heartbeat
 	hbID, ok := baseStream[indexPayload].(string)

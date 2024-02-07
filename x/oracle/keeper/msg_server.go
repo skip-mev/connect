@@ -41,7 +41,7 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	for _, cp := range req.CurrencyPairs {
 		// only set the currency-pair if it does not already exist in state
-		if !m.k.HasCurrencyPair(ctx, cp.Ticker()) {
+		if !m.k.HasCurrencyPair(ctx, cp.String()) {
 			// set to state, initial nonce will be zero (no price updates have been made for this CurrencyPair)
 			err = m.k.CreateCurrencyPair(ctx, cp)
 		}
@@ -51,7 +51,7 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 }
 
 // RemoveCurrencyPairs takes a set of CurrencyPairs to remove. CurrencyPairs given are represented by string identifiers of CurrencyPairs
-// i.e `cp.Ticker()`. For each CurrencyPair in the message, remove the Nonce / QuotePrice data for that CurrencyPair, if a CurrencyPair is
+// i.e `cp.String()`. For each CurrencyPair in the message, remove the Nonce / QuotePrice data for that CurrencyPair, if a CurrencyPair is
 // given that is not currently tracked, skip, and continue removing CurrencyPairs.
 func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRemoveCurrencyPairs) (*types.MsgRemoveCurrencyPairsResponse, error) {
 	// check validity of message

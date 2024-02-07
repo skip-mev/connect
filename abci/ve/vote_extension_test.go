@@ -36,11 +36,11 @@ var (
 
 	nilPrices   = map[string]string{}
 	singlePrice = map[string]string{
-		btcUSD.String(): oneHundred.String(),
+		btcUSD.FullString(): oneHundred.String(),
 	}
 	multiplePrices = map[string]string{
-		btcUSD.String(): oneHundred.String(),
-		ethUSD.String(): twoHundred.String(),
+		btcUSD.FullString(): oneHundred.String(),
+		ethUSD.FullString(): twoHundred.String(),
 	}
 )
 

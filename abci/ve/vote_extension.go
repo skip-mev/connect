@@ -280,8 +280,8 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 	strategyPrices := make(map[uint64][]byte)
 
 	// Iterate over the prices and transform them into the correct format.
-	for currencyPairID, priceString := range prices {
-		cp, err := oracletypes.CurrencyPairFromString(currencyPairID)
+	for currencyPairString, priceString := range prices {
+		cp, err := oracletypes.CurrencyPairFromString(currencyPairString)
 		if err != nil {
 			return types.OracleVoteExtension{}, err
 		}

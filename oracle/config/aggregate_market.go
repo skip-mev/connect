@@ -107,7 +107,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 
 		// Upper case the currency pair string since toml may not preserve the case.
 		delete(c.Feeds, marketString)
-		c.Feeds[cp.Ticker()] = feedConfig
+		c.Feeds[cp.String()] = feedConfig
 	}
 
 	// Ensure that all convertable feeds are valid. We consider it valid if the
@@ -126,7 +126,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 
 		for _, feeds := range conversions.Conversions {
 			for _, conversion := range feeds {
-				if _, ok := c.Feeds[conversion.CurrencyPair.Ticker()]; !ok {
+				if _, ok := c.Feeds[conversion.CurrencyPair.String()]; !ok {
 					return fmt.Errorf("convertable market %s does not exist in the feeds", conversion.CurrencyPair)
 				}
 			}
@@ -176,7 +176,7 @@ func CheckSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
 	}
 
 	if base != pair.Base || quote != pair.Quote {
-		return fmt.Errorf("invalid convertable market; expected %s but got base %s, quote %s", pair.Ticker(), base, quote)
+		return fmt.Errorf("invalid convertable market; expected %s but got base %s, quote %s", pair.String(), base, quote)
 	}
 
 	// Check that the order is topologically sorted.

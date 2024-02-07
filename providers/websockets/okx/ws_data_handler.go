@@ -53,7 +53,7 @@ func NewWebSocketDataHandler(
 //
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
-//  2. Ticker response message. This is sent when a ticker update is received from the
+//  2. String response message. This is sent when a ticker update is received from the
 //     OKX websocket API.
 //
 // Heartbeat messages are NOT sent by the OKX websocket. The connection is only closed
@@ -124,9 +124,9 @@ func (h *WebsocketDataHandler) CreateMessages(
 	instruments := make([]SubscriptionTopic, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.Ticker()))
+			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
 			continue
 		}
 

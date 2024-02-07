@@ -124,13 +124,15 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
 	cp1 := types.CurrencyPair{
-		Base:  "BTC",
-		Quote: "USD",
+		Base:     "BTC",
+		Quote:    "USD",
+		Decimals: types.DefaultDecimals,
 	}
 
 	cp2 := types.CurrencyPair{
-		Base:  "ETH",
-		Quote: "USD",
+		Base:     "ETH",
+		Quote:    "USD",
+		Decimals: types.DefaultDecimals,
 	}
 
 	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
@@ -145,8 +147,8 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().NoError(err)
 
 	// check response
-	s.Require().Equal(resp.Prices[cp1.Ticker()], big.NewInt(100).String())
-	s.Require().Equal(resp.Prices[cp2.Ticker()], big.NewInt(200).String())
+	s.Require().Equal(resp.Prices[cp1.FullString()], big.NewInt(100).String())
+	s.Require().Equal(resp.Prices[cp2.FullString()], big.NewInt(200).String())
 	// check timestamp
 
 	s.Require().Equal(resp.Timestamp, ts.UTC())
@@ -159,7 +161,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
 	respBz, err := io.ReadAll(httpResp.Body)
 	s.Require().NoError(err)
-	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.Ticker(), cp2.Ticker()))
+	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.FullString(), cp2.FullString()))
 }
 
 // test that the oracle server closes when expected.

@@ -71,7 +71,7 @@ var LocalConfig = config.OracleConfig{
 		},
 		AggregatedFeeds: map[string]config.AggregateFeedConfig{
 			"BITCOIN/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -82,7 +82,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"ETHEREUM/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -93,7 +93,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"ATOM/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -104,7 +104,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"SOLANA/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -115,7 +115,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"CELESTIA/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -126,7 +126,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"AVAX/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -137,7 +137,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"DYDX/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -148,7 +148,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"ETHEREUM/BITCOIN": {
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{
@@ -159,7 +159,7 @@ var LocalConfig = config.OracleConfig{
 				},
 			},
 			"OSMOSIS/USD": {
-				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD", oracletypes.DefaultDecimals),
 				Conversions: []config.Conversions{
 					{
 						{

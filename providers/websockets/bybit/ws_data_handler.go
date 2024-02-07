@@ -53,7 +53,7 @@ func NewWebSocketDataHandler(
 //
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
-//  2. Ticker update message. This is sent when a ticker update is received from the
+//  2. String update message. This is sent when a ticker update is received from the
 //     ByBit websocket API.
 //  3. Heartbeat update messages.  This should be sent every 20 seconds to ensure the
 //     connection remains open.
@@ -123,9 +123,9 @@ func (h *WebsocketDataHandler) CreateMessages(
 	pairs := make([]string, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("pair ID not found for currency pair", zap.String("currency_pair", cp.Ticker()))
+			h.logger.Debug("pair ID not found for currency pair", zap.String("currency_pair", cp.String()))
 			continue
 		}
 

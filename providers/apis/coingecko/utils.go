@@ -125,7 +125,7 @@ func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []oracletypes.CurrencyPai
 	// Iterate through every currency pair and add the base and quote to the
 	// unique bases and quotes list as long as they are supported.
 	for _, cp := range pairs {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			continue
 		}

@@ -33,7 +33,7 @@ type CurrencyPairAlreadyExistsError struct {
 }
 
 func NewCurrencyPairAlreadyExistsError(cp CurrencyPair) CurrencyPairAlreadyExistsError {
-	return CurrencyPairAlreadyExistsError{cp.Ticker()}
+	return CurrencyPairAlreadyExistsError{cp.String()}
 }
 
 func (e CurrencyPairAlreadyExistsError) Error() string {

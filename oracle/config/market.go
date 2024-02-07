@@ -79,7 +79,7 @@ func (c *MarketConfig) ValidateBasic() error {
 		}
 
 		delete(c.CurrencyPairToMarketConfigs, ticker)
-		c.CurrencyPairToMarketConfigs[cp.Ticker()] = marketConfig
+		c.CurrencyPairToMarketConfigs[cp.String()] = marketConfig
 	}
 
 	// Invert the ticker market config into the currency pair market config.

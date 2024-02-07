@@ -139,7 +139,7 @@ func (k Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.
 	}
 
 	for cp := range currencyPairs {
-		if err := k.currencyPairs.Set(ctx, cp.Ticker(), cp); err != nil {
+		if err := k.currencyPairs.Set(ctx, cp.String(), cp); err != nil {
 			return err
 		}
 	}

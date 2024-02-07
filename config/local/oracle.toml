@@ -29,33 +29,33 @@ production = false
   [providers.market_config]
     name = "binance"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSDT"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTCUSDT"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETHBTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSDT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOLUSDT"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -88,57 +88,57 @@ production = false
   [providers.market_config]
     name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM-USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX-USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTC-USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA-USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDX-USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH-BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH-USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
         ticker = "OSMO-USD"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -171,51 +171,51 @@ production = false
   [providers.market_config]
     name = "coingecko"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "cosmos/usd"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "bitcoin/usd"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "celestia/usd"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "dydx-chain/usd"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ethereum/btc"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ethereum/usd"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
         ticker = "osmosis/usd"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "solana/usd"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -248,45 +248,45 @@ production = false
   [providers.market_config]
     name = "bitfinex"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAXUSD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTCUSD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIAUSD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDXUSD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETHBTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOLUSD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -319,39 +319,39 @@ production = false
   [providers.market_config]
     name = "bitstamp"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "avaxusd"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "btcusd"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "dydxusd"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ethbtc"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ethusd"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "solusd"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -384,39 +384,39 @@ production = false
   [providers.market_config]
     name = "bybit"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSDT"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAXUSDT"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTCUSDT"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDXUSDT"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSDT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOLUSDT"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -449,57 +449,57 @@ production = false
   [providers.market_config]
     name = "coinbase"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM-USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX-USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTC-USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA-USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDX-USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH-BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH-USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
         ticker = "OSMO-USD"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -532,57 +532,57 @@ production = false
   [providers.market_config]
     name = "crypto_dot_com"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAXUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTCUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIAUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDXUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH_BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
         ticker = "OSMO_USD"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOLUSD-PERP"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -615,51 +615,51 @@ production = false
   [providers.market_config]
     name = "gate.io"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM_USDT"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX_USDT"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTC_USDT"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA_USDT"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDX_USDT"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH_BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH_USDT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL_USDT"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -692,51 +692,51 @@ production = false
   [providers.market_config]
     name = "huobi"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "atomusdt"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "avaxusdt"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "btcusdt"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "tiausdt"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "dydxusdt"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ethbtc"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ethusdt"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "solusdt"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -769,51 +769,51 @@ production = false
   [providers.market_config]
     name = "kraken"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM/USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX/USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "XBT/USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA/USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDX/USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH/XBT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH/USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL/USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -846,57 +846,57 @@ production = false
   [providers.market_config]
     name = "kucoin"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM-USDT"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX-USDT"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTC-USDT"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA-USDT"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDX-USDT"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH-BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH-USDT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
         ticker = "OSMO-USDT"
-        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
           Base = "OSMOSIS"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USDT"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -929,39 +929,39 @@ production = false
   [providers.market_config]
     name = "mexc"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOMUSDC"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAXUSDC"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTCUSDT"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETHBTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETHUSDT"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOLUSDC"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -994,51 +994,51 @@ production = false
   [providers.market_config]
     name = "okx"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
         ticker = "ATOM-USD"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX-USD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
           Base = "AVAX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTC-USD"
-        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
           Base = "BITCOIN"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA-USD"
-        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
         ticker = "DYDX-USD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
           Base = "DYDX"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETH-BTC"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
           Base = "ETHEREUM"
           Quote = "BITCOIN"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
         ticker = "ETH-USD"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
           Decimals = 8
-      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8"]
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
         ticker = "SOL-USD"
-        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD/8".currency_pair]
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
           Base = "SOLANA"
           Quote = "USD"
           Decimals = 8
@@ -1091,63 +1091,60 @@ production = false
         Quote = "USD"
         Decimals = 8
   [market.aggregated_feeds]
-<<<<<<< HEAD
-    "ATOM/USD" = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD", Decimals = 8}}]]
-    "AVAX/USD" = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD", Decimals = 8}}]]
-    "BITCOIN/USD" = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD", Decimals = 8}}]]
-    "CELESTIA/USD" = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD", Decimals = 8}}]]
-    "DYDX/USD" = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD", Decimals = 8}}]]
-    "ETHEREUM/BITCOIN" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN", Decimals = 8}}]]
-    "ETHEREUM/USD" = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD", Decimals = 8}}]]
-    "OSMOSIS/USD" = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD", Decimals = 8}}]]
-    "SOLANA/USD" = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD", Decimals = 8}}]]
-=======
     [market.aggregated_feeds."ATOM/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "ATOM", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."ATOM/USD".currency_pair]
         Base = "ATOM"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."AVAX/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "AVAX", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."AVAX/USD".currency_pair]
         Base = "AVAX"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."BITCOIN/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "BITCOIN", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."BITCOIN/USD".currency_pair]
         Base = "BITCOIN"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."CELESTIA/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "CELESTIA", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."CELESTIA/USD".currency_pair]
         Base = "CELESTIA"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."DYDX/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "DYDX", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."DYDX/USD".currency_pair]
         Base = "DYDX"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."ETHEREUM/BITCOIN"]
-      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "BITCOIN", Decimals = 8}}]]
       [market.aggregated_feeds."ETHEREUM/BITCOIN".currency_pair]
         Base = "ETHEREUM"
         Quote = "BITCOIN"
+        Decimals = 8
     [market.aggregated_feeds."ETHEREUM/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "ETHEREUM", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."ETHEREUM/USD".currency_pair]
         Base = "ETHEREUM"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."OSMOSIS/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "OSMOSIS", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."OSMOSIS/USD".currency_pair]
         Base = "OSMOSIS"
         Quote = "USD"
+        Decimals = 8
     [market.aggregated_feeds."SOLANA/USD"]
-      conversions = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD"}}]]
+      conversions = [[{invert = false, currency_pair = {Base = "SOLANA", Quote = "USD", Decimals = 8}}]]
       [market.aggregated_feeds."SOLANA/USD".currency_pair]
         Base = "SOLANA"
         Quote = "USD"
->>>>>>> main
+        Decimals = 8
 
 [metrics]
   prometheus_server_address = "0.0.0.0:8002"

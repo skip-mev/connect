@@ -89,12 +89,12 @@ func (h *APIHandler) ParseResponse(
 	// Map each of the currency pairs for easy lookup.
 	configCPs := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
 			continue
 		}
 
-		configCPs.CurrencyPairToMarketConfigs[cp.Ticker()] = market
+		configCPs.CurrencyPairToMarketConfigs[cp.String()] = market
 	}
 
 	// Filter out the responses that are not expected.
@@ -113,7 +113,7 @@ func (h *APIHandler) ParseResponse(
 			cp := market.CurrencyPair
 			price := math.Float64ToBigInt(price, cp.Decimals)
 			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-			delete(configCPs.CurrencyPairToMarketConfigs, cp.Ticker())
+			delete(configCPs.CurrencyPairToMarketConfigs, cp.String())
 		}
 	}
 

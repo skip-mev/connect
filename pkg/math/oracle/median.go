@@ -70,7 +70,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 				m.logger.Error(
 					"failed to scale price",
 					zap.Error(err),
-					zap.String("currency_pair", cp.Ticker()),
+					zap.String("currency_pair", cp.String()),
 					zap.Int("decimals", int(cp.Decimals)),
 					zap.String("price", price.String()),
 				)
@@ -92,7 +92,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 			// If there were no converted prices, log an error and continue.
 			cp := cfg.CurrencyPair
 			if len(convertedPrices) == 0 {
-				m.logger.Debug("no converted prices", zap.String("currency_pair", cp.Ticker()))
+				m.logger.Debug("no converted prices", zap.String("currency_pair", cp.String()))
 				continue
 			}
 
@@ -100,7 +100,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 			aggregatedMedians[cp] = aggregator.CalculateMedian(convertedPrices)
 			m.logger.Debug(
 				"calculated median price",
-				zap.String("currency_pair", cp.Ticker()),
+				zap.String("currency_pair", cp.String()),
 				zap.String("price", aggregatedMedians[cp].String()),
 				zap.Any("converted_prices", convertedPrices),
 			)
@@ -113,7 +113,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 				m.logger.Error(
 					"failed to scale price",
 					zap.Error(err),
-					zap.String("currency_pair", cp.Ticker()),
+					zap.String("currency_pair", cp.String()),
 					zap.Int("decimals", int(cp.Decimals)),
 					zap.String("price", price.String()),
 				)
@@ -187,7 +187,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 	// Get the median price for the first feed.
 	price, ok := medians[cp]
 	if !ok {
-		return nil, fmt.Errorf("missing median price for feed %s", first.CurrencyPair.Ticker())
+		return nil, fmt.Errorf("missing median price for feed %s", first.CurrencyPair.String())
 	}
 
 	if price.Cmp(zero) == 0 {
@@ -201,8 +201,8 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 
 	m.logger.Debug(
 		"got median price",
-		zap.String("target_currency_pair", target.Ticker()),
-		zap.String("current_currency_pair", cp.Ticker()),
+		zap.String("target_currency_pair", target.String()),
+		zap.String("current_currency_pair", cp.String()),
 		zap.String("tracking_price", price.String()),
 		zap.String("median_price", price.String()),
 	)
@@ -212,7 +212,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		cp := feed.CurrencyPair
 		median, ok := medians[cp]
 		if !ok {
-			return nil, fmt.Errorf("missing median price for feed %s", feed.CurrencyPair.Ticker())
+			return nil, fmt.Errorf("missing median price for feed %s", feed.CurrencyPair.String())
 		}
 
 		if median.Cmp(zero) == 0 {
@@ -230,8 +230,8 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 
 		m.logger.Debug(
 			"got median price",
-			zap.String("target_currency_pair", target.Ticker()),
-			zap.String("conversion_currency_pair", cp.Ticker()),
+			zap.String("target_currency_pair", target.String()),
+			zap.String("conversion_currency_pair", cp.String()),
 			zap.String("tracking_price", price.String()),
 			zap.String("median_price", median.String()),
 		)
@@ -239,7 +239,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 
 	m.logger.Debug(
 		"calculated converted price",
-		zap.String("target_currency_pair", target.Ticker()),
+		zap.String("target_currency_pair", target.String()),
 		zap.String("price", price.String()),
 	)
 

@@ -123,7 +123,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a failed response from the oracle keeper (no currency pair)
-				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals).Ticker()).Return(false).Once()
+				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals).String()).Return(false).Once()
 			},
 			msg: &types.MsgAlert{
 				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals)),
@@ -143,7 +143,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals).Ticker()).Return(true).Once()
+				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals).String()).Return(true).Once()
 
 				// expect a failed response from the bank keeper
 				s.bk.On("SendCoinsFromAccountToModule",
@@ -176,7 +176,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				// expect a correct response from the oracle keeper
 				s.ok.On("HasCurrencyPair",
 					mock.Anything,
-					oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals).Ticker(),
+					oracletypes.NewCurrencyPair("BTC", "USD", oracletypes.DefaultDecimals).String(),
 				).Return(true).Once()
 
 				// expect a correct response from the bank keeper

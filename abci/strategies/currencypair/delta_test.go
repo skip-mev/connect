@@ -25,7 +25,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{}, oracletypes.QuotePriceNotExistError{})
 
 		price := big.NewInt(100)
@@ -48,7 +48,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		price := big.NewInt(80)
@@ -71,7 +71,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		price := big.NewInt(120)
@@ -94,7 +94,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		price := big.NewInt(100)
@@ -117,7 +117,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		price := big.NewInt(120)
@@ -147,7 +147,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			ctx,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil).Once()
 
 		price := big.NewInt(120)
@@ -166,7 +166,7 @@ func TestDeltaCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			ctx,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: updatedOnChainPrice}, nil).Once()
 
 		price = big.NewInt(50)
@@ -201,7 +201,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{}, oracletypes.QuotePriceNotExistError{})
 
 		price := big.NewInt(100)
@@ -224,7 +224,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		delta := big.NewInt(-20)
@@ -249,7 +249,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		delta := big.NewInt(20)
@@ -274,7 +274,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		delta := big.NewInt(0)
@@ -299,7 +299,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			mock.Anything,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil)
 
 		delta := big.NewInt(-120)
@@ -320,7 +320,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			ctx,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil).Once()
 
 		delta := big.NewInt(20)
@@ -349,7 +349,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			ctx,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: onChainPrice}, nil).Once()
 
 		delta := big.NewInt(20)
@@ -368,7 +368,7 @@ func TestDeltaCurrencyPairStrategyGetDecodedPrice(t *testing.T) {
 		ok.On(
 			"GetPriceForCurrencyPair",
 			ctx,
-			cp.Ticker(),
+			cp.String(),
 		).Return(oracletypes.QuotePrice{Price: updatedOnChainPrice}, nil).Once()
 
 		delta = big.NewInt(50)

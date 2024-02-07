@@ -61,7 +61,7 @@ func (m msgServer) Alert(goCtx context.Context, req *types.MsgAlert) (*types.Msg
 	}
 
 	// check that the referenced currency-pair exists
-	if !m.k.oracleKeeper.HasCurrencyPair(ctx, req.Alert.CurrencyPair.Ticker()) {
+	if !m.k.oracleKeeper.HasCurrencyPair(ctx, req.Alert.CurrencyPair.String()) {
 		return nil, fmt.Errorf("currency pair %s does not exist", req.Alert.CurrencyPair)
 	}
 

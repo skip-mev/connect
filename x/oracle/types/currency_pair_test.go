@@ -84,7 +84,7 @@ func TestValidateBasic(t *testing.T) {
 	}
 }
 
-func TestToFromString(t *testing.T) {
+func TestToFromFullString(t *testing.T) {
 	tcs := []struct {
 		name string
 		// string formatted CurrencyPair
@@ -106,7 +106,7 @@ func TestToFromString(t *testing.T) {
 		},
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
-			types.CurrencyPairString("A", "B", types.DefaultDecimals),
+			types.CurrencyPairFullString("A", "B", types.DefaultDecimals),
 			types.CurrencyPair{Base: "A", Quote: "B", Decimals: types.DefaultDecimals},
 			true,
 		},

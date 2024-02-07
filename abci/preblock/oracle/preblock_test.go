@@ -159,7 +159,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		s.Require().NoError(err)
 
 		// Check that the price was written to state.
-		oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0].Ticker())
+		oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0].String())
 		s.Require().NoError(err)
 		s.Require().Equal(math.NewIntFromBigInt(prices[s.currencyPairs[0]]), oraclePrice.Price)
 	})
@@ -176,7 +176,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 
 		// Check that the prices were written to state.
 		for _, cp := range s.currencyPairs {
-			oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cp.Ticker())
+			oraclePrice, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cp.String())
 			s.Require().NoError(err)
 			s.Require().Equal(math.NewIntFromBigInt(prices[cp]), oraclePrice.Price)
 		}
@@ -191,7 +191,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		s.Require().NoError(err)
 
 		// Check that the price was not written to state.
-		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0].Ticker())
+		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, s.currencyPairs[0].String())
 		s.Require().Error(err)
 	})
 
@@ -208,7 +208,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 		s.Require().NoError(err)
 
 		// Check that the price was not written to state.
-		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, unsupportedCP.Ticker())
+		_, err = s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, unsupportedCP.String())
 		s.Require().Error(err)
 	})
 }

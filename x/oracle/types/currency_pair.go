@@ -43,17 +43,17 @@ func (cp *CurrencyPair) ValidateBasic() error {
 }
 
 // String returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
+// This function differs from FullString() which also includes the decimal information.
 func (cp CurrencyPair) String() string {
-	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote, cp.Decimals)
-}
-
-// Ticker returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
-// This function differs from String() which also includes the decimal information.
-func (cp CurrencyPair) Ticker() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
-// CurrencyPairStringToTicker takes a CurrencyPair string and returns the Ticker representation of it.
+// FullString returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
+func (cp CurrencyPair) FullString() string {
+	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote, cp.Decimals)
+}
+
+// CurrencyPairStringToTicker takes a CurrencyPair string and returns the String representation of it.
 func CurrencyPairStringToTicker(cpStr string) (string, error) {
 	cp, err := CurrencyPairFromString(cpStr)
 	if err != nil {
@@ -65,13 +65,13 @@ func CurrencyPairStringToTicker(cpStr string) (string, error) {
 		return "", fmt.Errorf("invalid string provided: %w", err)
 	}
 
-	return cp.Ticker(), nil
+	return cp.String(), nil
 }
 
-// CurrencyPairString constructs and returns the string representation of a currency pair.
-func CurrencyPairString(base, quote string, decimals int64) string {
+// CurrencyPairFullString constructs and returns the string representation of a currency pair.
+func CurrencyPairFullString(base, quote string, decimals int64) string {
 	cp := NewCurrencyPair(base, quote, decimals)
-	return cp.String()
+	return cp.FullString()
 }
 
 func CurrencyPairFromString(s string) (CurrencyPair, error) {

@@ -53,7 +53,7 @@ func NewWebSocketDataHandler(
 //
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
-//  2. Ticker stream message. This is sent when a ticker update is received from the
+//  2. String stream message. This is sent when a ticker update is received from the
 //     Gate.io websocket API.
 func (h *WebsocketDataHandler) HandleMessage(
 	message []byte,
@@ -108,10 +108,10 @@ func (h *WebsocketDataHandler) CreateMessages(
 	symbols := make([]string, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("market not found for currency pair", zap.String("currency_pair", cp.Ticker()))
-			return nil, fmt.Errorf("market not found for currency pair: %s", cp.Ticker())
+			h.logger.Debug("market not found for currency pair", zap.String("currency_pair", cp.String()))
+			return nil, fmt.Errorf("market not found for currency pair: %s", cp.String())
 		}
 
 		symbols = append(symbols, market.Ticker)

@@ -28,9 +28,9 @@ func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyP
 // ID returns the ID of the given currency pair, by querying the x/oracle state for the ID of the given
 // currency pair. This method returns an error if the given currency pair is not found in the x/oracle state.
 func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp oracletypes.CurrencyPair) (uint64, error) {
-	id, found := s.oracleKeeper.GetIDForCurrencyPair(ctx, cp.Ticker())
+	id, found := s.oracleKeeper.GetIDForCurrencyPair(ctx, cp.String())
 	if !found {
-		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.Ticker())
+		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.String())
 	}
 
 	// cache the currency pair for future lookups

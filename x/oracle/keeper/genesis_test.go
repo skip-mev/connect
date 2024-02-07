@@ -83,7 +83,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 				// expect all the currency-pairs to be stored in state
 				for _, cpg := range tc.gs.CurrencyPairGenesis {
 					// get the quote-price
-					qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
+					qp, err := s.oracleKeeper.GetPriceForCurrencyPair(s.ctx, cpg.CurrencyPair.String())
 
 					// check equality of quote-price if one is given
 					if cpg.CurrencyPairPrice != nil {
@@ -96,7 +96,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 					}
 
 					// get nonce, and check equality
-					nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
+					nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cpg.CurrencyPair.String())
 					s.Require().Nil(err)
 
 					// check equality of nonces
@@ -155,12 +155,12 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		expectedNonces := map[string]uint64{"AA/BB": 2, "CC/DD": 1}
 
 		for _, cpg := range gs.CurrencyPairGenesis {
-			qp, ok := expectedCurrencyPairs[cpg.CurrencyPair.Ticker()]
+			qp, ok := expectedCurrencyPairs[cpg.CurrencyPair.String()]
 			s.Require().True(ok)
 			// check equality for quote-prices
 			checkQuotePriceEqual(s.T(), qp, *cpg.CurrencyPairPrice)
 			// check equality of nonces
-			nonce, ok := expectedNonces[cpg.CurrencyPair.Ticker()]
+			nonce, ok := expectedNonces[cpg.CurrencyPair.String()]
 			s.Require().True(ok)
 			s.Require().Equal(nonce, cpg.Nonce)
 		}
@@ -237,7 +237,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		// iterate over CurrencyPairGeneses in egs
 		for _, cpg := range egs.CurrencyPairGenesis {
 			// expect that all currency-pairs in gen-state are expected
-			cps := cpg.CurrencyPair.Ticker()
+			cps := cpg.CurrencyPair.String()
 			_, ok := expectedCurrencyPairs[cps]
 			s.Require().True(ok)
 
@@ -258,7 +258,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			}
 
 			// check IDs
-			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair.Ticker())
+			id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair.String())
 
 			s.Require().True(ok)
 

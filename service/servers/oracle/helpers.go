@@ -10,7 +10,7 @@ func ToReqPrices(prices map[types.CurrencyPair]*big.Int) map[string]string {
 	reqPrices := make(map[string]string, len(prices))
 
 	for cp, price := range prices {
-		reqPrices[cp.Ticker()] = price.String()
+		reqPrices[cp.FullString()] = price.String()
 	}
 
 	return reqPrices

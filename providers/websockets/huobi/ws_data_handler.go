@@ -57,7 +57,7 @@ func NewWebSocketDataHandler(
 //
 //  1. Subscribe response message. The subscribe response message is used to determine if
 //     the subscription was successful.
-//  2. Ticker response message. This is sent when a ticker update is received from the
+//  2. String response message. This is sent when a ticker update is received from the
 //     Huobi websocket API.
 //  3. Heartbeat ping message.
 func (h *WebsocketDataHandler) HandleMessage(
@@ -135,10 +135,10 @@ func (h *WebsocketDataHandler) CreateMessages(
 	msgs := make([]handlers.WebsocketEncodedMessage, len(cps))
 
 	for i, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("ID not found for currency pair", zap.String("currency_pair", cp.Ticker()))
-			return nil, fmt.Errorf("currency pair %s not in config", cp.Ticker())
+			h.logger.Debug("ID not found for currency pair", zap.String("currency_pair", cp.String()))
+			return nil, fmt.Errorf("currency pair %s not in config", cp.String())
 		}
 
 		msg, err := NewSubscriptionRequest(market.Ticker)
