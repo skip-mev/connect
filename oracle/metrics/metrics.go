@@ -11,7 +11,7 @@ const (
 	ProviderLabel = "provider"
 	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
 	ProviderTypeLabel = "type"
-	// PairIDLabel is the
+	// PairIDLabel is the.
 	PairIDLabel = "pair"
 	// OracleSubsystem is a subsystem shared by all metrics exposed by this
 	// package.
@@ -54,7 +54,7 @@ func NewMetrics() Metrics {
 	m := &OracleMetricsImpl{
 		ticks: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "ticks",
+			Name:      "ticks_total",
 			Help:      "Number of ticks with a successful oracle update.",
 		}),
 		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{

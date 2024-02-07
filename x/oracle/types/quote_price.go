@@ -19,7 +19,7 @@ func NewQuotePriceWithNonce(qp QuotePrice, nonce uint64) QuotePriceWithNonce {
 	}
 }
 
-// Nonce returns the nonce for a given QuotePriceWithNonce
+// Nonce returns the nonce for a given QuotePriceWithNonce.
 func (q *QuotePriceWithNonce) Nonce() uint64 {
 	return q.nonce
 }

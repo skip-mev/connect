@@ -58,7 +58,7 @@ func CmdQueryParams() *cobra.Command {
 	return cmd
 }
 
-// CmdQueryAlerts returns the command for querying alerts
+// CmdQueryAlerts returns the command for querying alerts.
 func CmdQueryAlerts() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "alerts",

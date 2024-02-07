@@ -87,7 +87,7 @@ func ProvideIncentives(bk alerttypes.BankKeeper, sk alerttypes.StakingKeeper) ma
 }
 
 var (
-	// module account permissions
+	// module account permissions.
 	moduleAccPerms = []*authmodulev1.ModuleAccountPermission{
 		{Account: authtypes.FeeCollectorName},
 		{Account: distrtypes.ModuleName},
@@ -100,7 +100,7 @@ var (
 		{Account: alerttypes.ModuleName, Permissions: []string{authtypes.Burner, authtypes.Minter}},
 	}
 
-	// blocked account addresses
+	// blocked account addresses.
 	blockAccAddrs = []string{
 		authtypes.FeeCollectorName,
 		distrtypes.ModuleName,
@@ -111,7 +111,7 @@ var (
 		// govtypes.ModuleName
 	}
 
-	// application configuration (used by depinject)
+	// application configuration (used by depinject).
 	AppConfig = depinject.Configs(appconfig.Compose(&appv1alpha1.Config{
 		Modules: []*appv1alpha1.ModuleConfig{
 			{

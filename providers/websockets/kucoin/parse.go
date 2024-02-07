@@ -70,7 +70,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	// Parse the price from the message.
 	price, err := math.Float64StringToBigInt(msg.Data.Price, cp.Decimals())
 	if err != nil {
-		err = fmt.Errorf("failed to parse price %s", err)
+		err = fmt.Errorf("failed to parse price %w", err)
 		unResolved[cp] = err
 		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}

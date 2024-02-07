@@ -13,7 +13,7 @@ import (
 	"github.com/skip-mev/slinky/pkg/sync"
 )
 
-// stable defaults
+// stable defaults.
 const (
 	maxOpenConnections = 3
 	readHeaderTimeout  = 10 * time.Second

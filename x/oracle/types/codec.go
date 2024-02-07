@@ -9,7 +9,7 @@ import (
 )
 
 // RegisterLegacyAminoCodec registers the necessary x/oracle interfaces (messages) on the
-// cdc. These types are used for amino serialization
+// cdc. These types are used for amino serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// register the MsgAddCurrencyPairs for amino serialization
 	legacy.RegisterAminoMsg(cdc, &MsgAddCurrencyPairs{}, "slinky/x/oracle/MsgAddCurrencyPairs")

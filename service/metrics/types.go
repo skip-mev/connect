@@ -1,9 +1,9 @@
 package metrics
 
 const (
-	// Metric namespace
+	// Metric namespace.
 	AppNamespace = "app"
-	// Metrics labels
+	// Metrics labels.
 	TickerLabel           = "ticker"
 	InclusionLabel        = "included"
 	ProviderLabel         = "provider"
@@ -14,7 +14,7 @@ const (
 	MessageTypeLabel      = "message_type"
 	ValidatorLabel        = "validator"
 
-	// helpful constants
+	// helpful constants.
 	notImplemented = "not_implemented"
 )
 
@@ -28,7 +28,7 @@ func StatusFromError(err error) Labeller {
 }
 
 // MessageType is an identifier used to represent the different types of data that is transmitted between validators in Slinky.
-// This ID is used to paginate metrics corresponding to these messages
+// This ID is used to paginate metrics corresponding to these messages.
 type MessageType int
 
 const (
@@ -77,7 +77,7 @@ func (a ABCIMethod) String() string {
 }
 
 // ReportStatus is an identifier for the status of a report, this is used to label what kind of report a validator has given, i.e
-// absent, missing_price, with_price
+// absent, missing_price, with_price.
 type ReportStatus int
 
 const (

@@ -278,7 +278,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 		_, err := msgServer.Conclusion(ctx, msg)
 
 		s.Require().Error(err)
-		s.Require().Equal(fmt.Errorf("message validation failed: %v", msg.ValidateBasic()).Error(), err.Error())
+		s.Require().Equal(fmt.Errorf("message validation failed: %w", msg.ValidateBasic()).Error(), err.Error())
 	})
 
 	s.Run("if alerts are not enabled", func() {
@@ -328,7 +328,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 		_, err = msgServer.Conclusion(ctx, msg)
 		s.Require().Error(err)
 
-		s.Require().Equal(fmt.Errorf("failed to verify conclusion: %v", conclusion.Verify(&types.MultiSigConclusionVerificationParams{
+		s.Require().Equal(fmt.Errorf("failed to verify conclusion: %w", conclusion.Verify(&types.MultiSigConclusionVerificationParams{
 			Signers: []*codectypes.Any{pkany},
 		})).Error(), err.Error())
 	})
@@ -606,7 +606,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 			&types.MsgUpdateParams{
 				Authority: "invalid",
 			},
-			fmt.Errorf("message validation failed: %v", types.MsgUpdateParams{
+			fmt.Errorf("message validation failed: %w", types.MsgUpdateParams{
 				Authority: "invalid",
 			}.ValidateBasic()),
 		},
