@@ -71,7 +71,7 @@ func (m MsgRemoveCurrencyPairs) ValidateBasic() error {
 
 	// check that each CurrencyPairID is correctly formatted
 	for _, id := range m.CurrencyPairIds {
-		if _, err := CurrencyPairFromID(id, 1); err != nil {
+		if _, err := CurrencyPairFromTicker(id, 1); err != nil {
 			return err
 		}
 	}

@@ -220,16 +220,16 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		s.Require().Nil(err)
 
 		// setup expected values
-		expectedCurrencyPairs := map[string]struct{}{"AA/BB/8": {}, "CC/DD/8": {}, "EE/FF/8": {}, "GG/HH/8": {}}
+		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
 		expectedQuotePrices := map[string]types.QuotePrice{
-			"AA/BB/8": {
+			"AA/BB": {
 				Price: sdkmath.NewInt(100),
 			},
-			"CC/DD/8": {
+			"CC/DD": {
 				Price: sdkmath.NewInt(101),
 			},
 		}
-		expectedNonces := map[string]uint64{"AA/BB/8": 100, "CC/DD/8": 101}
+		expectedNonces := map[string]uint64{"AA/BB": 100, "CC/DD": 101}
 
 		// ExportGenesis
 		egs := s.oracleKeeper.ExportGenesis(s.ctx)
@@ -237,7 +237,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		// iterate over CurrencyPairGeneses in egs
 		for _, cpg := range egs.CurrencyPairGenesis {
 			// expect that all currency-pairs in gen-state are expected
-			cps := cpg.CurrencyPair.String()
+			cps := cpg.CurrencyPair.Ticker()
 			_, ok := expectedCurrencyPairs[cps]
 			s.Require().True(ok)
 

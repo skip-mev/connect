@@ -12,7 +12,7 @@ import (
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
-// PreBlockerHandler is responsible for aggregating information about
+// PreBlockHandler is responsible for aggregating information about
 // oracle price feeds that each validator is including via their vote extensions.
 // This handler is run before any transactions are executed/finalized for
 // a given block. The handler check's the vote extensions included in each
@@ -37,7 +37,7 @@ type PreBlockHandler struct {
 	extendedCommitCodec compression.ExtendedCommitCodec
 }
 
-// NewSLAPreBlockerHandler returns a new PreBlockHandler.
+// NewSLAPreBlockHandler returns a new PreBlockHandler.
 func NewSLAPreBlockHandler(
 	oracleKeeper OracleKeeper,
 	stakingKeeper StakingKeeper,
@@ -78,7 +78,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			"height", ctx.BlockHeight(),
 		)
 
-		// Retrieve all of the vote extensions that were included in the block. This
+		// Retrieve all vote extensions that were included in the block. This
 		// returns a list of validators and the price updates that they made.
 		votes, err := voteaggregator.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
 		if err != nil {
@@ -105,7 +105,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, err
 		}
 
-		// Update all of the price feeds for each validator.
+		// Update all price feeds for each validator.
 		if err := h.slaKeeper.UpdatePriceFeeds(ctx, updates); err != nil {
 			ctx.Logger().Error(
 				"failed to update price feeds",

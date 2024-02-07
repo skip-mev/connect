@@ -105,9 +105,9 @@ func (h *WebSocketDataHandler) CreateMessages(
 
 	instruments := make([]string, 0)
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
 		if !ok {
-			return nil, fmt.Errorf("currency pair %s not found in market configs", cp.String())
+			return nil, fmt.Errorf("currency pair %s not found in market configs", cp.Ticker())
 		}
 
 		mexcTicker := fmt.Sprintf("%s%s%s", string(MiniTickerChannel), strings.ToUpper(market.Ticker), "@UTC+8")

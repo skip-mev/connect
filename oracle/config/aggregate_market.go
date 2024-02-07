@@ -91,7 +91,7 @@ func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
 func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Verify the configurations of all price feeds.
 	for marketString, feedConfig := range c.Feeds {
-		cp, err := oracletypes.CurrencyPairFromID(marketString, feedConfig.CurrencyPair.Decimals)
+		cp, err := oracletypes.CurrencyPairFromTicker(marketString, feedConfig.CurrencyPair.Decimals)
 		if err != nil {
 			return err
 		}
@@ -115,7 +115,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 	// sorted.
 	for marketString, conversions := range c.AggregatedFeeds {
 		// check validity of market string
-		checkCP, err := oracletypes.CurrencyPairFromID(marketString, oracletypes.DefaultDecimals)
+		checkCP, err := oracletypes.CurrencyPairFromTicker(marketString, oracletypes.DefaultDecimals)
 		if err != nil {
 			return err
 		}

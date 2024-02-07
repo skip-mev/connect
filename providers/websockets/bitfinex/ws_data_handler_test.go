@@ -22,11 +22,11 @@ var (
 		Market: config.MarketConfig{
 			Name: bitfinex.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USDT/8": {
+				"BITCOIN/USDT": {
 					Ticker:       "BTCUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USDT/8": {
+				"ETHEREUM/USDT": {
 					Ticker:       "ETHUSDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT", oracletypes.DefaultDecimals),
 				},

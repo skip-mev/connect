@@ -54,7 +54,7 @@ func (h *APIHandler) CreateURL(
 	var cpStrings string
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
 		if !ok {
 			continue
 		}
@@ -89,12 +89,12 @@ func (h *APIHandler) ParseResponse(
 	// Determine of the provided currency pairs which are supported by the Binance API.
 	configuredCps := config.NewMarketConfig()
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
 		if !ok {
 			continue
 		}
 
-		configuredCps.CurrencyPairToMarketConfigs[cp.String()] = market
+		configuredCps.CurrencyPairToMarketConfigs[cp.Ticker()] = market
 	}
 
 	// Filter out the responses that are not expected.
@@ -111,13 +111,13 @@ func (h *APIHandler) ParseResponse(
 		}
 
 		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-		delete(configuredCps.CurrencyPairToMarketConfigs, cp.String())
+		delete(configuredCps.CurrencyPairToMarketConfigs, cp.Ticker())
 	}
 
 	// If there are any currency pairs that were not resolved, return an error.
 	for _, market := range configuredCps.CurrencyPairToMarketConfigs {
 		cp := market.CurrencyPair
-		unresolved[cp] = fmt.Errorf("currency pair %s did not get a response", cp.String())
+		unresolved[cp] = fmt.Errorf("currency pair %s did not get a response", cp.Ticker())
 	}
 
 	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)

@@ -56,7 +56,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 			Decimals: types.DefaultDecimals,
 		}, types.QuotePrice{Price: sdkmath.NewInt(100)}))
 
-		expectedCurrencyPairs := map[string]struct{}{"AA/BB/8": {}, "CC/DD/8": {}, "EE/FF/8": {}, "GG/HH/8": {}}
+		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
 
 		// query for pairs
 		res, err := qs.GetAllCurrencyPairs(s.ctx, nil)
@@ -64,7 +64,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 
 		// assert that currency-pairs are correctly returned
 		for _, cp := range res.CurrencyPairs {
-			_, ok := expectedCurrencyPairs[cp.String()]
+			_, ok := expectedCurrencyPairs[cp.Ticker()]
 			require.True(t, ok)
 		}
 	})

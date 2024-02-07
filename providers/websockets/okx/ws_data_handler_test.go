@@ -23,11 +23,11 @@ var (
 		Market: config.MarketConfig{
 			Name: okx.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USDT/8": {
+				"BITCOIN/USDT": {
 					Ticker:       "BTC-USDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USDT/8": {
+				"ETHEREUM/USDT": {
 					Ticker:       "ETH-USDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT", oracletypes.DefaultDecimals),
 				},

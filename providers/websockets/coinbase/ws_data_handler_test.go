@@ -24,11 +24,11 @@ var (
 		Market: config.MarketConfig{
 			Name: coinbase.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD/8": {
+				"BITCOIN/USD": {
 					Ticker:       "BTC-USD",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USD/8": {
+				"ETHEREUM/USD": {
 					Ticker:       "ETH-USD",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},

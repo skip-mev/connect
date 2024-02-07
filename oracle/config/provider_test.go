@@ -32,7 +32,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -62,7 +62,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -86,7 +86,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -102,7 +102,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -141,7 +141,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -163,7 +163,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -183,7 +183,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -206,7 +206,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test2",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -231,7 +231,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test2",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},
@@ -273,7 +273,7 @@ func TestProviderConfig(t *testing.T) {
 				Market: config.MarketConfig{
 					Name: "test2",
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD/8": {
+						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
 							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 						},

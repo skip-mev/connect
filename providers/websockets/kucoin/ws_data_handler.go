@@ -116,9 +116,9 @@ func (h *WebSocketDataHandler) CreateMessages(
 	instruments := make([]string, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
 		if !ok {
-			h.logger.Warn("currency pair not found in market configs", zap.String("currency_pair", cp.String()))
+			h.logger.Warn("currency pair not found in market configs", zap.String("currency_pair", cp.Ticker()))
 			continue
 		}
 

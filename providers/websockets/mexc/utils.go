@@ -52,27 +52,27 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD/8": {
+			"BITCOIN/USD": {
 				Ticker:       "BTCUSDT",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 			},
-			"ETHEREUM/USD/8": {
+			"ETHEREUM/USD": {
 				Ticker:       "ETHUSDT",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 			},
-			"ATOM/USD/8": {
+			"ATOM/USD": {
 				Ticker:       "ATOMUSDC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD", oracletypes.DefaultDecimals),
 			},
-			"SOLANA/USD/8": {
+			"SOLANA/USD": {
 				Ticker:       "SOLUSDC",
 				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD", oracletypes.DefaultDecimals),
 			},
-			"AVAX/USD/8": {
+			"AVAX/USD": {
 				Ticker:       "AVAXUSDC",
 				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD", oracletypes.DefaultDecimals),
 			},
-			"ETHEREUM/BITCOIN/8": {
+			"ETHEREUM/BITCOIN": {
 				Ticker:       "ETHBTC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN", oracletypes.DefaultDecimals),
 			},

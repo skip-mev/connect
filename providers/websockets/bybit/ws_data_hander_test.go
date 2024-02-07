@@ -38,11 +38,11 @@ var (
 		Market: config.MarketConfig{
 			Name: bybit.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD/8": {
+				"BITCOIN/USD": {
 					Ticker:       "BTCUSD",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USD/8": {
+				"ETHEREUM/USD": {
 					Ticker:       "ETHUSD",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},

@@ -100,7 +100,7 @@ func (h *WebsocketDataHandler) handleStream(
 	}
 
 	cp := market.CurrencyPair
-	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("market", cp.String()))
+	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("market", cp.Ticker()))
 
 	// check if it is a heartbeat
 	hbID, ok := baseStream[indexPayload].(string)

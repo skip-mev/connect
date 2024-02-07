@@ -309,7 +309,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 					},
 				},
 				AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
-					cp.String(): {
+					cp.Ticker(): {
 						CurrencyPair: cp,
 						Conversions: []oracleconfig.Conversions{
 							{

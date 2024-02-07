@@ -158,14 +158,14 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 	s.Require().Nil(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, cp2, qp2))
 
 	// get all cps
-	expectedCurrencyPairs := map[string]struct{}{"AA/BB/8": {}, "CC/DD/8": {}}
+	expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}}
 	tickers := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
 
 	s.Require().Equal(len(tickers), 2)
 
 	// check for inclusion
 	for _, ticker := range tickers {
-		ts := ticker.String()
+		ts := ticker.Ticker()
 		_, ok := expectedCurrencyPairs[ts]
 		s.Require().True(ok)
 	}
@@ -192,7 +192,7 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 
 		var found bool
 		for _, cp := range cps {
-			if cp.String() == "NEW/PAIR/8" {
+			if cp.Ticker() == "NEW/PAIR" {
 				found = true
 				break
 			}

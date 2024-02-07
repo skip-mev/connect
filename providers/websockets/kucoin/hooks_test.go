@@ -26,11 +26,11 @@ var (
 		Market: config.MarketConfig{
 			Name: kucoin.Name,
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD/8": {
+				"BITCOIN/USD": {
 					Ticker:       "BTC-USDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD", oracletypes.DefaultDecimals),
 				},
-				"ETHEREUM/USD/8": {
+				"ETHEREUM/USD": {
 					Ticker:       "ETH-USDT",
 					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD", oracletypes.DefaultDecimals),
 				},

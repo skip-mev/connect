@@ -242,7 +242,7 @@ func (k Keeper) GetCurrencyPairFromID(ctx sdk.Context, id uint64) (types.Currenc
 		return types.CurrencyPair{}, false
 	}
 
-	cp, err := types.CurrencyPairFromID(cpStr, cps.Decimals)
+	cp, err := types.CurrencyPairFromTicker(cpStr, cps.Decimals)
 	return cp, err == nil
 }
 
@@ -277,7 +277,7 @@ func (k Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp types.CurrencyP
 			return err
 		}
 
-		cp, err := types.CurrencyPairFromID(primaryKey, cps.Decimals)
+		cp, err := types.CurrencyPairFromTicker(primaryKey, cps.Decimals)
 		if err != nil {
 			return err
 		}

@@ -109,9 +109,9 @@ func (h *WebSocketDataHandler) CreateMessages(
 	// corresponds to the perpetual contract name on the Crypto.com websocket API. This will
 	// only subscribe to price feeds that are configured in the config file.
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
 		if !ok {
-			h.logger.Debug("no market configuration for currency pair", zap.String("currency_pair", cp.String()))
+			h.logger.Debug("no market configuration for currency pair", zap.String("currency_pair", cp.Ticker()))
 			continue
 		}
 

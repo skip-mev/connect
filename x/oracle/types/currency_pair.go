@@ -42,7 +42,7 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	return nil
 }
 
-// String returns a string representation of the CurrencyPair, in the following form "ETH/BTC/8" where 8 is the number of decimals.
+// String returns a string representation of the CurrencyPair, in the following form "ETH/BTC" where 8 is the number of decimals.
 func (cp CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s/%d", cp.Base, cp.Quote, cp.Decimals)
 }
@@ -53,8 +53,8 @@ func (cp CurrencyPair) Ticker() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
 }
 
-// CurrencyPairStringToID takes a CurrencyPair string and returns the ID representation of it.
-func CurrencyPairStringToID(cpStr string) (string, error) {
+// CurrencyPairStringToTicker takes a CurrencyPair string and returns the Ticker representation of it.
+func CurrencyPairStringToTicker(cpStr string) (string, error) {
 	cp, err := CurrencyPairFromString(cpStr)
 	if err != nil {
 		split := strings.Split(cpStr, "/")
@@ -94,7 +94,7 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 	return cp, cp.ValidateBasic()
 }
 
-func CurrencyPairFromID(s string, decimals int64) (CurrencyPair, error) {
+func CurrencyPairFromTicker(s string, decimals int64) (CurrencyPair, error) {
 	split := strings.Split(s, "/")
 	if len(split) != 2 {
 		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)

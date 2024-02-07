@@ -133,7 +133,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				require.Nil(s.T(), err)
 
 				// check the nonce is correct (if the cp had already existed in state, check that it was not overwritten)
-				if cp.String() == "E/F/8" {
+				if cp.Ticker() == "E/F" {
 					require.Equal(s.T(), nonce, uint64(100))
 				} else {
 					require.Equal(s.T(), nonce, uint64(0))

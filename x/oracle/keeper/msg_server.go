@@ -51,7 +51,7 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 }
 
 // RemoveCurrencyPairs takes a set of CurrencyPairs to remove. CurrencyPairs given are represented by string identifiers of CurrencyPairs
-// i.e `cp.String()`. For each CurrencyPair in the message, remove the Nonce / QuotePrice data for that CurrencyPair, if a CurrencyPair is
+// i.e `cp.Ticker()`. For each CurrencyPair in the message, remove the Nonce / QuotePrice data for that CurrencyPair, if a CurrencyPair is
 // given that is not currently tracked, skip, and continue removing CurrencyPairs.
 func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRemoveCurrencyPairs) (*types.MsgRemoveCurrencyPairsResponse, error) {
 	// check validity of message

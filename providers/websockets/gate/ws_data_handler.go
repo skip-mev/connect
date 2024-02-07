@@ -108,10 +108,10 @@ func (h *WebsocketDataHandler) CreateMessages(
 	symbols := make([]string, 0)
 
 	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.Ticker()]
 		if !ok {
-			h.logger.Debug("market not found for currency pair", zap.String("currency_pair", cp.String()))
-			return nil, fmt.Errorf("market not found for currency pair: %s", cp.String())
+			h.logger.Debug("market not found for currency pair", zap.String("currency_pair", cp.Ticker()))
+			return nil, fmt.Errorf("market not found for currency pair: %s", cp.Ticker())
 		}
 
 		symbols = append(symbols, market.Ticker)

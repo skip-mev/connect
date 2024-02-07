@@ -30,7 +30,7 @@ func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyP
 func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp oracletypes.CurrencyPair) (uint64, error) {
 	id, found := s.oracleKeeper.GetIDForCurrencyPair(ctx, cp.Ticker())
 	if !found {
-		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.String())
+		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.Ticker())
 	}
 
 	// cache the currency pair for future lookups

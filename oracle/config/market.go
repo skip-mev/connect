@@ -64,8 +64,8 @@ func (c *MarketConfig) ValidateBasic() error {
 		return fmt.Errorf("market config must have at least one currency pair")
 	}
 
-	for cpStr, marketConfig := range c.CurrencyPairToMarketConfigs {
-		cp, err := oracletypes.CurrencyPairFromString(cpStr)
+	for ticker, marketConfig := range c.CurrencyPairToMarketConfigs {
+		cp, err := oracletypes.CurrencyPairFromTicker(ticker, marketConfig.CurrencyPair.Decimals)
 		if err != nil {
 			return err
 		}
@@ -78,8 +78,8 @@ func (c *MarketConfig) ValidateBasic() error {
 			return err
 		}
 
-		delete(c.CurrencyPairToMarketConfigs, cpStr)
-		c.CurrencyPairToMarketConfigs[cp.String()] = marketConfig
+		delete(c.CurrencyPairToMarketConfigs, ticker)
+		c.CurrencyPairToMarketConfigs[cp.Ticker()] = marketConfig
 	}
 
 	// Invert the ticker market config into the currency pair market config.
