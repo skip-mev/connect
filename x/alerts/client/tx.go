@@ -31,10 +31,10 @@ func AlertTxCmd() *cobra.Command {
 		Short: "Create a new alert",
 		Long: `
 Create a new alert with the specified height, sender, and currency-pair.
-	Example: "slinkycli tx alerts alert cosmos1deadbeef 1 BTC/USD"
-	Structure: "slinkycli tx alerts alert <sender> <height> <currency-pair>
+	Example: "slinkyd tx alerts alert cosmos... 1 BTC/USD"
+	Structure: "slinkyd tx alerts alert <sender> <height> <currency-pair>
 `,
-		Example: "slinkycli tx alerts alert cosmos1deadbeef 1 BTC/USD",
+		Example: "slinkyd tx alerts alert cosmos... 1 BTC/USD",
 		Args:    cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
