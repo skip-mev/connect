@@ -43,8 +43,8 @@ func NewAlert(height uint64, signer sdk.AccAddress, cp oracledata.CurrencyPair) 
 	}
 }
 
-// ValidateBasic performs stateless validation on the Claim, i.e checks that the signer and the currency-pair are valid.
-func (a Alert) ValidateBasic() error {
+// ValidateBasic performs stateless validation on the Claim, i.e. checks that the signer and the currency-pair are valid.
+func (a *Alert) ValidateBasic() error {
 	// validate the currency-pair
 	if err := a.CurrencyPair.ValidateBasic(); err != nil {
 		return fmt.Errorf("invalid alert: %w", err)
@@ -62,7 +62,7 @@ func (a Alert) ValidateBasic() error {
 // this will be used to derive the key under which this Claim will be stored. This method appends
 // the Height, signer, currency-pair strings into a byte-array, and returns the first 20-bytes of
 // the hash of that array.
-func (a Alert) UID() []byte {
+func (a *Alert) UID() []byte {
 	heightBz := []byte(fmt.Sprintf("%d", a.Height))
 	signerBz := []byte(a.Signer)
 	currencyPairBz := []byte(a.CurrencyPair.String())
@@ -79,9 +79,9 @@ func NewAlertStatus(submissionHeight uint64, purgeHeight uint64, blockTimestamp 
 	}
 }
 
-// ValidateBasic performs a basic validation of the ConclusionStatus, i.e that the submissionHeight
+// ValidateBasic performs a basic validation of the ConclusionStatus, i.e. that the submissionHeight
 // is before the purgeHeight, and that the status is either Unconcluded or Concluded.
-func (a AlertStatus) ValidateBasic() error {
+func (a *AlertStatus) ValidateBasic() error {
 	if a.SubmissionHeight >= a.PurgeHeight {
 		return fmt.Errorf("invalid alert status: submission height must be before purge height")
 	}
@@ -102,7 +102,7 @@ func NewAlertWithStatus(alert Alert, status AlertStatus) AlertWithStatus {
 }
 
 // ValidateBasic validates that both the alert status and the alert are valid.
-func (aws AlertWithStatus) ValidateBasic() error {
+func (aws *AlertWithStatus) ValidateBasic() error {
 	if err := aws.Alert.ValidateBasic(); err != nil {
 		return err
 	}

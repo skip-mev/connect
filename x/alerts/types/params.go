@@ -48,7 +48,7 @@ func NewParams(ap AlertParams, cvp ConclusionVerificationParams, pp PruningParam
 	return params
 }
 
-// DefaultParams returns a default set of parameters. I.e BondAmount is set to
+// DefaultParams returns a default set of parameters, i.e. BondAmount is set to
 // DefaultBondAmount.
 func DefaultParams(denom string, cvp ConclusionVerificationParams) Params {
 	return NewParams(
@@ -65,9 +65,9 @@ func DefaultParams(denom string, cvp ConclusionVerificationParams) Params {
 	)
 }
 
-// Validate performs a basic validation of the AlertParams, i.e if Alerts are enabled, that the
+// Validate performs a basic validation of the AlertParams, i.e. if Alerts are enabled, that the
 // bond amount is non-zero, and that the MaxBlockAge is non-zero.
-func (ap AlertParams) Validate() error {
+func (ap *AlertParams) Validate() error {
 	if !ap.Enabled {
 		if !ap.BondAmount.IsZero() || !(ap.MaxBlockAge == 0) {
 			return fmt.Errorf("invalid alert params: bond amount must be zero if alerts are disabled")
@@ -87,9 +87,9 @@ func (ap AlertParams) Validate() error {
 	return nil
 }
 
-// Validate performs basic validation of the Pruning Params, specifically, that the BlocksToPrune is non
-// zero if pruning is enabled, and zero if disabled.
-func (pp PruningParams) Validate() error {
+// Validate performs basic validation of the Pruning Params, specifically, that the BlocksToPrune is
+// non-zero if pruning is enabled, and zero if disabled.
+func (pp *PruningParams) Validate() error {
 	if !pp.Enabled {
 		if pp.BlocksToPrune != 0 {
 			return fmt.Errorf("invalid pruning params: blocks to prune must be zero if pruning is disabled")
@@ -105,9 +105,9 @@ func (pp PruningParams) Validate() error {
 	return nil
 }
 
-// Validate performs a basic validation of the Params, i.e that the AlertParams are valid,
+// Validate performs a basic validation of the Params, i.e. that the AlertParams are valid,
 // and the ConclusionVerificationParams are valid (if present).
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if p.ConclusionVerificationParams != nil {
 		// Unmarshal the Any into a ConclusionVerificationParams
 		var params ConclusionVerificationParams
