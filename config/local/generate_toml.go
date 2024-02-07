@@ -146,8 +146,80 @@ var (
 
 	// Feeds is a map of all of the price feeds that the oracle will fetch prices for.
 	Feeds = map[string]config.FeedConfig{
-		"USDT/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+		"ATOM/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+		},
+		"ATOM/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDC"),
+		},
+		"ATOM/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
+		},
+		"AVAX/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+		},
+		"AVAX/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDC"),
+		},
+		"AVAX/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
+		},
+		"BITCOIN/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+		},
+		"BITCOIN/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
+		},
+		"BITCOIN/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+		},
+		"CELESTIA/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+		},
+		"CELESTIA/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDC"),
+		},
+		"CELESTIA/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
+		},
+		"DYDX/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+		},
+		"DYDX/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDC"),
+		},
+		"DYDX/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
+		},
+		"ETHEREUM/BITCOIN": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+		},
+		"ETHEREUM/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+		},
+		"ETHEREUM/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
+		},
+		"ETHEREUM/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+		},
+		"OSMOSIS/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+		},
+		"OSMOSIS/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDC"),
+		},
+		"OSMOSIS/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDT"),
+		},
+		"SOLANA/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+		},
+		"SOLANA/USDC": {
+			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
+		},
+		"SOLANA/USDT": {
+			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
 		},
 		"USDC/USD": {
 			CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
@@ -155,80 +227,8 @@ var (
 		"USDC/USDT": {
 			CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
 		},
-		"BITCOIN/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-		},
-		"BITCOIN/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-		},
-		"BITCOIN/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
-		},
-		"ETHEREUM/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-		},
-		"ETHEREUM/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
-		},
-		"ETHEREUM/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
-		},
-		"ATOM/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
-		},
-		"ATOM/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
-		},
-		"ATOM/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDC"),
-		},
-		"SOLANA/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-		},
-		"SOLANA/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
-		},
-		"SOLANA/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
-		},
-		"CELESTIA/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-		},
-		"CELESTIA/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
-		},
-		"CELESTIA/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDC"),
-		},
-		"AVAX/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
-		},
-		"AVAX/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
-		},
-		"AVAX/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDC"),
-		},
-		"DYDX/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
-		},
-		"DYDX/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
-		},
-		"DYDX/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDC"),
-		},
-		"ETHEREUM/BITCOIN": {
-			CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-		},
-		"OSMOSIS/USD": {
-			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
-		},
-		"OSMOSIS/USDT": {
-			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDT"),
-		},
-		"OSMOSIS/USDC": {
-			CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDC"),
+		"USDT/USD": {
+			CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 		},
 	}
 

@@ -346,11 +346,6 @@ production = false
   [providers.market_config]
     name = "bitfinex"
     [providers.market_config.currency_pair_to_market_configs]
-      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
-        ticker = "AVAXUSD"
-        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
-          Base = "AVAX"
-          Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
         ticker = "BTCUSD"
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
@@ -360,11 +355,6 @@ production = false
         ticker = "TIAUSD"
         [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
           Base = "CELESTIA"
-          Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "DYDXUSD"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
-          Base = "DYDX"
           Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ETHBTC"
@@ -430,11 +420,6 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USDT".currency_pair]
           Base = "BITCOIN"
           Quote = "USDT"
-      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
-        ticker = "dydxusd"
-        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
-          Base = "DYDX"
-          Quote = "USD"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
         ticker = "ethbtc"
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
@@ -445,11 +430,6 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
           Base = "ETHEREUM"
           Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USDC"]
-        ticker = "ethusdc"
-        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USDC".currency_pair]
-          Base = "ETHEREUM"
-          Quote = "USDC"
       [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USDT"]
         ticker = "ethusdt"
         [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USDT".currency_pair]
@@ -921,11 +901,6 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."USDC/USDT".currency_pair]
           Base = "USDC"
           Quote = "USDT"
-      [providers.market_config.currency_pair_to_market_configs."USDT/USD"]
-        ticker = "USDT_USD"
-        [providers.market_config.currency_pair_to_market_configs."USDT/USD".currency_pair]
-          Base = "USDT"
-          Quote = "USD"
 
 [[providers]]
   name = "huobi"
@@ -1044,11 +1019,6 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
           Base = "ATOM"
           Quote = "USD"
-      [providers.market_config.currency_pair_to_market_configs."ATOM/USDC"]
-        ticker = "ATOM/USDC"
-        [providers.market_config.currency_pair_to_market_configs."ATOM/USDC".currency_pair]
-          Base = "ATOM"
-          Quote = "USDC"
       [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
         ticker = "AVAX/USD"
         [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
@@ -1069,6 +1039,11 @@ production = false
         [providers.market_config.currency_pair_to_market_configs."BITCOIN/USDC".currency_pair]
           Base = "BITCOIN"
           Quote = "USDC"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USDT"]
+        ticker = "XBT/USDT"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USDT".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USDT"
       [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
         ticker = "TIA/USD"
         [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
