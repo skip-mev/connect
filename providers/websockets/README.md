@@ -46,6 +46,8 @@ The current set of supported providers are:
     * Check if a given market is supported:
         * `curl https://api.gateio.ws/api/v4/spot/currency_pairs/{ETH_USDT} | jq`
 * [Huobi](./huobi/README.md) - Huobi is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Huobi is a **primary data source** for the oracle.
+    * Check all supported markets:
+        * `curl "https://api.huobi.pro/market/tickers" | jq`
 * [Kraken](./kraken/README.md) - Kraken is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Kraken is a **primary data source** for the oracle.
     * Check all supported markets:
         * `curl "https://api.kraken.com/0/public/Assets"` 
