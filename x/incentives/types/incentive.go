@@ -19,10 +19,10 @@ type (
 		// Type returns the incentive type.
 		Type() string
 
-		// Marshall the incentive into bytes.
+		// Marshal marshals the incentive into bytes.
 		Marshal() ([]byte, error)
 
-		// Unmarshal the incentive from bytes.
+		// Unmarshal unmarshals the incentive from bytes.
 		Unmarshal([]byte) error
 
 		// Copy the incentive.

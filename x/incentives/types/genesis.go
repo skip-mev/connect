@@ -21,7 +21,7 @@ func NewGenesisState(incentives []IncentivesByType) *GenesisState {
 
 // ValidateBasic performs basic validation of the genesis state data returning an
 // error for any failed validation criteria.
-func (gs GenesisState) ValidateBasic() error {
+func (gs *GenesisState) ValidateBasic() error {
 	seen := make(map[string]struct{})
 	for _, entry := range gs.Registry {
 		if _, ok := seen[entry.IncentiveType]; ok {
@@ -48,7 +48,7 @@ func NewIncentives(name string, incentives [][]byte) IncentivesByType {
 
 // ValidateBasic performs basic validation of the Incentives data returning an
 // error for any failed validation criteria.
-func (i IncentivesByType) ValidateBasic() error {
+func (i *IncentivesByType) ValidateBasic() error {
 	if len(i.IncentiveType) == 0 {
 		return fmt.Errorf("incentive name cannot be empty")
 	}

@@ -29,7 +29,6 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ module.AppModule      = AppModule{}
 	_ appmodule.AppModule   = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
 )
@@ -86,7 +85,8 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	return gs.ValidateBasic()
 }
 
-// No RESTful routes exist for the incentives module (outside of those served via the grpc-gateway).
+// RegisterRESTRoutes does nothing as no RESTful routes exist for the incentives module
+// (outside of those served via the grpc-gateway).
 func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // AppModule represents an application module for the x/incentives module.
@@ -106,7 +106,7 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	}
 }
 
-// BeginBlock returns the begin blocker for the incentives module.
+// BeginBlock returns the beginblocker for the incentives module.
 func (am AppModule) BeginBlock(ctx context.Context) error {
 	return am.k.ExecuteStrategies(sdk.UnwrapSDKContext(ctx))
 }

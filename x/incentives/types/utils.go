@@ -19,7 +19,7 @@ func IncentivesToBytes(incentives ...Incentive) ([][]byte, error) {
 
 // SortIncentivesStrategiesMap sorts a map of IncentivesByType by their type.
 func SortIncentivesStrategiesMap(incentiveStrategies map[Incentive]Strategy) []Incentive {
-	// Get all of the incentive types and sort them by name.
+	// Get all incentive types and sort them by name.
 	incentiveTypes := make([]Incentive, len(incentiveStrategies))
 	i := 0
 	for incentive := range incentiveStrategies {
