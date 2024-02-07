@@ -32,11 +32,19 @@ The current set of supported providers are:
     * Check all supported markets: 
         * `curl https://api.exchange.coinbase.com/currencies | jq`
         * `curl https://api.exchange.coinbase.com/products | jq`
-    * Check if a given market is supported: `curl https://api.coinbase.com/v2/prices/DYDX-USDC/spot | jq`
-* [Crypto.com](./cryptodotcom/README.md) - Crypto.com is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Crypto.com is a **primary data source** for the oracle.  
-    * `curl https://api.crypto.com/v2/public/get-instruments | jq`
+    * Check if a given market is supported: 
+        * `curl https://api.coinbase.com/v2/prices/DYDX-USDC/spot | jq`
+* [Crypto.com](./cryptodotcom/README.md) - Crypto.com is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Crypto.com is a **primary data source** for the oracle.
+    * Check all supported markets:
+        * `curl https://api.crypto.com/v2/public/get-instruments | jq`
+        * `curl https://api.crypto.com/v2/public/get-ticker | jq`
+    * Check if a given market is supported:
+        * `curl https://api.crypto.com/v2/public/get-ticker?instrument_name=BTCUSD-PERP | jq`
 * [Gate](./gate/README.md) - Gate.io is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Gate.io is a **primary data source** for the oracle.
-    * `curl https://api.gateio.ws/api/v4/spot/currencies | jq`
+    * Check all supported markets:
+        * `curl https://api.gateio.ws/api/v4/spot/currency_pairs | jq`
+    * Check if a given market is supported:
+        * `curl https://api.gateio.ws/api/v4/spot/currency_pair | jq`
 * [Kraken](./kraken/README.md) - Kraken is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Kraken is a **primary data source** for the oracle.
 * [Huobi](./huobi/README.md) - Huobi is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Huobi is a **primary data source** for the oracle.
 * [KuCoin](./kucoin/README.md) - KuCoin is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. KuCoin is a **primary data source** for the oracle.
