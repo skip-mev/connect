@@ -61,7 +61,14 @@ The current set of supported providers are:
     * Check all supported markets:
         * `curl https://api.kucoin.com/api/v1/symbols | jq`
         * `curl https://api.kucoin.com/api/v3/currencies | jq`
+        * `curl https://api.kucoin.com/api/v1/market/allTickers | jq`
     * Check if a given market is supported:
         * `curl https://api.kucoin.com/api/v1/market/orderbook/level1?symbol={BTC-USDT} | jq`
 * [MEXC](./mexc/README.md) - MEXC is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. MEXC is a **primary data source** for the oracle.
+    * Check all supported markets:
+        * `curl https://www.mexc.com/open/api/v2/market/ticker | jq`
+        * `curl https://www.mexc.com/open/api/v2/market/symbols | jq`
+        * `curl https://api.mexc.com/api/v3/exchangeInfo | jq`
+    * Check if a given market is supported:
+        * `curl https://www.mexc.com/open/api/v2/market/ticker?symbol={BTC_USDT} | jq`
 * [OKX](./okx/README.md) - OKX is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. OKX is a **primary data source** for the oracle.
