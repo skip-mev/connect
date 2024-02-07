@@ -1,5 +1,5 @@
-update_interval = "1s"
-production = false
+update_interval = "1.5s"
+production = true
 
 [[providers]]
   name = "binance"

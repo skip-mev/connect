@@ -46,7 +46,7 @@ var (
 			Feeds:           Feeds,
 			AggregatedFeeds: AggregatedFeeds,
 		},
-		Production: false,
+		Production: true,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
@@ -54,7 +54,7 @@ var (
 			Enabled:                 true,
 			PrometheusServerAddress: "0.0.0.0:8002",
 		},
-		UpdateInterval: 1 * time.Second,
+		UpdateInterval: 1500 * time.Millisecond,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
 			// ---------------------Start API Providers--------------------	//
