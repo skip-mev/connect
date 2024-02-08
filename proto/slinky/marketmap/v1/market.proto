@@ -9,18 +9,16 @@ import "gogoproto/gogo.proto";
 // is scaled to a number of decimal places and has a minimum number of providers required
 // to consider the ticker valid.
 message Ticker {
-    // ID is a unique sequentially-generated value for the ticker.
-    uint64 id = 1;
     // Base is the base asset of the ticker.
-    string base = 2;
+    string base = 1;
     // Quote is the quote asset of the ticker.
-    string quote = 3;
+    string quote = 2;
     // Decimals is the number of decimal places for the ticker. The number of decimal places
     // is used to convert the price to a human-readable format.
-    uint64 decimals = 4;
+    uint64 decimals = 3;
     // MinProviderCount is the minimum number of providers required to consider the ticker
     // valid.
-    uint64 min_provider_count = 5;
+    uint64 min_provider_count = 4;
 }
 
 // TickerConfig is the config the provider uses to create mappings between on-chain and 
@@ -42,7 +40,7 @@ message MarketConfig {
     // TickerConfigs is the config the provider uses to create mappings between on-chain 
     // and off-chain tickers. In particular, this config maps the on-chain ticker representation 
     // (i.e. BITCOIN/USD) to the off-chain ticker representation (i.e. BTC/USD).
-    map<uint64, TickerConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
+    map<string, TickerConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
 }
 
 // AggregateMarketConfig represents the global set of market configurations for all providers
@@ -76,7 +74,7 @@ message AggregateMarketConfig {
     // to convert the price of a set of tickers to a common ticker. This allows developers to 
     // manually specify the exact set of tickers that will be used to calculate the final price 
     // of a ticker. However, it is possible that other aggregation strategies can be used.
-    map<uint64, PathsConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
+    map<string, PathsConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
 }
 
 // PathsConfig represents the list of convertable markets (paths) that will be used to 
