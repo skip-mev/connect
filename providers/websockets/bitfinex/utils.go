@@ -42,6 +42,14 @@ var (
 				Ticker:       "BTCUSD",
 				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
+			"CELESTIA/USD": {
+				Ticker:       "TIAUSD",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"ETHEREUM/BITCOIN": {
+				Ticker:       "ETHBTC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
 			"ETHEREUM/USD": {
 				Ticker:       "ETHUSD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
@@ -49,22 +57,6 @@ var (
 			"SOLANA/USD": {
 				Ticker:       "SOLUSD",
 				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-			},
-			"CELESTIA/USD": {
-				Ticker:       "TIAUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-			},
-			"AVAX/USD": {
-				Ticker:       "AVAXUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
-			},
-			"DYDX/USD": {
-				Ticker:       "DYDXUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 		},
 	}
