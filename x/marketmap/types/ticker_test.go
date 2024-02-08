@@ -16,7 +16,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "valid ticker",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "BITCOIN",
 				Quote:            "USDT",
 				Decimals:         8,
@@ -27,7 +26,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "empty base",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "",
 				Quote:            "USDT",
 				Decimals:         8,
@@ -38,7 +36,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "empty quote",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "BITCOIN",
 				Quote:            "",
 				Decimals:         8,
@@ -49,7 +46,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid base",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "bitcoin",
 				Quote:            "USDT",
 				Decimals:         8,
@@ -60,7 +56,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid quote",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "BITCOIN",
 				Quote:            "usdt",
 				Decimals:         8,
@@ -71,7 +66,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid decimals",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "BITCOIN",
 				Quote:            "USDT",
 				Decimals:         0,
@@ -82,7 +76,6 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid min provider count",
 			ticker: types.Ticker{
-				Id:               1,
 				Base:             "BITCOIN",
 				Quote:            "USDT",
 				Decimals:         8,
@@ -115,7 +108,6 @@ func TestTickerConfig(t *testing.T) {
 			name: "valid ticker config",
 			tickerConfig: types.TickerConfig{
 				Ticker: types.Ticker{
-					Id:               1,
 					Base:             "BITCOIN",
 					Quote:            "USDT",
 					Decimals:         8,
@@ -129,7 +121,6 @@ func TestTickerConfig(t *testing.T) {
 			name: "invalid ticker",
 			tickerConfig: types.TickerConfig{
 				Ticker: types.Ticker{
-					Id:               1,
 					Base:             "",
 					Quote:            "USDT",
 					Decimals:         8,
@@ -143,7 +134,6 @@ func TestTickerConfig(t *testing.T) {
 			name: "invalid off chain ticker",
 			tickerConfig: types.TickerConfig{
 				Ticker: types.Ticker{
-					Id:               1,
 					Base:             "BITCOIN",
 					Quote:            "USDT",
 					Decimals:         8,

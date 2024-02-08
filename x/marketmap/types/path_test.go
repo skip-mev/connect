@@ -10,7 +10,6 @@ import (
 func TestOperation(t *testing.T) {
 	t.Run("valid operation", func(t *testing.T) {
 		ticker := types.Ticker{
-			Id:               1,
 			Base:             "BITCOIN",
 			Quote:            "USDT",
 			Decimals:         8,
@@ -22,10 +21,7 @@ func TestOperation(t *testing.T) {
 	})
 
 	t.Run("invalid operation", func(t *testing.T) {
-		ticker := types.Ticker{
-			Id: 1,
-		}
-
+		ticker := types.Ticker{}
 		_, err := types.NewOperation(ticker, false)
 		require.Error(t, err)
 	})

@@ -15,7 +15,6 @@ const (
 // NewTicker returns a new Ticker instance.
 func NewTicker(id uint64, base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
 	t := Ticker{
-		Id:               id,
 		Base:             base,
 		Quote:            quote,
 		Decimals:         decimals,
@@ -72,6 +71,11 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+// String returns a string representation of the Ticker.
+func (t *Ticker) String() string {
+	return fmt.Sprintf("%s/%s", t.Base, t.Quote)
 }
 
 // ValidateBasic performs basic validation on the TickerConfig.

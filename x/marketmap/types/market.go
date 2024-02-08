@@ -3,7 +3,7 @@ package types
 import "fmt"
 
 // NewMarketConfig returns a new MarketConfig instance.
-func NewMarketConfig(provider string, configs map[uint64]TickerConfig) MarketConfig {
+func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketConfig {
 	return MarketConfig{
 		Name:          provider,
 		TickerConfigs: configs,
@@ -20,13 +20,9 @@ func (c *MarketConfig) ValidateBasic() error {
 		return fmt.Errorf("ticker configs cannot be empty")
 	}
 
-	for id, cfg := range c.TickerConfigs {
+	for ticker, cfg := range c.TickerConfigs {
 		if err := cfg.ValidateBasic(); err != nil {
 			return err
-		}
-
-		if id != cfg.Ticker.Id {
-			return fmt.Errorf("id %d does not match the id in the config", id)
 		}
 	}
 

@@ -17,7 +17,7 @@ func TestMarketConfig(t *testing.T) {
 			name: "valid market",
 			market: types.MarketConfig{
 				Name: "binance",
-				TickerConfigs: map[uint64]types.TickerConfig{
+				TickerConfigs: map[string]types.TickerConfig{
 					1: {
 						Ticker: types.Ticker{
 							Id:               1,
