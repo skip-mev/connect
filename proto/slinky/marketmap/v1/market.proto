@@ -23,17 +23,6 @@ message Ticker {
     uint64 min_provider_count = 5;
 }
 
-// MarketConfig represents the provider specific configurations for different markets and
-// the associated markets they are traded on.
-message MarketConfig {
-    // Name corresponds to the name of the provider for which the configuration is being set.
-    string name = 1;
-    // TickerConfigs is the config the provider uses to create mappings between on-chain 
-    // and off-chain tickers. In particular, this config maps the on-chain ticker representation 
-    // (i.e. BITCOIN/USD) to the off-chain ticker representation (i.e. BTC/USD).
-    map<uint64, TickerConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
-}
-
 // TickerConfig is the config the provider uses to create mappings between on-chain and 
 // off-chain tickers.
 message TickerConfig {
@@ -45,6 +34,17 @@ message TickerConfig {
     string off_chain_ticker = 2;
 }
 
+// MarketConfig represents the provider specific configurations for different markets and
+// the associated markets they are traded on.
+message MarketConfig {
+    // Name corresponds to the name of the provider for which the configuration is being set.
+    string name = 1;
+    // TickerConfigs is the config the provider uses to create mappings between on-chain 
+    // and off-chain tickers. In particular, this config maps the on-chain ticker representation 
+    // (i.e. BITCOIN/USD) to the off-chain ticker representation (i.e. BTC/USD).
+    map<uint64, TickerConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
+}
+
 // AggregateMarketConfig represents the global set of market configurations for all providers
 // that will be utilized off-chain as well as how tickers will be resolved to a final
 // price. Each ticker can have a list of convertable markets that will be used to convert the
@@ -52,11 +52,12 @@ message TickerConfig {
 //
 // Price aggregation broadly follows the following steps:
 //  1. Fetch prices for each ticker from the providers.
-//  2. Calculate the final price for each ticker. This is dependent on the aggregation strategy
-//     used by the oracle. The oracle may use a median price, a weighted average price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggreagted ticker configurations
-//     by default. The oracle may use a different aggregation strategy to convert the price of a ticker
-//     to a common ticker.
+//  2. Calculate the final price for each ticker. This is dependent on the aggregation 
+//     strategy used by the oracle. The oracle may use a median price, a weighted average 
+//     price, etc.
+//  3. Convert the price of each ticker to a common ticker using the aggreagted ticker 
+//     configurations by default. The oracle may use a different aggregation strategy to convert 
+//     the price of a ticker to a common ticker.
 //
 // For example, the oracle may be configured with the feeds:
 //   - BTC/USDT
@@ -71,26 +72,34 @@ message TickerConfig {
 message AggregateMarketConfig {
     // MarketConfigs maps provider names to their respective market configurations.
     map<string, MarketConfig> market_configs = 1;
-    // AggregatedTickerConfigs maps tickers to the list of convertable markets that will be used to 
-    // convert the price of a set of tickers to a common ticker. This allows developers to manually
-    // specify the exact set of tickers that will be used to calculate the final price of a ticker.
-    // However, it is possible that other aggregation strategies can be used.
-    map<uint64, AggregatedTickerConfig> aggregated_ticker_configs = 2;
+    // TickerConfigs maps tickers to the list of convertable markets that will be used 
+    // to convert the price of a set of tickers to a common ticker. This allows developers to 
+    // manually specify the exact set of tickers that will be used to calculate the final price 
+    // of a ticker. However, it is possible that other aggregation strategies can be used.
+    map<uint64, PathsConfig> ticker_configs = 2;
 }
 
-// AggregatedTickerConfig represents the aggregated ticker configuration for a given currency
-// pair. The aggregated ticker configuration contains the set of tickers that will be used to
-// calculate the final price of the ticker.
-message AggregatedTickerConfig {
-    // Ticker is the on-chain representation of the ticker.
+// PathsConfig represents the list of convertable markets (paths) that will be used to 
+// convert the prices of a set of tickers to a common ticker.
+message PathsConfig {
+    // Ticker is the on-chain representation of the ticker. This is the target ticker that
+    // the prices of the set of tickers will be converted to.
     Ticker ticker = 1;
-    // Operations is the list of convertable markets that will be used to convert the
+    // Paths is the list of convertable markets that will be used to convert the
     // prices of a set of tickers to a common ticker.
-    repeated OperationConfig operations = 2 [(gogoproto.nullable) = false];
+    repeated Path paths = 2 [(gogoproto.nullable) = false];
 }
 
-// OperationConfig represents the operation configuration for a given ticker.
-message OperationConfig {
+// Path is the list of convertable markets that will be used to convert the prices of a 
+// set of tickers to a common ticker.
+message Path {
+    // Operations is an ordered list of operations that will be taken. These must be
+    // topologically sorted to ensure that the conversion is possible i.e. DAG.
+    repeated Operation operations = 1 [(gogoproto.nullable) = false];
+}
+
+// Operation represents the operation configuration for a given ticker.
+message Operation {
     // Ticker is the on-chain representation of the ticker.
     Ticker ticker = 1;
     // Invert is a boolean that indicates whether the price of the ticker should be
