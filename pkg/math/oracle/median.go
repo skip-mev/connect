@@ -59,7 +59,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 	) map[oracletypes.CurrencyPair]*big.Int {
 		// Calculate the median price for each price feed.
 		feedMedians := aggregator.ComputeMedian()(feedsPerProvider)
-		m.logger.Info("calculated median prices for raw price feeds", zap.Any("num_prices", len(feedMedians)))
+		m.logger.Info("calculated median prices for raw price feeds", zap.Int("num_prices", len(feedMedians)))
 
 		// Scale all of the medians to a common number of decimals. This does not lose precision.
 		scaledMedians := make(map[oracletypes.CurrencyPair]*big.Int)
