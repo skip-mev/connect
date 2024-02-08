@@ -36,41 +36,117 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
-				Ticker:       "BTC-USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ETH-USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
 			"ATOM/USD": {
 				Ticker:       "ATOM-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			},
-			"SOLANA/USD": {
-				Ticker:       "SOL-USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			"ATOM/USDC": {
+				Ticker:       "ATOM-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDC"),
 			},
-			"CELESTIA/USD": {
-				Ticker:       "TIA-USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			"ATOM/USDT": {
+				Ticker:       "ATOM-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 			},
 			"AVAX/USD": {
 				Ticker:       "AVAX-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
 			},
+			"AVAX/USDC": {
+				Ticker:       "AVAX-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDC"),
+			},
+			"AVAX/USDT": {
+				Ticker:       "AVAX-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
+			},
+			"BITCOIN/USD": {
+				Ticker:       "BTC-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"BITCOIN/USDC": {
+				Ticker:       "BTC-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
+			},
+			"BITCOIN/USDT": {
+				Ticker:       "BTC-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIA-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"CELESTIA/USDC": {
+				Ticker:       "TIA-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDC"),
+			},
+			"CELESTIA/USDT": {
+				Ticker:       "TIA-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
+			},
 			"DYDX/USD": {
 				Ticker:       "DYDX-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"DYDX/USDC": {
+				Ticker:       "DYDX-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDC"),
+			},
+			"DYDX/USDT": {
+				Ticker:       "DYDX-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ETH-BTC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETH-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ETHEREUM/USDC": {
+				Ticker:       "ETH-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
+			},
+			"ETHEREUM/USDT": {
+				Ticker:       "ETH-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			},
 			"OSMOSIS/USD": {
 				Ticker:       "OSMO-USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+			"OSMOSIS/USDC": {
+				Ticker:       "OSMO-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDC"),
+			},
+			"OSMOSIS/USDT": {
+				Ticker:       "OSMO-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USDT"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOL-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"SOLANA/USDC": {
+				Ticker:       "SOL-USDC",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
+			},
+			"SOLANA/USDT": {
+				Ticker:       "SOL-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
+			},
+			"USDC/USD": {
+				Ticker:       "USDC-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+			},
+			"USDC/USDT": {
+				Ticker:       "USDC-USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
+			},
+			"USDT/USD": {
+				Ticker:       "USDT-USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 			},
 		},
 	}
