@@ -7,7 +7,7 @@ import (
 const (
 	// ModuleName is the name of module for external use.
 	ModuleName = "oracle"
-	// StoreKey is the top-level store key for the oracle module
+	// StoreKey is the top-level store key for the oracle module.
 	StoreKey = ModuleName
 )
 
