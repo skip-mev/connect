@@ -25,7 +25,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the x/marketmap module's genesis state.
 type GenesisState struct {
-	// Config defines the global set of market configurations for all providers and markets.
+	// Config defines the global set of market configurations for all providers
+	// and markets.
 	Config AggregateMarketConfig `protobuf:"bytes,1,opt,name=config,proto3" json:"config"`
 }
 

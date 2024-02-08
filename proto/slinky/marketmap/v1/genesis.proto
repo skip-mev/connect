@@ -7,6 +7,7 @@ option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
 // GenesisState defines the x/marketmap module's genesis state.
 message GenesisState {
-    // Config defines the global set of market configurations for all providers and markets.
-    AggregateMarketConfig config = 1 [(gogoproto.nullable) = false];
+  // Config defines the global set of market configurations for all providers
+  // and markets.
+  AggregateMarketConfig config = 1 [ (gogoproto.nullable) = false ];
 }
