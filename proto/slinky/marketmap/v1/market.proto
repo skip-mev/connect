@@ -27,7 +27,7 @@ message Ticker {
 // off-chain tickers.
 message TickerConfig {
     // Ticker is the cannonical representation of the ticker/market i.e. BITCOIN/USD.
-    Ticker ticker = 1;
+    Ticker ticker = 1 [(gogoproto.nullable) = false];
     // OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD. The 
     // off-chain ticker is unique to a given provider and is used to fetch the price of the 
     // ticker from the provider.
@@ -71,12 +71,12 @@ message MarketConfig {
 //     2. BTC/USDC -> USDC/USD = BTC/USD
 message AggregateMarketConfig {
     // MarketConfigs maps provider names to their respective market configurations.
-    map<string, MarketConfig> market_configs = 1;
+    map<string, MarketConfig> market_configs = 1 [(gogoproto.nullable) = false];
     // TickerConfigs maps tickers to the list of convertable markets that will be used 
     // to convert the price of a set of tickers to a common ticker. This allows developers to 
     // manually specify the exact set of tickers that will be used to calculate the final price 
     // of a ticker. However, it is possible that other aggregation strategies can be used.
-    map<uint64, PathsConfig> ticker_configs = 2;
+    map<uint64, PathsConfig> ticker_configs = 2 [(gogoproto.nullable) = false];
 }
 
 // PathsConfig represents the list of convertable markets (paths) that will be used to 
@@ -84,7 +84,7 @@ message AggregateMarketConfig {
 message PathsConfig {
     // Ticker is the on-chain representation of the ticker. This is the target ticker that
     // the prices of the set of tickers will be converted to.
-    Ticker ticker = 1;
+    Ticker ticker = 1 [(gogoproto.nullable) = false];
     // Paths is the list of convertable markets that will be used to convert the
     // prices of a set of tickers to a common ticker.
     repeated Path paths = 2 [(gogoproto.nullable) = false];
@@ -101,7 +101,7 @@ message Path {
 // Operation represents the operation configuration for a given ticker.
 message Operation {
     // Ticker is the on-chain representation of the ticker.
-    Ticker ticker = 1;
+    Ticker ticker = 1 [(gogoproto.nullable) = false];
     // Invert is a boolean that indicates whether the price of the ticker should be
     // inverted.
     bool invert = 2;
