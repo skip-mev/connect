@@ -23,19 +23,19 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price feed
-// is scaled to a number of decimal places and has a minimum number of providers required
-// to consider the ticker valid.
+// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
+// feed is scaled to a number of decimal places and has a minimum number of
+// providers required to consider the ticker valid.
 type Ticker struct {
 	// Base is the base asset of the ticker.
 	Base string `protobuf:"bytes,1,opt,name=base,proto3" json:"base,omitempty"`
 	// Quote is the quote asset of the ticker.
 	Quote string `protobuf:"bytes,2,opt,name=quote,proto3" json:"quote,omitempty"`
-	// Decimals is the number of decimal places for the ticker. The number of decimal places
-	// is used to convert the price to a human-readable format.
+	// Decimals is the number of decimal places for the ticker. The number of
+	// decimal places is used to convert the price to a human-readable format.
 	Decimals uint64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
-	// MinProviderCount is the minimum number of providers required to consider the ticker
-	// valid.
+	// MinProviderCount is the minimum number of providers required to consider
+	// the ticker valid.
 	MinProviderCount uint64 `protobuf:"varint,4,opt,name=min_provider_count,json=minProviderCount,proto3" json:"min_provider_count,omitempty"`
 }
 
@@ -99,14 +99,15 @@ func (m *Ticker) GetMinProviderCount() uint64 {
 	return 0
 }
 
-// TickerConfig is the config the provider uses to create mappings between on-chain and
-// off-chain tickers.
+// TickerConfig is the config the provider uses to create mappings between
+// on-chain and off-chain tickers.
 type TickerConfig struct {
-	// Ticker is the cannonical representation of the ticker/market i.e. BITCOIN/USD.
+	// Ticker is the cannonical representation of the ticker/market i.e.
+	// BITCOIN/USD.
 	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
-	// OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD. The
-	// off-chain ticker is unique to a given provider and is used to fetch the price of the
-	// ticker from the provider.
+	// OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
+	// The off-chain ticker is unique to a given provider and is used to fetch the
+	// price of the ticker from the provider.
 	OffChainTicker string `protobuf:"bytes,2,opt,name=off_chain_ticker,json=offChainTicker,proto3" json:"off_chain_ticker,omitempty"`
 }
 
@@ -157,14 +158,16 @@ func (m *TickerConfig) GetOffChainTicker() string {
 	return ""
 }
 
-// MarketConfig represents the provider specific configurations for different markets and
-// the associated markets they are traded on.
+// MarketConfig represents the provider specific configurations for different
+// markets and the associated markets they are traded on.
 type MarketConfig struct {
-	// Name corresponds to the name of the provider for which the configuration is being set.
+	// Name corresponds to the name of the provider for which the configuration is
+	// being set.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// TickerConfigs is the config the provider uses to create mappings between on-chain
-	// and off-chain tickers. In particular, this config maps the on-chain ticker representation
-	// (i.e. BITCOIN/USD) to the off-chain ticker representation (i.e. BTC/USD).
+	// TickerConfigs is the config the provider uses to create mappings between
+	// on-chain and off-chain tickers. In particular, this config maps the
+	// on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
+	// representation (i.e. BTC/USD).
 	TickerConfigs map[string]TickerConfig `protobuf:"bytes,2,rep,name=ticker_configs,json=tickerConfigs,proto3" json:"ticker_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -215,19 +218,22 @@ func (m *MarketConfig) GetTickerConfigs() map[string]TickerConfig {
 	return nil
 }
 
-// AggregateMarketConfig represents the global set of market configurations for all providers
-// that will be utilized off-chain as well as how tickers will be resolved to a final
-// price. Each ticker can have a list of convertable markets that will be used to convert the
-// prices of a set of tickers to a common ticker.
+// AggregateMarketConfig represents the global set of market configurations for
+// all providers that will be utilized off-chain as well as how tickers will be
+// resolved to a final price. Each ticker can have a list of convertable markets
+// that will be used to convert the prices of a set of tickers to a common
+// ticker.
 //
 // Price aggregation broadly follows the following steps:
 //  1. Fetch prices for each ticker from the providers.
-//  2. Calculate the final price for each ticker. This is dependent on the aggregation
-//     strategy used by the oracle. The oracle may use a median price, a weighted average
-//     price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggreagted ticker
-//     configurations by default. The oracle may use a different aggregation strategy to convert
-//     the price of a ticker to a common ticker.
+//  2. Calculate the final price for each ticker. This is dependent on the
+//     aggregation
+//     strategy used by the oracle. The oracle may use a median price, a
+//     weighted average price, etc.
+//  3. Convert the price of each ticker to a common ticker using the aggreagted
+//     ticker
+//     configurations by default. The oracle may use a different aggregation
+//     strategy to convert the price of a ticker to a common ticker.
 //
 // For example, the oracle may be configured with the feeds:
 //   - BTC/USDT
@@ -236,16 +242,19 @@ func (m *MarketConfig) GetTickerConfigs() map[string]TickerConfig {
 //   - USDC/USD
 //
 // The aggregated ticker may be:
-//   - BTC/USD: (calculate a median price from the following convertable markets)
+//   - BTC/USD: (calculate a median price from the following convertable
+//     markets)
 //     1. BTC/USDT -> USDT/USD = BTC/USD
 //     2. BTC/USDC -> USDC/USD = BTC/USD
 type AggregateMarketConfig struct {
-	// MarketConfigs maps provider names to their respective market configurations.
+	// MarketConfigs maps provider names to their respective market
+	// configurations.
 	MarketConfigs map[string]MarketConfig `protobuf:"bytes,1,rep,name=market_configs,json=marketConfigs,proto3" json:"market_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// TickerConfigs maps tickers to the list of convertable markets that will be used
-	// to convert the price of a set of tickers to a common ticker. This allows developers to
-	// manually specify the exact set of tickers that will be used to calculate the final price
-	// of a ticker. However, it is possible that other aggregation strategies can be used.
+	// TickerConfigs maps tickers to the list of convertable markets that will be
+	// used to convert the price of a set of tickers to a common ticker. This
+	// allows developers to manually specify the exact set of tickers that will be
+	// used to calculate the final price of a ticker. However, it is possible that
+	// other aggregation strategies can be used.
 	TickerConfigs map[string]PathsConfig `protobuf:"bytes,2,rep,name=ticker_configs,json=tickerConfigs,proto3" json:"ticker_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -296,11 +305,11 @@ func (m *AggregateMarketConfig) GetTickerConfigs() map[string]PathsConfig {
 	return nil
 }
 
-// PathsConfig represents the list of convertable markets (paths) that will be used to
-// convert the prices of a set of tickers to a common ticker.
+// PathsConfig represents the list of convertable markets (paths) that will be
+// used to convert the prices of a set of tickers to a common ticker.
 type PathsConfig struct {
-	// Ticker is the on-chain representation of the ticker. This is the target ticker that
-	// the prices of the set of tickers will be converted to.
+	// Ticker is the on-chain representation of the ticker. This is the target
+	// ticker that the prices of the set of tickers will be converted to.
 	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
 	// Paths is the list of convertable markets that will be used to convert the
 	// prices of a set of tickers to a common ticker.
@@ -354,11 +363,11 @@ func (m *PathsConfig) GetPaths() []Path {
 	return nil
 }
 
-// Path is the list of convertable markets that will be used to convert the prices of a
-// set of tickers to a common ticker.
+// Path is the list of convertable markets that will be used to convert the
+// prices of a set of tickers to a common ticker.
 type Path struct {
-	// Operations is an ordered list of operations that will be taken. These must be
-	// topologically sorted to ensure that the conversion is possible i.e. DAG.
+	// Operations is an ordered list of operations that will be taken. These must
+	// be topologically sorted to ensure that the conversion is possible i.e. DAG.
 	Operations []Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations"`
 }
 
@@ -406,8 +415,8 @@ func (m *Path) GetOperations() []Operation {
 type Operation struct {
 	// Ticker is the on-chain representation of the ticker.
 	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
-	// Invert is a boolean that indicates whether the price of the ticker should be
-	// inverted.
+	// Invert is a boolean that indicates whether the price of the ticker should
+	// be inverted.
 	Invert bool `protobuf:"varint,2,opt,name=invert,proto3" json:"invert,omitempty"`
 }
 
