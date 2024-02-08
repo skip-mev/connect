@@ -109,6 +109,10 @@ func NewMetrics(chainID string) Metrics {
 	prometheus.MustRegister(m.oracleResponseCounter)
 	prometheus.MustRegister(m.abciMethodLatency)
 	prometheus.MustRegister(m.abciRequests)
+	prometheus.MustRegister(m.messageSize)
+	prometheus.MustRegister(m.prices)
+	prometheus.MustRegister(m.reportsPerValidator)
+	prometheus.MustRegister(m.reportStatusPerValidator)
 
 	m.chainID = chainID
 
