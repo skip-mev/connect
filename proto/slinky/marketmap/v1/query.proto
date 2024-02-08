@@ -1,0 +1,85 @@
+syntax = "proto3";
+package slinky.marketmap.v1;
+import "slinky/marketmap/v1/market.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
+
+// Query is the query service for the x/marketmap module.
+service Query {
+    // GetAggregateMarketConfig returns the aggregate market configuration.
+    rpc GetAggregateMarketConfig(AggregateMarketConfigRequest) returns (AggregateMarketConfigResponse) {
+        option (google.api.http) = {
+            get: "/slinky/marketmap/v1/aggregate_market_config"
+        };
+    }
+
+    // GetMarketConfig returns the market configurations for a given provider.
+    rpc GetMarketConfig(MarketConfigRequest) returns (MarketConfigResponse) {
+        option (google.api.http) = {
+            get: "/slinky/marketmap/v1/market_config/{provider}"
+        };
+    }
+
+    // GetProvidersForTicker returns the set of providers responsible for a given ticker.
+    rpc GetProvidersForTicker(ProvidersForTickerRequest) returns (ProvidersForTickerResponse) {
+        option (google.api.http) = {
+            get: "/slinky/marketmap/v1/providers_for_ticker/{ticker}"
+        };
+    }
+
+    // GetAggregatedTickerConfig returns the list of convertable markets that will be used to 
+    // convert the prices of a set of tickers to a target ticker.
+    rpc GetAggregatedTickerConfig(AggregatedTickerConfigRequest) returns (AggregatedTickerConfigResponse) {
+        option (google.api.http) = {
+            get: "/slinky/marketmap/v1/operations_for_ticker/{ticker}"
+        };
+    }
+}
+
+// AggregateMarketConfigRequest is the request type for the Query/AggregateMarketConfig RPC method.
+message AggregateMarketConfigRequest {
+}
+
+// AggregateMarketConfigResponse is the response type for the Query/AggregateMarketConfig RPC method.
+message AggregateMarketConfigResponse {
+    // aggregate_market_config is the aggregate market configuration.
+    AggregateMarketConfig aggregate_market_config = 1;
+}
+
+// MarketConfigRequest is the request type for the Query/MarketConfig RPC method.
+message MarketConfigRequest {
+    // provider is the provider name.
+    string provider = 1;
+}
+
+// MarketConfigResponse is the response type for the Query/MarketConfig RPC method.
+message MarketConfigResponse {
+    // market_config is the market configuration.
+    MarketConfig market_config = 1;
+}
+
+// ProvidersForTickerRequest is the request type for the Query/ProvidersForTicker RPC method.
+message ProvidersForTickerRequest {
+    // ticker is the ticker symbol.
+    string ticker = 1;
+}
+
+// ProvidersForTickerResponse is the response type for the Query/ProvidersForTicker RPC method.
+message ProvidersForTickerResponse {
+    // providers is the set of providers responsible for the ticker.
+    repeated string providers = 1;
+}
+
+// AggregatedTickerConfigRequest is the request type for the Query/AggregatedTickerConfig RPC method.
+message AggregatedTickerConfigRequest {
+    // ticker is the ticker symbol.
+    string ticker = 1;
+}
+
+// AggregatedTickerConfigResponse is the response type for the Query/AggregatedTickerConfig RPC method.
+message AggregatedTickerConfigResponse {
+    // config is the list of convertable markets that will be used to convert the prices of a set of 
+    // tickers to a target ticker.
+    AggregatedTickerConfig config = 1;
+}
