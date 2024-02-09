@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestTicker(t *testing.T) {
