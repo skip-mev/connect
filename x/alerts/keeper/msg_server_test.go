@@ -38,13 +38,13 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 	testCases := []testCase{
 		{
 			name:  "nil message - fail",
-			setup: func(ctx sdk.Context) {},
+			setup: func(_ sdk.Context) {},
 			msg:   nil,
 			valid: false,
 		},
 		{
 			name:  "invalid message - fail",
-			setup: func(ctx sdk.Context) {},
+			setup: func(_ sdk.Context) {},
 			msg: &types.MsgAlert{
 				Alert: types.Alert{
 					Height:       1,
