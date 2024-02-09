@@ -96,7 +96,7 @@ func (k *Keeper) RemoveAlert(ctx sdk.Context, alert types.Alert) error {
 
 // GetAllAlerts returns all alerts in state, it does so via an iterator over the alerts table.
 func (k *Keeper) GetAllAlerts(ctx sdk.Context) ([]types.AlertWithStatus, error) {
-	return k.GetAllAlertsWithCondition(ctx, func(alert types.AlertWithStatus) bool { return true })
+	return k.GetAllAlertsWithCondition(ctx, func(_ types.AlertWithStatus) bool { return true })
 }
 
 // GetAllAlertsWithCondition returns all alerts for which the Condition evaluates to true.
