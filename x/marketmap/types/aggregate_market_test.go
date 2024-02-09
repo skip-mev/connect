@@ -152,6 +152,53 @@ func TestAggregateMarketConfig(t *testing.T) {
 			},
 			expErr: true,
 		},
+		{
+			name: "1 good provider but no support for conversion path",
+			markets: map[string]types.MarketConfig{
+				"binance": {
+					Name: "binance",
+					TickerConfigs: map[string]types.TickerConfig{
+						"BITCOIN/USDT": {
+							Ticker:         btcusdt,
+							OffChainTicker: "BTC/USDT",
+						},
+					},
+				},
+			},
+			tickers: map[string]types.PathsConfig{
+				"BITCOIN/USD": {
+					Ticker: types.Ticker{
+						Base:             "BITCOIN",
+						Quote:            "USD",
+						Decimals:         8,
+						MinProviderCount: 1,
+					},
+					Paths: []types.Path{
+						{
+							Operations: []types.Operation{
+								{
+									Ticker: types.Ticker{
+										Base:             "BITCOIN",
+										Quote:            "USDT",
+										Decimals:         8,
+										MinProviderCount: 1,
+									},
+								},
+								{
+									Ticker: types.Ticker{
+										Base:             "USDT",
+										Quote:            "USD",
+										Decimals:         8,
+										MinProviderCount: 1,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expErr: true,
+		},
 	}
 
 	for _, tc := range testCases {

@@ -76,11 +76,6 @@ func (c AggregateMarketConfig) ValidateBasic() error {
 			return fmt.Errorf("ticker config key does not match ticker value; expected %s, got %s", ticker, cfg.Ticker.String())
 		}
 
-		// Ensure that the target ticker is supported by at least one provider.
-		if _, ok := seenTickers[cfg.Ticker]; !ok {
-			return fmt.Errorf("ticker not found in market configs: %s", cfg.Ticker.String())
-		}
-
 		// Ensure that all of the tickers in the conversion paths are supported by at least one provider.
 		for ticker := range cfg.UniqueTickers() {
 			if _, ok := seenTickers[ticker]; !ok {
