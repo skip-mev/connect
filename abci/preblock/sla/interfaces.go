@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
 )
 
@@ -23,7 +22,7 @@ type Keeper interface {
 //go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface {
 	// GetAllCurrencyPairs returns all CurrencyPairs that have currently been stored to state.
-	GetAllCurrencyPairs(ctx sdk.Context) []oracletypes.CurrencyPair
+	GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
 }
 
 // StakingKeeper defines the interface that must be fulfilled by the staking keeper.

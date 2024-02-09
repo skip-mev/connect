@@ -201,7 +201,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
+		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 			{
 				Base:  "BTC",
 				Quote: "USD",
@@ -218,7 +218,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
 	s.Run("Remove a currency-pair and check Prices", func() {
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{oracletypes.CurrencyPairString("BTC", "USD")}...))
+		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{slinkytypes.CurrencyPairString("BTC", "USD")}...))
 
 		// check that the currency-pair is added to state
 		resp, err := QueryCurrencyPairs(s.chain)
@@ -227,9 +227,9 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	})
 
 	s.Run("Add multiple Currency Pairs and remove 1", func() {
-		cp1 := oracletypes.NewCurrencyPair("ETH", "USD")
-		cp2 := oracletypes.NewCurrencyPair("BTC", "USD")
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
+		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
+		cp2 := slinkytypes.NewCurrencyPair("BTC", "USD")
+		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 			cp1, cp2,
 		}...))
 
@@ -250,12 +250,12 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
-	cp := oracletypes.CurrencyPair{
+	cp := slinkytypes.CurrencyPair{
 		Base:  "ETHEREUM",
 		Quote: "USDC",
 	}
 
-	s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []oracletypes.CurrencyPair{
+	s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 		cp,
 	}...))
 
@@ -481,7 +481,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	cp3 := oracletypes.NewCurrencyPair("ETHEREUM", "USD")
 
 	// add multiple currency pairs
-	cps := []oracletypes.CurrencyPair{
+	cps := []slinkytypes.CurrencyPair{
 		cp1,
 		cp2,
 		cp3,
@@ -766,7 +766,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	})
 }
 
-func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp oracletypes.CurrencyPair) (uint64, error) {
+func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp slinkytypes.CurrencyPair) (uint64, error) {
 	// query for the given currency pair
 	resp, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
 		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{

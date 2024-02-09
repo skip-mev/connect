@@ -12,6 +12,6 @@ import (
 //
 //go:generate mockery --name Keeper --filename mock_oracle_keeper.go
 type Keeper interface { //golint:ignore
-	GetAllCurrencyPairs(ctx sdk.Context) []oracletypes.CurrencyPair
-	SetPriceForCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair, qp oracletypes.QuotePrice) error
+	GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
+	SetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair, qp oracletypes.QuotePrice) error
 }

@@ -68,7 +68,7 @@ func TestDefaultCurrencyPairStrategyFromID(t *testing.T) {
 	// test that if a currency-pair does not have an ID w/ x/oracle, a failure is returned
 	t.Run("expect error when currency-pair not found in module-state", func(t *testing.T) {
 		// expect an error when querying for a currency-pair not in module-state
-		ok.On("GetCurrencyPairFromID", ctx, uint64(2)).Return(oracletypes.CurrencyPair{}, false)
+		ok.On("GetCurrencyPairFromID", ctx, uint64(2)).Return(slinkytypes.CurrencyPair{}, false)
 		_, err := strategy.FromID(ctx, uint64(2))
 		require.Error(t, err)
 	})

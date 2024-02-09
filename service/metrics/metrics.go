@@ -6,7 +6,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 //go:generate mockery --name Metrics --filename mock_metrics.go
@@ -27,15 +26,15 @@ type Metrics interface {
 	ObserveMessageSize(msg MessageType, size int)
 
 	// ObservePriceForTicker updates a gauge with the price for the given ticker, this is updated each time a price is written to state
-	ObservePriceForTicker(ticker oracletypes.CurrencyPair, price float64)
+	ObservePriceForTicker(ticker slinkytypes.CurrencyPair, price float64)
 
 	// AddValidatorPriceForTicker updates a gauge per validator with the price they observed for a given ticker, this is updated when prices
 	// to be written to state are aggregated
-	AddValidatorPriceForTicker(validator string, ticker oracletypes.CurrencyPair, price float64)
+	AddValidatorPriceForTicker(validator string, ticker slinkytypes.CurrencyPair, price float64)
 
 	// AddValidatorReportForTicker updates a counter per validator + status. This counter represents the number of times a validator
 	// for a ticker with a price, w/o a price, or w/ an absent.
-	AddValidatorReportForTicker(validator string, ticker oracletypes.CurrencyPair, status ReportStatus)
+	AddValidatorReportForTicker(validator string, ticker slinkytypes.CurrencyPair, status ReportStatus)
 }
 
 type nopMetricsImpl struct{}
@@ -50,11 +49,11 @@ func (m *nopMetricsImpl) AddOracleResponse(_ Labeller)                          
 func (m *nopMetricsImpl) ObserveABCIMethodLatency(_ ABCIMethod, _ time.Duration)      {}
 func (m *nopMetricsImpl) AddABCIRequest(_ ABCIMethod, _ Labeller)                     {}
 func (m *nopMetricsImpl) ObserveMessageSize(_ MessageType, _ int)                     {}
-func (m *nopMetricsImpl) ObservePriceForTicker(_ oracletypes.CurrencyPair, _ float64) {}
-func (m *nopMetricsImpl) AddValidatorReportForTicker(_ string, _ oracletypes.CurrencyPair, _ ReportStatus) {
+func (m *nopMetricsImpl) ObservePriceForTicker(_ slinkytypes.CurrencyPair, _ float64) {}
+func (m *nopMetricsImpl) AddValidatorReportForTicker(_ string, _ slinkytypes.CurrencyPair, _ ReportStatus) {
 }
 
-func (m *nopMetricsImpl) AddValidatorPriceForTicker(_ string, _ oracletypes.CurrencyPair, _ float64) {
+func (m *nopMetricsImpl) AddValidatorPriceForTicker(_ string, _ slinkytypes.CurrencyPair, _ float64) {
 }
 
 func NewMetrics(chainID string) Metrics {
@@ -166,14 +165,14 @@ func (m *metricsImpl) ObserveMessageSize(messageType MessageType, size int) {
 	}).Observe(float64(size))
 }
 
-func (m *metricsImpl) ObservePriceForTicker(ticker oracletypes.CurrencyPair, price float64) {
+func (m *metricsImpl) ObservePriceForTicker(ticker slinkytypes.CurrencyPair, price float64) {
 	m.prices.With(prometheus.Labels{
 		ChainIDLabel: m.chainID,
 		TickerLabel:  ticker.String(),
 	}).Set(price)
 }
 
-func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker oracletypes.CurrencyPair, price float64) {
+func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker slinkytypes.CurrencyPair, price float64) {
 	m.reportsPerValidator.With(prometheus.Labels{
 		ChainIDLabel:   m.chainID,
 		TickerLabel:    ticker.String(),
@@ -181,7 +180,7 @@ func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker oracle
 	}).Set(price)
 }
 
-func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker oracletypes.CurrencyPair, rs ReportStatus) {
+func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker slinkytypes.CurrencyPair, rs ReportStatus) {
 	m.reportStatusPerValidator.With(prometheus.Labels{
 		ChainIDLabel:   m.chainID,
 		ValidatorLabel: validator,

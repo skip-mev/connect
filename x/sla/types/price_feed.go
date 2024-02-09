@@ -5,8 +5,6 @@ import (
 
 	"github.com/bits-and-blooms/bitset"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -29,7 +27,7 @@ type UpdateStatus int
 func NewPriceFeed(
 	maximumViableWindow uint,
 	validator sdk.ConsAddress,
-	currencyPair oracletypes.CurrencyPair,
+	currencyPair slinkytypes.CurrencyPair,
 	id string,
 ) (PriceFeed, error) {
 	updateMap := bitset.New(maximumViableWindow)

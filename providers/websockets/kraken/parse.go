@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseBaseMessage will parse message responses from the Kraken websocket API that are
@@ -81,16 +80,16 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 // in messages.go.
 func (h *WebSocketDataHandler) parseTickerMessage(
 	resp TickerResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unResolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// We will only parse messages from the ticker channel.
 	if ch := Channel(resp.ChannelName); ch != TickerChannel {
 		h.logger.Debug("received price update for unknown channel", zap.String("channel", string(ch)))
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("invalid channel %s", ch)
 	}
 
@@ -98,13 +97,13 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 	h.logger.Debug("received price update", zap.String("instrument", resp.Pair))
 	market, ok := h.cfg.Market.TickerToMarketConfigs[resp.Pair]
 	if !ok {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("no currency pair found for instrument %s", resp.Pair)
 	}
 
 	// Ensure that the length of the price update is valid.
 	if len(resp.TickerData.VolumeWeightedAveragePrice) != ExpectedVolumeWeightedAveragePriceLength {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("invalid price update length %d", len(resp.TickerData.VolumeWeightedAveragePrice))
 	}
 
@@ -114,9 +113,9 @@ func (h *WebSocketDataHandler) parseTickerMessage(
 	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals())
 	if err != nil {
 		unResolved[cp] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), unResolved[cp]
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), unResolved[cp]
 	}
 
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }

@@ -236,7 +236,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
 			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: oracletypes.CurrencyPairString("BTC", "USD"),
+				CurrencyPairId: slinkytypes.CurrencyPairString("BTC", "USD"),
 			},
 		})
 		if err == nil {

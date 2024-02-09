@@ -259,7 +259,7 @@ func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyP
 }
 
 // QueryCurrencyPair queries the price for the given currency-pair given a desired height to query from
-func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, height uint64) (*oracletypes.QuotePrice, int64, error) {
+func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, height uint64) (*oracletypes.QuotePrice, int64, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
 	// create the client
@@ -333,7 +333,7 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...oracletypes.CurrencyPair) error {
+func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
 	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
 		Authority:     authority,
 		CurrencyPairs: cps,

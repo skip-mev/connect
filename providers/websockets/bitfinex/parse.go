@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -68,23 +67,23 @@ func (h *WebsocketDataHandler) parseErrorMessage(
 // ref: https://docs.bitfinex.com/reference/ws-public-ticker
 func (h *WebsocketDataHandler) handleStream(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
 		baseStream []interface{}
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unResolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// Attempt to unmarshal the message into a base message. This is used to determine the type
 	// of message that was received.
 	if err := json.Unmarshal(message, &baseStream); err != nil {
 		h.logger.Debug("unable to unmarshal message into base struct", zap.Error(err))
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	if len(baseStream) != ExpectedBaseStreamLength {
 		h.logger.Error("invalid length of stream data received. must be 2", zap.Any("data", baseStream), zap.Int("len", len(baseStream)))
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), fmt.Errorf("invalid length of stream data received. must be %d.  stream: %v. len: %d",
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), fmt.Errorf("invalid length of stream data received. must be %d.  stream: %v. len: %d",
 			ExpectedBaseStreamLength,
 			baseStream,
 			len(baseStream),
@@ -96,7 +95,7 @@ func (h *WebsocketDataHandler) handleStream(
 	market, ok := h.channelMap[channelID]
 	if !ok {
 		h.logger.Error("received stream for unknown channel id", zap.Int("channel_id", channelID))
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), fmt.Errorf("received stream for unknown channel id %v", channelID)
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), fmt.Errorf("received stream for unknown channel id %v", channelID)
 	}
 
 	cp := market.CurrencyPair
@@ -106,7 +105,7 @@ func (h *WebsocketDataHandler) handleStream(
 	hbID, ok := baseStream[indexPayload].(string)
 	if ok && hbID == IDHeartbeat {
 		h.logger.Debug("received heartbeat", zap.Int("channel_id", channelID), zap.String("pair", market.Ticker))
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 
 	}
 
@@ -115,7 +114,7 @@ func (h *WebsocketDataHandler) handleStream(
 	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	lastPrice := dataArr[6]
@@ -123,5 +122,5 @@ func (h *WebsocketDataHandler) handleStream(
 	price := math.Float64ToBigInt(lastPrice.(float64), cp.Decimals())
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }

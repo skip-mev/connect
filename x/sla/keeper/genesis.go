@@ -3,7 +3,6 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -21,7 +20,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs slatypes.GenesisState) {
 		}
 	}
 
-	seenCPs := make(map[oracletypes.CurrencyPair]struct{})
+	seenCPs := make(map[slinkytypes.CurrencyPair]struct{})
 	for _, feed := range gs.PriceFeeds {
 		if err := k.SetPriceFeed(ctx, feed); err != nil {
 			panic(err)

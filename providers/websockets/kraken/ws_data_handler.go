@@ -10,10 +10,9 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
+var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the Kraken websocket API.
@@ -28,7 +27,7 @@ type WebSocketDataHandler struct {
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
+) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
@@ -55,9 +54,9 @@ func NewWebSocketDataHandler(
 //     heartbeats, and system status updates.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp        providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
 		baseMessage BaseMessage
 	)
 
@@ -90,7 +89,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 // subscribe to the given currency pairs. This is called when the connection to the data
 // provider is first established.
 func (h *WebSocketDataHandler) CreateMessages(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 

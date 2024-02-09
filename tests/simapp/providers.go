@@ -31,13 +31,12 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // DefaultProviderFactory returns a sample implementation of the provider factory. This provider
 // factory function returns providers that are API & websocket based.
-func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+func DefaultProviderFactory() providertypes.ProviderFactory[slinkytypes.CurrencyPair, *big.Int] {
+	return func(logger *zap.Logger, cfg config.OracleConfig) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err
 		}
@@ -50,7 +49,7 @@ func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.Currency
 		mProviders := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
 		// Create the providers.
-		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], 0)
+		providers := make([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], 0)
 		for _, p := range cfg.Providers {
 			switch {
 			case p.API.Enabled:
@@ -82,10 +81,10 @@ func DefaultProviderFactory() providertypes.ProviderFactory[oracletypes.Currency
 func apiProviderFromProviderConfig(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 	mAPI apimetrics.APIMetrics,
 	mProvider providermetrics.ProviderMetrics,
-) (providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 	// Validate the provider config.
 	err := cfg.ValidateBasic()
 	if err != nil {
@@ -109,7 +108,7 @@ func apiProviderFromProviderConfig(
 	}
 
 	var (
-		apiDataHandler apihandlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int]
+		apiDataHandler apihandlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int]
 		requestHandler apihandlers.RequestHandler
 	)
 
@@ -143,7 +142,7 @@ func apiProviderFromProviderConfig(
 	}
 
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
-	apiQueryHandler, err := apihandlers.NewAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](
+	apiQueryHandler, err := apihandlers.NewAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.API,
 		requestHandler,
@@ -155,13 +154,13 @@ func apiProviderFromProviderConfig(
 	}
 
 	// Create the provider.
-	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		base.WithName[oracletypes.CurrencyPair, *big.Int](cfg.Name),
-		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+	return base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
+		base.WithName[slinkytypes.CurrencyPair, *big.Int](cfg.Name),
+		base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 		base.WithAPIQueryHandler(apiQueryHandler),
-		base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](cfg.API),
-		base.WithIDs[oracletypes.CurrencyPair, *big.Int](filteredCPs),
-		base.WithMetrics[oracletypes.CurrencyPair, *big.Int](mProvider),
+		base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](cfg.API),
+		base.WithIDs[slinkytypes.CurrencyPair, *big.Int](filteredCPs),
+		base.WithMetrics[slinkytypes.CurrencyPair, *big.Int](mProvider),
 	)
 }
 
@@ -170,10 +169,10 @@ func apiProviderFromProviderConfig(
 func webSocketProviderFromProviderConfig(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 	wsMetrics wsmetrics.WebSocketMetrics,
 	pMetrics providermetrics.ProviderMetrics,
-) (providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 	// Validate the provider config.
 	err := cfg.ValidateBasic()
 	if err != nil {
@@ -197,7 +196,7 @@ func webSocketProviderFromProviderConfig(
 
 	var (
 		requestHandler apihandlers.RequestHandler
-		wsDataHandler  wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
+		wsDataHandler  wshandlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int]
 		connHandler    wshandlers.WebSocketConnHandler
 	)
 
@@ -259,7 +258,7 @@ func webSocketProviderFromProviderConfig(
 	}
 
 	// Create the websocket query handler which encapsulates all fetching and parsing logic.
-	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
+	wsQueryHandler, err := wshandlers.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](
 		logger,
 		cfg.WebSocket,
 		wsDataHandler,
@@ -271,13 +270,13 @@ func webSocketProviderFromProviderConfig(
 	}
 
 	// Create the provider.
-	return base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-		base.WithName[oracletypes.CurrencyPair, *big.Int](cfg.Name),
-		base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+	return base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
+		base.WithName[slinkytypes.CurrencyPair, *big.Int](cfg.Name),
+		base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 		base.WithWebSocketQueryHandler(wsQueryHandler),
-		base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](cfg.WebSocket),
-		base.WithIDs[oracletypes.CurrencyPair, *big.Int](filteredCPs),
-		base.WithMetrics[oracletypes.CurrencyPair, *big.Int](pMetrics),
+		base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](cfg.WebSocket),
+		base.WithIDs[slinkytypes.CurrencyPair, *big.Int](filteredCPs),
+		base.WithMetrics[slinkytypes.CurrencyPair, *big.Int](pMetrics),
 	)
 }
 
@@ -285,10 +284,10 @@ func webSocketProviderFromProviderConfig(
 // providers config.
 func filterForConfiguredCurrencyPairs(
 	logger *zap.Logger,
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 	cfg config.ProviderConfig,
-) ([]oracletypes.CurrencyPair, error) {
-	filteredCps := make([]oracletypes.CurrencyPair, 0)
+) ([]slinkytypes.CurrencyPair, error) {
+	filteredCps := make([]slinkytypes.CurrencyPair, 0)
 
 	for _, cp := range cps {
 		if _, ok := cfg.Market.CurrencyPairToMarketConfigs[cp.String()]; ok {

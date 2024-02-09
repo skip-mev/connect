@@ -24,7 +24,7 @@ type Vote struct {
 
 // WritePrices writes the oracle data to state. Note, this will only write prices
 // that are already present in state.
-func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.CurrencyPair]*big.Int) error {
+func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[slinkytypes.CurrencyPair]*big.Int) error {
 	currencyPairs := h.keeper.GetAllCurrencyPairs(ctx)
 	for _, cp := range currencyPairs {
 		price, ok := prices[cp]
@@ -66,7 +66,7 @@ func (h *PreBlockHandler) WritePrices(ctx sdk.Context, prices map[oracletypes.Cu
 }
 
 // recordPrice records all the given prices per ticker, and reports them as a float64.
-func (h *PreBlockHandler) recordPrices(prices map[oracletypes.CurrencyPair]*big.Int) {
+func (h *PreBlockHandler) recordPrices(prices map[slinkytypes.CurrencyPair]*big.Int) {
 	for ticker, price := range prices {
 		floatPrice, _ := price.Float64()
 		h.metrics.ObservePriceForTicker(ticker, floatPrice)

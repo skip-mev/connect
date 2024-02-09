@@ -10,10 +10,9 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
+var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the KuCoin websocket API.
@@ -24,14 +23,14 @@ type WebSocketDataHandler struct {
 	cfg config.ProviderConfig
 
 	// sequences is a map of currency pair to sequence number.
-	sequences map[oracletypes.CurrencyPair]int64
+	sequences map[slinkytypes.CurrencyPair]int64
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for KuCoin.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
+) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
@@ -47,7 +46,7 @@ func NewWebSocketDataHandler(
 	return &WebSocketDataHandler{
 		cfg:       cfg,
 		logger:    logger.With(zap.String("web_socket_data_handler", Name)),
-		sequences: make(map[oracletypes.CurrencyPair]int64),
+		sequences: make(map[slinkytypes.CurrencyPair]int64),
 	}, nil
 }
 
@@ -64,9 +63,9 @@ func NewWebSocketDataHandler(
 //  4. Message: This is sent by the KuCoin websocket when a match happens.
 func (h *WebSocketDataHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
 		msg  BaseMessage
 	)
 
@@ -111,7 +110,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 // KuCoin websocket API. The subscribe messages are created based on the currency pairs
 // that are configured for the provider.
 func (h *WebSocketDataHandler) CreateMessages(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 

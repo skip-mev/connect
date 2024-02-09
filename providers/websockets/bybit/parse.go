@@ -12,7 +12,6 @@ import (
 
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseSubscribeResponseMessage parses a subscribe response message. The format of the message
@@ -42,15 +41,15 @@ func (h *WebsocketDataHandler) parseSubscriptionResponse(resp SubscriptionRespon
 // in the messages.go file. This message contains the latest price data for a set of pairs.
 func (h *WebsocketDataHandler) parseTickerUpdate(
 	resp TickerUpdateMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// The topic must be the tickers topic.
 	if !strings.Contains(resp.Topic, string(TickerChannel)) {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
 			fmt.Errorf("invalid topic %s", resp.Topic)
 	}
 
@@ -59,7 +58,7 @@ func (h *WebsocketDataHandler) parseTickerUpdate(
 	market, ok := h.cfg.Market.TickerToMarketConfigs[data.Symbol]
 	if !ok {
 		h.logger.Debug("currency pair not found for symbol ID", zap.String("symbol", data.Symbol))
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 	}
 
 	cp := market.CurrencyPair
@@ -69,9 +68,9 @@ func (h *WebsocketDataHandler) parseTickerUpdate(
 	if err != nil {
 		h.logger.Error("failed to convert price to big.Int", zap.Error(err))
 		unresolved[cp] = fmt.Errorf("failed to convert price to big.Int: %w", err)
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 	}
 
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 }

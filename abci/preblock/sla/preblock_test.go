@@ -59,9 +59,9 @@ type SLAPreBlockerHandlerTestSuite struct {
 	val3      stakingtypes.Validator
 	consAddr3 sdk.ConsAddress
 
-	cp1 oracletypes.CurrencyPair
-	cp2 oracletypes.CurrencyPair
-	cp3 oracletypes.CurrencyPair
+	cp1 slinkytypes.CurrencyPair
+	cp2 slinkytypes.CurrencyPair
+	cp3 slinkytypes.CurrencyPair
 
 	veEnabled bool
 
@@ -145,7 +145,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{})
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -168,7 +168,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{})
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -204,7 +204,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		s.currencyPairIDStrategy.On("ID", mock.Anything, s.cp1).Return(uint64(0), nil)
 
@@ -246,7 +246,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -293,7 +293,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -357,7 +357,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
@@ -422,7 +422,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		_, err = s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
@@ -492,7 +492,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		}
 
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		s.currencyPairIDStrategy.On("ID", s.ctx, s.cp1).Return(uint64(0), nil)
 
@@ -535,7 +535,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 	s.Run("returns with no voting updates", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{})
 
 		updates, err := s.handler.GetUpdates(s.ctx, nil)
 		s.Require().NoError(err)
@@ -546,7 +546,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("returns single validator, with single currency pair, and no updates", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		updates, err := s.handler.GetUpdates(s.ctx, nil)
 		s.Require().NoError(err)
@@ -567,7 +567,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("returns with single validator, single cp, and vote with price", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -600,7 +600,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("returns with single validator, single cp, and vote without price", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -631,7 +631,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("returns with single validator, multiple cps, and votes with Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -677,7 +677,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("returns with single validator, multiple cps, and some Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -722,7 +722,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("returns with 2 validators, single cp, and votes with Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -772,7 +772,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("multiple validators, single cp, and one validator did not post any price updates", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -814,7 +814,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("multiple validators, multiple cps, and all validators posted Prices", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
 		votes := []voteaggregator.Vote{
 			{
@@ -884,7 +884,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 
 	s.Run("3 validators, 3 cps, 1 validator did not vote, 1 validator posted Prices for some, 1 posted for all", func() {
 		s.stakingKeeper.On("GetBondedValidatorsByPower", s.ctx).Return([]stakingtypes.Validator{s.val1, s.val2, s.val3}, nil)
-		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
+		s.oracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{s.cp1, s.cp2, s.cp3})
 
 		votes := []voteaggregator.Vote{
 			{

@@ -7,6 +7,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "tendermint/abci/types.proto";
 import "google/protobuf/any.proto";
+import "slinky/types/v1/currency_pair.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/alerts/types";
 
@@ -26,7 +27,7 @@ message Alert {
 
   // currency_pair is the currency-pair that this claim asserts is deviating
   // from the price off-chain.
-  slinky.oracle.v1.CurrencyPair currency_pair = 3
+  slinky.types.v1.CurrencyPair currency_pair = 3
       [ (gogoproto.nullable) = false ];
 }
 

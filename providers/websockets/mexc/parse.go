@@ -8,22 +8,21 @@ import (
 
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseTickerResponseMessage parses a price update received from the MEXC websocket
 // and returns a GetResponse.
 func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	msg TickerResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unResolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	market, ok := h.cfg.Market.TickerToMarketConfigs[msg.Data.Symbol]
 	if !ok {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("unknown ticker %s", msg.Data.Symbol)
 	}
 
@@ -32,16 +31,16 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	if !strings.HasPrefix(msg.Channel, string(MiniTickerChannel)) {
 		err := fmt.Errorf("invalid channel %s", msg.Channel)
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	// Convert the price.
 	price, err := math.Float64StringToBigInt(msg.Data.Price, cp.Decimals())
 	if err != nil {
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }

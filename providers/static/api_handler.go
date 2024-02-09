@@ -9,10 +9,9 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*MockAPIHandler)(nil)
+var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*MockAPIHandler)(nil)
 
 const (
 	// Name is the name of the provider.
@@ -21,8 +20,8 @@ const (
 
 // MockAPIHandler implements a mock API handler that returns static data.
 type MockAPIHandler struct {
-	exchangeRates map[oracletypes.CurrencyPair]*big.Int
-	currencyPairs []oracletypes.CurrencyPair
+	exchangeRates map[slinkytypes.CurrencyPair]*big.Int
+	currencyPairs []slinkytypes.CurrencyPair
 }
 
 // NewAPIHandler returns a new MockAPIHandler. This constructs a
@@ -37,12 +36,12 @@ func NewAPIHandler(
 	}
 
 	s := MockAPIHandler{
-		exchangeRates: make(map[oracletypes.CurrencyPair]*big.Int),
-		currencyPairs: make([]oracletypes.CurrencyPair, 0),
+		exchangeRates: make(map[slinkytypes.CurrencyPair]*big.Int),
+		currencyPairs: make([]slinkytypes.CurrencyPair, 0),
 	}
 
 	for cpString, market := range cfg.Market.CurrencyPairToMarketConfigs {
-		cp, err := oracletypes.CurrencyPairFromString(cpString)
+		cp, err := slinkytypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			continue
 		}
@@ -60,19 +59,19 @@ func NewAPIHandler(
 }
 
 // CreateURL is a no-op.
-func (s *MockAPIHandler) CreateURL(_ []oracletypes.CurrencyPair) (string, error) {
+func (s *MockAPIHandler) CreateURL(_ []slinkytypes.CurrencyPair) (string, error) {
 	return "static-url", nil
 }
 
 // ParseResponse is a no-op. This simply returns the price of the currency pairs configured
 // timestamped with the current time.
 func (s *MockAPIHandler) ParseResponse(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 	_ *http.Response,
-) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {
+) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	for _, cp := range cps {
@@ -83,5 +82,5 @@ func (s *MockAPIHandler) ParseResponse(
 		}
 	}
 
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved)
 }

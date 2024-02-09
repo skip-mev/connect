@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // MarketConfig represents the provider specific configurations for different
@@ -32,7 +30,7 @@ type CurrencyPairMarketConfig struct {
 	Ticker string `mapstructure:"ticker" toml:"ticker"`
 
 	// CurrencyPair is the on-chain representation of the currency pair.
-	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+	CurrencyPair slinkytypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
 
 // NewMarketConfig returns a new MarketConfig instance.
@@ -65,7 +63,7 @@ func (c *MarketConfig) ValidateBasic() error {
 	}
 
 	for cpStr, marketConfig := range c.CurrencyPairToMarketConfigs {
-		cp, err := oracletypes.CurrencyPairFromString(cpStr)
+		cp, err := slinkytypes.CurrencyPairFromString(cpStr)
 		if err != nil {
 			return err
 		}

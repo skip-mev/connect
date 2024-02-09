@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -33,7 +32,7 @@ type Keeper struct {
 	// currencyPairs is a map of (currency pair string -> currency pair) that is used to
 	// track the currency pairs that are currently in the x/sla module's state. This set
 	// of currency pairs is used to remove stale price feeds.
-	currencyPairs collections.Map[string, oracletypes.CurrencyPair]
+	currencyPairs collections.Map[string, slinkytypes.CurrencyPair]
 
 	// params is the module's parameters.
 	params collections.Item[slatypes.Params]
@@ -84,7 +83,7 @@ func NewKeeper(
 		slatypes.KeyPrefixCurrencyPairs,
 		"currency_pairs",
 		collections.StringKey,
-		codec.CollValue[oracletypes.CurrencyPair](cdc),
+		codec.CollValue[slinkytypes.CurrencyPair](cdc),
 	)
 
 	// Create the collections item that will track the module parameters.
@@ -132,7 +131,7 @@ func (k Keeper) GetParams(ctx sdk.Context) (slatypes.Params, error) {
 
 // SetCurrencyPairs sets the x/sla module's currency pairs. Note, this function
 // is primarily used to remove stale price feeds.
-func (k Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.CurrencyPair]struct{}) error {
+func (k Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[slinkytypes.CurrencyPair]struct{}) error {
 	// Remove all currency pairs that are currently in the x/sla module's state.
 	if err := k.currencyPairs.Clear(ctx, nil); err != nil {
 		return err
@@ -148,14 +147,14 @@ func (k Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.
 }
 
 // GetCurrencyPairs returns the x/sla module's currency pairs.
-func (k Keeper) GetCurrencyPairs(ctx sdk.Context) (map[oracletypes.CurrencyPair]struct{}, error) {
+func (k Keeper) GetCurrencyPairs(ctx sdk.Context) (map[slinkytypes.CurrencyPair]struct{}, error) {
 	iterator, err := k.currencyPairs.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
 	defer iterator.Close()
 
-	currencyPairs := make(map[oracletypes.CurrencyPair]struct{})
+	currencyPairs := make(map[slinkytypes.CurrencyPair]struct{})
 	for ; iterator.Valid(); iterator.Next() {
 		cp, err := iterator.Value()
 		if err != nil {

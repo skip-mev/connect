@@ -18,7 +18,6 @@ import (
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // VoteExtensionHandler is a handler that extends a vote with the oracle's
@@ -281,7 +280,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 
 	// Iterate over the prices and transform them into the correct format.
 	for currencyPairID, priceString := range prices {
-		cp, err := oracletypes.CurrencyPairFromString(currencyPairID)
+		cp, err := slinkytypes.CurrencyPairFromString(currencyPairID)
 		if err != nil {
 			return types.OracleVoteExtension{}, err
 		}

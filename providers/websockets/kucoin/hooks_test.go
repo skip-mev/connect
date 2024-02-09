@@ -15,7 +15,6 @@ import (
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -28,11 +27,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {
 					Ticker:       "BTC-USDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 				},
 				"ETHEREUM/USD": {
 					Ticker:       "ETH-USDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 				},
 			},
 		},

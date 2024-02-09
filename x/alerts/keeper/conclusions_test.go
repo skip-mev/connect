@@ -38,7 +38,7 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 	}{
 		{
 			"invalid alert - fail",
-			types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("base", "")),
+			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("base", "")),
 			keeper.Negative,
 			func(ctx sdk.Context) {},
 			fmt.Errorf("invalid alert: empty quote or base string"),
@@ -46,22 +46,22 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 		},
 		{
 			"alert not found - fail",
-			types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			keeper.Negative,
 			func(ctx sdk.Context) {},
-			fmt.Errorf("alert not found: %v", types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE"))),
+			fmt.Errorf("alert not found: %v", types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE"))),
 			types.AlertWithStatus{},
 		},
 		{
 			"alert already concluded",
-			types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			keeper.Negative,
 			func(ctx sdk.Context) {
 				// set the alert with concluded AlertStatus
 				s.alertKeeper.SetAlert(
 					ctx,
 					types.NewAlertWithStatus(
-						types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+						types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 						types.NewAlertStatus(1, 1, time.Now(), types.Concluded),
 					),
 				)
@@ -71,7 +71,7 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 		},
 		{
 			"alert status unknown",
-			types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			keeper.ConclusionStatus(3),
 			func(ctx sdk.Context) {
 				// set the alert with concluded AlertStatus

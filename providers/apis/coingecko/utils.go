@@ -56,7 +56,7 @@ var (
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"ATOM/USD": {
 				Ticker:       "cosmos/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
 			},
 			"BITCOIN/USD": {
 				Ticker:       "bitcoin/usd",
@@ -110,7 +110,7 @@ type (
 // from a list of currency pairs. Note that this function will only return the
 // denoms that are configured for the handler. If any of the currency pairs are
 // not configured, they will not be fetched.
-func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []oracletypes.CurrencyPair) (string, string, error) {
+func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []slinkytypes.CurrencyPair) (string, string, error) {
 	if len(pairs) == 0 {
 		return "", "", fmt.Errorf("no currency pairs specified")
 	}

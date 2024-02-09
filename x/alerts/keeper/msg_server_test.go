@@ -30,7 +30,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 		valid bool
 	}
 
-	validAlert := types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD"))
+	validAlert := types.NewAlert(8, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BTC", "USD"))
 
 	s.ctx = s.ctx.WithBlockHeight(10)
 	s.ctx = s.ctx.WithBlockTime(time.Now())
@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				Alert: types.Alert{
 					Height:       1,
 					Signer:       "",
-					CurrencyPair: oracletypes.NewCurrencyPair("base", "quote"),
+					CurrencyPair: slinkytypes.NewCurrencyPair("base", "quote"),
 				},
 			},
 			valid: false,
@@ -65,7 +65,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				s.Require().NoError(err)
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("base", "quote")),
+				Alert: types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("base", "quote")),
 			},
 			valid: false,
 		},
@@ -82,7 +82,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(7, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+				Alert: types.NewAlert(7, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			},
 			valid: false,
 		},
@@ -100,13 +100,13 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 
 				// set the alert to state
 				alert := types.NewAlertWithStatus(
-					types.NewAlert(9, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(9, sdk.AccAddress("abc1"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(9, 11, s.ctx.BlockTime(), types.Unconcluded),
 				)
 				s.Require().NoError(s.alertKeeper.SetAlert(ctx, alert))
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(9, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+				Alert: types.NewAlert(9, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			},
 			valid: false,
 		},

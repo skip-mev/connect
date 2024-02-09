@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // AggregateMarketConfig represents the market configurations for how currency pairs will
@@ -46,14 +44,14 @@ type AggregateMarketConfig struct {
 // will have its own feed configuration.
 type FeedConfig struct {
 	// CurrencyPair is the currency pair that the oracle will fetch prices for.
-	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+	CurrencyPair slinkytypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 }
 
 // AggregateFeedConfig represents all of the conversion markets that can be used to convert the
 // price of a currency pair to a common currency pair.
 type AggregateFeedConfig struct {
 	// CurrencyPair is the currency pair that the oracle will convert to.
-	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+	CurrencyPair slinkytypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 
 	// Conversions is a list of conversion operations that will be used to convert the price
 	// of the currency pair to the common currency pair.
@@ -67,7 +65,7 @@ type Conversions []Conversion
 // currency pair.
 type Conversion struct {
 	// CurrencyPair is the feed that will be used in the conversion.
-	CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+	CurrencyPair slinkytypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
 
 	// Invert is a flag that indicates if the feed should be inverted prior to being used
 	// in the conversion.
@@ -75,8 +73,8 @@ type Conversion struct {
 }
 
 // GetCurrencyPairs returns the set of currency pairs in the aggregate market config.
-func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
-	currencyPairs := make([]oracletypes.CurrencyPair, len(c.Feeds))
+func (c *AggregateMarketConfig) GetCurrencyPairs() []slinkytypes.CurrencyPair {
+	currencyPairs := make([]slinkytypes.CurrencyPair, len(c.Feeds))
 
 	i := 0
 	for _, cpConfig := range c.Feeds {
@@ -91,7 +89,7 @@ func (c *AggregateMarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
 func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Verify the configurations of all price feeds.
 	for cpString, feedConfig := range c.Feeds {
-		cp, err := oracletypes.CurrencyPairFromString(cpString)
+		cp, err := slinkytypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			return err
 		}
@@ -114,7 +112,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 	// currency pair can be found in the feeds map and the convertable market is topologically
 	// sorted.
 	for cpString, conversions := range c.AggregatedFeeds {
-		cp, err := oracletypes.CurrencyPairFromString(cpString)
+		cp, err := slinkytypes.CurrencyPairFromString(cpString)
 		if err != nil {
 			return err
 		}
@@ -153,7 +151,7 @@ func (c *FeedConfig) ValidateBasic() error {
 }
 
 // CheckSort checks if the given list of convertable markets is topologically sorted.
-func CheckSort(pair oracletypes.CurrencyPair, feeds []Conversion) error {
+func CheckSort(pair slinkytypes.CurrencyPair, feeds []Conversion) error {
 	// Check that order is topologically sorted for each market. For example, if the oracle
 	// receives a price for BTC/USDT and USDT/USD, the order must be BTC/USDT -> USDT/USD.
 	// Alternatively, if the oracle receives a price for BTC/USDT and USD/USDT, the order must

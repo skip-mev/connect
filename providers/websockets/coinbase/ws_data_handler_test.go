@@ -26,11 +26,11 @@ var (
 			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 				"BITCOIN/USD": {
 					Ticker:       "BTC-USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 				},
 				"ETHEREUM/USD": {
 					Ticker:       "ETH-USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 				},
 			},
 		},
@@ -43,7 +43,7 @@ func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
 		name          string
 		msg           func() []byte
-		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp          providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
 		updateMessage func() []handlers.WebsocketEncodedMessage
 		expErr        bool
 	}{
@@ -52,7 +52,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"type":"unknown"}`)
 			},
-			resp:          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:          providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -71,9 +71,9 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
 						Value: big.NewInt(1000000000000),
 					},
 				},
@@ -98,7 +98,7 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -119,8 +119,8 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				UnResolved: map[oracletypes.CurrencyPair]error{
+			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				UnResolved: map[slinkytypes.CurrencyPair]error{
 					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("failed to convert price to big int"),
 				},
 			},
@@ -144,8 +144,8 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				UnResolved: map[oracletypes.CurrencyPair]error{
+			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+				UnResolved: map[slinkytypes.CurrencyPair]error{
 					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("received out of order ticker response message"),
 				},
 			},
@@ -174,7 +174,7 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -220,13 +220,13 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessages(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []slinkytypes.CurrencyPair
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs to subscribe to",
-			cps:  []oracletypes.CurrencyPair{},
+			cps:  []slinkytypes.CurrencyPair{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -234,7 +234,7 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "one currency pair to subscribe to",
-			cps: []oracletypes.CurrencyPair{
+			cps: []slinkytypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
@@ -257,7 +257,7 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs to subscribe to",
-			cps: []oracletypes.CurrencyPair{
+			cps: []slinkytypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
@@ -282,7 +282,7 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs to subscribe to with one not supported",
-			cps: []oracletypes.CurrencyPair{
+			cps: []slinkytypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
 				oracletypes.NewCurrencyPair("MOG", "USD"),

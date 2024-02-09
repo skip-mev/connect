@@ -4,7 +4,6 @@ import (
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -26,7 +25,7 @@ func (k Keeper) SetPriceFeed(
 func (k Keeper) GetPriceFeed(
 	ctx sdk.Context,
 	slaID string,
-	cp oracletypes.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 	consAddress sdk.ConsAddress,
 ) (slatypes.PriceFeed, error) {
 	key := collections.Join3(slaID, cp.String(), consAddress.Bytes())
@@ -54,7 +53,7 @@ func (k Keeper) GetAllPriceFeeds(ctx sdk.Context, slaID string) ([]slatypes.Pric
 func (k Keeper) RemovePriceFeed(
 	ctx sdk.Context,
 	slaID string,
-	cp oracletypes.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 	consAddress sdk.ConsAddress,
 ) error {
 	key := collections.Join3(slaID, cp.String(), consAddress.Bytes())
@@ -66,7 +65,7 @@ func (k Keeper) RemovePriceFeed(
 func (k Keeper) RemovePriceFeedByCurrencyPair(
 	ctx sdk.Context,
 	slaID string,
-	cp oracletypes.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 ) error {
 	prefix := collections.NewSuperPrefixedTripleRange[string, string, []byte](slaID, cp.String())
 	return k.priceFeeds.Clear(ctx, prefix)
@@ -84,7 +83,7 @@ func (k Keeper) RemovePriceFeedsBySLA(ctx sdk.Context, slaID string) error {
 func (k Keeper) ContainsPriceFeed(
 	ctx sdk.Context,
 	slaID string,
-	cp oracletypes.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 	validator sdk.ConsAddress,
 ) (bool, error) {
 	key := collections.Join3(slaID, cp.String(), validator.Bytes())

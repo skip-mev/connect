@@ -15,7 +15,7 @@ type OracleKeeper struct {
 }
 
 // HasCurrencyPair provides a mock function with given fields: ctx, cp
-func (_m *OracleKeeper) HasCurrencyPair(ctx types.Context, cp oracletypes.CurrencyPair) bool {
+func (_m *OracleKeeper) HasCurrencyPair(ctx types.Context, cp slinkytypes.CurrencyPair) bool {
 	ret := _m.Called(ctx, cp)
 
 	if len(ret) == 0 {
@@ -23,7 +23,7 @@ func (_m *OracleKeeper) HasCurrencyPair(ctx types.Context, cp oracletypes.Curren
 	}
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) bool); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, slinkytypes.CurrencyPair) bool); ok {
 		r0 = rf(ctx, cp)
 	} else {
 		r0 = ret.Get(0).(bool)

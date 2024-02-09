@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestMarketConfig(t *testing.T) {
@@ -22,7 +21,7 @@ func TestMarketConfig(t *testing.T) {
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTC/USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 					},
 				},
 			},
@@ -34,7 +33,7 @@ func TestMarketConfig(t *testing.T) {
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTC/USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 					},
 				},
 			},
@@ -47,7 +46,7 @@ func TestMarketConfig(t *testing.T) {
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOINUSD": {
 						Ticker:       "BTC/USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+						CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 					},
 				},
 			},
@@ -60,7 +59,7 @@ func TestMarketConfig(t *testing.T) {
 				CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 					"BITCOIN/USD": {
 						Ticker:       "BTC/USD",
-						CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", ""),
+						CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", ""),
 					},
 				},
 			},

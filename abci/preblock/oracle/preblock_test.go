@@ -41,7 +41,7 @@ type PreBlockTestSuite struct {
 
 	myVal         sdk.ConsAddress
 	ctx           sdk.Context
-	currencyPairs []oracletypes.CurrencyPair
+	currencyPairs []slinkytypes.CurrencyPair
 	genesis       oracletypes.GenesisState
 	key           *storetypes.KVStoreKey
 	transientKey  *storetypes.TransientStoreKey
@@ -60,7 +60,7 @@ func TestPreBlockTestSuite(t *testing.T) {
 func (s *PreBlockTestSuite) SetupTest() {
 	s.myVal = sdk.ConsAddress([]byte("myVal"))
 
-	s.currencyPairs = []oracletypes.CurrencyPair{
+	s.currencyPairs = []slinkytypes.CurrencyPair{
 		{
 			Base:  "BTC",
 			Quote: "ETH",
@@ -74,7 +74,7 @@ func (s *PreBlockTestSuite) SetupTest() {
 			Quote: "USD",
 		},
 	}
-	genesisCPs := []oracletypes.CurrencyPairGenesis{
+	genesisCPs := []slinkytypes.CurrencyPairGenesis{
 		{
 			CurrencyPair: s.currencyPairs[0],
 			Nonce:        0,
@@ -148,7 +148,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 	})
 
 	s.Run("single price update", func() {
-		prices := map[oracletypes.CurrencyPair]*big.Int{
+		prices := map[slinkytypes.CurrencyPair]*big.Int{
 			s.currencyPairs[0]: big.NewInt(1),
 		}
 
@@ -162,7 +162,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 	})
 
 	s.Run("multiple price updates", func() {
-		prices := map[oracletypes.CurrencyPair]*big.Int{
+		prices := map[slinkytypes.CurrencyPair]*big.Int{
 			s.currencyPairs[0]: big.NewInt(1),
 			s.currencyPairs[1]: big.NewInt(2),
 			s.currencyPairs[2]: maxUint256,
@@ -180,7 +180,7 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 	})
 
 	s.Run("single price update with a nil price", func() {
-		prices := map[oracletypes.CurrencyPair]*big.Int{
+		prices := map[slinkytypes.CurrencyPair]*big.Int{
 			s.currencyPairs[0]: nil,
 		}
 
@@ -193,11 +193,11 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 	})
 
 	s.Run("attempting to set price for unsupported currency pair", func() {
-		unsupportedCP := oracletypes.CurrencyPair{
+		unsupportedCP := slinkytypes.CurrencyPair{
 			Base:  "cap",
 			Quote: "on-god",
 		}
-		prices := map[oracletypes.CurrencyPair]*big.Int{
+		prices := map[slinkytypes.CurrencyPair]*big.Int{
 			unsupportedCP: big.NewInt(1),
 		}
 
@@ -252,8 +252,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -275,8 +275,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -307,8 +307,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		veCodec := codecmock.NewVoteExtensionCodec(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -360,8 +360,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -385,8 +385,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -427,9 +427,9 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
-					return map[oracletypes.CurrencyPair]*big.Int{
+			func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+					return map[slinkytypes.CurrencyPair]*big.Int{
 						// return default values
 						btcUsd: big.NewInt(1),
 						mogUsd: maxUint256,
@@ -456,7 +456,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		currencyPairStrategyMock.On("GetDecodedPrice", s.ctx, mogUsd, mock.Anything).Return(maxUint256, nil)
 
 		// mock oracle keeper calls
-		mockOracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]oracletypes.CurrencyPair{btcUsd, mogUsd}, nil)
+		mockOracleKeeper.On("GetAllCurrencyPairs", s.ctx).Return([]slinkytypes.CurrencyPair{btcUsd, mogUsd}, nil)
 		mockOracleKeeper.On("SetPriceForCurrencyPair", s.ctx, btcUsd, mock.Anything).Return(nil)
 		mockOracleKeeper.On("SetPriceForCurrencyPair", s.ctx, mogUsd, mock.Anything).Return(nil)
 

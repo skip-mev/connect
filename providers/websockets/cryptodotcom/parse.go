@@ -9,23 +9,22 @@ import (
 
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseInstrumentMessage is used to parse an instrument message received from the Crypto.com
 // websocket API. This message contains the latest price data for a set of instruments.
 func (h *WebSocketDataHandler) parseInstrumentMessage(
 	msg InstrumentResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved    = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved  = make(map[oracletypes.CurrencyPair]error)
+		resolved    = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved  = make(map[slinkytypes.CurrencyPair]error)
 		instruments = msg.Result.Data
 	)
 
 	// If the response contained no instrument data, return an error.
 	if len(instruments) == 0 {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
 			fmt.Errorf("no instrument data was returned")
 	}
 
@@ -49,5 +48,5 @@ func (h *WebSocketDataHandler) parseInstrumentMessage(
 
 	}
 
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 }

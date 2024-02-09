@@ -44,7 +44,7 @@ func TestHandlerMessage(t *testing.T) {
 	testCases := []struct {
 		name          string
 		msg           func() []byte
-		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp          providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
 		updateMessage func() []handlers.WebsocketEncodedMessage
 		expErr        bool
 	}{
@@ -53,7 +53,7 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte("invalid message")
 			},
-			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+			resp:          providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -78,7 +78,7 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+			resp:          providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -102,13 +102,13 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): {
 						Value: big.NewInt(100000000),
 					},
 				},
-				map[oracletypes.CurrencyPair]error{},
+				map[slinkytypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -133,9 +133,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[slinkytypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
@@ -161,9 +161,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[slinkytypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -189,9 +189,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[slinkytypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				msg, err := huobi.NewSubscriptionRequest("btcusdt")
@@ -218,9 +218,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[slinkytypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				msg := huobi.PongMessage{Pong: 123}
@@ -249,9 +249,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return buf.Bytes()
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
+				map[slinkytypes.CurrencyPair]error{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
@@ -290,13 +290,13 @@ func TestHandlerMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []slinkytypes.CurrencyPair
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []oracletypes.CurrencyPair{},
+			cps:  []slinkytypes.CurrencyPair{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -304,7 +304,7 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps: []oracletypes.CurrencyPair{
+			cps: []slinkytypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
@@ -317,7 +317,7 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "two currency pairs",
-			cps: []oracletypes.CurrencyPair{
+			cps: []slinkytypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
 				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
 			},
@@ -333,7 +333,7 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair not in config",
-			cps: []oracletypes.CurrencyPair{
+			cps: []slinkytypes.CurrencyPair{
 				oracletypes.NewCurrencyPair("MOG", "USDT"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {

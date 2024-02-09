@@ -12,7 +12,6 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/aggregator"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // Vote encapsulates the validator and oracle data contained within a vote extension.
@@ -89,16 +88,16 @@ type VoteAggregator interface {
 	// price aggregator but can be replaced by the application.
 	//
 	// Notice: This method overwrites the VoteAggregator's local view of prices.
-	AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[oracletypes.CurrencyPair]*big.Int, error)
+	AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[slinkytypes.CurrencyPair]*big.Int, error)
 
 	// GetPriceForValidator gets the prices reported by a given validator. This method depends
 	// on the prices from the latest set of aggregated votes.
-	GetPriceForValidator(validator sdk.ConsAddress) map[oracletypes.CurrencyPair]*big.Int
+	GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int
 }
 
 func NewDefaultVoteAggregator(
 	logger log.Logger,
-	aggregateFn aggregator.AggregateFnFromContext[string, map[oracletypes.CurrencyPair]*big.Int],
+	aggregateFn aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int],
 	strategy currencypair.CurrencyPairStrategy,
 ) VoteAggregator {
 	return &DefaultVoteAggregator{
@@ -112,7 +111,7 @@ func NewDefaultVoteAggregator(
 
 type DefaultVoteAggregator struct {
 	// validator address -> currency-pair -> price
-	priceAggregator *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]
+	priceAggregator *aggregator.DataAggregator[string, map[slinkytypes.CurrencyPair]*big.Int]
 
 	// decoding prices / currency-pair ids
 	currencyPairStrategy currencypair.CurrencyPairStrategy
@@ -120,7 +119,7 @@ type DefaultVoteAggregator struct {
 	logger log.Logger
 }
 
-func (dva *DefaultVoteAggregator) AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[oracletypes.CurrencyPair]*big.Int, error) {
+func (dva *DefaultVoteAggregator) AggregateOracleVotes(ctx sdk.Context, votes []Vote) (map[slinkytypes.CurrencyPair]*big.Int, error) {
 	// Reset the price aggregator and set the aggregationFn to use the latest application-state.
 	dva.priceAggregator.ResetProviderData()
 
@@ -162,7 +161,7 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 	}
 
 	// Format all of the prices into a map of currency pair -> price.
-	prices := make(map[oracletypes.CurrencyPair]*big.Int, len(oracleData.Prices))
+	prices := make(map[slinkytypes.CurrencyPair]*big.Int, len(oracleData.Prices))
 	for cpID, priceBz := range oracleData.Prices {
 		if len(priceBz) > slinkyabci.MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(priceBz))
@@ -211,7 +210,7 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 	return nil
 }
 
-func (dva *DefaultVoteAggregator) GetPriceForValidator(validator sdk.ConsAddress) map[oracletypes.CurrencyPair]*big.Int {
+func (dva *DefaultVoteAggregator) GetPriceForValidator(validator sdk.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
 	consAddrStr := validator.String()
 	return dva.priceAggregator.GetDataByProvider(consAddrStr)
 }

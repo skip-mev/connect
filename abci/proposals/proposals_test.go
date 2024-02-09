@@ -27,7 +27,6 @@ import (
 	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	servicemetricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -38,12 +37,12 @@ var (
 	threeHundred = big.NewInt(300)
 	fourHundred  = big.NewInt(400)
 
-	btcUSD = oracletypes.CurrencyPair{ // id 0
+	btcUSD = slinkytypes.CurrencyPair{ // id 0
 		Base:  "BTC",
 		Quote: "USD",
 	}
 
-	ethUSD = oracletypes.CurrencyPair{ // id 1
+	ethUSD = slinkytypes.CurrencyPair{ // id 1
 		Base:  "ETH",
 		Quote: "USD",
 	}

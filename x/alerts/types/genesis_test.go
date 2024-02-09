@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestGenesisValidation(t *testing.T) {
@@ -45,7 +44,7 @@ func TestGenesisValidation(t *testing.T) {
 					types.NewAlertStatus(1, 2, time.Now(), 1),
 				),
 				types.NewAlertWithStatus(
-					types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(1, 2, time.Now(), 1),
 				),
 			}),
@@ -55,11 +54,11 @@ func TestGenesisValidation(t *testing.T) {
 			"genesis with duplicate alerts - fail",
 			types.NewGenesisState(types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
 				types.NewAlertWithStatus(
-					types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(1, 2, time.Now(), 1),
 				),
 				types.NewAlertWithStatus(
-					types.NewAlert(1, sdk.AccAddress("test1"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(1, sdk.AccAddress("test1"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(1, 2, time.Now(), 0),
 				),
 			}),
@@ -69,11 +68,11 @@ func TestGenesisValidation(t *testing.T) {
 			"genesis with valid non-duplicatge alerts - pass",
 			types.NewGenesisState(types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
 				types.NewAlertWithStatus(
-					types.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(1, 2, time.Now(), 1),
 				),
 				types.NewAlertWithStatus(
-					types.NewAlert(0, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BASE2", "QUOTE2")),
+					types.NewAlert(0, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BASE2", "QUOTE2")),
 					types.NewAlertStatus(1, 2, time.Now(), 0),
 				),
 			}),

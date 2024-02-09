@@ -11,10 +11,9 @@ import (
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
+var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
 // APIHandler implements the Base Provider API handler interface for CoinGecko.
 // This provider can be configured to support API based fetching, however, the provider
@@ -27,7 +26,7 @@ type APIHandler struct {
 // NewAPIHandler returns a new CoinGecko API handler.
 func NewAPIHandler(
 	cfg config.ProviderConfig,
-) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
+) (handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
@@ -50,7 +49,7 @@ func NewAPIHandler(
 // currency pairs in a single request. The URL that is generated automatically populates
 // the API key if it is set.
 func (h *APIHandler) CreateURL(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 ) (string, error) {
 	// Create a list of base currencies and quote currencies.
 	bases, quotes, err := h.getUniqueBaseAndQuoteDenoms(cps)
@@ -72,18 +71,18 @@ func (h *APIHandler) CreateURL(
 // out the responses that are not expected. Note that the response will only return
 // a response for the inputted currency pairs.
 func (h *APIHandler) ParseResponse(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 	resp *http.Response,
-) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {
+) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
 	// Parse the response.
 	var result CoinGeckoResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
+		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
 	}
 
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// Map each of the currency pairs for easy lookup.
@@ -123,5 +122,5 @@ func (h *APIHandler) ParseResponse(
 		unresolved[market.CurrencyPair] = fmt.Errorf("currency pair %s did not get a response", market.CurrencyPair.String())
 	}
 
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved)
 }

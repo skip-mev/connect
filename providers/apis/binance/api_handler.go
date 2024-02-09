@@ -12,10 +12,9 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var _ handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
+var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
 
 // APIHandler implements the APIHandler interface for Binance.
 // for more information about the Binance API, refer to the following link:
@@ -28,7 +27,7 @@ type APIHandler struct {
 // NewAPIHandler returns a new Binance API handler.
 func NewAPIHandler(
 	cfg config.ProviderConfig,
-) (handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
+) (handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
@@ -49,7 +48,7 @@ func NewAPIHandler(
 // CreateURL returns the URL that is used to fetch data from the Binance API for the
 // given currency pairs.
 func (h *APIHandler) CreateURL(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 ) (string, error) {
 	var cpStrings string
 
@@ -72,18 +71,18 @@ func (h *APIHandler) CreateURL(
 }
 
 func (h *APIHandler) ParseResponse(
-	cps []oracletypes.CurrencyPair,
+	cps []slinkytypes.CurrencyPair,
 	resp *http.Response,
-) providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int] {
+) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
+		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
 	}
 
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// Determine of the provided currency pairs which are supported by the Binance API.
@@ -107,7 +106,7 @@ func (h *APIHandler) ParseResponse(
 		cp := market.CurrencyPair
 		price, err := math.Float64StringToBigInt(data.Price, cp.Decimals())
 		if err != nil {
-			return providertypes.NewGetResponseWithErr[oracletypes.CurrencyPair, *big.Int](cps, err)
+			return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
 		}
 
 		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
@@ -120,5 +119,5 @@ func (h *APIHandler) ParseResponse(
 		unresolved[cp] = fmt.Errorf("currency pair %s did not get a response", cp.String())
 	}
 
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved)
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved)
 }

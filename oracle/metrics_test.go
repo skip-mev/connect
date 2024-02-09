@@ -13,15 +13,14 @@ import (
 	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type OracleMetricsTestSuite struct {
 	suite.Suite
 
 	// mocked providers
-	mockProvider1 *providermocks.Provider[oracletypes.CurrencyPair, *big.Int]
-	mockProvider2 *providermocks.Provider[oracletypes.CurrencyPair, *big.Int]
+	mockProvider1 *providermocks.Provider[slinkytypes.CurrencyPair, *big.Int]
+	mockProvider2 *providermocks.Provider[slinkytypes.CurrencyPair, *big.Int]
 
 	// mock metrics
 	mockMetrics *metricmocks.Metrics
@@ -41,10 +40,10 @@ func TestOracleMetricsTestSuite(t *testing.T) {
 
 func (s *OracleMetricsTestSuite) SetupTest() {
 	// mock providers
-	s.mockProvider1 = providermocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
+	s.mockProvider1 = providermocks.NewProvider[slinkytypes.CurrencyPair, *big.Int](s.T())
 	s.mockProvider1.On("Name").Return("provider1").Maybe()
 
-	s.mockProvider2 = providermocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
+	s.mockProvider2 = providermocks.NewProvider[slinkytypes.CurrencyPair, *big.Int](s.T())
 	s.mockProvider2.On("Name").Return("provider2").Maybe()
 
 	// mock metrics
@@ -54,7 +53,7 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	s.o, err = oracle.New(
 		oracle.WithUpdateInterval(oracleTicker),
 		oracle.WithProviders(
-			[]providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{
+			[]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]{
 				s.mockProvider1,
 				s.mockProvider2,
 			},

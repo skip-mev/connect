@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func (s *KeeperTestSuite) TestEndBlocker() {
@@ -18,19 +17,19 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 
 	// set three alerts (this shld be purged first)
 	alert1 := types.NewAlertWithStatus(
-		types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		types.NewAlert(1, sdk.AccAddress("abc1"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		types.NewAlertStatus(10, 10, time.Time{}, types.Concluded),
 	)
 
 	// this will be purged next
 	alert2 := types.NewAlertWithStatus(
-		types.NewAlert(2, sdk.AccAddress("abc2"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		types.NewAlert(2, sdk.AccAddress("abc2"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		types.NewAlertStatus(10, 11, time.Time{}, types.Concluded),
 	)
 
 	// this will be purged last
 	alert3 := types.NewAlertWithStatus(
-		types.NewAlert(3, sdk.AccAddress("abc3"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		types.NewAlert(3, sdk.AccAddress("abc3"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		types.NewAlertStatus(10, 12, time.Time{}, types.Unconcluded),
 	)
 

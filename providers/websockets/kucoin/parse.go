@@ -9,28 +9,27 @@ import (
 
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseTickerResponseMessage is used to parse a ticker response message.
 func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	msg TickerResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unResolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// The response must be from a subscription to the ticker channel.
 	if subject := SubjectType(msg.Subject); subject != TickerSubject {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("received unsupported channel %s", subject)
 	}
 
 	// Retrieve the ticker data from the message.
 	tickerData := strings.Split(msg.Topic, string(TickerTopic))
 	if len(tickerData) != ExpectedTopicLength {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("invalid ticker data %s", tickerData)
 	}
 
@@ -38,7 +37,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	ticker := tickerData[TickerIndex]
 	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
 	if !ok {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("market not found for ticker %s", ticker)
 	}
 
@@ -47,7 +46,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	sequence, err := strconv.ParseInt(msg.Data.Sequence, 10, 64)
 	if err != nil {
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	seenSequence, ok := h.sequences[cp]
@@ -64,7 +63,7 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	// Parse the price from the message.
@@ -72,9 +71,9 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	if err != nil {
 		err = fmt.Errorf("failed to parse price %w", err)
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }
