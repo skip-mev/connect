@@ -33,7 +33,7 @@ func GetAllSLAsCmd() *cobra.Command {
 		Use:   "slas",
 		Short: "Query for all SLAs in the store",
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -56,7 +56,7 @@ func GetParamsCmd() *cobra.Command {
 		Use:   "params",
 		Short: "Query for the current SLA parameters",
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
