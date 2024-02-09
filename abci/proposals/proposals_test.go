@@ -529,6 +529,111 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 	}
 }
 
+func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
+	// If retain option is given we feed oracle-data into prepare / process
+	s.Run("test RetainOracleDataInWrappedProposalHandler", func() {
+		codec := codec.NewDefaultExtendedCommitCodec()
+
+		extendedCommit := cometabci.ExtendedCommitInfo{
+			Round: 1,
+		}
+		bz, err := codec.Encode(extendedCommit)
+		s.Require().NoError(err)
+
+		handler := proposals.NewProposalHandler(
+			log.NewNopLogger(),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				// assert that the oracle data is retained
+				s.Require().Equal(bz, rpp.Txs[types.OracleInfoIndex])
+				return &cometabci.ResponsePrepareProposal{}, nil
+			},
+			func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+				// assert that the oracle data is retained
+				s.Require().Equal(bz, rpp.Txs[types.OracleInfoIndex])
+				return &cometabci.ResponseProcessProposal{}, nil
+			},
+			ve.NoOpValidateVoteExtensions,
+			nil,
+			codec,
+			nil,
+			servicemetrics.NewNopMetrics(),
+			proposals.RetainOracleDataInWrappedProposalHandler(),
+		)
+
+		// enable VE
+		s.ctx = testutils.CreateBaseSDKContext(s.T())
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 3)
+		s.ctx = s.ctx.WithBlockHeight(4)
+
+		// prepare proposal
+		req := &cometabci.RequestPrepareProposal{
+			LocalLastCommit: extendedCommit,
+			MaxTxBytes:      100, // arbitrary
+		}
+
+		_, err = handler.PrepareProposalHandler()(s.ctx, req)
+		s.Require().NoError(err)
+
+		// process proposal
+		req2 := &cometabci.RequestProcessProposal{
+			Txs: [][]byte{bz},
+		}
+		_, err = handler.ProcessProposalHandler()(s.ctx, req2)
+		s.Require().NoError(err)
+	})
+
+	// Otherwise, we don't
+	s.Run("test that oracle-data is not passed if not RetainOracleDataInWrappedProposalHandler", func() {
+		codec := codec.NewDefaultExtendedCommitCodec()
+
+		extendedCommit := cometabci.ExtendedCommitInfo{
+			Round: 1,
+		}
+		bz, err := codec.Encode(extendedCommit)
+		s.Require().NoError(err)
+
+		handler := proposals.NewProposalHandler(
+			log.NewNopLogger(),
+			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+				// assert that the oracle data is retained
+				s.Require().Len(rpp.Txs, 0)
+				return &cometabci.ResponsePrepareProposal{}, nil
+			},
+			func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+				// assert that the oracle data is retained
+				s.Require().Len(rpp.Txs, 0)
+				return &cometabci.ResponseProcessProposal{}, nil
+			},
+			ve.NoOpValidateVoteExtensions,
+			nil,
+			codec,
+			nil,
+			servicemetrics.NewNopMetrics(),
+		)
+
+		// enable VE
+		s.ctx = testutils.CreateBaseSDKContext(s.T())
+		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 3)
+		s.ctx = s.ctx.WithBlockHeight(4)
+
+		// prepare proposal
+		req := &cometabci.RequestPrepareProposal{
+			LocalLastCommit: extendedCommit,
+			MaxTxBytes:      100, // arbitrary
+		}
+
+		_, err = handler.PrepareProposalHandler()(s.ctx, req)
+		s.Require().NoError(err)
+
+		// process proposal
+		req2 := &cometabci.RequestProcessProposal{
+			Txs: [][]byte{bz},
+		}
+		_, err = handler.ProcessProposalHandler()(s.ctx, req2)
+		s.Require().NoError(err)
+	})
+}
+
 func (s *ProposalsTestSuite) TestProcessProposal() {
 	testCases := []struct {
 		name                 string

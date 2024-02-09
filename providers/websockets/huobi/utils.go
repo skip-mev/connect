@@ -42,37 +42,49 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
-				Ticker:       "btcusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ethusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
-			"ATOM/USD": {
+			"ATOM/USDT": {
 				Ticker:       "atomusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 			},
-			"SOLANA/USD": {
-				Ticker:       "solusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-			},
-			"CELESTIA/USD": {
-				Ticker:       "tiausdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
-			},
-			"AVAX/USD": {
+			"AVAX/USDT": {
 				Ticker:       "avaxusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
 			},
-			"DYDX/USD": {
+			"BITCOIN/USDC": {
+				Ticker:       "btcusdc",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
+			},
+			"BITCOIN/USDT": {
+				Ticker:       "btcusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+			},
+			"CELESTIA/USDT": {
+				Ticker:       "tiausdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
+			},
+			"DYDX/USDT": {
 				Ticker:       "dydxusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ethbtc",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			},
+			"ETHEREUM/USDC": {
+				Ticker:       "ethusdc",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
+			},
+			"ETHEREUM/USDT": {
+				Ticker:       "ethusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			},
+			"SOLANA/USDT": {
+				Ticker:       "solusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
+			},
+			"USDC/USDT": {
+				Ticker:       "usdcusdt",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
 			},
 		},
 	}
