@@ -15,7 +15,7 @@ message Ticker {
 
   // CurrencyPair is the currency pair for this ticker.
   slinky.types.v1.CurrencyPair currency_pair = 1
-  [ (gogoproto.nullable) = false ];
+      [ (gogoproto.nullable) = false ];
 
   // Decimals is the number of decimal places for the ticker. The number of
   // decimal places is used to convert the price to a human-readable format.
@@ -47,7 +47,7 @@ message MarketConfig {
   // on-chain and off-chain tickers. In particular, this config maps the
   // on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
   // representation (i.e. BTC/USD).
-  map<slinky.types.v1.CurrencyPair, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
+  map<string, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
 }
 
 // AggregateMarketConfig represents the global set of market configurations for
@@ -87,7 +87,7 @@ message AggregateMarketConfig {
   // allows developers to manually specify the exact set of tickers that will be
   // used to calculate the final price of a ticker. However, it is possible that
   // other aggregation strategies can be used.
-  map<slinky.types.v1.CurrencyPair, PathsConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
+  map<string, PathsConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
 }
 
 // PathsConfig represents the list of convertable markets (paths) that will be
