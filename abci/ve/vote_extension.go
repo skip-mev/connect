@@ -15,6 +15,7 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
@@ -137,7 +138,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		// To ensure liveness, we return a vote even if the oracle is not running
 		// or if the oracle returns a bad response.
-		oracleResp, err := h.oracleClient.Prices(reqCtx, &servicetypes.QueryPricesRequest{})
+		oracleResp, err := h.oracleClient.Prices(ctx.WithContext(reqCtx), &servicetypes.QueryPricesRequest{})
 		if err != nil {
 			h.logger.Error(
 				"failed to retrieve oracle prices for vote extension; returning empty vote extension",

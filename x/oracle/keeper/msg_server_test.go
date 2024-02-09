@@ -1,13 +1,13 @@
 package keeper_test
 
 import (
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -107,30 +107,30 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 	// construct message server + wrap context
 	ms := keeper.NewMsgServer(s.oracleKeeper)
 	for _, tc := range tcs {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			// execute message
 			_, err := ms.AddCurrencyPairs(s.ctx, tc.req)
 
 			// expect failure if necessary
 			if !tc.expectPass {
-				assert.NotNil(s.T(), err)
+				s.Require().NotNil(err)
 				return
 			}
 
 			// otherwise, check that insertions executed faithfully
-			assert.Nil(s.T(), err)
+			s.Require().Nil(err)
 
 			// check all currency pairs were inserted
 			for _, cp := range tc.req.CurrencyPairs {
 				// get nonce for cpg.CurrencyPair
 				nonce, err := s.oracleKeeper.GetNonceForCurrencyPair(s.ctx, cp)
-				assert.Nil(s.T(), err)
+				s.Require().Nil(err)
 
 				// check the nonce is correct (if the cp had already existed in state, check that it was not overwritten)
 				if cp.String() == "E/F" {
-					assert.Equal(s.T(), nonce, uint64(100))
+					s.Require().Equal(nonce, uint64(100))
 				} else {
-					assert.Equal(s.T(), nonce, uint64(0))
+					s.Require().Equal(nonce, uint64(0))
 				}
 			}
 		})
@@ -231,7 +231,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			// check that all currency-pairs were removed
 			for _, cps := range tc.req.CurrencyPairIds {
 				// get currency pair from request
-				cp, err := types.CurrencyPairFromString(cps)
+				cp, err := slinkytypes.CurrencyPairFromString(cps)
 				assert.Nil(s.T(), err)
 
 				// assert that currency-pair was removed

@@ -25,7 +25,6 @@ import (
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	wshandlermocks "github.com/skip-mev/slinky/providers/base/websocket/handlers/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -473,90 +472,90 @@ func TestAPIProviderLoop(t *testing.T) {
 	testCases := []struct {
 		name           string
 		handler        func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int]
-		pairs          []oracletypes.CurrencyPair
-		expectedPrices map[oracletypes.CurrencyPair]*big.Int
+		pairs          []slinkytypes.CurrencyPair
+		expectedPrices map[slinkytypes.CurrencyPair]*big.Int
 	}{
 		{
 			name: "no prices to fetch",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					nil,
 				)
 			},
-			pairs:          []oracletypes.CurrencyPair{},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
+			pairs:          []slinkytypes.CurrencyPair{},
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "can fetch a single price",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
 					},
 				}
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
 				)
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				fn := func(responseCh chan<- providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]) {
-					resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				fn := func(responseCh chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]) {
+					resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(100),
 							Timestamp: respTime,
 						},
 					}
-					resp := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+					resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
 					logger.Debug("sending response", zap.String("response", resp.String()))
 					responseCh <- resp
 
-					resolved = map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					resolved = map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(200),
 							Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 						},
 					}
-					resp = providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+					resp = providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
 					logger.Debug("sending response", zap.String("response", resp.String()))
 					responseCh <- resp
 				}
 
-				return testutils.CreateAPIQueryHandlerWithResponseFn[oracletypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithResponseFn[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					fn,
 				)
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
 		{
 			name: "can fetch multiple prices",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -567,62 +566,62 @@ func TestAPIProviderLoop(t *testing.T) {
 					},
 				}
 
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
 				)
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 				pairs[1],
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 				pairs[1]: big.NewInt(200),
 			},
 		},
 		{
 			name: "does not update if the response included an error",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				unResolved := map[oracletypes.CurrencyPair]error{
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				unResolved := map[slinkytypes.CurrencyPair]error{
 					pairs[0]: apierrors.ErrRateLimit,
 				}
 
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, unResolved),
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, unResolved),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
 				)
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "continues updating even with timeouts on the query handler",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				handler := apihandlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
 				handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
-					responseCh := args.Get(2).(chan<- providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int])
+					responseCh := args.Get(2).(chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int])
 
-					resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+					resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(100),
 							Timestamp: respTime,
 						},
 					}
-					resp := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
+					resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
 					logger.Debug("sending response", zap.String("response", resp.String()))
 					responseCh <- resp
@@ -630,10 +629,10 @@ func TestAPIProviderLoop(t *testing.T) {
 
 				return handler
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				pairs[0]: big.NewInt(100),
 			},
 		},
@@ -641,12 +640,12 @@ func TestAPIProviderLoop(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-				base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
-				base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
-				base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
-				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
+			provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
+				base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
+				base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
+				base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+				base.WithIDs[slinkytypes.CurrencyPair, *big.Int](tc.pairs),
 			)
 			require.NoError(t, err)
 
@@ -671,24 +670,24 @@ func TestAPIProviderLoop(t *testing.T) {
 func TestMetrics(t *testing.T) {
 	testCases := []struct {
 		name    string
-		handler func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int]
+		handler func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int]
 		metrics func() providermetrics.ProviderMetrics
-		pairs   []oracletypes.CurrencyPair
+		pairs   []slinkytypes.CurrencyPair
 	}{
 		{
 			name: "can fetch a single price",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
 					},
 				}
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 					providertypes.NewGetResponse(resolved, nil),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
@@ -704,22 +703,22 @@ func TestMetrics(t *testing.T) {
 
 				return m
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 			},
 		},
 		{
 			name: "updates correctly with bad responses",
-			handler: func() apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int] {
-				unResolved := map[oracletypes.CurrencyPair]error{
+			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				unResolved := map[slinkytypes.CurrencyPair]error{
 					pairs[0]: apierrors.ErrRateLimit,
 				}
 
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-					providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, unResolved),
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, unResolved),
 				}
 
-				return testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
 					logger,
 					responses,
@@ -735,7 +734,7 @@ func TestMetrics(t *testing.T) {
 
 				return m
 			},
-			pairs: []oracletypes.CurrencyPair{
+			pairs: []slinkytypes.CurrencyPair{
 				pairs[0],
 			},
 		},
@@ -743,13 +742,13 @@ func TestMetrics(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-				base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
-				base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](tc.handler()),
-				base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
-				base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-				base.WithIDs[oracletypes.CurrencyPair, *big.Int](tc.pairs),
-				base.WithMetrics[oracletypes.CurrencyPair, *big.Int](tc.metrics()),
+			provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
+				base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
+				base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](tc.handler()),
+				base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
+				base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+				base.WithIDs[slinkytypes.CurrencyPair, *big.Int](tc.pairs),
+				base.WithMetrics[slinkytypes.CurrencyPair, *big.Int](tc.metrics()),
 			)
 			require.NoError(t, err)
 

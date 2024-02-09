@@ -20,12 +20,12 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/clients/oracle/mocks"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -556,7 +556,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteLatency() {
 			Timestamp: time.Now(),
 		},
 		nil,
-	).Run(func(args mock.Arguments) {
+	).Run(func(_ mock.Arguments) {
 		// sleep to simulate latency
 		time.Sleep(100 * time.Millisecond)
 	})
@@ -602,7 +602,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			nil,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				panic("panic")
 			},
 			mockMetrics,
@@ -626,7 +626,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			nil,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				return nil, preBlockError
 			},
 			mockMetrics,
@@ -650,7 +650,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			nil,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				return nil, nil
 			},
 			mockMetrics,
@@ -675,7 +675,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			nil,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				return nil, nil
 			},
 			mockMetrics,
@@ -705,7 +705,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			codec,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				return nil, nil
 			},
 			mockMetrics,
@@ -735,7 +735,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			codec,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				return nil, nil
 			},
 			mockMetrics,
@@ -873,7 +873,7 @@ func (s *VoteExtensionTestSuite) TestVoteExtensionSize() {
 		time.Second*1,
 		nil,
 		codec,
-		func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+		func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 			return nil, nil
 		},
 		mockMetrics,

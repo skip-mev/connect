@@ -12,6 +12,7 @@ import (
 	"github.com/BurntSushi/toml"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
@@ -26,7 +27,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (

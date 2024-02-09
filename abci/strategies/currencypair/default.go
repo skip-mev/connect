@@ -5,6 +5,8 @@ import (
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // DefaultCurrencyPairStrategy is a strategy that uses the currency pair ID stored in the x/oracle state as

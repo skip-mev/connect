@@ -104,8 +104,8 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 			types.MsgRemoveCurrencyPairs{
 				Authority: sdk.AccAddress([]byte("abc")).String(),
 				CurrencyPairIds: []string{
-					types.CurrencyPairString("A", "B"),
-					types.CurrencyPairString("C", "D"),
+					slinkytypes.CurrencyPairString("A", "B"),
+					slinkytypes.CurrencyPairString("C", "D"),
 				},
 			},
 			true,

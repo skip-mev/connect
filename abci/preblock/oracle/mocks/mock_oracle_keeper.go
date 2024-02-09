@@ -7,6 +7,8 @@ import (
 
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+
 	types "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -16,19 +18,19 @@ type Keeper struct {
 }
 
 // GetAllCurrencyPairs provides a mock function with given fields: ctx
-func (_m *Keeper) GetAllCurrencyPairs(ctx types.Context) []slinkytypes.CurrencyPair {
+func (_m *Keeper) GetAllCurrencyPairs(ctx types.Context) []pkgtypes.CurrencyPair {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAllCurrencyPairs")
 	}
 
-	var r0 []slinkytypes.CurrencyPair
-	if rf, ok := ret.Get(0).(func(types.Context) []slinkytypes.CurrencyPair); ok {
+	var r0 []pkgtypes.CurrencyPair
+	if rf, ok := ret.Get(0).(func(types.Context) []pkgtypes.CurrencyPair); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]slinkytypes.CurrencyPair)
+			r0 = ret.Get(0).([]pkgtypes.CurrencyPair)
 		}
 	}
 
@@ -36,7 +38,7 @@ func (_m *Keeper) GetAllCurrencyPairs(ctx types.Context) []slinkytypes.CurrencyP
 }
 
 // SetPriceForCurrencyPair provides a mock function with given fields: ctx, cp, qp
-func (_m *Keeper) SetPriceForCurrencyPair(ctx types.Context, cp slinkytypes.CurrencyPair, qp oracletypes.QuotePrice) error {
+func (_m *Keeper) SetPriceForCurrencyPair(ctx types.Context, cp pkgtypes.CurrencyPair, qp oracletypes.QuotePrice) error {
 	ret := _m.Called(ctx, cp, qp)
 
 	if len(ret) == 0 {
@@ -44,7 +46,7 @@ func (_m *Keeper) SetPriceForCurrencyPair(ctx types.Context, cp slinkytypes.Curr
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(types.Context, slinkytypes.CurrencyPair, oracletypes.QuotePrice) error); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair, oracletypes.QuotePrice) error); ok {
 		r0 = rf(ctx, cp, qp)
 	} else {
 		r0 = ret.Error(0)

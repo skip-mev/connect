@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
 )
 

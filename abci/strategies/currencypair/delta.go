@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 

@@ -14,6 +14,7 @@ import (
 	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 )
 

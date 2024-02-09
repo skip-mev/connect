@@ -237,7 +237,7 @@ func (k Keeper) GetCurrencyPairFromID(ctx sdk.Context, id uint64) (slinkytypes.C
 		return slinkytypes.CurrencyPair{}, false
 	}
 
-	cp, err := types.CurrencyPairFromString(cps)
+	cp, err := slinkytypes.CurrencyPairFromString(cps)
 	if err != nil {
 		return slinkytypes.CurrencyPair{}, false
 	}
@@ -271,7 +271,7 @@ func (k Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp slinkytypes.Cur
 			return err
 		}
 
-		cp, err := types.CurrencyPairFromString(primaryKey)
+		cp, err := slinkytypes.CurrencyPairFromString(primaryKey)
 		if err != nil {
 			return err
 		}

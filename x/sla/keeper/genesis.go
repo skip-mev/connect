@@ -3,6 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 

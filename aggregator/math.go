@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func ComputeMedianWithContext(_ sdk.Context) AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {

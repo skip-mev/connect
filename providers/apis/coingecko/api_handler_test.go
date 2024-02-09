@@ -14,7 +14,6 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var providerCfg = config.ProviderConfig{

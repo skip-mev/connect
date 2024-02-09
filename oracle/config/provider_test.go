@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestProviderConfig(t *testing.T) {

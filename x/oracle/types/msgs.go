@@ -47,10 +47,10 @@ func (m MsgAddCurrencyPairs) ValidateBasic() error {
 }
 
 // NewMsgRemoveCurrencyPairs returns a new message to remove a set of currency-pairs from the x/oracle module's state.
-func NewMsgRemoveCurrencyPairs(authority string, currencyPairIds []string) MsgRemoveCurrencyPairs {
+func NewMsgRemoveCurrencyPairs(authority string, currencyPairIDs []string) MsgRemoveCurrencyPairs {
 	return MsgRemoveCurrencyPairs{
 		Authority:       authority,
-		CurrencyPairIds: currencyPairIds,
+		CurrencyPairIds: currencyPairIDs,
 	}
 }
 

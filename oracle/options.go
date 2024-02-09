@@ -9,6 +9,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 

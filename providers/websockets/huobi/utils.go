@@ -2,7 +2,7 @@ package huobi
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 const (

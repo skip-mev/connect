@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 

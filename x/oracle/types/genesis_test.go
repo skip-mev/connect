@@ -1,8 +1,9 @@
 package types_test
 
 import (
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"testing"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 

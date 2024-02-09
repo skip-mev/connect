@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )

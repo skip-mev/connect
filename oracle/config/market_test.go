@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestMarketConfig(t *testing.T) {

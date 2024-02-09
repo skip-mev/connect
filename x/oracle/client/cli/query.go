@@ -2,11 +2,11 @@ package cli
 
 import (
 	"fmt"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -70,7 +70,7 @@ func GetAllCurrencyPairsCmd() *cobra.Command {
 		Use:   "currency-pairs",
 		Short: "Query for all the currency-pairs being tracked by the module",
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			// get the context
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

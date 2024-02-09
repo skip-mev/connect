@@ -9,7 +9,7 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -20,23 +20,23 @@ type VoteAggregator struct {
 }
 
 // AggregateOracleVotes provides a mock function with given fields: ctx, votes
-func (_m *VoteAggregator) AggregateOracleVotes(ctx types.Context, votes []aggregator.Vote) (map[slinkytypes.CurrencyPair]*big.Int, error) {
+func (_m *VoteAggregator) AggregateOracleVotes(ctx types.Context, votes []aggregator.Vote) (map[pkgtypes.CurrencyPair]*big.Int, error) {
 	ret := _m.Called(ctx, votes)
 
 	if len(ret) == 0 {
 		panic("no return value specified for AggregateOracleVotes")
 	}
 
-	var r0 map[slinkytypes.CurrencyPair]*big.Int
+	var r0 map[pkgtypes.CurrencyPair]*big.Int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, []aggregator.Vote) (map[slinkytypes.CurrencyPair]*big.Int, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, []aggregator.Vote) (map[pkgtypes.CurrencyPair]*big.Int, error)); ok {
 		return rf(ctx, votes)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, []aggregator.Vote) map[slinkytypes.CurrencyPair]*big.Int); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, []aggregator.Vote) map[pkgtypes.CurrencyPair]*big.Int); ok {
 		r0 = rf(ctx, votes)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[slinkytypes.CurrencyPair]*big.Int)
+			r0 = ret.Get(0).(map[pkgtypes.CurrencyPair]*big.Int)
 		}
 	}
 
@@ -50,19 +50,19 @@ func (_m *VoteAggregator) AggregateOracleVotes(ctx types.Context, votes []aggreg
 }
 
 // GetPriceForValidator provides a mock function with given fields: validator
-func (_m *VoteAggregator) GetPriceForValidator(validator types.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int {
+func (_m *VoteAggregator) GetPriceForValidator(validator types.ConsAddress) map[pkgtypes.CurrencyPair]*big.Int {
 	ret := _m.Called(validator)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetPriceForValidator")
 	}
 
-	var r0 map[slinkytypes.CurrencyPair]*big.Int
-	if rf, ok := ret.Get(0).(func(types.ConsAddress) map[slinkytypes.CurrencyPair]*big.Int); ok {
+	var r0 map[pkgtypes.CurrencyPair]*big.Int
+	if rf, ok := ret.Get(0).(func(types.ConsAddress) map[pkgtypes.CurrencyPair]*big.Int); ok {
 		r0 = rf(validator)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[slinkytypes.CurrencyPair]*big.Int)
+			r0 = ret.Get(0).(map[pkgtypes.CurrencyPair]*big.Int)
 		}
 	}
 

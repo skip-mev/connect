@@ -6,6 +6,8 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	mock "github.com/stretchr/testify/mock"
 
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+
 	types "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -15,22 +17,22 @@ type OracleKeeper struct {
 }
 
 // GetCurrencyPairFromID provides a mock function with given fields: ctx, id
-func (_m *OracleKeeper) GetCurrencyPairFromID(ctx types.Context, id uint64) (slinkytypes.CurrencyPair, bool) {
+func (_m *OracleKeeper) GetCurrencyPairFromID(ctx types.Context, id uint64) (pkgtypes.CurrencyPair, bool) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCurrencyPairFromID")
 	}
 
-	var r0 slinkytypes.CurrencyPair
+	var r0 pkgtypes.CurrencyPair
 	var r1 bool
-	if rf, ok := ret.Get(0).(func(types.Context, uint64) (slinkytypes.CurrencyPair, bool)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, uint64) (pkgtypes.CurrencyPair, bool)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, uint64) slinkytypes.CurrencyPair); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, uint64) pkgtypes.CurrencyPair); ok {
 		r0 = rf(ctx, id)
 	} else {
-		r0 = ret.Get(0).(slinkytypes.CurrencyPair)
+		r0 = ret.Get(0).(pkgtypes.CurrencyPair)
 	}
 
 	if rf, ok := ret.Get(1).(func(types.Context, uint64) bool); ok {
@@ -43,7 +45,7 @@ func (_m *OracleKeeper) GetCurrencyPairFromID(ctx types.Context, id uint64) (sli
 }
 
 // GetIDForCurrencyPair provides a mock function with given fields: ctx, cp
-func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp slinkytypes.CurrencyPair) (uint64, bool) {
+func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp pkgtypes.CurrencyPair) (uint64, bool) {
 	ret := _m.Called(ctx, cp)
 
 	if len(ret) == 0 {
@@ -52,16 +54,16 @@ func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp slinkytypes.C
 
 	var r0 uint64
 	var r1 bool
-	if rf, ok := ret.Get(0).(func(types.Context, slinkytypes.CurrencyPair) (uint64, bool)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair) (uint64, bool)); ok {
 		return rf(ctx, cp)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, slinkytypes.CurrencyPair) uint64); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair) uint64); ok {
 		r0 = rf(ctx, cp)
 	} else {
 		r0 = ret.Get(0).(uint64)
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, slinkytypes.CurrencyPair) bool); ok {
+	if rf, ok := ret.Get(1).(func(types.Context, pkgtypes.CurrencyPair) bool); ok {
 		r1 = rf(ctx, cp)
 	} else {
 		r1 = ret.Get(1).(bool)
@@ -71,7 +73,7 @@ func (_m *OracleKeeper) GetIDForCurrencyPair(ctx types.Context, cp slinkytypes.C
 }
 
 // GetPriceForCurrencyPair provides a mock function with given fields: ctx, cp
-func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cp slinkytypes.CurrencyPair) (oracletypes.QuotePrice, error) {
+func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cp pkgtypes.CurrencyPair) (oracletypes.QuotePrice, error) {
 	ret := _m.Called(ctx, cp)
 
 	if len(ret) == 0 {
@@ -80,16 +82,16 @@ func (_m *OracleKeeper) GetPriceForCurrencyPair(ctx types.Context, cp slinkytype
 
 	var r0 oracletypes.QuotePrice
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, slinkytypes.CurrencyPair) (oracletypes.QuotePrice, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair) (oracletypes.QuotePrice, error)); ok {
 		return rf(ctx, cp)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, slinkytypes.CurrencyPair) oracletypes.QuotePrice); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair) oracletypes.QuotePrice); ok {
 		r0 = rf(ctx, cp)
 	} else {
 		r0 = ret.Get(0).(oracletypes.QuotePrice)
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, slinkytypes.CurrencyPair) error); ok {
+	if rf, ok := ret.Get(1).(func(types.Context, pkgtypes.CurrencyPair) error); ok {
 		r1 = rf(ctx, cp)
 	} else {
 		r1 = ret.Error(1)

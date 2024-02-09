@@ -18,6 +18,7 @@ import (
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 var (

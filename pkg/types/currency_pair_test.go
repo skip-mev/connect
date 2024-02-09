@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestValidateBasic(t *testing.T) {
@@ -85,7 +85,7 @@ func TestToFromString(t *testing.T) {
 		},
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
-			types.CurrencyPairString("A", "B"),
+			slinkytypes.CurrencyPairString("A", "B"),
 			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
@@ -99,7 +99,7 @@ func TestToFromString(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			cp, err := types.CurrencyPairFromString(tc.cps)
+			cp, err := slinkytypes.CurrencyPairFromString(tc.cps)
 			if tc.expectPass {
 				assert.Nil(t, err)
 				assert.Equal(t, cp, tc.cp)

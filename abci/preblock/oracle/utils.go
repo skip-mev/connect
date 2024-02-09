@@ -4,12 +4,12 @@ import (
 	"math/big"
 
 	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
