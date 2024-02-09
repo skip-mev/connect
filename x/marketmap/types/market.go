@@ -14,10 +14,13 @@ func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketCon
 }
 
 // Tickers returns all of the tickers that the provider supports.
-func (c MarketConfig) Tickers() []Ticker {
+func (c *MarketConfig) Tickers() []Ticker {
 	tickers := make([]Ticker, 0, len(c.TickerConfigs))
+
+	i := 0
 	for _, cfg := range c.TickerConfigs {
-		tickers = append(tickers, cfg.Ticker)
+		tickers[i] = cfg.Ticker
+		i++
 	}
 
 	return tickers
@@ -45,7 +48,7 @@ func (c *MarketConfig) ValidateBasic() error {
 		// The ticker key should match the ticker value.
 		t := cfg.Ticker.String()
 		if ticker != t {
-			return fmt.Errorf("ticker config key does not match ticker value; expected %s, got %s", ticker, cfg.Ticker.String())
+			return fmt.Errorf("ticker config key does not match ticker value; expected %s, got %s", ticker, t)
 		}
 
 		// Check for duplicate tickers.

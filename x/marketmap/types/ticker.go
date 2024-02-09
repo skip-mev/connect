@@ -82,13 +82,9 @@ func NewTickerConfig(ticker Ticker, offChainTicker string) (TickerConfig, error)
 
 // ValidateBasic performs basic validation on the TickerConfig.
 func (tc *TickerConfig) ValidateBasic() error {
-	if err := tc.Ticker.ValidateBasic(); err != nil {
-		return err
-	}
-
 	if len(tc.OffChainTicker) == 0 {
 		return fmt.Errorf("off chain ticker cannot be empty")
 	}
 
-	return nil
+	return tc.Ticker.ValidateBasic()
 }

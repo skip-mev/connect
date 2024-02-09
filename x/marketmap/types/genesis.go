@@ -8,6 +8,6 @@ func NewGenesisState(config AggregateMarketConfig) GenesisState {
 }
 
 // ValidateBasic performs basic validation on the GenesisState.
-func (gs GenesisState) ValidateBasic() error {
+func (gs *GenesisState) ValidateBasic() error {
 	return gs.Config.ValidateBasic()
 }

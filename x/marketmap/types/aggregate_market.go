@@ -47,7 +47,7 @@ func NewAggregateMarketConfig(markets map[string]MarketConfig, tickers map[strin
 }
 
 // ValidateBasic performs basic validation on the AggregateMarketConfig.
-func (c AggregateMarketConfig) ValidateBasic() error {
+func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Track all of the tickers that are supported by all providers to ensure that
 	// all market conversions are supported by at least one provider.
 	seenTickers := make(map[Ticker]struct{})

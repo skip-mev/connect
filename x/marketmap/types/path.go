@@ -205,9 +205,5 @@ func NewOperation(ticker Ticker, invert bool) (Operation, error) {
 
 // ValidateBasic performs basic validation on the Operation.
 func (o *Operation) ValidateBasic() error {
-	if err := o.Ticker.ValidateBasic(); err != nil {
-		return err
-	}
-
-	return nil
+	return o.Ticker.ValidateBasic()
 }
