@@ -65,7 +65,7 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	}
 
 	for _, tc := range tcs {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			// set the price to state
 			err := s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, tc.cp, tc.price)
 
