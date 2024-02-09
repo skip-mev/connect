@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"testing"
-
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
@@ -159,7 +157,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 	qs := keeper.NewQueryServer(s.oracleKeeper)
 
 	for _, tc := range tcs {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			// get the response + error from the query
 			res, err := qs.GetPrice(s.ctx, tc.req)
 			if !tc.expectPass {

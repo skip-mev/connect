@@ -705,7 +705,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			time.Second*1,
 			nil,
 			codec,
-			func(ctx sdk.Context, rfb *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+			func(_ sdk.Context, _ *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 				return nil, nil
 			},
 			mockMetrics,

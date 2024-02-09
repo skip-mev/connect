@@ -121,7 +121,7 @@ func catchPanic(t *testing.T, k keeper.Keeper, ctx sdk.Context, gs types.Genesis
 }
 
 func (s *KeeperTestSuite) TestExportGenesis() {
-	s.T().Run("ExportGenesis with all valid QuotePrices", func(t *testing.T) {
+	s.Run("ExportGenesis with all valid QuotePrices", func() {
 		// insert multiple currency pairs
 		cp1 := types.CurrencyPair{
 			Base:  "AA",
@@ -166,7 +166,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		}
 	})
 
-	s.T().Run("ExportGenesis with some un-price-initialized CurrencyPairs", func(t *testing.T) {
+	s.Run("ExportGenesis with some un-price-initialized CurrencyPairs", func() {
 		// initialize genesis w/ price-data
 		gs := types.GenesisState{
 			CurrencyPairGenesis: []types.CurrencyPairGenesis{

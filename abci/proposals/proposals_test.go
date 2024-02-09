@@ -542,12 +542,12 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 
 		handler := proposals.NewProposalHandler(
 			log.NewNopLogger(),
-			func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+			func(_ sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
 				// assert that the oracle data is retained
 				s.Require().Equal(bz, rpp.Txs[types.OracleInfoIndex])
 				return &cometabci.ResponsePrepareProposal{}, nil
 			},
-			func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+			func(_ sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 				// assert that the oracle data is retained
 				s.Require().Equal(bz, rpp.Txs[types.OracleInfoIndex])
 				return &cometabci.ResponseProcessProposal{}, nil
@@ -979,7 +979,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				}, nil
 			},
 			nil,
-			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
 				time.Sleep(100 * time.Millisecond)
 				return nil
 			},
@@ -1053,7 +1053,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			baseapp.NoOpPrepareProposal(),
-			func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+			func(_ sdk.Context, _ *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 				// simulate a long-running process proposal
 				time.Sleep(200 * time.Millisecond)
 				return &cometabci.ResponseProcessProposal{}, nil
@@ -1138,7 +1138,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1168,7 +1168,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, prepareErr
 			},
 			nil,
-			func(ctx sdk.Context, height int64, extInfo cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1323,7 +1323,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			nil,
-			func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+			func(_ sdk.Context, _ *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 				return nil, processErr
 			},
 			nil,
