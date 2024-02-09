@@ -138,7 +138,7 @@ func (h *VoteExtensionHandler) ExtendVoteHandler() sdk.ExtendVoteHandler {
 
 		// To ensure liveness, we return a vote even if the oracle is not running
 		// or if the oracle returns a bad response.
-		oracleResp, err := h.oracleClient.Prices(reqCtx, &servicetypes.QueryPricesRequest{})
+		oracleResp, err := h.oracleClient.Prices(ctx.WithContext(reqCtx), &servicetypes.QueryPricesRequest{})
 		if err != nil {
 			h.logger.Error(
 				"failed to retrieve oracle prices for vote extension; returning empty vote extension",

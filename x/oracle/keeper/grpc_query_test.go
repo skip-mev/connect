@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"testing"
-
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
@@ -15,14 +13,14 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	qs := keeper.NewQueryServer(s.oracleKeeper)
 
 	// test that an error is returned if no CurrencyPairs have been registered in the module
-	s.T().Run("an error is returned if no CurrencyPairs have been registered in the module", func(t *testing.T) {
+	s.Run("an error is returned if no CurrencyPairs have been registered in the module", func() {
 		// execute query
 		_, err := qs.GetAllCurrencyPairs(s.ctx, nil)
 		assert.Nil(s.T(), err)
 	})
 
 	// test that after CurrencyPairs are registered, all of them are returned from the query
-	s.T().Run("after CurrencyPairs are registered, all of them are returned from the query", func(t *testing.T) {
+	s.Run("after CurrencyPairs are registered, all of them are returned from the query", func() {
 		// insert multiple currency Pairs
 		cp1 := types.CurrencyPair{
 			Base:  "AA",
@@ -43,7 +41,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 			CurrencyPairs: []types.CurrencyPair{cp1, cp2, cp3},
 			Authority:     sdk.AccAddress([]byte(moduleAuth)).String(),
 		})
-		assert.Nil(s.T(), err)
+		s.Require().Nil(err)
 
 		// manually insert a new CurrencyPair as well
 		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
@@ -55,12 +53,12 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 
 		// query for pairs
 		res, err := qs.GetAllCurrencyPairs(s.ctx, nil)
-		assert.Nil(s.T(), err)
+		s.Require().Nil(err)
 
 		// assert that currency-pairs are correctly returned
 		for _, cp := range res.CurrencyPairs {
 			_, ok := expectedCurrencyPairs[cp.String()]
-			assert.True(t, ok)
+			s.Require().True(ok)
 		}
 	})
 }
@@ -159,7 +157,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 	qs := keeper.NewQueryServer(s.oracleKeeper)
 
 	for _, tc := range tcs {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			// get the response + error from the query
 			res, err := qs.GetPrice(s.ctx, tc.req)
 			if !tc.expectPass {
