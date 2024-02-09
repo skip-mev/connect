@@ -10,9 +10,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	"github.com/skip-mev/slinky/tests/simapp"
@@ -67,11 +67,18 @@ func main() {
 		return
 	}
 
+	// Create the conversion market aggregator.
+	aggregator, err := oraclemath.NewMedianAggregator(logger, cfg.Market)
+	if err != nil {
+		logger.Error("failed to create median aggregator", zap.Error(err))
+		return
+	}
+
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                          // Replace with custom providers.
-		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
+		oracle.WithProviders(providers),                        // Replace with custom providers.
+		oracle.WithAggregateFunction(aggregator.AggregateFn()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithLogger(logger),
 	)

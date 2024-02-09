@@ -44,41 +44,73 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
-				Ticker:       "BTCUSD-PERP",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ETHUSD-PERP",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
 			"ATOM/USD": {
 				Ticker:       "ATOMUSD-PERP",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			},
-			"SOLANA/USD": {
-				Ticker:       "SOLUSD-PERP",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-			},
-			"CELESTIA/USD": {
-				Ticker:       "TIAUSD-PERP",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			"ATOM/USDT": {
+				Ticker:       "ATOM_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
 			},
 			"AVAX/USD": {
 				Ticker:       "AVAXUSD-PERP",
 				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
 			},
+			"AVAX/USDT": {
+				Ticker:       "AVAX_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
+			},
+			"BITCOIN/USD": {
+				Ticker:       "BTCUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			},
+			"BITCOIN/USDT": {
+				Ticker:       "BTC_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+			},
+			"CELESTIA/USD": {
+				Ticker:       "TIAUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+			},
+			"CELESTIA/USDT": {
+				Ticker:       "TIA_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
+			},
 			"DYDX/USD": {
 				Ticker:       "DYDXUSD-PERP",
 				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+			},
+			"DYDX/USDT": {
+				Ticker:       "DYDX_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ETH_BTC",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
+			"ETHEREUM/USD": {
+				Ticker:       "ETHUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
+			"ETHEREUM/USDT": {
+				Ticker:       "ETH_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			},
 			"OSMOSIS/USD": {
 				Ticker:       "OSMO_USD",
 				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "SOLUSD-PERP",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			},
+			"SOLANA/USDT": {
+				Ticker:       "SOL_USDT",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
+			},
+			"USDT/USD": {
+				Ticker:       "USDT_USD",
+				CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
 			},
 		},
 	}

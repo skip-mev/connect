@@ -444,6 +444,8 @@ func TestCalculateConvertedPrices(t *testing.T) {
 
 // verifyPrice verifies that the expected price matches the actual price within an acceptable delta.
 func verifyPrice(t *testing.T, expected, actual *big.Int) {
+	t.Helper()
+
 	zero := big.NewInt(0)
 	if expected.Cmp(zero) == 0 {
 		require.Equal(t, zero, actual)

@@ -54,21 +54,13 @@ var (
 	DefaultMarketConfig = config.MarketConfig{
 		Name: Name,
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
-				Ticker:       "bitcoin/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ethereum/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
 			"ATOM/USD": {
 				Ticker:       "cosmos/usd",
 				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
 			},
-			"SOLANA/USD": {
-				Ticker:       "solana/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+			"BITCOIN/USD": {
+				Ticker:       "bitcoin/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"CELESTIA/USD": {
 				Ticker:       "celestia/usd",
@@ -82,9 +74,17 @@ var (
 				Ticker:       "ethereum/btc",
 				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
+			"ETHEREUM/USD": {
+				Ticker:       "ethereum/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			},
 			"OSMOSIS/USD": {
 				Ticker:       "osmosis/usd",
 				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+			},
+			"SOLANA/USD": {
+				Ticker:       "solana/usd",
+				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
 			},
 		},
 	}
