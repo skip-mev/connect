@@ -4,8 +4,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/pkg/math/oracle"
 )
 
 func TestInvertCurrencyPairPrice(t *testing.T) {
