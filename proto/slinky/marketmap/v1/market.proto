@@ -4,6 +4,7 @@ package slinky.marketmap.v1;
 option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
 import "gogoproto/gogo.proto";
+import "slinky/types/v1/currency_pair.proto";
 
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
 // feed is scaled to a number of decimal places and has a minimum number of
@@ -12,10 +13,10 @@ message Ticker {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
 
-  // Base is the base asset of the ticker.
-  string base = 1;
-  // Quote is the quote asset of the ticker.
-  string quote = 2;
+  // CurrencyPair is the currency pair for this ticker.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+  [ (gogoproto.nullable) = false ];
+
   // Decimals is the number of decimal places for the ticker. The number of
   // decimal places is used to convert the price to a human-readable format.
   uint64 decimals = 3;
@@ -46,7 +47,7 @@ message MarketConfig {
   // on-chain and off-chain tickers. In particular, this config maps the
   // on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
   // representation (i.e. BTC/USD).
-  map<string, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
+  map<slinky.types.v1.CurrencyPair, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
 }
 
 // AggregateMarketConfig represents the global set of market configurations for
@@ -86,7 +87,7 @@ message AggregateMarketConfig {
   // allows developers to manually specify the exact set of tickers that will be
   // used to calculate the final price of a ticker. However, it is possible that
   // other aggregation strategies can be used.
-  map<string, PathsConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
+  map<slinky.types.v1.CurrencyPair, PathsConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
 }
 
 // PathsConfig represents the list of convertable markets (paths) that will be
