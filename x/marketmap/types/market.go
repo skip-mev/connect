@@ -15,7 +15,7 @@ func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketCon
 
 // Tickers returns all of the tickers that the provider supports.
 func (c *MarketConfig) Tickers() []Ticker {
-	tickers := make([]Ticker, 0, len(c.TickerConfigs))
+	tickers := make([]Ticker, len(c.TickerConfigs))
 
 	i := 0
 	for _, cfg := range c.TickerConfigs {

@@ -152,6 +152,10 @@ func (p *Path) ValidateBasic() error {
 		return err
 	}
 
+	if len(p.Operations) == 1 {
+		return nil
+	}
+
 	quote := first.Ticker.Quote
 	if first.Invert {
 		quote = first.Ticker.Base
