@@ -18,6 +18,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )

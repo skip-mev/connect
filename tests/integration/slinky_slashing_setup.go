@@ -21,8 +21,8 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 )
 
