@@ -88,6 +88,60 @@ func TestMarketConfig(t *testing.T) {
 			},
 			expErr: true,
 		},
+		{
+			name: "duplicate on-chain ticker",
+			market: types.MarketConfig{
+				Name: "binance",
+				TickerConfigs: map[string]types.TickerConfig{
+					"BITCOIN/USDT": {
+						Ticker: types.Ticker{
+							Base:             "BITCOIN",
+							Quote:            "USDT",
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						OffChainTicker: "BTC/USDT",
+					},
+					"BITCOIN/USDC": {
+						Ticker: types.Ticker{
+							Base:             "BITCOIN",
+							Quote:            "USDT",
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						OffChainTicker: "BTC/USDC",
+					},
+				},
+			},
+			expErr: true,
+		},
+		{
+			name: "duplicate off-chain ticker",
+			market: types.MarketConfig{
+				Name: "binance",
+				TickerConfigs: map[string]types.TickerConfig{
+					"BITCOIN/USDT": {
+						Ticker: types.Ticker{
+							Base:             "BITCOIN",
+							Quote:            "USDT",
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						OffChainTicker: "BTC/USDT",
+					},
+					"BITCOIN/USDC": {
+						Ticker: types.Ticker{
+							Base:             "BITCOIN",
+							Quote:            "USDC",
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						OffChainTicker: "BTC/USDT",
+					},
+				},
+			},
+			expErr: true,
+		},
 	}
 
 	for _, tc := range testCases {

@@ -20,6 +20,138 @@ func TestAggregateMarketConfig(t *testing.T) {
 			tickers: map[string]types.PathsConfig{},
 			expErr:  false,
 		},
+		{
+			name: "single provider with single ticker",
+			markets: map[string]types.MarketConfig{
+				"binance": {
+					Name: "binance",
+					TickerConfigs: map[string]types.TickerConfig{
+						"BITCOIN/USDT": {
+							Ticker:         btcusdt,
+							OffChainTicker: "BTC/USDT",
+						},
+					},
+				},
+			},
+			tickers: map[string]types.PathsConfig{
+				"BITCOIN/USDT": {
+					Ticker: btcusdt,
+					Paths: []types.Path{
+						{
+							Operations: []types.Operation{
+								{
+									Ticker: btcusdt,
+								},
+							},
+						},
+					},
+				},
+			},
+			expErr: false,
+		},
+		{
+			name: "single provider with an unsupported ticker",
+			markets: map[string]types.MarketConfig{
+				"binance": {
+					Name: "binance",
+					TickerConfigs: map[string]types.TickerConfig{
+						"BITCOIN/USDT": {
+							Ticker:         btcusdt,
+							OffChainTicker: "BTC/USDT",
+						},
+					},
+				},
+			},
+			tickers: map[string]types.PathsConfig{
+				"ETHEREUM/USDT": {
+					Ticker: ethusdt,
+					Paths: []types.Path{
+						{
+							Operations: []types.Operation{
+								{
+									Ticker: ethusdt,
+								},
+							},
+						},
+					},
+				},
+			},
+			expErr: true,
+		},
+		{
+			name: "single bad provider market config",
+			markets: map[string]types.MarketConfig{
+				"binance": {},
+			},
+			tickers: map[string]types.PathsConfig{},
+			expErr:  true,
+		},
+		{
+			name: "single bad provider with mismatching provider name",
+			markets: map[string]types.MarketConfig{
+				"binance": {
+					Name: "coinbase",
+					TickerConfigs: map[string]types.TickerConfig{
+						"BITCOIN/USDT": {
+							Ticker:         btcusdt,
+							OffChainTicker: "BTC/USDT",
+						},
+					},
+				},
+			},
+			tickers: map[string]types.PathsConfig{},
+			expErr:  true,
+		},
+		{
+			name: "1 good provider and a bad ticker config",
+			markets: map[string]types.MarketConfig{
+				"binance": {
+					Name: "binance",
+					TickerConfigs: map[string]types.TickerConfig{
+						"BITCOIN/USDT": {
+							Ticker:         btcusdt,
+							OffChainTicker: "BTC/USDT",
+						},
+					},
+				},
+			},
+			tickers: map[string]types.PathsConfig{
+				"BITCOIN/USDT": {
+					Ticker: types.Ticker{},
+					Paths:  []types.Path{},
+				},
+			},
+			expErr: true,
+		},
+		{
+			name: "1 good provider and a mismatching ticker config",
+			markets: map[string]types.MarketConfig{
+				"binance": {
+					Name: "binance",
+					TickerConfigs: map[string]types.TickerConfig{
+						"BITCOIN/USDT": {
+							Ticker:         btcusdt,
+							OffChainTicker: "BTC/USDT",
+						},
+					},
+				},
+			},
+			tickers: map[string]types.PathsConfig{
+				"ETHEREUM/USDT": {
+					Ticker: btcusdt,
+					Paths: []types.Path{
+						{
+							Operations: []types.Operation{
+								{
+									Ticker: btcusdt,
+								},
+							},
+						},
+					},
+				},
+			},
+			expErr: true,
+		},
 	}
 
 	for _, tc := range testCases {

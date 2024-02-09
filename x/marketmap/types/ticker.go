@@ -6,13 +6,18 @@ import (
 )
 
 const (
-	// DefaultMaxDecimals is the maximum number of decimals allowed for a ticker.
+	// DefaultMaxDecimals is the maximum number of decimals allowed
+	// for a ticker.
 	DefaultMaxDecimals = 36
-	//DefaultMinProviderCount is the minimum number of providers required for a ticker.
+	// DefaultMinProviderCount is the minimum number of providers
+	// required for a ticker.
 	DefaultMinProviderCount = 1
 )
 
-// NewTicker returns a new Ticker instance.
+// NewTicker returns a new Ticker instance. A Ticker represents a price
+// feed for a given asset pair i.e. BTC/USD. The price feed is scaled to
+// a number of decimal places and has a minimum number of providers required
+// to consider the ticker valid.
 func NewTicker(id uint64, base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
 	t := Ticker{
 		Base:             base,
@@ -28,18 +33,9 @@ func NewTicker(id uint64, base, quote string, decimals, minProviderCount uint64)
 	return t, nil
 }
 
-// NewTickerConfig returns a new TickerConfig instance.
-func NewTickerConfig(ticker Ticker, offChainTicker string) (TickerConfig, error) {
-	config := TickerConfig{
-		Ticker:         ticker,
-		OffChainTicker: offChainTicker,
-	}
-
-	if err := config.ValidateBasic(); err != nil {
-		return TickerConfig{}, err
-	}
-
-	return config, nil
+// String returns a string representation of the Ticker.
+func (t *Ticker) String() string {
+	return fmt.Sprintf("%s/%s", t.Base, t.Quote)
 }
 
 // ValidateBasic performs basic validation on the Ticker.
@@ -73,9 +69,20 @@ func (t *Ticker) ValidateBasic() error {
 	return nil
 }
 
-// String returns a string representation of the Ticker.
-func (t *Ticker) String() string {
-	return fmt.Sprintf("%s/%s", t.Base, t.Quote)
+// NewTickerConfig returns a new TickerConfig instance. The TickerConfig is
+// the config the provider uses to create mappings between on-chain and off-chain
+// tickers.
+func NewTickerConfig(ticker Ticker, offChainTicker string) (TickerConfig, error) {
+	config := TickerConfig{
+		Ticker:         ticker,
+		OffChainTicker: offChainTicker,
+	}
+
+	if err := config.ValidateBasic(); err != nil {
+		return TickerConfig{}, err
+	}
+
+	return config, nil
 }
 
 // ValidateBasic performs basic validation on the TickerConfig.

@@ -5,8 +5,9 @@ import (
 	"strings"
 )
 
-// NewPathsConfig returns a new PathsConfig instance. Given a set of paths, this will construct a new
-// PathsConfig instance.
+// NewPathsConfig returns a new PathsConfig instance. PathsConfig represents
+// the list of convertable markets (paths) that will be used to convert the
+// prices of a set of tickers to a common ticker.
 func NewPathsConfig(ticker Ticker, paths ...Path) (PathsConfig, error) {
 	c := PathsConfig{
 		Ticker: ticker,
@@ -27,7 +28,7 @@ func (c *PathsConfig) ValidateBasic() error {
 	}
 
 	if len(c.Paths) == 0 {
-		return fmt.Errorf("paths cannot be empty")
+		return fmt.Errorf("paths cannot be empty; at least one path is required for a ticker")
 	}
 
 	routes := make(map[string]struct{})
@@ -50,8 +51,23 @@ func (c *PathsConfig) ValidateBasic() error {
 	return nil
 }
 
-// NewPath returns a new Path instance. This constructs a new path from a list of operations.
-// The set of operations are valid if they form a directed acyclic graph.
+// UniqueTickers returns all of the unique tickers across all of the paths that
+// are part of the PathsConfig. This is particularly useful for determining the
+// set of markets that are required for a given ticker.
+func (c *PathsConfig) UniqueTickers() map[Ticker]struct{} {
+	seen := make(map[Ticker]struct{})
+
+	for _, path := range c.Paths {
+		for _, ticker := range path.GetTickers() {
+			seen[ticker] = struct{}{}
+		}
+	}
+
+	return seen
+}
+
+// NewPath returns a new Path instance. A Path is a list of convertable markets
+// that will be used to convert the prices of a set of tickers to a common ticker.
 func NewPath(ops ...Operation) (Path, error) {
 	p := Path{
 		Operations: ops,
@@ -64,8 +80,8 @@ func NewPath(ops ...Operation) (Path, error) {
 	return p, nil
 }
 
-// Match returns true if the path matches the provided ticker. This is useful for determining
-// if a path is valid for a given market.
+// Match returns true if the path matches the provided ticker. This is useful
+// for determining if a path is valid for a given ticker.
 func (p *Path) Match(ticker string) bool {
 	if len(p.Operations) == 0 {
 		return false
@@ -83,13 +99,43 @@ func (p *Path) Match(ticker string) bool {
 		quote = last.Ticker.Base
 	}
 
-	return fmt.Sprintf("%s/%s", base, quote) == ticker
+	return ticker == fmt.Sprintf("%s/%s", base, quote)
 }
 
-// ValidateBasic performs basic validation on the Path. Specifically this will check that order
-// is topologically sorted for each market. For example, if the oracle receives a price for
-// BTC/USDT and USDT/USD, the order must be BTC/USDT -> USDT/USD. Alternatively, if the oracle
-// receives a price for BTC/USDT and USD/USDT, the order must be BTC/USDT -> USD/USDT (inverted == true).
+// GetTickers returns the set of tickers in the path.
+func (p *Path) GetTickers() []Ticker {
+	tickers := make([]Ticker, len(p.Operations))
+	for i, op := range p.Operations {
+		tickers[i] = op.Ticker
+	}
+	return tickers
+}
+
+// ShowRoute returns the route of the path in human readable format.
+func (p *Path) ShowRoute() string {
+	hops := make([]string, len(p.Operations))
+	for i, op := range p.Operations {
+		base := op.Ticker.Base
+		if op.Invert {
+			base = op.Ticker.Quote
+		}
+
+		quote := op.Ticker.Quote
+		if op.Invert {
+			quote = op.Ticker.Base
+		}
+
+		hops[i] = fmt.Sprintf("%s/%s", base, quote)
+	}
+
+	return strings.Join(hops, " -> ")
+}
+
+// ValidateBasic performs basic validation on the Path. Specifically this will check
+// that order is topologically sorted for each market. For example, if the oracle
+// receives a price for BTC/USDT and USDT/USD, the order must be BTC/USDT -> USDT/USD.
+// Alternatively, if the oracle receives a price for BTC/USDT and USD/USDT, the order
+// must be BTC/USDT -> USD/USDT (inverted == true).
 func (p *Path) ValidateBasic() error {
 	if len(p.Operations) == 0 {
 		return fmt.Errorf("path cannot be empty")
@@ -132,26 +178,6 @@ func (p *Path) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-// ShowRoute returns the route of the path in human readable format.
-func (p *Path) ShowRoute() string {
-	hops := make([]string, len(p.Operations))
-	for i, op := range p.Operations {
-		base := op.Ticker.Base
-		if op.Invert {
-			base = op.Ticker.Quote
-		}
-
-		quote := op.Ticker.Quote
-		if op.Invert {
-			quote = op.Ticker.Base
-		}
-
-		hops[i] = fmt.Sprintf("%s/%s", base, quote)
-	}
-
-	return strings.Join(hops, " -> ")
 }
 
 // NewOperation returns a new Operation instance.

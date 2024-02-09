@@ -2,7 +2,9 @@ package types
 
 import "fmt"
 
-// NewMarketConfig returns a new MarketConfig instance.
+// NewMarketConfig returns a new MarketConfig instance. The MarketConfig represents
+// the provider specific configurations for different markets and the associated
+// markets they are traded on.
 func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketConfig {
 	return MarketConfig{
 		Name:          provider,
@@ -26,18 +28,36 @@ func (c *MarketConfig) ValidateBasic() error {
 		return fmt.Errorf("provider name cannot be empty")
 	}
 
+	// The provider must support at least one ticker.
 	if len(c.TickerConfigs) == 0 {
 		return fmt.Errorf("ticker configs cannot be empty")
 	}
 
+	seen := make(map[string]struct{})
+	seenOffChain := make(map[string]struct{})
 	for ticker, cfg := range c.TickerConfigs {
+		// Validate the ticker configurations.
 		if err := cfg.ValidateBasic(); err != nil {
 			return err
 		}
 
-		if ticker != cfg.Ticker.String() {
+		// The ticker key should match the ticker value.
+		t := cfg.Ticker.String()
+		if ticker != t {
 			return fmt.Errorf("ticker config key does not match ticker value; expected %s, got %s", ticker, cfg.Ticker.String())
 		}
+
+		// Check for duplicate tickers.
+		if _, ok := seen[t]; ok {
+			return fmt.Errorf("duplicate ticker found: %s", t)
+		}
+		seen[t] = struct{}{}
+
+		// Check for duplicate off-chain tickers.
+		if _, ok := seenOffChain[cfg.OffChainTicker]; ok {
+			return fmt.Errorf("duplicate off-chain ticker found: %s", cfg.OffChainTicker)
+		}
+		seenOffChain[cfg.OffChainTicker] = struct{}{}
 	}
 
 	return nil
