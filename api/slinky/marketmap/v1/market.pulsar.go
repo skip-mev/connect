@@ -2,7 +2,7 @@
 package marketmapv1
 
 import (
-	v1 "cosmossdk.io/api/slinky/types/v1"
+	v1 "github.com/skip-mev/slinky/api/slinky/types/v1"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
