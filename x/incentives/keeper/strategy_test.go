@@ -14,7 +14,7 @@ import (
 )
 
 func (s *KeeperTestSuite) TestExecuteByIncentiveType() {
-	deleteCB := func(incentive types.Incentive) (types.Incentive, error) {
+	deleteCB := func(_ types.Incentive) (types.Incentive, error) {
 		return nil, nil
 	}
 
