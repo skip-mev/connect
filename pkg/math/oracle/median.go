@@ -60,7 +60,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 	) map[oracletypes.CurrencyPair]*big.Int {
 		// Calculate the median price for each price feed.
 		feedMedians := aggregator.ComputeMedian()(feedsPerProvider)
-		m.logger.Debug("calculated median prices for raw price feeds", zap.Any("num_prices", len(feedMedians)))
+		m.logger.Info("calculated median prices for raw price feeds", zap.Int("num_prices", len(feedMedians)))
 
 		// Scale all of the medians to a common number of decimals. This does not lose precision.
 		scaledMedians := make(map[oracletypes.CurrencyPair]*big.Int)
@@ -92,13 +92,13 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 			// If there were no converted prices, log an error and continue.
 			cp := cfg.CurrencyPair
 			if len(convertedPrices) == 0 {
-				m.logger.Debug("no converted prices", zap.String("currency_pair", cp.String()))
+				m.logger.Error("no converted prices", zap.String("currency_pair", cp.String()))
 				continue
 			}
 
 			// Take the median of the converted prices.
 			aggregatedMedians[cp] = aggregator.CalculateMedian(convertedPrices)
-			m.logger.Debug(
+			m.logger.Info(
 				"calculated median price",
 				zap.String("currency_pair", cp.String()),
 				zap.String("price", aggregatedMedians[cp].String()),
@@ -121,6 +121,11 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 				continue
 			}
 
+			m.logger.Info(
+				"calculated final scaled median price",
+				zap.String("currency_pair", cp.String()),
+				zap.String("price", unscaledPrice.String()),
+			)
 			aggregatedMedians[cp] = unscaledPrice
 		}
 
@@ -146,9 +151,10 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 		// Calculate the converted price.
 		convertedPrice, err := m.CalculateConvertedPrice(cp, conversion, medians)
 		if err != nil {
-			m.logger.Debug(
+			m.logger.Error(
 				"failed to calculate converted price",
 				zap.Error(err),
+				zap.String("currency_pair", cp.String()),
 				zap.Any("conversions", conversion),
 			)
 
@@ -199,7 +205,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		price = InvertCurrencyPairPrice(price, ScaledDecimals)
 	}
 
-	m.logger.Debug(
+	m.logger.Info(
 		"got median price",
 		zap.String("target_currency_pair", target.String()),
 		zap.String("current_currency_pair", cp.String()),
@@ -228,7 +234,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		price = price.Mul(price, median)
 		price = price.Div(price, one)
 
-		m.logger.Debug(
+		m.logger.Info(
 			"got median price",
 			zap.String("target_currency_pair", target.String()),
 			zap.String("conversion_currency_pair", cp.String()),
@@ -237,7 +243,7 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		)
 	}
 
-	m.logger.Debug(
+	m.logger.Info(
 		"calculated converted price",
 		zap.String("target_currency_pair", target.String()),
 		zap.String("price", price.String()),
