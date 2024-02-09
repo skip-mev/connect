@@ -253,7 +253,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
 			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+				return func(_ aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -275,8 +275,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -308,7 +308,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
 			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+				return func(_ aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -361,7 +361,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
 			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+				return func(_ aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -385,8 +385,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
 					return nil
 				}
 			},
@@ -427,8 +427,8 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 
 		handler := preblock.NewOraclePreBlockHandler(
 			log.NewTestLogger(s.T()),
-			func(ctx sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-				return func(providers aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int]) map[oracletypes.CurrencyPair]*big.Int {
 					return map[oracletypes.CurrencyPair]*big.Int{
 						// return default values
 						btcUsd: big.NewInt(1),

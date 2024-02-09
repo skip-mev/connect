@@ -95,11 +95,11 @@ func TestAPIQueryHandler(t *testing.T) {
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] {
-				expectedIds := []oracletypes.CurrencyPair{btcusd}
+				expectedIDs := []oracletypes.CurrencyPair{btcusd}
 
 				h := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", expectedIds).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Times(1)
 
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -111,7 +111,7 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", expectedIds, newValidResponse()).Return(response).Times(1)
+				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Times(1)
 
 				return h
 			},
@@ -145,11 +145,11 @@ func TestAPIQueryHandler(t *testing.T) {
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] {
-				expectedIds := []oracletypes.CurrencyPair{btcusd}
+				expectedIDs := []oracletypes.CurrencyPair{btcusd}
 
 				h := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", expectedIds).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Times(1)
 
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -161,7 +161,7 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", expectedIds, newValidResponse()).Return(response).Times(1)
+				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Times(1)
 
 				return h
 			},
@@ -297,11 +297,11 @@ func TestAPIQueryHandler(t *testing.T) {
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int] {
-				expectedIds := []oracletypes.CurrencyPair{btcusd, ethusd, atomusd}
+				expectedIDs := []oracletypes.CurrencyPair{btcusd, ethusd, atomusd}
 
 				h := mocks.NewAPIDataHandler[oracletypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", expectedIds).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Times(1)
 
 				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -319,7 +319,7 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", expectedIds, newValidResponse()).Return(response).Times(1)
+				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Times(1)
 
 				return h
 			},

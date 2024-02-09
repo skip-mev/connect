@@ -68,7 +68,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 	}
 
 	for _, tc := range tcs {
-		s.T().Run(tc.name, func(t *testing.T) {
+		s.Run(tc.name, func() {
 			if !tc.expectPass {
 				// call init-genesis, and catch the panic
 				catchPanic(s.T(), s.oracleKeeper, s.ctx, tc.gs)
