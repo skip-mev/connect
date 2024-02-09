@@ -21,3 +21,6 @@ sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/s
 
 echo "fixing sla.pulsar.go"
 sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/sla/v1/genesis.pulsar.go && rm ./api/slinky/sla/v1/genesis.pulsar.go.bak
+
+echo "fixing types.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/types/v1/currency_pair.pulsar.go && rm ./api/slinky/types/v1/currency_pair.pulsar.go.bak
