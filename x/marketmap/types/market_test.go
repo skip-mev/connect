@@ -18,9 +18,8 @@ func TestMarketConfig(t *testing.T) {
 			market: types.MarketConfig{
 				Name: "binance",
 				TickerConfigs: map[string]types.TickerConfig{
-					1: {
+					"BITCOIN/USDT": {
 						Ticker: types.Ticker{
-							Id:               1,
 							Base:             "BITCOIN",
 							Quote:            "USDT",
 							Decimals:         8,
@@ -36,10 +35,9 @@ func TestMarketConfig(t *testing.T) {
 			name: "empty name",
 			market: types.MarketConfig{
 				Name: "",
-				TickerConfigs: map[uint64]types.TickerConfig{
-					1: {
+				TickerConfigs: map[string]types.TickerConfig{
+					"BITCOIN/USDT": {
 						Ticker: types.Ticker{
-							Id:               1,
 							Base:             "BITCOIN",
 							Quote:            "USDT",
 							Decimals:         8,
@@ -55,7 +53,7 @@ func TestMarketConfig(t *testing.T) {
 			name: "empty ticker configs",
 			market: types.MarketConfig{
 				Name:          "binance",
-				TickerConfigs: map[uint64]types.TickerConfig{},
+				TickerConfigs: map[string]types.TickerConfig{},
 			},
 			expErr: true,
 		},
@@ -63,8 +61,8 @@ func TestMarketConfig(t *testing.T) {
 			name: "invalid ticker config",
 			market: types.MarketConfig{
 				Name: "binance",
-				TickerConfigs: map[uint64]types.TickerConfig{
-					1: {
+				TickerConfigs: map[string]types.TickerConfig{
+					"BITCOIN/USDT": {
 						Ticker:         types.Ticker{},
 						OffChainTicker: "BTC/USDT",
 					},
@@ -73,13 +71,12 @@ func TestMarketConfig(t *testing.T) {
 			expErr: true,
 		},
 		{
-			name: "invalid id",
+			name: "missing ticker config key",
 			market: types.MarketConfig{
 				Name: "binance",
-				TickerConfigs: map[uint64]types.TickerConfig{
-					2: {
+				TickerConfigs: map[string]types.TickerConfig{
+					"BITCOIN/USDC": {
 						Ticker: types.Ticker{
-							Id:               1,
 							Base:             "BITCOIN",
 							Quote:            "USDT",
 							Decimals:         8,
