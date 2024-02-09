@@ -9,6 +9,9 @@ import "gogoproto/gogo.proto";
 // feed is scaled to a number of decimal places and has a minimum number of
 // providers required to consider the ticker valid.
 message Ticker {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
   // Base is the base asset of the ticker.
   string base = 1;
   // Quote is the quote asset of the ticker.
