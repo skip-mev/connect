@@ -16,7 +16,7 @@ const (
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
 // a given asset pair i.e. BTC/USD. The price feed is scaled to a number of decimal
 // places and has a minimum number of providers required to consider the ticker valid.
-func NewTicker(id uint64, base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
+func NewTicker(base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
 	t := Ticker{
 		Base:             base,
 		Quote:            quote,

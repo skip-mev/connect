@@ -23,5 +23,4 @@ func TestGenesisState(t *testing.T) {
 		}
 		require.Error(t, gs.ValidateBasic())
 	})
-
 }
