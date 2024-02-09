@@ -8,6 +8,9 @@ import (
 // NewPathsConfig returns a new PathsConfig instance. PathsConfig represents
 // the list of convertable markets (paths) that will be used to convert the
 // prices of a set of tickers to a common ticker.
+//
+// For example, if the oracle receives a price for BTC/USDT and USDT/USD, one
+// possible path to get the price of BTC/USD would would be BTC/USDT -> USDT/USD.
 func NewPathsConfig(ticker Ticker, paths ...Path) (PathsConfig, error) {
 	c := PathsConfig{
 		Ticker: ticker,
@@ -28,9 +31,10 @@ func (c *PathsConfig) ValidateBasic() error {
 	}
 
 	if len(c.Paths) == 0 {
-		return fmt.Errorf("paths cannot be empty; at least one path is required for a ticker")
+		return fmt.Errorf("at least one path is required for a ticker to be calculated")
 	}
 
+	// Track the routes to ensure that there are no duplicates.
 	routes := make(map[string]struct{})
 	for _, path := range c.Paths {
 		if err := path.ValidateBasic(); err != nil {
@@ -43,6 +47,7 @@ func (c *PathsConfig) ValidateBasic() error {
 		}
 		routes[route] = struct{}{}
 
+		// Ensure that the path ends up converting to the ticker.
 		if !path.Match(c.Ticker.String()) {
 			return fmt.Errorf("path does not match ticker")
 		}
@@ -53,7 +58,8 @@ func (c *PathsConfig) ValidateBasic() error {
 
 // UniqueTickers returns all of the unique tickers across all of the paths that
 // are part of the PathsConfig. This is particularly useful for determining the
-// set of markets that are required for a given ticker.
+// set of markets that are required for a given ticker as well as ensuring
+// that a given set of providers can provide the required markets.
 func (c *PathsConfig) UniqueTickers() map[Ticker]struct{} {
 	seen := make(map[Ticker]struct{})
 
@@ -80,8 +86,7 @@ func NewPath(ops ...Operation) (Path, error) {
 	return p, nil
 }
 
-// Match returns true if the path matches the provided ticker. This is useful
-// for determining if a path is valid for a given ticker.
+// Match returns true if the path matches the provided ticker.
 func (p *Path) Match(ticker string) bool {
 	if len(p.Operations) == 0 {
 		return false
@@ -102,7 +107,8 @@ func (p *Path) Match(ticker string) bool {
 	return ticker == fmt.Sprintf("%s/%s", base, quote)
 }
 
-// GetTickers returns the set of tickers in the path.
+// GetTickers returns the set of tickers in the path. Note that some of the tickers
+// may need to be inverted. This function does NOT return the inverted tickers.
 func (p *Path) GetTickers() []Ticker {
 	tickers := make([]Ticker, len(p.Operations))
 	for i, op := range p.Operations {
@@ -180,7 +186,10 @@ func (p *Path) ValidateBasic() error {
 	return nil
 }
 
-// NewOperation returns a new Operation instance.
+// NewOperation returns a new Operation instance. An Operation is a single step
+// in a path that represents a conversion from one ticker to another. The operation's
+// ticker is a price feed that is supported by a set of providers and may be inverted
+// if necessary.
 func NewOperation(ticker Ticker, invert bool) (Operation, error) {
 	o := Operation{
 		Ticker: ticker,

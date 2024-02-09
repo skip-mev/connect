@@ -4,7 +4,8 @@ import "fmt"
 
 // NewMarketConfig returns a new MarketConfig instance. The MarketConfig represents
 // the provider specific configurations for different markets and the associated
-// markets they are traded on.
+// markets they are traded on i.e. all of the price feeds that a given provider
+// is responsible for maintaining.
 func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketConfig {
 	return MarketConfig{
 		Name:          provider,
@@ -12,7 +13,7 @@ func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketCon
 	}
 }
 
-// Tickers returns all of the tickers in the MarketConfig.
+// Tickers returns all of the tickers that the provider supports.
 func (c MarketConfig) Tickers() []Ticker {
 	tickers := make([]Ticker, 0, len(c.TickerConfigs))
 	for _, cfg := range c.TickerConfigs {

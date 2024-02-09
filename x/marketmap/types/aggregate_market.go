@@ -4,7 +4,35 @@ import (
 	fmt "fmt"
 )
 
-// NewAggregateMarketConfig returns a new AggregateMarketConfig instance.
+// NewAggregateMarketConfig returns a new AggregateMarketConfig instance. The
+// AggregateMarketConfig represents the global set of market configurations for
+// all providers that will be utilized off-chain as well as how tickers will be
+// resolved to a final price. Each ticker can have a list of convertable markets
+// that will be used to convert the prices of a set of tickers to a common
+// ticker.
+//
+// Price aggregation broadly follows the following steps:
+//  1. Fetch prices for each ticker from the providers.
+//  2. Calculate the final price for each ticker. This is dependent on the
+//     aggregation
+//     strategy used by the oracle. The oracle may use a median price, a
+//     weighted average price, etc.
+//  3. Convert the price of each ticker to a common ticker using the aggreagted
+//     ticker
+//     configurations by default. The oracle may use a different aggregation
+//     strategy to convert the price of a ticker to a common ticker.
+//
+// For example, the oracle may be configured with the feeds:
+//   - BTC/USDT
+//   - USDT/USD
+//   - BTC/USDC
+//   - USDC/USD
+//
+// The aggregated ticker may be:
+//   - BTC/USD: (calculate a median price from the following convertable
+//     markets)
+//     1. BTC/USDT -> USDT/USD = BTC/USD
+//     2. BTC/USDC -> USDC/USD = BTC/USD
 func NewAggregateMarketConfig(markets map[string]MarketConfig, tickers map[string]PathsConfig) (AggregateMarketConfig, error) {
 	c := AggregateMarketConfig{
 		MarketConfigs: markets,
