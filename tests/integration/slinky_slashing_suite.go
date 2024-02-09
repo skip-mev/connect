@@ -171,7 +171,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			alerttypes.NewAlert(
 				1,
 				alertSubmitter,
-				oracletypes.NewCurrencyPair("BTC", "USD"),
+				slinkytypes.NewCurrencyPair("BTC", "USD"),
 			),
 		)
 		s.Require().NoError(err)
@@ -205,7 +205,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			alerttypes.NewAlert(
 				height-5,
 				alertSubmitter,
-				oracletypes.NewCurrencyPair("BTC", "USD"),
+				slinkytypes.NewCurrencyPair("BTC", "USD"),
 			),
 		)
 		s.Require().NoError(err)
@@ -220,7 +220,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 		defer close()
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 		// update the max-block-age
 		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
@@ -277,7 +277,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 		defer close()
 
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 		// check if the BTC/USD currency pair exists
 		oraclesClient := oracletypes.NewQueryClient(cc)
@@ -354,7 +354,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 
 	s.Run("test submitting an alert after it has already been submitted - fail", func() {
 		// file a duplicate alert
-		cp := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 		alertSubmitter, err := sdk.AccAddressFromBech32(s.multiSigUser2.FormattedAddress())
 		s.Require().NoError(err)
@@ -388,7 +388,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 	defer close()
 
-	cp := oracletypes.NewCurrencyPair("BTC", "USD") // arbitrary
+	cp := slinkytypes.NewCurrencyPair("BTC", "USD") // arbitrary
 
 	// expect that the above currency-pair is in state, so we can submit alerts that reference it
 	oraclesClient := oracletypes.NewQueryClient(cc)
@@ -632,7 +632,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			alert = alerttypes.NewAlert(
 				alertHeight,
 				submitAddr,
-				oracletypes.NewCurrencyPair(
+				slinkytypes.NewCurrencyPair(
 					"BTC",
 					"USD",
 				),
@@ -832,7 +832,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	s.Require().NoError(err)
 	defer close()
 
-	cp := oracletypes.NewCurrencyPair("BTC", "USD")
+	cp := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 	// check if the currency pair exists, if not, add it
 	oraclesClient := oracletypes.NewQueryClient(cc)
@@ -867,7 +867,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 
 			// submit a conclusion
 			conclusion := &alerttypes.MultiSigConclusion{
-				Alert: alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC")),
+				Alert: alerttypes.NewAlert(1, submitter, slinkytypes.NewCurrencyPair("BASE", "USDC")),
 				PriceBound: alerttypes.PriceBound{
 					High: "1",
 					Low:  "0",
@@ -909,7 +909,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 
 			// submit a conclusion
 			conclusion := &alerttypes.MultiSigConclusion{
-				Alert: alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC")),
+				Alert: alerttypes.NewAlert(1, submitter, slinkytypes.NewCurrencyPair("BASE", "USDC")),
 				PriceBound: alerttypes.PriceBound{
 					High: "1",
 					Low:  "0",
@@ -960,7 +960,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			submitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
 			s.Require().NoError(err)
 
-			alert := alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BASE", "USDC"))
+			alert := alerttypes.NewAlert(1, submitter, slinkytypes.NewCurrencyPair("BASE", "USDC"))
 			// submit a conclusion
 			conclusion := &alerttypes.MultiSigConclusion{
 				Alert: alert,
@@ -1022,7 +1022,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			submitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
 			s.Require().NoError(err)
 
-			alert := alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BTC", "USD"))
+			alert := alerttypes.NewAlert(1, submitter, slinkytypes.NewCurrencyPair("BTC", "USD"))
 
 			// get the balance of the sender / module to check balance differences for escrow
 			senderBalanceBeforeAlert, err := s.chain.GetBalance(context.Background(), s.multiSigUser1.FormattedAddress(), s.denom)
@@ -1118,7 +1118,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			submitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
 			s.Require().NoError(err)
 
-			alert := alerttypes.NewAlert(1, submitter, oracletypes.NewCurrencyPair("BTC", "USD"))
+			alert := alerttypes.NewAlert(1, submitter, slinkytypes.NewCurrencyPair("BTC", "USD"))
 
 			// submit a conclusion
 			conclusion := &alerttypes.MultiSigConclusion{

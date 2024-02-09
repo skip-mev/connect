@@ -10,10 +10,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -259,7 +259,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "single currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -280,8 +280,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -302,8 +302,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one known and one unknown currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{

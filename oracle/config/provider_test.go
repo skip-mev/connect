@@ -163,7 +163,7 @@ func TestProviderConfig(t *testing.T) {
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},
@@ -183,7 +183,7 @@ func TestProviderConfig(t *testing.T) {
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},
@@ -206,7 +206,7 @@ func TestProviderConfig(t *testing.T) {
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},
@@ -231,7 +231,7 @@ func TestProviderConfig(t *testing.T) {
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},
@@ -273,7 +273,7 @@ func TestProviderConfig(t *testing.T) {
 					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 						"BITCOIN/USD": {
 							Ticker:       "BTC/USD",
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},

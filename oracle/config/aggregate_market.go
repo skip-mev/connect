@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // AggregateMarketConfig represents the market configurations for how currency pairs will

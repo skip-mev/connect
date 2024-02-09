@@ -9,10 +9,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -82,7 +82,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
 						Value: big.NewInt(10000000000000),
 					},
 				},
@@ -132,7 +132,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("error"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("error"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -195,7 +195,7 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps:  []slinkytypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
+			cps:  []slinkytypes.CurrencyPair{slinkytypes.NewCurrencyPair("BITCOIN", "USD")},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{
 					[]byte(`{"event":"bts:subscribe","data":{"channel":"live_trades_btcusd"}}`),
@@ -206,8 +206,8 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{
@@ -220,7 +220,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "unsupported currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil

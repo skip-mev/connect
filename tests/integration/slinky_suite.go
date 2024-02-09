@@ -476,9 +476,9 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
-	cp1 := oracletypes.NewCurrencyPair("ETHEREUM", "USDC")
-	cp2 := oracletypes.NewCurrencyPair("ETHEREUM", "USDT")
-	cp3 := oracletypes.NewCurrencyPair("ETHEREUM", "USD")
+	cp1 := slinkytypes.NewCurrencyPair("ETHEREUM", "USDC")
+	cp2 := slinkytypes.NewCurrencyPair("ETHEREUM", "USDT")
+	cp3 := slinkytypes.NewCurrencyPair("ETHEREUM", "USD")
 
 	// add multiple currency pairs
 	cps := []slinkytypes.CurrencyPair{

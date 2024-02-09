@@ -8,9 +8,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
@@ -33,7 +34,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			"if the authority is not the authority of the module - fail",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress([]byte("not-authority")).String(),
-				CurrencyPairs: []types.CurrencyPair{
+				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{
 						Base:  "A",
 						Quote: "B",
@@ -46,7 +47,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			"if the authority is correct + formatted, and the currency pairs are valid - pass",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
-				CurrencyPairs: []types.CurrencyPair{
+				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{
 						Base:  "A",
 						Quote: "B",
@@ -63,7 +64,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 			"if there is a CurrencyPair that already exists in module, it is not overwritten",
 			&types.MsgAddCurrencyPairs{
 				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
-				CurrencyPairs: []types.CurrencyPair{
+				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{
 						Base:  "A",
 						Quote: "B",
@@ -82,7 +83,7 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 		},
 	}
 
-	initCP := types.CurrencyPair{
+	initCP := slinkytypes.CurrencyPair{
 		Base:  "E",
 		Quote: "F",
 	}
@@ -138,11 +139,11 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 
 func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 	// insert CurrencyPairs that will be deleted in the test-cases
-	cp1 := types.CurrencyPair{
+	cp1 := slinkytypes.CurrencyPair{
 		Base:  "AA",
 		Quote: "BB",
 	}
-	cp2 := types.CurrencyPair{
+	cp2 := slinkytypes.CurrencyPair{
 		Base:  "CC",
 		Quote: "DD",
 	}

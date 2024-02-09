@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
@@ -26,9 +27,9 @@ import (
 
 var (
 	logger  = zap.NewExample()
-	btcusd  = oracletypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = oracletypes.NewCurrencyPair("ETH", "USD")
-	atomusd = oracletypes.NewCurrencyPair("ATOM", "USD")
+	btcusd  = slinkytypes.NewCurrencyPair("BTC", "USD")
+	ethusd  = slinkytypes.NewCurrencyPair("ETH", "USD")
+	atomusd = slinkytypes.NewCurrencyPair("ATOM", "USD")
 
 	constantURL = "http://fetchdata.org:8080"
 

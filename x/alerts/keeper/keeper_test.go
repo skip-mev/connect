@@ -15,6 +15,7 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/suite"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/mocks"

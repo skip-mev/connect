@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -48,7 +49,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "single valid currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
 			expectedErr: false,
@@ -56,8 +57,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple valid currency pairs",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&precision=18",
 			expectedErr: false,
@@ -65,9 +66,9 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple valid currency pairs with multiple quotes",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,btc&precision=18",
 			expectedErr: false,
@@ -75,7 +76,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "no supported bases",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			url:         "",
 			expectedErr: true,
@@ -83,7 +84,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "no supported quotes",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
 			},
 			url:         "",
 			expectedErr: true,
@@ -91,8 +92,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "some supported and non-supported currency pairs",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
 			expectedErr: false,
@@ -125,7 +126,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "single valid currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -138,7 +139,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
 						Value: big.NewInt(102025000000),
 					},
 				},
@@ -148,7 +149,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "single valid currency pair that did not get a price response",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -162,14 +163,14 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
 				},
 			),
 		},
 		{
 			name: "unknown base",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -184,14 +185,14 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("no response"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("no response"),
 				},
 			),
 		},
 		{
 			name: "unknown quote",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -205,14 +206,14 @@ func TestParseResponse(t *testing.T) {
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("no response"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("no response"),
 				},
 			),
 		},
 		{
 			name: "unsupported base",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -231,7 +232,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "unsupported quote",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -250,7 +251,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad response",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "MOG"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -260,14 +261,14 @@ shout out my label thats me
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("json error"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("json error"),
 				},
 			),
 		},
 		{
 			name: "bad price response",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -281,15 +282,15 @@ shout out my label thats me
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("invalid syntax"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("invalid syntax"),
 				},
 			),
 		},
 		{
 			name: "multiple bases with single quotes",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -305,10 +306,10 @@ shout out my label thats me
 			),
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
 						Value: big.NewInt(102025000000),
 					},
-					oracletypes.NewCurrencyPair("ETHEREUM", "USD"): {
+					slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): {
 						Value: big.NewInt(102000000000),
 					},
 				},
@@ -318,8 +319,8 @@ shout out my label thats me
 		{
 			name: "single base with multiple quotes",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -333,10 +334,10 @@ shout out my label thats me
 			),
 			expected: providertypes.NewGetResponse(
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("ETHEREUM", "USD"): {
+					slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): {
 						Value: big.NewInt(102025000000),
 					},
-					oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"): {
+					slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"): {
 						Value: big.NewInt(100000000),
 					},
 				},

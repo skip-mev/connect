@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apimocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
 	"github.com/skip-mev/slinky/providers/base/testutils"

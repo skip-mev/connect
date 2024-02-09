@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 

@@ -25,7 +25,7 @@ import (
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	oraclevetypes "github.com/skip-mev/slinky/abci/ve/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 	slamocks "github.com/skip-mev/slinky/x/sla/types/mocks"
@@ -95,9 +95,9 @@ func (s *SLAPreBlockerHandlerTestSuite) SetupTest() {
 	s.consAddr3, err = s.val3.GetConsAddr()
 	s.Require().NoError(err)
 
-	s.cp1 = oracletypes.NewCurrencyPair("btc", "usd")
-	s.cp2 = oracletypes.NewCurrencyPair("eth", "usd")
-	s.cp3 = oracletypes.NewCurrencyPair("btc", "eth")
+	s.cp1 = slinkytypes.NewCurrencyPair("btc", "usd")
+	s.cp2 = slinkytypes.NewCurrencyPair("eth", "usd")
+	s.cp3 = slinkytypes.NewCurrencyPair("btc", "eth")
 
 	s.currencyPairIDStrategy = currencypairmocks.NewCurrencyPairStrategy(s.T())
 

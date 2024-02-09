@@ -15,11 +15,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func (s *KeeperTestSuite) TestMsgAlert() {
@@ -123,10 +123,10 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a failed response from the oracle keeper (no currency pair)
-				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD")).Return(false).Once()
+				s.ok.On("HasCurrencyPair", mock.Anything, slinkytypes.NewCurrencyPair("BTC", "USD")).Return(false).Once()
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
+				Alert: types.NewAlert(8, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 			},
 			valid: false,
 		},
@@ -143,7 +143,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				}))
 
 				// expect a correct response from the oracle keeper
-				s.ok.On("HasCurrencyPair", mock.Anything, oracletypes.NewCurrencyPair("BTC", "USD")).Return(true).Once()
+				s.ok.On("HasCurrencyPair", mock.Anything, slinkytypes.NewCurrencyPair("BTC", "USD")).Return(true).Once()
 
 				// expect a failed response from the bank keeper
 				s.bk.On("SendCoinsFromAccountToModule",
@@ -154,7 +154,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				).Return(fmt.Errorf("bank error")).Once()
 			},
 			msg: &types.MsgAlert{
-				Alert: types.NewAlert(8, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BTC", "USD")),
+				Alert: types.NewAlert(8, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 			},
 			valid: false,
 		},
@@ -176,7 +176,7 @@ func (s *KeeperTestSuite) TestMsgAlert() {
 				// expect a correct response from the oracle keeper
 				s.ok.On("HasCurrencyPair",
 					mock.Anything,
-					oracletypes.NewCurrencyPair("BTC", "USD"),
+					slinkytypes.NewCurrencyPair("BTC", "USD"),
 				).Return(true).Once()
 
 				// expect a correct response from the bank keeper
@@ -229,7 +229,7 @@ func (s *KeeperTestSuite) TestConclusion() {
 	alert := types.Alert{
 		Height:       1,
 		Signer:       sdk.AccAddress("cosmos1").String(),
-		CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
+		CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 	}
 
 	conclusion := &types.MultiSigConclusion{

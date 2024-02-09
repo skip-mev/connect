@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"time"
 
-	"github.com/stretchr/testify/mock"
-
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/mock"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
 )
 

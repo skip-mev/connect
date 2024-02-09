@@ -2,6 +2,7 @@ package mexc_test
 
 import (
 	"fmt"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"math/big"
 	"testing"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -74,7 +74,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): {
+					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): {
 						Value: big.NewInt(1000000000000),
 					},
 				},
@@ -104,7 +104,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("invalid channel"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("invalid channel"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -120,7 +120,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("invalid price"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("invalid price"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -175,7 +175,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "single currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8"]}`
@@ -186,9 +186,9 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
-				oracletypes.NewCurrencyPair("ATOM", "USDC"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				slinkytypes.NewCurrencyPair("ATOM", "USDC"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8","spot@public.miniTicker.v3.api@ETHUSDT@UTC+8","spot@public.miniTicker.v3.api@ATOMUSDC@UTC+8"]}`
@@ -199,7 +199,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "unsupported currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			expected:    func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: true,

@@ -11,10 +11,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -42,7 +42,7 @@ var (
 
 	btcusd = slinkytypes.NewCurrencyPair("BITCOIN", "USD")
 	ethusd = slinkytypes.NewCurrencyPair("ETHEREUM", "USD")
-	solusd = oracletypes.NewCurrencyPair("SOLANA", "USD")
+	solusd = slinkytypes.NewCurrencyPair("SOLANA", "USD")
 
 	logger = zap.NewExample()
 )
@@ -345,7 +345,7 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one found and one not found",
-			cps:  []slinkytypes.CurrencyPair{btcusd, oracletypes.NewCurrencyPair("MOG", "USD")},
+			cps:  []slinkytypes.CurrencyPair{btcusd, slinkytypes.NewCurrencyPair("MOG", "USD")},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
 				Params: cryptodotcom.InstrumentParams{

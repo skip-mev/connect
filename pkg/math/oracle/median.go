@@ -8,6 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // MedianAggregator is an aggregator that calculates the median price for each currency pair,

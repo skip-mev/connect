@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	wserrors "github.com/skip-mev/slinky/providers/base/websocket/errors"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	handlermocks "github.com/skip-mev/slinky/providers/base/websocket/handlers/mocks"
@@ -24,9 +25,9 @@ import (
 
 var (
 	logger  = zap.NewExample()
-	btcusd  = oracletypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = oracletypes.NewCurrencyPair("ETH", "USD")
-	atomusd = oracletypes.NewCurrencyPair("ATOM", "USD")
+	btcusd  = slinkytypes.NewCurrencyPair("BTC", "USD")
+	ethusd  = slinkytypes.NewCurrencyPair("ETH", "USD")
+	atomusd = slinkytypes.NewCurrencyPair("ATOM", "USD")
 
 	name        = "sirmoggintonwebsocket"
 	testMessage = []byte("gib me money")

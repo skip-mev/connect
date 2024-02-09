@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -121,7 +121,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("failed to convert price to big int"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("failed to convert price to big int"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -146,7 +146,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("received out of order ticker response message"),
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("received out of order ticker response message"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -235,7 +235,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "one currency pair to subscribe to",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
@@ -258,8 +258,8 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs to subscribe to",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
@@ -283,9 +283,9 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs to subscribe to with one not supported",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{

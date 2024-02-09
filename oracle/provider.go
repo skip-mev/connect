@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 

@@ -14,6 +14,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 

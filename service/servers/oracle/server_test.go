@@ -16,11 +16,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/skip-mev/slinky/oracle/mocks"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/metrics"
 	server "github.com/skip-mev/slinky/service/servers/oracle"
 	stypes "github.com/skip-mev/slinky/service/servers/oracle/types"
-	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -123,17 +123,17 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
-	cp1 := types.CurrencyPair{
+	cp1 := slinkytypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
 
-	cp2 := types.CurrencyPair{
+	cp2 := slinkytypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[types.CurrencyPair]*big.Int{
+	s.mockOracle.On("GetPrices").Return(map[slinkytypes.CurrencyPair]*big.Int{
 		cp1: big.NewInt(100),
 		cp2: big.NewInt(200),
 	})

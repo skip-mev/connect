@@ -13,9 +13,9 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -70,9 +70,9 @@ func (s *OracleTestSuite) SetupTest() {
 	s.logger = zap.NewExample()
 
 	s.currencyPairs = []slinkytypes.CurrencyPair{
-		oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-		oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-		oracletypes.NewCurrencyPair("COSMOS", "USD"),
+		slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+		slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+		slinkytypes.NewCurrencyPair("COSMOS", "USD"),
 	}
 	s.aggregationFn = aggregator.ComputeMedian()
 }

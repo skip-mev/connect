@@ -5,15 +5,15 @@ import (
 	"testing"
 
 	"github.com/skip-mev/slinky/aggregator"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 var (
-	btcusd = oracletypes.NewCurrencyPair("btc", "usd")
+	btcusd = slinkytypes.NewCurrencyPair("btc", "usd")
 
-	ethusd = oracletypes.NewCurrencyPair("eth", "usd")
+	ethusd = slinkytypes.NewCurrencyPair("eth", "usd")
 
-	usdtusd = oracletypes.NewCurrencyPair("usdt", "usd")
+	usdtusd = slinkytypes.NewCurrencyPair("usdt", "usd")
 )
 
 func TestComputeMedian(t *testing.T) {

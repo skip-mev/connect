@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func (s *KeeperTestSuite) TestConcludeAlert() {
@@ -78,7 +78,7 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 				s.alertKeeper.SetAlert(
 					ctx,
 					types.NewAlertWithStatus(
-						types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+						types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 						types.NewAlertStatus(1, 1, time.Now(), types.Unconcluded),
 					),
 				)
@@ -88,11 +88,11 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 		},
 		{
 			"negative alert - bond is burned",
-			types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			keeper.Negative,
 			func(ctx sdk.Context) {
 				alert := types.NewAlertWithStatus(
-					types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(10, 11, time.Time{}, types.Unconcluded),
 				)
 				// set the unconcluded alert
@@ -110,17 +110,17 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 			},
 			nil,
 			types.NewAlertWithStatus(
-				types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+				types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 				types.NewAlertStatus(10, 11, time.Time{}, types.Concluded),
 			),
 		},
 		{
 			"positive alert - bond is returned",
-			types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+			types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 			keeper.Positive,
 			func(ctx sdk.Context) {
 				alert := types.NewAlertWithStatus(
-					types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+					types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(10, 11, time.Time{}, types.Unconcluded),
 				)
 				// set the unconcluded alert
@@ -138,7 +138,7 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 			},
 			nil,
 			types.NewAlertWithStatus(
-				types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("BASE", "QUOTE")),
+				types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 				types.NewAlertStatus(10, 11, time.Time{}, types.Concluded),
 			),
 		},

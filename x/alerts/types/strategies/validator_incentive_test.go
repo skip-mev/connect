@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/mocks"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"

@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -43,7 +44,7 @@ func (q queryServer) GetAllCurrencyPairs(ctx context.Context, _ *types.GetAllCur
 // CurrencyPairSelector (either the stringified CurrencyPair, or the CurrencyPair itself). If the request is nil this method fails.
 // If the selector is an incorrectly formatted string this method fails. If the QuotePrice / Nonce do not exist for this CurrencyPair, this method fails.
 func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest) (_ *types.GetPriceResponse, err error) {
-	var cp types.CurrencyPair
+	var cp slinkytypes.CurrencyPair
 
 	// fail on nil requests
 	if req == nil {
@@ -96,7 +97,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 
 // GetPrice gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
 func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
-	var cp types.CurrencyPair
+	var cp slinkytypes.CurrencyPair
 
 	// fail on nil requests
 	if req == nil {

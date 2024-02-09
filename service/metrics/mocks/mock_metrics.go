@@ -27,12 +27,12 @@ func (_m *Metrics) AddOracleResponse(status metrics.Labeller) {
 }
 
 // AddValidatorPriceForTicker provides a mock function with given fields: validator, ticker, price
-func (_m *Metrics) AddValidatorPriceForTicker(validator string, ticker types.CurrencyPair, price float64) {
+func (_m *Metrics) AddValidatorPriceForTicker(validator string, ticker slinkytypes.CurrencyPair, price float64) {
 	_m.Called(validator, ticker, price)
 }
 
 // AddValidatorReportForTicker provides a mock function with given fields: validator, ticker, status
-func (_m *Metrics) AddValidatorReportForTicker(validator string, ticker types.CurrencyPair, status metrics.ReportStatus) {
+func (_m *Metrics) AddValidatorReportForTicker(validator string, ticker slinkytypes.CurrencyPair, status metrics.ReportStatus) {
 	_m.Called(validator, ticker, status)
 }
 
@@ -52,7 +52,7 @@ func (_m *Metrics) ObserveOracleResponseLatency(duration time.Duration) {
 }
 
 // ObservePriceForTicker provides a mock function with given fields: ticker, price
-func (_m *Metrics) ObservePriceForTicker(ticker types.CurrencyPair, price float64) {
+func (_m *Metrics) ObservePriceForTicker(ticker slinkytypes.CurrencyPair, price float64) {
 	_m.Called(ticker, price)
 }
 

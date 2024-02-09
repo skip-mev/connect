@@ -10,6 +10,7 @@ import (
 	"github.com/skip-mev/slinky/pkg/math"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )

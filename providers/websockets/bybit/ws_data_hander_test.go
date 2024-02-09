@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
@@ -103,7 +103,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
 				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
 						Value: big.NewInt(100000000),
 					},
 				},
@@ -236,7 +236,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			expected: func() []byte {
 				msg := bybit.SubscriptionRequest{
@@ -256,8 +256,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			expected: func() []byte {
 				msg := bybit.SubscriptionRequest{
@@ -277,7 +277,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair not in config",
 			cps: []slinkytypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+				slinkytypes.NewCurrencyPair("MOG", "USD"),
 			},
 			expected: func() []byte {
 				return nil

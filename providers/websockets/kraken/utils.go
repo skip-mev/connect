@@ -49,71 +49,71 @@ var (
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"ATOM/USD": {
 				Ticker:       "ATOM/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
 			},
 			"AVAX/USD": {
 				Ticker:       "AVAX/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
 			},
 			"AVAX/USDT": {
 				Ticker:       "AVAX/USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
 			},
 			"BITCOIN/USD": {
 				Ticker:       "XBT/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"BITCOIN/USDC": {
 				Ticker:       "XBT/USDC",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
 			},
 			"BITCOIN/USDT": {
 				Ticker:       "XBT/USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
 			},
 			"CELESTIA/USD": {
 				Ticker:       "TIA/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
 			},
 			"DYDX/USD": {
 				Ticker:       "DYDX/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ETH/XBT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			"ETHEREUM/USD": {
 				Ticker:       "ETH/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			"ETHEREUM/USDC": {
 				Ticker:       "ETH/USDC",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDC"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
 			},
 			"ETHEREUM/USDT": {
 				Ticker:       "ETH/USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
 			},
 			"SOLANA/USD": {
 				Ticker:       "SOL/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
 			},
 			"SOLANA/USDT": {
 				Ticker:       "SOL/USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
 			},
 			"USDC/USD": {
 				Ticker:       "USDC/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
 			},
 			"USDC/USDT": {
 				Ticker:       "USDC/USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
 			},
 			"USDT/USD": {
 				Ticker:       "USDT/USD",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 			},
 		},
 	}

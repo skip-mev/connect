@@ -28,7 +28,7 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 								"BITCOIN/USD": {
 									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 								},
 							},
 						},
@@ -50,16 +50,16 @@ func TestOracleConfig(t *testing.T) {
 				Market: config.AggregateMarketConfig{
 					Feeds: map[string]config.FeedConfig{
 						"BITCOIN/USD": {
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 					AggregatedFeeds: map[string]config.AggregateFeedConfig{
 						"BITCOIN/USD": {
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 							Conversions: []config.Conversions{
 								{
 									{
-										CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+										CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 										Invert:       false,
 									},
 								},
@@ -87,7 +87,7 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 								"BITCOIN/USD": {
 									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 								},
 							},
 						},
@@ -109,7 +109,7 @@ func TestOracleConfig(t *testing.T) {
 				Market: config.AggregateMarketConfig{
 					Feeds: map[string]config.FeedConfig{
 						"BITCOINUSD": {
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},
@@ -128,7 +128,7 @@ func TestOracleConfig(t *testing.T) {
 							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 								"BITCOIN/USD": {
 									Ticker:       "BTC/USD",
-									CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+									CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 								},
 							},
 						},
@@ -150,16 +150,16 @@ func TestOracleConfig(t *testing.T) {
 				Market: config.AggregateMarketConfig{
 					Feeds: map[string]config.FeedConfig{
 						"BITCOIN/USD": {
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 					AggregatedFeeds: map[string]config.AggregateFeedConfig{
 						"BITCOIN/USD": {
-							CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 							Conversions: []config.Conversions{
 								{
 									{
-										CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+										CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 										Invert:       false,
 									},
 								},

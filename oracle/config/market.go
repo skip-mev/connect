@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // MarketConfig represents the provider specific configurations for different
