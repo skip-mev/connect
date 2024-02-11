@@ -42,11 +42,11 @@ func (amb AppModuleBasic) RegisterInterfaces(ir codectypes.InterfaceRegistry) {
 
 // RegisterGRPCGatewayRoutes registers the necessary REST routes for the GRPC-gateway to the x/marketmap module QueryService on mux.
 // This method panics on failure.
-func (amb AppModuleBasic) RegisterGRPCGatewayRoutes(cliCtx client.Context, mux *runtime.ServeMux) {
+func (amb AppModuleBasic) RegisterGRPCGatewayRoutes(_ client.Context, _ *runtime.ServeMux) {
 	// todo
 }
 
-// AppModule is the actual app module for x/marketmap
+// AppModule is the actual app module for x/marketmap.
 type AppModule struct {
 	AppModuleBasic
 	k keeper.Keeper

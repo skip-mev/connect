@@ -15,7 +15,7 @@ import (
 
 var _ depinject.OnePerModuleType = AppModule{}
 
-// Inputs contains the dependencies required for module construction
+// Inputs contains the dependencies required for module construction.
 type Inputs struct {
 	depinject.In
 
@@ -26,7 +26,7 @@ type Inputs struct {
 	OracleKeeper types.OracleKeeper
 }
 
-// Outputs defines the constructor outputs for the module
+// Outputs defines the constructor outputs for the module.
 type Outputs struct {
 	depinject.Out
 
@@ -34,7 +34,7 @@ type Outputs struct {
 	Module          appmodule.AppModule
 }
 
-// ProvideModule is the depinject constructor for the module
+// ProvideModule is the depinject constructor for the module.
 func ProvideModule(in Inputs) Outputs {
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	if in.Config.Authority != "" {

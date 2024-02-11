@@ -27,7 +27,7 @@ type Keeper struct {
 	aggregationConfigs collections.Map[string, types.PathsConfig]
 }
 
-// NewKeeper initializes the keeper and its backing stores
+// NewKeeper initializes the keeper and its backing stores.
 func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, oracleKeeper types.OracleKeeper, authority sdk.AccAddress) Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
@@ -40,7 +40,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, oracleKeeper type
 	}
 }
 
-// GetAllMarketConfigs returns the set of MarketConfig objects currently stored in state
+// GetAllMarketConfigs returns the set of MarketConfig objects currently stored in state.
 func (k Keeper) GetAllMarketConfigs(ctx sdk.Context) ([]types.MarketConfig, error) {
 	iter, err := k.marketConfigs.Iterate(ctx, nil)
 	if err != nil {
