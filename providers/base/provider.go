@@ -97,8 +97,8 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		p.logger.Warn("no ids to fetch")
 	}
 
-	// If the config client is set, the provider may update it's internal configurations
-	// on the fly. As such, we need to listen for updates to the config client and restart
+	// If the config updater is set, the provider may update it's internal configurations
+	// on the fly. As such, we need to listen for updates to the config updater and restart
 	// the provider's main loop when the configuration changes.
 	go p.listenConfigUpdater(ctx)
 
@@ -128,7 +128,6 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		case err := <-errCh:
 			return err
 		case <-ctx.Done():
-			// Block on the main fetch loop till it stops.
 			return <-errCh
 		}
 	}
