@@ -10,7 +10,6 @@ import (
 
 	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
-	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ depinject.OnePerModuleType = AppModule{}
@@ -23,7 +22,6 @@ type Inputs struct {
 	Config       *marketmapmodulev1.Module
 	Cdc          codec.Codec
 	StoreService store.KVStoreService
-	OracleKeeper types.OracleKeeper
 }
 
 // Outputs defines the constructor outputs for the module.
@@ -41,7 +39,7 @@ func ProvideModule(in Inputs) Outputs {
 		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
 	}
 
-	marketmapKeeper := keeper.NewKeeper(in.StoreService, in.Cdc, in.OracleKeeper, authority)
+	marketmapKeeper := keeper.NewKeeper(in.StoreService, in.Cdc, authority)
 
 	m := NewAppModule(in.Cdc, marketmapKeeper)
 

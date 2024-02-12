@@ -13,9 +13,6 @@ import (
 type Keeper struct {
 	cdc codec.BinaryCodec
 
-	// keeper dependencies
-	oracleKeeper types.OracleKeeper
-
 	// module authority
 	authority sdk.AccAddress
 
@@ -28,12 +25,11 @@ type Keeper struct {
 }
 
 // NewKeeper initializes the keeper and its backing stores.
-func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, oracleKeeper types.OracleKeeper, authority sdk.AccAddress) Keeper {
+func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
 	return Keeper{
 		cdc:                cdc,
-		oracleKeeper:       oracleKeeper,
 		authority:          authority,
 		marketConfigs:      collections.NewMap(sb, types.MarketConfigsPrefix, "market_configs", collections.StringKey, codec.CollValue[types.MarketConfig](cdc)),
 		aggregationConfigs: collections.NewMap(sb, types.AggregationConfigsPrefix, "aggregation_configs", collections.StringKey, codec.CollValue[types.PathsConfig](cdc)),
