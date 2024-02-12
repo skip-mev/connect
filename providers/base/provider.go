@@ -149,6 +149,8 @@ MainLoop:
 		case <-p.stopCh:
 			p.logger.Debug("stopping provider")
 			cancel()
+			// If the context is cancelled, we should return. We expect the fetch go routine
+			// to exit when the context is cancelled.
 			retErr = <-errCh
 			break MainLoop
 		}
