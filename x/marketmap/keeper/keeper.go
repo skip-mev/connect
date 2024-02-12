@@ -10,6 +10,7 @@ import (
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+// Keeper is the module's keeper implementation.
 type Keeper struct {
 	cdc codec.BinaryCodec
 
@@ -18,10 +19,10 @@ type Keeper struct {
 
 	// collections
 	// marketConfigs is keyed by provider name and provides the MarketConfig for each given provider
-	marketConfigs collections.Map[string, types.MarketConfig]
+	marketConfigs collections.Map[types.MarketProvider, types.MarketConfig]
 	// aggregationConfigs is keyed by CurrencyPair string (BASE/QUOTE) and contains the PathsConfig used
 	// to do price aggregation for a given canonical Ticker
-	aggregationConfigs collections.Map[string, types.PathsConfig]
+	aggregationConfigs collections.Map[types.TickerString, types.PathsConfig]
 }
 
 // NewKeeper initializes the keeper and its backing stores.
@@ -31,8 +32,8 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 	return Keeper{
 		cdc:                cdc,
 		authority:          authority,
-		marketConfigs:      collections.NewMap(sb, types.MarketConfigsPrefix, "market_configs", collections.StringKey, codec.CollValue[types.MarketConfig](cdc)),
-		aggregationConfigs: collections.NewMap(sb, types.AggregationConfigsPrefix, "aggregation_configs", collections.StringKey, codec.CollValue[types.PathsConfig](cdc)),
+		marketConfigs:      collections.NewMap(sb, types.MarketConfigsPrefix, "market_configs", types.MarketProviderCodec, codec.CollValue[types.MarketConfig](cdc)),
+		aggregationConfigs: collections.NewMap(sb, types.AggregationConfigsPrefix, "aggregation_configs", types.TickerStringCodec, codec.CollValue[types.PathsConfig](cdc)),
 	}
 }
 
@@ -49,6 +50,9 @@ func (k Keeper) GetAllMarketConfigs(ctx sdk.Context) ([]types.MarketConfig, erro
 	return configs, err
 }
 
+// GetAllAggregationConfigs returns all PathsConfig objects currently in x/marketmap state.
+// The keys are omitted since the PathsConfig object contains a Ticker which effectively identifies
+// which pair each config refers to.
 func (k Keeper) GetAllAggregationConfigs(ctx sdk.Context) ([]types.PathsConfig, error) {
 	iter, err := k.aggregationConfigs.Iterate(ctx, nil)
 	if err != nil {
@@ -61,6 +65,7 @@ func (k Keeper) GetAllAggregationConfigs(ctx sdk.Context) ([]types.PathsConfig, 
 	return configs, err
 }
 
+// GetMarketMap returns an AggregateMarketConfig object which effectively contains the entire state of the module.
 func (k Keeper) GetMarketMap(ctx sdk.Context) (*types.AggregateMarketConfig, error) {
 	marketMap := &types.AggregateMarketConfig{
 		MarketConfigs: make(map[string]types.MarketConfig),
@@ -83,9 +88,12 @@ func (k Keeper) GetMarketMap(ctx sdk.Context) (*types.AggregateMarketConfig, err
 	return marketMap, nil
 }
 
+// CreateAggregationConfig initializes a new PathsConfig.
+// The combination of pathsConfig.Ticker.Base and pathsConfig.Ticker.Quote provide a unique key which is used to
+// validate against duplication.
 func (k Keeper) CreateAggregationConfig(ctx sdk.Context, pathsConfig types.PathsConfig) error {
 	// Construct the key for the PathsConfig
-	configKey := slinkytypes.CurrencyPair{Base: pathsConfig.Ticker.Base, Quote: pathsConfig.Ticker.Quote}.String()
+	configKey := types.TickerString(slinkytypes.CurrencyPair{Base: pathsConfig.Ticker.Base, Quote: pathsConfig.Ticker.Quote}.String())
 	// Check if AggregationConfig already exists for the Ticker
 	alreadyExists, err := k.aggregationConfigs.Has(ctx, configKey)
 	if err != nil {
@@ -98,15 +106,17 @@ func (k Keeper) CreateAggregationConfig(ctx sdk.Context, pathsConfig types.Paths
 	return k.aggregationConfigs.Set(ctx, configKey, pathsConfig)
 }
 
+// CreateMarketConfig initializes a new MarketConfig.
+// The marketConfig.Name corresponds to a price provider, and must be unique.
 func (k Keeper) CreateMarketConfig(ctx sdk.Context, marketConfig types.MarketConfig) error {
 	// Check if MarketConfig already exists for the provider
-	alreadyExists, err := k.marketConfigs.Has(ctx, marketConfig.Name)
+	alreadyExists, err := k.marketConfigs.Has(ctx, types.MarketProvider(marketConfig.Name))
 	if err != nil {
 		return err
 	}
 	if alreadyExists {
-		return types.NewMarketConfigAlreadyExistsError(marketConfig.Name)
+		return types.NewMarketConfigAlreadyExistsError(types.MarketProvider(marketConfig.Name))
 	}
 	// Create the config
-	return k.marketConfigs.Set(ctx, marketConfig.Name, marketConfig)
+	return k.marketConfigs.Set(ctx, types.MarketProvider(marketConfig.Name), marketConfig)
 }

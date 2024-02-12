@@ -3,10 +3,10 @@ package types
 import "fmt"
 
 type AggregationConfigAlreadyExistsError struct {
-	ticker string
+	ticker TickerString
 }
 
-func NewAggregationConfigAlreadyExistsError(ticker string) AggregationConfigAlreadyExistsError {
+func NewAggregationConfigAlreadyExistsError(ticker TickerString) AggregationConfigAlreadyExistsError {
 	return AggregationConfigAlreadyExistsError{ticker: ticker}
 }
 
@@ -15,10 +15,10 @@ func (e AggregationConfigAlreadyExistsError) Error() string {
 }
 
 type MarketConfigAlreadyExistsError struct {
-	provider string
+	provider MarketProvider
 }
 
-func NewMarketConfigAlreadyExistsError(key string) MarketConfigAlreadyExistsError {
+func NewMarketConfigAlreadyExistsError(key MarketProvider) MarketConfigAlreadyExistsError {
 	return MarketConfigAlreadyExistsError{provider: key}
 }
 

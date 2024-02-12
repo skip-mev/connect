@@ -13,7 +13,6 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/skip-mev/slinky/x/marketmap/types/mocks"
 )
 
 type KeeperTestSuite struct {
@@ -22,19 +21,17 @@ type KeeperTestSuite struct {
 	ctx sdk.Context
 
 	// Keeper variables
-	authority    sdk.AccAddress
-	oracleKeeper *mocks.OracleKeeper
-	keeper       keeper.Keeper
+	authority sdk.AccAddress
+	keeper    keeper.Keeper
 }
 
 func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
-	s.oracleKeeper = mocks.NewOracleKeeper(s.T())
 	s.authority = sdk.AccAddress("authority")
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
-	return keeper.NewKeeper(ss, encCfg.Codec, s.oracleKeeper, s.authority)
+	return keeper.NewKeeper(ss, encCfg.Codec, s.authority)
 }
 
 func (s *KeeperTestSuite) SetupTest() {
@@ -82,7 +79,7 @@ func (s *KeeperTestSuite) TestMarketConfigs() {
 		s.Require().NoError(s.keeper.CreateMarketConfig(s.ctx, marketCfg2))
 	})
 	s.Run("creating market config for existing provider fails", func() {
-		s.Require().ErrorIs(s.keeper.CreateMarketConfig(s.ctx, marketCfg1), types.NewMarketConfigAlreadyExistsError(marketCfg1.Name))
+		s.Require().ErrorIs(s.keeper.CreateMarketConfig(s.ctx, marketCfg1), types.NewMarketConfigAlreadyExistsError(types.MarketProvider(marketCfg1.Name)))
 	})
 	s.Run("fetching all market configs returns all initialized market configs", func() {
 		marketCfgs, err := s.keeper.GetAllMarketConfigs(s.ctx)
@@ -121,7 +118,7 @@ func (s *KeeperTestSuite) TestAggregationConfigs() {
 		s.Require().NoError(s.keeper.CreateAggregationConfig(s.ctx, aggCfg2))
 	})
 	s.Run("creating agg config for existing ticker fails", func() {
-		s.Require().ErrorIs(s.keeper.CreateAggregationConfig(s.ctx, aggCfg1), types.NewAggregationConfigAlreadyExistsError(cp1.String()))
+		s.Require().ErrorIs(s.keeper.CreateAggregationConfig(s.ctx, aggCfg1), types.NewAggregationConfigAlreadyExistsError(types.TickerString(cp1.String())))
 	})
 	s.Run("fetching all agg configs returns all initialized agg configs", func() {
 		aggCfgs, err := s.keeper.GetAllAggregationConfigs(s.ctx)
