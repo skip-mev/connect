@@ -144,13 +144,14 @@ MainLoop:
 			retErr = err
 			break MainLoop
 		case <-ctx.Done():
+			// If the context is cancelled, we should return. We expect the fetch go routine
+			// to exit when the context is cancelled.
 			retErr = <-errCh
 			break MainLoop
 		case <-p.stopCh:
+			// If the provider is manually stopped, we stop the fetch loop and return.
 			p.logger.Debug("stopping provider")
 			cancel()
-			// If the context is cancelled, we should return. We expect the fetch go routine
-			// to exit when the context is cancelled.
 			retErr = <-errCh
 			break MainLoop
 		}
