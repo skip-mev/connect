@@ -125,6 +125,8 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 			// Wait for the fetch loop to stop.
 			err := <-errCh
 			p.logger.Debug("provider fetch loop stopped", zap.Error(err))
+		case err := <-errCh:
+			return err
 		case <-ctx.Done():
 			// Block on the main fetch loop till it stops.
 			return <-errCh
