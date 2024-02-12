@@ -109,9 +109,14 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 	// If the config updater is set, the provider may update it's internal configurations
 	// on the fly. As such, we need to listen for updates to the config updater and restart
 	// the provider's main loop when the configuration changes.
-	go p.listenConfigUpdater(ctx)
+	go p.listenOnConfigUpdater(ctx)
 
-	// Start the main loop.
+	// Start the main loop. At a high level, the main loop will continuously fetch data from
+	// the handler and update the provider's data. It allows for the provider to be restarted
+	// when the configuration changes. The main loop will exit either when the context is
+	// cancelled or the provider gets an unexpected error.
+	var retErr error
+MainLoop:
 	for {
 		// Create a new context for the fetch loop. This allows us to cancel the fetch loop
 		// when the provider needs to be restarted.
@@ -135,15 +140,23 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 			err := <-errCh
 			p.logger.Debug("provider fetch loop stopped", zap.Error(err))
 		case err := <-errCh:
-			return err
+			// If the fetch loop stops unexpectedly, we should return.
+			retErr = err
+			break MainLoop
 		case <-ctx.Done():
-			return <-errCh
+			retErr = <-errCh
+			break MainLoop
 		case <-p.stopCh:
 			p.logger.Debug("stopping provider")
 			cancel()
-			return <-errCh
+			// If the context is cancelled, we should return. We expect the fetch go routine
+			// to exit when the context is cancelled.
+			retErr = <-errCh
+			break MainLoop
 		}
 	}
+
+	return retErr
 }
 
 // Stop stops the provider's main loop.

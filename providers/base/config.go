@@ -6,10 +6,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// listenConfigUpdater listens for updates from the config updater and updates the
+// listenOnConfigUpdater listens for updates from the config updater and updates the
 // provider's internal configurations. This will trigger the provider to restart
 // and is blocking until the context is cancelled.
-func (p *Provider[K, V]) listenConfigUpdater(ctx context.Context) {
+func (p *Provider[K, V]) listenOnConfigUpdater(ctx context.Context) {
 	if p.updater == nil {
 		return
 	}
