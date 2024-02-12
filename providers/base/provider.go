@@ -153,6 +153,11 @@ MainLoop:
 			// to exit when the context is cancelled.
 			retErr = <-errCh
 			break MainLoop
+		case <-p.stopCh:
+			p.logger.Debug("stopping provider")
+			cancel()
+			retErr = <-errCh
+			break MainLoop
 		}
 	}
 
