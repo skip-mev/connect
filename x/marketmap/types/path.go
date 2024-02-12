@@ -93,15 +93,15 @@ func (p *Path) Match(ticker string) bool {
 	}
 
 	first := p.Operations[0]
-	base := first.Ticker.Base
+	base := first.Ticker.CurrencyPair.Base
 	if first.Invert {
-		base = first.Ticker.Quote
+		base = first.Ticker.CurrencyPair.Quote
 	}
 
 	last := p.Operations[len(p.Operations)-1]
-	quote := last.Ticker.Quote
+	quote := last.Ticker.CurrencyPair.Quote
 	if last.Invert {
-		quote = last.Ticker.Base
+		quote = last.Ticker.CurrencyPair.Base
 	}
 
 	return ticker == fmt.Sprintf("%s/%s", base, quote)
@@ -117,18 +117,18 @@ func (p *Path) GetTickers() []Ticker {
 	return tickers
 }
 
-// ShowRoute returns the route of the path in human readable format.
+// ShowRoute returns the route of the path in human-readable format.
 func (p *Path) ShowRoute() string {
 	hops := make([]string, len(p.Operations))
 	for i, op := range p.Operations {
-		base := op.Ticker.Base
+		base := op.Ticker.CurrencyPair.Base
 		if op.Invert {
-			base = op.Ticker.Quote
+			base = op.Ticker.CurrencyPair.Quote
 		}
 
-		quote := op.Ticker.Quote
+		quote := op.Ticker.CurrencyPair.Quote
 		if op.Invert {
-			quote = op.Ticker.Base
+			quote = op.Ticker.CurrencyPair.Base
 		}
 
 		hops[i] = fmt.Sprintf("%s/%s", base, quote)
@@ -156,9 +156,9 @@ func (p *Path) ValidateBasic() error {
 		return nil
 	}
 
-	quote := first.Ticker.Quote
+	quote := first.Ticker.CurrencyPair.Quote
 	if first.Invert {
-		quote = first.Ticker.Base
+		quote = first.Ticker.CurrencyPair.Base
 	}
 
 	// Ensure that the path is a directed acyclic graph.
@@ -176,14 +176,14 @@ func (p *Path) ValidateBasic() error {
 		seen[op.Ticker] = struct{}{}
 
 		switch {
-		case !op.Invert && quote != op.Ticker.Base:
-			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.Ticker.Base)
-		case !op.Invert && quote == op.Ticker.Base:
-			quote = op.Ticker.Quote
-		case op.Invert && quote != op.Ticker.Quote:
-			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.Ticker.Quote)
-		case op.Invert && quote == op.Ticker.Quote:
-			quote = op.Ticker.Base
+		case !op.Invert && quote != op.Ticker.CurrencyPair.Base:
+			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.Ticker.CurrencyPair.Base)
+		case !op.Invert && quote == op.Ticker.CurrencyPair.Base:
+			quote = op.Ticker.CurrencyPair.Quote
+		case op.Invert && quote != op.Ticker.CurrencyPair.Quote:
+			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.Ticker.CurrencyPair.Quote)
+		case op.Invert && quote == op.Ticker.CurrencyPair.Quote:
+			quote = op.Ticker.CurrencyPair.Base
 		}
 	}
 
