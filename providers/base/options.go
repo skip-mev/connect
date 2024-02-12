@@ -110,3 +110,15 @@ func WithMetrics[K providertypes.ResponseKey, V providertypes.ResponseValue](met
 		p.metrics = metrics
 	}
 }
+
+// WithConfigUpdater sets the ConfigUpdater for the provider. This can be used to update the
+// set of IDs that the provider will fetch data for.
+func WithConfigUpdater[K providertypes.ResponseKey, V providertypes.ResponseValue](updater ConfigUpdater[K]) ProviderOption[K, V] {
+	return func(p *Provider[K, V]) {
+		if updater == nil {
+			panic("cannot set nil config updater")
+		}
+
+		p.updater = updater
+	}
+}

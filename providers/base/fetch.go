@@ -18,9 +18,6 @@ import (
 // fetch is the main blocker for the provider. It is responsible for fetching data from the
 // data provider and updating the data.
 func (p *Provider[K, V]) fetch(ctx context.Context) error {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	// responseCh is used to receive the response(s) from the query handler.
 	var responseCh chan providertypes.GetResponse[K, V]
 	switch {
@@ -28,7 +25,7 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 		// The buffer size is set to the minimum of the number of IDs and the max number of queries.
 		// This is to ensure that the response channel does not block the query handler and that the
 		// query handler does not exceed the rate limit parameters of the provider.
-		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.ids), p.apiCfg.MaxQueries))
+		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.GetIDs()), p.apiCfg.MaxQueries))
 	case p.ws != nil:
 		// Otherwise, the buffer size is set to the max buffer size configured for the websocket.
 		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
@@ -68,7 +65,6 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 		case <-ticker.C:
 			p.logger.Debug(
 				"attempting to fetch new data",
-				zap.Int("num_ids", len(p.ids)),
 				zap.Int("buffer_size", len(responseCh)),
 			)
 
@@ -80,7 +76,8 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 // attemptAPIDataUpdate tries to update data by fetching and parsing API data.
 // It logs any errors encountered during the process.
 func (p *Provider[K, V]) attemptAPIDataUpdate(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) {
-	if len(p.ids) == 0 {
+	ids := p.GetIDs()
+	if len(ids) == 0 {
 		p.logger.Debug("no ids to fetch")
 		return
 	}
@@ -96,8 +93,8 @@ func (p *Provider[K, V]) attemptAPIDataUpdate(ctx context.Context, responseCh ch
 		}()
 
 		// Start the query handler. The handler must respect the context timeout.
-		p.logger.Debug("starting query handler")
-		p.api.Query(ctx, p.ids, responseCh)
+		p.logger.Debug("starting query handler", zap.Int("num_ids", len(ids)))
+		p.api.Query(ctx, ids, responseCh)
 	}()
 }
 
@@ -112,12 +109,18 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 		wg             = errgroup.Group{}
 	)
 
+	ids := p.GetIDs()
+	if len(ids) == 0 {
+		p.logger.Debug("no ids to fetch")
+		return nil
+	}
+
 	// create sub handlers
 	// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
 	// 30 / 45 = 0 -> need one sub handler
 	if maxSubsPerConn > 0 {
 		// case where we will split ID's across sub handlers
-		numSubHandlers := (len(p.ids) / maxSubsPerConn) + 1
+		numSubHandlers := (len(ids) / maxSubsPerConn) + 1
 		wg.SetLimit(numSubHandlers)
 
 		// split ids
@@ -126,16 +129,16 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 			start := i
 			end := maxSubsPerConn * (i + 1)
 			if i+1 == numSubHandlers {
-				subIDs = p.ids[start:]
+				subIDs = ids[start:]
 			} else {
-				subIDs = p.ids[start:end]
+				subIDs = ids[start:end]
 			}
 
 			subTasks = append(subTasks, subIDs)
 		}
 	} else {
 		// case where there is 1 sub handler
-		subTasks = append(subTasks, p.ids)
+		subTasks = append(subTasks, ids)
 		wg.SetLimit(1)
 	}
 
@@ -158,7 +161,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 				p.logger.Info("provider stopped via context")
 				return ctx.Err()
 			default:
-				p.logger.Debug("starting websocket query handler")
+				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
 				if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}

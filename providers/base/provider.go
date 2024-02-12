@@ -50,14 +50,21 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 
 	// metrics is the metrics implementation for the provider.
 	metrics providermetrics.ProviderMetrics
+
+	// updater is the config updater that is used to fetch the configuration for the provider.
+	updater ConfigUpdater[K]
+
+	// restartCh is the channel that is used to signal the provider to restart.
+	restartCh chan struct{}
 }
 
 // NewProvider returns a new Base provider.
-func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opts ...ProviderOption[K, V]) (providertypes.Provider[K, V], error) {
+func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opts ...ProviderOption[K, V]) (*Provider[K, V], error) {
 	p := &Provider[K, V]{
-		logger: zap.NewNop(),
-		ids:    make([]K, 0),
-		data:   make(map[K]providertypes.Result[V]),
+		logger:    zap.NewNop(),
+		ids:       make([]K, 0),
+		data:      make(map[K]providertypes.Result[V]),
+		restartCh: make(chan struct{}),
 	}
 
 	for _, opt := range opts {
@@ -90,13 +97,63 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		p.logger.Warn("no ids to fetch")
 	}
 
+	// If the config client is set, the provider may update it's internal configurations
+	// on the fly. As such, we need to listen for updates to the config client and restart
+	// the provider's main loop when the configuration changes.
+	go p.listenConfigUpdater(ctx)
+
 	// Start the main loop.
-	return p.fetch(ctx)
+	for {
+		// Create a new context for the fetch loop. This allows us to cancel the fetch loop
+		// when the provider needs to be restarted.
+		fetchCtx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		// Start the fetch loop.
+		errCh := make(chan error)
+		go func() {
+			errCh <- p.fetch(fetchCtx)
+		}()
+
+		select {
+		case <-p.restartCh:
+			// If any of the provider's configurations have changed, the provider will
+			// be signalled to restart.
+			p.logger.Info("restarting provider")
+			cancel()
+
+			// Wait for the fetch loop to stop.
+			err := <-errCh
+			p.logger.Debug("provider fetch loop stopped", zap.Error(err))
+		case <-ctx.Done():
+			// Block on the main fetch loop till it stops.
+			return <-errCh
+		}
+	}
 }
 
 // Name returns the name of the provider.
 func (p *Provider[K, V]) Name() string {
 	return p.name
+}
+
+// SetIDs sets the set of IDs that the provider is responsible for fetching data for.
+func (p *Provider[K, V]) SetIDs(ids []K) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.ids = ids
+}
+
+// GetIDs returns the set of IDs that the provider is responsible for fetching data for.
+func (p *Provider[K, V]) GetIDs() []K {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	ids := make([]K, len(p.ids))
+	copy(ids, p.ids)
+
+	return ids
 }
 
 // GetData returns the latest data recorded by the provider. The data is constantly
