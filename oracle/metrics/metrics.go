@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"fmt"
+
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -11,10 +13,11 @@ const (
 	ProviderLabel = "provider"
 	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
 	ProviderTypeLabel = "type"
-	// PairIDLabel is the.
+	// PairIDLabel is the currency pair for which the metric applies.
 	PairIDLabel = "pair"
-	// OracleSubsystem is a subsystem shared by all metrics exposed by this
-	// package.
+	// DecimalsLabel is the number of decimal points associated with the price.
+	DecimalsLabel = "decimals"
+	// OracleSubsystem is a subsystem shared by all metrics exposed by this package.
 	OracleSubsystem = "oracle"
 )
 
@@ -27,10 +30,10 @@ type Metrics interface {
 	AddTick()
 
 	// UpdatePrice price updates the price for the given pairID for the provider.
-	UpdatePrice(name, handlerType, pairID string, price float64)
+	UpdatePrice(name, handlerType, pairID string, decimals int, price float64)
 
 	// UpdateAggregatePrice updates the aggregated price for the given pairID.
-	UpdateAggregatePrice(pairID string, price float64)
+	UpdateAggregatePrice(pairID string, decimals int, price float64)
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
@@ -61,12 +64,12 @@ func NewMetrics() Metrics {
 			Namespace: OracleSubsystem,
 			Name:      "provider_price",
 			Help:      "Price gauge for a given currency pair on a provider",
-		}, []string{ProviderLabel, ProviderTypeLabel, PairIDLabel}),
+		}, []string{ProviderLabel, ProviderTypeLabel, PairIDLabel, DecimalsLabel}),
 		aggregatePrices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: OracleSubsystem,
 			Name:      "aggregate_price",
 			Help:      "Aggregate price for a given currency pair",
-		}, []string{PairIDLabel}),
+		}, []string{PairIDLabel, DecimalsLabel}),
 	}
 
 	// register the above metrics
@@ -89,11 +92,11 @@ func (m *noOpOracleMetrics) AddTick() {
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
-func (m *noOpOracleMetrics) UpdatePrice(_, _, _ string, _ float64) {
+func (m *noOpOracleMetrics) UpdatePrice(_, _, _ string, _ int, _ float64) {
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
-func (m *noOpOracleMetrics) UpdateAggregatePrice(_ string, _ float64) {
+func (m *noOpOracleMetrics) UpdateAggregatePrice(string, int, float64) {
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
@@ -102,19 +105,29 @@ func (m *OracleMetricsImpl) AddTick() {
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
-func (m *OracleMetricsImpl) UpdatePrice(providerName, handlerType, pairID string, price float64) {
+func (m *OracleMetricsImpl) UpdatePrice(
+	providerName, handlerType, pairID string,
+	decimals int,
+	price float64,
+) {
 	m.prices.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		ProviderTypeLabel: handlerType,
 		PairIDLabel:       pairID,
+		DecimalsLabel:     fmt.Sprintf("%d", decimals),
 	},
 	).Set(price)
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
-func (m *OracleMetricsImpl) UpdateAggregatePrice(pairID string, price float64) {
+func (m *OracleMetricsImpl) UpdateAggregatePrice(
+	pairID string,
+	decimals int,
+	price float64,
+) {
 	m.aggregatePrices.With(prometheus.Labels{
-		PairIDLabel: pairID,
+		PairIDLabel:   pairID,
+		DecimalsLabel: fmt.Sprintf("%d", decimals),
 	},
 	).Set(price)
 }
