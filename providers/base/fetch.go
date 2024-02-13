@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -56,6 +57,7 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 	defer ticker.Stop()
 
 	// Start the data update loop.
+	handler := p.GetAPIHandler()
 	for {
 		select {
 		case <-ctx.Done():
@@ -68,14 +70,18 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 				zap.Int("buffer_size", len(responseCh)),
 			)
 
-			p.attemptAPIDataUpdate(ctx, responseCh)
+			p.attemptAPIDataUpdate(ctx, handler, responseCh)
 		}
 	}
 }
 
 // attemptAPIDataUpdate tries to update data by fetching and parsing API data.
 // It logs any errors encountered during the process.
-func (p *Provider[K, V]) attemptAPIDataUpdate(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) {
+func (p *Provider[K, V]) attemptAPIDataUpdate(
+	ctx context.Context,
+	handler apihandlers.APIQueryHandler[K, V],
+	responseCh chan<- providertypes.GetResponse[K, V],
+) {
 	ids := p.GetIDs()
 	if len(ids) == 0 {
 		p.logger.Debug("no ids to fetch")
@@ -94,7 +100,7 @@ func (p *Provider[K, V]) attemptAPIDataUpdate(ctx context.Context, responseCh ch
 
 		// Start the query handler. The handler must respect the context timeout.
 		p.logger.Debug("starting query handler", zap.Int("num_ids", len(ids)))
-		p.api.Query(ctx, ids, responseCh)
+		handler.Query(ctx, ids, responseCh)
 	}()
 }
 
@@ -162,7 +168,8 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 				return ctx.Err()
 			default:
 				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
-				if err := p.ws.Start(ctx, subIDs, responseCh); err != nil {
+				handler := p.GetWebSocketHandler()
+				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
 

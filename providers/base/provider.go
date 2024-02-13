@@ -54,7 +54,7 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	metrics providermetrics.ProviderMetrics
 
 	// updater is the config updater that is used to fetch the configuration for the provider.
-	updater ConfigUpdater[K]
+	updater ConfigUpdater[K, V]
 
 	// restartCh is the channel that is used to signal the provider to restart.
 	restartCh chan struct{}
@@ -69,8 +69,8 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 		logger:    zap.NewNop(),
 		ids:       make([]K, 0),
 		data:      make(map[K]providertypes.Result[V]),
-		restartCh: make(chan struct{}),
-		stopCh:    make(chan struct{}),
+		restartCh: make(chan struct{}, 1),
+		stopCh:    make(chan struct{}, 1),
 	}
 
 	for _, opt := range opts {
@@ -179,25 +179,6 @@ func (p *Provider[K, V]) IsRunning() bool {
 // Name returns the name of the provider.
 func (p *Provider[K, V]) Name() string {
 	return p.name
-}
-
-// SetIDs sets the set of IDs that the provider is responsible for fetching data for.
-func (p *Provider[K, V]) SetIDs(ids []K) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	p.ids = ids
-}
-
-// GetIDs returns the set of IDs that the provider is responsible for fetching data for.
-func (p *Provider[K, V]) GetIDs() []K {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	ids := make([]K, len(p.ids))
-	copy(ids, p.ids)
-
-	return ids
 }
 
 // GetData returns the latest data recorded by the provider. The data is constantly
