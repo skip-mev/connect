@@ -108,6 +108,7 @@ func (s *OracleTestSuite) TestProviders() {
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					time.Second*2,
+					s.currencyPairs,
 					providerCfg2,
 					s.logger,
 					responses2,

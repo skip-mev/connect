@@ -222,6 +222,91 @@ func TestStart(t *testing.T) {
 	})
 }
 
+func TestStop(t *testing.T) {
+	t.Run("no error when not running", func(t *testing.T) {
+		handler := apihandlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+
+		provider, err := base.NewProvider(
+			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+		)
+		require.NoError(t, err)
+		provider.Stop()
+	})
+
+	t.Run("no error when running an API provider", func(t *testing.T) {
+		handler := testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+			t,
+			logger,
+			nil,
+		)
+
+		provider, err := base.NewProvider(
+			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+		)
+		require.NoError(t, err)
+
+		// Use a timeout greater than the interval to ensure that the provider is running.
+		now := time.Now()
+		timeout := apiCfg.Interval * 10
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		go func() {
+			err = provider.Start(ctx)
+			require.Error(t, err)
+		}()
+
+		time.Sleep(time.Second * 3)
+		provider.Stop()
+		require.True(t, time.Since(now) < timeout)
+
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, time.Second*3, time.Millisecond*100)
+	})
+
+	t.Run("no error when running a WebSocket provider", func(t *testing.T) {
+		handler := testutils.CreateWebSocketQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+			t,
+			time.Second,
+			logger,
+			nil,
+		)
+
+		provider, err := base.NewProvider(
+			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
+			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
+			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+		)
+		require.NoError(t, err)
+
+		// Use a timeout greater than the interval to ensure that the provider is running.
+		now := time.Now()
+		timeout := wsCfg.ReconnectionTimeout * 10
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		go func() {
+			err = provider.Start(ctx)
+			require.Error(t, err)
+		}()
+
+		time.Sleep(time.Second * 3)
+		provider.Stop()
+		require.True(t, time.Since(now) < timeout)
+
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, time.Second*3, time.Millisecond*100)
+	})
+}
+
 func TestWebSocketProvider(t *testing.T) {
 	testCases := []struct {
 		name           string

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/skip-mev/slinky/x/incentives/types"
@@ -33,7 +34,7 @@ func GetQueryCmd() *cobra.Command {
 // This is essentially a wrapper around the module's QueryClient, as under-the-hood it constructs
 // a request to a query-client served over a grpc-conn embedded in the clientCtx.
 func GetIncentivesByTypeCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "type [type]",
 		Short: "Query for all incentives of a specified type",
 		Args:  cobra.ExactArgs(1),
@@ -61,13 +62,15 @@ func GetIncentivesByTypeCmd() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetAllIncentivesCmd returns the cli-command that queries all incentives currently stored in the
 // incentives module. This is essentially a wrapper around the module's QueryClient, as under-the-hood
 // it constructs a request to a query-client served over a grpc-conn embedded in the clientCtx.
 func GetAllIncentivesCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "all-incentives",
 		Short: "Query for all incentives currently stored in the module",
 		Args:  cobra.ExactArgs(0),
@@ -90,4 +93,6 @@ func GetAllIncentivesCmd() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
