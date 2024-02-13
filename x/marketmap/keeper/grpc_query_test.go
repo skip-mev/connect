@@ -48,8 +48,10 @@ func (s *KeeperTestSuite) TestQueryServer() {
 	qs := keeper.NewQueryServer(s.keeper)
 
 	s.Run("run valid request", func() {
-		s.Require().NoError(s.keeper.CreateMarketConfig(s.ctx, marketCfg1))
-		s.Require().NoError(s.keeper.CreateAggregationConfig(s.ctx, aggCfg1))
+		const testBlockHeight int64 = 9
+
+		s.Require().NoError(s.keeper.CreateMarketConfig(s.ctx.WithBlockHeight(testBlockHeight), marketCfg1))
+		s.Require().NoError(s.keeper.CreateAggregationConfig(s.ctx.WithBlockHeight(testBlockHeight), aggCfg1))
 
 		resp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
 		s.Require().NoError(err)
@@ -59,6 +61,9 @@ func (s *KeeperTestSuite) TestQueryServer() {
 
 		s.Require().Equal(*mm, resp.MarketMap)
 		s.Require().Equal(expectedMM, resp.MarketMap)
+
+		// check if last updated is the ctx value used for the keeper writes.
+		s.Require().Equal(testBlockHeight, resp.LastUpdated)
 	})
 
 	s.Run("run invalid nil request", func() {
