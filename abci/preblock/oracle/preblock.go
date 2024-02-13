@@ -14,8 +14,8 @@ import (
 	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	"github.com/skip-mev/slinky/aggregator"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // PreBlockHandler is responsible for aggregating oracle data from each
@@ -49,7 +49,7 @@ type PreBlockHandler struct { //golint:ignore
 // is responsible for writing oracle data included in vote extensions to state.
 func NewOraclePreBlockHandler(
 	logger log.Logger,
-	aggregateFn aggregator.AggregateFnFromContext[string, map[oracletypes.CurrencyPair]*big.Int],
+	aggregateFn aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int],
 	oracleKeeper Keeper,
 	metrics servicemetrics.Metrics,
 	strategy currencypair.CurrencyPairStrategy,
@@ -78,7 +78,7 @@ func NewOraclePreBlockHandler(
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
 		start := time.Now()
-		var prices map[oracletypes.CurrencyPair]*big.Int
+		var prices map[slinkytypes.CurrencyPair]*big.Int
 		defer func() {
 			// only measure latency in Finalize
 			if ctx.ExecMode() == sdk.ExecModeFinalize {

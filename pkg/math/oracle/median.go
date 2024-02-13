@@ -8,7 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // MedianAggregator is an aggregator that calculates the median price for each currency pair,
@@ -54,16 +54,16 @@ func NewMedianAggregator(logger *zap.Logger, cfg config.AggregateMarketConfig) (
 //
 // The final median price for BTC/USD will be the median of the prices calculated from the above
 // calculations.
-func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
+func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
 	return func(
-		feedsPerProvider aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int],
-	) map[oracletypes.CurrencyPair]*big.Int {
+		feedsPerProvider aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int],
+	) map[slinkytypes.CurrencyPair]*big.Int {
 		// Calculate the median price for each price feed.
 		feedMedians := aggregator.ComputeMedian()(feedsPerProvider)
 		m.logger.Info("calculated median prices for raw price feeds", zap.Int("num_prices", len(feedMedians)))
 
 		// Scale all of the medians to a common number of decimals. This does not lose precision.
-		scaledMedians := make(map[oracletypes.CurrencyPair]*big.Int)
+		scaledMedians := make(map[slinkytypes.CurrencyPair]*big.Int)
 		for cp, price := range feedMedians {
 			scaledPrice, err := ScaleUpCurrencyPairPrice(int64(cp.Decimals()), price)
 			if err != nil {
@@ -82,7 +82,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 		}
 
 		// Determine the final aggregated price for each currency pair.
-		aggregatedMedians := make(map[oracletypes.CurrencyPair]*big.Int)
+		aggregatedMedians := make(map[slinkytypes.CurrencyPair]*big.Int)
 		for _, cfg := range m.cfg.AggregatedFeeds {
 			// Get the converted prices for set of convertable markets.
 			// ex. BTC/USDT * USDT/USD = BTC/USD
@@ -142,7 +142,7 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 // operations to convert the price of BTC/USDT to BTC/USD i.e. BTC/USDT * USDT/USD = BTC/USD.
 func (m *MedianAggregator) CalculateConvertedPrices(
 	cfg config.AggregateFeedConfig,
-	medians map[oracletypes.CurrencyPair]*big.Int,
+	medians map[slinkytypes.CurrencyPair]*big.Int,
 ) []*big.Int {
 	convertedPrices := make([]*big.Int, 0)
 	cp := cfg.CurrencyPair
@@ -170,9 +170,9 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 // CalculateConvertedPrice converts a set of median prices to a target currency pair using a set of
 // conversion operations.
 func (m *MedianAggregator) CalculateConvertedPrice(
-	target oracletypes.CurrencyPair,
+	target slinkytypes.CurrencyPair,
 	operations []config.Conversion,
-	medians map[oracletypes.CurrencyPair]*big.Int,
+	medians map[slinkytypes.CurrencyPair]*big.Int,
 ) (*big.Int, error) {
 	if len(operations) == 0 {
 		return nil, fmt.Errorf("no conversion operations")

@@ -3,35 +3,46 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
 	btcusdt = types.Ticker{
-		Base:             "BITCOIN",
-		Quote:            "USDT",
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "BITCOIN",
+			Quote: "USDT",
+		},
 		Decimals:         8,
 		MinProviderCount: 1,
 	}
 
 	usdtusd = types.Ticker{
-		Base:             "USDT",
-		Quote:            "USD",
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "USDT",
+			Quote: "USD",
+		},
 		Decimals:         8,
 		MinProviderCount: 1,
 	}
 
 	usdcusd = types.Ticker{
-		Base:             "USDC",
-		Quote:            "USD",
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "USDC",
+			Quote: "USD",
+		},
 		Decimals:         8,
 		MinProviderCount: 1,
 	}
 
 	ethusdt = types.Ticker{
-		Base:             "ETHEREUM",
-		Quote:            "USDT",
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "ETHEREUM",
+			Quote: "USDT",
+		},
 		Decimals:         8,
 		MinProviderCount: 1,
 	}
@@ -299,8 +310,10 @@ func TestPath(t *testing.T) {
 func TestOperation(t *testing.T) {
 	t.Run("valid operation", func(t *testing.T) {
 		ticker := types.Ticker{
-			Base:             "BITCOIN",
-			Quote:            "USDT",
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
+			},
 			Decimals:         8,
 			MinProviderCount: 1,
 		}

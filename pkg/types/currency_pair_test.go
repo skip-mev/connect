@@ -5,18 +5,18 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestValidateBasic(t *testing.T) {
 	tcs := []struct {
 		name       string
-		cp         types.CurrencyPair
+		cp         slinkytypes.CurrencyPair
 		expectPass bool
 	}{
 		{
 			"if the Base is not upper-case - fail",
-			types.CurrencyPair{
+			slinkytypes.CurrencyPair{
 				Base:  "aB",
 				Quote: "BB",
 			},
@@ -24,7 +24,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if the Quote is not upper-case - fail",
-			types.CurrencyPair{
+			slinkytypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "aB",
 			},
@@ -32,7 +32,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if the base string is empty - fail",
-			types.CurrencyPair{
+			slinkytypes.CurrencyPair{
 				Base:  "",
 				Quote: "BB",
 			},
@@ -40,7 +40,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if the quote string is empty - fail",
-			types.CurrencyPair{
+			slinkytypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "",
 			},
@@ -48,7 +48,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			"if both Quote + Base are formatted correctly - pass",
-			types.CurrencyPair{
+			slinkytypes.CurrencyPair{
 				Base:  "BB",
 				Quote: "AA",
 			},
@@ -74,32 +74,32 @@ func TestToFromString(t *testing.T) {
 		name string
 		// string formatted CurrencyPair
 		cps        string
-		cp         types.CurrencyPair
+		cp         slinkytypes.CurrencyPair
 		expectPass bool
 	}{
 		{
 			"if string is incorrectly formatted, return an empty CurrencyPair",
 			"aa",
-			types.CurrencyPair{},
+			slinkytypes.CurrencyPair{},
 			false,
 		},
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
-			types.CurrencyPairString("A", "B"),
-			types.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPairString("A", "B"),
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case, return the original CurrencyPair",
 			"a/B",
-			types.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
 			true,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			cp, err := types.CurrencyPairFromString(tc.cps)
+			cp, err := slinkytypes.CurrencyPairFromString(tc.cps)
 			if tc.expectPass {
 				assert.Nil(t, err)
 				assert.Equal(t, cp, tc.cp)
@@ -113,17 +113,17 @@ func TestToFromString(t *testing.T) {
 func TestDecimals(t *testing.T) {
 	tcs := []struct {
 		name string
-		cp   types.CurrencyPair
+		cp   slinkytypes.CurrencyPair
 		dec  int
 	}{
 		{
 			"if the quote is ethereum, return 18",
-			types.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
 			18,
 		},
 		{
 			"if the quote is not ethereum or eth, return 8",
-			types.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
 			8,
 		},
 	}

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 const (
@@ -43,47 +43,47 @@ var (
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"AVAX/USD": {
 				Ticker:       "avaxusd",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
 			},
 			"BITCOIN/USD": {
 				Ticker:       "btcusd",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"BITCOIN/USDC": {
 				Ticker:       "btcusdc",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDC"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
 			},
 			"BITCOIN/USDT": {
 				Ticker:       "btcusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ethbtc",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			"ETHEREUM/USD": {
 				Ticker:       "ethusd",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			"ETHEREUM/USDT": {
 				Ticker:       "ethusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
 			},
 			"SOLANA/USD": {
 				Ticker:       "solusd",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
 			},
 			"USDC/USD": {
 				Ticker:       "usdcusd",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
 			},
 			"USDC/USDT": {
 				Ticker:       "usdcusdt",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
 			},
 			"USDT/USD": {
 				Ticker:       "usdtusd",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDT", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 			},
 		},
 	}

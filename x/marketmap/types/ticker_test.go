@@ -3,8 +3,11 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestTicker(t *testing.T) {
@@ -16,8 +19,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "valid ticker",
 			ticker: types.Ticker{
-				Base:             "BITCOIN",
-				Quote:            "USDT",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
 				Decimals:         8,
 				MinProviderCount: 1,
 			},
@@ -26,8 +31,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "empty base",
 			ticker: types.Ticker{
-				Base:             "",
-				Quote:            "USDT",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "",
+					Quote: "USDT",
+				},
 				Decimals:         8,
 				MinProviderCount: 1,
 			},
@@ -36,8 +43,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "empty quote",
 			ticker: types.Ticker{
-				Base:             "BITCOIN",
-				Quote:            "",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "",
+				},
 				Decimals:         8,
 				MinProviderCount: 1,
 			},
@@ -46,8 +55,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid base",
 			ticker: types.Ticker{
-				Base:             "bitcoin",
-				Quote:            "USDT",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "bitcoin",
+					Quote: "USDT",
+				},
 				Decimals:         8,
 				MinProviderCount: 1,
 			},
@@ -56,8 +67,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid quote",
 			ticker: types.Ticker{
-				Base:             "BITCOIN",
-				Quote:            "usdt",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "usdt",
+				},
 				Decimals:         8,
 				MinProviderCount: 1,
 			},
@@ -66,8 +79,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid decimals",
 			ticker: types.Ticker{
-				Base:             "BITCOIN",
-				Quote:            "USDT",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
 				Decimals:         0,
 				MinProviderCount: 1,
 			},
@@ -76,8 +91,10 @@ func TestTicker(t *testing.T) {
 		{
 			name: "invalid min provider count",
 			ticker: types.Ticker{
-				Base:             "BITCOIN",
-				Quote:            "USDT",
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
 				Decimals:         8,
 				MinProviderCount: 0,
 			},
@@ -108,8 +125,10 @@ func TestTickerConfig(t *testing.T) {
 			name: "valid ticker config",
 			tickerConfig: types.TickerConfig{
 				Ticker: types.Ticker{
-					Base:             "BITCOIN",
-					Quote:            "USDT",
+					CurrencyPair: slinkytypes.CurrencyPair{
+						Base:  "BITCOIN",
+						Quote: "USDT",
+					},
 					Decimals:         8,
 					MinProviderCount: 1,
 				},
@@ -121,8 +140,10 @@ func TestTickerConfig(t *testing.T) {
 			name: "invalid ticker",
 			tickerConfig: types.TickerConfig{
 				Ticker: types.Ticker{
-					Base:             "",
-					Quote:            "USDT",
+					CurrencyPair: slinkytypes.CurrencyPair{
+						Base:  "",
+						Quote: "USDT",
+					},
 					Decimals:         8,
 					MinProviderCount: 1,
 				},
@@ -134,8 +155,10 @@ func TestTickerConfig(t *testing.T) {
 			name: "invalid off chain ticker",
 			tickerConfig: types.TickerConfig{
 				Ticker: types.Ticker{
-					Base:             "BITCOIN",
-					Quote:            "USDT",
+					CurrencyPair: slinkytypes.CurrencyPair{
+						Base:  "BITCOIN",
+						Quote: "USDT",
+					},
 					Decimals:         8,
 					MinProviderCount: 1,
 				},

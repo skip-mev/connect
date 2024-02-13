@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -16,7 +16,7 @@ type (
 		ValidatorUpdates map[string]ValidatorUpdate
 
 		// CurrencyPairs is a set of currency pairs that are supported by the network.
-		CurrencyPairs map[oracletypes.CurrencyPair]struct{}
+		CurrencyPairs map[slinkytypes.CurrencyPair]struct{}
 	}
 
 	// ValidatorUpdate is utilized to map a validator's price feed updates.
@@ -25,7 +25,7 @@ type (
 		ConsAddress sdk.ConsAddress
 
 		// Updates is a map of price feed updates. The key is the currency pair and the value is
-		Updates map[oracletypes.CurrencyPair]slatypes.UpdateStatus
+		Updates map[slinkytypes.CurrencyPair]slatypes.UpdateStatus
 	}
 )
 
@@ -33,7 +33,7 @@ type (
 func NewPriceFeedUpdates() PriceFeedUpdates {
 	return PriceFeedUpdates{
 		ValidatorUpdates: make(map[string]ValidatorUpdate),
-		CurrencyPairs:    make(map[oracletypes.CurrencyPair]struct{}),
+		CurrencyPairs:    make(map[slinkytypes.CurrencyPair]struct{}),
 	}
 }
 
@@ -41,7 +41,7 @@ func NewPriceFeedUpdates() PriceFeedUpdates {
 func NewValidatorUpdate(consAddress sdk.ConsAddress) ValidatorUpdate {
 	return ValidatorUpdate{
 		ConsAddress: consAddress,
-		Updates:     make(map[oracletypes.CurrencyPair]slatypes.UpdateStatus),
+		Updates:     make(map[slinkytypes.CurrencyPair]slatypes.UpdateStatus),
 	}
 }
 
@@ -124,7 +124,7 @@ func (k Keeper) UpdatePriceFeedsForSLA(ctx sdk.Context, sla slatypes.PriceFeedSL
 func (k Keeper) updatePriceFeedWithStatus(
 	ctx sdk.Context,
 	sla slatypes.PriceFeedSLA,
-	cp oracletypes.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 	validator sdk.ConsAddress,
 	status slatypes.UpdateStatus,
 ) error {
@@ -145,7 +145,7 @@ func (k Keeper) updatePriceFeedWithStatus(
 func (k Keeper) initPriceFeedWithStatus(
 	ctx sdk.Context,
 	sla slatypes.PriceFeedSLA,
-	cp oracletypes.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 	validator sdk.ConsAddress,
 	status slatypes.UpdateStatus,
 ) error {

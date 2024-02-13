@@ -20,17 +20,17 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
 	abcitypes "github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/clients/oracle/mocks"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	metricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
 	servicetypes "github.com/skip-mev/slinky/service/servers/oracle/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var (
-	btcUSD     = oracletypes.NewCurrencyPair("BTC", "USD")
-	ethUSD     = oracletypes.NewCurrencyPair("ETH", "USD")
+	btcUSD     = slinkytypes.NewCurrencyPair("BTC", "USD")
+	ethUSD     = slinkytypes.NewCurrencyPair("ETH", "USD")
 	oneHundred = big.NewInt(100)
 	twoHundred = big.NewInt(200)
 

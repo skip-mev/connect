@@ -3,8 +3,11 @@ package types_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestAggregateMarketConfig(t *testing.T) {
@@ -168,8 +171,10 @@ func TestAggregateMarketConfig(t *testing.T) {
 			tickers: map[string]types.PathsConfig{
 				"BITCOIN/USD": {
 					Ticker: types.Ticker{
-						Base:             "BITCOIN",
-						Quote:            "USD",
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "BITCOIN",
+							Quote: "USD",
+						},
 						Decimals:         8,
 						MinProviderCount: 1,
 					},
@@ -178,16 +183,20 @@ func TestAggregateMarketConfig(t *testing.T) {
 							Operations: []types.Operation{
 								{
 									Ticker: types.Ticker{
-										Base:             "BITCOIN",
-										Quote:            "USDT",
+										CurrencyPair: slinkytypes.CurrencyPair{
+											Base:  "BITCOIN",
+											Quote: "USDT",
+										},
 										Decimals:         8,
 										MinProviderCount: 1,
 									},
 								},
 								{
 									Ticker: types.Ticker{
-										Base:             "USDT",
-										Quote:            "USD",
+										CurrencyPair: slinkytypes.CurrencyPair{
+											Base:  "USDT",
+											Quote: "USD",
+										},
 										Decimals:         8,
 										MinProviderCount: 1,
 									},
