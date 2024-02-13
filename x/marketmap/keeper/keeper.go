@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -76,7 +75,7 @@ func (k Keeper) GetMarketMap(ctx sdk.Context) (*types.AggregateMarketConfig, err
 		return nil, err
 	}
 	for _, pathConfig := range aggregationCfgs {
-		marketMap.TickerConfigs[slinkytypes.CurrencyPair{Base: pathConfig.Ticker.Base, Quote: pathConfig.Ticker.Quote}.String()] = pathConfig
+		marketMap.TickerConfigs[pathConfig.Ticker.CurrencyPair.String()] = pathConfig
 	}
 	marketConfigs, err := k.GetAllMarketConfigs(ctx)
 	if err != nil {
@@ -93,7 +92,7 @@ func (k Keeper) GetMarketMap(ctx sdk.Context) (*types.AggregateMarketConfig, err
 // validate against duplication.
 func (k Keeper) CreateAggregationConfig(ctx sdk.Context, pathsConfig types.PathsConfig) error {
 	// Construct the key for the PathsConfig
-	configKey := types.TickerString(slinkytypes.CurrencyPair{Base: pathsConfig.Ticker.Base, Quote: pathsConfig.Ticker.Quote}.String())
+	configKey := types.TickerString(pathsConfig.Ticker.CurrencyPair.String())
 	// Check if AggregationConfig already exists for the Ticker
 	alreadyExists, err := k.aggregationConfigs.Has(ctx, configKey)
 	if err != nil {
