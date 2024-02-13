@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"maps"
 	"sync"
+	"sync/atomic"
 
 	"go.uber.org/zap"
 
@@ -17,8 +18,9 @@ import (
 
 // Provider implements a base provider that can be used to build other providers.
 type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
-	mu     sync.Mutex
-	logger *zap.Logger
+	mu      sync.Mutex
+	logger  *zap.Logger
+	running atomic.Bool
 
 	// name is the name of the provider.
 	name string
@@ -56,6 +58,9 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 
 	// restartCh is the channel that is used to signal the provider to restart.
 	restartCh chan struct{}
+
+	// stopCh is the channel that is used to signal the provider to stop.
+	stopCh chan struct{}
 }
 
 // NewProvider returns a new Base provider.
@@ -65,6 +70,7 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 		ids:       make([]K, 0),
 		data:      make(map[K]providertypes.Result[V]),
 		restartCh: make(chan struct{}),
+		stopCh:    make(chan struct{}),
 	}
 
 	for _, opt := range opts {
@@ -96,6 +102,9 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 	if len(p.ids) == 0 {
 		p.logger.Warn("no ids to fetch")
 	}
+
+	p.running.Store(true)
+	defer p.running.Store(false)
 
 	// If the config updater is set, the provider may update it's internal configurations
 	// on the fly. As such, we need to listen for updates to the config updater and restart
@@ -140,10 +149,31 @@ MainLoop:
 			// to exit when the context is cancelled.
 			retErr = <-errCh
 			break MainLoop
+		case <-p.stopCh:
+			// If the provider is manually stopped, we stop the fetch loop and return.
+			p.logger.Debug("stopping provider")
+			cancel()
+			retErr = <-errCh
+			break MainLoop
 		}
 	}
 
 	return retErr
+}
+
+// Stop stops the provider's main loop.
+func (p *Provider[K, V]) Stop() {
+	if !p.running.Load() {
+		return
+	}
+
+	p.logger.Info("received manual stop signal")
+	p.stopCh <- struct{}{}
+}
+
+// IsRunning returns true if the provider is running.
+func (p *Provider[K, V]) IsRunning() bool {
+	return p.running.Load()
 }
 
 // Name returns the name of the provider.
