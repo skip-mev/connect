@@ -1,6 +1,10 @@
 package keeper
 
-import "github.com/skip-mev/slinky/x/marketmap/types"
+import (
+	"context"
+
+	"github.com/skip-mev/slinky/x/marketmap/types"
+)
 
 // msgServer is the default implementation of the x/marketmap MsgService.
 type msgServer struct {
@@ -13,3 +17,10 @@ func NewMsgServer(k Keeper) types.MsgServer {
 }
 
 var _ types.MsgServer = (*msgServer)(nil)
+
+// CreateMarket creates a market from the given message.
+func (ms msgServer) CreateMarket(ctx context.Context, msg *types.MsgCreateMarket) (*types.MsgCreateMarketResponse, error) {
+	// TODO finish
+
+	return nil, nil
+}
