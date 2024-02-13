@@ -26,7 +26,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func DefaultWebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
+func OracleWebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(logger *zap.Logger, cfg config.ProviderConfig, wsMetrics wsmetrics.WebSocketMetrics) (wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int], error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()

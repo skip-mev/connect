@@ -7,8 +7,8 @@ import (
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 type (
@@ -18,14 +18,18 @@ type (
 		config.OracleConfig,
 	) ([]providertypes.Provider[K, V], error)
 
-	// APIQueryHandlerFactory inputs the oracle configuration and returns a API Query Handler.
+	// APIQueryHandlerFactory inputs the provider configuration and returns a API Query Handler. The
+	// factory should case on all the different provider configurations and return the appropriate
+	// API Query Handler.
 	APIQueryHandlerFactory[K providertypes.ResponseKey, V providertypes.ResponseValue] func(
 		*zap.Logger,
 		config.ProviderConfig,
 		apimetrics.APIMetrics,
 	) (apihandlers.APIQueryHandler[K, V], error)
 
-	// WebSocketQueryHandlerFactory inputs the oracle configuration and returns a WebSocket Query Handler.
+	// WebSocketQueryHandlerFactory inputs the provider configuration and returns a WebSocket Query Handler.
+	// The factory should case on all the different provider configurations and return the appropriate
+	// WebSocket Query Handler.
 	WebSocketQueryHandlerFactory[K providertypes.ResponseKey, V providertypes.ResponseValue] func(
 		*zap.Logger,
 		config.ProviderConfig,

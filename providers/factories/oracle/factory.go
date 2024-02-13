@@ -16,9 +16,9 @@ import (
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-// DefaultProviderFactory is a sample implementation of the provider factory. This provider
+// DefaultOracleProviderFactory is a sample implementation of the provider factory. This provider
 // factory function returns providers that are API & websocket based.
-type DefaultProviderFactory struct {
+type DefaultOracleProviderFactory struct {
 	logger *zap.Logger
 
 	// apiFactory is the factory function that creates API query handlers.
@@ -33,7 +33,7 @@ func NewDefaultProviderFactory(
 	logger *zap.Logger,
 	apiFactory factory.APIQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int],
 	wsFactory factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int],
-) (*DefaultProviderFactory, error) {
+) (*DefaultOracleProviderFactory, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -46,16 +46,15 @@ func NewDefaultProviderFactory(
 		return nil, fmt.Errorf("wsFactory cannot be nil")
 	}
 
-	return &DefaultProviderFactory{
+	return &DefaultOracleProviderFactory{
 		logger:     logger,
 		apiFactory: apiFactory,
 		wsFactory:  wsFactory,
 	}, nil
 }
 
-// DefaultProviderFactory returns a sample implementation of the provider factory. This provider
-// factory function returns providers that are API & websocket based.
-func (f *DefaultProviderFactory) Factory() factory.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
+// Factory returns a factory function that creates providers based on the oracle configuration.
+func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(cfg config.OracleConfig) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err

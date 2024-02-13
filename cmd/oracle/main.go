@@ -61,9 +61,10 @@ func main() {
 	}
 
 	// Create the API and websocket query handler factories. These are used to create the
-	// data collection handlers for the providers.
-	apiFactory := oraclefactory.DefaultAPIQueryHandlerFactory()      // Replace with custom API factory.
-	wsFactory := oraclefactory.DefaultWebSocketQueryHandlerFactory() // Replace with custom websocket factory.
+	// data collection handlers for the providers. To read more about what these query handlers
+	// do, see the documentation for the `providers/base` package.
+	apiFactory := oraclefactory.OracleAPIQueryHandlerFactory()      // Replace with custom API factory.
+	wsFactory := oraclefactory.OracleWebSocketQueryHandlerFactory() // Replace with custom websocket factory.
 
 	// Create the providers using the default provider factory.
 	generator, err := oraclefactory.NewDefaultProviderFactory(

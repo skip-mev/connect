@@ -18,8 +18,8 @@ import (
 	"go.uber.org/zap"
 )
 
-// DefaultAPIQueryHandlerFactory returns a sample implementation of the API query handler factory.
-func DefaultAPIQueryHandlerFactory() factory.APIQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
+// OracleAPIQueryHandlerFactory returns a sample implementation of the API query handler factory.
+func OracleAPIQueryHandlerFactory() factory.APIQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(logger *zap.Logger, cfg config.ProviderConfig, metrics metrics.APIMetrics) (apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int], error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()
