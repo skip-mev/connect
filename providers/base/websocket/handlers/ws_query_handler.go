@@ -157,7 +157,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 
 	h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
 	for _, message := range messages {
-		h.logger.Debug("connection created; sending initial payload", zap.Binary("payload", message))
+		h.logger.Debug("connection created; sending initial payload", zap.String("payload", string(message)))
 
 		// Send the initial payload to the data provider.
 		if err := h.connHandler.Write(message); err != nil {
@@ -200,10 +200,10 @@ func (h *WebSocketQueryHandlerImpl[K, V]) heartBeat(ctx context.Context) {
 			for _, msg := range msgs {
 				if err := h.connHandler.Write(msg); err != nil {
 					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
-					h.logger.Error("failed to write heartbeat message", zap.Error(err))
+					h.logger.Error("failed to write heartbeat message", zap.String("message", string(msg)), zap.Error(err))
 				} else {
 					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
-					h.logger.Debug("heartbeat message sent")
+					h.logger.Debug("heartbeat message sent", zap.String("message", string(msg)))
 				}
 			}
 		}
@@ -243,7 +243,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
-				h.logger.Error("failed to read message from websocket handler", zap.Error(err))
+				h.logger.Error(
+					"failed to read message from websocket handler",
+					zap.String("message", string(message)),
+					zap.Error(err),
+				)
 				h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadErr)
 
 				// If the read error count is greater than the max read error count, close the
@@ -261,7 +265,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 				return errors.ErrReadWithErr(err)
 			}
 
-			h.logger.Debug("message received; attempting to handle message", zap.Binary("message", message))
+			h.logger.Debug("message received; attempting to handle message", zap.String("message", string(message)))
 			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.ReadSuccess)
 
 			// Handle the message.
@@ -281,7 +285,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// If the update messages are not nil, send it to the data provider.
 			if len(updateMessage) != 0 {
 				for _, msg := range updateMessage {
-					h.logger.Debug("sending update message to data provider", zap.Binary("update_message", msg))
+					h.logger.Debug("sending update message to data provider", zap.String("update_message", string(msg)))
 					h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
 
 					if err := h.connHandler.Write(msg); err != nil {
