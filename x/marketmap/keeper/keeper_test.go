@@ -30,7 +30,7 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 	s.authority = sdk.AccAddress("authority")
-	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
+	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key")).WithBlockHeight(10)
 	return keeper.NewKeeper(ss, encCfg.Codec, s.authority)
 }
 
@@ -89,6 +89,12 @@ func (s *KeeperTestSuite) TestMarketConfigs() {
 		marketCfgs, err := s.keeper.GetAllMarketConfigs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(2, len(marketCfgs))
+	})
+
+	s.Run("check if block height was set to that of the ctx", func() {
+		height, err := s.keeper.GetLastUpdated(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(s.ctx.BlockHeight(), height)
 	})
 }
 
