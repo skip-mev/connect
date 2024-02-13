@@ -33,6 +33,12 @@ message MsgCreateMarket {
   // ticker that the prices of the set of tickers will be converted to.
   Ticker ticker = 2 [ (gogoproto.nullable) = false ];
 
+  // ProvidersToOffChainTickers maps provider names to their off-chain
+  // representations for the given ticker of the message.  This is used to
+  // construct the updates MarketConfig resulting from this message execution.
+  map<string, string> providers_to_off_chain_tickers = 3
+      [ (gogoproto.nullable) = false ];
+
   // Paths is the list of convertable markets that will be used to convert the
   // prices of a set of tickers to a common ticker.
   repeated Path paths = 4 [ (gogoproto.nullable) = false ];

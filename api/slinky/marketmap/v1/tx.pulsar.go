@@ -13,8 +13,91 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	io "io"
 	reflect "reflect"
+	sort "sort"
 	sync "sync"
 )
+
+var _ protoreflect.Map = (*_MsgCreateMarket_3_map)(nil)
+
+type _MsgCreateMarket_3_map struct {
+	m *map[string]string
+}
+
+func (x *_MsgCreateMarket_3_map) Len() int {
+	if x.m == nil {
+		return 0
+	}
+	return len(*x.m)
+}
+
+func (x *_MsgCreateMarket_3_map) Range(f func(protoreflect.MapKey, protoreflect.Value) bool) {
+	if x.m == nil {
+		return
+	}
+	for k, v := range *x.m {
+		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfString(k))
+		mapValue := protoreflect.ValueOfString(v)
+		if !f(mapKey, mapValue) {
+			break
+		}
+	}
+}
+
+func (x *_MsgCreateMarket_3_map) Has(key protoreflect.MapKey) bool {
+	if x.m == nil {
+		return false
+	}
+	keyUnwrapped := key.String()
+	concreteValue := keyUnwrapped
+	_, ok := (*x.m)[concreteValue]
+	return ok
+}
+
+func (x *_MsgCreateMarket_3_map) Clear(key protoreflect.MapKey) {
+	if x.m == nil {
+		return
+	}
+	keyUnwrapped := key.String()
+	concreteKey := keyUnwrapped
+	delete(*x.m, concreteKey)
+}
+
+func (x *_MsgCreateMarket_3_map) Get(key protoreflect.MapKey) protoreflect.Value {
+	if x.m == nil {
+		return protoreflect.Value{}
+	}
+	keyUnwrapped := key.String()
+	concreteKey := keyUnwrapped
+	v, ok := (*x.m)[concreteKey]
+	if !ok {
+		return protoreflect.Value{}
+	}
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_MsgCreateMarket_3_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
+	if !key.IsValid() || !value.IsValid() {
+		panic("invalid key or value provided")
+	}
+	keyUnwrapped := key.String()
+	concreteKey := keyUnwrapped
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.m)[concreteKey] = concreteValue
+}
+
+func (x *_MsgCreateMarket_3_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
+	panic("should not call Mutable on protoreflect.Map whose value is not of type protoreflect.Message")
+}
+
+func (x *_MsgCreateMarket_3_map) NewValue() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_MsgCreateMarket_3_map) IsValid() bool {
+	return x.m != nil
+}
 
 var _ protoreflect.List = (*_MsgCreateMarket_4_list)(nil)
 
@@ -68,10 +151,11 @@ func (x *_MsgCreateMarket_4_list) IsValid() bool {
 }
 
 var (
-	md_MsgCreateMarket        protoreflect.MessageDescriptor
-	fd_MsgCreateMarket_signer protoreflect.FieldDescriptor
-	fd_MsgCreateMarket_ticker protoreflect.FieldDescriptor
-	fd_MsgCreateMarket_paths  protoreflect.FieldDescriptor
+	md_MsgCreateMarket                                protoreflect.MessageDescriptor
+	fd_MsgCreateMarket_signer                         protoreflect.FieldDescriptor
+	fd_MsgCreateMarket_ticker                         protoreflect.FieldDescriptor
+	fd_MsgCreateMarket_providers_to_off_chain_tickers protoreflect.FieldDescriptor
+	fd_MsgCreateMarket_paths                          protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -79,6 +163,7 @@ func init() {
 	md_MsgCreateMarket = File_slinky_marketmap_v1_tx_proto.Messages().ByName("MsgCreateMarket")
 	fd_MsgCreateMarket_signer = md_MsgCreateMarket.Fields().ByName("signer")
 	fd_MsgCreateMarket_ticker = md_MsgCreateMarket.Fields().ByName("ticker")
+	fd_MsgCreateMarket_providers_to_off_chain_tickers = md_MsgCreateMarket.Fields().ByName("providers_to_off_chain_tickers")
 	fd_MsgCreateMarket_paths = md_MsgCreateMarket.Fields().ByName("paths")
 }
 
@@ -159,6 +244,12 @@ func (x *fastReflection_MsgCreateMarket) Range(f func(protoreflect.FieldDescript
 			return
 		}
 	}
+	if len(x.ProvidersToOffChainTickers) != 0 {
+		value := protoreflect.ValueOfMap(&_MsgCreateMarket_3_map{m: &x.ProvidersToOffChainTickers})
+		if !f(fd_MsgCreateMarket_providers_to_off_chain_tickers, value) {
+			return
+		}
+	}
 	if len(x.Paths) != 0 {
 		value := protoreflect.ValueOfList(&_MsgCreateMarket_4_list{list: &x.Paths})
 		if !f(fd_MsgCreateMarket_paths, value) {
@@ -184,6 +275,8 @@ func (x *fastReflection_MsgCreateMarket) Has(fd protoreflect.FieldDescriptor) bo
 		return x.Signer != ""
 	case "slinky.marketmap.v1.MsgCreateMarket.ticker":
 		return x.Ticker != nil
+	case "slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers":
+		return len(x.ProvidersToOffChainTickers) != 0
 	case "slinky.marketmap.v1.MsgCreateMarket.paths":
 		return len(x.Paths) != 0
 	default:
@@ -206,6 +299,8 @@ func (x *fastReflection_MsgCreateMarket) Clear(fd protoreflect.FieldDescriptor) 
 		x.Signer = ""
 	case "slinky.marketmap.v1.MsgCreateMarket.ticker":
 		x.Ticker = nil
+	case "slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers":
+		x.ProvidersToOffChainTickers = nil
 	case "slinky.marketmap.v1.MsgCreateMarket.paths":
 		x.Paths = nil
 	default:
@@ -230,6 +325,12 @@ func (x *fastReflection_MsgCreateMarket) Get(descriptor protoreflect.FieldDescri
 	case "slinky.marketmap.v1.MsgCreateMarket.ticker":
 		value := x.Ticker
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers":
+		if len(x.ProvidersToOffChainTickers) == 0 {
+			return protoreflect.ValueOfMap(&_MsgCreateMarket_3_map{})
+		}
+		mapValue := &_MsgCreateMarket_3_map{m: &x.ProvidersToOffChainTickers}
+		return protoreflect.ValueOfMap(mapValue)
 	case "slinky.marketmap.v1.MsgCreateMarket.paths":
 		if len(x.Paths) == 0 {
 			return protoreflect.ValueOfList(&_MsgCreateMarket_4_list{})
@@ -260,6 +361,10 @@ func (x *fastReflection_MsgCreateMarket) Set(fd protoreflect.FieldDescriptor, va
 		x.Signer = value.Interface().(string)
 	case "slinky.marketmap.v1.MsgCreateMarket.ticker":
 		x.Ticker = value.Message().Interface().(*Ticker)
+	case "slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers":
+		mv := value.Map()
+		cmv := mv.(*_MsgCreateMarket_3_map)
+		x.ProvidersToOffChainTickers = *cmv.m
 	case "slinky.marketmap.v1.MsgCreateMarket.paths":
 		lv := value.List()
 		clv := lv.(*_MsgCreateMarket_4_list)
@@ -289,6 +394,12 @@ func (x *fastReflection_MsgCreateMarket) Mutable(fd protoreflect.FieldDescriptor
 			x.Ticker = new(Ticker)
 		}
 		return protoreflect.ValueOfMessage(x.Ticker.ProtoReflect())
+	case "slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers":
+		if x.ProvidersToOffChainTickers == nil {
+			x.ProvidersToOffChainTickers = make(map[string]string)
+		}
+		value := &_MsgCreateMarket_3_map{m: &x.ProvidersToOffChainTickers}
+		return protoreflect.ValueOfMap(value)
 	case "slinky.marketmap.v1.MsgCreateMarket.paths":
 		if x.Paths == nil {
 			x.Paths = []*Path{}
@@ -315,6 +426,9 @@ func (x *fastReflection_MsgCreateMarket) NewField(fd protoreflect.FieldDescripto
 	case "slinky.marketmap.v1.MsgCreateMarket.ticker":
 		m := new(Ticker)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers":
+		m := make(map[string]string)
+		return protoreflect.ValueOfMap(&_MsgCreateMarket_3_map{m: &m})
 	case "slinky.marketmap.v1.MsgCreateMarket.paths":
 		list := []*Path{}
 		return protoreflect.ValueOfList(&_MsgCreateMarket_4_list{list: &list})
@@ -395,6 +509,27 @@ func (x *fastReflection_MsgCreateMarket) ProtoMethods() *protoiface.Methods {
 			l = options.Size(x.Ticker)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if len(x.ProvidersToOffChainTickers) > 0 {
+			SiZeMaP := func(k string, v string) {
+				mapEntrySize := 1 + len(k) + runtime.Sov(uint64(len(k))) + 1 + len(v) + runtime.Sov(uint64(len(v)))
+				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
+			}
+			if options.Deterministic {
+				sortme := make([]string, 0, len(x.ProvidersToOffChainTickers))
+				for k := range x.ProvidersToOffChainTickers {
+					sortme = append(sortme, k)
+				}
+				sort.Strings(sortme)
+				for _, k := range sortme {
+					v := x.ProvidersToOffChainTickers[k]
+					SiZeMaP(k, v)
+				}
+			} else {
+				for k, v := range x.ProvidersToOffChainTickers {
+					SiZeMaP(k, v)
+				}
+			}
+		}
 		if len(x.Paths) > 0 {
 			for _, e := range x.Paths {
 				l = options.Size(e)
@@ -444,6 +579,49 @@ func (x *fastReflection_MsgCreateMarket) ProtoMethods() *protoiface.Methods {
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
 				dAtA[i] = 0x22
+			}
+		}
+		if len(x.ProvidersToOffChainTickers) > 0 {
+			MaRsHaLmAp := func(k string, v string) (protoiface.MarshalOutput, error) {
+				baseI := i
+				i -= len(v)
+				copy(dAtA[i:], v)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(v)))
+				i--
+				dAtA[i] = 0x12
+				i -= len(k)
+				copy(dAtA[i:], k)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(k)))
+				i--
+				dAtA[i] = 0xa
+				i = runtime.EncodeVarint(dAtA, i, uint64(baseI-i))
+				i--
+				dAtA[i] = 0x1a
+				return protoiface.MarshalOutput{}, nil
+			}
+			if options.Deterministic {
+				keysForProvidersToOffChainTickers := make([]string, 0, len(x.ProvidersToOffChainTickers))
+				for k := range x.ProvidersToOffChainTickers {
+					keysForProvidersToOffChainTickers = append(keysForProvidersToOffChainTickers, string(k))
+				}
+				sort.Slice(keysForProvidersToOffChainTickers, func(i, j int) bool {
+					return keysForProvidersToOffChainTickers[i] < keysForProvidersToOffChainTickers[j]
+				})
+				for iNdEx := len(keysForProvidersToOffChainTickers) - 1; iNdEx >= 0; iNdEx-- {
+					v := x.ProvidersToOffChainTickers[string(keysForProvidersToOffChainTickers[iNdEx])]
+					out, err := MaRsHaLmAp(keysForProvidersToOffChainTickers[iNdEx], v)
+					if err != nil {
+						return out, err
+					}
+				}
+			} else {
+				for k := range x.ProvidersToOffChainTickers {
+					v := x.ProvidersToOffChainTickers[k]
+					out, err := MaRsHaLmAp(k, v)
+					if err != nil {
+						return out, err
+					}
+				}
 			}
 		}
 		if x.Ticker != nil {
@@ -583,6 +761,133 @@ func (x *fastReflection_MsgCreateMarket) ProtoMethods() *protoiface.Methods {
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Ticker); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProvidersToOffChainTickers", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.ProvidersToOffChainTickers == nil {
+					x.ProvidersToOffChainTickers = make(map[string]string)
+				}
+				var mapkey string
+				var mapvalue string
+				for iNdEx < postIndex {
+					entryPreIndex := iNdEx
+					var wire uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						wire |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					fieldNum := int32(wire >> 3)
+					if fieldNum == 1 {
+						var stringLenmapkey uint64
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							stringLenmapkey |= uint64(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						intStringLenmapkey := int(stringLenmapkey)
+						if intStringLenmapkey < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						postStringIndexmapkey := iNdEx + intStringLenmapkey
+						if postStringIndexmapkey < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if postStringIndexmapkey > l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+						iNdEx = postStringIndexmapkey
+					} else if fieldNum == 2 {
+						var stringLenmapvalue uint64
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							stringLenmapvalue |= uint64(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						intStringLenmapvalue := int(stringLenmapvalue)
+						if intStringLenmapvalue < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						postStringIndexmapvalue := iNdEx + intStringLenmapvalue
+						if postStringIndexmapvalue < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if postStringIndexmapvalue > l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						mapvalue = string(dAtA[iNdEx:postStringIndexmapvalue])
+						iNdEx = postStringIndexmapvalue
+					} else {
+						iNdEx = entryPreIndex
+						skippy, err := runtime.Skip(dAtA[iNdEx:])
+						if err != nil {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+						}
+						if (skippy < 0) || (iNdEx+skippy) < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if (iNdEx + skippy) > postIndex {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						iNdEx += skippy
+					}
+				}
+				x.ProvidersToOffChainTickers[mapkey] = mapvalue
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
@@ -1035,6 +1340,10 @@ type MsgCreateMarket struct {
 	// Ticker is the on-chain representation of the ticker. This is the target
 	// ticker that the prices of the set of tickers will be converted to.
 	Ticker *Ticker `protobuf:"bytes,2,opt,name=ticker,proto3" json:"ticker,omitempty"`
+	// ProvidersToOffChainTickers maps provider names to their off-chain
+	// representations for the given ticker of the message.  This is used to
+	// construct the updates MarketConfig resulting from this message execution.
+	ProvidersToOffChainTickers map[string]string `protobuf:"bytes,3,rep,name=providers_to_off_chain_tickers,json=providersToOffChainTickers,proto3" json:"providers_to_off_chain_tickers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Paths is the list of convertable markets that will be used to convert the
 	// prices of a set of tickers to a common ticker.
 	Paths []*Path `protobuf:"bytes,4,rep,name=paths,proto3" json:"paths,omitempty"`
@@ -1070,6 +1379,13 @@ func (x *MsgCreateMarket) GetSigner() string {
 func (x *MsgCreateMarket) GetTicker() *Ticker {
 	if x != nil {
 		return x.Ticker
+	}
+	return nil
+}
+
+func (x *MsgCreateMarket) GetProvidersToOffChainTickers() map[string]string {
+	if x != nil {
+		return x.ProvidersToOffChainTickers
 	}
 	return nil
 }
@@ -1122,7 +1438,7 @@ var file_slinky_marketmap_v1_tx_proto_rawDesc = []byte{
 	0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x1a, 0x20, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
 	0x61, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0xed, 0x01, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x74, 0x6f, 0x22, 0xcd, 0x03, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
 	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x12, 0x30, 0x0a, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
@@ -1130,10 +1446,24 @@ var file_slinky_marketmap_v1_tx_proto_rawDesc = []byte{
 	0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b,
 	0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54,
 	0x69, 0x63, 0x6b, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x74, 0x69, 0x63,
-	0x6b, 0x65, 0x72, 0x12, 0x35, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x04, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04, 0xc8,
-	0xde, 0x1f, 0x00, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x3a, 0x36, 0xe8, 0xa0, 0x1f, 0x00,
+	0x6b, 0x65, 0x72, 0x12, 0x8e, 0x01, 0x0a, 0x1e, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
+	0x73, 0x5f, 0x74, 0x6f, 0x5f, 0x6f, 0x66, 0x66, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x74,
+	0x69, 0x63, 0x6b, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x44, 0x2e, 0x73,
+	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x2e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x54, 0x6f, 0x4f, 0x66,
+	0x66, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x1a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64,
+	0x65, 0x72, 0x73, 0x54, 0x6f, 0x4f, 0x66, 0x66, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x54, 0x69, 0x63,
+	0x6b, 0x65, 0x72, 0x73, 0x12, 0x35, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x04, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04,
+	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x1a, 0x4d, 0x0a, 0x1f, 0x50,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x54, 0x6f, 0x4f, 0x66, 0x66, 0x43, 0x68, 0x61,
+	0x69, 0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10,
+	0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79,
+	0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x3a, 0x36, 0xe8, 0xa0, 0x1f, 0x00,
 	0x82, 0xe7, 0xb0, 0x2a, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x22,
 	0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x78, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
 	0x61, 0x70, 0x2f, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b,
@@ -1173,23 +1503,25 @@ func file_slinky_marketmap_v1_tx_proto_rawDescGZIP() []byte {
 	return file_slinky_marketmap_v1_tx_proto_rawDescData
 }
 
-var file_slinky_marketmap_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_slinky_marketmap_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_slinky_marketmap_v1_tx_proto_goTypes = []interface{}{
 	(*MsgCreateMarket)(nil),         // 0: slinky.marketmap.v1.MsgCreateMarket
 	(*MsgCreateMarketResponse)(nil), // 1: slinky.marketmap.v1.MsgCreateMarketResponse
-	(*Ticker)(nil),                  // 2: slinky.marketmap.v1.Ticker
-	(*Path)(nil),                    // 3: slinky.marketmap.v1.Path
+	nil,                             // 2: slinky.marketmap.v1.MsgCreateMarket.ProvidersToOffChainTickersEntry
+	(*Ticker)(nil),                  // 3: slinky.marketmap.v1.Ticker
+	(*Path)(nil),                    // 4: slinky.marketmap.v1.Path
 }
 var file_slinky_marketmap_v1_tx_proto_depIdxs = []int32{
-	2, // 0: slinky.marketmap.v1.MsgCreateMarket.ticker:type_name -> slinky.marketmap.v1.Ticker
-	3, // 1: slinky.marketmap.v1.MsgCreateMarket.paths:type_name -> slinky.marketmap.v1.Path
-	0, // 2: slinky.marketmap.v1.Msg.CreateMarket:input_type -> slinky.marketmap.v1.MsgCreateMarket
-	1, // 3: slinky.marketmap.v1.Msg.CreateMarket:output_type -> slinky.marketmap.v1.MsgCreateMarketResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 0: slinky.marketmap.v1.MsgCreateMarket.ticker:type_name -> slinky.marketmap.v1.Ticker
+	2, // 1: slinky.marketmap.v1.MsgCreateMarket.providers_to_off_chain_tickers:type_name -> slinky.marketmap.v1.MsgCreateMarket.ProvidersToOffChainTickersEntry
+	4, // 2: slinky.marketmap.v1.MsgCreateMarket.paths:type_name -> slinky.marketmap.v1.Path
+	0, // 3: slinky.marketmap.v1.Msg.CreateMarket:input_type -> slinky.marketmap.v1.MsgCreateMarket
+	1, // 4: slinky.marketmap.v1.Msg.CreateMarket:output_type -> slinky.marketmap.v1.MsgCreateMarketResponse
+	4, // [4:5] is the sub-list for method output_type
+	3, // [3:4] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_slinky_marketmap_v1_tx_proto_init() }
@@ -1230,7 +1562,7 @@ func file_slinky_marketmap_v1_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_slinky_marketmap_v1_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
