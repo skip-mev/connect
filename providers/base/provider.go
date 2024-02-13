@@ -139,6 +139,7 @@ MainLoop:
 			// Wait for the fetch loop to stop.
 			err := <-errCh
 			p.logger.Debug("provider fetch loop stopped", zap.Error(err))
+			continue MainLoop
 		case err := <-errCh:
 			// If the fetch loop stops unexpectedly, we should return.
 			retErr = err
