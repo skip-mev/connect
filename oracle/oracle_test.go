@@ -127,6 +127,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					time.Second,
+					s.currencyPairs,
 					providerCfg2,
 					s.logger,
 					nil,
@@ -226,6 +227,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					time.Second,
+					s.currencyPairs,
 					providerCfg2,
 					s.logger,
 					nil,
@@ -313,6 +315,7 @@ func (s *OracleTestSuite) TestStop() {
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
 					s.T(),
 					time.Second,
+					s.currencyPairs,
 					providerCfg2,
 					s.logger,
 					nil,
