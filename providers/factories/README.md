@@ -2,7 +2,7 @@
 
 ## Overview
 
-Factories are used to create an underlying set of data providers that will be utilized by the oracle side-car. Currently, the factory is primarily built to support price feeds, but later will be extended to support other data types.
+Factories are used to create an underlying set of data providers that will be utilized by the oracle sidecar. Currently, the factory is primarily built to support price feeds, but later will be extended to support other data types.
 
 ## Supported Provider Factories
 

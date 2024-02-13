@@ -65,8 +65,8 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[oraclet
 		providerMetrics := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
 		// Create the providers.
-		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], 0)
-		for _, p := range cfg.Providers {
+		providers := make([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], len(cfg.Providers))
+		for i, p := range cfg.Providers {
 			switch {
 			case p.API.Enabled:
 				queryHandler, err := f.apiFactory(f.logger, p, apiMetrics)
@@ -87,7 +87,7 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[oraclet
 					return nil, err
 				}
 
-				providers = append(providers, provider)
+				providers[i] = provider
 			case p.WebSocket.Enabled:
 				// Create the websocket query handler which encapsulates all fetching and parsing logic.
 				queryHandler, err := f.wsFactory(f.logger, p, wsMetrics)
@@ -108,7 +108,7 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[oraclet
 					return nil, err
 				}
 
-				providers = append(providers, provider)
+				providers[i] = provider
 			default:
 				f.logger.Info("unknown provider type", zap.String("provider", p.Name))
 				return nil, fmt.Errorf("unknown provider type: %s", p.Name)
