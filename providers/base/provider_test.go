@@ -224,32 +224,32 @@ func TestStart(t *testing.T) {
 
 func TestStop(t *testing.T) {
 	t.Run("no error when not running", func(t *testing.T) {
-		handler := apihandlermocks.NewQueryHandler[oracletypes.CurrencyPair, *big.Int](t)
+		handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
 		provider, err := base.NewProvider(
-			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
-			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 		provider.Stop()
 	})
 
 	t.Run("no error when running an API provider", func(t *testing.T) {
-		handler := testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+		handler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
 			nil,
 		)
 
 		provider, err := base.NewProvider(
-			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
-			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
+			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
@@ -272,7 +272,7 @@ func TestStop(t *testing.T) {
 	})
 
 	t.Run("no error when running a WebSocket provider", func(t *testing.T) {
-		handler := testutils.CreateWebSocketQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+		handler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
 			logger,
@@ -280,11 +280,11 @@ func TestStop(t *testing.T) {
 		)
 
 		provider, err := base.NewProvider(
-			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
-			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](handler),
-			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
-			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
+			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfg.Name),
+			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
+			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
+			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
 		)
 		require.NoError(t, err)
 
