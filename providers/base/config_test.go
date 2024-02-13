@@ -6,35 +6,36 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (
-	btcusd = oracletypes.NewCurrencyPair("BITCOIN", "USD")
-	ethusd = oracletypes.NewCurrencyPair("ETHEREUM", "USD")
-	solusd = oracletypes.NewCurrencyPair("SOLANA", "USD")
+	btcusd = slinkytypes.NewCurrencyPair("BITCOIN", "USD")
+	ethusd = slinkytypes.NewCurrencyPair("ETHEREUM", "USD")
+	solusd = slinkytypes.NewCurrencyPair("SOLANA", "USD")
 )
 
 func TestConfigUpdater(t *testing.T) {
 	t.Run("restart on IDs update with an API provider", func(t *testing.T) {
-		pairs := []oracletypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[oracletypes.CurrencyPair]()
-		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+		pairs := []slinkytypes.CurrencyPair{btcusd}
+		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair]()
+		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
 			nil,
 		)
 
-		provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-			base.WithName[oracletypes.CurrencyPair, *big.Int](apiCfg.Name),
-			base.WithAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](apiHandler),
-			base.WithAPIConfig[oracletypes.CurrencyPair, *big.Int](apiCfg),
-			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[oracletypes.CurrencyPair, *big.Int](updater),
+		provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
+			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
+			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](apiHandler),
+			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
+			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -53,7 +54,7 @@ func TestConfigUpdater(t *testing.T) {
 
 		// Wait for a few seconds and update the IDs.
 		time.Sleep(2 * time.Second)
-		updated := []oracletypes.CurrencyPair{ethusd, solusd, btcusd}
+		updated := []slinkytypes.CurrencyPair{ethusd, solusd, btcusd}
 		updater.UpdateIDs(updated)
 
 		// Wait for the provider to restart.
@@ -68,22 +69,22 @@ func TestConfigUpdater(t *testing.T) {
 	})
 
 	t.Run("restart on IDs update with a websocket provider", func(t *testing.T) {
-		pairs := []oracletypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[oracletypes.CurrencyPair]()
-		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+		pairs := []slinkytypes.CurrencyPair{btcusd}
+		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair]()
+		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
 			logger,
 			nil,
 		)
 
-		provider, err := base.NewProvider[oracletypes.CurrencyPair, *big.Int](
-			base.WithName[oracletypes.CurrencyPair, *big.Int](wsCfg.Name),
-			base.WithWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](wsHandler),
-			base.WithWebSocketConfig[oracletypes.CurrencyPair, *big.Int](wsCfg),
-			base.WithLogger[oracletypes.CurrencyPair, *big.Int](logger),
-			base.WithIDs[oracletypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[oracletypes.CurrencyPair, *big.Int](updater),
+		provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
+			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfg.Name),
+			base.WithWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](wsHandler),
+			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
+			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
+			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
+			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -102,7 +103,7 @@ func TestConfigUpdater(t *testing.T) {
 
 		// Wait for a few seconds and update the IDs.
 		time.Sleep(2 * time.Second)
-		updated := []oracletypes.CurrencyPair{ethusd, solusd, btcusd}
+		updated := []slinkytypes.CurrencyPair{ethusd, solusd, btcusd}
 		updater.UpdateIDs(updated)
 
 		// Wait for the provider to restart.
