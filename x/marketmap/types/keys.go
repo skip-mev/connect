@@ -19,11 +19,17 @@ var (
 	// AggregationConfigsPrefix is the key prefix for PathsConfigs per-Ticker.
 	AggregationConfigsPrefix = collections.NewPrefix(1)
 
+	// LastUpdatedPrefix is the key prefix for the lastUpdated height.
+	LastUpdatedPrefix = collections.NewPrefix(2)
+
 	// MarketProviderCodec is the collections.KeyCodec value used for the marketConfigs map.
 	MarketProviderCodec = codec.NewStringKeyCodec[MarketProvider]()
 
 	// TickerStringCodec is the collections.KeyCodec value used for the aggregationConfigs map.
 	TickerStringCodec = codec.NewStringKeyCodec[TickerString]()
+
+	// LastUpdatedCodec is the collections.KeyCodec value used for the lastUpdated value.
+	LastUpdatedCodec = codec.KeyToValueCodec[int64](codec.NewInt64Key[int64]())
 )
 
 // MarketProvider is the unique name used to key the MarketConfigs in the marketmap module.
