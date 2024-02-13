@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -32,7 +33,7 @@ func GetQueryCmd() *cobra.Command {
 // GetPriceCmd returns the cli-command that queries the price information for a given CurrencyPair. This is essentially a wrapper around the module's
 // QueryClient, as under-the-hood it constructs a request to a query-client served over a grpc-conn embedded in the clientCtx.
 func GetPriceCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "price [base] [quote]",
 		Short: "Query for the price of a specified currency-pair",
 		Args:  cobra.ExactArgs(2),
@@ -60,12 +61,14 @@ func GetPriceCmd() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetAllCurrencyPairsCmd returns the cli-command that queries for all CurrencyPairs in the module. This is essentially a wrapper around the module's
 // QueryClient, as under-the-hood it constructs a request to a query-client served over a grpc-conn embedded in the clientCtx.
 func GetAllCurrencyPairsCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "currency-pairs",
 		Short: "Query for all the currency-pairs being tracked by the module",
 		Args:  cobra.NoArgs,
@@ -88,4 +91,6 @@ func GetAllCurrencyPairsCmd() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
