@@ -1,0 +1,9 @@
+syntax = "proto3";
+package slinky.marketmap.v1;
+
+import "cosmos/msg/v1/msg.proto";
+
+option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
+
+// Msg is the message service for the x/alerts module.
+service Msg { option (cosmos.msg.v1.service) = true; }

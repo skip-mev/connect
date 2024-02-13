@@ -18,6 +18,7 @@ type Keeper struct {
 	authority sdk.AccAddress
 
 	// collections
+
 	// marketConfigs is keyed by provider name and provides the MarketConfig for each given provider
 	marketConfigs collections.Map[types.MarketProvider, types.MarketConfig]
 	// aggregationConfigs is keyed by CurrencyPair string (BASE/QUOTE) and contains the PathsConfig used
