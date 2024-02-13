@@ -62,6 +62,7 @@ func CreateWebSocketQueryHandlerWithResponseFn[K providertypes.ResponseKey, V pr
 func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
 	timeout time.Duration,
+	ids []K,
 	cfg config.ProviderConfig,
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
@@ -80,6 +81,7 @@ func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V prov
 		base.WithWebSocketQueryHandler[K, V](handler),
 		base.WithWebSocketConfig[K, V](cfg.WebSocket),
 		base.WithLogger[K, V](logger),
+		base.WithIDs[K, V](ids),
 	)
 	require.NoError(t, err)
 
