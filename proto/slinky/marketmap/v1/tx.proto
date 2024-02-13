@@ -2,8 +2,32 @@ syntax = "proto3";
 package slinky.marketmap.v1;
 
 import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "amino/amino.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
-// Msg is the message service for the x/alerts module.
-service Msg { option (cosmos.msg.v1.service) = true; }
+// Msg is the message service for the x/marketmap module.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // CreateMarket creates a market from the given message.
+  rpc CreateMarket(MsgCreateMarket) returns (MsgCreateMarketResponse);
+}
+
+// MsgCreateMarket defines a message carrying a payload for creating a new
+// market in the x/marketmap module.
+message MsgCreateMarket {
+  option (cosmos.msg.v1.signer) = "signer";
+  option (amino.name) = "slinky/x/marketmap/MsgCreateMarket";
+
+  option (gogoproto.equal) = false;
+
+  // signer is the signer of this transaction (notice, this may not always be a
+  // node from the SecondTier)
+  string signer = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgCreateMarketResponse is the response message for MsgCreateMarket.
+message MsgCreateMarketResponse {}

@@ -7,7 +7,10 @@
 package marketmapv1
 
 import (
+	context "context"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -15,12 +18,16 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-const ()
+const (
+	Msg_CreateMarket_FullMethodName = "/slinky.marketmap.v1.Msg/CreateMarket"
+)
 
 // MsgClient is the client API for Msg service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
+	// CreateMarket creates a market from the given message.
+	CreateMarket(ctx context.Context, in *MsgCreateMarket, opts ...grpc.CallOption) (*MsgCreateMarketResponse, error)
 }
 
 type msgClient struct {
@@ -31,10 +38,21 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
+func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarket, opts ...grpc.CallOption) (*MsgCreateMarketResponse, error) {
+	out := new(MsgCreateMarketResponse)
+	err := c.cc.Invoke(ctx, Msg_CreateMarket_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
+	// CreateMarket creates a market from the given message.
+	CreateMarket(context.Context, *MsgCreateMarket) (*MsgCreateMarketResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -42,6 +60,9 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
+func (UnimplementedMsgServer) CreateMarket(context.Context, *MsgCreateMarket) (*MsgCreateMarketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMarket not implemented")
+}
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
 // UnsafeMsgServer may be embedded to opt out of forward compatibility for this service.
@@ -55,13 +76,36 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 	s.RegisterService(&Msg_ServiceDesc, srv)
 }
 
+func _Msg_CreateMarket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateMarket)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateMarket(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_CreateMarket_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateMarket(ctx, req.(*MsgCreateMarket))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Msg_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "slinky.marketmap.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "slinky/marketmap/v1/tx.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateMarket",
+			Handler:    _Msg_CreateMarket_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "slinky/marketmap/v1/tx.proto",
 }
