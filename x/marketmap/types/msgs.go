@@ -8,6 +8,13 @@ import (
 
 var _ sdk.Msg = &MsgCreateMarket{}
 
+// GetSigners gets the address that must sign this message.
+func (m *MsgCreateMarket) GetSigners() []sdk.AccAddress {
+	// convert from string to acc address
+	addr, _ := sdk.AccAddressFromBech32(m.Signer)
+	return []sdk.AccAddress{addr}
+}
+
 // ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the signer is a valid acc-address.
 func (m *MsgCreateMarket) ValidateBasic() error {
