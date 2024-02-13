@@ -24,7 +24,11 @@ func (m *MsgCreateMarket) ValidateBasic() error {
 	}
 
 	if err := m.Ticker.ValidateBasic(); err != nil {
-		return nil
+		return err
+	}
+
+	if len(m.Paths) == 0 {
+		return fmt.Errorf("at least one path is required for a ticker to be calculated")
 	}
 
 	for _, path := range m.Paths {

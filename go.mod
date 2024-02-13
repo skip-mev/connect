@@ -1,6 +1,8 @@
 module github.com/skip-mev/slinky
 
-go 1.21
+go 1.21.4
+
+toolchain go1.22.0
 
 require (
 	cosmossdk.io/api v0.7.2
@@ -53,6 +55,8 @@ require (
 	google.golang.org/protobuf v1.32.0
 	mvdan.cc/gofumpt v0.6.0
 )
+
+require github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
