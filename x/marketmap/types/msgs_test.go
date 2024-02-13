@@ -3,12 +3,10 @@ package types_test
 import (
 	"testing"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-
+	"github.com/skip-mev/chaintestutil/sample"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/chaintestutil/sample"
-
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
