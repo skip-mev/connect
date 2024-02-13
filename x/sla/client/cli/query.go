@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
@@ -29,7 +30,7 @@ func GetQueryCmd() *cobra.Command {
 
 // GetAllSLAsCmd returns the cli-command that queries all SLAs in the store.
 func GetAllSLAsCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "slas",
 		Short: "Query for all SLAs in the store",
 		Args:  cobra.NoArgs,
@@ -48,11 +49,13 @@ func GetAllSLAsCmd() *cobra.Command {
 			return clientCtx.PrintProto(resp)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 // GetParamsCmd returns the cli-command that queries the current SLA parameters.
 func GetParamsCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "params",
 		Short: "Query for the current SLA parameters",
 		Args:  cobra.NoArgs,
@@ -71,4 +74,6 @@ func GetParamsCmd() *cobra.Command {
 			return clientCtx.PrintProto(resp)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
