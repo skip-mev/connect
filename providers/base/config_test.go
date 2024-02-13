@@ -161,15 +161,15 @@ func TestConfigUpdater(t *testing.T) {
 		responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
 			providertypes.NewGetResponse(resolved, nil),
 		}
-		updatedApiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](t, logger, responses)
-		updater.UpdateAPIHandler(updatedApiHandler)
+		updatedAPIHandler := testutils.CreateAPIQueryHandlerWithGetResponses[oracletypes.CurrencyPair, *big.Int](t, logger, responses)
+		updater.UpdateAPIHandler(updatedAPIHandler)
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
 
 		// The API handler should be updated.
 		handler = provider.GetAPIHandler()
-		require.Equal(t, updatedApiHandler, handler)
+		require.Equal(t, updatedAPIHandler, handler)
 
 		// Check that the provider exited without error.
 		require.Equal(t, context.DeadlineExceeded, <-errCh)

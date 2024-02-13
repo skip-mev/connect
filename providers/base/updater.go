@@ -1,7 +1,6 @@
 package base
 
 import (
-	apihandler "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -44,7 +43,7 @@ type (
 
 		// apiHandlerCh is the channel that is used to update the API handler that the provider
 		// will use to fetch data.
-		apiHandlerCh chan apihandler.APIQueryHandler[K, V]
+		apiHandlerCh chan apihandlers.APIQueryHandler[K, V]
 
 		// wsHandlerCh is the channel that is used to update the WebSocket handler that the provider
 		// will use to fetch data.
@@ -56,7 +55,7 @@ type (
 func NewConfigUpdater[K providertypes.ResponseKey, V providertypes.ResponseValue]() ConfigUpdater[K, V] {
 	return &ConfigUpdaterImpl[K, V]{
 		idsCh:        make(chan []K, 1),
-		apiHandlerCh: make(chan apihandler.APIQueryHandler[K, V], 1),
+		apiHandlerCh: make(chan apihandlers.APIQueryHandler[K, V], 1),
 		wsHandlerCh:  make(chan wshandlers.WebSocketQueryHandler[K, V], 1),
 	}
 }
@@ -72,12 +71,12 @@ func (c *ConfigUpdaterImpl[K, V]) UpdateIDs(ids []K) {
 }
 
 // GetAPIHandler updates the API handler that the provider will use to fetch data.
-func (c *ConfigUpdaterImpl[K, V]) GetAPIHandler() <-chan apihandler.APIQueryHandler[K, V] {
+func (c *ConfigUpdaterImpl[K, V]) GetAPIHandler() <-chan apihandlers.APIQueryHandler[K, V] {
 	return c.apiHandlerCh
 }
 
 // UpdateAPIHandler sets the API handler that the provider will use to fetch data.
-func (c *ConfigUpdaterImpl[K, V]) UpdateAPIHandler(apiHandler apihandler.APIQueryHandler[K, V]) {
+func (c *ConfigUpdaterImpl[K, V]) UpdateAPIHandler(apiHandler apihandlers.APIQueryHandler[K, V]) {
 	c.apiHandlerCh <- apiHandler
 }
 
