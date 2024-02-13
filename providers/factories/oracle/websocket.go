@@ -19,6 +19,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
+
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
@@ -26,7 +27,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func OracleWebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
+// WebSocketQueryHandlerFactory returns a sample implementation of the websocket query handler
+// factory. Specifically, this factory function returns websocket query handlers that are used to
+// fetch data from the price providers.
+func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
 	return func(logger *zap.Logger, cfg config.ProviderConfig, wsMetrics wsmetrics.WebSocketMetrics) (wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int], error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()

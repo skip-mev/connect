@@ -23,7 +23,6 @@ type DefaultOracleProviderFactory struct {
 
 	// apiFactory is the factory function that creates API query handlers.
 	apiFactory factory.APIQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int]
-
 	// wsFactory is the factory function that creates websocket query handlers.
 	wsFactory factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int]
 }
