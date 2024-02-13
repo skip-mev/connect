@@ -22,6 +22,9 @@ type Keeper struct {
 	// aggregationConfigs is keyed by CurrencyPair string (BASE/QUOTE) and contains the PathsConfig used
 	// to do price aggregation for a given canonical Ticker
 	aggregationConfigs collections.Map[types.TickerString, types.PathsConfig]
+
+	// lastUpdated is the last block height the marketmap was updated.
+	lastUpdated collections.Item[int64]
 }
 
 // NewKeeper initializes the keeper and its backing stores.
@@ -33,7 +36,18 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 		authority:          authority,
 		marketConfigs:      collections.NewMap(sb, types.MarketConfigsPrefix, "market_configs", types.MarketProviderCodec, codec.CollValue[types.MarketConfig](cdc)),
 		aggregationConfigs: collections.NewMap(sb, types.AggregationConfigsPrefix, "aggregation_configs", types.TickerStringCodec, codec.CollValue[types.PathsConfig](cdc)),
+		lastUpdated:        collections.NewItem[int64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
 	}
+}
+
+// setLastUpdated sets the lastUpdated field to the current block height.
+func (k Keeper) setLastUpdated(ctx sdk.Context) error {
+	return k.lastUpdated.Set(ctx, ctx.BlockHeight())
+}
+
+// GetLastUpdated gets the last block-height the market map was updated.
+func (k Keeper) GetLastUpdated(ctx sdk.Context) (int64, error) {
+	return k.lastUpdated.Get(ctx)
 }
 
 // GetAllMarketConfigs returns the set of MarketConfig objects currently stored in state.
@@ -102,7 +116,12 @@ func (k Keeper) CreateAggregationConfig(ctx sdk.Context, pathsConfig types.Paths
 		return types.NewAggregationConfigAlreadyExistsError(configKey)
 	}
 	// Create the config
-	return k.aggregationConfigs.Set(ctx, configKey, pathsConfig)
+	err = k.aggregationConfigs.Set(ctx, configKey, pathsConfig)
+	if err != nil {
+		return err
+	}
+
+	return k.setLastUpdated(ctx)
 }
 
 // CreateMarketConfig initializes a new MarketConfig.
@@ -117,5 +136,10 @@ func (k Keeper) CreateMarketConfig(ctx sdk.Context, marketConfig types.MarketCon
 		return types.NewMarketConfigAlreadyExistsError(types.MarketProvider(marketConfig.Name))
 	}
 	// Create the config
-	return k.marketConfigs.Set(ctx, types.MarketProvider(marketConfig.Name), marketConfig)
+	err = k.marketConfigs.Set(ctx, types.MarketProvider(marketConfig.Name), marketConfig)
+	if err != nil {
+		return err
+	}
+
+	return k.setLastUpdated(ctx)
 }
