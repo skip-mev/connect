@@ -12,10 +12,10 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func (s *OracleTestSuite) TestProviders() {
@@ -24,16 +24,16 @@ func (s *OracleTestSuite) TestProviders() {
 
 	testCases := []struct {
 		name           string
-		factory        providertypes.ProviderFactory[oracletypes.CurrencyPair, *big.Int]
-		expectedPrices map[oracletypes.CurrencyPair]*big.Int
+		factory        providertypes.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
+		expectedPrices map[slinkytypes.CurrencyPair]*big.Int
 	}{
 		{
 			name: "1 provider with no prices",
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
+				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -41,26 +41,26 @@ func (s *OracleTestSuite) TestProviders() {
 					nil,
 				)
 
-				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				providers := []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]{provider}
 				return providers, nil
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
 		{
 			name: "1 provider with prices",
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -68,10 +68,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				providers := []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]{provider}
 				return providers, nil
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				s.currencyPairs[0]: big.NewInt(100),
 			},
 		},
@@ -80,16 +80,16 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -97,15 +97,15 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				resolved2 := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved2 := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(200),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response2 := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved2, nil)
-				responses2 := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response2}
-				provider2 := testutils.CreateWebSocketProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				response2 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved2, nil)
+				responses2 := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{response2}
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					s.T(),
 					time.Second*2,
 					providerCfg2,
@@ -113,10 +113,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses2,
 				)
 
-				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider, provider2}
+				providers := []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]{provider, provider2}
 				return providers, nil
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				s.currencyPairs[0]: big.NewInt(150),
 			},
 		},
@@ -125,16 +125,16 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -142,10 +142,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider, s.noStartProvider("provider2")}
+				providers := []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]{provider, s.noStartProvider("provider2")}
 				return providers, nil
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
 				s.currencyPairs[0]: big.NewInt(100),
 			},
 		},
@@ -154,16 +154,16 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				*zap.Logger,
 				config.OracleConfig,
-			) ([]providertypes.Provider[oracletypes.CurrencyPair, *big.Int], error) {
-				resolved := map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
+			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(1738, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[oracletypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -171,10 +171,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				providers := []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]{provider}
+				providers := []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]{provider}
 				return providers, nil
 			},
-			expectedPrices: map[oracletypes.CurrencyPair]*big.Int{},
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
 	}
 
@@ -216,8 +216,8 @@ func (s *OracleTestSuite) TestProviders() {
 	}
 }
 
-func (s *OracleTestSuite) noStartProvider(name string) providertypes.Provider[oracletypes.CurrencyPair, *big.Int] {
-	provider := providermocks.NewProvider[oracletypes.CurrencyPair, *big.Int](s.T())
+func (s *OracleTestSuite) noStartProvider(name string) providertypes.Provider[slinkytypes.CurrencyPair, *big.Int] {
+	provider := providermocks.NewProvider[slinkytypes.CurrencyPair, *big.Int](s.T())
 
 	provider.On("Name").Return(name).Maybe()
 	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz error")).Maybe()

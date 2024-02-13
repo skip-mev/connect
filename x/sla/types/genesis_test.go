@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -47,7 +47,7 @@ func TestGenesisState(t *testing.T) {
 
 	val1 := sdk.ConsAddress([]byte("val1"))
 
-	cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
+	cp1 := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 	goodFeed1, err := slatypes.NewPriceFeed(10, val1, cp1, "test")
 	require.NoError(t, err)

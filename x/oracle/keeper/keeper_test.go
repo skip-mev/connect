@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -45,13 +46,13 @@ func TestKeeperTestSuite(t *testing.T) {
 func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	tcs := []struct {
 		name       string
-		cp         types.CurrencyPair
+		cp         slinkytypes.CurrencyPair
 		price      types.QuotePrice
 		expectPass bool
 	}{
 		{
 			"if the currency pair is correctly formatted - pass",
-			types.CurrencyPair{
+			slinkytypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "BB",
 			},
@@ -88,7 +89,7 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 
 func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	// insert a cp + qp pair, and check that the nonce is zero
-	cp := types.CurrencyPair{
+	cp := slinkytypes.CurrencyPair{
 		Base:  "AA",
 		Quote: "BB",
 	}
@@ -133,14 +134,14 @@ func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 
 func (s *KeeperTestSuite) TestGetAllCPs() {
 	// insert multiple currency pairs
-	cp1 := types.CurrencyPair{
+	cp1 := slinkytypes.CurrencyPair{
 		Base:  "AA",
 		Quote: "BB",
 	}
 	qp1 := types.QuotePrice{
 		Price: sdkmath.NewInt(100),
 	}
-	cp2 := types.CurrencyPair{
+	cp2 := slinkytypes.CurrencyPair{
 		Base:  "CC",
 		Quote: "DD",
 	}
@@ -167,7 +168,7 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 }
 
 func (s *KeeperTestSuite) TestCreateCurrencyPair() {
-	cp := types.CurrencyPair{
+	cp := slinkytypes.CurrencyPair{
 		Base:  "NEW",
 		Quote: "PAIR",
 	}
@@ -201,12 +202,12 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 }
 
 func (s *KeeperTestSuite) TestIDForCurrencyPair() {
-	cp1 := types.CurrencyPair{
+	cp1 := slinkytypes.CurrencyPair{
 		Base:  "PAIR",
 		Quote: "1",
 	}
 
-	cp2 := types.CurrencyPair{
+	cp2 := slinkytypes.CurrencyPair{
 		Base:  "PAIR",
 		Quote: "2",
 	}
@@ -268,7 +269,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	})
 
 	s.Run("insert another currency-pair, and expect that unusedID + 1 is used", func() {
-		cp3 := types.CurrencyPair{
+		cp3 := slinkytypes.CurrencyPair{
 			Base:  "PAIR",
 			Quote: "3",
 		}

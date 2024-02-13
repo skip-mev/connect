@@ -45,8 +45,10 @@ func TestKeeperTestSuite(t *testing.T) {
 func (s *KeeperTestSuite) TestMarketConfigs() {
 	btcEthTickerConfig := types.TickerConfig{
 		Ticker: types.Ticker{
-			Base:             "BTC",
-			Quote:            "ETH",
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BTC",
+				Quote: "ETH",
+			},
 			Decimals:         8,
 			MinProviderCount: 1,
 		},
@@ -54,8 +56,10 @@ func (s *KeeperTestSuite) TestMarketConfigs() {
 	}
 	atomUsdcTickerConfig := types.TickerConfig{
 		Ticker: types.Ticker{
-			Base:             "BTC",
-			Quote:            "ETH",
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BTC",
+				Quote: "ETH",
+			},
 			Decimals:         8,
 			MinProviderCount: 1,
 		},
@@ -92,25 +96,23 @@ func (s *KeeperTestSuite) TestAggregationConfigs() {
 	cp1 := slinkytypes.CurrencyPair{Base: "BTC", Quote: "ETH"}
 	aggCfg1 := types.PathsConfig{
 		Ticker: types.Ticker{
-			Base:             cp1.Base,
-			Quote:            cp1.Quote,
+			CurrencyPair:     cp1,
 			Decimals:         0,
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{Base: cp1.Base, Quote: cp1.Quote}}}},
+			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp1}}}},
 		},
 	}
 	cp2 := slinkytypes.CurrencyPair{Base: "ATOM", Quote: "USDC"}
 	aggCfg2 := types.PathsConfig{
 		Ticker: types.Ticker{
-			Base:             cp2.Base,
-			Quote:            cp2.Quote,
+			CurrencyPair:     cp2,
 			Decimals:         0,
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{Base: cp2.Base, Quote: cp2.Quote}}}},
+			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp2}}}},
 		},
 	}
 	s.Run("creating valid agg configs passes", func() {
@@ -131,19 +133,20 @@ func (s *KeeperTestSuite) TestMarketMap() {
 	cp1 := slinkytypes.CurrencyPair{Base: "BTC", Quote: "ETH"}
 	aggCfg1 := types.PathsConfig{
 		Ticker: types.Ticker{
-			Base:             cp1.Base,
-			Quote:            cp1.Quote,
+			CurrencyPair:     cp1,
 			Decimals:         0,
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{Base: cp1.Base, Quote: cp1.Quote}}}},
+			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp1}}}},
 		},
 	}
 	btcEthTickerConfig := types.TickerConfig{
 		Ticker: types.Ticker{
-			Base:             "BTC",
-			Quote:            "ETH",
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BTC",
+				Quote: "ETH",
+			},
 			Decimals:         8,
 			MinProviderCount: 1,
 		},

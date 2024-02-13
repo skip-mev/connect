@@ -6,6 +6,7 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
+	v1 "github.com/skip-mev/slinky/api/slinky/types/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -14,490 +15,6 @@ import (
 	reflect "reflect"
 	sync "sync"
 )
-
-var (
-	md_CurrencyPair       protoreflect.MessageDescriptor
-	fd_CurrencyPair_Base  protoreflect.FieldDescriptor
-	fd_CurrencyPair_Quote protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_slinky_oracle_v1_genesis_proto_init()
-	md_CurrencyPair = File_slinky_oracle_v1_genesis_proto.Messages().ByName("CurrencyPair")
-	fd_CurrencyPair_Base = md_CurrencyPair.Fields().ByName("Base")
-	fd_CurrencyPair_Quote = md_CurrencyPair.Fields().ByName("Quote")
-}
-
-var _ protoreflect.Message = (*fastReflection_CurrencyPair)(nil)
-
-type fastReflection_CurrencyPair CurrencyPair
-
-func (x *CurrencyPair) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_CurrencyPair)(x)
-}
-
-func (x *CurrencyPair) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_CurrencyPair_messageType fastReflection_CurrencyPair_messageType
-var _ protoreflect.MessageType = fastReflection_CurrencyPair_messageType{}
-
-type fastReflection_CurrencyPair_messageType struct{}
-
-func (x fastReflection_CurrencyPair_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_CurrencyPair)(nil)
-}
-func (x fastReflection_CurrencyPair_messageType) New() protoreflect.Message {
-	return new(fastReflection_CurrencyPair)
-}
-func (x fastReflection_CurrencyPair_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_CurrencyPair
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_CurrencyPair) Descriptor() protoreflect.MessageDescriptor {
-	return md_CurrencyPair
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_CurrencyPair) Type() protoreflect.MessageType {
-	return _fastReflection_CurrencyPair_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_CurrencyPair) New() protoreflect.Message {
-	return new(fastReflection_CurrencyPair)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_CurrencyPair) Interface() protoreflect.ProtoMessage {
-	return (*CurrencyPair)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_CurrencyPair) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Base != "" {
-		value := protoreflect.ValueOfString(x.Base)
-		if !f(fd_CurrencyPair_Base, value) {
-			return
-		}
-	}
-	if x.Quote != "" {
-		value := protoreflect.ValueOfString(x.Quote)
-		if !f(fd_CurrencyPair_Quote, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_CurrencyPair) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "slinky.oracle.v1.CurrencyPair.Base":
-		return x.Base != ""
-	case "slinky.oracle.v1.CurrencyPair.Quote":
-		return x.Quote != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
-		}
-		panic(fmt.Errorf("message slinky.oracle.v1.CurrencyPair does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CurrencyPair) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "slinky.oracle.v1.CurrencyPair.Base":
-		x.Base = ""
-	case "slinky.oracle.v1.CurrencyPair.Quote":
-		x.Quote = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
-		}
-		panic(fmt.Errorf("message slinky.oracle.v1.CurrencyPair does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_CurrencyPair) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "slinky.oracle.v1.CurrencyPair.Base":
-		value := x.Base
-		return protoreflect.ValueOfString(value)
-	case "slinky.oracle.v1.CurrencyPair.Quote":
-		value := x.Quote
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
-		}
-		panic(fmt.Errorf("message slinky.oracle.v1.CurrencyPair does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CurrencyPair) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "slinky.oracle.v1.CurrencyPair.Base":
-		x.Base = value.Interface().(string)
-	case "slinky.oracle.v1.CurrencyPair.Quote":
-		x.Quote = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
-		}
-		panic(fmt.Errorf("message slinky.oracle.v1.CurrencyPair does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CurrencyPair) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.oracle.v1.CurrencyPair.Base":
-		panic(fmt.Errorf("field Base of message slinky.oracle.v1.CurrencyPair is not mutable"))
-	case "slinky.oracle.v1.CurrencyPair.Quote":
-		panic(fmt.Errorf("field Quote of message slinky.oracle.v1.CurrencyPair is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
-		}
-		panic(fmt.Errorf("message slinky.oracle.v1.CurrencyPair does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_CurrencyPair) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.oracle.v1.CurrencyPair.Base":
-		return protoreflect.ValueOfString("")
-	case "slinky.oracle.v1.CurrencyPair.Quote":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPair"))
-		}
-		panic(fmt.Errorf("message slinky.oracle.v1.CurrencyPair does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_CurrencyPair) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.oracle.v1.CurrencyPair", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_CurrencyPair) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_CurrencyPair) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_CurrencyPair) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_CurrencyPair) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*CurrencyPair)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Base)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Quote)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*CurrencyPair)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Quote) > 0 {
-			i -= len(x.Quote)
-			copy(dAtA[i:], x.Quote)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Quote)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.Base) > 0 {
-			i -= len(x.Base)
-			copy(dAtA[i:], x.Base)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Base)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*CurrencyPair)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CurrencyPair: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CurrencyPair: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Base", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Base = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Quote", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Quote = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
 
 var (
 	md_QuotePrice                 protoreflect.MessageDescriptor
@@ -523,7 +40,7 @@ func (x *QuotePrice) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QuotePrice) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[1]
+	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,7 +587,7 @@ func (x *CurrencyPairState) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CurrencyPairState) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[2]
+	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1603,7 +1120,7 @@ func (x *CurrencyPairGenesis) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CurrencyPairGenesis) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[3]
+	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1779,7 +1296,7 @@ func (x *fastReflection_CurrencyPairGenesis) Get(descriptor protoreflect.FieldDe
 func (x *fastReflection_CurrencyPairGenesis) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "slinky.oracle.v1.CurrencyPairGenesis.currency_pair":
-		x.CurrencyPair = value.Message().Interface().(*CurrencyPair)
+		x.CurrencyPair = value.Message().Interface().(*v1.CurrencyPair)
 	case "slinky.oracle.v1.CurrencyPairGenesis.currency_pair_price":
 		x.CurrencyPairPrice = value.Message().Interface().(*QuotePrice)
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
@@ -1808,7 +1325,7 @@ func (x *fastReflection_CurrencyPairGenesis) Mutable(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	case "slinky.oracle.v1.CurrencyPairGenesis.currency_pair":
 		if x.CurrencyPair == nil {
-			x.CurrencyPair = new(CurrencyPair)
+			x.CurrencyPair = new(v1.CurrencyPair)
 		}
 		return protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
 	case "slinky.oracle.v1.CurrencyPairGenesis.currency_pair_price":
@@ -1834,7 +1351,7 @@ func (x *fastReflection_CurrencyPairGenesis) Mutable(fd protoreflect.FieldDescri
 func (x *fastReflection_CurrencyPairGenesis) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "slinky.oracle.v1.CurrencyPairGenesis.currency_pair":
-		m := new(CurrencyPair)
+		m := new(v1.CurrencyPair)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "slinky.oracle.v1.CurrencyPairGenesis.currency_pair_price":
 		m := new(QuotePrice)
@@ -2072,7 +1589,7 @@ func (x *fastReflection_CurrencyPairGenesis) ProtoMethods() *protoiface.Methods 
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				if x.CurrencyPair == nil {
-					x.CurrencyPair = &CurrencyPair{}
+					x.CurrencyPair = &v1.CurrencyPair{}
 				}
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.CurrencyPair); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
@@ -2260,7 +1777,7 @@ func (x *GenesisState) ProtoReflect() protoreflect.Message {
 }
 
 func (x *GenesisState) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[4]
+	mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2742,51 +2259,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// CurrencyPair is the standard representation of a pair of assets, where one
-// (Base) is priced in terms of the other (Quote)
-type CurrencyPair struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Base  string `protobuf:"bytes,1,opt,name=Base,proto3" json:"Base,omitempty"`
-	Quote string `protobuf:"bytes,2,opt,name=Quote,proto3" json:"Quote,omitempty"`
-}
-
-func (x *CurrencyPair) Reset() {
-	*x = CurrencyPair{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CurrencyPair) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CurrencyPair) ProtoMessage() {}
-
-// Deprecated: Use CurrencyPair.ProtoReflect.Descriptor instead.
-func (*CurrencyPair) Descriptor() ([]byte, []int) {
-	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *CurrencyPair) GetBase() string {
-	if x != nil {
-		return x.Base
-	}
-	return ""
-}
-
-func (x *CurrencyPair) GetQuote() string {
-	if x != nil {
-		return x.Quote
-	}
-	return ""
-}
-
 // QuotePrice is the representation of the aggregated prices for a CurrencyPair,
 // where price represents the price of Base in terms of Quote
 type QuotePrice struct {
@@ -2806,7 +2278,7 @@ type QuotePrice struct {
 func (x *QuotePrice) Reset() {
 	*x = QuotePrice{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[1]
+		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2820,7 +2292,7 @@ func (*QuotePrice) ProtoMessage() {}
 
 // Deprecated: Use QuotePrice.ProtoReflect.Descriptor instead.
 func (*QuotePrice) Descriptor() ([]byte, []int) {
-	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{1}
+	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *QuotePrice) GetPrice() string {
@@ -2863,7 +2335,7 @@ type CurrencyPairState struct {
 func (x *CurrencyPairState) Reset() {
 	*x = CurrencyPairState{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[2]
+		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2877,7 +2349,7 @@ func (*CurrencyPairState) ProtoMessage() {}
 
 // Deprecated: Use CurrencyPairState.ProtoReflect.Descriptor instead.
 func (*CurrencyPairState) Descriptor() ([]byte, []int) {
-	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{2}
+	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *CurrencyPairState) GetPrice() *QuotePrice {
@@ -2909,7 +2381,7 @@ type CurrencyPairGenesis struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The CurrencyPair to be added to module state
-	CurrencyPair *CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
+	CurrencyPair *v1.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
 	// A genesis price if one exists (note this will be empty, unless it results
 	// from forking the state of this module)
 	CurrencyPairPrice *QuotePrice `protobuf:"bytes,2,opt,name=currency_pair_price,json=currencyPairPrice,proto3" json:"currency_pair_price,omitempty"`
@@ -2923,7 +2395,7 @@ type CurrencyPairGenesis struct {
 func (x *CurrencyPairGenesis) Reset() {
 	*x = CurrencyPairGenesis{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[3]
+		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2937,10 +2409,10 @@ func (*CurrencyPairGenesis) ProtoMessage() {}
 
 // Deprecated: Use CurrencyPairGenesis.ProtoReflect.Descriptor instead.
 func (*CurrencyPairGenesis) Descriptor() ([]byte, []int) {
-	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{3}
+	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CurrencyPairGenesis) GetCurrencyPair() *CurrencyPair {
+func (x *CurrencyPairGenesis) GetCurrencyPair() *v1.CurrencyPair {
 	if x != nil {
 		return x.CurrencyPair
 	}
@@ -2986,7 +2458,7 @@ type GenesisState struct {
 func (x *GenesisState) Reset() {
 	*x = GenesisState{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[4]
+		mi := &file_slinky_oracle_v1_genesis_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3000,7 +2472,7 @@ func (*GenesisState) ProtoMessage() {}
 
 // Deprecated: Use GenesisState.ProtoReflect.Descriptor instead.
 func (*GenesisState) Descriptor() ([]byte, []int) {
-	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{4}
+	return file_slinky_oracle_v1_genesis_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GenesisState) GetCurrencyPairGenesis() []*CurrencyPairGenesis {
@@ -3028,34 +2500,32 @@ var file_slinky_oracle_v1_genesis_proto_rawDesc = []byte{
 	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74,
 	0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
 	0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x42, 0x0a, 0x0c, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
-	0x50, 0x61, 0x69, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x42, 0x61, 0x73, 0x65, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x42, 0x61, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x51, 0x75, 0x6f, 0x74,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x3a, 0x08,
-	0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x22, 0xc1, 0x01, 0x0a, 0x0a, 0x51, 0x75, 0x6f,
-	0x74, 0x65, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x41, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2b, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x15,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74,
-	0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x49, 0x6e, 0x74, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x4d, 0x0a, 0x0f, 0x62, 0x6c,
-	0x6f, 0x63, 0x6b, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42,
-	0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0e, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
-	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c, 0x6f,
-	0x63, 0x6b, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x22, 0x73, 0x0a, 0x11,
-	0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x53, 0x74, 0x61, 0x74,
-	0x65, 0x12, 0x38, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1c, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x50, 0x72, 0x69, 0x63, 0x65, 0x42, 0x04,
-	0xc8, 0xde, 0x1f, 0x01, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6e,
-	0x6f, 0x6e, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63,
-	0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69,
-	0x64, 0x22, 0xda, 0x01, 0x0a, 0x13, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61,
-	0x69, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x12, 0x49, 0x0a, 0x0d, 0x63, 0x75, 0x72,
-	0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1e, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x23, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x74, 0x79, 0x70,
+	0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70,
+	0x61, 0x69, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc1, 0x01, 0x0a, 0x0a, 0x51, 0x75,
+	0x6f, 0x74, 0x65, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x41, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2b, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f,
+	0x15, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
+	0x74, 0x68, 0x2e, 0x49, 0x6e, 0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x49, 0x6e, 0x74, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x4d, 0x0a, 0x0f, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0e, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x22, 0x73, 0x0a,
+	0x11, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x53, 0x74, 0x61,
+	0x74, 0x65, 0x12, 0x38, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1c, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c,
+	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x50, 0x72, 0x69, 0x63, 0x65, 0x42,
+	0x04, 0xc8, 0xde, 0x1f, 0x01, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x14, 0x0a, 0x05,
+	0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x6e, 0x6f, 0x6e,
+	0x63, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
+	0x69, 0x64, 0x22, 0xd9, 0x01, 0x0a, 0x13, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
+	0x61, 0x69, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x12, 0x48, 0x0a, 0x0d, 0x63, 0x75,
+	0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73,
 	0x2e, 0x76, 0x31, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72,
 	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
 	0x50, 0x61, 0x69, 0x72, 0x12, 0x52, 0x0a, 0x13, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
@@ -3101,21 +2571,21 @@ func file_slinky_oracle_v1_genesis_proto_rawDescGZIP() []byte {
 	return file_slinky_oracle_v1_genesis_proto_rawDescData
 }
 
-var file_slinky_oracle_v1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_slinky_oracle_v1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_slinky_oracle_v1_genesis_proto_goTypes = []interface{}{
-	(*CurrencyPair)(nil),          // 0: slinky.oracle.v1.CurrencyPair
-	(*QuotePrice)(nil),            // 1: slinky.oracle.v1.QuotePrice
-	(*CurrencyPairState)(nil),     // 2: slinky.oracle.v1.CurrencyPairState
-	(*CurrencyPairGenesis)(nil),   // 3: slinky.oracle.v1.CurrencyPairGenesis
-	(*GenesisState)(nil),          // 4: slinky.oracle.v1.GenesisState
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*QuotePrice)(nil),            // 0: slinky.oracle.v1.QuotePrice
+	(*CurrencyPairState)(nil),     // 1: slinky.oracle.v1.CurrencyPairState
+	(*CurrencyPairGenesis)(nil),   // 2: slinky.oracle.v1.CurrencyPairGenesis
+	(*GenesisState)(nil),          // 3: slinky.oracle.v1.GenesisState
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*v1.CurrencyPair)(nil),       // 5: slinky.types.v1.CurrencyPair
 }
 var file_slinky_oracle_v1_genesis_proto_depIdxs = []int32{
-	5, // 0: slinky.oracle.v1.QuotePrice.block_timestamp:type_name -> google.protobuf.Timestamp
-	1, // 1: slinky.oracle.v1.CurrencyPairState.price:type_name -> slinky.oracle.v1.QuotePrice
-	0, // 2: slinky.oracle.v1.CurrencyPairGenesis.currency_pair:type_name -> slinky.oracle.v1.CurrencyPair
-	1, // 3: slinky.oracle.v1.CurrencyPairGenesis.currency_pair_price:type_name -> slinky.oracle.v1.QuotePrice
-	3, // 4: slinky.oracle.v1.GenesisState.currency_pair_genesis:type_name -> slinky.oracle.v1.CurrencyPairGenesis
+	4, // 0: slinky.oracle.v1.QuotePrice.block_timestamp:type_name -> google.protobuf.Timestamp
+	0, // 1: slinky.oracle.v1.CurrencyPairState.price:type_name -> slinky.oracle.v1.QuotePrice
+	5, // 2: slinky.oracle.v1.CurrencyPairGenesis.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	0, // 3: slinky.oracle.v1.CurrencyPairGenesis.currency_pair_price:type_name -> slinky.oracle.v1.QuotePrice
+	2, // 4: slinky.oracle.v1.GenesisState.currency_pair_genesis:type_name -> slinky.oracle.v1.CurrencyPairGenesis
 	5, // [5:5] is the sub-list for method output_type
 	5, // [5:5] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -3130,18 +2600,6 @@ func file_slinky_oracle_v1_genesis_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_slinky_oracle_v1_genesis_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CurrencyPair); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_slinky_oracle_v1_genesis_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QuotePrice); i {
 			case 0:
 				return &v.state
@@ -3153,7 +2611,7 @@ func file_slinky_oracle_v1_genesis_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_oracle_v1_genesis_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_oracle_v1_genesis_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CurrencyPairState); i {
 			case 0:
 				return &v.state
@@ -3165,7 +2623,7 @@ func file_slinky_oracle_v1_genesis_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_oracle_v1_genesis_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_oracle_v1_genesis_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CurrencyPairGenesis); i {
 			case 0:
 				return &v.state
@@ -3177,7 +2635,7 @@ func file_slinky_oracle_v1_genesis_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_oracle_v1_genesis_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_oracle_v1_genesis_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GenesisState); i {
 			case 0:
 				return &v.state
@@ -3196,7 +2654,7 @@ func file_slinky_oracle_v1_genesis_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_slinky_oracle_v1_genesis_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

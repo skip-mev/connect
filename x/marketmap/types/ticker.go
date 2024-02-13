@@ -2,7 +2,8 @@ package types
 
 import (
 	"fmt"
-	"strings"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 const (
@@ -18,8 +19,10 @@ const (
 // places and has a minimum number of providers required to consider the ticker valid.
 func NewTicker(base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
 	t := Ticker{
-		Base:             base,
-		Quote:            quote,
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  base,
+			Quote: quote,
+		},
 		Decimals:         decimals,
 		MinProviderCount: minProviderCount,
 	}
@@ -33,26 +36,11 @@ func NewTicker(base, quote string, decimals, minProviderCount uint64) (Ticker, e
 
 // String returns a string representation of the Ticker.
 func (t *Ticker) String() string {
-	return fmt.Sprintf("%s/%s", t.Base, t.Quote)
+	return t.CurrencyPair.String()
 }
 
 // ValidateBasic performs basic validation on the Ticker.
 func (t *Ticker) ValidateBasic() error {
-	if len(t.Base) == 0 {
-		return fmt.Errorf("base cannot be empty")
-	}
-	if len(t.Quote) == 0 {
-		return fmt.Errorf("quote cannot be empty")
-	}
-
-	// Ensure the base and quote are upper case.
-	if strings.ToUpper(t.Base) != t.Base {
-		return fmt.Errorf("base must be upper case; got %s", t.Base)
-	}
-	if strings.ToUpper(t.Quote) != t.Quote {
-		return fmt.Errorf("quote must be upper case; got %s", t.Quote)
-	}
-
 	if t.Decimals > DefaultMaxDecimals || t.Decimals == 0 {
 		return fmt.Errorf("decimals must be between 1 and %d; got %d", DefaultMaxDecimals, t.Decimals)
 	}
@@ -60,7 +48,7 @@ func (t *Ticker) ValidateBasic() error {
 		return fmt.Errorf("min provider count must be at least %d; got %d", DefaultMinProviderCount, t.MinProviderCount)
 	}
 
-	return nil
+	return t.CurrencyPair.ValidateBasic()
 }
 
 // NewTickerConfig returns a new TickerConfig instance. The TickerConfig is

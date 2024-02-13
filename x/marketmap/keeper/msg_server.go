@@ -19,7 +19,7 @@ func NewMsgServer(k Keeper) types.MsgServer {
 var _ types.MsgServer = (*msgServer)(nil)
 
 // CreateMarket creates a market from the given message.
-func (ms msgServer) CreateMarket(ctx context.Context, msg *types.MsgCreateMarket) (*types.MsgCreateMarketResponse, error) {
+func (ms msgServer) CreateMarket(_ context.Context, _ *types.MsgCreateMarket) (*types.MsgCreateMarketResponse, error) {
 	// TODO finish
 
 	return nil, nil

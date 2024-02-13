@@ -2,7 +2,7 @@ package bitfinex
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 const (
@@ -40,23 +40,23 @@ var (
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"BITCOIN/USD": {
 				Ticker:       "BTCUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"CELESTIA/USD": {
 				Ticker:       "TIAUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ETHBTC",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			"ETHEREUM/USD": {
 				Ticker:       "ETHUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			"SOLANA/USD": {
 				Ticker:       "SOLUSD",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
 			},
 		},
 	}

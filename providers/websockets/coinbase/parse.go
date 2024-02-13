@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseTickerResponseMessage is used to parse a ticker response message. Note
@@ -17,16 +17,16 @@ import (
 // are received at a later time.
 func (h *WebSocketDataHandler) parseTickerResponseMessage(
 	msg TickerResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unResolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// Determine if the ticker is valid.
 	market, ok := h.cfg.Market.TickerToMarketConfigs[msg.Ticker]
 	if !ok {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
 			fmt.Errorf("got response for an unsupported market %s", msg.Ticker)
 	}
 
@@ -46,19 +46,19 @@ func (h *WebSocketDataHandler) parseTickerResponseMessage(
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	// Convert the price to a big int.
 	price, err := math.Float64StringToBigInt(msg.Price, cp.Decimals())
 	if err != nil {
 		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), err
 	}
 
 	// Convert the time to a time object and resolve the price into the response.
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 
 	h.logger.Debug("successfully parsed ticker response message")
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
 }

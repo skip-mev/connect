@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	mock "github.com/stretchr/testify/mock"
 
 	types "github.com/cosmos/cosmos-sdk/types"
@@ -15,19 +15,19 @@ type OracleKeeper struct {
 }
 
 // GetAllCurrencyPairs provides a mock function with given fields: ctx
-func (_m *OracleKeeper) GetAllCurrencyPairs(ctx types.Context) []oracletypes.CurrencyPair {
+func (_m *OracleKeeper) GetAllCurrencyPairs(ctx types.Context) []pkgtypes.CurrencyPair {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetAllCurrencyPairs")
 	}
 
-	var r0 []oracletypes.CurrencyPair
-	if rf, ok := ret.Get(0).(func(types.Context) []oracletypes.CurrencyPair); ok {
+	var r0 []pkgtypes.CurrencyPair
+	if rf, ok := ret.Get(0).(func(types.Context) []pkgtypes.CurrencyPair); ok {
 		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]oracletypes.CurrencyPair)
+			r0 = ret.Get(0).([]pkgtypes.CurrencyPair)
 		}
 	}
 

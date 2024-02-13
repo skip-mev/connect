@@ -8,9 +8,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseSubscribeResponse attempts to parse a SubscribeResponse to see if it was successful.
@@ -36,15 +36,15 @@ func (h *WebsocketDataHandler) parseSubscribeResponse(
 // CurrencyPair update.
 func (h *WebsocketDataHandler) parseTickerStream(
 	stream TickerStream,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// The channel must be the tickers channel.
 	if Channel(stream.Channel) != ChannelTickers {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
 			fmt.Errorf("invalid channel %s", stream.Channel)
 	}
 
@@ -52,7 +52,7 @@ func (h *WebsocketDataHandler) parseTickerStream(
 	h.logger.Debug("received price update", zap.String("symbol", stream.Result.CurrencyPair))
 	market, ok := h.cfg.Market.TickerToMarketConfigs[stream.Result.CurrencyPair]
 	if !ok {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
 			fmt.Errorf("no currency pair found for symbol %s", stream.Result.CurrencyPair)
 	}
 
@@ -62,7 +62,7 @@ func (h *WebsocketDataHandler) parseTickerStream(
 	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals())
 	if err != nil {
 		unresolved[cp] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), unresolved[cp]
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), unresolved[cp]
 	}
 
 	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())

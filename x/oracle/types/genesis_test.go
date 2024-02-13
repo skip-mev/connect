@@ -3,6 +3,8 @@ package types_test
 import (
 	"testing"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -19,14 +21,14 @@ func TestGenesisValidation(t *testing.T) {
 			"if any of the currency-pair geneses are invalid - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
 				},
 				{
 					// invalid CurrencyPairGenesis
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base: "BB",
 					},
 				},
@@ -38,7 +40,7 @@ func TestGenesisValidation(t *testing.T) {
 			"if the CurrencyPairPrice is nil, but the nonce is non-zero - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
@@ -52,7 +54,7 @@ func TestGenesisValidation(t *testing.T) {
 			"if all of the currency-pair geneses are valid - pass",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
@@ -60,7 +62,7 @@ func TestGenesisValidation(t *testing.T) {
 				},
 				{
 					// invalid CurrencyPairGenesis
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "BB",
 						Quote: "CC",
 					},
@@ -74,14 +76,14 @@ func TestGenesisValidation(t *testing.T) {
 			"if any of the CurrencyPairGenesis ID's are duplicated - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
 					Id: 1,
 				},
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "BB",
 						Quote: "CC",
 					},
@@ -95,14 +97,14 @@ func TestGenesisValidation(t *testing.T) {
 			"if any of the CurrencyPairs are repeated - fail",
 			[]types.CurrencyPairGenesis{
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
 					Id: 1,
 				},
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},

@@ -21,10 +21,9 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const gasPrice = 100
@@ -158,7 +157,7 @@ func QueryValidators(chain *cosmos.CosmosChain) ([]stakingtypes.Validator, error
 }
 
 // UpdateNodePrices updates the price reported for a given ticker, from a specified node
-func UpdateNodePrices(node *cosmos.ChainNode, ticker oracletypes.CurrencyPair, price int64) error {
+func UpdateNodePrices(node *cosmos.ChainNode, ticker slinkytypes.CurrencyPair, price int64) error {
 	if err := StopOracle(node); err != nil {
 		return err
 	}

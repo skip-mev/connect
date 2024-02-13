@@ -3,16 +3,23 @@ package types_test
 import (
 	"testing"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/chaintestutil/sample"
+
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestValidateBasicMsgCreateMarket(t *testing.T) {
+	validCurrencyPair := slinkytypes.CurrencyPair{
+		Base:  "BTC",
+		Quote: "ETH",
+	}
+
 	validTicker := types.Ticker{
-		Base:             "BTC",
-		Quote:            "ETH",
+		CurrencyPair:     validCurrencyPair,
 		Decimals:         8,
 		MinProviderCount: 2,
 	}
@@ -34,8 +41,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			types.MsgCreateMarket{
 				Signer: sample.Address(sample.Rand()),
 				Ticker: types.Ticker{
-					Base:             "",
-					Quote:            "",
+					CurrencyPair:     validCurrencyPair,
 					Decimals:         0,
 					MinProviderCount: 0,
 				},

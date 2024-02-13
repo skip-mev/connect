@@ -14,12 +14,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/mocks"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
 	"github.com/skip-mev/slinky/x/incentives/types/examples/goodprice"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestValidatorAlertIncentive(t *testing.T) {
@@ -302,7 +302,7 @@ func TestDefaultHandler(t *testing.T) {
 			types.Alert{
 				Signer: sdk.AccAddress("test").String(),
 				Height: 1,
-				CurrencyPair: oracletypes.CurrencyPair{
+				CurrencyPair: slinkytypes.CurrencyPair{
 					Base:  "A",
 					Quote: "B",
 				},
@@ -326,7 +326,7 @@ func TestDefaultHandler(t *testing.T) {
 			types.Alert{
 				Signer: sdk.AccAddress("test").String(),
 				Height: 1,
-				CurrencyPair: oracletypes.CurrencyPair{
+				CurrencyPair: slinkytypes.CurrencyPair{
 					Base:  "A",
 					Quote: "B",
 				},
@@ -352,7 +352,7 @@ func TestDefaultHandler(t *testing.T) {
 			types.Alert{
 				Signer: sdk.AccAddress("signer").String(),
 				Height: 1,
-				CurrencyPair: oracletypes.CurrencyPair{
+				CurrencyPair: slinkytypes.CurrencyPair{
 					Base:  "A",
 					Quote: "B",
 				},
@@ -384,7 +384,7 @@ func TestDefaultHandler(t *testing.T) {
 			types.Alert{
 				Signer: sdk.AccAddress("signer").String(),
 				Height: 1,
-				CurrencyPair: oracletypes.CurrencyPair{
+				CurrencyPair: slinkytypes.CurrencyPair{
 					Base:  "A",
 					Quote: "B",
 				},
@@ -416,7 +416,7 @@ func TestDefaultHandler(t *testing.T) {
 			types.Alert{
 				Signer: sdk.AccAddress("signer").String(),
 				Height: 1,
-				CurrencyPair: oracletypes.CurrencyPair{
+				CurrencyPair: slinkytypes.CurrencyPair{
 					Base:  "A",
 					Quote: "B",
 				},

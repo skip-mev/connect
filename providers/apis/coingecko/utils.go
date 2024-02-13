@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // NOTE: All documentation for this file can be located on the CoinGecko
@@ -56,35 +56,35 @@ var (
 		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
 			"ATOM/USD": {
 				Ticker:       "cosmos/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
 			},
 			"BITCOIN/USD": {
 				Ticker:       "bitcoin/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 			},
 			"CELESTIA/USD": {
 				Ticker:       "celestia/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
 			},
 			"DYDX/USD": {
 				Ticker:       "dydx-chain/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
 			},
 			"ETHEREUM/BITCOIN": {
 				Ticker:       "ethereum/btc",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
 			},
 			"ETHEREUM/USD": {
 				Ticker:       "ethereum/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
 			},
 			"OSMOSIS/USD": {
 				Ticker:       "osmosis/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("OSMOSIS", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USD"),
 			},
 			"SOLANA/USD": {
 				Ticker:       "solana/usd",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
 			},
 		},
 	}
@@ -110,7 +110,7 @@ type (
 // from a list of currency pairs. Note that this function will only return the
 // denoms that are configured for the handler. If any of the currency pairs are
 // not configured, they will not be fetched.
-func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []oracletypes.CurrencyPair) (string, string, error) {
+func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []slinkytypes.CurrencyPair) (string, string, error) {
 	if len(pairs) == 0 {
 		return "", "", fmt.Errorf("no currency pairs specified")
 	}

@@ -8,6 +8,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -23,14 +24,14 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 			types.GenesisState{
 				CurrencyPairGenesis: []types.CurrencyPairGenesis{
 					{
-						CurrencyPair: types.CurrencyPair{
+						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "AA",
 							Quote: "BB",
 						},
 					},
 					{
 						// invalid CurrencyPairGenesis
-						CurrencyPair: types.CurrencyPair{
+						CurrencyPair: slinkytypes.CurrencyPair{
 							Base: "BB",
 						},
 					},
@@ -43,14 +44,14 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 			types.GenesisState{
 				CurrencyPairGenesis: []types.CurrencyPairGenesis{
 					{
-						CurrencyPair: types.CurrencyPair{
+						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "AA",
 							Quote: "BB",
 						},
 						Id: 0,
 					},
 					{
-						CurrencyPair: types.CurrencyPair{
+						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "BB",
 							Quote: "CC",
 						},
@@ -123,14 +124,14 @@ func catchPanic(t *testing.T, k keeper.Keeper, ctx sdk.Context, gs types.Genesis
 func (s *KeeperTestSuite) TestExportGenesis() {
 	s.Run("ExportGenesis with all valid QuotePrices", func() {
 		// insert multiple currency pairs
-		cp1 := types.CurrencyPair{
+		cp1 := slinkytypes.CurrencyPair{
 			Base:  "AA",
 			Quote: "BB",
 		}
 		qp1 := types.QuotePrice{
 			Price: sdkmath.NewInt(100),
 		}
-		cp2 := types.CurrencyPair{
+		cp2 := slinkytypes.CurrencyPair{
 			Base:  "CC",
 			Quote: "DD",
 		}
@@ -171,7 +172,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		gs := types.GenesisState{
 			CurrencyPairGenesis: []types.CurrencyPairGenesis{
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
@@ -182,7 +183,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 					Id:    0,
 				},
 				{
-					CurrencyPair: types.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "CC",
 						Quote: "DD",
 					},
@@ -202,7 +203,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		ms := keeper.NewMsgServer(s.oracleKeeper)
 		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
 			Authority: moduleAuthAddr.String(),
-			CurrencyPairs: []types.CurrencyPair{
+			CurrencyPairs: []slinkytypes.CurrencyPair{
 				{
 					Base:  "EE",
 					Quote: "FF",

@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -21,8 +22,10 @@ func TestMarketConfig(t *testing.T) {
 				TickerConfigs: map[string]types.TickerConfig{
 					"BITCOIN/USDT": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDT",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -39,8 +42,10 @@ func TestMarketConfig(t *testing.T) {
 				TickerConfigs: map[string]types.TickerConfig{
 					"BITCOIN/USDT": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDT",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -78,8 +83,10 @@ func TestMarketConfig(t *testing.T) {
 				TickerConfigs: map[string]types.TickerConfig{
 					"BITCOIN/USDC": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDT",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -96,8 +103,10 @@ func TestMarketConfig(t *testing.T) {
 				TickerConfigs: map[string]types.TickerConfig{
 					"BITCOIN/USDT": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDT",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -105,8 +114,10 @@ func TestMarketConfig(t *testing.T) {
 					},
 					"BITCOIN/USDC": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDT",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -123,8 +134,10 @@ func TestMarketConfig(t *testing.T) {
 				TickerConfigs: map[string]types.TickerConfig{
 					"BITCOIN/USDT": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDT",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},
@@ -132,8 +145,10 @@ func TestMarketConfig(t *testing.T) {
 					},
 					"BITCOIN/USDC": {
 						Ticker: types.Ticker{
-							Base:             "BITCOIN",
-							Quote:            "USDC",
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDC",
+							},
 							Decimals:         8,
 							MinProviderCount: 1,
 						},

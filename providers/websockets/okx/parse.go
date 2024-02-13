@@ -10,9 +10,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
@@ -70,15 +70,15 @@ func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeRespo
 // in the messages.go file. This message contains the latest price data for a set of instruments.
 func (h *WebsocketDataHandler) parseTickerResponseMessage(
 	resp IndexTickersResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+		unresolved = make(map[slinkytypes.CurrencyPair]error)
 	)
 
 	// The channel must be the index tickers channel.
 	if Channel(resp.Arguments.Channel) != IndexTickersChannel {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
 			fmt.Errorf("invalid channel %s", resp.Arguments.Channel)
 	}
 
@@ -102,5 +102,5 @@ func (h *WebsocketDataHandler) parseTickerResponseMessage(
 		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 	}
 
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
 }

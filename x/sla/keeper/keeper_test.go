@@ -10,7 +10,7 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/suite"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/sla/keeper"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 	"github.com/skip-mev/slinky/x/sla/types/mocks"
@@ -64,10 +64,10 @@ func (s *KeeperTestSuite) TestSetParams() {
 }
 
 func (s *KeeperTestSuite) TestSetCurrencyPairs() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
-	cp2 := oracletypes.NewCurrencyPair("eth", "usd")
+	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
+	cp2 := slinkytypes.NewCurrencyPair("eth", "usd")
 
-	testCPs := map[oracletypes.CurrencyPair]struct{}{
+	testCPs := map[slinkytypes.CurrencyPair]struct{}{
 		cp1: {},
 		cp2: {},
 	}
