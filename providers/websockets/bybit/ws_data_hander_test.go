@@ -4,59 +4,27 @@ import (
 	"encoding/json"
 	"math/big"
 	"testing"
-	"time"
-
-	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	"github.com/skip-mev/slinky/providers/constants"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
 	logger = zap.NewExample()
-
-	cfg = config.ProviderConfig{
-		Name: bybit.Name,
-		WebSocket: config.WebSocketConfig{
-			Enabled:             true,
-			MaxBufferSize:       1024,
-			ReconnectionTimeout: 10 * time.Second,
-			WSS:                 bybit.URLProd,
-			Name:                bybit.Name,
-			ReadBufferSize:      config.DefaultReadBufferSize,
-			WriteBufferSize:     config.DefaultWriteBufferSize,
-			HandshakeTimeout:    config.DefaultHandshakeTimeout,
-			EnableCompression:   config.DefaultEnableCompression,
-			ReadTimeout:         config.DefaultReadTimeout,
-			WriteTimeout:        config.DefaultWriteTimeout,
-		},
-		Market: config.MarketConfig{
-			Name: bybit.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
-					Ticker:       "BTCUSD",
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-				"ETHEREUM/USD": {
-					Ticker:       "ETHUSD",
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-				},
-			},
-		},
-	}
+	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
 )
 
 func TestHandlerMessage(t *testing.T) {
 	testCases := []struct {
 		name      string
 		msg       func() []byte
-		resp      providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp      providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 		updateMsg func() []handlers.WebsocketEncodedMessage
 		expErr    bool
 	}{
@@ -65,7 +33,7 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte("invalid message")
 			},
-			resp:      providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+			resp:      providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](nil, nil),
 			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:    true,
 		},
@@ -81,7 +49,7 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp:      providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](nil, nil),
+			resp:      providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](nil, nil),
 			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:    true,
 		},
@@ -89,9 +57,9 @@ func TestHandlerMessage(t *testing.T) {
 			name: "price update",
 			msg: func() []byte {
 				msg := bybit.TickerUpdateMessage{
-					Topic: "tickers.BTCUSD",
+					Topic: "tickers.BTCUSDT",
 					Data: bybit.TickerUpdateData{
-						Symbol:    "BTCUSD",
+						Symbol:    "BTCUSDT",
 						LastPrice: "1",
 					},
 				}
@@ -101,13 +69,13 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
+			resp: providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+					constants.BITCOIN_USDT: {
 						Value: big.NewInt(100000000),
 					},
 				},
-				map[slinkytypes.CurrencyPair]error{},
+				map[mmtypes.Ticker]error{},
 			),
 			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:    false,
@@ -128,12 +96,12 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{},
 			),
 			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
-			expErr:    false,
+			expErr:    true,
 		},
 		{
 			name: "successful subscription",
@@ -153,9 +121,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{},
 			),
 			updateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:    false,
@@ -178,20 +146,20 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
+			resp: providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{},
 			),
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
-			expErr: false,
+			expErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := bybit.NewWebSocketDataHandler(logger, cfg)
+			wsHandler, err := bybit.NewWebSocketDataHandler(logger, bybit.DefaultMarketConfig, bybit.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -221,13 +189,13 @@ func TestHandlerMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []slinkytypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		expected    func() []byte
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []slinkytypes.CurrencyPair{},
+			cps:  []mmtypes.Ticker{},
 			expected: func() []byte {
 				return nil
 			},
@@ -235,15 +203,15 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
 			},
 			expected: func() []byte {
 				msg := bybit.SubscriptionRequest{
 					BaseRequest: bybit.BaseRequest{
 						Op: string(bybit.OperationSubscribe),
 					},
-					Args: []string{"tickers.BTCUSD"},
+					Args: []string{"tickers.BTCUSDT"},
 				}
 
 				bz, err := json.Marshal(msg)
@@ -255,16 +223,16 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "two currency pairs",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
 			},
 			expected: func() []byte {
 				msg := bybit.SubscriptionRequest{
 					BaseRequest: bybit.BaseRequest{
 						Op: string(bybit.OperationSubscribe),
 					},
-					Args: []string{"tickers.BTCUSD", "tickers.ETHUSD"},
+					Args: []string{"tickers.BTCUSDT", "tickers.ETHUSDT"},
 				}
 
 				bz, err := json.Marshal(msg)
@@ -276,8 +244,8 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair not in config",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			expected: func() []byte {
 				return nil
@@ -288,7 +256,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := bybit.NewWebSocketDataHandler(logger, cfg)
+			handler, err := bybit.NewWebSocketDataHandler(logger, bybit.DefaultMarketConfig, bybit.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := handler.CreateMessages(tc.cps)
