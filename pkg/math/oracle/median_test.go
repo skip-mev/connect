@@ -17,16 +17,16 @@ var (
 	// within 1e-10 of the expected price.
 	acceptableDelta = 1e-10
 
-	btcusd, _  = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
-	btcusdt, _ = mmtypes.NewTicker("BITCOIN", "USDT", 8, 1)
-	usdtbtc, _ = mmtypes.NewTicker("USDT", "BITCOIN", 8, 1)
+	btcusd  = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
+	btcusdt = mmtypes.NewTicker("BITCOIN", "USDT", 8, 1)
+	usdtbtc = mmtypes.NewTicker("USDT", "BITCOIN", 8, 1)
 
-	usdtusd, _ = mmtypes.NewTicker("USDT", "USD", 8, 1)
+	usdtusd = mmtypes.NewTicker("USDT", "USD", 8, 1)
 
-	ethusdt, _ = mmtypes.NewTicker("ETHEREUM", "USDT", 8, 1)
-	btceth, _  = mmtypes.NewTicker("BITCOIN", "ETHEREUM", 18, 1)
-	usdteth, _ = mmtypes.NewTicker("USDT", "ETHEREUM", 18, 1)
-	ethusd, _  = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
+	ethusdt = mmtypes.NewTicker("ETHEREUM", "USDT", 8, 1)
+	btceth  = mmtypes.NewTicker("BITCOIN", "ETHEREUM", 18, 1)
+	usdteth = mmtypes.NewTicker("USDT", "ETHEREUM", 18, 1)
+	ethusd  = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
 
 	logger, _ = zap.NewDevelopment()
 	marketmap = mmtypes.AggregateMarketConfig{

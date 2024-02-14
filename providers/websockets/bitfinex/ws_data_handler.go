@@ -13,11 +13,11 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int] = (*WebsocketDataHandler)(nil)
+var _ handlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int] = (*WebSocketHandler)(nil)
 
-// WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to
+// WebSocketHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the BitFinex websocket API.
-type WebsocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
 	// market is the config for the BitFinex API.
@@ -28,8 +28,7 @@ type WebsocketDataHandler struct {
 	channelMap map[int]mmtypes.TickerConfig
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for BitFinex
-// from a given provider configuration.
+// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for BitFinex.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	marketCfg mmtypes.MarketConfig,
@@ -56,7 +55,7 @@ func NewWebSocketDataHandler(
 		return nil, fmt.Errorf("invalid websocket config %w", err)
 	}
 
-	return &WebsocketDataHandler{
+	return &WebSocketHandler{
 		logger:     logger,
 		market:     marketCfg,
 		ws:         wsCfg,
@@ -74,7 +73,7 @@ func NewWebSocketDataHandler(
 //  3. Ticker stream message. This is sent when a ticker update is received from the
 //     BitFinex websocket API.
 //  4. Heartbeat stream messages.  These are sent every 15 seconds by the BitFinex API.
-func (h *WebsocketDataHandler) HandleMessage(
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
 ) (providertypes.GetResponse[mmtypes.Ticker, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
@@ -127,7 +126,7 @@ func (h *WebsocketDataHandler) HandleMessage(
 // CreateMessages is used to create an initial subscription message to send to the data provider.
 // Only the tickers that are specified in the config are subscribed to. The only channel that is
 // subscribed to is the index tickers channel - which supports spot markets.
-func (h *WebsocketDataHandler) CreateMessages(
+func (h *WebSocketHandler) CreateMessages(
 	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(tickers) == 0 {
@@ -154,6 +153,6 @@ func (h *WebsocketDataHandler) CreateMessages(
 }
 
 // HeartBeatMessages is not used for BitFinex.
-func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return nil, nil
 }

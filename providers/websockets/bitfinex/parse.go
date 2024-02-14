@@ -22,14 +22,14 @@ const (
 )
 
 // parseSubscribedMessage updates the channel map for a subscribed message.
-func (h *WebsocketDataHandler) parseSubscribedMessage(
+func (h *WebSocketHandler) parseSubscribedMessage(
 	msg SubscribedMessage,
 ) error {
 	return h.updateChannelMap(msg.ChannelID, msg.Pair)
 }
 
 // parseErrorMessage returns the proper error code from an error message.
-func (h *WebsocketDataHandler) parseErrorMessage(
+func (h *WebSocketHandler) parseErrorMessage(
 	msg ErrorMessage,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	e := ErrorCode(msg.Code)
@@ -66,7 +66,7 @@ func (h *WebsocketDataHandler) parseErrorMessage(
 // ]
 //
 // ref: https://docs.bitfinex.com/reference/ws-public-ticker
-func (h *WebsocketDataHandler) handleStream(
+func (h *WebSocketHandler) handleStream(
 	message []byte,
 ) (providertypes.GetResponse[mmtypes.Ticker, *big.Int], error) {
 	var (
@@ -126,7 +126,7 @@ func (h *WebsocketDataHandler) handleStream(
 }
 
 // updateChannelMap updates the internal map for the given channelID and ticker.
-func (h *WebsocketDataHandler) updateChannelMap(channelID int, ticker string) error {
+func (h *WebSocketHandler) updateChannelMap(channelID int, ticker string) error {
 	inverted := h.market.Invert()
 	market, ok := inverted[ticker]
 	if !ok {
