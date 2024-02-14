@@ -24,8 +24,8 @@ message Ticker {
   // the ticker valid.
   uint64 min_provider_count = 4;
 
-  // MetadataJSON is a string of JSON that encodes any extra configuration for
-  // the given ticker.
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given ticker.
   string metadata_JSON = 15;
 }
 
@@ -53,8 +53,8 @@ message MarketConfig {
   // representation (i.e. BTC/USD).
   map<string, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
 
-  // MetadataJSON is a string of JSON that encodes any extra configuration for
-  // the given market.
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given market.
   string metadata_JSON = 15;
 }
 

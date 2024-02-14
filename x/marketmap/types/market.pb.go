@@ -36,8 +36,8 @@ type Ticker struct {
 	// MinProviderCount is the minimum number of providers required to consider
 	// the ticker valid.
 	MinProviderCount uint64 `protobuf:"varint,4,opt,name=min_provider_count,json=minProviderCount,proto3" json:"min_provider_count,omitempty"`
-	// MetadataJSON is a string of JSON that encodes any extra configuration for
-	// the given ticker.
+	// MetadataJSON is a string of JSON that encodes any extra configuration
+	// for the given ticker.
 	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
 }
 
@@ -171,8 +171,8 @@ type MarketConfig struct {
 	// on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
 	// representation (i.e. BTC/USD).
 	TickerConfigs map[string]TickerConfig `protobuf:"bytes,2,rep,name=ticker_configs,json=tickerConfigs,proto3" json:"ticker_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// MetadataJSON is a string of JSON that encodes any extra configuration for
-	// the given market.
+	// MetadataJSON is a string of JSON that encodes any extra configuration
+	// for the given market.
 	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
 }
 
