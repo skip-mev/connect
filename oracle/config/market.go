@@ -43,8 +43,8 @@ func NewMarketConfig() MarketConfig {
 }
 
 // GetCurrencyPairs returns the currency pairs in the market config.
-func (c *MarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
-	currencyPairs := make([]oracletypes.CurrencyPair, 0, len(c.CurrencyPairToMarketConfigs))
+func (c *MarketConfig) GetCurrencyPairs() []slinkytypes.CurrencyPair {
+	currencyPairs := make([]slinkytypes.CurrencyPair, 0, len(c.CurrencyPairToMarketConfigs))
 
 	for _, marketConfig := range c.CurrencyPairToMarketConfigs {
 		currencyPairs = append(currencyPairs, marketConfig.CurrencyPair)

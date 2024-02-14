@@ -5,8 +5,11 @@ import (
 	"math/big"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
@@ -19,19 +22,16 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/gate"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
-
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 // WebSocketQueryHandlerFactory returns a sample implementation of the websocket query handler
 // factory. Specifically, this factory function returns websocket query handlers that are used to
 // fetch data from the price providers.
-func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, cfg config.ProviderConfig, wsMetrics wsmetrics.WebSocketMetrics) (wshandlers.WebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int], error) {
+func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int] {
+	return func(logger *zap.Logger, cfg config.ProviderConfig, wsMetrics wsmetrics.WebSocketMetrics) (wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int], error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()
 		if err != nil {
@@ -49,7 +49,7 @@ func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oraclet
 
 		var (
 			requestHandler apihandlers.RequestHandler
-			wsDataHandler  wshandlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
+			wsDataHandler  wshandlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int]
 			connHandler    wshandlers.WebSocketConnHandler
 		)
 
@@ -111,7 +111,7 @@ func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[oraclet
 		}
 
 		// Create the websocket query handler which encapsulates all fetching and parsing logic.
-		return wshandlers.NewWebSocketQueryHandler[oracletypes.CurrencyPair, *big.Int](
+		return wshandlers.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](
 			logger,
 			cfg.WebSocket,
 			wsDataHandler,

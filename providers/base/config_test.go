@@ -12,7 +12,6 @@ import (
 	"github.com/skip-mev/slinky/providers/base"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -24,7 +23,7 @@ var (
 func TestConfigUpdater(t *testing.T) {
 	t.Run("restart on IDs update with an API provider", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair]()
+		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
@@ -72,7 +71,7 @@ func TestConfigUpdater(t *testing.T) {
 
 	t.Run("restart on IDs update with a websocket provider", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair]()
+		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,

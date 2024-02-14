@@ -7,6 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
@@ -14,15 +15,14 @@ import (
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/static"
 	"github.com/skip-mev/slinky/providers/types/factory"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"go.uber.org/zap"
 )
 
 // APIQueryHandlerFactory returns a sample implementation of the API query handler factory.
 // Specifically, this factory function returns API query handlers that are used to fetch data from
 // the price providers.
-func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[oracletypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, cfg config.ProviderConfig, metrics metrics.APIMetrics) (apihandlers.APIQueryHandler[oracletypes.CurrencyPair, *big.Int], error) {
+func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int] {
+	return func(logger *zap.Logger, cfg config.ProviderConfig, metrics metrics.APIMetrics) (apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int], error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()
 		if err != nil {
@@ -40,7 +40,7 @@ func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[oracletypes.Currenc
 		}
 
 		var (
-			apiDataHandler apihandlers.APIDataHandler[oracletypes.CurrencyPair, *big.Int]
+			apiDataHandler apihandlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int]
 			requestHandler apihandlers.RequestHandler
 		)
 
@@ -74,7 +74,7 @@ func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[oracletypes.Currenc
 		}
 
 		// Create the API query handler which encapsulates all of the fetching and parsing logic.
-		return apihandlers.NewAPIQueryHandler[oracletypes.CurrencyPair, *big.Int](
+		return apihandlers.NewAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](
 			logger,
 			cfg.API,
 			requestHandler,
