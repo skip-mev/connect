@@ -1,12 +1,11 @@
 package kraken
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/constants"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -44,110 +43,77 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.
-	DefaultMarketConfig = config.MarketConfig{
+	DefaultMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USD": {
-				Ticker:       "ATOM/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
+				Ticker:         constants.ATOM_USD,
+				OffChainTicker: "ATOM/USD",
 			},
 			"AVAX/USD": {
-				Ticker:       "AVAX/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
+				Ticker:         constants.AVAX_USD,
+				OffChainTicker: "AVAX/USD",
 			},
 			"AVAX/USDT": {
-				Ticker:       "AVAX/USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+				Ticker:         constants.AVAX_USDT,
+				OffChainTicker: "AVAX/USDT",
 			},
 			"BITCOIN/USD": {
-				Ticker:       "XBT/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				Ticker:         constants.BITCOIN_USD,
+				OffChainTicker: "XBT/USD",
 			},
 			"BITCOIN/USDC": {
-				Ticker:       "XBT/USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+				Ticker:         constants.BITCOIN_USDC,
+				OffChainTicker: "XBT/USDC",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "XBT/USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker:         constants.BITCOIN_USDT,
+				OffChainTicker: "XBT/USDT",
 			},
 			"CELESTIA/USD": {
-				Ticker:       "TIA/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
+				Ticker:         constants.CELESTIA_USD,
+				OffChainTicker: "TIA/USD",
 			},
 			"DYDX/USD": {
-				Ticker:       "DYDX/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
+				Ticker:         constants.DYDX_USD,
+				OffChainTicker: "DYDX/USD",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETH/XBT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker:         constants.ETHEREUM_BITCOIN,
+				OffChainTicker: "ETH/XBT",
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETH/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Ticker:         constants.ETHEREUM_USD,
+				OffChainTicker: "ETH/USD",
 			},
 			"ETHEREUM/USDC": {
-				Ticker:       "ETH/USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+				Ticker:         constants.ETHEREUM_USDC,
+				OffChainTicker: "ETH/USDC",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ETH/USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker:         constants.ETHEREUM_USDT,
+				OffChainTicker: "ETH/USDT",
 			},
 			"SOLANA/USD": {
-				Ticker:       "SOL/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
+				Ticker:         constants.SOLANA_USD,
+				OffChainTicker: "SOL/USD",
 			},
 			"SOLANA/USDT": {
-				Ticker:       "SOL/USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+				Ticker:         constants.SOLANA_USDT,
+				OffChainTicker: "SOL/USDT",
 			},
 			"USDC/USD": {
-				Ticker:       "USDC/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
+				Ticker:         constants.USDC_USD,
+				OffChainTicker: "USDC/USD",
 			},
 			"USDC/USDT": {
-				Ticker:       "USDC/USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+				Ticker:         constants.USDC_USDT,
+				OffChainTicker: "USDC/USDT",
 			},
 			"USDT/USD": {
-				Ticker:       "USDT/USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+				Ticker:         constants.USDT_USD,
+				OffChainTicker: "USDT/USD",
 			},
 		},
 	}
 )
-
-// DecodeTickerResponseMessage decodes a ticker response message .
-func DecodeTickerResponseMessage(message []byte) (TickerResponseMessage, error) {
-	var rawResponse []json.RawMessage
-	if err := json.Unmarshal(message, &rawResponse); err != nil {
-		return TickerResponseMessage{}, err
-	}
-
-	if len(rawResponse) != ExpectedTickerResponseMessageLength {
-		return TickerResponseMessage{}, fmt.Errorf(
-			"invalid ticker response message; expected length %d, got %d", ExpectedTickerResponseMessageLength, len(rawResponse),
-		)
-	}
-
-	var response TickerResponseMessage
-	if err := json.Unmarshal(rawResponse[ChannelIDIndex], &response.ChannelID); err != nil {
-		return TickerResponseMessage{}, err
-	}
-
-	if err := json.Unmarshal(rawResponse[TickerDataIndex], &response.TickerData); err != nil {
-		return TickerResponseMessage{}, err
-	}
-
-	if err := json.Unmarshal(rawResponse[ChannelNameIndex], &response.ChannelName); err != nil {
-		return TickerResponseMessage{}, err
-	}
-
-	if err := json.Unmarshal(rawResponse[PairIndex], &response.Pair); err != nil {
-		return TickerResponseMessage{}, err
-	}
-
-	return response, nil
-}
