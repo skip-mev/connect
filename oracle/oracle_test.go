@@ -16,6 +16,7 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/slinky/providers/types/factory"
 )
 
 var (
@@ -80,12 +81,11 @@ func (s *OracleTestSuite) SetupTest() {
 func (s *OracleTestSuite) TestStopWithContextCancel() {
 	testCases := []struct {
 		name    string
-		factory providertypes.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
+		factory factory.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
 	}{
 		{
 			name: "no providers",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
@@ -94,7 +94,6 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 		{
 			name: "1 provider",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -113,7 +112,6 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 		{
 			name: "multiple providers",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -146,7 +144,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				UpdateInterval: 1 * time.Second,
 			}
 
-			providers, err := tc.factory(s.logger, cfg)
+			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
@@ -177,13 +175,12 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 func (s *OracleTestSuite) TestStopWithContextDeadline() {
 	testCases := []struct {
 		name     string
-		factory  providertypes.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
+		factory  factory.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
 		duration time.Duration
 	}{
 		{
 			name: "no providers",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				return nil, nil
@@ -193,7 +190,6 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 		{
 			name: "1 provider",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -213,7 +209,6 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 		{
 			name: "multiple providers",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -247,7 +242,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				UpdateInterval: 1 * time.Second,
 			}
 
-			providers, err := tc.factory(s.logger, cfg)
+			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(
@@ -275,13 +270,12 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 func (s *OracleTestSuite) TestStop() {
 	testCases := []struct {
 		name     string
-		factory  providertypes.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
+		factory  factory.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
 		duration time.Duration
 	}{
 		{
 			name: "1 provider",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -301,7 +295,6 @@ func (s *OracleTestSuite) TestStop() {
 		{
 			name: "multiple providers",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -335,7 +328,7 @@ func (s *OracleTestSuite) TestStop() {
 				UpdateInterval: 1 * time.Second,
 			}
 
-			providers, err := tc.factory(s.logger, cfg)
+			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
 
 			oracle, err := oracle.New(

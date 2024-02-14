@@ -1,10 +1,7 @@
 package types
 
 import (
-	"go.uber.org/zap"
 	"golang.org/x/net/context"
-
-	"github.com/skip-mev/slinky/oracle/config"
 )
 
 type ProviderType string
@@ -33,10 +30,3 @@ type Provider[K ResponseKey, V ResponseValue] interface {
 	// Type returns the type of the provider data handler.
 	Type() ProviderType
 }
-
-// ProviderFactory inputs the oracle configuration and returns a set of providers. Developers
-// can implement their own provider factory to create their own providers.
-type ProviderFactory[K ResponseKey, V ResponseValue] func(
-	*zap.Logger,
-	config.OracleConfig,
-) ([]Provider[K, V], error)
