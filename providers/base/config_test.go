@@ -6,11 +6,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/providers/base"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (
