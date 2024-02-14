@@ -24,3 +24,10 @@ func (ms msgServer) CreateMarket(_ context.Context, _ *types.MsgCreateMarket) (*
 
 	return nil, nil
 }
+
+// Params updates the x/marketmap module's Params.
+func (ms msgServer) Params(_ context.Context, _ *types.MsgParams) (*types.MsgParamsResponse, error) {
+	// TODO finish
+
+	return nil, nil
+}
