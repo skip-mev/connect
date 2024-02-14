@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/constants"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -38,199 +38,115 @@ var (
 		Name: Name,
 		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ATOM_USD,
 				OffChainTicker: "ATOM-USD",
 			},
 			"ATOM/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ATOM_USDC,
 				OffChainTicker: "ATOM-USDC",
 			},
 			"ATOM/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ATOM_USDT,
 				OffChainTicker: "ATOM-USDT",
 			},
 			"AVAX/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.AVAX_USD,
 				OffChainTicker: "AVAX-USD",
 			},
 			"AVAX/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.AVAX_USDC,
 				OffChainTicker: "AVAX-USDC",
 			},
 			"AVAX/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.AVAX_USDT,
 				OffChainTicker: "AVAX-USDT",
 			},
 			"BITCOIN/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.BITCOIN_USD,
 				OffChainTicker: "BTC-USD",
 			},
 			"BITCOIN/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.BITCOIN_USDC,
 				OffChainTicker: "BTC-USDC",
 			},
 			"BITCOIN/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.BITCOIN_USDT,
 				OffChainTicker: "BTC-USDT",
 			},
 			"CELESTIA/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.CELESTIA_USD,
 				OffChainTicker: "TIA-USD",
 			},
 			"CELESTIA/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.CELESTIA_USDC,
 				OffChainTicker: "TIA-USDC",
 			},
 			"CELESTIA/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.CELESTIA_USDT,
 				OffChainTicker: "TIA-USDT",
 			},
 			"DYDX/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.DYDX_USD,
 				OffChainTicker: "DYDX-USD",
 			},
 			"DYDX/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.DYDX_USDC,
 				OffChainTicker: "DYDX-USDC",
 			},
 			"DYDX/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ATOM_USDT,
 				OffChainTicker: "DYDX-USDT",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ETHEREUM_BITCOIN,
 				OffChainTicker: "ETH-BTC",
 			},
 			"ETHEREUM/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ETHEREUM_USD,
 				OffChainTicker: "ETH-USD",
 			},
 			"ETHEREUM/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ETHEREUM_USDC,
 				OffChainTicker: "ETH-USDC",
 			},
 			"ETHEREUM/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.ETHEREUM_USDT,
 				OffChainTicker: "ETH-USDT",
 			},
 			"OSMOSIS/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.OSMOSIS_USD,
 				OffChainTicker: "OSMO-USD",
 			},
 			"OSMOSIS/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.OSMOSIS_USDC,
 				OffChainTicker: "OSMO-USDC",
 			},
 			"OSMOSIS/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.OSMOSIS_USDT,
 				OffChainTicker: "OSMO-USDT",
 			},
 			"SOLANA/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.SOLANA_USD,
 				OffChainTicker: "SOL-USD",
 			},
 			"SOLANA/USDC": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
-					Decimals:     8,
-				},
+				Ticker:         constants.SOLANA_USDC,
 				OffChainTicker: "SOL-USDC",
 			},
 			"SOLANA/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.SOLANA_USDT,
 				OffChainTicker: "SOL-USDT",
 			},
 			"USDC/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.USDC_USD,
 				OffChainTicker: "USDC-USD",
 			},
 			"USDC/USDT": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
-					Decimals:     8,
-				},
+				Ticker:         constants.USDC_USDT,
 				OffChainTicker: "USDC-USDT",
 			},
 			"USDT/USD": {
-				Ticker: mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-					Decimals:     8,
-				},
+				Ticker:         constants.USDT_USD,
 				OffChainTicker: "USDT-USD",
 			},
 		},

@@ -20,17 +20,23 @@ var (
 	USDT_USD     = mmtypes.NewTicker("USDT", "USD", 8, 1)
 
 	// USDC denominated tickers.
+	ATOM_USDC     = mmtypes.NewTicker("ATOM", "USDC", 8, 1)
 	AVAX_USDC     = mmtypes.NewTicker("AVAX", "USDC", 8, 1)
 	BITCOIN_USDC  = mmtypes.NewTicker("BITCOIN", "USDC", 8, 1)
+	CELESTIA_USDC = mmtypes.NewTicker("CELESTIA", "USDC", 8, 1)
+	DYDX_USDC     = mmtypes.NewTicker("DYDX", "USDC", 8, 1)
 	ETHEREUM_USDC = mmtypes.NewTicker("ETHEREUM", "USDC", 8, 1)
+	OSMOSIS_USDC  = mmtypes.NewTicker("OSMOSIS", "USDC", 8, 1)
 	SOLANA_USDC   = mmtypes.NewTicker("SOLANA", "USDC", 8, 1)
 
 	// USDT denominated tickers.
 	ATOM_USDT     = mmtypes.NewTicker("ATOM", "USDT", 8, 1)
 	AVAX_USDT     = mmtypes.NewTicker("AVAX", "USDT", 8, 1)
 	BITCOIN_USDT  = mmtypes.NewTicker("BITCOIN", "USDT", 8, 1)
+	CELESTIA_USDT = mmtypes.NewTicker("CELESTIA", "USDT", 8, 1)
 	DYDX_USDT     = mmtypes.NewTicker("DYDX", "USDT", 8, 1)
 	ETHEREUM_USDT = mmtypes.NewTicker("ETHEREUM", "USDT", 8, 1)
+	OSMOSIS_USDT  = mmtypes.NewTicker("OSMOSIS", "USDT", 8, 1)
 	SOLANA_USDT   = mmtypes.NewTicker("SOLANA", "USDT", 8, 1)
 	USDC_USDT     = mmtypes.NewTicker("USDC", "USDT", 8, 1)
 
