@@ -14,6 +14,7 @@ import (
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/types/factory"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // DefaultOracleProviderFactory is a sample implementation of the provider factory. This provider
@@ -25,6 +26,8 @@ type DefaultOracleProviderFactory struct {
 	apiFactory factory.APIQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int]
 	// wsFactory is the factory function that creates websocket query handlers.
 	wsFactory factory.WebSocketQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int]
+	// marketMap contains the entire set of price feeds that the oracle will fetch prices for.
+	marketMap mmtypes.AggregateMarketConfig
 }
 
 // NewDefaultProviderFactory returns a new instance of the default provider factory.
@@ -32,6 +35,7 @@ func NewDefaultProviderFactory(
 	logger *zap.Logger,
 	apiFactory factory.APIQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int],
 	wsFactory factory.WebSocketQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int],
+	marketmap mmtypes.AggregateMarketConfig,
 ) (*DefaultOracleProviderFactory, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -45,10 +49,15 @@ func NewDefaultProviderFactory(
 		return nil, fmt.Errorf("wsFactory cannot be nil")
 	}
 
+	if err := marketmap.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	return &DefaultOracleProviderFactory{
 		logger:     logger,
 		apiFactory: apiFactory,
 		wsFactory:  wsFactory,
+		marketMap:  marketmap,
 	}, nil
 }
 
@@ -67,6 +76,13 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[slinkyt
 		// Create the providers.
 		providers := make([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], len(cfg.Providers))
 		for i, p := range cfg.Providers {
+			// Get the market configuration for the provider.
+			market, ok := f.marketMap.MarketConfigs[p.Name]
+			if !ok {
+				f.logger.Info("market config not found", zap.String("provider", p.Name))
+				continue
+			}
+
 			switch {
 			case p.API.Enabled:
 				queryHandler, err := f.apiFactory(f.logger, p, apiMetrics)

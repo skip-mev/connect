@@ -26,6 +26,17 @@ func (c *MarketConfig) Tickers() []Ticker {
 	return tickers
 }
 
+// Invert returns the inverted ticker market config.
+func (c *MarketConfig) Invert() map[string]TickerConfig {
+	invertedCfg := make(map[string]TickerConfig)
+
+	for _, config := range c.TickerConfigs {
+		invertedCfg[config.OffChainTicker] = config
+	}
+
+	return invertedCfg
+}
+
 // ValidateBasic performs basic validation on the MarketConfig.
 func (c *MarketConfig) ValidateBasic() error {
 	if len(c.Name) == 0 {

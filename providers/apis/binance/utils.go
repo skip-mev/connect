@@ -7,6 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // NOTE: All documentation for this file can be located on the Binance GitHub
@@ -58,95 +59,155 @@ var (
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
-	DefaultUSMarketConfig = config.MarketConfig{
+	DefaultUSMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USDT": {
-				Ticker:       "ATOMUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ATOMUSDT",
 			},
 			"AVAX/USDT": {
-				Ticker:       "AVAXUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "AVAXUSDT",
 			},
 			"BITCOIN/USDC": {
-				Ticker:       "BTCUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+					Decimals:     8,
+				},
+				OffChainTicker: "BTCUSDC",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "BTCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "BTCUSDT",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ETHBTC",
 			},
 			"ETHEREUM/USDC": {
-				Ticker:       "ETHUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ETHUSDC",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ETHUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ETHUSDT",
 			},
 			"SOLANA/USDC": {
-				Ticker:       "SOLUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
+					Decimals:     8,
+				},
+				OffChainTicker: "SOLUSDC",
 			},
 			"SOLANA/USDT": {
-				Ticker:       "SOLUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "SOLUSDT",
 			},
 			"USDC/USDT": {
-				Ticker:       "USDCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "USDCUSDT",
 			},
 		},
 	}
 
 	// DefaultNonUSMarketConfig is the default market configuration for Binance.
-	DefaultNonUSMarketConfig = config.MarketConfig{
+	DefaultNonUSMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USDT": {
-				Ticker:       "ATOMUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ATOMUSDT",
 			},
 			"AVAX/USDT": {
-				Ticker:       "AVAXUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "AVAXUSDT",
 			},
 			"BITCOIN/USDC": {
-				Ticker:       "BTCUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+					Decimals:     8,
+				},
+				OffChainTicker: "BTCUSDC",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "BTCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "BTCUSDT",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ETHBTC",
 			},
 			"ETHEREUM/USDC": {
-				Ticker:       "ETHUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ETHUSDC",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ETHUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "ETHUSDT",
 			},
 			"SOLANA/USDC": {
-				Ticker:       "SOLUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
+					Decimals:     8,
+				},
+				OffChainTicker: "SOLUSDC",
 			},
 			"SOLANA/USDT": {
-				Ticker:       "SOLUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "SOLUSDT",
 			},
 			"USDC/USDT": {
-				Ticker:       "USDCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+				Ticker: mmtypes.Ticker{
+					CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+					Decimals:     8,
+				},
+				OffChainTicker: "USDCUSDT",
 			},
 		},
 	}

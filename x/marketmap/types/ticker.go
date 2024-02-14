@@ -35,7 +35,7 @@ func NewTicker(base, quote string, decimals, minProviderCount uint64) (Ticker, e
 }
 
 // String returns a string representation of the Ticker.
-func (t *Ticker) String() string {
+func (t Ticker) String() string {
 	return t.CurrencyPair.String()
 }
 

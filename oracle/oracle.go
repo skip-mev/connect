@@ -14,8 +14,8 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ Oracle = (*OracleImpl)(nil)
@@ -26,7 +26,7 @@ var _ Oracle = (*OracleImpl)(nil)
 type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
-	GetPrices() map[slinkytypes.CurrencyPair]*big.Int
+	GetPrices() map[mmtypes.Ticker]*big.Int
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -44,7 +44,7 @@ type OracleImpl struct { //nolint
 	// Each provider is responsible for fetching prices for a given set of
 	// currency pairs (base, quote). The oracle will fetch prices from each
 	// provider concurrently.
-	providers []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]
+	providers []providertypes.Provider[mmtypes.Ticker, *big.Int]
 
 	// providerCh is the channel that the oracle will use to signal whether all of the
 	// providers are running or not.
@@ -59,7 +59,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *aggregator.DataAggregator[string, map[slinkytypes.CurrencyPair]*big.Int]
+	priceAggregator *aggregator.DataAggregator[string, map[mmtypes.Ticker]*big.Int]
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
@@ -82,7 +82,7 @@ func New(opts ...Option) (*OracleImpl, error) {
 		closer:  ssync.NewCloser(),
 		logger:  zap.NewNop(),
 		metrics: metrics.NewNopMetrics(),
-		priceAggregator: aggregator.NewDataAggregator[string, map[slinkytypes.CurrencyPair]*big.Int](
+		priceAggregator: aggregator.NewDataAggregator[string, map[mmtypes.Ticker]*big.Int](
 			aggregator.WithAggregateFn(aggregator.ComputeMedian()),
 		),
 		updateInterval: 1 * time.Second,
@@ -182,7 +182,7 @@ func (o *OracleImpl) tick() {
 
 // fetchPrices retrieves the latest prices from a given provider and updates the aggregator
 // iff the price age is less than the update interval.
-func (o *OracleImpl) fetchPrices(provider providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]) {
+func (o *OracleImpl) fetchPrices(provider providertypes.Provider[mmtypes.Ticker, *big.Int]) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("provider panicked", zap.Error(fmt.Errorf("%v", r)))
@@ -198,7 +198,7 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[slinkytypes.Cur
 		return
 	}
 
-	timeFilteredPrices := make(map[slinkytypes.CurrencyPair]*big.Int)
+	timeFilteredPrices := make(map[mmtypes.Ticker]*big.Int)
 	for pair, result := range prices {
 		floatValue, _ := result.Value.Float64() // we ignore the accuracy in this conversion
 
@@ -207,7 +207,7 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[slinkytypes.Cur
 			provider.Name(),
 			string(provider.Type()),
 			strings.ToLower(pair.String()),
-			pair.Decimals(),
+			int(pair.Decimals),
 			floatValue,
 		)
 
@@ -260,7 +260,7 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *OracleImpl) GetPrices() map[slinkytypes.CurrencyPair]*big.Int {
+func (o *OracleImpl) GetPrices() map[mmtypes.Ticker]*big.Int {
 	prices := o.priceAggregator.GetAggregatedData()
 
 	// set metrics in background
@@ -270,7 +270,7 @@ func (o *OracleImpl) GetPrices() map[slinkytypes.CurrencyPair]*big.Int {
 
 			o.metrics.UpdateAggregatePrice(
 				strings.ToLower(cp.String()),
-				cp.Decimals(),
+				int(cp.Decimals),
 				floatValue,
 			)
 		}

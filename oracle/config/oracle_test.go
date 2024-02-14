@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestOracleConfig(t *testing.T) {
@@ -23,15 +22,6 @@ func TestOracleConfig(t *testing.T) {
 				Providers: []config.ProviderConfig{
 					{
 						Name: "test",
-						Market: config.MarketConfig{
-							Name: "test",
-							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
-									Ticker:       "BTC/USD",
-									CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-								},
-							},
-						},
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
@@ -44,26 +34,6 @@ func TestOracleConfig(t *testing.T) {
 							EnableCompression:   config.DefaultEnableCompression,
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
-						},
-					},
-				},
-				Market: config.AggregateMarketConfig{
-					Feeds: map[string]config.FeedConfig{
-						"BITCOIN/USD": {
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-					AggregatedFeeds: map[string]config.AggregateFeedConfig{
-						"BITCOIN/USD": {
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-							Conversions: []config.Conversions{
-								{
-									{
-										CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-										Invert:       false,
-									},
-								},
-							},
 						},
 					},
 				},
@@ -82,15 +52,6 @@ func TestOracleConfig(t *testing.T) {
 				Providers: []config.ProviderConfig{
 					{
 						Name: "test",
-						Market: config.MarketConfig{
-							Name: "test",
-							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
-									Ticker:       "BTC/USD",
-									CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-								},
-							},
-						},
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
@@ -103,13 +64,6 @@ func TestOracleConfig(t *testing.T) {
 							EnableCompression:   config.DefaultEnableCompression,
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
-						},
-					},
-				},
-				Market: config.AggregateMarketConfig{
-					Feeds: map[string]config.FeedConfig{
-						"BITCOINUSD": {
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
 						},
 					},
 				},
@@ -123,15 +77,6 @@ func TestOracleConfig(t *testing.T) {
 				Providers: []config.ProviderConfig{
 					{
 						Name: "test",
-						Market: config.MarketConfig{
-							Name: "test",
-							CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-								"BITCOIN/USD": {
-									Ticker:       "BTC/USD",
-									CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-								},
-							},
-						},
 						WebSocket: config.WebSocketConfig{
 							Enabled:             true,
 							MaxBufferSize:       1,
@@ -144,26 +89,6 @@ func TestOracleConfig(t *testing.T) {
 							EnableCompression:   config.DefaultEnableCompression,
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
-						},
-					},
-				},
-				Market: config.AggregateMarketConfig{
-					Feeds: map[string]config.FeedConfig{
-						"BITCOIN/USD": {
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-					AggregatedFeeds: map[string]config.AggregateFeedConfig{
-						"BITCOIN/USD": {
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-							Conversions: []config.Conversions{
-								{
-									{
-										CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-										Invert:       false,
-									},
-								},
-							},
 						},
 					},
 				},

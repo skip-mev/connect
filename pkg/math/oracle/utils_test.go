@@ -126,3 +126,11 @@ func TestScaleDownCurrencyPairPrice(t *testing.T) {
 		require.Equal(t, price, scaledPrice)
 	})
 }
+
+func TestScaledOne(t *testing.T) {
+	t.Run("can get a scaled one", func(t *testing.T) {
+		hundred := big.NewInt(100)
+		one := oracle.ScaledOne(2)
+		require.Equal(t, hundred, one)
+	})
+}

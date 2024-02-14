@@ -5,44 +5,44 @@ import (
 	"testing"
 
 	"github.com/skip-mev/slinky/aggregator"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	btcusd = slinkytypes.NewCurrencyPair("btc", "usd")
+	btcusd, _ = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
 
-	ethusd = slinkytypes.NewCurrencyPair("eth", "usd")
+	ethusd, _ = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
 
-	usdtusd = slinkytypes.NewCurrencyPair("usdt", "usd")
+	usdtusd, _ = mmtypes.NewTicker("USDT", "USD", 8, 1)
 )
 
 func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
-		providerPrices aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]
-		expectedPrices map[slinkytypes.CurrencyPair]*big.Int
+		providerPrices aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]
+		expectedPrices map[mmtypes.Ticker]*big.Int
 	}{
 		{
 			"empty provider prices",
-			aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{},
-			map[slinkytypes.CurrencyPair]*big.Int{},
+			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{},
+			map[mmtypes.Ticker]*big.Int{},
 		},
 		{
 			"single provider price",
-			aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
+			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
 					btcusd: big.NewInt(100),
 					ethusd: big.NewInt(200),
 				},
 			},
-			map[slinkytypes.CurrencyPair]*big.Int{
+			map[mmtypes.Ticker]*big.Int{
 				btcusd: big.NewInt(100),
 				ethusd: big.NewInt(200),
 			},
 		},
 		{
 			"multiple provider prices",
-			aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
+			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
 					btcusd: big.NewInt(100),
 					ethusd: big.NewInt(200),
@@ -52,14 +52,14 @@ func TestComputeMedian(t *testing.T) {
 					ethusd: big.NewInt(300),
 				},
 			},
-			map[slinkytypes.CurrencyPair]*big.Int{
+			map[mmtypes.Ticker]*big.Int{
 				btcusd: big.NewInt(150),
 				ethusd: big.NewInt(250),
 			},
 		},
 		{
 			"multiple provider prices with different assets",
-			aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
+			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
 					btcusd: big.NewInt(100),
 					ethusd: big.NewInt(200),
@@ -70,14 +70,14 @@ func TestComputeMedian(t *testing.T) {
 					usdtusd: nil, // should be ignored
 				},
 			},
-			map[slinkytypes.CurrencyPair]*big.Int{
+			map[mmtypes.Ticker]*big.Int{
 				btcusd: big.NewInt(150),
 				ethusd: big.NewInt(250),
 			},
 		},
 		{
 			"odd number of provider prices",
-			aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]{
+			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
 					btcusd: big.NewInt(100),
 					ethusd: big.NewInt(200),
@@ -91,7 +91,7 @@ func TestComputeMedian(t *testing.T) {
 					ethusd: big.NewInt(400),
 				},
 			},
-			map[slinkytypes.CurrencyPair]*big.Int{
+			map[mmtypes.Ticker]*big.Int{
 				btcusd: big.NewInt(200),
 				ethusd: big.NewInt(300),
 			},

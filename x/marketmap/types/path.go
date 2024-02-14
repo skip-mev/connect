@@ -35,17 +35,10 @@ func (c *PathsConfig) ValidateBasic() error {
 	}
 
 	// Track the routes to ensure that there are no duplicates.
-	routes := make(map[string]struct{})
 	for _, path := range c.Paths {
 		if err := path.ValidateBasic(); err != nil {
 			return err
 		}
-
-		route := path.ShowRoute()
-		if _, ok := routes[route]; ok {
-			return fmt.Errorf("duplicate path found: %s", route)
-		}
-		routes[route] = struct{}{}
 
 		// Ensure that the path ends up converting to the ticker.
 		if !path.Match(c.Ticker.String()) {
