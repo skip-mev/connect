@@ -13,6 +13,9 @@ import (
 type Keeper struct {
 	cdc codec.BinaryCodec
 
+	// module authority
+	authority sdk.AccAddress
+
 	// collections
 
 	// marketConfigs is keyed by provider name and provides the MarketConfig for each given provider
@@ -29,7 +32,7 @@ type Keeper struct {
 }
 
 // NewKeeper initializes the keeper and its backing stores.
-func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec) Keeper {
+func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
 	// Create the collections item that will track the module parameters.
@@ -42,6 +45,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec) Keeper {
 
 	return Keeper{
 		cdc:                cdc,
+		authority:          authority,
 		marketConfigs:      collections.NewMap(sb, types.MarketConfigsPrefix, "market_configs", types.MarketProviderCodec, codec.CollValue[types.MarketConfig](cdc)),
 		aggregationConfigs: collections.NewMap(sb, types.AggregationConfigsPrefix, "aggregation_configs", types.TickerStringCodec, codec.CollValue[types.PathsConfig](cdc)),
 		lastUpdated:        collections.NewItem[int64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),

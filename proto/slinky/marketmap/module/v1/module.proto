@@ -9,4 +9,8 @@ message Module {
   option (cosmos.app.v1alpha1.module) = {
     go_import : "github.com/skip-mev/slinky/x/marketmap"
   };
+
+  // Authority defines the custom module authority. If not set, defaults to the
+  // governance module.
+  string authority = 1;
 }

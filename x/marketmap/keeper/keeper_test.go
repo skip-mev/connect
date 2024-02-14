@@ -31,11 +31,12 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 	s.authority = sdk.AccAddress("authority")
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key")).WithBlockHeight(10)
-	return keeper.NewKeeper(ss, encCfg.Codec)
+	return keeper.NewKeeper(ss, encCfg.Codec, s.authority)
 }
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.initKeeper()
+	s.keeper.SetParams(s.ctx, types.DefaultParams())
 }
 
 func TestKeeperTestSuite(t *testing.T) {

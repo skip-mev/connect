@@ -5,7 +5,7 @@ option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
 // Params defines the parameters for the x/marketmap module.
 message Params {
-  // Authority is the authority account that is able to control updating the
-  // marketmap.
-  string authority = 1;
+  // MarketAuthority is the authority account that is able to control updating
+  // the marketmap.
+  string market_authority = 1;
 }

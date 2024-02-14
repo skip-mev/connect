@@ -11,21 +11,21 @@ import (
 // DefaultParams returns default incentive parameters.
 func DefaultParams() Params {
 	return Params{
-		Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		MarketAuthority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	}
 }
 
 // NewParams returns a new Params instance.
 func NewParams(authority string) Params {
 	return Params{
-		Authority: authority,
+		MarketAuthority: authority,
 	}
 }
 
 // ValidateBasic performs stateless validation of the Params.
 func (p *Params) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(p.Authority); err != nil {
-		return fmt.Errorf("invalid authority string: %w", err)
+	if _, err := sdk.AccAddressFromBech32(p.MarketAuthority); err != nil {
+		return fmt.Errorf("invalid market authority string: %w", err)
 	}
 
 	return nil
