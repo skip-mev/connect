@@ -5,8 +5,6 @@ import (
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
 	"github.com/cosmos/cosmos-sdk/codec"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
@@ -34,12 +32,7 @@ type Outputs struct {
 
 // ProvideModule is the depinject constructor for the module.
 func ProvideModule(in Inputs) Outputs {
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	if in.Config.Authority != "" {
-		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
-	}
-
-	marketmapKeeper := keeper.NewKeeper(in.StoreService, in.Cdc, authority)
+	marketmapKeeper := keeper.NewKeeper(in.StoreService, in.Cdc)
 
 	m := NewAppModule(in.Cdc, marketmapKeeper)
 
