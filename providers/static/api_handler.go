@@ -6,13 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*MockAPIHandler)(nil)
+var _ handlers.APIDataHandler[mmtypes.Ticker, *big.Int] = (*MockAPIHandler)(nil)
 
 const (
 	// Name is the name of the provider.
@@ -21,67 +20,61 @@ const (
 
 // MockAPIHandler implements a mock API handler that returns static data.
 type MockAPIHandler struct {
-	exchangeRates map[slinkytypes.CurrencyPair]*big.Int
-	currencyPairs []slinkytypes.CurrencyPair
+	exchangeRates map[mmtypes.Ticker]*big.Int
+	tickers       []mmtypes.Ticker
 }
 
-// NewAPIHandler returns a new MockAPIHandler. This constructs a
-// new static mock provider from the config. Notice this method expects the
-// market configuration map to be populated w/ entries of the form CurrencyPair.ToString():
-// big.NewInt(price).
+// NewAPIHandler returns a new MockAPIHandler. This constructs a new static mock provider from
+// the config. Notice this method expects the market configuration map to the offchain ticker
+// to the desired price.
 func NewAPIHandler(
-	cfg config.ProviderConfig,
+	market mmtypes.MarketConfig,
 ) (*MockAPIHandler, error) {
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", cfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected provider config name to be static-mock-provider, got %s", market.Name)
 	}
 
 	s := MockAPIHandler{
-		exchangeRates: make(map[slinkytypes.CurrencyPair]*big.Int),
-		currencyPairs: make([]slinkytypes.CurrencyPair, 0),
+		exchangeRates: make(map[mmtypes.Ticker]*big.Int),
+		tickers:       make([]mmtypes.Ticker, 0),
 	}
 
-	for cpString, market := range cfg.Market.CurrencyPairToMarketConfigs {
-		cp, err := slinkytypes.CurrencyPairFromString(cpString)
-		if err != nil {
-			continue
-		}
-
-		price, converted := big.NewInt(0).SetString(market.Ticker, 10)
+	for cpString, market := range market.TickerConfigs {
+		price, converted := big.NewInt(0).SetString(market.OffChainTicker, 10)
 		if !converted {
-			return nil, fmt.Errorf("failed to parse price %s for currency pair %s", price, cpString)
+			return nil, fmt.Errorf("failed to parse price %s for ticker %s", price, cpString)
 		}
 
-		s.exchangeRates[cp] = price
-		s.currencyPairs = append(s.currencyPairs, cp)
+		s.exchangeRates[market.Ticker] = price
+		s.tickers = append(s.tickers, market.Ticker)
 	}
 
 	return &s, nil
 }
 
 // CreateURL is a no-op.
-func (s *MockAPIHandler) CreateURL(_ []slinkytypes.CurrencyPair) (string, error) {
+func (s *MockAPIHandler) CreateURL(_ []mmtypes.Ticker) (string, error) {
 	return "static-url", nil
 }
 
-// ParseResponse is a no-op. This simply returns the price of the currency pairs configured
+// ParseResponse is a no-op. This simply returns the price of the tickers configured,
 // timestamped with the current time.
 func (s *MockAPIHandler) ParseResponse(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 	_ *http.Response,
-) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
+) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {
 	var (
-		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[slinkytypes.CurrencyPair]error)
+		resolved   = make(map[mmtypes.Ticker]providertypes.Result[*big.Int])
+		unresolved = make(map[mmtypes.Ticker]error)
 	)
 
-	for _, cp := range cps {
-		if price, ok := s.exchangeRates[cp]; ok {
-			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
+	for _, ticker := range tickers {
+		if price, ok := s.exchangeRates[ticker]; ok {
+			resolved[ticker] = providertypes.NewResult[*big.Int](price, time.Now())
 		} else {
-			unresolved[cp] = fmt.Errorf("failed to resolve currency pair %s", cp)
+			unresolved[ticker] = fmt.Errorf("failed to resolve ticker %s", ticker)
 		}
 	}
 
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved)
+	return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved)
 }
