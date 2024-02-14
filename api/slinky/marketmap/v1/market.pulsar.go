@@ -4540,7 +4540,7 @@ func (x *MarketConfig) GetTickerConfigs() map[string]*TickerConfig {
 //     aggregation
 //     strategy used by the oracle. The oracle may use a median price, a
 //     weighted average price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggreagted
+//  3. Convert the price of each ticker to a common ticker using the aggregated
 //     ticker
 //     configurations by default. The oracle may use a different aggregation
 //     strategy to convert the price of a ticker to a common ticker.
