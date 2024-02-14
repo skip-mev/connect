@@ -12,43 +12,56 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)
+var _ handlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int] = (*WebSocketHandler)(nil)
 
-// WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to
+// WebSocketHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the Huobi websocket API.
-type WebsocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Huobi websocket API.
-	cfg config.ProviderConfig
+	// market is the config for the Gate.io API.
+	market mmtypes.MarketConfig
+	// ws is the config for the Gate.io websocket.
+	ws config.WebSocketConfig
 }
 
 // NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Huobi
 // from a given provider configuration.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
+	marketCfg mmtypes.MarketConfig,
+	wsCfg config.WebSocketConfig,
+) (handlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int], error) {
+	if err := marketCfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if marketCfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, marketCfg.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if wsCfg.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
 	}
 
-	return &WebsocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+	if !wsCfg.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+
+	}
+
+	if err := wsCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config %w", err)
+	}
+
+	return &WebSocketHandler{
+		logger: logger,
+		market: marketCfg,
+		ws:     wsCfg,
 	}, nil
 }
 
@@ -60,11 +73,11 @@ func NewWebSocketDataHandler(
 //  2. Ticker response message. This is sent when a ticker update is received from the
 //     Huobi websocket API.
 //  3. Heartbeat ping message.
-func (h *WebsocketDataHandler) HandleMessage(
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (providertypes.GetResponse[mmtypes.Ticker, *big.Int], []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp                 providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp                 providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 		pingMessage          PingMessage
 		subscriptionResponse SubscriptionResponse
 		tickerStream         TickerStream
@@ -72,7 +85,6 @@ func (h *WebsocketDataHandler) HandleMessage(
 
 	reader, err := gzip.NewReader(bytes.NewReader(message))
 	if err != nil {
-		h.logger.Error("error creating gzip reader", zap.Error(err))
 		return resp, nil, err
 	}
 	defer func(reader *gzip.Reader) {
@@ -83,7 +95,6 @@ func (h *WebsocketDataHandler) HandleMessage(
 	var uncompressed bytes.Buffer
 	_, err = io.Copy(&uncompressed, reader)
 	if err != nil {
-		h.logger.Error("error reading gzip", zap.Error(err))
 		return resp, nil, err
 	}
 
@@ -118,30 +129,27 @@ func (h *WebsocketDataHandler) HandleMessage(
 		return resp, nil, nil
 	}
 
-	h.logger.Error("received unknown message", zap.String("message", uncompressed.String()))
 	return resp, nil, fmt.Errorf("unknown message %s", uncompressed.String())
 }
 
 // CreateMessages is used to create an initial subscription message to send to the data provider.
-// Only the currency pairs that are specified in the config are subscribed to. The only channel
-// that is subscribed to is the index tickers channel - which supports spot markets.
-func (h *WebsocketDataHandler) CreateMessages(
-	cps []slinkytypes.CurrencyPair,
+// Only the tickers that are specified in the config are subscribed to. The only channel that is
+// subscribed to is the index tickers channel - which supports spot markets.
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(cps) == 0 {
-		return nil, nil
+	if len(tickers) == 0 {
+		return nil, fmt.Errorf("no tickers to subscribe to")
 	}
 
-	msgs := make([]handlers.WebsocketEncodedMessage, len(cps))
-
-	for i, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	msgs := make([]handlers.WebsocketEncodedMessage, len(tickers))
+	for i, cp := range tickers {
+		market, ok := h.market.TickerConfigs[cp.String()]
 		if !ok {
-			h.logger.Debug("ID not found for currency pair", zap.String("currency_pair", cp.String()))
-			return nil, fmt.Errorf("currency pair %s not in config", cp.String())
+			return nil, fmt.Errorf("ticker not found in market configs %s", market.Ticker.String())
 		}
 
-		msg, err := NewSubscriptionRequest(market.Ticker)
+		msg, err := NewSubscriptionRequest(market.OffChainTicker)
 		if err != nil {
 			return nil, fmt.Errorf("error marshalling subscription message: %w", err)
 		}
@@ -150,11 +158,10 @@ func (h *WebsocketDataHandler) CreateMessages(
 
 	}
 
-	h.logger.Debug("subscribing to currency pairs", zap.Any("pairs", cps))
 	return msgs, nil
 }
 
 // HeartBeatMessages is not used for Huobi.
-func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return nil, nil
 }

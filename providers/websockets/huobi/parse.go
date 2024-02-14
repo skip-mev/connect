@@ -5,20 +5,16 @@ import (
 	"math/big"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// parseSubscriptionResponse attempts to parse a subscription message.   It returns an error if the message
+// parseSubscriptionResponse attempts to parse a subscription message. It returns an error if the message
 // cannot be properly parsed.
-func (h *WebsocketDataHandler) parseSubscriptionResponse(resp SubscriptionResponse) ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) parseSubscriptionResponse(resp SubscriptionResponse) ([]handlers.WebsocketEncodedMessage, error) {
 	if Status(resp.Status) != StatusOk {
-		h.logger.Error("unable to create subscription", zap.String("ticker", resp.Subbed))
-		// create new message
 		msg, err := NewSubscriptionRequest(symbolFromSub(resp.Subbed))
 		return []handlers.WebsocketEncodedMessage{msg}, err
 	}
@@ -27,35 +23,32 @@ func (h *WebsocketDataHandler) parseSubscriptionResponse(resp SubscriptionRespon
 		return nil, fmt.Errorf("invalid ticker returned")
 	}
 
-	h.logger.Debug("successfully subscribed", zap.String("ticker", resp.Subbed))
 	return nil, nil
 }
 
-// parseTickerStream attempts to parse a ticker stream message.  It returns a providertypes.GetResponse for the
+// parseTickerStream attempts to parse a ticker stream message. It returns a providertypes.GetResponse for the
 // ticker update.
-func (h *WebsocketDataHandler) parseTickerStream(stream TickerStream) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
+func (h *WebSocketHandler) parseTickerStream(stream TickerStream) (providertypes.GetResponse[mmtypes.Ticker, *big.Int], error) {
 	var (
-		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[slinkytypes.CurrencyPair]error)
+		resolved   = make(map[mmtypes.Ticker]providertypes.Result[*big.Int])
+		unresolved = make(map[mmtypes.Ticker]error)
 	)
 
 	ticker := symbolFromSub(stream.Channel)
 	if ticker == "" {
-		h.logger.Error("incorrectly formatted stream", zap.Any("stream", stream))
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved),
 			fmt.Errorf("incorrectly formatted stream: %v", stream)
 	}
 
-	market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
+	inverted := h.market.Invert()
+	market, ok := inverted[ticker]
 	if !ok {
-		h.logger.Error("received stream for unknown channel", zap.String("channel", stream.Channel))
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved),
 			fmt.Errorf("received stream for unknown channel %s", stream.Channel)
 	}
 
-	cp := market.CurrencyPair
-	price := math.Float64ToBigInt(stream.Tick.LastPrice, cp.Decimals())
-	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
+	price := math.Float64ToBigInt(stream.Tick.LastPrice, market.Ticker.Decimals)
+	resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+	return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved), nil
 }
