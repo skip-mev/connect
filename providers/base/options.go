@@ -113,7 +113,7 @@ func WithMetrics[K providertypes.ResponseKey, V providertypes.ResponseValue](met
 
 // WithConfigUpdater sets the ConfigUpdater for the provider. This can be used to update the provider asynchronously. Anytime
 // the config is updated, the provider will restart with the new config.
-func WithConfigUpdater[K providertypes.ResponseKey, V providertypes.ResponseValue](updater ConfigUpdater[K]) ProviderOption[K, V] {
+func WithConfigUpdater[K providertypes.ResponseKey, V providertypes.ResponseValue](updater ConfigUpdater[K, V]) ProviderOption[K, V] {
 	return func(p *Provider[K, V]) {
 		if updater == nil {
 			panic("cannot set nil config updater")

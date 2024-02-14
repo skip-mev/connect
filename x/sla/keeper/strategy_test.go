@@ -231,7 +231,7 @@ func (s *KeeperTestSuite) TestEnforceSLA() {
 	)
 
 	consAddress := sdk.ConsAddress([]byte("validator"))
-	cp := slinkytypes.NewCurrencyPair("blud", "bds")
+	cp := slinkytypes.NewCurrencyPair("mog", "usd")
 	feed, err := slatypes.NewPriceFeed(
 		uint(20),
 		consAddress,

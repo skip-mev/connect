@@ -186,7 +186,7 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		s.Require().False(contains)
 	})
 
-	cp2 := slinkytypes.NewCurrencyPair("blud", "crip")
+	cp2 := slinkytypes.NewCurrencyPair("mog", "usd")
 	priceFeed3, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,

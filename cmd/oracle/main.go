@@ -13,9 +13,9 @@ import (
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
+	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-	"github.com/skip-mev/slinky/tests/simapp"
 )
 
 var (
@@ -60,10 +60,26 @@ func main() {
 		}
 	}
 
-	// This can be replaced with a custom provider factory. See the simapp package for an example.
-	providers, err := simapp.DefaultProviderFactory()(logger, cfg)
+	// Create the API and websocket query handler factories. These are used to create the
+	// data collection handlers for the providers. To read more about what these query handlers
+	// do, see the documentation for the `providers/base` package.
+	apiFactory := oraclefactory.APIQueryHandlerFactory()      // Replace with custom API factory.
+	wsFactory := oraclefactory.WebSocketQueryHandlerFactory() // Replace with custom websocket factory.
+
+	// Create the providers using the default provider factory.
+	generator, err := oraclefactory.NewDefaultProviderFactory(
+		logger,
+		apiFactory,
+		wsFactory,
+	)
 	if err != nil {
-		logger.Error("failed to create providers using the factory", zap.Error(err))
+		logger.Error("failed to create provider factory", zap.Error(err))
+		return
+	}
+
+	providers, err := generator.Factory()(cfg)
+	if err != nil {
+		logger.Error("failed to create providers", zap.Error(err))
 		return
 	}
 

@@ -6,8 +6,6 @@ import (
 	"math/big"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/stretchr/testify/mock"
 
 	"github.com/skip-mev/slinky/oracle"
@@ -15,6 +13,7 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/slinky/providers/types/factory"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 )
 
@@ -24,13 +23,12 @@ func (s *OracleTestSuite) TestProviders() {
 
 	testCases := []struct {
 		name           string
-		factory        providertypes.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
+		factory        factory.ProviderFactory[slinkytypes.CurrencyPair, *big.Int]
 		expectedPrices map[slinkytypes.CurrencyPair]*big.Int
 	}{
 		{
 			name: "1 provider with no prices",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
@@ -49,7 +47,6 @@ func (s *OracleTestSuite) TestProviders() {
 		{
 			name: "1 provider with prices",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -78,7 +75,6 @@ func (s *OracleTestSuite) TestProviders() {
 		{
 			name: "multiple providers with prices",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -124,7 +120,6 @@ func (s *OracleTestSuite) TestProviders() {
 		{
 			name: "multiple providers with 1 provider erroring on start",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -153,7 +148,6 @@ func (s *OracleTestSuite) TestProviders() {
 		{
 			name: "1 provider with stale prices",
 			factory: func(
-				*zap.Logger,
 				config.OracleConfig,
 			) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
@@ -184,7 +178,7 @@ func (s *OracleTestSuite) TestProviders() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
 			}
-			providers, err := tc.factory(s.logger, cfg)
+			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
 
 			testOracle, err := oracle.New(
