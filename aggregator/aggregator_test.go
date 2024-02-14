@@ -9,11 +9,9 @@ import (
 )
 
 var (
-	btcusd, _ = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
-
-	ethusd, _ = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
-
-	usdtusd, _ = mmtypes.NewTicker("USDT", "USD", 8, 1)
+	btcusd  = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
+	ethusd  = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
+	usdtusd = mmtypes.NewTicker("USDT", "USD", 8, 1)
 )
 
 func TestComputeMedian(t *testing.T) {

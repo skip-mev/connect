@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	btcusd, _ = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
-	ethusd, _ = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
+	btcusd = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
+	ethusd = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
 
 	marketCfg = mmtypes.MarketConfig{
 		Name: coinbase.Name,

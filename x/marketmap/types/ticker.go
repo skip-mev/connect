@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
@@ -17,21 +18,15 @@ const (
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
 // a given asset pair i.e. BTC/USD. The price feed is scaled to a number of decimal
 // places and has a minimum number of providers required to consider the ticker valid.
-func NewTicker(base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
-	t := Ticker{
+func NewTicker(base, quote string, decimals, minProviderCount uint64) Ticker {
+	return Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  base,
-			Quote: quote,
+			Base:  strings.ToUpper(base),
+			Quote: strings.ToUpper(quote),
 		},
 		Decimals:         decimals,
 		MinProviderCount: minProviderCount,
 	}
-
-	if err := t.ValidateBasic(); err != nil {
-		return Ticker{}, err
-	}
-
-	return t, nil
 }
 
 // String returns a string representation of the Ticker.

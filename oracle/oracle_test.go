@@ -70,14 +70,9 @@ func (s *OracleTestSuite) SetupTest() {
 	s.random = rand.New(rand.NewSource(time.Now().UnixNano()))
 	s.logger = zap.NewExample()
 
-	btcusd, err := mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
-	s.Require().NoError(err)
-
-	ethusd, err := mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
-	s.Require().NoError(err)
-
-	atomusd, err := mmtypes.NewTicker("COSMOS", "USD", 8, 1)
-	s.Require().NoError(err)
+	btcusd := mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
+	ethusd := mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
+	atomusd := mmtypes.NewTicker("COSMOS", "USD", 8, 1)
 
 	s.currencyPairs = []mmtypes.Ticker{
 		btcusd,

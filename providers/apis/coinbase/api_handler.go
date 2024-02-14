@@ -69,8 +69,7 @@ func (h *APIHandler) CreateURL(
 		return "", fmt.Errorf("expected 1 ticker, got %d", len(tickers))
 	}
 
-	// Ensure that the base and quote 
-	ies are supported by the Coinbase API and
+	// Ensure that the base and quote currencies are supported by the Coinbase API and
 	// are configured for the handler.
 	ticker := tickers[0]
 	market, ok := h.marketCfg.TickerConfigs[tickers[0].String()]

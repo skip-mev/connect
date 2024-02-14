@@ -19,10 +19,9 @@ import (
 )
 
 var (
-	btcusdt, _ = mmtypes.NewTicker("BITCOIN", "USDT", 8, 1)
-	bnbusdt, _ = mmtypes.NewTicker("BINANCE", "USDT", 8, 1)
-
-	mogusdt, _ = mmtypes.NewTicker("MOG", "USDT", 8, 1)
+	btcusdt = mmtypes.NewTicker("BITCOIN", "USDT", 8, 1)
+	bnbusdt = mmtypes.NewTicker("BINANCE", "USDT", 8, 1)
+	mogusdt = mmtypes.NewTicker("MOG", "USDT", 8, 1)
 
 	marketConfig = mmtypes.MarketConfig{
 		Name: binance.Name,
