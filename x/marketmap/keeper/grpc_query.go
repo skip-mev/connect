@@ -41,12 +41,15 @@ func (q queryServerImpl) GetMarketMap(goCtx context.Context, req *types.GetMarke
 }
 
 // Params returns the parameters stored in the x/marketmap module.
-func (q queryServerImpl) Params(_ context.Context, req *types.ParamsRequest) (*types.ParamsResponse, error) {
+func (q queryServerImpl) Params(goCtx context.Context, req *types.ParamsRequest) (*types.ParamsResponse, error) {
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
 	}
 
-	// TODO fix
+	// unwrap the context
+	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	return nil, nil
+	params, err := q.k.params.Get(ctx)
+
+	return &types.ParamsResponse{Params: params}, err
 }
