@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Query_GetMarketMap_FullMethodName = "/slinky.marketmap.v1.Query/GetMarketMap"
+	Query_Params_FullMethodName       = "/slinky.marketmap.v1.Query/Params"
 )
 
 // QueryClient is the client API for Query service.
@@ -29,6 +30,8 @@ type QueryClient interface {
 	// GetMarketMap returns the full market map stored in the x/marketmap
 	// module.
 	GetMarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
+	// Params returns the current x/marketmap module parameters.
+	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
 }
 
 type queryClient struct {
@@ -48,6 +51,15 @@ func (c *queryClient) GetMarketMap(ctx context.Context, in *GetMarketMapRequest,
 	return out, nil
 }
 
+func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error) {
+	out := new(ParamsResponse)
+	err := c.cc.Invoke(ctx, Query_Params_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -55,6 +67,8 @@ type QueryServer interface {
 	// GetMarketMap returns the full market map stored in the x/marketmap
 	// module.
 	GetMarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
+	// Params returns the current x/marketmap module parameters.
+	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -64,6 +78,9 @@ type UnimplementedQueryServer struct {
 
 func (UnimplementedQueryServer) GetMarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMarketMap not implemented")
+}
+func (UnimplementedQueryServer) Params(context.Context, *ParamsRequest) (*ParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -96,6 +113,24 @@ func _Query_GetMarketMap_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Params_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Params(ctx, req.(*ParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -106,6 +141,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMarketMap",
 			Handler:    _Query_GetMarketMap_Handler,
+		},
+		{
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
