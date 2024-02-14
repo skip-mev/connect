@@ -60,38 +60,43 @@ func NewAPIHandler(
 }
 
 // CreateURL returns the URL that is used to fetch data from the Binance API for the
-// given currency pairs.
+// given tickers.
 func (h *APIHandler) CreateURL(
-	cps []mmtypes.Ticker,
+	tickers []mmtypes.Ticker,
 ) (string, error) {
-	var cpStrings string
+	var tickerStrings string
 
-	for _, cp := range cps {
-		market, ok := h.marketCfg.TickerConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.marketCfg.TickerConfigs[ticker.String()]
 		if !ok {
-			return "", fmt.Errorf("currency pair %s not found in market config", cp.String())
+			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
 		}
 
-		cpStrings += fmt.Sprintf("%s%s%s%s", Quotation, market.OffChainTicker, Quotation, Separator)
+		tickerStrings += fmt.Sprintf("%s%s%s%s", Quotation, market.OffChainTicker, Quotation, Separator)
 	}
 
-	if len(cpStrings) == 0 {
-		return "", fmt.Errorf("empty url created. invalid or no currency pairs were provided")
+	if len(tickerStrings) == 0 {
+		return "", fmt.Errorf("empty url created. invalid or no ticker were provided")
 	}
 
-	// remove last comma from list
-	cpStrings = strings.TrimSuffix(cpStrings, Separator)
-	return fmt.Sprintf(h.apiCfg.URL, LeftBracket, cpStrings, RightBracket), nil
+	return fmt.Sprintf(
+		h.apiCfg.URL,
+		LeftBracket,
+		strings.TrimSuffix(tickerStrings, Separator),
+		RightBracket,
+	), nil
 }
 
+// ParseResponse parses the response from the Binance API and returns a GetResponse. Each
+// of the tickers supplied will get a response or an error.
 func (h *APIHandler) ParseResponse(
-	cps []mmtypes.Ticker,
+	tickers []mmtypes.Ticker,
 	resp *http.Response,
 ) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](cps, err)
+		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
 	}
 
 	var (
@@ -99,29 +104,30 @@ func (h *APIHandler) ParseResponse(
 		unresolved = make(map[mmtypes.Ticker]error)
 	)
 
-	// Filter out the responses that are not expected.
 	inverted := h.marketCfg.Invert()
 	for _, data := range result {
+		// Filter out the responses that are not expected.
 		market, ok := inverted[data.Symbol]
 		if !ok {
 			continue
 		}
 
-		cp := market.Ticker
-		price, err := math.Float64StringToBigInt(data.Price, cp.Decimals)
+		price, err := math.Float64StringToBigInt(data.Price, market.Ticker.Decimals)
 		if err != nil {
-			unresolved[cp] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			unresolved[market.Ticker] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
 			continue
 		}
 
-		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
+		resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now())
 	}
 
-	for _, cp := range cps {
-		_, resolvedOk := resolved[cp]
-		_, unresolvedOk := unresolved[cp]
+	// Add currency pairs that received no response to the unresolved map.
+	for _, ticker := range tickers {
+		_, resolvedOk := resolved[ticker]
+		_, unresolvedOk := unresolved[ticker]
+
 		if !resolvedOk && !unresolvedOk {
-			unresolved[cp] = fmt.Errorf("no response")
+			unresolved[ticker] = fmt.Errorf("no response")
 		}
 	}
 

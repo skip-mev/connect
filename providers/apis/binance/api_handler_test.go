@@ -227,6 +227,23 @@ func TestParseResponse(t *testing.T) {
 				},
 			),
 		},
+		{
+			name: "no response",
+			cps: []mmtypes.Ticker{
+				btcusdt,
+				bnbusdt,
+			},
+			response: testutils.CreateResponseFromJSON(
+				`[]`,
+			),
+			expected: providertypes.NewGetResponse(
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					btcusdt: fmt.Errorf("no response"),
+					bnbusdt: fmt.Errorf("no response"),
+				},
+			),
+		},
 	}
 
 	for _, tc := range testCases {

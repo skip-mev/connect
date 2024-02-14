@@ -9,67 +9,63 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var providerCfg = config.ProviderConfig{
-	Name: coinbase.Name,
-	API:  coinbase.DefaultAPIConfig,
-	Market: config.MarketConfig{
+var (
+	btcusd, _ = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
+	ethusd, _ = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
+
+	marketCfg = mmtypes.MarketConfig{
 		Name: coinbase.Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"BITCOIN/USD": {
-				Ticker:       "BTC-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				Ticker:         btcusd,
+				OffChainTicker: "BTC-USD",
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETH-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Ticker:         ethusd,
+				OffChainTicker: "ETH-USD",
 			},
 		},
-	},
-}
+	}
+)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []slinkytypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		url         string
 		expectedErr bool
 	}{
 		{
 			name: "valid",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				btcusd,
 			},
 			url:         "https://api.coinbase.com/v2/prices/BTC-USD/spot",
 			expectedErr: false,
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				btcusd,
+				ethusd,
 			},
 			url:         "",
 			expectedErr: true,
 		},
 		{
-			name: "unknown base currency",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
-			},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "unknown quote currency",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
+			name: "unknown currency",
+			cps: []mmtypes.Ticker{
+				{
+					CurrencyPair: slinkytypes.NewCurrencyPair("MOG", "USD"),
+					Decimals:     8,
+				},
 			},
 			url:         "",
 			expectedErr: true,
@@ -78,7 +74,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coinbase.NewAPIHandler(providerCfg)
+			h, err := coinbase.NewAPIHandler(marketCfg, coinbase.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -95,92 +91,14 @@ func TestCreateURL(t *testing.T) {
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cps      []slinkytypes.CurrencyPair
+		cps      []mmtypes.Ticker
 		response *http.Response
-		expected providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		expected providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 	}{
 		{
 			name: "valid",
-			cps:  []slinkytypes.CurrencyPair{slinkytypes.NewCurrencyPair("BITCOIN", "USD")},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"data": {
-		"amount": "1020.25",
-		"currency": "USD"
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
-						Value: big.NewInt(102025000000),
-					},
-				},
-				map[slinkytypes.CurrencyPair]error{},
-			),
-		},
-		{
-			name: "malformed response",
-			cps:  []slinkytypes.CurrencyPair{slinkytypes.NewCurrencyPair("BITCOIN", "USD")},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"data": {
-		"amount": "1020.25",
-		"currency": "USD",
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("bad format"),
-				},
-			),
-		},
-		{
-			name: "unable to parse float",
-			cps:  []slinkytypes.CurrencyPair{slinkytypes.NewCurrencyPair("BITCOIN", "USD")},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"data": {
-		"amount": "$1020.25",
-		"currency": "USD"
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("bad format"),
-				},
-			),
-		},
-		{
-			name: "unable to parse json",
-			cps:  []slinkytypes.CurrencyPair{slinkytypes.NewCurrencyPair("BITCOIN", "USD")},
-			response: testutils.CreateResponseFromJSON(
-				`
-toms obvious but not minimal language
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("bad format"),
-				},
-			),
-		},
-		{
-			name: "multiple currency pairs to parse response for",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -193,10 +111,90 @@ toms obvious but not minimal language
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"):  fmt.Errorf("multiple cps"),
-					slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): fmt.Errorf("multiple cps"),
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+					btcusd: {
+						Value: big.NewInt(102025000000),
+					},
+				},
+				map[mmtypes.Ticker]error{},
+			),
+		},
+		{
+			name: "malformed response",
+			cps:  []mmtypes.Ticker{btcusd},
+			response: testutils.CreateResponseFromJSON(
+				`
+{
+	"data": {
+		"amount": "1020.25",
+		"currency": "USD",
+	}
+}
+	`,
+			),
+			expected: providertypes.NewGetResponse(
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					btcusd: fmt.Errorf("bad format"),
+				},
+			),
+		},
+		{
+			name: "unable to parse float",
+			cps:  []mmtypes.Ticker{btcusd},
+			response: testutils.CreateResponseFromJSON(
+				`
+{
+	"data": {
+		"amount": "$1020.25",
+		"currency": "USD"
+	}
+}
+	`,
+			),
+			expected: providertypes.NewGetResponse(
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					btcusd: fmt.Errorf("bad format"),
+				},
+			),
+		},
+		{
+			name: "unable to parse json",
+			cps:  []mmtypes.Ticker{btcusd},
+			response: testutils.CreateResponseFromJSON(
+				`
+toms obvious but not minimal language
+	`,
+			),
+			expected: providertypes.NewGetResponse(
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					btcusd: fmt.Errorf("bad format"),
+				},
+			),
+		},
+		{
+			name: "multiple currency pairs to parse response for",
+			cps: []mmtypes.Ticker{
+				btcusd,
+				ethusd,
+			},
+			response: testutils.CreateResponseFromJSON(
+				`
+{
+	"data": {
+		"amount": "1020.25",
+		"currency": "USD"
+	}
+}
+	`,
+			),
+			expected: providertypes.NewGetResponse(
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					btcusd: fmt.Errorf("multiple cps"),
+					ethusd: fmt.Errorf("multiple cps"),
 				},
 			),
 		},
@@ -204,7 +202,7 @@ toms obvious but not minimal language
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coinbase.NewAPIHandler(providerCfg)
+			h, err := coinbase.NewAPIHandler(marketCfg, coinbase.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			now := time.Now()
