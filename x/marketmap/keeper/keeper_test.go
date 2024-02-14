@@ -179,3 +179,16 @@ func (s *KeeperTestSuite) TestMarketMap() {
 		s.Require().Equal(aggCfg1.String(), aggCfg.String())
 	})
 }
+
+func (s *KeeperTestSuite) TestSetParams() {
+	params := types.DefaultParams()
+
+	s.Run("can set and get params", func() {
+		err := s.keeper.SetParams(s.ctx, params)
+		s.Require().NoError(err)
+
+		params2, err := s.keeper.GetParams(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(params, params2)
+	})
+}

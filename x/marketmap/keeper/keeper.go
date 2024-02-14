@@ -5,7 +5,6 @@ import (
 	"cosmossdk.io/core/store"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -23,17 +22,29 @@ type Keeper struct {
 
 	// lastUpdated is the last block height the marketmap was updated.
 	lastUpdated collections.Item[int64]
+
+	// params is the module's parameters.
+	params collections.Item[types.Params]
 }
 
 // NewKeeper initializes the keeper and its backing stores.
 func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec) Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
+	// Create the collections item that will track the module parameters.
+	params := collections.NewItem(
+		sb,
+		types.ParamsPrefix,
+		"params",
+		codec.CollValue[types.Params](cdc),
+	)
+
 	return Keeper{
 		cdc:                cdc,
 		marketConfigs:      collections.NewMap(sb, types.MarketConfigsPrefix, "market_configs", types.MarketProviderCodec, codec.CollValue[types.MarketConfig](cdc)),
 		aggregationConfigs: collections.NewMap(sb, types.AggregationConfigsPrefix, "aggregation_configs", types.TickerStringCodec, codec.CollValue[types.PathsConfig](cdc)),
 		lastUpdated:        collections.NewItem[int64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
+		params:             params,
 	}
 }
 
@@ -139,4 +150,14 @@ func (k Keeper) CreateMarketConfig(ctx sdk.Context, marketConfig types.MarketCon
 	}
 
 	return k.setLastUpdated(ctx)
+}
+
+// SetParams sets the x/marketmap module's parameters.
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
+	return k.params.Set(ctx, params)
+}
+
+// GetParams returns the x/marketmap module's parameters.
+func (k Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
+	return k.params.Get(ctx)
 }
