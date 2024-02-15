@@ -2,7 +2,6 @@ package kraken_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"testing"
 
@@ -371,7 +370,6 @@ func TestDecodeTickerResponseMessage(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual, err := kraken.DecodeTickerResponseMessage([]byte(tc.response))
-			fmt.Println(actual, err)
 			if tc.expErr {
 				require.Error(t, err)
 				return
