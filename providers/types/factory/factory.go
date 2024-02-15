@@ -23,7 +23,7 @@ type (
 	// API Query Handler.
 	APIQueryHandlerFactory[K providertypes.ResponseKey, V providertypes.ResponseValue] func(
 		*zap.Logger,
-		config.APIConfig,
+		config.ProviderConfig,
 		apimetrics.APIMetrics,
 	) (apihandlers.APIQueryHandler[K, V], error)
 
@@ -32,7 +32,7 @@ type (
 	// WebSocket Query Handler.
 	WebSocketQueryHandlerFactory[K providertypes.ResponseKey, V providertypes.ResponseValue] func(
 		*zap.Logger,
-		config.WebSocketConfig,
+		config.ProviderConfig,
 		wsmetrics.WebSocketMetrics,
 	) (wshandlers.WebSocketQueryHandler[K, V], error)
 )

@@ -23,7 +23,12 @@ import (
 // Specifically, this factory function returns API query handlers that are used to fetch data from
 // the price providers.
 func APIQueryHandlerFactory(aggConfig mmtypes.AggregateMarketConfig) factory.APIQueryHandlerFactory[mmtypes.Ticker, *big.Int] {
-	return func(logger *zap.Logger, cfg config.APIConfig, metrics metrics.APIMetrics) (apihandlers.APIQueryHandler[mmtypes.Ticker, *big.Int], error) {
+	return func(logger *zap.Logger, cfg config.ProviderConfig, metrics metrics.APIMetrics) (apihandlers.APIQueryHandler[mmtypes.Ticker, *big.Int], error) {
+		// If the API is not enabled, return an error.
+		if !cfg.API.Enabled {
+			return nil, fmt.Errorf("API for provider %s is not enabled", cfg.Name)
+		}
+
 		// Validate the provider config.
 		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err
@@ -43,10 +48,10 @@ func APIQueryHandlerFactory(aggConfig mmtypes.AggregateMarketConfig) factory.API
 		// Create the underlying client that will be used to fetch data from the API. This client
 		// will limit the number of concurrent connections and uses the configured timeout to
 		// ensure requests do not hang.
-		maxCons := math.Min(len(market.TickerConfigs), cfg.MaxQueries)
+		maxCons := math.Min(len(market.TickerConfigs), cfg.API.MaxQueries)
 		client := &http.Client{
 			Transport: &http.Transport{MaxConnsPerHost: maxCons},
-			Timeout:   cfg.Timeout,
+			Timeout:   cfg.API.Timeout,
 		}
 
 		var (
@@ -57,11 +62,11 @@ func APIQueryHandlerFactory(aggConfig mmtypes.AggregateMarketConfig) factory.API
 
 		switch cfg.Name {
 		case binance.Name:
-			apiDataHandler, err = binance.NewAPIHandler(market, cfg)
+			apiDataHandler, err = binance.NewAPIHandler(market, cfg.API)
 		case coinbaseapi.Name:
-			apiDataHandler, err = coinbaseapi.NewAPIHandler(market, cfg)
+			apiDataHandler, err = coinbaseapi.NewAPIHandler(market, cfg.API)
 		case coingecko.Name:
-			apiDataHandler, err = coingecko.NewAPIHandler(market, cfg)
+			apiDataHandler, err = coingecko.NewAPIHandler(market, cfg.API)
 		case static.Name:
 			apiDataHandler, err = static.NewAPIHandler(market)
 			if err != nil {
@@ -87,7 +92,7 @@ func APIQueryHandlerFactory(aggConfig mmtypes.AggregateMarketConfig) factory.API
 		// Create the API query handler which encapsulates all of the fetching and parsing logic.
 		return apihandlers.NewAPIQueryHandler[mmtypes.Ticker, *big.Int](
 			logger,
-			cfg,
+			cfg.API,
 			requestHandler,
 			apiDataHandler,
 			metrics,

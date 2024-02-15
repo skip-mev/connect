@@ -7,7 +7,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
@@ -23,9 +22,9 @@ type DefaultOracleProviderFactory struct {
 	logger *zap.Logger
 
 	// apiFactory is the factory function that creates API query handlers.
-	apiFactory factory.APIQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int]
+	apiFactory factory.APIQueryHandlerFactory[mmtypes.Ticker, *big.Int]
 	// wsFactory is the factory function that creates websocket query handlers.
-	wsFactory factory.WebSocketQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int]
+	wsFactory factory.WebSocketQueryHandlerFactory[mmtypes.Ticker, *big.Int]
 	// marketMap contains the entire set of price feeds that the oracle will fetch prices for.
 	marketMap mmtypes.AggregateMarketConfig
 }
@@ -33,8 +32,8 @@ type DefaultOracleProviderFactory struct {
 // NewDefaultProviderFactory returns a new instance of the default provider factory.
 func NewDefaultProviderFactory(
 	logger *zap.Logger,
-	apiFactory factory.APIQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int],
-	wsFactory factory.WebSocketQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int],
+	apiFactory factory.APIQueryHandlerFactory[mmtypes.Ticker, *big.Int],
+	wsFactory factory.WebSocketQueryHandlerFactory[mmtypes.Ticker, *big.Int],
 	marketmap mmtypes.AggregateMarketConfig,
 ) (*DefaultOracleProviderFactory, error) {
 	if logger == nil {
@@ -62,8 +61,8 @@ func NewDefaultProviderFactory(
 }
 
 // Factory returns a factory function that creates providers based on the oracle configuration.
-func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[slinkytypes.CurrencyPair, *big.Int] {
-	return func(cfg config.OracleConfig) ([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], error) {
+func (f *DefaultOracleProviderFactory) Factory(aggConfig mmtypes.AggregateMarketConfig) factory.ProviderFactory[mmtypes.Ticker, *big.Int] {
+	return func(cfg config.OracleConfig) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err
 		}
@@ -74,10 +73,10 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[slinkyt
 		providerMetrics := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
 		// Create the providers.
-		providers := make([]providertypes.Provider[slinkytypes.CurrencyPair, *big.Int], len(cfg.Providers))
+		providers := make([]providertypes.Provider[mmtypes.Ticker, *big.Int], len(cfg.Providers))
 		for i, p := range cfg.Providers {
 			// Get the market configuration for the provider.
-			market, ok := f.marketMap.MarketConfigs[p.Name]
+			market, ok := aggConfig.MarketConfigs[p.Name]
 			if !ok {
 				f.logger.Info("market config not found", zap.String("provider", p.Name))
 				continue
@@ -91,13 +90,13 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[slinkyt
 				}
 
 				// Create the provider.
-				provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
-					base.WithName[slinkytypes.CurrencyPair, *big.Int](p.Name),
-					base.WithLogger[slinkytypes.CurrencyPair, *big.Int](f.logger),
+				provider, err := base.NewProvider[mmtypes.Ticker, *big.Int](
+					base.WithName[mmtypes.Ticker, *big.Int](p.Name),
+					base.WithLogger[mmtypes.Ticker, *big.Int](f.logger),
 					base.WithAPIQueryHandler(queryHandler),
-					base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](p.API),
-					base.WithIDs[slinkytypes.CurrencyPair, *big.Int](cfg.Market.GetCurrencyPairs()),
-					base.WithMetrics[slinkytypes.CurrencyPair, *big.Int](providerMetrics),
+					base.WithAPIConfig[mmtypes.Ticker, *big.Int](p.API),
+					base.WithIDs[mmtypes.Ticker, *big.Int](market.Tickers()),
+					base.WithMetrics[mmtypes.Ticker, *big.Int](providerMetrics),
 				)
 				if err != nil {
 					return nil, err
@@ -112,13 +111,13 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[slinkyt
 				}
 
 				// Create the provider.
-				provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
-					base.WithName[slinkytypes.CurrencyPair, *big.Int](p.Name),
-					base.WithLogger[slinkytypes.CurrencyPair, *big.Int](f.logger),
+				provider, err := base.NewProvider[mmtypes.Ticker, *big.Int](
+					base.WithName[mmtypes.Ticker, *big.Int](p.Name),
+					base.WithLogger[mmtypes.Ticker, *big.Int](f.logger),
 					base.WithWebSocketQueryHandler(queryHandler),
-					base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](p.WebSocket),
-					base.WithIDs[slinkytypes.CurrencyPair, *big.Int](cfg.Market.GetCurrencyPairs()),
-					base.WithMetrics[slinkytypes.CurrencyPair, *big.Int](providerMetrics),
+					base.WithWebSocketConfig[mmtypes.Ticker, *big.Int](p.WebSocket),
+					base.WithIDs[mmtypes.Ticker, *big.Int](market.Tickers()),
+					base.WithMetrics[mmtypes.Ticker, *big.Int](providerMetrics),
 				)
 				if err != nil {
 					return nil, err
