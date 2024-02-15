@@ -3,13 +3,10 @@ package oracle
 import (
 	"context"
 	"fmt"
-	"math/big"
 
+	"github.com/skip-mev/slinky/oracle/types"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
-
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 var CtxErrors = map[error]struct{}{
@@ -34,7 +31,7 @@ func (o *OracleImpl) StartProviders(ctx context.Context) {
 // to concurrently run until the context is canceled.
 func (o *OracleImpl) execProviderFn(
 	ctx context.Context,
-	p providertypes.Provider[slinkytypes.CurrencyPair, *big.Int],
+	p types.PriceProvider,
 ) func() error {
 	return func() error {
 		defer func() {
