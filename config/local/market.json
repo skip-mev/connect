@@ -1,0 +1,2341 @@
+{
+  "market_configs": {
+    "binance": {
+      "name": "binance",
+      "ticker_configs": {
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHBTC"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSDT"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSDT"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDCUSDT"
+        }
+      }
+    },
+    "bitfinex": {
+      "name": "bitfinex",
+      "ticker_configs": {
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSD"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIAUSD"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHBTC"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSD"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSD"
+        }
+      }
+    },
+    "bitstamp": {
+      "name": "bitstamp",
+      "ticker_configs": {
+        "AVAX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "avaxusd"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "btcusd"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "btcusdc"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "btcusdt"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethbtc"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethusd"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethusdt"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "solusd"
+        },
+        "USDC/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "usdcusd"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "usdcusdt"
+        },
+        "USDT/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDT",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "usdtusd"
+        }
+      }
+    },
+    "bybit": {
+      "name": "bybit",
+      "ticker_configs": {
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        "AVAX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAXUSDC"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSDT"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDXUSDT"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSDT"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSDT"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDCUSDT"
+        }
+      }
+    },
+    "coinbase_api": {
+      "name": "coinbase_api",
+      "ticker_configs": {
+        "ATOM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USD"
+        },
+        "ATOM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        "AVAX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USD"
+        },
+        "AVAX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USD"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDT"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USD"
+        },
+        "CELESTIA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USDC"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USDT"
+        },
+        "DYDX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USD"
+        },
+        "DYDX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USDC"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-BTC"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USD"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDT"
+        },
+        "OSMOSIS/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USD"
+        },
+        "OSMOSIS/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USDC"
+        },
+        "OSMOSIS/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USDT"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USD"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDT"
+        },
+        "USDC/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USD"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USDT"
+        },
+        "USDT/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDT",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDT-USD"
+        }
+      }
+    },
+    "coinbase_websocket": {
+      "name": "coinbase_websocket",
+      "ticker_configs": {
+        "ATOM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USD"
+        },
+        "ATOM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        "AVAX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USD"
+        },
+        "AVAX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USD"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDT"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USD"
+        },
+        "CELESTIA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USDC"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USDT"
+        },
+        "DYDX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USD"
+        },
+        "DYDX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USDC"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-BTC"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USD"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDT"
+        },
+        "OSMOSIS/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USD"
+        },
+        "OSMOSIS/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USDC"
+        },
+        "OSMOSIS/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USDT"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USD"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDT"
+        },
+        "USDC/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USD"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USDT"
+        },
+        "USDT/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDT",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDT-USD"
+        }
+      }
+    },
+    "coingecko": {
+      "name": "coingecko",
+      "ticker_configs": {
+        "ATOM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "cosmos/usd"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "bitcoin/usd"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "celestia/usd"
+        },
+        "DYDX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "dydx-chain/usd"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethereum/btc"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethereum/usd"
+        },
+        "OSMOSIS/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "osmosis/usd"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "solana/usd"
+        }
+      }
+    },
+    "crypto_dot_com": {
+      "name": "crypto_dot_com",
+      "ticker_configs": {
+        "ATOM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOMUSD-PERP"
+        },
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM_USDT"
+        },
+        "AVAX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAXUSD-PERP"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX_USDT"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSD-PERP"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC_USDT"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIAUSD-PERP"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA_USDT"
+        },
+        "DYDX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDXUSD-PERP"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX_USDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH_BTC"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSD-PERP"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH_USDT"
+        },
+        "OSMOSIS/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO_USD"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSD-PERP"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL_USDT"
+        },
+        "USDT/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDT",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDT_USD"
+        }
+      }
+    },
+    "gate.io": {
+      "name": "gate.io",
+      "ticker_configs": {
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM_USDT"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX_USDT"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC_USDT"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA_USDT"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX_USDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH_BTC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH_USDT"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL_USDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL_USDT"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC_USDT"
+        }
+      }
+    },
+    "huobi": {
+      "name": "huobi",
+      "ticker_configs": {
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "atomusdt"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "avaxusdt"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "btcusdc"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "btcusdt"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "tiausdt"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "dydxusdt"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethbtc"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethusdc"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ethusdt"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "solusdt"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "usdcusdt"
+        }
+      }
+    },
+    "kraken": {
+      "name": "kraken",
+      "ticker_configs": {
+        "ATOM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM/USD"
+        },
+        "AVAX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX/USD"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX/USDT"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "XBT/USD"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "XBT/USDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "XBT/USDT"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA/USD"
+        },
+        "DYDX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX/USD"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH/XBT"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH/USD"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH/USDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH/USDT"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL/USD"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL/USDT"
+        },
+        "USDC/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC/USD"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC/USDT"
+        },
+        "USDT/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDT",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDT/USD"
+        }
+      }
+    },
+    "kucoin": {
+      "name": "kucoin",
+      "ticker_configs": {
+        "ATOM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        "AVAX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDT"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USDT"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-BTC"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDT"
+        },
+        "OSMOSIS/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "OSMOSIS",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "OSMO-USDT"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDT"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USDT"
+        }
+      }
+    },
+    "mexc": {
+      "name": "mexc",
+      "ticker_configs": {
+        "ATOM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOMUSDC"
+        },
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        "AVAX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAXUSDC"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTCUSDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHBTC"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETHUSDT"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOLUSDT"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDCUSDT"
+        }
+      }
+    },
+    "okx": {
+      "name": "okx",
+      "ticker_configs": {
+        "ATOM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USD"
+        },
+        "ATOM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        "ATOM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ATOM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        "AVAX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USD"
+        },
+        "AVAX/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        "AVAX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "AVAX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        "BITCOIN/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USD"
+        },
+        "BITCOIN/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDC"
+        },
+        "BITCOIN/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "BITCOIN",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "BTC-USDT"
+        },
+        "CELESTIA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USD"
+        },
+        "CELESTIA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "CELESTIA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "TIA-USDT"
+        },
+        "DYDX/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USD"
+        },
+        "DYDX/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "DYDX",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        "ETHEREUM/BITCOIN": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "BITCOIN"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-BTC"
+        },
+        "ETHEREUM/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USD"
+        },
+        "ETHEREUM/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDC"
+        },
+        "ETHEREUM/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "ETHEREUM",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "ETH-USDT"
+        },
+        "SOLANA/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USD"
+        },
+        "SOLANA/USDC": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDC"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDC"
+        },
+        "SOLANA/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "SOLANA",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "SOL-USDT"
+        },
+        "USDC/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USD"
+        },
+        "USDC/USDT": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDC",
+              "Quote": "USDT"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDC-USDT"
+        },
+        "USDT/USD": {
+          "ticker": {
+            "currency_pair": {
+              "Base": "USDT",
+              "Quote": "USD"
+            },
+            "decimals": 8,
+            "min_provider_count": 1
+          },
+          "off_chain_ticker": "USDT-USD"
+        }
+      }
+    }
+  },
+  "ticker_configs": null
+}

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains the [configuration file](./oracle.toml) for the local oracle instance. To update the configuration, edit the `LocalConfig` in [generate_toml.go](./generate_toml.go) and run the following command:
+This directory contains the [configuration file](./oracle.json) for the local oracle instance. To update the configuration, edit the `LocalConfig` in [generate_toml.go](./generate_toml.go) and run the following command:
 
 ```bash
 make update-local-config

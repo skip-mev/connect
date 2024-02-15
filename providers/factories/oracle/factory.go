@@ -61,7 +61,7 @@ func NewDefaultProviderFactory(
 }
 
 // Factory returns a factory function that creates providers based on the oracle configuration.
-func (f *DefaultOracleProviderFactory) Factory(aggConfig mmtypes.AggregateMarketConfig) factory.ProviderFactory[mmtypes.Ticker, *big.Int] {
+func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[mmtypes.Ticker, *big.Int] {
 	return func(cfg config.OracleConfig) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
 		if err := cfg.ValidateBasic(); err != nil {
 			return nil, err
@@ -73,10 +73,10 @@ func (f *DefaultOracleProviderFactory) Factory(aggConfig mmtypes.AggregateMarket
 		providerMetrics := providermetrics.NewProviderMetricsFromConfig(cfg.Metrics)
 
 		// Create the providers.
-		providers := make([]providertypes.Provider[mmtypes.Ticker, *big.Int], len(cfg.Providers))
-		for i, p := range cfg.Providers {
+		providers := make([]providertypes.Provider[mmtypes.Ticker, *big.Int], 0)
+		for _, p := range cfg.Providers {
 			// Get the market configuration for the provider.
-			market, ok := aggConfig.MarketConfigs[p.Name]
+			market, ok := f.marketMap.MarketConfigs[p.Name]
 			if !ok {
 				f.logger.Info("market config not found", zap.String("provider", p.Name))
 				continue
@@ -102,7 +102,8 @@ func (f *DefaultOracleProviderFactory) Factory(aggConfig mmtypes.AggregateMarket
 					return nil, err
 				}
 
-				providers[i] = provider
+				f.logger.Info("created provider", zap.String("name", provider.Name()))
+				providers = append(providers, provider)
 			case p.WebSocket.Enabled:
 				// Create the websocket query handler which encapsulates all fetching and parsing logic.
 				queryHandler, err := f.wsFactory(f.logger, p, wsMetrics)
@@ -123,7 +124,8 @@ func (f *DefaultOracleProviderFactory) Factory(aggConfig mmtypes.AggregateMarket
 					return nil, err
 				}
 
-				providers[i] = provider
+				f.logger.Info("created provider", zap.String("name", provider.Name()))
+				providers = append(providers, provider)
 			default:
 				f.logger.Info("unknown provider type", zap.String("provider", p.Name))
 				return nil, fmt.Errorf("unknown provider type: %s", p.Name)
