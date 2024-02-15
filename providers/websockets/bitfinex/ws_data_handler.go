@@ -34,11 +34,11 @@ func NewWebSocketDataHandler(
 	wsCfg config.WebSocketConfig,
 ) (types.PriceWebSocketDataHandler, error) {
 	if err := marketCfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
 	if marketCfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, marketCfg.Name)
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
 	}
 
 	if wsCfg.Name != Name {
@@ -51,7 +51,7 @@ func NewWebSocketDataHandler(
 	}
 
 	if err := wsCfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid websocket config %w", err)
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
 	}
 
 	return &WebSocketHandler{
