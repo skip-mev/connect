@@ -31,7 +31,7 @@ func NewAPIHandler(
 	market mmtypes.MarketConfig,
 ) (*MockAPIHandler, error) {
 	if market.Name != Name {
-		return nil, fmt.Errorf("expected market config name to be static-mock-provider, got %s", market.Name)
+		return nil, fmt.Errorf("expected market config name to be %s, got %s", Name, market.Name)
 	}
 
 	s := MockAPIHandler{
