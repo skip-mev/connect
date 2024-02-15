@@ -186,7 +186,8 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		s.Require().False(contains)
 	})
 
-	cp2 := oracletypes.NewCurrencyPair("BTC", "USD")
+
+	cp2 := oracletypes.NewCurrencyPair("mog", "usd")
 	priceFeed3, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,
