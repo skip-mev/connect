@@ -1,6 +1,10 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/skip-mev/slinky/pkg/json"
+)
 
 // NewMarketConfig returns a new MarketConfig instance. The MarketConfig represents
 // the provider specific configurations for different markets and the associated
@@ -64,5 +68,5 @@ func (c *MarketConfig) ValidateBasic() error {
 		seenOffChain[cfg.OffChainTicker] = struct{}{}
 	}
 
-	return nil
+	return json.IsValid([]byte(c.Metadata_JSON))
 }

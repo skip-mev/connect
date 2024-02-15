@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 
+	"github.com/skip-mev/slinky/pkg/json"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
@@ -48,7 +50,11 @@ func (t *Ticker) ValidateBasic() error {
 		return fmt.Errorf("min provider count must be at least %d; got %d", DefaultMinProviderCount, t.MinProviderCount)
 	}
 
-	return t.CurrencyPair.ValidateBasic()
+	if err := t.CurrencyPair.ValidateBasic(); err != nil {
+		return err
+	}
+
+	return json.IsValid([]byte(t.Metadata_JSON))
 }
 
 // NewTickerConfig returns a new TickerConfig instance. The TickerConfig is
