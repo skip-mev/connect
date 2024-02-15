@@ -13,13 +13,13 @@ toolchain go1.21.0
 require (
 	cosmossdk.io/math v1.2.0
 	github.com/cometbft/cometbft v0.38.5
-	github.com/cosmos/cosmos-sdk v0.50.3
+	github.com/cosmos/cosmos-sdk v0.50.4-0.20240125183858-0abf94a334e3
 	github.com/pelletier/go-toml v1.9.5
 	github.com/skip-mev/slinky v0.0.0-00010101000000-000000000000
 	github.com/strangelove-ventures/interchaintest/v8 v8.0.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.26.0
-	google.golang.org/grpc v1.61.0
+	google.golang.org/grpc v1.61.1
 )
 
 require (
