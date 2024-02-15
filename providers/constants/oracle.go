@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -15,6 +16,9 @@ type (
 	// PriceAPIDataHandler is a type alias for the API data handler that is used to fetch resolve http
 	// requests and parse the response into price data.
 	PriceAPIDataHandler = apihandlers.APIDataHandler[mmtypes.Ticker, *big.Int]
+
+	// PriceResponse is a type alias for the response from the price providers.
+	PriceResponse = providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 )
 
 var (

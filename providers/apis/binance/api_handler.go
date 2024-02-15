@@ -46,7 +46,6 @@ func NewAPIHandler(
 
 	if !api.Enabled {
 		return nil, fmt.Errorf("api config for %s is not enabled", Name)
-
 	}
 
 	if err := api.ValidateBasic(); err != nil {
@@ -91,7 +90,7 @@ func (h *APIHandler) CreateURL(
 func (h *APIHandler) ParseResponse(
 	tickers []mmtypes.Ticker,
 	resp *http.Response,
-) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {
+) constants.PriceResponse {
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
@@ -117,7 +116,7 @@ func (h *APIHandler) ParseResponse(
 			continue
 		}
 
-		resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now())
+		resolved[market.Ticker] = providertypes.NewResult(price, time.Now())
 	}
 
 	// Add currency pairs that received no response to the unresolved map.
@@ -130,5 +129,5 @@ func (h *APIHandler) ParseResponse(
 		}
 	}
 
-	return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved)
+	return providertypes.NewGetResponse(resolved, unresolved)
 }

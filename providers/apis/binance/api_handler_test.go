@@ -19,9 +19,7 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var (
-	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
-)
+var mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
