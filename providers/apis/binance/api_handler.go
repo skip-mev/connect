@@ -21,41 +21,41 @@ var _ constants.PriceAPIDataHandler = (*APIHandler)(nil)
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
-	// marketCfg is the config for the Binance API.
-	marketCfg mmtypes.MarketConfig
-	// apiCfg is the config for the Binance API.
-	apiCfg config.APIConfig
+	// market is the config for the Binance API.
+	market mmtypes.MarketConfig
+	// api is the config for the Binance API.
+	api config.APIConfig
 }
 
 // NewAPIHandler returns a new Binance Price API Data Handler.
 func NewAPIHandler(
-	marketCfg mmtypes.MarketConfig,
-	apiCfg config.APIConfig,
+	market mmtypes.MarketConfig,
+	api config.APIConfig,
 ) (constants.PriceAPIDataHandler, error) {
-	if err := marketCfg.ValidateBasic(); err != nil {
+	if err := market.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
-	if marketCfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, marketCfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, market.Name)
 	}
 
-	if apiCfg.Name != Name {
-		return nil, fmt.Errorf("expected api config name %s, got %s", Name, apiCfg.Name)
+	if api.Name != Name {
+		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
 
-	if !apiCfg.Enabled {
+	if !api.Enabled {
 		return nil, fmt.Errorf("api config for %s is not enabled", Name)
 
 	}
 
-	if err := apiCfg.ValidateBasic(); err != nil {
+	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid api config %w", err)
 	}
 
 	return &APIHandler{
-		marketCfg: marketCfg,
-		apiCfg:    apiCfg,
+		market: market,
+		api:    api,
 	}, nil
 }
 
@@ -66,7 +66,7 @@ func (h *APIHandler) CreateURL(
 ) (string, error) {
 	var tickerStrings string
 	for _, ticker := range tickers {
-		market, ok := h.marketCfg.TickerConfigs[ticker.String()]
+		market, ok := h.market.TickerConfigs[ticker.String()]
 		if !ok {
 			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
 		}
@@ -79,7 +79,7 @@ func (h *APIHandler) CreateURL(
 	}
 
 	return fmt.Sprintf(
-		h.apiCfg.URL,
+		h.api.URL,
 		LeftBracket,
 		strings.TrimSuffix(tickerStrings, Separator),
 		RightBracket,
@@ -103,7 +103,7 @@ func (h *APIHandler) ParseResponse(
 		unresolved = make(map[mmtypes.Ticker]error)
 	)
 
-	inverted := h.marketCfg.Invert()
+	inverted := h.market.Invert()
 	for _, data := range result {
 		// Filter out the responses that are not expected.
 		market, ok := inverted[data.Symbol]
