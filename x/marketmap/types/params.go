@@ -8,7 +8,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-// DefaultParams returns default incentive parameters.
+// DefaultParams returns default marketmap parameters.
 func DefaultParams() Params {
 	return Params{
 		MarketAuthority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
