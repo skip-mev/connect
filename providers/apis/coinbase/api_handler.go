@@ -8,103 +8,115 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
+var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
-// APIHandler implements the APIDataHandler interface for Coinbase, which can be used
+// APIHandler implements the PriceAPIDataHandler interface for Coinbase, which can be used
 // by a base provider. The DataHandler fetches data from the spot price Coinbase API. It is
-// atomic in that it must request data from the Coinbase API sequentially for each currency pair.
+// atomic in that it must request data from the Coinbase API sequentially for each ticker.
 type APIHandler struct {
-	// cfg is the config for the Coinbase API.
-	cfg config.ProviderConfig
+	// market is the config for the Coinbase API.
+	market mmtypes.MarketConfig
+	// api is the config for the Coinbase API.
+	api config.APIConfig
 }
 
 // NewAPIHandler returns a new Coinbase APIDataHandler.
 func NewAPIHandler(
-	cfg config.ProviderConfig,
-) (handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	market mmtypes.MarketConfig,
+	api config.APIConfig,
+) (types.PriceAPIDataHandler, error) {
+	if err := market.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.API.Enabled {
-		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
+	if api.Name != Name {
+		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", Name)
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config for %s: %w", Name, err)
 	}
 
 	return &APIHandler{
-		cfg,
+		market: market,
+		api:    api,
 	}, nil
 }
 
 // CreateURL returns the URL that is used to fetch data from the Coinbase API for the
-// given currency pair. Since the Coinbase API only supports fetching spot prices for
-// a single currency pair at a time, this function will return an error if the currency
-// pair slice contains more than one currency pair.
+// given tickers. Since the Coinbase API only supports fetching spot prices for a single
+// ticker at a time, this function will return an error if the ticker slice contains more
+// than one ticker.
 func (h *APIHandler) CreateURL(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 ) (string, error) {
-	if len(cps) != 1 {
-		return "", fmt.Errorf("expected 1 currency pair, got %d", len(cps))
+	if len(tickers) != 1 {
+		return "", fmt.Errorf("expected 1 ticker, got %d", len(tickers))
 	}
 
 	// Ensure that the base and quote currencies are supported by the Coinbase API and
 	// are configured for the handler.
-	cp := cps[0]
-	market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	ticker := tickers[0]
+	market, ok := h.market.TickerConfigs[ticker.String()]
 	if !ok {
-		return "", fmt.Errorf("unknown currency pair %s", cp)
+		return "", fmt.Errorf("unknown ticker %s", ticker.String())
 	}
 
-	return fmt.Sprintf(h.cfg.API.URL, market.Ticker), nil
+	return fmt.Sprintf(h.api.URL, market.OffChainTicker), nil
 }
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns
-// the resulting price. Note that this can only parse a single currency pair at a time.
+// the resulting price. Note that this can only parse a single ticker at a time.
 func (h *APIHandler) ParseResponse(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 	resp *http.Response,
-) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
-	if len(cps) != 1 {
-		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](
-			cps,
-			fmt.Errorf("expected 1 currency pair, got %d", len(cps)),
+) types.PriceResponse {
+	if len(tickers) != 1 {
+		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
+			tickers,
+			fmt.Errorf("expected 1 ticker, got %d", len(tickers)),
 		)
 	}
 
-	// Check if this currency pair is supported by the Coinbase API.
-	cp := cps[0]
-	_, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	// Check if this ticker is supported by the Coinbase API market config.
+	ticker := tickers[0]
+	_, ok := h.market.TickerConfigs[ticker.String()]
 	if !ok {
-		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](
-			cps,
-			fmt.Errorf("unknown currency pair %s", cp.String()),
+		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
+			tickers,
+			fmt.Errorf("unknown ticker %s", ticker.String()),
 		)
 	}
 
 	// Parse the response into a CoinBaseResponse.
 	var result CoinBaseResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
+		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
 	}
 
 	// Convert the float64 price into a big.Int.
-	price, err := math.Float64StringToBigInt(result.Data.Amount, cp.Decimals())
+	price, err := math.Float64StringToBigInt(result.Data.Amount, ticker.Decimals)
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
+		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
 	}
 
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
-		map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-			cp: providertypes.NewResult[*big.Int](price, time.Now()),
+	return providertypes.NewGetResponse(
+		types.ResolvedPrices{
+			ticker: providertypes.NewResult[*big.Int](price, time.Now()),
 		},
 		nil,
 	)

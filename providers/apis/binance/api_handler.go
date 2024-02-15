@@ -17,7 +17,7 @@ import (
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
-// APIHandler implements the APIHandler interface for Binance.
+// APIHandler implements the PriceAPIDataHandler interface for Binance.
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
