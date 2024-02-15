@@ -10,9 +10,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -30,7 +30,7 @@ const (
 //
 // 1. Successfully subscribed to the channel. In this case, no further action is required.
 // 2. Error message. In this case, we attempt to re-subscribe to the channel.
-func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeResponseMessage) ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) parseSubscribeResponseMessage(resp SubscribeResponseMessage) ([]handlers.WebsocketEncodedMessage, error) {
 	// A response with an event type of subscribe means that we have successfully subscribed to the channel.
 	if t := EventType(resp.Event); t == EventSubscribe {
 		h.logger.Info("successfully subscribed to channel", zap.String("instrument", resp.Arguments.InstrumentID))
@@ -68,39 +68,38 @@ func (h *WebsocketDataHandler) parseSubscribeResponseMessage(resp SubscribeRespo
 
 // parseTickerResponseMessage parses a ticker response message. The format of the message is defined
 // in the messages.go file. This message contains the latest price data for a set of instruments.
-func (h *WebsocketDataHandler) parseTickerResponseMessage(
+func (h *WebSocketHandler) parseTickerResponseMessage(
 	resp IndexTickersResponseMessage,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
+) (providertypes.GetResponse[mmtypes.Ticker, *big.Int], error) {
 	var (
-		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[slinkytypes.CurrencyPair]error)
+		resolved   = make(map[mmtypes.Ticker]providertypes.Result[*big.Int])
+		unresolved = make(map[mmtypes.Ticker]error)
 	)
 
 	// The channel must be the index tickers channel.
 	if Channel(resp.Arguments.Channel) != IndexTickersChannel {
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved),
+		return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved),
 			fmt.Errorf("invalid channel %s", resp.Arguments.Channel)
 	}
 
 	// Iterate through all tickers and add them to the response.
 	for _, ticker := range resp.Data {
-		market, ok := h.cfg.Market.TickerToMarketConfigs[ticker.InstrumentID]
+		inverted := h.market.Invert()
+		market, ok := inverted[ticker.InstrumentID]
 		if !ok {
-			h.logger.Debug("currency pair not found for instrument ID", zap.String("instrument_id", ticker.InstrumentID))
+			h.logger.Debug("ticker not found for instrument ID", zap.String("instrument_id", ticker.InstrumentID))
 			continue
 		}
 
 		// Convert the price to a big.Int.
-		cp := market.CurrencyPair
-		price, err := math.Float64StringToBigInt(ticker.IndexPrice, cp.Decimals())
+		price, err := math.Float64StringToBigInt(ticker.IndexPrice, market.Ticker.Decimals)
 		if err != nil {
-			h.logger.Error("failed to convert price to big.Int", zap.Error(err))
-			unresolved[cp] = fmt.Errorf("failed to convert price to big.Int: %w", err)
+			unresolved[market.Ticker] = fmt.Errorf("failed to convert price to big.Int: %w", err)
 			continue
 		}
 
-		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
+		resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
 	}
 
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved), nil
+	return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved), nil
 }
