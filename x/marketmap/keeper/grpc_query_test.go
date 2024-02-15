@@ -6,7 +6,7 @@ import (
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func (s *KeeperTestSuite) TestQueryServer() {
+func (s *KeeperTestSuite) TestQueryServeGetMarketMap() {
 	cp1 := slinkytypes.CurrencyPair{Base: "BTC", Quote: "ETH"}
 	aggCfg1 := types.PathsConfig{
 		Ticker: types.Ticker{
@@ -68,6 +68,25 @@ func (s *KeeperTestSuite) TestQueryServer() {
 
 	s.Run("run invalid nil request", func() {
 		_, err := qs.GetMarketMap(s.ctx, nil)
+		s.Require().Error(err)
+	})
+}
+
+func (s *KeeperTestSuite) TestQueryServerParams() {
+	params := types.DefaultParams()
+	s.Require().NoError(s.keeper.SetParams(s.ctx, params))
+
+	qs := keeper.NewQueryServer(s.keeper)
+
+	s.Run("run valid request", func() {
+		resp, err := qs.Params(s.ctx, &types.ParamsRequest{})
+		s.Require().NoError(err)
+
+		s.Require().Equal(params, resp.Params)
+	})
+
+	s.Run("run invalid nil request", func() {
+		_, err := qs.Params(s.ctx, nil)
 		s.Require().Error(err)
 	})
 }

@@ -22,6 +22,9 @@ var (
 	// LastUpdatedPrefix is the key prefix for the lastUpdated height.
 	LastUpdatedPrefix = collections.NewPrefix(2)
 
+	// ParamsPrefix is the key prefix of the module Params.
+	ParamsPrefix = collections.NewPrefix(3)
+
 	// MarketProviderCodec is the collections.KeyCodec value used for the marketConfigs map.
 	MarketProviderCodec = codec.NewStringKeyCodec[MarketProvider]()
 
