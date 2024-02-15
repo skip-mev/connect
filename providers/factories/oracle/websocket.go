@@ -20,11 +20,12 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"go.uber.org/zap"
 )
 
 // WebSocketQueryHandlerFactory returns a sample implementation of the websocket query handler
