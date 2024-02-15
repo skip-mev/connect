@@ -2,7 +2,8 @@ package bitfinex
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -35,28 +36,28 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.
-	DefaultMarketConfig = config.MarketConfig{
+	DefaultMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"BITCOIN/USD": {
-				Ticker:       "BTCUSD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				Ticker:         constants.BITCOIN_USD,
+				OffChainTicker: "BTCUSD",
 			},
 			"CELESTIA/USD": {
-				Ticker:       "TIAUSD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
+				Ticker:         constants.CELESTIA_USD,
+				OffChainTicker: "TIAUSD",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker:         constants.ETHEREUM_BITCOIN,
+				OffChainTicker: "ETHBTC",
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETHUSD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Ticker:         constants.ETHEREUM_USD,
+				OffChainTicker: "ETHUSD",
 			},
 			"SOLANA/USD": {
-				Ticker:       "SOLUSD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
+				Ticker:         constants.SOLANA_USD,
+				OffChainTicker: "SOLUSD",
 			},
 		},
 	}
