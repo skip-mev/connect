@@ -5,13 +5,8 @@ import (
 	"testing"
 
 	"github.com/skip-mev/slinky/aggregator"
+	"github.com/skip-mev/slinky/oracle/constants"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-)
-
-var (
-	btcusd  = mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
-	ethusd  = mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
-	usdtusd = mmtypes.NewTicker("USDT", "USD", 8, 1)
 )
 
 func TestComputeMedian(t *testing.T) {
@@ -29,69 +24,69 @@ func TestComputeMedian(t *testing.T) {
 			"single provider price",
 			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
-					btcusd: big.NewInt(100),
-					ethusd: big.NewInt(200),
+					constants.BITCOIN_USD:  big.NewInt(100),
+					constants.ETHEREUM_USD: big.NewInt(200),
 				},
 			},
 			map[mmtypes.Ticker]*big.Int{
-				btcusd: big.NewInt(100),
-				ethusd: big.NewInt(200),
+				constants.BITCOIN_USD:  big.NewInt(100),
+				constants.ETHEREUM_USD: big.NewInt(200),
 			},
 		},
 		{
 			"multiple provider prices",
 			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
-					btcusd: big.NewInt(100),
-					ethusd: big.NewInt(200),
+					constants.BITCOIN_USD:  big.NewInt(100),
+					constants.ETHEREUM_USD: big.NewInt(200),
 				},
 				"provider2": {
-					btcusd: big.NewInt(200),
-					ethusd: big.NewInt(300),
+					constants.BITCOIN_USD:  big.NewInt(200),
+					constants.ETHEREUM_USD: big.NewInt(300),
 				},
 			},
 			map[mmtypes.Ticker]*big.Int{
-				btcusd: big.NewInt(150),
-				ethusd: big.NewInt(250),
+				constants.BITCOIN_USD:  big.NewInt(150),
+				constants.ETHEREUM_USD: big.NewInt(250),
 			},
 		},
 		{
 			"multiple provider prices with different assets",
 			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
-					btcusd: big.NewInt(100),
-					ethusd: big.NewInt(200),
+					constants.BITCOIN_USD:  big.NewInt(100),
+					constants.ETHEREUM_USD: big.NewInt(200),
 				},
 				"provider2": {
-					btcusd:  big.NewInt(200),
-					ethusd:  big.NewInt(300),
-					usdtusd: nil, // should be ignored
+					constants.BITCOIN_USD:  big.NewInt(200),
+					constants.ETHEREUM_USD: big.NewInt(300),
+					constants.USDT_USD:     nil, // should be ignored
 				},
 			},
 			map[mmtypes.Ticker]*big.Int{
-				btcusd: big.NewInt(150),
-				ethusd: big.NewInt(250),
+				constants.BITCOIN_USD:  big.NewInt(150),
+				constants.ETHEREUM_USD: big.NewInt(250),
 			},
 		},
 		{
 			"odd number of provider prices",
 			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
 				"provider1": {
-					btcusd: big.NewInt(100),
-					ethusd: big.NewInt(200),
+					constants.BITCOIN_USD:  big.NewInt(100),
+					constants.ETHEREUM_USD: big.NewInt(200),
 				},
 				"provider2": {
-					btcusd: big.NewInt(200),
-					ethusd: big.NewInt(300),
+					constants.BITCOIN_USD:  big.NewInt(200),
+					constants.ETHEREUM_USD: big.NewInt(300),
 				},
 				"provider3": {
-					btcusd: big.NewInt(300),
-					ethusd: big.NewInt(400),
+					constants.BITCOIN_USD:  big.NewInt(300),
+					constants.ETHEREUM_USD: big.NewInt(400),
 				},
 			},
 			map[mmtypes.Ticker]*big.Int{
-				btcusd: big.NewInt(200),
-				ethusd: big.NewInt(300),
+				constants.BITCOIN_USD:  big.NewInt(200),
+				constants.ETHEREUM_USD: big.NewInt(300),
 			},
 		},
 	}
