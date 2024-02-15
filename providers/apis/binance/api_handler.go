@@ -10,115 +10,125 @@ import (
 	"github.com/skip-mev/slinky/pkg/math"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/base/api/handlers"
+	"github.com/skip-mev/slinky/providers/constants"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
+var _ constants.PriceAPIDataHandler = (*APIHandler)(nil)
 
 // APIHandler implements the APIHandler interface for Binance.
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
-	// cfg is the config for the Binance API.
-	cfg config.ProviderConfig
+	// marketCfg is the config for the Binance API.
+	marketCfg mmtypes.MarketConfig
+	// apiCfg is the config for the Binance API.
+	apiCfg config.APIConfig
 }
 
-// NewAPIHandler returns a new Binance API handler.
+// NewAPIHandler returns a new Binance Price API Data Handler.
 func NewAPIHandler(
-	cfg config.ProviderConfig,
-) (handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
+	marketCfg mmtypes.MarketConfig,
+	apiCfg config.APIConfig,
+) (constants.PriceAPIDataHandler, error) {
+	if err := marketCfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config %w", err)
 	}
 
-	if !cfg.API.Enabled {
-		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
+	if marketCfg.Name != Name {
+		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, marketCfg.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
+	if apiCfg.Name != Name {
+		return nil, fmt.Errorf("expected api config name %s, got %s", Name, apiCfg.Name)
+	}
+
+	if !apiCfg.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", Name)
+
+	}
+
+	if err := apiCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config %w", err)
 	}
 
 	return &APIHandler{
-		cfg: cfg,
+		marketCfg: marketCfg,
+		apiCfg:    apiCfg,
 	}, nil
 }
 
 // CreateURL returns the URL that is used to fetch data from the Binance API for the
-// given currency pairs.
+// given tickers.
 func (h *APIHandler) CreateURL(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 ) (string, error) {
-	var cpStrings string
-
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	var tickerStrings string
+	for _, ticker := range tickers {
+		market, ok := h.marketCfg.TickerConfigs[ticker.String()]
 		if !ok {
-			continue
+			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
 		}
 
-		cpStrings += fmt.Sprintf("%s%s%s%s", Quotation, market.Ticker, Quotation, Separator)
+		tickerStrings += fmt.Sprintf("%s%s%s%s", Quotation, market.OffChainTicker, Quotation, Separator)
 	}
 
-	if len(cpStrings) == 0 {
-		return "", fmt.Errorf("empty url created. invalid or no currency pairs were provided")
+	if len(tickerStrings) == 0 {
+		return "", fmt.Errorf("empty url created. invalid or no ticker were provided")
 	}
 
-	// remove last comma from list
-	cpStrings = strings.TrimSuffix(cpStrings, Separator)
-	return fmt.Sprintf(h.cfg.API.URL, LeftBracket, cpStrings, RightBracket), nil
+	return fmt.Sprintf(
+		h.apiCfg.URL,
+		LeftBracket,
+		strings.TrimSuffix(tickerStrings, Separator),
+		RightBracket,
+	), nil
 }
 
+// ParseResponse parses the response from the Binance API and returns a GetResponse. Each
+// of the tickers supplied will get a response or an error.
 func (h *APIHandler) ParseResponse(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 	resp *http.Response,
-) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
+) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
+		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
 	}
 
 	var (
-		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[slinkytypes.CurrencyPair]error)
+		resolved   = make(map[mmtypes.Ticker]providertypes.Result[*big.Int])
+		unresolved = make(map[mmtypes.Ticker]error)
 	)
 
-	// Determine of the provided currency pairs which are supported by the Binance API.
-	configuredCps := config.NewMarketConfig()
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
-		if !ok {
-			continue
-		}
-
-		configuredCps.CurrencyPairToMarketConfigs[cp.String()] = market
-	}
-
-	// Filter out the responses that are not expected.
+	inverted := h.marketCfg.Invert()
 	for _, data := range result {
-		market, ok := h.cfg.Market.TickerToMarketConfigs[data.Symbol]
+		// Filter out the responses that are not expected.
+		market, ok := inverted[data.Symbol]
 		if !ok {
 			continue
 		}
 
-		cp := market.CurrencyPair
-		price, err := math.Float64StringToBigInt(data.Price, cp.Decimals())
+		price, err := math.Float64StringToBigInt(data.Price, market.Ticker.Decimals)
 		if err != nil {
-			return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
+			unresolved[market.Ticker] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			continue
 		}
 
-		resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-		delete(configuredCps.CurrencyPairToMarketConfigs, cp.String())
+		resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now())
 	}
 
-	// If there are any currency pairs that were not resolved, return an error.
-	for _, market := range configuredCps.CurrencyPairToMarketConfigs {
-		cp := market.CurrencyPair
-		unresolved[cp] = fmt.Errorf("currency pair %s did not get a response", cp.String())
+	// Add currency pairs that received no response to the unresolved map.
+	for _, ticker := range tickers {
+		_, resolvedOk := resolved[ticker]
+		_, unresolvedOk := unresolved[ticker]
+
+		if !resolvedOk && !unresolvedOk {
+			unresolved[ticker] = fmt.Errorf("no response")
+		}
 	}
 
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved)
+	return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved)
 }

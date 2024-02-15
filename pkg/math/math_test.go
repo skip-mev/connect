@@ -58,7 +58,7 @@ func TestFloat64StringToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    string
-		base     int
+		base     uint64
 		expected *big.Int
 	}{
 		{
@@ -106,7 +106,7 @@ func TestFloat64ToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    float64
-		base     int
+		base     uint64
 		expected *big.Int
 	}{
 		{
@@ -153,7 +153,7 @@ func TestBigFloatToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    *big.Float
-		base     int
+		base     uint64
 		expected *big.Int
 	}{
 		{
