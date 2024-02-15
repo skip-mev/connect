@@ -29,7 +29,7 @@ type WebSocketHandler struct {
 	channelMap map[int]mmtypes.TickerConfig
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for BitFinex.
+// NewWebSocketDataHandler returns a new Price WebSocketDataHandler implementation for BitFinex.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
 	market mmtypes.MarketConfig,
