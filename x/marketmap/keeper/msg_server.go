@@ -40,10 +40,40 @@ func (ms msgServer) CreateMarket(goCtx context.Context, msg *types.MsgCreateMark
 	}
 
 	// check if market already exists
+	aggCfgs, err := ms.k.GetAllAggregationConfigs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get aggregation configs")
+	}
+
+	for _, cfg := range aggCfgs {
+		if msg.Ticker.CurrencyPair == cfg.Ticker.CurrencyPair {
+			return nil, fmt.Errorf("ticker %s already exists in marketmap", msg.Ticker.CurrencyPair.String())
+		}
+	}
+
+	marketConfigs, err := ms.k.GetAllMarketConfigs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get market configs")
+	}
 
 	// set market
+	for providerName, offChainTicker := range msg.ProvidersToOffChainTickers {
+		marketConfig, found := marketConfigs[providerName]
+		if !found {
+			// if not found, add new provider
+			marketConfig = types.MarketConfig{
+				Name: providerName,
+			}
+		}
 
-	return nil, nil
+		marketConfig.TickerConfigs[msg.Ticker.CurrencyPair.String()] = types.TickerConfig{
+			Ticker:         msg.Ticker,
+			OffChainTicker: offChainTicker,
+		}
+
+	}
+
+	return &types.MsgCreateMarketResponse{}, nil
 }
 
 // Params updates the x/marketmap module's Params.
