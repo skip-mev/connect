@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -15,6 +16,14 @@ type (
 	// PriceAPIDataHandler is a type alias for the API data handler that is used to fetch resolve http
 	// requests and parse the response into price data.
 	PriceAPIDataHandler = apihandlers.APIDataHandler[mmtypes.Ticker, *big.Int]
+
+	// PriceWebSocketQueryHandler is a type alias for the WebSocket query handler that is used to fetch
+	// price data from the price providers.
+	PriceWebSocketQueryHandler = wshandlers.WebSocketQueryHandler[mmtypes.Ticker, *big.Int]
+
+	// PriceWebSocketDataHandler is a type alias for the WebSocket data handler that is used to fetch
+	// resolve WebSocket messages and parse the response into price data.
+	PriceWebSocketDataHandler = wshandlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int]
 )
 
 var (

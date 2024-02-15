@@ -35,6 +35,7 @@ func NewAPIHandler(
 	}
 
 	s := MockAPIHandler{
+		
 		exchangeRates: make(map[mmtypes.Ticker]*big.Int),
 		tickers:       make([]mmtypes.Ticker, 0),
 	}
