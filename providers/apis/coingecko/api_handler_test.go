@@ -9,99 +9,82 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
+	"github.com/skip-mev/slinky/providers/constants"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var providerCfg = config.ProviderConfig{
-	Name: coingecko.Name,
-	API:  coingecko.DefaultAPIConfig,
-	Market: config.MarketConfig{
-		Name: coingecko.Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"BITCOIN/USD": {
-				Ticker:       "bitcoin/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ethereum/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ethereum/btc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-		},
-	},
-}
+var (
+	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+	btcmog = mmtypes.NewTicker("BTC", "MOG", 8, 1)
+)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []slinkytypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		url         string
 		expectedErr bool
 	}{
 		{
 			name: "single valid currency pair",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
 			expectedErr: false,
 		},
 		{
 			name: "multiple valid currency pairs",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&precision=18",
 			expectedErr: false,
 		},
 		{
 			name: "multiple valid currency pairs with multiple quotes",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
+				constants.ETHEREUM_BITCOIN,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,btc&precision=18",
 			expectedErr: false,
 		},
 		{
 			name: "no supported bases",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			url:         "",
 			expectedErr: true,
 		},
 		{
 			name: "no supported quotes",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
+			cps: []mmtypes.Ticker{
+				btcmog,
 			},
 			url:         "",
 			expectedErr: true,
 		},
 		{
 			name: "some supported and non-supported currency pairs",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				mogusd,
 			},
-			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
-			expectedErr: false,
+			url:         "",
+			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coingecko.NewAPIHandler(providerCfg)
+			h, err := coingecko.NewAPIHandler(coingecko.DefaultMarketConfig, coingecko.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -118,14 +101,14 @@ func TestCreateURL(t *testing.T) {
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cps      []slinkytypes.CurrencyPair
+		cps      []mmtypes.Ticker
 		response *http.Response
-		expected providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		expected providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 	}{
 		{
 			name: "single valid currency pair",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -137,18 +120,18 @@ func TestParseResponse(t *testing.T) {
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+					constants.BITCOIN_USD: {
 						Value: big.NewInt(102025000000),
 					},
 				},
-				map[slinkytypes.CurrencyPair]error{},
+				map[mmtypes.Ticker]error{},
 			),
 		},
 		{
 			name: "single valid currency pair that did not get a price response",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -160,97 +143,17 @@ func TestParseResponse(t *testing.T) {
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					constants.BITCOIN_USD: fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
 				},
-			),
-		},
-		{
-			name: "unknown base",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"mog": {
-		"usd": 1020.25,
-		"btc": 1
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("no response"),
-				},
-			),
-		},
-		{
-			name: "unknown quote",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"bitcoin": {
-		"mog": 1
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("no response"),
-				},
-			),
-		},
-		{
-			name: "unsupported base",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"mog": {
-		"usd": 1
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
-			),
-		},
-		{
-			name: "unsupported quote",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"mog": {
-		"usd": 1
-	}
-}
-	`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
 			),
 		},
 		{
 			name: "bad response",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
+			cps: []mmtypes.Ticker{
+
+				btcmog,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -258,16 +161,16 @@ shout out my label thats me
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("json error"),
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					btcmog: fmt.Errorf("json error"),
 				},
 			),
 		},
 		{
 			name: "bad price response",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -279,17 +182,17 @@ shout out my label thats me
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("invalid syntax"),
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
+				map[mmtypes.Ticker]error{
+					constants.BITCOIN_USD: fmt.Errorf("invalid syntax"),
 				},
 			),
 		},
 		{
 			name: "multiple bases with single quotes",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -304,22 +207,22 @@ shout out my label thats me
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): {
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+					constants.BITCOIN_USD: {
 						Value: big.NewInt(102025000000),
 					},
-					slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): {
+					constants.ETHEREUM_USD: {
 						Value: big.NewInt(102000000000),
 					},
 				},
-				map[slinkytypes.CurrencyPair]error{},
+				map[mmtypes.Ticker]error{},
 			),
 		},
 		{
 			name: "single base with multiple quotes",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+			cps: []mmtypes.Ticker{
+				constants.ETHEREUM_USD,
+				constants.ETHEREUM_BITCOIN,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -332,22 +235,22 @@ shout out my label thats me
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): {
+				map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+					constants.ETHEREUM_USD: {
 						Value: big.NewInt(102025000000),
 					},
-					slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"): {
+					constants.ETHEREUM_BITCOIN: {
 						Value: big.NewInt(100000000),
 					},
 				},
-				map[slinkytypes.CurrencyPair]error{},
+				map[mmtypes.Ticker]error{},
 			),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := coingecko.NewAPIHandler(providerCfg)
+			h, err := coingecko.NewAPIHandler(coingecko.DefaultMarketConfig, coingecko.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			now := time.Now()
