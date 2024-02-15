@@ -3,10 +3,11 @@ package base
 import (
 	"context"
 
+	"go.uber.org/zap"
+
 	apihandler "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"go.uber.org/zap"
 )
 
 // listenOnConfigUpdater listens for updates from the config updater and updates the

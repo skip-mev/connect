@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -15,7 +17,6 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	"github.com/skip-mev/slinky/providers/types/factory"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 // APIQueryHandlerFactory returns a sample implementation of the API query handler factory.
