@@ -10,9 +10,9 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/skip-mev/slinky/providers/types/factory"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -23,14 +23,14 @@ func (s *OracleTestSuite) TestProviders() {
 
 	testCases := []struct {
 		name           string
-		factory        factory.ProviderFactory[mmtypes.Ticker, *big.Int]
-		expectedPrices map[mmtypes.Ticker]*big.Int
+		factory        types.PriceProviderFactory
+		expectedPrices types.TickerPrices
 	}{
 		{
 			name: "1 provider with no prices",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -39,16 +39,16 @@ func (s *OracleTestSuite) TestProviders() {
 					nil,
 				)
 
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider}
+				providers := []types.PriceProvider{provider}
 				return providers, nil
 			},
-			expectedPrices: map[mmtypes.Ticker]*big.Int{},
+			expectedPrices: types.TickerPrices{},
 		},
 		{
 			name: "1 provider with prices",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
@@ -65,10 +65,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider}
+				providers := []types.PriceProvider{provider}
 				return providers, nil
 			},
-			expectedPrices: map[mmtypes.Ticker]*big.Int{
+			expectedPrices: types.TickerPrices{
 				s.currencyPairs[0]: big.NewInt(100),
 			},
 		},
@@ -76,7 +76,7 @@ func (s *OracleTestSuite) TestProviders() {
 			name: "multiple providers with prices",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
@@ -110,10 +110,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses2,
 				)
 
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider, provider2}
+				providers := []types.PriceProvider{provider, provider2}
 				return providers, nil
 			},
-			expectedPrices: map[mmtypes.Ticker]*big.Int{
+			expectedPrices: types.TickerPrices{
 				s.currencyPairs[0]: big.NewInt(150),
 			},
 		},
@@ -121,7 +121,7 @@ func (s *OracleTestSuite) TestProviders() {
 			name: "multiple providers with 1 provider erroring on start",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
@@ -138,10 +138,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider, s.noStartProvider("provider2")}
+				providers := []types.PriceProvider{provider, s.noStartProvider("provider2")}
 				return providers, nil
 			},
-			expectedPrices: map[mmtypes.Ticker]*big.Int{
+			expectedPrices: types.TickerPrices{
 				s.currencyPairs[0]: big.NewInt(100),
 			},
 		},
@@ -149,7 +149,7 @@ func (s *OracleTestSuite) TestProviders() {
 			name: "1 provider with stale prices",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
@@ -166,10 +166,10 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider}
+				providers := []types.PriceProvider{provider}
 				return providers, nil
 			},
-			expectedPrices: map[mmtypes.Ticker]*big.Int{},
+			expectedPrices: types.TickerPrices{},
 		},
 	}
 
@@ -211,7 +211,7 @@ func (s *OracleTestSuite) TestProviders() {
 	}
 }
 
-func (s *OracleTestSuite) noStartProvider(name string) providertypes.Provider[mmtypes.Ticker, *big.Int] {
+func (s *OracleTestSuite) noStartProvider(name string) types.PriceProvider {
 	provider := providermocks.NewProvider[mmtypes.Ticker, *big.Int](s.T())
 
 	provider.On("Name").Return(name).Maybe()

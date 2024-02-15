@@ -13,9 +13,9 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/skip-mev/slinky/providers/types/factory"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -59,7 +59,7 @@ type OracleTestSuite struct {
 
 	// Oracle config
 	currencyPairs []mmtypes.Ticker
-	aggregationFn aggregator.AggregateFn[string, map[mmtypes.Ticker]*big.Int]
+	aggregationFn aggregator.AggregateFn[string, types.TickerPrices]
 }
 
 func TestOracleSuite(t *testing.T) {
@@ -70,14 +70,10 @@ func (s *OracleTestSuite) SetupTest() {
 	s.random = rand.New(rand.NewSource(time.Now().UnixNano()))
 	s.logger = zap.NewExample()
 
-	btcusd := mmtypes.NewTicker("BITCOIN", "USD", 8, 1)
-	ethusd := mmtypes.NewTicker("ETHEREUM", "USD", 8, 1)
-	atomusd := mmtypes.NewTicker("COSMOS", "USD", 8, 1)
-
 	s.currencyPairs = []mmtypes.Ticker{
-		btcusd,
-		ethusd,
-		atomusd,
+		constants.BITCOIN_USD,
+		constants.ETHEREUM_USD,
+		constants.ATOM_USD,
 	}
 	s.aggregationFn = aggregator.ComputeMedian()
 }
@@ -85,13 +81,13 @@ func (s *OracleTestSuite) SetupTest() {
 func (s *OracleTestSuite) TestStopWithContextCancel() {
 	testCases := []struct {
 		name    string
-		factory factory.ProviderFactory[mmtypes.Ticker, *big.Int]
+		factory types.PriceProviderFactory
 	}{
 		{
 			name: "no providers",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				return nil, nil
 			},
 		},
@@ -99,7 +95,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			name: "1 provider",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -109,7 +105,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				)
 
 				// Create the provider factory.
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider}
+				providers := []types.PriceProvider{provider}
 				return providers, nil
 			},
 		},
@@ -117,7 +113,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			name: "multiple providers",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -136,7 +132,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				)
 
 				// Create the provider factory.
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider1, provider2}
+				providers := []types.PriceProvider{provider1, provider2}
 				return providers, nil
 			},
 		},
@@ -179,14 +175,14 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 func (s *OracleTestSuite) TestStopWithContextDeadline() {
 	testCases := []struct {
 		name     string
-		factory  factory.ProviderFactory[mmtypes.Ticker, *big.Int]
+		factory  types.PriceProviderFactory
 		duration time.Duration
 	}{
 		{
 			name: "no providers",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				return nil, nil
 			},
 			duration: 1 * time.Second,
@@ -195,7 +191,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			name: "1 provider",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -205,7 +201,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				)
 
 				// Create the provider factory.
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider}
+				providers := []types.PriceProvider{provider}
 				return providers, nil
 			},
 			duration: 1 * time.Second,
@@ -214,7 +210,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			name: "multiple providers",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -233,7 +229,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				)
 
 				// Create the provider factory.
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider1, provider2}
+				providers := []types.PriceProvider{provider1, provider2}
 				return providers, nil
 			},
 			duration: 1 * time.Second,
@@ -274,14 +270,14 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 func (s *OracleTestSuite) TestStop() {
 	testCases := []struct {
 		name     string
-		factory  factory.ProviderFactory[mmtypes.Ticker, *big.Int]
+		factory  types.PriceProviderFactory
 		duration time.Duration
 	}{
 		{
 			name: "1 provider",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -291,7 +287,7 @@ func (s *OracleTestSuite) TestStop() {
 				)
 
 				// Create the provider factory.
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider}
+				providers := []types.PriceProvider{provider}
 				return providers, nil
 			},
 			duration: 1 * time.Second,
@@ -300,7 +296,7 @@ func (s *OracleTestSuite) TestStop() {
 			name: "multiple providers",
 			factory: func(
 				config.OracleConfig,
-			) ([]providertypes.Provider[mmtypes.Ticker, *big.Int], error) {
+			) ([]types.PriceProvider, error) {
 				provider1 := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -319,7 +315,7 @@ func (s *OracleTestSuite) TestStop() {
 				)
 
 				// Create the provider factory.
-				providers := []providertypes.Provider[mmtypes.Ticker, *big.Int]{provider1, provider2}
+				providers := []types.PriceProvider{provider1, provider2}
 				return providers, nil
 			},
 			duration: 1 * time.Second,

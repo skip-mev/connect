@@ -11,6 +11,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
+	"github.com/skip-mev/slinky/oracle/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -54,7 +55,7 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	s.o, err = oracle.New(
 		oracle.WithUpdateInterval(oracleTicker),
 		oracle.WithProviders(
-			[]providertypes.Provider[mmtypes.Ticker, *big.Int]{
+			[]types.PriceProvider{
 				s.mockProvider1,
 				s.mockProvider2,
 			},
