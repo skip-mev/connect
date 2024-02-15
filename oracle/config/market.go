@@ -42,6 +42,17 @@ func NewMarketConfig() MarketConfig {
 	}
 }
 
+// GetCurrencyPairs returns the currency pairs in the market config.
+func (c *MarketConfig) GetCurrencyPairs() []oracletypes.CurrencyPair {
+	currencyPairs := make([]oracletypes.CurrencyPair, 0, len(c.CurrencyPairToMarketConfigs))
+
+	for _, marketConfig := range c.CurrencyPairToMarketConfigs {
+		currencyPairs = append(currencyPairs, marketConfig.CurrencyPair)
+	}
+
+	return currencyPairs
+}
+
 // Invert returns the inverted currency pair market config. This is used to
 // create the inverse currency pair market config for the provider.
 func (c *MarketConfig) Invert() map[string]CurrencyPairMarketConfig {
