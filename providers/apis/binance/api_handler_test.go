@@ -1,8 +1,5 @@
 package binance_test
 
-// NOTE: some binance tests currently use the binance.us endpoints because the standard binance endpoints
-// are georestricted
-
 import (
 	"fmt"
 	"math/big"
@@ -12,87 +9,44 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var (
-	providerCfg = config.ProviderConfig{
-		Name: binance.Name,
-		API:  binance.DefaultNonUSAPIConfig,
-		Market: config.MarketConfig{
-			Name: binance.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USDT": {
-					Ticker:       "BTCUSDT",
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				"BINANCE/USDT": {
-					Ticker:       "BNBUSDT",
-					CurrencyPair: slinkytypes.NewCurrencyPair("BINANCE", "USDT"),
-				},
-			},
-		},
-	}
-
-	providerCfgUS = config.ProviderConfig{
-		Name: binance.Name,
-		API:  binance.DefaultUSAPIConfig,
-		Market: config.MarketConfig{
-			Name: binance.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USDT": {
-					Ticker:       "BTCUSDT",
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				"BINANCE/USDT": {
-					Ticker:       "BNBUSDT",
-					CurrencyPair: slinkytypes.NewCurrencyPair("BINANCE", "USDT"),
-				},
-			},
-		},
-	}
-)
+var mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []slinkytypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		url         string
 		expectedErr bool
 	}{
 		{
 			name: "valid single",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
 		},
 		{
 			name: "valid multiple",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				slinkytypes.NewCurrencyPair("BINANCE", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
 			},
-			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22BNBUSDT%22%5D",
+			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
 			expectedErr: false,
 		},
 		{
-			name: "unknown base currency",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
-			},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "unknown quote currency",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
+			name: "unknown currency",
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			url:         "",
 			expectedErr: true,
@@ -101,7 +55,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(providerCfg)
+			h, err := binance.NewAPIHandler(binance.DefaultNonUSMarketConfig, binance.DefaultNonUSAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -118,39 +72,31 @@ func TestCreateURL(t *testing.T) {
 func TestCreateURL_US(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []slinkytypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		url         string
 		expectedErr bool
 	}{
 		{
 			name: "valid single",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
 		},
 		{
 			name: "valid multiple",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				slinkytypes.NewCurrencyPair("BINANCE", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
 			},
-			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22BNBUSDT%22%5D",
+			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
 			expectedErr: false,
 		},
 		{
-			name: "unknown base currency",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USD"),
-			},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "unknown quote currency",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
+			name: "unknown currency",
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			url:         "",
 			expectedErr: true,
@@ -159,7 +105,7 @@ func TestCreateURL_US(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(providerCfgUS)
+			h, err := binance.NewAPIHandler(binance.DefaultUSMarketConfig, binance.DefaultUSAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -176,129 +122,105 @@ func TestCreateURL_US(t *testing.T) {
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cps      []slinkytypes.CurrencyPair
+		cps      []mmtypes.Ticker
 		response *http.Response
-		expected providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		expected types.PriceResponse
 	}{
 		{
 			name: "valid single",
-			cps:  []slinkytypes.CurrencyPair{slinkytypes.NewCurrencyPair("BITCOIN", "USDT")},
+			cps:  []mmtypes.Ticker{constants.BITCOIN_USDT},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"}]`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): {
+				types.ResolvedPrices{
+					constants.BITCOIN_USDT: {
 						Value: big.NewInt(4670703000000),
 					},
 				},
-				map[slinkytypes.CurrencyPair]error{},
+				types.UnResolvedPrices{},
 			),
 		},
 		{
 			name: "valid multiple",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				slinkytypes.NewCurrencyPair("BINANCE", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
 			},
 			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"BNBUSDT","price":"297.50000000"}]`,
+				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"ETHUSDT","price":"297.50000000"}]`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): {
+				types.ResolvedPrices{
+					constants.BITCOIN_USDT: {
 						Value: big.NewInt(4670703000000),
 					},
-					slinkytypes.NewCurrencyPair("BINANCE", "USDT"): {
+					constants.ETHEREUM_USDT: {
 						Value: big.NewInt(29750000000),
 					},
 				},
-				map[slinkytypes.CurrencyPair]error{},
+				types.UnResolvedPrices{},
 			),
 		},
 		{
-			name: "unknown base",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+			name: "unsupported currency",
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"MOGUSDT","price":"46707.03000000"}]`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("no response"),
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
+					mogusd: fmt.Errorf("no response"),
 				},
-			),
-		},
-		{
-			name: "unknown quote",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"BTCMOG","price":"46707.03000000"}]`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("no response"),
-				},
-			),
-		},
-		{
-			name: "unsupported base",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("MOG", "USDT"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"MOGUSDT","price":"46707.03000000"}]`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
-			),
-		},
-		{
-			name: "unsupported quote",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("USDT", "MOG"),
-			},
-			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"USDTMOG","price":"46707.03000000"}]`,
-			),
-			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{},
 			),
 		},
 		{
 			name: "bad response",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "MOG"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`shout out my label thats me`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "MOG"): fmt.Errorf("no response"),
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
+					constants.BITCOIN_USDT: fmt.Errorf("no response"),
 				},
 			),
 		},
 		{
 			name: "bad price response",
-			cps: []slinkytypes.CurrencyPair{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"$46707.03000000"}]`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[slinkytypes.CurrencyPair]error{
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): fmt.Errorf("invalid syntax"),
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
+					constants.BITCOIN_USDT: fmt.Errorf("invalid syntax"),
+				},
+			),
+		},
+		{
+			name: "no response",
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
+			},
+			response: testutils.CreateResponseFromJSON(
+				`[]`,
+			),
+			expected: providertypes.NewGetResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
+					constants.BITCOIN_USDT:  fmt.Errorf("no response"),
+					constants.ETHEREUM_USDT: fmt.Errorf("no response"),
 				},
 			),
 		},
@@ -306,12 +228,11 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(providerCfg)
+			h, err := binance.NewAPIHandler(binance.DefaultNonUSMarketConfig, binance.DefaultNonUSAPIConfig)
 			require.NoError(t, err)
 
 			now := time.Now()
 			resp := h.ParseResponse(tc.cps, tc.response)
-			fmt.Println(resp)
 
 			require.Len(t, resp.Resolved, len(tc.expected.Resolved))
 			require.Len(t, resp.UnResolved, len(tc.expected.UnResolved))
@@ -354,7 +275,7 @@ func TestDecode(t *testing.T) {
 		{
 			name: "valid multi",
 			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"BNBUSDT","price":"707.03000000"}]`,
+				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"ETHUSDT","price":"707.03000000"}]`,
 			),
 			expected: binance.Response{
 				binance.Data{
@@ -362,7 +283,7 @@ func TestDecode(t *testing.T) {
 					Price:  "46707.03000000",
 				},
 				binance.Data{
-					Symbol: "BNBUSDT",
+					Symbol: "ETHUSDT",
 					Price:  "707.03000000",
 				},
 			},
