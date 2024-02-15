@@ -27,7 +27,7 @@ type APIHandler struct {
 	api config.APIConfig
 }
 
-// NewAPIHandler returns a new Binance Price API Data Handler.
+// NewAPIHandler returns a new Binance PriceAPIDataHandler.
 func NewAPIHandler(
 	market mmtypes.MarketConfig,
 	api config.APIConfig,

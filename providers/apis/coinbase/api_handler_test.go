@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -75,7 +76,7 @@ func TestParseResponse(t *testing.T) {
 		name     string
 		cps      []mmtypes.Ticker
 		response *http.Response
-		expected providertypes.GetResponse[mmtypes.Ticker, *big.Int]
+		expected types.PriceResponse
 	}{
 		{
 			name: "valid",
@@ -93,12 +94,12 @@ func TestParseResponse(t *testing.T) {
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+				types.ResolvedPrices{
 					constants.BITCOIN_USD: {
 						Value: big.NewInt(102025000000),
 					},
 				},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 		},
 		{
@@ -115,8 +116,8 @@ func TestParseResponse(t *testing.T) {
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
-				map[mmtypes.Ticker]error{
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("bad format"),
 				},
 			),
@@ -135,8 +136,8 @@ func TestParseResponse(t *testing.T) {
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
-				map[mmtypes.Ticker]error{
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("bad format"),
 				},
 			),
@@ -150,8 +151,8 @@ toms obvious but not minimal language
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
-				map[mmtypes.Ticker]error{
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("bad format"),
 				},
 			),
@@ -173,8 +174,8 @@ toms obvious but not minimal language
 	`,
 			),
 			expected: providertypes.NewGetResponse(
-				map[mmtypes.Ticker]providertypes.Result[*big.Int]{},
-				map[mmtypes.Ticker]error{
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{
 					constants.BITCOIN_USD:  fmt.Errorf("multiple cps"),
 					constants.ETHEREUM_USD: fmt.Errorf("multiple cps"),
 				},

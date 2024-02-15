@@ -16,10 +16,15 @@ type (
 	// PriceProvider is a type alias for the price provider.
 	PriceProvider = providertypes.Provider[mmtypes.Ticker, *big.Int]
 
-	// PriceAPIDataHandler is a type alias for the price API data handler.
+	// PriceAPIDataHandler is a type alias for the price API data handler. This
+	// is responsible for parsing http responses and returning the resolved
+	// and unresolved prices.
 	PriceAPIDataHandler = apihandlers.APIDataHandler[mmtypes.Ticker, *big.Int]
 
-	// PriceResponse is a type alias for the price response.
+	// PriceResponse is a type alias for the price response. A price response is
+	// composed of a map of resolved prices and a map of unresolved prices. Resolved
+	// prices are the prices that were successfully fetched from the API, while
+	// unresolved prices are the prices that were not successfully fetched from the API.
 	PriceResponse = providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 
 	// ResolvedPrices is a type alias for the resolved prices.

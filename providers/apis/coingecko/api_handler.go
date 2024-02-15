@@ -24,7 +24,7 @@ type APIHandler struct {
 	api config.APIConfig
 }
 
-// NewAPIHandler returns a new CoinGecko API handler.
+// NewAPIHandler returns a new CoinGecko PriceAPIDataHandler.
 func NewAPIHandler(
 	market mmtypes.MarketConfig,
 	api config.APIConfig,
@@ -57,8 +57,7 @@ func NewAPIHandler(
 
 // CreateURL returns the URL that is used to fetch data from the CoinGecko API for the
 // given tickers. The CoinGecko API supports fetching spot prices for multiple tickers
-// in a single request. The URL that is generated automatically populates the API key
-// if it is set.
+// in a single request.
 func (h *APIHandler) CreateURL(
 	tickers []mmtypes.Ticker,
 ) (string, error) {

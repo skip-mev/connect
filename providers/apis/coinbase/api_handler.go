@@ -26,7 +26,7 @@ type APIHandler struct {
 	api config.APIConfig
 }
 
-// NewAPIHandler returns a new Coinbase APIDataHandler.
+// NewAPIHandler returns a new Coinbase PriceAPIDataHandler.
 func NewAPIHandler(
 	market mmtypes.MarketConfig,
 	api config.APIConfig,
@@ -92,7 +92,7 @@ func (h *APIHandler) ParseResponse(
 		)
 	}
 
-	// Check if this ticker is supported by the Coinbase API market config.
+	// Check if this ticker is supported by the Coinbase market config.
 	ticker := tickers[0]
 	_, ok := h.market.TickerConfigs[ticker.String()]
 	if !ok {
