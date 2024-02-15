@@ -33,11 +33,11 @@ func NewAPIHandler(
 	api config.APIConfig,
 ) (constants.PriceAPIDataHandler, error) {
 	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
 	if market.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, market.Name)
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
 	if api.Name != Name {
@@ -50,7 +50,7 @@ func NewAPIHandler(
 	}
 
 	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config %w", err)
+		return nil, fmt.Errorf("invalid api config for %s: %w", Name, err)
 	}
 
 	return &APIHandler{
