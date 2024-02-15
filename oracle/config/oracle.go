@@ -13,17 +13,17 @@ import (
 // data providers for the currency pairs at the specified update interval.
 type OracleConfig struct {
 	// UpdateInterval is the interval at which the oracle will fetch prices from providers.
-	UpdateInterval time.Duration `mapstructure:"updateInterval" json:"updateInterval"`
+	UpdateInterval time.Duration `json:"updateInterval"`
 
 	// Providers is the list of providers that the oracle will fetch prices from.
-	Providers []ProviderConfig `mapstructure:"providers" json:"providers"`
+	Providers []ProviderConfig `json:"providers"`
 
 	// Production specifies whether the oracle is running in production mode. This is used to
 	// determine whether the oracle should be run in debug mode or not.
-	Production bool `mapstructure:"production" json:"production"`
+	Production bool `json:"production"`
 
 	// Metrics is the metrics configurations for the oracle.
-	Metrics MetricsConfig `mapstructure:"metrics" json:"metrics"`
+	Metrics MetricsConfig `json:"metrics"`
 }
 
 // ValidateBasic performs basic validation on the oracle config.

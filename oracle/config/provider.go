@@ -8,15 +8,15 @@ import (
 // config to the oracle configuration.
 type ProviderConfig struct {
 	// Name identifies which provider this config is for.
-	Name string `mapstructure:"name" json:"name"`
+	Name string `json:"name"`
 
 	// API is the config for the API based data provider. If the provider does not
 	// support API based fetching, this field should be omitted.
-	API APIConfig `mapstructure:"api" json:"api"`
+	API APIConfig `json:"api"`
 
 	// WebSocket is the config for the websocket based data provider. If the provider
 	// does not support websocket based fetching, this field should be omitted.
-	WebSocket WebSocketConfig `mapstructure:"webSocket" json:"webSocket"`
+	WebSocket WebSocketConfig `json:"webSocket"`
 }
 
 func (c *ProviderConfig) ValidateBasic() error {
