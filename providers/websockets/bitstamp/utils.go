@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -38,52 +39,52 @@ var (
 	}
 
 	// DefaultMarketConfig returns the default market config for bitstamp.
-	DefaultMarketConfig = config.MarketConfig{
+	DefaultMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"AVAX/USD": {
-				Ticker:       "avaxusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
+				Ticker:         constants.AVAX_USD,
+				OffChainTicker: "avaxusd",
 			},
 			"BITCOIN/USD": {
-				Ticker:       "btcusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				Ticker:         constants.BITCOIN_USD,
+				OffChainTicker: "btcusd",
 			},
 			"BITCOIN/USDC": {
-				Ticker:       "btcusdc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+				Ticker:         constants.BITCOIN_USDC,
+				OffChainTicker: "btcusdc",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "btcusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker:         constants.BITCOIN_USDT,
+				OffChainTicker: "btcusdt",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ethbtc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker:         constants.ETHEREUM_BITCOIN,
+				OffChainTicker: "ethbtc",
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ethusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Ticker:         constants.ETHEREUM_USD,
+				OffChainTicker: "ethusd",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ethusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker:         constants.ETHEREUM_USDT,
+				OffChainTicker: "ethusdt",
 			},
 			"SOLANA/USD": {
-				Ticker:       "solusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
+				Ticker:         constants.SOLANA_USD,
+				OffChainTicker: "solusd",
 			},
 			"USDC/USD": {
-				Ticker:       "usdcusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
+				Ticker:         constants.USDC_USD,
+				OffChainTicker: "usdcusd",
 			},
 			"USDC/USDT": {
-				Ticker:       "usdcusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+				Ticker:         constants.USDC_USDT,
+				OffChainTicker: "usdcusdt",
 			},
 			"USDT/USD": {
-				Ticker:       "usdtusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+				Ticker:         constants.USDT_USD,
+				OffChainTicker: "usdtusd",
 			},
 		},
 	}
