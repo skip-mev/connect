@@ -10,10 +10,10 @@ import (
 type MetricsConfig struct {
 	// PrometheusServerAddress is the address of the prometheus server that the oracle will expose
 	// metrics to.
-	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
+	PrometheusServerAddress string `mapstructure:"prometheusServerAddress" json:"prometheusServerAddress"`
 
 	// Enabled indicates whether metrics should be enabled.
-	Enabled bool `mapstructure:"enabled" toml:"enabled"`
+	Enabled bool `mapstructure:"enabled" json:"enabled"`
 }
 
 // ValidateBasic performs basic validation of the config.

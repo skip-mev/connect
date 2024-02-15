@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestProviderConfig(t *testing.T) {
@@ -29,15 +28,6 @@ func TestProviderConfig(t *testing.T) {
 					URL:        "http://test.com",
 				},
 				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: false,
 		},
@@ -58,15 +48,6 @@ func TestProviderConfig(t *testing.T) {
 					WriteTimeout:        config.DefaultWriteTimeout,
 				},
 				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: false,
 		},
@@ -82,15 +63,6 @@ func TestProviderConfig(t *testing.T) {
 					Atomic:     true,
 					URL:        "http://test.com",
 				},
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
@@ -98,15 +70,6 @@ func TestProviderConfig(t *testing.T) {
 			name: "no API or websocket config",
 			config: config.ProviderConfig{
 				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
@@ -136,15 +99,6 @@ func TestProviderConfig(t *testing.T) {
 					WriteTimeout:        config.DefaultWriteTimeout,
 				},
 				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
@@ -158,15 +112,6 @@ func TestProviderConfig(t *testing.T) {
 					MaxQueries: 1,
 				},
 				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
@@ -178,15 +123,6 @@ func TestProviderConfig(t *testing.T) {
 					ReconnectionTimeout: 2 * time.Second,
 				},
 				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
@@ -201,15 +137,6 @@ func TestProviderConfig(t *testing.T) {
 					Name:                "test",
 				},
 				Name: "test2",
-				Market: config.MarketConfig{
-					Name: "test2",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
@@ -226,57 +153,6 @@ func TestProviderConfig(t *testing.T) {
 					URL:        "http://test.com",
 				},
 				Name: "test2",
-				Market: config.MarketConfig{
-					Name: "test2",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
-			},
-			expectedErr: true,
-		},
-		{
-			name: "bad market config",
-			config: config.ProviderConfig{
-				API: config.APIConfig{
-					Enabled:    true,
-					Timeout:    time.Second,
-					Interval:   time.Second,
-					MaxQueries: 1,
-					Name:       "test",
-					Atomic:     true,
-					URL:        "http://test.com",
-				},
-				Name:   "test",
-				Market: config.MarketConfig{},
-			},
-			expectedErr: true,
-		},
-		{
-			name: "mismatch names between provider and market config",
-			config: config.ProviderConfig{
-				API: config.APIConfig{
-					Enabled:    true,
-					Timeout:    time.Second,
-					Interval:   time.Second,
-					MaxQueries: 1,
-					Name:       "test",
-					Atomic:     true,
-					URL:        "http://test.com",
-				},
-				Name: "test",
-				Market: config.MarketConfig{
-					Name: "test2",
-					CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-						"BITCOIN/USD": {
-							Ticker:       "BTC/USD",
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-				},
 			},
 			expectedErr: true,
 		},
