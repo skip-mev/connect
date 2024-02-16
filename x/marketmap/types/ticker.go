@@ -54,6 +54,12 @@ func (t *Ticker) ValidateBasic() error {
 		return err
 	}
 
+	for i := range t.Paths {
+		if err := t.Paths[i].ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
 	return json.IsValid([]byte(t.Metadata_JSON))
 }
 
