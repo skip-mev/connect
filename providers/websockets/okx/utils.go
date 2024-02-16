@@ -2,7 +2,8 @@ package okx
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -42,100 +43,100 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for OKX.
-	DefaultMarketConfig = config.MarketConfig{
+	DefaultMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USD": {
-				Ticker:       "ATOM-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
+				Ticker:         constants.ATOM_USD,
+				OffChainTicker: "ATOM-USD",
 			},
 			"ATOM/USDC": {
-				Ticker:       "ATOM-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDC"),
+				Ticker:         constants.ATOM_USDC,
+				OffChainTicker: "ATOM-USDC",
 			},
 			"ATOM/USDT": {
-				Ticker:       "ATOM-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+				Ticker:         constants.ATOM_USDT,
+				OffChainTicker: "ATOM-USDT",
 			},
 			"AVAX/USD": {
-				Ticker:       "AVAX-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
+				Ticker:         constants.AVAX_USD,
+				OffChainTicker: "AVAX-USD",
 			},
 			"AVAX/USDC": {
-				Ticker:       "AVAX-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDC"),
+				Ticker:         constants.AVAX_USDC,
+				OffChainTicker: "AVAX-USDC",
 			},
 			"AVAX/USDT": {
-				Ticker:       "AVAX-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+				Ticker:         constants.AVAX_USDT,
+				OffChainTicker: "AVAX-USDT",
 			},
 			"BITCOIN/USD": {
-				Ticker:       "BTC-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				Ticker:         constants.BITCOIN_USD,
+				OffChainTicker: "BTC-USD",
 			},
 			"BITCOIN/USDC": {
-				Ticker:       "BTC-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+				Ticker:         constants.BITCOIN_USDC,
+				OffChainTicker: "BTC-USDC",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "BTC-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker:         constants.BITCOIN_USDT,
+				OffChainTicker: "BTC-USDT",
 			},
 			"CELESTIA/USD": {
-				Ticker:       "TIA-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
+				Ticker:         constants.CELESTIA_USD,
+				OffChainTicker: "TIA-USD",
 			},
 			"CELESTIA/USDT": {
-				Ticker:       "TIA-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USDT"),
+				Ticker:         constants.CELESTIA_USDT,
+				OffChainTicker: "TIA-USDT",
 			},
 			"DYDX/USD": {
-				Ticker:       "DYDX-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
+				Ticker:         constants.DYDX_USD,
+				OffChainTicker: "DYDX-USD",
 			},
 			"DYDX/USDT": {
-				Ticker:       "DYDX-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USDT"),
+				Ticker:         constants.DYDX_USDT,
+				OffChainTicker: "DYDX-USDT",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETH-BTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker:         constants.ETHEREUM_BITCOIN,
+				OffChainTicker: "ETH-BTC",
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETH-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Ticker:         constants.ETHEREUM_USD,
+				OffChainTicker: "ETH-USD",
 			},
 			"ETHEREUM/USDC": {
-				Ticker:       "ETH-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+				Ticker:         constants.ETHEREUM_USDC,
+				OffChainTicker: "ETH-USDC",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ETH-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker:         constants.ETHEREUM_USDT,
+				OffChainTicker: "ETH-USDT",
 			},
 			"SOLANA/USD": {
-				Ticker:       "SOL-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
+				Ticker:         constants.SOLANA_USD,
+				OffChainTicker: "SOL-USD",
 			},
 			"SOLANA/USDC": {
-				Ticker:       "SOL-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
+				Ticker:         constants.SOLANA_USDC,
+				OffChainTicker: "SOL-USDC",
 			},
 			"SOLANA/USDT": {
-				Ticker:       "SOL-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+				Ticker:         constants.SOLANA_USDT,
+				OffChainTicker: "SOL-USDT",
 			},
 			"USDC/USD": {
-				Ticker:       "USDC-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
+				Ticker:         constants.USDC_USD,
+				OffChainTicker: "USDC-USD",
 			},
 			"USDC/USDT": {
-				Ticker:       "USDC-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+				Ticker:         constants.USDC_USDT,
+				OffChainTicker: "USDC-USDT",
 			},
 			"USDT/USD": {
-				Ticker:       "USDT-USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+				Ticker:         constants.USDT_USD,
+				OffChainTicker: "USDT-USD",
 			},
 		},
 	}

@@ -22,6 +22,11 @@ type (
 	// and unresolved prices.
 	PriceAPIDataHandler = apihandlers.APIDataHandler[mmtypes.Ticker, *big.Int]
 
+	// PriceAPIQueryHandler is a type alias for the price API query handler. This
+	// is responsible for building the API query for the price provider and
+	// returning the resolved and unresolved prices.
+	PriceAPIQueryHandler = apihandlers.APIQueryHandler[mmtypes.Ticker, *big.Int]
+
 	// PriceWebSocketDataHandler is a type alias for the price web socket data handler.
 	// This is responsible for parsing web socket messages and returning the resolved
 	// and unresolved prices.

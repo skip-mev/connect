@@ -2,7 +2,8 @@ package cryptodotcom
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -41,76 +42,76 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Crypto.com.
-	DefaultMarketConfig = config.MarketConfig{
+	DefaultMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USD": {
-				Ticker:       "ATOMUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
+				Ticker:         constants.ATOM_USD,
+				OffChainTicker: "ATOMUSD-PERP",
 			},
 			"ATOM/USDT": {
-				Ticker:       "ATOM_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+				Ticker:         constants.ATOM_USDT,
+				OffChainTicker: "ATOM_USDT",
 			},
 			"AVAX/USD": {
-				Ticker:       "AVAXUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
+				Ticker:         constants.AVAX_USD,
+				OffChainTicker: "AVAXUSD-PERP",
 			},
 			"AVAX/USDT": {
-				Ticker:       "AVAX_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+				Ticker:         constants.AVAX_USDT,
+				OffChainTicker: "AVAX_USDT",
 			},
 			"BITCOIN/USD": {
-				Ticker:       "BTCUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+				Ticker:         constants.BITCOIN_USD,
+				OffChainTicker: "BTCUSD-PERP",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "BTC_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker:         constants.BITCOIN_USDT,
+				OffChainTicker: "BTC_USDT",
 			},
 			"CELESTIA/USD": {
-				Ticker:       "TIAUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
+				Ticker:         constants.CELESTIA_USD,
+				OffChainTicker: "TIAUSD-PERP",
 			},
 			"CELESTIA/USDT": {
-				Ticker:       "TIA_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USDT"),
+				Ticker:         constants.CELESTIA_USDT,
+				OffChainTicker: "TIA_USDT",
 			},
 			"DYDX/USD": {
-				Ticker:       "DYDXUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
+				Ticker:         constants.DYDX_USD,
+				OffChainTicker: "DYDXUSD-PERP",
 			},
 			"DYDX/USDT": {
-				Ticker:       "DYDX_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USDT"),
+				Ticker:         constants.DYDX_USDT,
+				OffChainTicker: "DYDX_USDT",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETH_BTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker:         constants.ETHEREUM_BITCOIN,
+				OffChainTicker: "ETH_BTC",
 			},
 			"ETHEREUM/USD": {
-				Ticker:       "ETHUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+				Ticker:         constants.ETHEREUM_USD,
+				OffChainTicker: "ETHUSD-PERP",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ETH_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker:         constants.ETHEREUM_USDT,
+				OffChainTicker: "ETH_USDT",
 			},
 			"OSMOSIS/USD": {
-				Ticker:       "OSMO_USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USD"),
+				Ticker:         constants.OSMOSIS_USD,
+				OffChainTicker: "OSMO_USD",
 			},
 			"SOLANA/USD": {
-				Ticker:       "SOLUSD-PERP",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
+				Ticker:         constants.SOLANA_USD,
+				OffChainTicker: "SOLUSD-PERP",
 			},
 			"SOLANA/USDT": {
-				Ticker:       "SOL_USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+				Ticker:         constants.SOLANA_USDT,
+				OffChainTicker: "SOL_USDT",
 			},
 			"USDT/USD": {
-				Ticker:       "USDT_USD",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+				Ticker:         constants.USDT_USD,
+				OffChainTicker: "USDT_USD",
 			},
 		},
 	}

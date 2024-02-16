@@ -3,7 +3,6 @@ package coinbase
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 
 	"go.uber.org/zap"
 
@@ -13,7 +12,7 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int] = (*WebSocketHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
 // WebSocketHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the Coinbase websocket API.

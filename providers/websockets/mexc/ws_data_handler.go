@@ -3,48 +3,60 @@ package mexc
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"strings"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the MEXC websocket API.
-type WebSocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the MEXC websocket API.
-	cfg config.ProviderConfig
+	// market is the config for the MEXC API.
+	market mmtypes.MarketConfig
+	// ws is the config for the MEXC websocket.
+	ws config.WebSocketConfig
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for MEXC.
+// NewWebSocketDataHandler returns a new MEXC PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	marketCfg mmtypes.MarketConfig,
+	wsCfg config.WebSocketConfig,
+) (types.PriceWebSocketDataHandler, error) {
+	if err := marketCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if marketCfg.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if wsCfg.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
 	}
 
-	return &WebSocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+	if !wsCfg.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+
+	}
+
+	if err := wsCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
+	}
+
+	return &WebSocketHandler{
+		logger: logger,
+		market: marketCfg,
+		ws:     wsCfg,
 	}, nil
 }
 
@@ -54,12 +66,12 @@ func NewWebSocketDataHandler(
 //
 // 1. A message that confirms that the client has successfully subscribed to a channel.
 // 2. A message that confirms that the client has successfully pinged the server.
-// 3. A message that contains the latest price for a currency pair.
-func (h *WebSocketDataHandler) HandleMessage(
+// 3. A message that contains the latest price for a ticker.
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp      providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp      types.PriceResponse
 		msg       BaseMessage
 		tickerMsg TickerResponseMessage
 	)
@@ -88,29 +100,30 @@ func (h *WebSocketDataHandler) HandleMessage(
 		h.logger.Debug("received pong message")
 		return resp, nil, nil
 	default:
-		h.logger.Debug("received unknown message type", zap.String("type", msg.Message))
 		return resp, nil, fmt.Errorf("invalid message type %s", msg.Message)
 	}
 }
 
 // CreateMessages is used to create a message to send to the data provider. This is used to
-// subscribe to the given currency pairs. This is called when the connection to the data
-// provider is first established.
-func (h *WebSocketDataHandler) CreateMessages(
-	cps []slinkytypes.CurrencyPair,
+// subscribe to the given ticker. This is called when the connection to the data provider is
+// first established.
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	if len(cps) > MaxSubscriptionsPerConnection {
-		return nil, fmt.Errorf("cannot subscribe to more than %d currency pairs per connection", MaxSubscriptionsPerConnection)
+	if len(tickers) > MaxSubscriptionsPerConnection {
+		return nil, fmt.Errorf("cannot subscribe to more than %d tickers per connection", MaxSubscriptionsPerConnection)
+
 	}
 
 	instruments := make([]string, 0)
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker.String()]
 		if !ok {
-			return nil, fmt.Errorf("currency pair %s not found in market configs", cp.String())
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
-		mexcTicker := fmt.Sprintf("%s%s%s", string(MiniTickerChannel), strings.ToUpper(market.Ticker), "@UTC+8")
+		mexcTicker := fmt.Sprintf("%s%s%s", string(MiniTickerChannel), strings.ToUpper(market.OffChainTicker), "@UTC+8")
 		instruments = append(instruments, mexcTicker)
 	}
 
@@ -119,6 +132,6 @@ func (h *WebSocketDataHandler) CreateMessages(
 
 // HeartBeatMessages is used by the MEXC handler to send heart beat messages to the data provider.
 // This is used to keep the connection alive when no messages are being sent from the data provider.
-func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return NewPingRequestMessage()
 }
