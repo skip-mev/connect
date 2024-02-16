@@ -50,7 +50,8 @@ The MarketAuthority is the bech32 address that is permitted to submit market upd
 #### Version
 
 Version is the version of the MarketMap schema. This version is returned in the `GetMarketMap` query and can be used
-by oracle service providers to verify the schema they are consuming.
+by oracle service providers to verify the schema they are consuming.  When being modified via governance, the new value
+must always be greater than the current value.
 
 ## Events
 
