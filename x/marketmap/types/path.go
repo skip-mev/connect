@@ -158,6 +158,10 @@ func (p *Path) ValidateBasic() error {
 		return nil
 	}
 
+	if len(p.Operations) > MaxPathLength {
+		return fmt.Errorf("length of path cannot be longer than %d, got %d", MaxPathLength, len(p.Operations))
+	}
+
 	quote := first.CurrencyPair.Quote
 	if first.Invert {
 		quote = first.CurrencyPair.Base

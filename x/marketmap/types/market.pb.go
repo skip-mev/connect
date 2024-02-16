@@ -24,6 +24,54 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// TickersConfig is the full list of markets and their associated configurations
+// to be stored on-chain.
+type TickersConfig struct {
+	// Tickers is the full list of markets and their associated configurations to
+	// be stored on-chain.
+	Tickers []Ticker `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers"`
+}
+
+func (m *TickersConfig) Reset()         { *m = TickersConfig{} }
+func (m *TickersConfig) String() string { return proto.CompactTextString(m) }
+func (*TickersConfig) ProtoMessage()    {}
+func (*TickersConfig) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fefe265720fc8a78, []int{0}
+}
+func (m *TickersConfig) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TickersConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TickersConfig.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TickersConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TickersConfig.Merge(m, src)
+}
+func (m *TickersConfig) XXX_Size() int {
+	return m.Size()
+}
+func (m *TickersConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_TickersConfig.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TickersConfig proto.InternalMessageInfo
+
+func (m *TickersConfig) GetTickers() []Ticker {
+	if m != nil {
+		return m.Tickers
+	}
+	return nil
+}
+
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
 // feed is scaled to a number of decimal places and has a minimum number of
 // providers required to consider the ticker valid.
@@ -49,7 +97,7 @@ type Ticker struct {
 func (m *Ticker) Reset()      { *m = Ticker{} }
 func (*Ticker) ProtoMessage() {}
 func (*Ticker) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{0}
+	return fileDescriptor_fefe265720fc8a78, []int{1}
 }
 func (m *Ticker) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -134,7 +182,7 @@ func (m *ProviderConfig) Reset()         { *m = ProviderConfig{} }
 func (m *ProviderConfig) String() string { return proto.CompactTextString(m) }
 func (*ProviderConfig) ProtoMessage()    {}
 func (*ProviderConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{1}
+	return fileDescriptor_fefe265720fc8a78, []int{2}
 }
 func (m *ProviderConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -177,280 +225,6 @@ func (m *ProviderConfig) GetOffChainTicker() string {
 	return ""
 }
 
-// TickerConfig is the config the provider uses to create mappings between
-// on-chain and off-chain tickers.
-type TickerConfig struct {
-	// Ticker is the cannonical representation of the ticker/market i.e.
-	// BITCOIN/USD.
-	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
-	// OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
-	// The off-chain ticker is unique to a given provider and is used to fetch the
-	// price of the ticker from the provider.
-	OffChainTicker string `protobuf:"bytes,2,opt,name=off_chain_ticker,json=offChainTicker,proto3" json:"off_chain_ticker,omitempty"`
-}
-
-func (m *TickerConfig) Reset()         { *m = TickerConfig{} }
-func (m *TickerConfig) String() string { return proto.CompactTextString(m) }
-func (*TickerConfig) ProtoMessage()    {}
-func (*TickerConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{2}
-}
-func (m *TickerConfig) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *TickerConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_TickerConfig.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *TickerConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TickerConfig.Merge(m, src)
-}
-func (m *TickerConfig) XXX_Size() int {
-	return m.Size()
-}
-func (m *TickerConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_TickerConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_TickerConfig proto.InternalMessageInfo
-
-func (m *TickerConfig) GetTicker() Ticker {
-	if m != nil {
-		return m.Ticker
-	}
-	return Ticker{}
-}
-
-func (m *TickerConfig) GetOffChainTicker() string {
-	if m != nil {
-		return m.OffChainTicker
-	}
-	return ""
-}
-
-// MarketConfig represents the provider specific configurations for different
-// markets and the associated markets they are traded on.
-type MarketConfig struct {
-	// Name corresponds to the name of the provider for which the configuration is
-	// being set.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// TickerConfigs is the config the provider uses to create mappings between
-	// on-chain and off-chain tickers. In particular, this config maps the
-	// on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
-	// representation (i.e. BTC/USD).
-	TickerConfigs map[string]TickerConfig `protobuf:"bytes,2,rep,name=ticker_configs,json=tickerConfigs,proto3" json:"ticker_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// MetadataJSON is a string of JSON that encodes any extra configuration
-	// for the given market.
-	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
-}
-
-func (m *MarketConfig) Reset()         { *m = MarketConfig{} }
-func (m *MarketConfig) String() string { return proto.CompactTextString(m) }
-func (*MarketConfig) ProtoMessage()    {}
-func (*MarketConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{3}
-}
-func (m *MarketConfig) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MarketConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MarketConfig.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MarketConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MarketConfig.Merge(m, src)
-}
-func (m *MarketConfig) XXX_Size() int {
-	return m.Size()
-}
-func (m *MarketConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_MarketConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MarketConfig proto.InternalMessageInfo
-
-func (m *MarketConfig) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *MarketConfig) GetTickerConfigs() map[string]TickerConfig {
-	if m != nil {
-		return m.TickerConfigs
-	}
-	return nil
-}
-
-func (m *MarketConfig) GetMetadata_JSON() string {
-	if m != nil {
-		return m.Metadata_JSON
-	}
-	return ""
-}
-
-// AggregateMarketConfig represents the global set of market configurations for
-// all providers that will be utilized off-chain as well as how tickers will be
-// resolved to a final price. Each ticker can have a list of convertable markets
-// that will be used to convert the prices of a set of tickers to a common
-// ticker.
-//
-// Price aggregation broadly follows the following steps:
-//  1. Fetch prices for each ticker from the providers.
-//  2. Calculate the final price for each ticker. This is dependent on the
-//     aggregation
-//     strategy used by the oracle. The oracle may use a median price, a
-//     weighted average price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggregated
-//     ticker
-//     configurations by default. The oracle may use a different aggregation
-//     strategy to convert the price of a ticker to a common ticker.
-//
-// For example, the oracle may be configured with the feeds:
-//   - BTC/USDT
-//   - USDT/USD
-//   - BTC/USDC
-//   - USDC/USD
-//
-// The aggregated ticker may be:
-//   - BTC/USD: (calculate a median price from the following convertable
-//     markets)
-//     1. BTC/USDT -> USDT/USD = BTC/USD
-//     2. BTC/USDC -> USDC/USD = BTC/USD
-type AggregateMarketConfig struct {
-	// MarketConfigs maps provider names to their respective market
-	// configurations.
-	MarketConfigs map[string]MarketConfig `protobuf:"bytes,1,rep,name=market_configs,json=marketConfigs,proto3" json:"market_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// TickerConfigs maps tickers to the list of convertable markets that will be
-	// used to convert the price of a set of tickers to a common ticker. This
-	// allows developers to manually specify the exact set of tickers that will be
-	// used to calculate the final price of a ticker. However, it is possible that
-	// other aggregation strategies can be used.
-	TickerConfigs map[string]PathsConfig `protobuf:"bytes,2,rep,name=ticker_configs,json=tickerConfigs,proto3" json:"ticker_configs" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-}
-
-func (m *AggregateMarketConfig) Reset()         { *m = AggregateMarketConfig{} }
-func (m *AggregateMarketConfig) String() string { return proto.CompactTextString(m) }
-func (*AggregateMarketConfig) ProtoMessage()    {}
-func (*AggregateMarketConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{4}
-}
-func (m *AggregateMarketConfig) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AggregateMarketConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AggregateMarketConfig.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AggregateMarketConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AggregateMarketConfig.Merge(m, src)
-}
-func (m *AggregateMarketConfig) XXX_Size() int {
-	return m.Size()
-}
-func (m *AggregateMarketConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_AggregateMarketConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AggregateMarketConfig proto.InternalMessageInfo
-
-func (m *AggregateMarketConfig) GetMarketConfigs() map[string]MarketConfig {
-	if m != nil {
-		return m.MarketConfigs
-	}
-	return nil
-}
-
-func (m *AggregateMarketConfig) GetTickerConfigs() map[string]PathsConfig {
-	if m != nil {
-		return m.TickerConfigs
-	}
-	return nil
-}
-
-// PathsConfig represents the list of convertable markets (paths) that will be
-// used to convert the prices of a set of tickers to a common ticker.
-type PathsConfig struct {
-	// Ticker is the on-chain representation of the ticker. This is the target
-	// ticker that the prices of the set of tickers will be converted to.
-	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
-	// Paths is the list of convertable markets that will be used to convert the
-	// prices of a set of tickers to a common ticker.
-	Paths []Path `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths"`
-}
-
-func (m *PathsConfig) Reset()         { *m = PathsConfig{} }
-func (m *PathsConfig) String() string { return proto.CompactTextString(m) }
-func (*PathsConfig) ProtoMessage()    {}
-func (*PathsConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{5}
-}
-func (m *PathsConfig) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *PathsConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_PathsConfig.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *PathsConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PathsConfig.Merge(m, src)
-}
-func (m *PathsConfig) XXX_Size() int {
-	return m.Size()
-}
-func (m *PathsConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_PathsConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PathsConfig proto.InternalMessageInfo
-
-func (m *PathsConfig) GetTicker() Ticker {
-	if m != nil {
-		return m.Ticker
-	}
-	return Ticker{}
-}
-
-func (m *PathsConfig) GetPaths() []Path {
-	if m != nil {
-		return m.Paths
-	}
-	return nil
-}
-
 // Path is the list of convertable markets that will be used to convert the
 // prices of a set of tickers to a common ticker.
 type Path struct {
@@ -463,7 +237,7 @@ func (m *Path) Reset()         { *m = Path{} }
 func (m *Path) String() string { return proto.CompactTextString(m) }
 func (*Path) ProtoMessage()    {}
 func (*Path) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{6}
+	return fileDescriptor_fefe265720fc8a78, []int{3}
 }
 func (m *Path) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -512,7 +286,7 @@ func (m *Operation) Reset()         { *m = Operation{} }
 func (m *Operation) String() string { return proto.CompactTextString(m) }
 func (*Operation) ProtoMessage()    {}
 func (*Operation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fefe265720fc8a78, []int{7}
+	return fileDescriptor_fefe265720fc8a78, []int{4}
 }
 func (m *Operation) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -556,15 +330,9 @@ func (m *Operation) GetInvert() bool {
 }
 
 func init() {
+	proto.RegisterType((*TickersConfig)(nil), "slinky.marketmap.v1.TickersConfig")
 	proto.RegisterType((*Ticker)(nil), "slinky.marketmap.v1.Ticker")
 	proto.RegisterType((*ProviderConfig)(nil), "slinky.marketmap.v1.ProviderConfig")
-	proto.RegisterType((*TickerConfig)(nil), "slinky.marketmap.v1.TickerConfig")
-	proto.RegisterType((*MarketConfig)(nil), "slinky.marketmap.v1.MarketConfig")
-	proto.RegisterMapType((map[string]TickerConfig)(nil), "slinky.marketmap.v1.MarketConfig.TickerConfigsEntry")
-	proto.RegisterType((*AggregateMarketConfig)(nil), "slinky.marketmap.v1.AggregateMarketConfig")
-	proto.RegisterMapType((map[string]MarketConfig)(nil), "slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry")
-	proto.RegisterMapType((map[string]PathsConfig)(nil), "slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry")
-	proto.RegisterType((*PathsConfig)(nil), "slinky.marketmap.v1.PathsConfig")
 	proto.RegisterType((*Path)(nil), "slinky.marketmap.v1.Path")
 	proto.RegisterType((*Operation)(nil), "slinky.marketmap.v1.Operation")
 }
@@ -572,48 +340,75 @@ func init() {
 func init() { proto.RegisterFile("slinky/marketmap/v1/market.proto", fileDescriptor_fefe265720fc8a78) }
 
 var fileDescriptor_fefe265720fc8a78 = []byte{
-	// 654 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0x8e, 0x93, 0x34, 0x6a, 0x26, 0x69, 0xa8, 0x96, 0x1f, 0x99, 0x20, 0x5c, 0x93, 0x5e, 0x72,
-	0x28, 0x8e, 0x5a, 0xfe, 0x2b, 0x71, 0xa0, 0xe5, 0x4f, 0x08, 0xda, 0x2a, 0x70, 0xe2, 0x62, 0x6d,
-	0xdd, 0x8d, 0xb3, 0xa4, 0xfe, 0xd1, 0x7a, 0x63, 0x91, 0x13, 0xbc, 0x01, 0x1c, 0x39, 0xf2, 0x18,
-	0x3c, 0x42, 0x25, 0x2e, 0x3d, 0x72, 0x40, 0x08, 0xb5, 0x2f, 0x82, 0xbc, 0xbb, 0x31, 0xb6, 0x6a,
-	0xaa, 0x06, 0xb8, 0xed, 0xce, 0x7c, 0xf3, 0xcd, 0xcc, 0x37, 0xf6, 0x2c, 0x98, 0xd1, 0x3e, 0xf5,
-	0x47, 0x93, 0x9e, 0x87, 0xd9, 0x88, 0x70, 0x0f, 0x87, 0xbd, 0x78, 0x55, 0x5d, 0xac, 0x90, 0x05,
-	0x3c, 0x40, 0xe7, 0x25, 0xc2, 0x4a, 0x11, 0x56, 0xbc, 0xda, 0xbe, 0xe0, 0x06, 0x6e, 0x20, 0xfc,
-	0xbd, 0xe4, 0x24, 0xa1, 0xed, 0x65, 0x45, 0xc6, 0x27, 0x21, 0x89, 0x12, 0x22, 0x67, 0xcc, 0x18,
-	0xf1, 0x9d, 0x89, 0x1d, 0x62, 0xca, 0x24, 0xa8, 0xf3, 0xb5, 0x0c, 0xb5, 0x57, 0xd4, 0x19, 0x11,
-	0x86, 0x9e, 0xc2, 0x42, 0x0e, 0xa1, 0x6b, 0xa6, 0xd6, 0x6d, 0xac, 0x5d, 0xb5, 0x54, 0x4a, 0xc1,
-	0x63, 0xc5, 0xab, 0xd6, 0xa6, 0x42, 0xed, 0x60, 0xca, 0x36, 0xaa, 0x07, 0x3f, 0x96, 0x4a, 0xfd,
-	0xa6, 0x93, 0xb1, 0xa1, 0x36, 0xcc, 0xef, 0x11, 0x87, 0x7a, 0x78, 0x3f, 0xd2, 0x2b, 0xa6, 0xd6,
-	0xad, 0xf6, 0xd3, 0x3b, 0x5a, 0x01, 0xe4, 0x51, 0xdf, 0x0e, 0x59, 0x10, 0xd3, 0x3d, 0xc2, 0x6c,
-	0x27, 0x18, 0xfb, 0x5c, 0xaf, 0x0a, 0xd4, 0xa2, 0x47, 0xfd, 0x1d, 0xe5, 0xd8, 0x4c, 0xec, 0xe8,
-	0x16, 0xcc, 0x85, 0x98, 0x0f, 0x23, 0x7d, 0xce, 0xac, 0x74, 0x1b, 0x6b, 0x97, 0xad, 0x82, 0xf6,
-	0xad, 0x1d, 0xcc, 0x87, 0xaa, 0x0e, 0x89, 0x46, 0x4f, 0xa0, 0x3e, 0x4d, 0x10, 0xe9, 0x35, 0x11,
-	0xba, 0x5c, 0x1c, 0x9a, 0x66, 0xf3, 0x07, 0xd4, 0x55, 0x24, 0xbf, 0x63, 0xd1, 0x32, 0x2c, 0x78,
-	0x84, 0xe3, 0x3d, 0xcc, 0xb1, 0xfd, 0xec, 0xe5, 0xf6, 0x96, 0x7e, 0xce, 0xd4, 0xba, 0xf5, 0x7e,
-	0x73, 0x6a, 0x4c, 0x6c, 0xeb, 0xf3, 0x9f, 0x3e, 0x2f, 0x95, 0xde, 0x7f, 0x37, 0x4b, 0x9d, 0x2d,
-	0x68, 0xe5, 0x19, 0x11, 0x82, 0xaa, 0x8f, 0x3d, 0x22, 0xb4, 0xac, 0xf7, 0xc5, 0x19, 0x75, 0x61,
-	0x31, 0x18, 0x0c, 0x6c, 0x67, 0x88, 0xa9, 0x6f, 0x73, 0x21, 0xbe, 0x5e, 0x16, 0xfe, 0x56, 0x30,
-	0x18, 0x6c, 0x26, 0x66, 0x39, 0x92, 0x4e, 0x04, 0x4d, 0x79, 0x52, 0x6c, 0xf7, 0xa0, 0xa6, 0xf0,
-	0x72, 0x36, 0x57, 0x0a, 0x9b, 0x92, 0x21, 0xaa, 0x19, 0x15, 0x30, 0x43, 0xd2, 0x0f, 0x65, 0x68,
-	0xbe, 0x10, 0x7c, 0xa7, 0xf4, 0x80, 0xa1, 0x25, 0x49, 0x6c, 0x47, 0x80, 0x22, 0xbd, 0x2c, 0x64,
-	0xbe, 0x59, 0x58, 0x51, 0x96, 0xce, 0xca, 0x76, 0x14, 0x3d, 0xf2, 0x39, 0x9b, 0xa8, 0x52, 0x17,
-	0x78, 0xd6, 0x73, 0x26, 0xed, 0xdb, 0x0e, 0xa0, 0x93, 0x7c, 0x68, 0x11, 0x2a, 0x23, 0x32, 0x51,
-	0x05, 0x27, 0x47, 0x74, 0x07, 0xe6, 0x62, 0xbc, 0x3f, 0x26, 0xa2, 0xe7, 0xc6, 0xda, 0xb5, 0x53,
-	0x84, 0x93, 0x4c, 0x7d, 0x89, 0x5f, 0x2f, 0xdf, 0xd5, 0x3a, 0x5f, 0x2a, 0x70, 0xf1, 0x81, 0xeb,
-	0x32, 0xe2, 0x62, 0x4e, 0x72, 0xd2, 0xbc, 0x81, 0x96, 0x64, 0x48, 0x65, 0xd0, 0x84, 0x0c, 0xf7,
-	0x0b, 0xf9, 0x0b, 0x39, 0x72, 0xe2, 0xe4, 0xf5, 0xf0, 0xb2, 0x9e, 0x24, 0x57, 0xa1, 0xe4, 0xb3,
-	0xe4, 0x3a, 0xa3, 0xf6, 0x89, 0xac, 0x27, 0xcb, 0xfa, 0x5b, 0x59, 0xb3, 0x4c, 0x19, 0x59, 0xdb,
-	0xbb, 0x67, 0x9c, 0xdd, 0xed, 0x7c, 0x12, 0xf3, 0x8f, 0x4b, 0x20, 0x3a, 0x39, 0xba, 0x77, 0xd0,
-	0xc8, 0x78, 0xfe, 0xe5, 0x07, 0x4a, 0x57, 0x51, 0x79, 0x96, 0x55, 0xd4, 0x79, 0x0e, 0xd5, 0xc4,
-	0x88, 0x1e, 0x02, 0x04, 0x21, 0x61, 0x98, 0xd3, 0xc0, 0x9f, 0x7e, 0x25, 0x46, 0x21, 0xc7, 0xf6,
-	0x14, 0xa6, 0x88, 0x32, 0x71, 0x1d, 0x0f, 0xea, 0xa9, 0xfb, 0x3f, 0x2e, 0xec, 0x4b, 0x50, 0xa3,
-	0x7e, 0x4c, 0x18, 0x17, 0x12, 0xcf, 0xf7, 0xd5, 0x6d, 0xe3, 0xf1, 0xc1, 0x91, 0xa1, 0x1d, 0x1e,
-	0x19, 0xda, 0xcf, 0x23, 0x43, 0xfb, 0x78, 0x6c, 0x94, 0x0e, 0x8f, 0x8d, 0xd2, 0xb7, 0x63, 0xa3,
-	0xf4, 0x7a, 0xc5, 0xa5, 0x7c, 0x38, 0xde, 0xb5, 0x9c, 0xc0, 0xeb, 0x45, 0x23, 0x1a, 0x5e, 0xf7,
-	0x48, 0xdc, 0x53, 0x0f, 0xce, 0xdb, 0xcc, 0xfb, 0x25, 0x6a, 0xd8, 0xad, 0x89, 0xc7, 0xe6, 0xc6,
-	0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x30, 0xbc, 0x1e, 0x1f, 0xe0, 0x06, 0x00, 0x00,
+	// 483 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0x31, 0x6f, 0xd3, 0x40,
+	0x14, 0xb6, 0x5b, 0x37, 0x24, 0xaf, 0x4d, 0xa9, 0x0e, 0x84, 0x4c, 0x10, 0xae, 0xe5, 0x2c, 0x1e,
+	0x8a, 0xad, 0x16, 0xb1, 0xc0, 0xd6, 0x20, 0x40, 0xa8, 0x6a, 0x23, 0xc3, 0xc4, 0x62, 0x5d, 0x9d,
+	0x73, 0x72, 0x4a, 0xef, 0xce, 0x3a, 0x5f, 0x2c, 0xb2, 0xf1, 0x13, 0x18, 0x19, 0xf9, 0x39, 0x95,
+	0x58, 0x3a, 0x32, 0x20, 0x84, 0x92, 0x3f, 0x82, 0x7c, 0xb6, 0x43, 0x22, 0x65, 0x64, 0xf3, 0x7d,
+	0xef, 0xfb, 0xbe, 0xf7, 0xbe, 0x7b, 0x67, 0x70, 0xf3, 0x1b, 0xca, 0xa7, 0xf3, 0x90, 0x61, 0x39,
+	0x25, 0x8a, 0xe1, 0x2c, 0x2c, 0x4e, 0xeb, 0x43, 0x90, 0x49, 0xa1, 0x04, 0x7a, 0x50, 0x31, 0x82,
+	0x15, 0x23, 0x28, 0x4e, 0x7b, 0x0f, 0xc7, 0x62, 0x2c, 0x74, 0x3d, 0x2c, 0xbf, 0x2a, 0x6a, 0xaf,
+	0x5f, 0x9b, 0xa9, 0x79, 0x46, 0xf2, 0xd2, 0x28, 0x99, 0x49, 0x49, 0x78, 0x32, 0x8f, 0x33, 0x4c,
+	0x65, 0x45, 0xf2, 0x2e, 0xa0, 0xfb, 0x91, 0x26, 0x53, 0x22, 0xf3, 0x81, 0xe0, 0x29, 0x1d, 0xa3,
+	0x57, 0x70, 0x4f, 0x55, 0x80, 0x6d, 0xba, 0xbb, 0xfe, 0xfe, 0xd9, 0x93, 0x60, 0x4b, 0xcb, 0xa0,
+	0x12, 0x9d, 0x5b, 0xb7, 0xbf, 0x8f, 0x8d, 0xa8, 0x51, 0x78, 0x3f, 0x76, 0xa0, 0x55, 0x55, 0xd0,
+	0x3b, 0xe8, 0x6e, 0xf4, 0xb3, 0x4d, 0xd7, 0xf4, 0xf7, 0xcf, 0x9e, 0x36, 0x6e, 0x7a, 0xaa, 0xd2,
+	0x69, 0x50, 0xb3, 0x86, 0x98, 0x36, 0x7e, 0x07, 0xc9, 0x1a, 0x86, 0x7a, 0xd0, 0x1e, 0x91, 0x84,
+	0x32, 0x7c, 0x93, 0xdb, 0xbb, 0xae, 0xe9, 0x5b, 0xd1, 0xea, 0x8c, 0x4e, 0x00, 0x31, 0xca, 0xe3,
+	0x4c, 0x8a, 0x82, 0x8e, 0x88, 0x8c, 0x13, 0x31, 0xe3, 0xca, 0xb6, 0x34, 0xeb, 0x88, 0x51, 0x3e,
+	0xac, 0x0b, 0x83, 0x12, 0x47, 0x2f, 0x60, 0x2f, 0xc3, 0x6a, 0x92, 0xdb, 0x7b, 0x3a, 0xd9, 0xe3,
+	0xad, 0xc9, 0x86, 0x58, 0x4d, 0xea, 0x39, 0x2a, 0x36, 0x7a, 0x0b, 0x9d, 0xa6, 0x41, 0x6e, 0xb7,
+	0xb4, 0xb4, 0xbf, 0x5d, 0xba, 0xea, 0x56, 0x5e, 0x65, 0x6d, 0xf2, 0x4f, 0x8b, 0xfa, 0xd0, 0x65,
+	0x44, 0xe1, 0x11, 0x56, 0x38, 0x7e, 0xff, 0xe1, 0xea, 0xd2, 0xbe, 0xef, 0x9a, 0x7e, 0x27, 0x3a,
+	0x68, 0xc0, 0x12, 0x7b, 0xd9, 0xfe, 0xf6, 0xfd, 0xd8, 0xf8, 0xf2, 0xcb, 0x35, 0xbc, 0x4b, 0x38,
+	0xdc, 0x74, 0x44, 0x08, 0x2c, 0x8e, 0x19, 0xd1, 0x77, 0xd9, 0x89, 0xf4, 0x37, 0xf2, 0xe1, 0x48,
+	0xa4, 0x69, 0x9c, 0x4c, 0x30, 0xe5, 0x71, 0xb5, 0x08, 0x7b, 0x47, 0xd7, 0x0f, 0x45, 0x9a, 0x0e,
+	0x4a, 0xb8, 0x5a, 0x89, 0x77, 0x01, 0x56, 0x19, 0x0e, 0xbd, 0x06, 0x10, 0x19, 0x91, 0x58, 0x51,
+	0xc1, 0x9b, 0x2d, 0x3b, 0x5b, 0x03, 0x5d, 0x35, 0xb4, 0x3a, 0xcb, 0x9a, 0xce, 0x63, 0xd0, 0x59,
+	0x95, 0xff, 0xe3, 0xb6, 0x1f, 0x41, 0x8b, 0xf2, 0x82, 0x48, 0xa5, 0x43, 0xb4, 0xa3, 0xfa, 0x74,
+	0xfe, 0xe6, 0x76, 0xe1, 0x98, 0x77, 0x0b, 0xc7, 0xfc, 0xb3, 0x70, 0xcc, 0xaf, 0x4b, 0xc7, 0xb8,
+	0x5b, 0x3a, 0xc6, 0xcf, 0xa5, 0x63, 0x7c, 0x3a, 0x19, 0x53, 0x35, 0x99, 0x5d, 0x07, 0x89, 0x60,
+	0x61, 0x3e, 0xa5, 0xd9, 0x33, 0x46, 0x8a, 0xb0, 0x7e, 0xfb, 0x9f, 0xd7, 0x7e, 0x25, 0x3d, 0xc3,
+	0x75, 0x4b, 0xbf, 0xfb, 0xe7, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x42, 0x22, 0x91, 0x68, 0x6b,
+	0x03, 0x00, 0x00,
+}
+
+func (m *TickersConfig) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TickersConfig) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TickersConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Tickers) > 0 {
+		for iNdEx := len(m.Tickers) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Tickers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintMarket(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *Ticker) Marshal() (dAtA []byte, err error) {
@@ -731,225 +526,6 @@ func (m *ProviderConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *TickerConfig) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *TickerConfig) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *TickerConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.OffChainTicker) > 0 {
-		i -= len(m.OffChainTicker)
-		copy(dAtA[i:], m.OffChainTicker)
-		i = encodeVarintMarket(dAtA, i, uint64(len(m.OffChainTicker)))
-		i--
-		dAtA[i] = 0x12
-	}
-	{
-		size, err := m.Ticker.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintMarket(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *MarketConfig) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MarketConfig) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MarketConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Metadata_JSON) > 0 {
-		i -= len(m.Metadata_JSON)
-		copy(dAtA[i:], m.Metadata_JSON)
-		i = encodeVarintMarket(dAtA, i, uint64(len(m.Metadata_JSON)))
-		i--
-		dAtA[i] = 0x7a
-	}
-	if len(m.TickerConfigs) > 0 {
-		for k := range m.TickerConfigs {
-			v := m.TickerConfigs[k]
-			baseI := i
-			{
-				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintMarket(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-			i -= len(k)
-			copy(dAtA[i:], k)
-			i = encodeVarintMarket(dAtA, i, uint64(len(k)))
-			i--
-			dAtA[i] = 0xa
-			i = encodeVarintMarket(dAtA, i, uint64(baseI-i))
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if len(m.Name) > 0 {
-		i -= len(m.Name)
-		copy(dAtA[i:], m.Name)
-		i = encodeVarintMarket(dAtA, i, uint64(len(m.Name)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AggregateMarketConfig) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AggregateMarketConfig) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AggregateMarketConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.TickerConfigs) > 0 {
-		for k := range m.TickerConfigs {
-			v := m.TickerConfigs[k]
-			baseI := i
-			{
-				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintMarket(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-			i -= len(k)
-			copy(dAtA[i:], k)
-			i = encodeVarintMarket(dAtA, i, uint64(len(k)))
-			i--
-			dAtA[i] = 0xa
-			i = encodeVarintMarket(dAtA, i, uint64(baseI-i))
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if len(m.MarketConfigs) > 0 {
-		for k := range m.MarketConfigs {
-			v := m.MarketConfigs[k]
-			baseI := i
-			{
-				size, err := (&v).MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintMarket(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-			i -= len(k)
-			copy(dAtA[i:], k)
-			i = encodeVarintMarket(dAtA, i, uint64(len(k)))
-			i--
-			dAtA[i] = 0xa
-			i = encodeVarintMarket(dAtA, i, uint64(baseI-i))
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *PathsConfig) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *PathsConfig) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *PathsConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Paths) > 0 {
-		for iNdEx := len(m.Paths) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Paths[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintMarket(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	{
-		size, err := m.Ticker.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintMarket(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
 func (m *Path) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1041,6 +617,21 @@ func encodeVarintMarket(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *TickersConfig) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Tickers) > 0 {
+		for _, e := range m.Tickers {
+			l = e.Size()
+			n += 1 + l + sovMarket(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *Ticker) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1091,91 +682,6 @@ func (m *ProviderConfig) Size() (n int) {
 	return n
 }
 
-func (m *TickerConfig) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Ticker.Size()
-	n += 1 + l + sovMarket(uint64(l))
-	l = len(m.OffChainTicker)
-	if l > 0 {
-		n += 1 + l + sovMarket(uint64(l))
-	}
-	return n
-}
-
-func (m *MarketConfig) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Name)
-	if l > 0 {
-		n += 1 + l + sovMarket(uint64(l))
-	}
-	if len(m.TickerConfigs) > 0 {
-		for k, v := range m.TickerConfigs {
-			_ = k
-			_ = v
-			l = v.Size()
-			mapEntrySize := 1 + len(k) + sovMarket(uint64(len(k))) + 1 + l + sovMarket(uint64(l))
-			n += mapEntrySize + 1 + sovMarket(uint64(mapEntrySize))
-		}
-	}
-	l = len(m.Metadata_JSON)
-	if l > 0 {
-		n += 1 + l + sovMarket(uint64(l))
-	}
-	return n
-}
-
-func (m *AggregateMarketConfig) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.MarketConfigs) > 0 {
-		for k, v := range m.MarketConfigs {
-			_ = k
-			_ = v
-			l = v.Size()
-			mapEntrySize := 1 + len(k) + sovMarket(uint64(len(k))) + 1 + l + sovMarket(uint64(l))
-			n += mapEntrySize + 1 + sovMarket(uint64(mapEntrySize))
-		}
-	}
-	if len(m.TickerConfigs) > 0 {
-		for k, v := range m.TickerConfigs {
-			_ = k
-			_ = v
-			l = v.Size()
-			mapEntrySize := 1 + len(k) + sovMarket(uint64(len(k))) + 1 + l + sovMarket(uint64(l))
-			n += mapEntrySize + 1 + sovMarket(uint64(mapEntrySize))
-		}
-	}
-	return n
-}
-
-func (m *PathsConfig) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Ticker.Size()
-	n += 1 + l + sovMarket(uint64(l))
-	if len(m.Paths) > 0 {
-		for _, e := range m.Paths {
-			l = e.Size()
-			n += 1 + l + sovMarket(uint64(l))
-		}
-	}
-	return n
-}
-
 func (m *Path) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1210,6 +716,90 @@ func sovMarket(x uint64) (n int) {
 }
 func sozMarket(x uint64) (n int) {
 	return sovMarket(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *TickersConfig) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMarket
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TickersConfig: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TickersConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Tickers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMarket
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthMarket
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthMarket
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Tickers = append(m.Tickers, Ticker{})
+			if err := m.Tickers[len(m.Tickers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMarket(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMarket
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *Ticker) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -1524,789 +1114,6 @@ func (m *ProviderConfig) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.OffChainTicker = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMarket(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *TickerConfig) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMarket
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: TickerConfig: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: TickerConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Ticker.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OffChainTicker", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.OffChainTicker = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMarket(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MarketConfig) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMarket
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MarketConfig: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MarketConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Name = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TickerConfigs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.TickerConfigs == nil {
-				m.TickerConfigs = make(map[string]TickerConfig)
-			}
-			var mapkey string
-			mapvalue := &TickerConfig{}
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowMarket
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					var stringLenmapkey uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMarket
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapkey |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapkey := int(stringLenmapkey)
-					if intStringLenmapkey < 0 {
-						return ErrInvalidLengthMarket
-					}
-					postStringIndexmapkey := iNdEx + intStringLenmapkey
-					if postStringIndexmapkey < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if postStringIndexmapkey > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-					iNdEx = postStringIndexmapkey
-				} else if fieldNum == 2 {
-					var mapmsglen int
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMarket
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapmsglen |= int(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					if mapmsglen < 0 {
-						return ErrInvalidLengthMarket
-					}
-					postmsgIndex := iNdEx + mapmsglen
-					if postmsgIndex < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if postmsgIndex > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapvalue = &TickerConfig{}
-					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
-						return err
-					}
-					iNdEx = postmsgIndex
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipMarket(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.TickerConfigs[mapkey] = *mapvalue
-			iNdEx = postIndex
-		case 15:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Metadata_JSON", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Metadata_JSON = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMarket(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AggregateMarketConfig) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMarket
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AggregateMarketConfig: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AggregateMarketConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MarketConfigs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.MarketConfigs == nil {
-				m.MarketConfigs = make(map[string]MarketConfig)
-			}
-			var mapkey string
-			mapvalue := &MarketConfig{}
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowMarket
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					var stringLenmapkey uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMarket
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapkey |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapkey := int(stringLenmapkey)
-					if intStringLenmapkey < 0 {
-						return ErrInvalidLengthMarket
-					}
-					postStringIndexmapkey := iNdEx + intStringLenmapkey
-					if postStringIndexmapkey < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if postStringIndexmapkey > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-					iNdEx = postStringIndexmapkey
-				} else if fieldNum == 2 {
-					var mapmsglen int
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMarket
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapmsglen |= int(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					if mapmsglen < 0 {
-						return ErrInvalidLengthMarket
-					}
-					postmsgIndex := iNdEx + mapmsglen
-					if postmsgIndex < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if postmsgIndex > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapvalue = &MarketConfig{}
-					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
-						return err
-					}
-					iNdEx = postmsgIndex
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipMarket(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.MarketConfigs[mapkey] = *mapvalue
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TickerConfigs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.TickerConfigs == nil {
-				m.TickerConfigs = make(map[string]PathsConfig)
-			}
-			var mapkey string
-			mapvalue := &PathsConfig{}
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowMarket
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					var stringLenmapkey uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMarket
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapkey |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapkey := int(stringLenmapkey)
-					if intStringLenmapkey < 0 {
-						return ErrInvalidLengthMarket
-					}
-					postStringIndexmapkey := iNdEx + intStringLenmapkey
-					if postStringIndexmapkey < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if postStringIndexmapkey > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-					iNdEx = postStringIndexmapkey
-				} else if fieldNum == 2 {
-					var mapmsglen int
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMarket
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapmsglen |= int(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					if mapmsglen < 0 {
-						return ErrInvalidLengthMarket
-					}
-					postmsgIndex := iNdEx + mapmsglen
-					if postmsgIndex < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if postmsgIndex > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapvalue = &PathsConfig{}
-					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
-						return err
-					}
-					iNdEx = postmsgIndex
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipMarket(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
-						return ErrInvalidLengthMarket
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.TickerConfigs[mapkey] = *mapvalue
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMarket(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *PathsConfig) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMarket
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: PathsConfig: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PathsConfig: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Ticker.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMarket
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthMarket
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthMarket
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Paths = append(m.Paths, Path{})
-			if err := m.Paths[len(m.Paths)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -14,6 +14,8 @@ const (
 	// DefaultMinProviderCount is the minimum number of providers required for a
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
+	// MaxPathLength is the maximum length of a path for a ticker conversion.
+	MaxPathLength = 2
 )
 
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
@@ -65,4 +67,24 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	return json.IsValid([]byte(t.Metadata_JSON))
+}
+
+type Tickers []Ticker
+
+// ValidateBasic validates each ticker and ensures there are no duplicates.
+func (ts Tickers) ValidateBasic() error {
+	seenTickers := make(map[string]struct{})
+	for _, ticker := range ts {
+		if err := ticker.ValidateBasic(); err != nil {
+			return err
+		}
+
+		if _, found := seenTickers[ticker.String()]; found {
+			return fmt.Errorf("duplicate ticker for %s found", ticker.String())
+		}
+
+		seenTickers[ticker.String()] = struct{}{}
+	}
+
+	return nil
 }
