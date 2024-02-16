@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	val = sdk.ConsAddress([]byte("validator1"))
-	cp  = slinkytypes.NewCurrencyPair("BTC", "ETH")
+	val = sdk.ConsAddress("validator1")
+	cp  = oracletypes.NewCurrencyPair("BTC", "ETH")
 	id  = "testID"
 )
 
@@ -20,7 +20,7 @@ func TestSetUpdate(t *testing.T) {
 	t.Run("vote with price", func(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(10, val, cp, id)
 		require.NoError(t, err)
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 
 		count, err := priceFeed.GetUpdateCount()
 		require.NoError(t, err)
@@ -44,7 +44,7 @@ func TestSetUpdate(t *testing.T) {
 	t.Run("vote without price", func(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(10, val, cp, id)
 		require.NoError(t, err)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		count, err := priceFeed.GetUpdateCount()
 		require.NoError(t, err)
@@ -68,10 +68,10 @@ func TestSetUpdate(t *testing.T) {
 	t.Run("multiple votes", func(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(10, val, cp, id)
 		require.NoError(t, err)
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		count, err := priceFeed.GetUpdateCount()
 		require.NoError(t, err)
@@ -120,10 +120,10 @@ func TestSetUpdate(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(4, val, cp, id)
 		require.NoError(t, err)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		count, err := priceFeed.GetUpdateCount()
 		require.NoError(t, err)
@@ -134,7 +134,7 @@ func TestSetUpdate(t *testing.T) {
 		require.Equal(t, uint(4), count)
 
 		require.Equal(t, uint(0), uint(priceFeed.Index))
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		count, err = priceFeed.GetUpdateCount()
 		require.NoError(t, err)
@@ -144,7 +144,7 @@ func TestSetUpdate(t *testing.T) {
 	t.Run("no vote", func(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(10, val, cp, id)
 		require.NoError(t, err)
-		priceFeed.SetUpdate(slatypes.NoVote)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 
 		count, err := priceFeed.GetUpdateCount()
 		require.NoError(t, err)
@@ -163,9 +163,9 @@ func TestGetNumberOfPriceUpdates(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(4, val, cp, id)
 		require.NoError(t, err)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 
 		numUpdates, err := priceFeed.GetNumPriceUpdatesWithWindow(1)
 		require.NoError(t, err)
@@ -191,10 +191,10 @@ func TestGetNumberOfPriceUpdates(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(4, val, cp, id)
 		require.NoError(t, err)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		numUpdates, err := priceFeed.GetNumPriceUpdatesWithWindow(2)
 		require.NoError(t, err)
@@ -204,13 +204,13 @@ func TestGetNumberOfPriceUpdates(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, uint(2), numUpdates)
 
-		priceFeed.SetUpdate(slatypes.NoVote)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 
 		numUpdates, err = priceFeed.GetNumPriceUpdatesWithWindow(4)
 		require.NoError(t, err)
 		require.Equal(t, uint(1), numUpdates)
 
-		priceFeed.SetUpdate(slatypes.NoVote)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 
 		numUpdates, err = priceFeed.GetNumPriceUpdatesWithWindow(4)
 		require.NoError(t, err)
@@ -247,7 +247,7 @@ func TestGetNumVotesWithWindow(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(4, val, cp, id)
 		require.NoError(t, err)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 
 		numVotes, err := priceFeed.GetNumVotesWithWindow(1)
 		require.NoError(t, err)
@@ -273,8 +273,8 @@ func TestGetNumVotesWithWindow(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(4, val, cp, id)
 		require.NoError(t, err)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		numVotes, err := priceFeed.GetNumVotesWithWindow(1)
 		require.NoError(t, err)
@@ -300,8 +300,8 @@ func TestGetNumVotesWithWindow(t *testing.T) {
 		priceFeed, err := slatypes.NewPriceFeed(4, val, cp, id)
 		require.NoError(t, err)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
-		priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 
 		numVotes, err := priceFeed.GetNumVotesWithWindow(1)
 		require.NoError(t, err)
@@ -311,7 +311,7 @@ func TestGetNumVotesWithWindow(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, uint(2), numVotes)
 
-		priceFeed.SetUpdate(slatypes.NoVote)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 
 		numVotes, err = priceFeed.GetNumVotesWithWindow(2)
 		require.NoError(t, err)
@@ -321,7 +321,7 @@ func TestGetNumVotesWithWindow(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, uint(0), numVotes)
 
-		priceFeed.SetUpdate(slatypes.VoteWithPrice)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 
 		numVotes, err = priceFeed.GetNumVotesWithWindow(2)
 		require.NoError(t, err)
@@ -336,7 +336,7 @@ func TestGetNumVotesWithWindow(t *testing.T) {
 		require.Equal(t, uint(3), numVotes)
 
 		// Now we have a wrap around
-		priceFeed.SetUpdate(slatypes.NoVote)
+		require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 
 		numVotes, err = priceFeed.GetNumVotesWithWindow(4)
 		require.NoError(t, err)

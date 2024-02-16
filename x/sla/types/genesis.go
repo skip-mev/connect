@@ -2,7 +2,7 @@ package types
 
 import (
 	"encoding/json"
-	fmt "fmt"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,7 +28,7 @@ func NewGenesisState(slas []PriceFeedSLA, priceFeeds []PriceFeed, params Params)
 
 // ValidateBasic performs basic validation of the genesis state data returning an
 // error for any failed validation criteria.
-func (gs GenesisState) ValidateBasic() error {
+func (gs *GenesisState) ValidateBasic() error {
 	seen := make(map[string]struct{})
 	slaLength := make(map[string]uint64)
 	for _, sla := range gs.SLAs {
