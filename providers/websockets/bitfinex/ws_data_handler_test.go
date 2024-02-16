@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -41,7 +40,7 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte("invalid message")
 			},
-			resp:          providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](nil, nil),
+			resp:          types.NewPriceResponse(nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -58,7 +57,7 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp:          providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](nil, nil),
+			resp:          types.NewPriceResponse(nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -80,7 +79,7 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return rawStringToBz(`[111,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)
 			},
-			resp: providertypes.NewGetResponse(
+			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
 					constants.BITCOIN_USD: {
 						Value: big.NewInt(100000000),
@@ -97,7 +96,7 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return rawStringToBz(`[0,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)
 			},
-			resp: providertypes.NewGetResponse(
+			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{},
 			),
@@ -120,7 +119,7 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse(
+			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{},
 			),
@@ -142,7 +141,7 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse(
+			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{},
 			),

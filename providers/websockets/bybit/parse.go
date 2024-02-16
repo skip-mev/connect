@@ -2,7 +2,6 @@ package bybit
 
 import (
 	"fmt"
-	"math/big"
 	"strings"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 // parseSubscribeResponseMessage parses a subscribe response message. The format of the message
@@ -45,7 +43,7 @@ func (h *WebSocketHandler) parseTickerUpdate(
 
 	// The topic must be the tickers topic.
 	if !strings.Contains(resp.Topic, string(TickerChannel)) {
-		return providertypes.NewGetResponse(resolved, unresolved),
+		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("invalid topic %s", resp.Topic)
 	}
 
@@ -54,16 +52,16 @@ func (h *WebSocketHandler) parseTickerUpdate(
 	inverted := h.market.Invert()
 	market, ok := inverted[data.Symbol]
 	if !ok {
-		return providertypes.NewGetResponse(resolved, unresolved), fmt.Errorf("unknown ticker %s", data.Symbol)
+		return types.NewPriceResponse(resolved, unresolved), fmt.Errorf("unknown ticker %s", data.Symbol)
 	}
 
 	// Convert the price to a big.Int.
 	price, err := math.Float64StringToBigInt(data.LastPrice, market.Ticker.Decimals)
 	if err != nil {
 		unresolved[market.Ticker] = fmt.Errorf("failed to convert price to big.Int: %w", err)
-		return providertypes.NewGetResponse(resolved, unresolved), nil
+		return types.NewPriceResponse(resolved, unresolved), nil
 	}
 
-	resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse(resolved, unresolved), nil
+	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	return types.NewPriceResponse(resolved, unresolved), nil
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 const (
@@ -77,11 +76,11 @@ func (h *WebSocketHandler) handleStream(
 	// Attempt to unmarshal the message into a base message. This is used to determine the type
 	// of message that was received.
 	if err := json.Unmarshal(message, &baseStream); err != nil {
-		return providertypes.NewGetResponse(resolved, unResolved), err
+		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	if len(baseStream) != ExpectedBaseStreamLength {
-		return providertypes.NewGetResponse(resolved, unResolved),
+		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("invalid length of stream data received. must be %d.  stream: %v. len: %d",
 				ExpectedBaseStreamLength,
 				baseStream,
@@ -93,7 +92,7 @@ func (h *WebSocketHandler) handleStream(
 	channelID := int(baseStream[indexChannelID].(float64))
 	market, ok := h.channelMap[channelID]
 	if !ok {
-		return providertypes.NewGetResponse(resolved, unResolved),
+		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("received stream for unknown channel id %v", channelID)
 	}
 
@@ -104,7 +103,7 @@ func (h *WebSocketHandler) handleStream(
 	hbID, ok := baseStream[indexPayload].(string)
 	if ok && hbID == IDHeartbeat {
 		h.logger.Debug("received heartbeat", zap.Int("channel_id", channelID), zap.String("ticker", ticker.String()))
-		return providertypes.NewGetResponse(resolved, unResolved), nil
+		return types.NewPriceResponse(resolved, unResolved), nil
 
 	}
 
@@ -113,15 +112,15 @@ func (h *WebSocketHandler) handleStream(
 	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
 		unResolved[ticker] = err
-		return providertypes.NewGetResponse(resolved, unResolved), err
+		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	lastPrice := dataArr[6]
 	// Convert the price to a big int.
 	price := math.Float64ToBigInt(lastPrice.(float64), ticker.Decimals)
-	resolved[ticker] = providertypes.NewResult(price, time.Now().UTC())
+	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 
-	return providertypes.NewGetResponse(resolved, unResolved), nil
+	return types.NewPriceResponse(resolved, unResolved), nil
 }
 
 // updateChannelMap updates the internal map for the given channelID and ticker.
