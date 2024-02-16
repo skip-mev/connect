@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Msg_CreateMarket_FullMethodName = "/slinky.marketmap.v1.Msg/CreateMarket"
+	Msg_Params_FullMethodName       = "/slinky.marketmap.v1.Msg/Params"
 )
 
 // MsgClient is the client API for Msg service.
@@ -28,6 +29,8 @@ const (
 type MsgClient interface {
 	// CreateMarket creates a market from the given message.
 	CreateMarket(ctx context.Context, in *MsgCreateMarket, opts ...grpc.CallOption) (*MsgCreateMarketResponse, error)
+	// Params defines a method for updating the x/marketmap module parameters.
+	Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error)
 }
 
 type msgClient struct {
@@ -47,12 +50,23 @@ func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarket, opts 
 	return out, nil
 }
 
+func (c *msgClient) Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error) {
+	out := new(MsgParamsResponse)
+	err := c.cc.Invoke(ctx, Msg_Params_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
 	// CreateMarket creates a market from the given message.
 	CreateMarket(context.Context, *MsgCreateMarket) (*MsgCreateMarketResponse, error)
+	// Params defines a method for updating the x/marketmap module parameters.
+	Params(context.Context, *MsgParams) (*MsgParamsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -62,6 +76,9 @@ type UnimplementedMsgServer struct {
 
 func (UnimplementedMsgServer) CreateMarket(context.Context, *MsgCreateMarket) (*MsgCreateMarketResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMarket not implemented")
+}
+func (UnimplementedMsgServer) Params(context.Context, *MsgParams) (*MsgParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -94,6 +111,24 @@ func _Msg_CreateMarket_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_Params_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Params(ctx, req.(*MsgParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,6 +139,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateMarket",
 			Handler:    _Msg_CreateMarket_Handler,
+		},
+		{
+			MethodName: "Params",
+			Handler:    _Msg_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -36,6 +36,7 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.initKeeper()
+	s.keeper.SetParams(s.ctx, types.DefaultParams())
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -177,5 +178,18 @@ func (s *KeeperTestSuite) TestMarketMap() {
 		aggCfg, ok := marketMap.TickerConfigs[cp1.String()]
 		s.Require().True(ok)
 		s.Require().Equal(aggCfg1.String(), aggCfg.String())
+	})
+}
+
+func (s *KeeperTestSuite) TestSetParams() {
+	params := types.DefaultParams()
+
+	s.Run("can set and get params", func() {
+		err := s.keeper.SetParams(s.ctx, params)
+		s.Require().NoError(err)
+
+		params2, err := s.keeper.GetParams(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(params, params2)
 	})
 }
