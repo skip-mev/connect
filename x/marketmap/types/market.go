@@ -8,7 +8,7 @@ import (
 
 // NewMarketConfig returns a new MarketConfig instance. The MarketConfig represents
 // the provider specific configurations for different markets and the associated
-// markets they are traded on i.e. all of the price feeds that a given provider
+// markets they are traded on i.e. all price feeds that a given provider
 // is responsible for maintaining.
 func NewMarketConfig(provider string, configs map[string]TickerConfig) MarketConfig {
 	return MarketConfig{
