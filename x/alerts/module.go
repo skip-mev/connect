@@ -31,10 +31,10 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ module.AppModule       = AppModule{}
-	_ appmodule.AppModule    = AppModule{}
-	_ module.HasABCIEndblock = AppModule{}
-	_ module.AppModuleBasic  = AppModuleBasic{}
+	_ module.AppModuleBasic = AppModule{}
+	_ module.HasServices    = AppModule{}
+
+	_ appmodule.AppModule = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/alerts module exposes to the
