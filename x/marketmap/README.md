@@ -67,12 +67,12 @@ The following hooks can be registered:
 ### AfterMarketCreated
 
 * `AfterMarketCreated(ctx sdk.Context, TODO) error`
-  * Called after a new market is created in `CreateMarket` message server.
+    * Called after a new market is created in `CreateMarket` message server.
 
 ### AfterMarketUpdated
 
 * `AfterMarketUpdated(ctx sdk.Context, TODO) error`
-  * Called after a new market is updated in `UpdateMarket` message server.
+    * Called after a new market is updated in `UpdateMarket` message server.
 
 ## Client
 
