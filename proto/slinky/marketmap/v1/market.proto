@@ -28,9 +28,31 @@ message Ticker {
   // prices of a set of tickers to a common ticker.
   repeated Path paths = 5 [ (gogoproto.nullable) = false ];
 
+  // Providers is the list of provider configurations for the given ticker.
+  repeated ProviderConfig providers = 6 [ (gogoproto.nullable) = false ];
+
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
   string metadata_JSON = 15;
+}
+
+// PathsConfig2 represents the list of convertable markets (paths) that will be
+// used to convert the prices of a set of tickers to a common ticker.
+message PathsConfig2 {
+  // Paths is the list of convertable markets that will be used to convert the
+  // prices of a set of tickers to a common ticker.
+  repeated Path paths = 1 [ (gogoproto.nullable) = false ];
+}
+
+message ProviderConfig {
+  // Name corresponds to the name of the provider for which the configuration is
+  // being set.
+  string name = 1;
+
+  // OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
+  // The off-chain ticker is unique to a given provider and is used to fetch the
+  // price of the ticker from the provider.
+  string off_chain_ticker = 2;
 }
 
 // TickerConfig is the config the provider uses to create mappings between

@@ -213,3 +213,49 @@ func NewOperation(ticker Ticker, invert bool) (Operation, error) {
 func (o *Operation) ValidateBasic() error {
 	return o.Ticker.ValidateBasic()
 }
+
+type Paths []Path
+
+// ValidateBasic performs basic validation on the Paths.
+func (p Paths) ValidateBasic(cp slinkytypes.CurrencyPair) error {
+	if len(p) == 0 {
+		return fmt.Errorf("at least one path is required for a ticker to be calculated")
+	}
+
+	// Track the routes to ensure that there are no duplicates.
+	routes := make(map[string]struct{})
+	for _, path := range p {
+		if err := path.ValidateBasic(); err != nil {
+			return err
+		}
+
+		route := path.ShowRoute()
+		if _, ok := routes[route]; ok {
+			return fmt.Errorf("duplicate path found: %s", route)
+		}
+		routes[route] = struct{}{}
+
+		// Ensure that the path ends up converting to the ticker.
+		if !path.Match(cp.String()) {
+			return fmt.Errorf("path does not match ticker")
+		}
+	}
+
+	return nil
+}
+
+// UniqueTickers returns all unique tickers across all paths that
+// are part of the Paths. This is particularly useful for determining the
+// set of markets that are required for a given ticker as well as ensuring
+// that a given set of providers can provide the required markets.
+func (p Paths) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
+	seen := make(map[slinkytypes.CurrencyPair]struct{})
+
+	for _, path := range p {
+		for _, ticker := range path.GetTickers() {
+			seen[ticker.CurrencyPair] = struct{}{}
+		}
+	}
+
+	return seen
+}
