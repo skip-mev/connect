@@ -45,7 +45,7 @@ func TestGenesisState(t *testing.T) {
 		5,
 	)
 
-	val1 := sdk.ConsAddress([]byte("val1"))
+	val1 := sdk.ConsAddress("val1")
 
 	cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
 

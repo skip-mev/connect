@@ -11,12 +11,12 @@ import (
 type PriceFeedSLACB func(sla slatypes.PriceFeedSLA) error
 
 // GetSLA returns the SLA with the given ID from the x/sla module's state.
-func (k Keeper) GetSLA(ctx sdk.Context, slaID string) (slatypes.PriceFeedSLA, error) {
+func (k *Keeper) GetSLA(ctx sdk.Context, slaID string) (slatypes.PriceFeedSLA, error) {
 	return k.slas.Get(ctx, slaID)
 }
 
 // GetSLAs returns the set of SLAs that are currently in the x/sla module's state.
-func (k Keeper) GetSLAs(ctx sdk.Context) ([]slatypes.PriceFeedSLA, error) {
+func (k *Keeper) GetSLAs(ctx sdk.Context) ([]slatypes.PriceFeedSLA, error) {
 	var slas []slatypes.PriceFeedSLA
 	cb := func(sla slatypes.PriceFeedSLA) error {
 		slas = append(slas, sla)
@@ -32,7 +32,7 @@ func (k Keeper) GetSLAs(ctx sdk.Context) ([]slatypes.PriceFeedSLA, error) {
 
 // AddSLAs adds a set of SLAs to the x/sla module's state. Note, this will
 // overwrite any existing SLA with the same ID.
-func (k Keeper) AddSLAs(ctx sdk.Context, slas []slatypes.PriceFeedSLA) error {
+func (k *Keeper) AddSLAs(ctx sdk.Context, slas []slatypes.PriceFeedSLA) error {
 	for _, sla := range slas {
 		if err := k.SetSLA(ctx, sla); err != nil {
 			return err
@@ -42,14 +42,14 @@ func (k Keeper) AddSLAs(ctx sdk.Context, slas []slatypes.PriceFeedSLA) error {
 	return nil
 }
 
-// SetSLA sets a SLA to the x/sla module's state. Note, this will overwrite any
+// SetSLA sets an SLA to the x/sla module's state. Note, this will overwrite any
 // existing SLA with the same ID.
-func (k Keeper) SetSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
+func (k *Keeper) SetSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
 	return k.slas.Set(ctx, sla.ID, sla)
 }
 
 // RemoveSLAs removes a set of SLAs from the x/sla module's state.
-func (k Keeper) RemoveSLAs(ctx sdk.Context, slaIDs []string) error {
+func (k *Keeper) RemoveSLAs(ctx sdk.Context, slaIDs []string) error {
 	for _, id := range slaIDs {
 		if err := k.RemoveSLA(ctx, id); err != nil {
 			return err
@@ -59,16 +59,16 @@ func (k Keeper) RemoveSLAs(ctx sdk.Context, slaIDs []string) error {
 	return nil
 }
 
-// RemoveSLA removes a SLA from the x/sla module's state. If the SLA does not
+// RemoveSLA removes an SLA from the x/sla module's state. If the SLA does not
 // exist, the function will not error.
-func (k Keeper) RemoveSLA(ctx sdk.Context, slaID string) error {
+func (k *Keeper) RemoveSLA(ctx sdk.Context, slaID string) error {
 	return k.slas.Remove(ctx, slaID)
 }
 
 // iterateSLAs iterates over the set of SLAs that are currently in the x/sla
 // module's state. The function inputs a callback that will be executed for each
 // SLA in the state.
-func (k Keeper) iterateSLAs(ctx sdk.Context, cb PriceFeedSLACB) error {
+func (k *Keeper) iterateSLAs(ctx sdk.Context, cb PriceFeedSLACB) error {
 	iterator, err := k.slas.Iterate(ctx, nil)
 	if err != nil {
 		return err

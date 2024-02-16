@@ -45,8 +45,8 @@ func NewValidatorUpdate(consAddress sdk.ConsAddress) ValidatorUpdate {
 	}
 }
 
-// UpdatePriceFeeds will update the price feed incentives for all of the given updates. The
-// updates parameter is constructed in the preblock handler and contains all of the price feed
+// UpdatePriceFeeds will update the price feed incentives for all given updates. The
+// updates parameter is constructed in the preblock handler and contains all price feed
 // updates for the current block for every validator and currency pair. The validators included
 // are the ones in the active set from the previous block. There are a few cases that need to be
 // handled:
@@ -55,7 +55,7 @@ func NewValidatorUpdate(consAddress sdk.ConsAddress) ValidatorUpdate {
 // 3. A new currency pair is added to the network.
 // 4. A currency pair is removed from the network.
 // 5. A currency pair is updated.
-func (k Keeper) UpdatePriceFeeds(ctx sdk.Context, updates PriceFeedUpdates) error {
+func (k *Keeper) UpdatePriceFeeds(ctx sdk.Context, updates PriceFeedUpdates) error {
 	slas, err := k.GetSLAs(ctx)
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func (k Keeper) UpdatePriceFeeds(ctx sdk.Context, updates PriceFeedUpdates) erro
 }
 
 // UpdatePriceFeedsForSLA will update the price feeds for given SLA.
-func (k Keeper) UpdatePriceFeedsForSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA, updates PriceFeedUpdates) error {
+func (k *Keeper) UpdatePriceFeedsForSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA, updates PriceFeedUpdates) error {
 	for _, validator := range updates.ValidatorUpdates {
 		for cp, status := range validator.Updates {
 			contains, err := k.ContainsPriceFeed(ctx, sla.ID, cp, validator.ConsAddress)
@@ -121,7 +121,7 @@ func (k Keeper) UpdatePriceFeedsForSLA(ctx sdk.Context, sla slatypes.PriceFeedSL
 
 // updatePriceFeedWithStatus will update the price feed with the given status and add it to the
 // x/sla module's state.
-func (k Keeper) updatePriceFeedWithStatus(
+func (k *Keeper) updatePriceFeedWithStatus(
 	ctx sdk.Context,
 	sla slatypes.PriceFeedSLA,
 	cp oracletypes.CurrencyPair,
@@ -142,7 +142,7 @@ func (k Keeper) updatePriceFeedWithStatus(
 
 // initPriceFeedWithStatus will initialize a price feed with the given status and add it to the
 // x/sla module's state.
-func (k Keeper) initPriceFeedWithStatus(
+func (k *Keeper) initPriceFeedWithStatus(
 	ctx sdk.Context,
 	sla slatypes.PriceFeedSLA,
 	cp oracletypes.CurrencyPair,

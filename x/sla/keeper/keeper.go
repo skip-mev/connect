@@ -13,7 +13,7 @@ import (
 
 // Keeper defines a new keeper for the price feed SLA module. This module
 // tracks the current SLAs and the corresponding price feed updates. Each
-// price feed is associated with a SLA, validator, and currency pair. The
+// price feed is associated with an SLA, validator, and currency pair. The
 // currency pairs utilized by the x/sla module are defined in the x/oracle
 // module.
 type Keeper struct {
@@ -116,23 +116,23 @@ func NewKeeper(
 }
 
 // Logger returns the keeper's logger.
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/sla")
 }
 
 // SetParams sets the x/sla module's parameters.
-func (k Keeper) SetParams(ctx sdk.Context, params slatypes.Params) error {
+func (k *Keeper) SetParams(ctx sdk.Context, params slatypes.Params) error {
 	return k.params.Set(ctx, params)
 }
 
 // GetParams returns the x/sla module's parameters.
-func (k Keeper) GetParams(ctx sdk.Context) (slatypes.Params, error) {
+func (k *Keeper) GetParams(ctx sdk.Context) (slatypes.Params, error) {
 	return k.params.Get(ctx)
 }
 
 // SetCurrencyPairs sets the x/sla module's currency pairs. Note, this function
 // is primarily used to remove stale price feeds.
-func (k Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.CurrencyPair]struct{}) error {
+func (k *Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.CurrencyPair]struct{}) error {
 	// Remove all currency pairs that are currently in the x/sla module's state.
 	if err := k.currencyPairs.Clear(ctx, nil); err != nil {
 		return err
@@ -148,7 +148,7 @@ func (k Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.
 }
 
 // GetCurrencyPairs returns the x/sla module's currency pairs.
-func (k Keeper) GetCurrencyPairs(ctx sdk.Context) (map[oracletypes.CurrencyPair]struct{}, error) {
+func (k *Keeper) GetCurrencyPairs(ctx sdk.Context) (map[oracletypes.CurrencyPair]struct{}, error) {
 	iterator, err := k.currencyPairs.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
