@@ -12,9 +12,11 @@ import (
 const (
 	// NoVote indicates that the validator did not vote on the current block.
 	NoVote UpdateStatus = iota
-	// VoteWithoutPrice indicates that the validator voted with a price update. i.e. the
+
+	// VoteWithPrice indicates that the validator voted with a price update. i.e. the
 	// vote extension included any price update for the given currency pair.
 	VoteWithPrice
+
 	// VoteWithoutPrice indicates that the validator voted without a price update. i.e. the
 	// vote extension did not include any price update for the given currency pair.
 	VoteWithoutPrice
@@ -140,7 +142,7 @@ func (feed *PriceFeed) GetUpdateCount() (uint, error) {
 	return updateMap.Count(), nil
 }
 
-// GetNumberOfUpdates returns the number of price updates in the moving window. This
+// GetNumPriceUpdatesWithWindow returns the number of price updates in the moving window. This
 // corresponds to the number of blocks that the validator has voted on and included
 // a price update in the previous n blocks.
 func (feed *PriceFeed) GetNumPriceUpdatesWithWindow(n uint) (uint, error) {
