@@ -32,10 +32,16 @@ func (q queryServerImpl) GetMarketMap(goCtx context.Context, req *types.GetMarke
 		return nil, err
 	}
 
+	params, err := q.k.GetParams(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	lastUpdated, err := q.k.GetLastUpdated(ctx)
 	return &types.GetMarketMapResponse{
 			MarketMap:   *mm,
 			LastUpdated: lastUpdated,
+			Version:     params.Version,
 		},
 		err
 }
