@@ -49,7 +49,7 @@ func (c *PathsConfig) ValidateBasic() error {
 	return nil
 }
 
-// UniqueTickers returns all of the unique tickers across all of the paths that
+// UniqueTickers returns all unique tickers across all paths that
 // are part of the PathsConfig. This is particularly useful for determining the
 // set of markets that are required for a given ticker as well as ensuring
 // that a given set of providers can provide the required markets.

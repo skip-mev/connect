@@ -23,6 +23,10 @@ message Ticker {
   // MinProviderCount is the minimum number of providers required to consider
   // the ticker valid.
   uint64 min_provider_count = 4;
+
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given ticker.
+  string metadata_JSON = 15;
 }
 
 // TickerConfig is the config the provider uses to create mappings between
@@ -48,6 +52,10 @@ message MarketConfig {
   // on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
   // representation (i.e. BTC/USD).
   map<string, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
+
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given market.
+  string metadata_JSON = 15;
 }
 
 // AggregateMarketConfig represents the global set of market configurations for
@@ -62,7 +70,7 @@ message MarketConfig {
 //  aggregation
 //     strategy used by the oracle. The oracle may use a median price, a
 //     weighted average price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggreagted
+//  3. Convert the price of each ticker to a common ticker using the aggregated
 //  ticker
 //     configurations by default. The oracle may use a different aggregation
 //     strategy to convert the price of a ticker to a common ticker.
