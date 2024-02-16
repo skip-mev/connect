@@ -45,7 +45,6 @@ func NewWebSocketDataHandler(
 
 	if !wsCfg.Enabled {
 		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
-
 	}
 
 	if err := wsCfg.ValidateBasic(); err != nil {

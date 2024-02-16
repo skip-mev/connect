@@ -17,9 +17,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 )
 
-var (
-	postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)
-)
+var postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)
 
 func TestPreDialHook(t *testing.T) {
 	testCases := []struct {

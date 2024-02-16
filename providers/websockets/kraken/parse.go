@@ -116,7 +116,7 @@ func (h *WebSocketHandler) parseTickerMessage(
 	return types.NewPriceResponse(resolved, unResolved), nil
 }
 
-// DecodeTickerResponseMessage decodes a ticker response message .
+// DecodeTickerResponseMessage decodes a ticker response message.
 func DecodeTickerResponseMessage(message []byte) (TickerResponseMessage, error) {
 	var rawResponse []json.RawMessage
 	if err := json.Unmarshal(message, &rawResponse); err != nil {

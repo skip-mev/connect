@@ -46,7 +46,6 @@ func NewWebSocketDataHandler(
 
 	if !wsCfg.Enabled {
 		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
-
 	}
 
 	if err := wsCfg.ValidateBasic(); err != nil {
@@ -112,7 +111,6 @@ func (h *WebSocketHandler) CreateMessages(
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	if len(tickers) > MaxSubscriptionsPerConnection {
 		return nil, fmt.Errorf("cannot subscribe to more than %d tickers per connection", MaxSubscriptionsPerConnection)
-
 	}
 
 	instruments := make([]string, 0)
