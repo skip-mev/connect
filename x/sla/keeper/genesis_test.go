@@ -40,8 +40,8 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 
 	cp1 := slinkytypes.NewCurrencyPair("BTC", "USD")
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
-	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
+	consAddress2 := sdk.ConsAddress("consAddress2")
 
 	priceFeed1, err := slatypes.NewPriceFeed(
 		10,
@@ -241,8 +241,8 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 
 	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
-	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
+	consAddress2 := sdk.ConsAddress("consAddress2")
 
 	priceFeed1, err := slatypes.NewPriceFeed(
 		10,

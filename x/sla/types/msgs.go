@@ -1,7 +1,7 @@
 package types
 
 import (
-	fmt "fmt"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -20,17 +20,17 @@ func NewMsgAddSLAs(authority string, slas []PriceFeedSLA) MsgAddSLAs {
 	}
 }
 
-// GetSigners, get the addresses that must sign this message. In this case, the signer
+// GetSigners gets the addresses that must sign this message. In this case, the signer
 // must be the module authority.
-func (m MsgAddSLAs) GetSigners() []sdk.AccAddress {
+func (m *MsgAddSLAs) GetSigners() []sdk.AccAddress {
 	// convert from string to acc address
 	addr, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{addr}
 }
 
-// ValidateBasic determines whether or not the information in the message is formatted correctly, specifically
+// ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the authority is a valid acc-address, and that each SLA in the message is formatted correctly.
-func (m MsgAddSLAs) ValidateBasic() error {
+func (m *MsgAddSLAs) ValidateBasic() error {
 	// validate authority address
 	_, err := sdk.AccAddressFromBech32(m.Authority)
 	if err != nil {
@@ -62,17 +62,17 @@ func NewMsgRemoveSLAs(authority string, slaIDs []string) MsgRemoveSLAs {
 	}
 }
 
-// GetSigners, get the addresses that must sign this message. In this case, the signer
+// GetSigners gets the addresses that must sign this message. In this case, the signer
 // must be the module authority.
-func (m MsgRemoveSLAs) GetSigners() []sdk.AccAddress {
+func (m *MsgRemoveSLAs) GetSigners() []sdk.AccAddress {
 	// convert from string to acc address
 	addr, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{addr}
 }
 
-// ValidateBasic determines whether or not the information in the message is formatted correctly, specifically
+// ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the authority is a valid acc-address, and that each SLA ID in the message is not empty.
-func (m MsgRemoveSLAs) ValidateBasic() error {
+func (m *MsgRemoveSLAs) ValidateBasic() error {
 	// validate authority address
 	_, err := sdk.AccAddressFromBech32(m.Authority)
 	if err != nil {
@@ -104,16 +104,16 @@ func NewMsgParams(authority string, params Params) MsgParams {
 	}
 }
 
-// GetSigners, get the addresses that must sign this message. In this case, the signer
+// GetSigners gets the addresses that must sign this message. In this case, the signer
 // must be the module authority.
-func (m MsgParams) GetSigners() []sdk.AccAddress {
+func (m *MsgParams) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Authority)
 	return []sdk.AccAddress{addr}
 }
 
-// ValidateBasic determines whether or not the information in the message is formatted correctly, specifically
+// ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the authority is a valid acc-address.
-func (m MsgParams) ValidateBasic() error {
+func (m *MsgParams) ValidateBasic() error {
 	// validate authority address
 	_, err := sdk.AccAddressFromBech32(m.Authority)
 	if err != nil {

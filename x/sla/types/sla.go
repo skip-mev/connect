@@ -1,7 +1,7 @@
 package types
 
 import (
-	fmt "fmt"
+	"fmt"
 
 	"cosmossdk.io/math"
 )
@@ -26,7 +26,7 @@ func NewPriceFeedSLA(
 }
 
 // Qualifies determines whether the inputted price feed qualifies for
-// the an SLA check. An price feed qualifies to be checked if the following
+// an SLA check. A price feed qualifies to be checked if the following
 // conditions are met:
 //  1. Price feed has the same ID / time window as the SLA.
 //  2. The price feed has met the threshold for minimum block updates within
@@ -54,7 +54,7 @@ func (sla *PriceFeedSLA) Qualifies(priceFeed PriceFeed) (bool, error) {
 	return true, nil
 }
 
-// GetUptimeFromSLA returns the uptime for the given SLA. The calculation for uptime is
+// GetUptimeFromPriceFeed returns the uptime for the given SLA. The calculation for uptime is
 // down below:
 //
 //	uptime = (number of price updates / number of blocks voted on)
@@ -86,7 +86,7 @@ func (sla *PriceFeedSLA) GetUptimeFromPriceFeed(priceFeed PriceFeed) (math.Legac
 
 // ValidateBasic performs basic validation of the PriceFeedSLA returning an
 // error for any failed validation criteria.
-func (sla PriceFeedSLA) ValidateBasic() error {
+func (sla *PriceFeedSLA) ValidateBasic() error {
 	if len(sla.ID) == 0 {
 		return fmt.Errorf("sla id cannot be empty")
 	}
