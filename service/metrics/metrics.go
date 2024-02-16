@@ -194,7 +194,7 @@ func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker oracl
 // returned is safe to be used in the client, and in the Oracle used by the PreBlocker.
 // If the metrics are not enabled, a nop implementation is returned.
 func NewMetricsFromConfig(cfg config.AppConfig, chainID string) (Metrics, error) {
-	if !cfg.Enabled {
+	if !cfg.MetricsEnabled {
 		return NewNopMetrics(), nil
 	}
 

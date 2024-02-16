@@ -12,7 +12,7 @@ import (
 //go:generate mockery --name SlashingKeeper --filename mock_slashing_keeper.go
 type SlashingKeeper interface {
 	// Slash attempts to slash a validator. The slash is delegated to the staking
-	// module to make the necessary validator changes. It specifies no intraction reason.
+	// module to make the necessary validator changes. It specifies no interaction reason.
 	Slash(
 		ctx context.Context,
 		consAddr sdk.ConsAddress,
