@@ -3,14 +3,12 @@ package coingecko
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -87,7 +85,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response.
 	var result CoinGeckoResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
+		return types.NewPriceResponseWithErr(tickers, err)
 	}
 
 	var (
@@ -110,7 +108,7 @@ func (h *APIHandler) ParseResponse(
 
 			// Resolve the price.
 			price := math.Float64ToBigInt(price, market.Ticker.Decimals)
-			resolved[market.Ticker] = providertypes.NewResult(price, time.Now())
+			resolved[market.Ticker] = types.NewPriceResult(price, time.Now())
 		}
 	}
 
@@ -122,5 +120,5 @@ func (h *APIHandler) ParseResponse(
 		}
 	}
 
-	return providertypes.NewGetResponse(resolved, unresolved)
+	return types.NewPriceResponse(resolved, unresolved)
 }

@@ -13,7 +13,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -120,7 +119,7 @@ func TestParseResponse(t *testing.T) {
 }
 	`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					constants.BITCOIN_USD: {
 						Value: big.NewInt(102025000000),
@@ -143,7 +142,7 @@ func TestParseResponse(t *testing.T) {
 }
 	`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
@@ -161,7 +160,7 @@ func TestParseResponse(t *testing.T) {
 shout out my label thats me
 	`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					btcmog: fmt.Errorf("json error"),
@@ -182,7 +181,7 @@ shout out my label thats me
 }
 	`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("invalid syntax"),
@@ -207,7 +206,7 @@ shout out my label thats me
 }
 	`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					constants.BITCOIN_USD: {
 						Value: big.NewInt(102025000000),
@@ -235,7 +234,7 @@ shout out my label thats me
 }
 	`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					constants.ETHEREUM_USD: {
 						Value: big.NewInt(102025000000),

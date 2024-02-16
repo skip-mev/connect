@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -70,11 +69,11 @@ func (s *MockAPIHandler) ParseResponse(
 
 	for _, ticker := range tickers {
 		if price, ok := s.exchangeRates[ticker]; ok {
-			resolved[ticker] = providertypes.NewResult[*big.Int](price, time.Now())
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
 		} else {
 			unresolved[ticker] = fmt.Errorf("failed to resolve ticker %s", ticker)
 		}
 	}
 
-	return providertypes.NewGetResponse(resolved, unresolved)
+	return types.NewPriceResponse(resolved, unresolved)
 }

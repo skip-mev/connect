@@ -2,7 +2,6 @@ package binance
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 	"strings"
 	"time"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -94,7 +92,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
+		return types.NewPriceResponseWithErr(tickers, err)
 	}
 
 	var (
@@ -116,7 +114,7 @@ func (h *APIHandler) ParseResponse(
 			continue
 		}
 
-		resolved[market.Ticker] = providertypes.NewResult(price, time.Now())
+		resolved[market.Ticker] = types.NewPriceResult(price, time.Now())
 	}
 
 	// Add currency pairs that received no response to the unresolved map.
@@ -129,5 +127,5 @@ func (h *APIHandler) ParseResponse(
 		}
 	}
 
-	return providertypes.NewGetResponse(resolved, unresolved)
+	return types.NewPriceResponse(resolved, unresolved)
 }

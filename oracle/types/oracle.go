@@ -37,3 +37,14 @@ type (
 	// BTC/USD, ETH/USD, etc. to their respective prices.
 	TickerPrices = map[mmtypes.Ticker]*big.Int
 )
+
+var (
+	// NewPriceResult is a function alias for the new price result.
+	NewPriceResult = providertypes.NewResult[*big.Int]
+
+	// NewPricesResponse is a function alias for the new price response.
+	NewPriceResponse = providertypes.NewGetResponse[mmtypes.Ticker, *big.Int]
+
+	// NewPriceResponseWithErr is a function alias for the new price response with errors.
+	NewPriceResponseWithErr = providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int]
+)

@@ -3,14 +3,12 @@ package coinbase
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -86,37 +84,31 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) types.PriceResponse {
 	if len(tickers) != 1 {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
-			tickers,
-			fmt.Errorf("expected 1 ticker, got %d", len(tickers)),
-		)
+		return types.NewPriceResponseWithErr(tickers, fmt.Errorf("expected 1 ticker, got %d", len(tickers)))
 	}
 
 	// Check if this ticker is supported by the Coinbase market config.
 	ticker := tickers[0]
 	_, ok := h.market.TickerConfigs[ticker.String()]
 	if !ok {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
-			tickers,
-			fmt.Errorf("unknown ticker %s", ticker.String()),
-		)
+		return types.NewPriceResponseWithErr(tickers, fmt.Errorf("unknown ticker %s", ticker.String()))
 	}
 
 	// Parse the response into a CoinBaseResponse.
 	var result CoinBaseResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
+		return types.NewPriceResponseWithErr(tickers, err)
 	}
 
 	// Convert the float64 price into a big.Int.
 	price, err := math.Float64StringToBigInt(result.Data.Amount, ticker.Decimals)
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](tickers, err)
+		return types.NewPriceResponseWithErr(tickers, err)
 	}
 
-	return providertypes.NewGetResponse(
+	return types.NewPriceResponse(
 		types.ResolvedPrices{
-			ticker: providertypes.NewResult[*big.Int](price, time.Now()),
+			ticker: types.NewPriceResult(price, time.Now()),
 		},
 		nil,
 	)

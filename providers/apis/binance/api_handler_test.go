@@ -13,7 +13,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -132,7 +131,7 @@ func TestParseResponse(t *testing.T) {
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"}]`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					constants.BITCOIN_USDT: {
 						Value: big.NewInt(4670703000000),
@@ -150,7 +149,7 @@ func TestParseResponse(t *testing.T) {
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"ETHUSDT","price":"297.50000000"}]`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					constants.BITCOIN_USDT: {
 						Value: big.NewInt(4670703000000),
@@ -170,7 +169,7 @@ func TestParseResponse(t *testing.T) {
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"MOGUSDT","price":"46707.03000000"}]`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					mogusd: fmt.Errorf("no response"),
@@ -185,7 +184,7 @@ func TestParseResponse(t *testing.T) {
 			response: testutils.CreateResponseFromJSON(
 				`shout out my label thats me`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USDT: fmt.Errorf("no response"),
@@ -200,7 +199,7 @@ func TestParseResponse(t *testing.T) {
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"$46707.03000000"}]`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USDT: fmt.Errorf("invalid syntax"),
@@ -216,7 +215,7 @@ func TestParseResponse(t *testing.T) {
 			response: testutils.CreateResponseFromJSON(
 				`[]`,
 			),
-			expected: providertypes.NewGetResponse(
+			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USDT:  fmt.Errorf("no response"),
