@@ -1,14 +1,10 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ types.MarketMapHooks = Hooks{}
-
-// Hooks gets the hooks for x/marketmap keeper {
+// Hooks gets the hooks for x/marketmap keeper.
 func (k *Keeper) Hooks() types.MarketMapHooks {
 	if k.hooks == nil {
 		// return a no-op implementation if no hooks are set
@@ -26,17 +22,4 @@ func (k *Keeper) SetHooks(mmh types.MarketMapHooks) {
 	}
 
 	k.hooks = mmh
-}
-
-// Hooks wrapper struct for x/marketmap keeper
-type Hooks struct {
-	k *Keeper
-}
-
-func (h Hooks) AfterMarketCreated(_ sdk.Context) error {
-	return nil
-}
-
-func (h Hooks) AfterMarketUpdated(_ sdk.Context) error {
-	return nil
 }
