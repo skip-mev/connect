@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/types/factory"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -20,6 +21,16 @@ type (
 	// is responsible for parsing http responses and returning the resolved
 	// and unresolved prices.
 	PriceAPIDataHandler = apihandlers.APIDataHandler[mmtypes.Ticker, *big.Int]
+
+	// PriceAPIQueryHandler is a type alias for the price API query handler. This
+	// is responsible for building the API query for the price provider and
+	// returning the resolved and unresolved prices.
+	PriceAPIQueryHandler = apihandlers.APIQueryHandler[mmtypes.Ticker, *big.Int]
+
+	// PriceWebSocketDataHandler is a type alias for the price web socket data handler.
+	// This is responsible for parsing web socket messages and returning the resolved
+	// and unresolved prices.
+	PriceWebSocketDataHandler = wshandlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int]
 
 	// PriceResponse is a type alias for the price response. A price response is
 	// composed of a map of resolved prices and a map of unresolved prices. Resolved

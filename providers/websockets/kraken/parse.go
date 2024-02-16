@@ -3,15 +3,13 @@ package kraken
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"time"
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 // parseBaseMessage will parse message responses from the Kraken websocket API that are
@@ -24,7 +22,7 @@ import (
 //  3. Subscription status response messages. This is used to check if the subscription request
 //     was successful. If the subscription request was not successful, the handler will attempt
 //     to resubscribe to the market.
-func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) parseBaseMessage(message []byte, event Event) ([]handlers.WebsocketEncodedMessage, error) {
 	switch event {
 	case SystemStatusEvent:
 		h.logger.Debug("received system status response message")
@@ -70,7 +68,6 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 			return nil, fmt.Errorf("unknown subscription status %s", status)
 		}
 	default:
-		h.logger.Debug("received unknown event", zap.String("event", string(event)))
 		return nil, fmt.Errorf("received unknown event %s", event)
 	}
 }
@@ -79,44 +76,75 @@ func (h *WebSocketDataHandler) parseBaseMessage(message []byte, event Event) ([]
 // related to price updates. The response message is expected to be in the format of a JSON
 // array that contains an update for a single ticker. The response message format can be found
 // in messages.go.
-func (h *WebSocketDataHandler) parseTickerMessage(
+func (h *WebSocketHandler) parseTickerMessage(
 	resp TickerResponseMessage,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], error) {
+) (types.PriceResponse, error) {
 	var (
-		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[slinkytypes.CurrencyPair]error)
+		resolved   = make(types.ResolvedPrices)
+		unResolved = make(types.UnResolvedPrices)
 	)
 
 	// We will only parse messages from the ticker channel.
 	if ch := Channel(resp.ChannelName); ch != TickerChannel {
-		h.logger.Debug("received price update for unknown channel", zap.String("channel", string(ch)))
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("invalid channel %s", ch)
 	}
 
-	// Get the currency pair from the instrument.
-	h.logger.Debug("received price update", zap.String("instrument", resp.Pair))
-	market, ok := h.cfg.Market.TickerToMarketConfigs[resp.Pair]
+	// Get the ticker from the instrument.
+	inverted := h.market.Invert()
+	market, ok := inverted[resp.Pair]
 	if !ok {
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
-			fmt.Errorf("no currency pair found for instrument %s", resp.Pair)
+		return types.NewPriceResponse(resolved, unResolved),
+			fmt.Errorf("no ticker found for instrument %s", resp.Pair)
 	}
 
 	// Ensure that the length of the price update is valid.
 	if len(resp.TickerData.VolumeWeightedAveragePrice) != ExpectedVolumeWeightedAveragePriceLength {
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("invalid price update length %d", len(resp.TickerData.VolumeWeightedAveragePrice))
 	}
 
 	// Parse the price update.
-	cp := market.CurrencyPair
 	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
-	price, err := math.Float64StringToBigInt(priceStr, cp.Decimals())
+	price, err := math.Float64StringToBigInt(priceStr, market.Ticker.Decimals)
 	if err != nil {
-		unResolved[cp] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), unResolved[cp]
+		unResolved[market.Ticker] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+		return types.NewPriceResponse(resolved, unResolved), unResolved[market.Ticker]
 	}
 
-	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	return types.NewPriceResponse(resolved, unResolved), nil
+}
+
+// DecodeTickerResponseMessage decodes a ticker response message.
+func DecodeTickerResponseMessage(message []byte) (TickerResponseMessage, error) {
+	var rawResponse []json.RawMessage
+	if err := json.Unmarshal(message, &rawResponse); err != nil {
+		return TickerResponseMessage{}, err
+	}
+
+	if len(rawResponse) != ExpectedTickerResponseMessageLength {
+		return TickerResponseMessage{}, fmt.Errorf(
+			"invalid ticker response message; expected length %d, got %d", ExpectedTickerResponseMessageLength, len(rawResponse),
+		)
+	}
+
+	var response TickerResponseMessage
+	if err := json.Unmarshal(rawResponse[ChannelIDIndex], &response.ChannelID); err != nil {
+		return TickerResponseMessage{}, err
+	}
+
+	if err := json.Unmarshal(rawResponse[TickerDataIndex], &response.TickerData); err != nil {
+		return TickerResponseMessage{}, err
+	}
+
+	if err := json.Unmarshal(rawResponse[ChannelNameIndex], &response.ChannelName); err != nil {
+		return TickerResponseMessage{}, err
+	}
+
+	if err := json.Unmarshal(rawResponse[PairIndex], &response.Pair); err != nil {
+		return TickerResponseMessage{}, err
+	}
+
+	return response, nil
 }

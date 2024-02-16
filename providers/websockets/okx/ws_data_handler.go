@@ -3,48 +3,58 @@ package okx
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
-// WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to
+// WebSocketHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the OKX websocket API.
-type WebsocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the OKX websocket API.
-	cfg config.ProviderConfig
+	// market is the config for the OKX API.
+	market mmtypes.MarketConfig
+	// ws is the config for the OKX websocket.
+	ws config.WebSocketConfig
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for OKX
-// from a given provider configuration.
+// NewWebSocketDataHandler returns a new OKX PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	marketCfg mmtypes.MarketConfig,
+	wsCfg config.WebSocketConfig,
+) (types.PriceWebSocketDataHandler, error) {
+	if err := marketCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if marketCfg.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if wsCfg.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
 	}
 
-	return &WebsocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+	if !wsCfg.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+	}
+
+	if err := wsCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
+	}
+
+	return &WebSocketHandler{
+		logger: logger,
+		market: marketCfg,
+		ws:     wsCfg,
 	}, nil
 }
 
@@ -60,18 +70,17 @@ func NewWebSocketDataHandler(
 // iff no data is received within a 30-second interval or if all subscriptions
 // fail. In the case where no data is received within a 30-second interval, the OKX
 // will be restarted after the configured restart interval.
-func (h *WebsocketDataHandler) HandleMessage(
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp        providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp        types.PriceResponse
 		baseMessage BaseMessage
 	)
 
 	// Attempt to unmarshal the message into a base message. This is used to determine the type
 	// of message that was received.
 	if err := json.Unmarshal(message, &baseMessage); err != nil {
-		h.logger.Debug("unable to unmarshal message into base message", zap.Error(err))
 		return resp, nil, err
 	}
 
@@ -82,13 +91,11 @@ func (h *WebsocketDataHandler) HandleMessage(
 
 		var subscribeMessage SubscribeResponseMessage
 		if err := json.Unmarshal(message, &subscribeMessage); err != nil {
-			h.logger.Error("failed to unmarshal subscribe response message", zap.Error(err))
 			return resp, nil, fmt.Errorf("failed to unmarshal subscribe response message: %w", err)
 		}
 
 		updateMessage, err := h.parseSubscribeResponseMessage(subscribeMessage)
 		if err != nil {
-			h.logger.Error("failed to parse subscribe response message", zap.Error(err))
 			return resp, nil, fmt.Errorf("failed to parse subscribe response message: %w", err)
 		}
 
@@ -98,19 +105,16 @@ func (h *WebsocketDataHandler) HandleMessage(
 
 		var tickerMessage IndexTickersResponseMessage
 		if err := json.Unmarshal(message, &tickerMessage); err != nil {
-			h.logger.Error("failed to unmarshal ticker response message", zap.Error(err))
 			return resp, nil, fmt.Errorf("failed to unmarshal ticker response message: %w", err)
 		}
 
 		resp, err := h.parseTickerResponseMessage(tickerMessage)
 		if err != nil {
-			h.logger.Error("failed to parse ticker response message", zap.Error(err))
 			return resp, nil, fmt.Errorf("failed to parse ticker response message: %w", err)
 		}
 
 		return resp, nil, nil
 	default:
-		h.logger.Debug("received unknown message", zap.String("message", string(message)))
 		return resp, nil, fmt.Errorf("unknown message type %s", baseMessage.Event)
 	}
 }
@@ -118,29 +122,26 @@ func (h *WebsocketDataHandler) HandleMessage(
 // CreateMessages is used to create an initial subscription message to send to the data provider.
 // Only the currency pairs that are specified in the config are subscribed to. The only channel
 // that is subscribed to is the index tickers channel - which supports spot markets.
-func (h *WebsocketDataHandler) CreateMessages(
-	cps []slinkytypes.CurrencyPair,
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]SubscriptionTopic, 0)
-
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker.String()]
 		if !ok {
-			h.logger.Debug("instrument ID not found for currency pair", zap.String("currency_pair", cp.String()))
-			continue
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
 		instruments = append(instruments, SubscriptionTopic{
 			Channel:      string(IndexTickersChannel),
-			InstrumentID: market.Ticker,
+			InstrumentID: market.OffChainTicker,
 		})
 	}
 
-	h.logger.Debug("subscribing to instruments", zap.Any("instruments", instruments))
 	return NewSubscribeToTickersRequestMessage(instruments)
 }
 
 // HeartBeatMessages is not used for okx.
-func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return nil, nil
 }

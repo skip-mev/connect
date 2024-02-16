@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apimocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
 	"github.com/skip-mev/slinky/providers/base/testutils"
@@ -18,28 +17,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 )
 
-var (
-	providerCfg = config.ProviderConfig{
-		Name:      kucoin.Name,
-		API:       kucoin.DefaultAPIConfig,
-		WebSocket: kucoin.DefaultWebSocketConfig,
-		Market: config.MarketConfig{
-			Name: kucoin.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
-					Ticker:       "BTC-USDT",
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-				"ETHEREUM/USD": {
-					Ticker:       "ETH-USDT",
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-				},
-			},
-		},
-	}
-
-	postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)
-)
+var postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)
 
 func TestPreDialHook(t *testing.T) {
 	testCases := []struct {
@@ -182,10 +160,10 @@ func TestPreDialHook(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			connHandler, err := wshandlers.NewWebSocketHandlerImpl(providerCfg.WebSocket)
+			connHandler, err := wshandlers.NewWebSocketHandlerImpl(kucoin.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
-			hook := kucoin.PreDialHook(providerCfg.API, tc.requestHandler())
+			hook := kucoin.PreDialHook(kucoin.DefaultAPIConfig, tc.requestHandler())
 			err = hook(connHandler)
 			if tc.expectErr {
 				require.Error(t, err)

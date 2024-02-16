@@ -3,48 +3,58 @@ package gate
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebsocketDataHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
-// WebsocketDataHandler implements the WebSocketDataHandler interface. This is used to
+// WebSocketHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the Gate.io websocket API.
-type WebsocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Gate.io websocket API.
-	cfg config.ProviderConfig
+	// market is the config for the Gate.io API.
+	market mmtypes.MarketConfig
+	// ws is the config for the Gate.io websocket.
+	ws config.WebSocketConfig
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Gate.io
-// from a given provider configuration.
+// NewWebSocketDataHandler returns a new Gate.io PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	marketCfg mmtypes.MarketConfig,
+	wsCfg config.WebSocketConfig,
+) (types.PriceWebSocketDataHandler, error) {
+	if err := marketCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if marketCfg.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if wsCfg.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
 	}
 
-	return &WebsocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+	if !wsCfg.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+	}
+
+	if err := wsCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
+	}
+
+	return &WebSocketHandler{
+		logger: logger,
+		market: marketCfg,
+		ws:     wsCfg,
 	}, nil
 }
 
@@ -55,11 +65,11 @@ func NewWebSocketDataHandler(
 //     the subscription was successful.
 //  2. Ticker stream message. This is sent when a ticker update is received from the
 //     Gate.io websocket API.
-func (h *WebsocketDataHandler) HandleMessage(
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp         providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp         types.PriceResponse
 		baseMessage  BaseMessage
 		subResponse  SubscribeResponse
 		tickerStream TickerStream
@@ -68,14 +78,12 @@ func (h *WebsocketDataHandler) HandleMessage(
 	// Attempt to unmarshal the message into a base message. This is used to determine the type
 	// of message that was received.
 	if err := json.Unmarshal(message, &baseMessage); err != nil {
-		h.logger.Debug("unable to unmarshal message into base message", zap.Error(err))
 		return resp, nil, err
 	}
 
 	switch Event(baseMessage.Event) {
 	case EventSubscribe:
 		if err := json.Unmarshal(message, &subResponse); err != nil {
-			h.logger.Debug("unable to unmarshal message into subscribe response", zap.Error(err))
 			return resp, nil, err
 		}
 
@@ -85,7 +93,6 @@ func (h *WebsocketDataHandler) HandleMessage(
 
 	case EventUpdate:
 		if err := json.Unmarshal(message, &tickerStream); err != nil {
-			h.logger.Debug("unable to unmarshal message into ticker stream", zap.Error(err))
 			return resp, nil, err
 		}
 
@@ -94,34 +101,31 @@ func (h *WebsocketDataHandler) HandleMessage(
 		return resp, nil, err
 
 	default:
-		h.logger.Debug("received unknown message", zap.String("message", string(message)))
 		return resp, nil, fmt.Errorf("unknown message type %s", baseMessage.Event)
 	}
 }
 
 // CreateMessages is used to create an initial subscription message to send to the data provider.
-// Only the currency pairs that are specified in the config are subscribed to. The only channel
-// that is subscribed to is the tickers channel - which supports spot markets.
-func (h *WebsocketDataHandler) CreateMessages(
-	cps []slinkytypes.CurrencyPair,
+// Only the tickers that are specified in the config are subscribed to. The only channel that is
+// subscribed to is the tickers channel - which supports spot markets.
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	symbols := make([]string, 0)
+	instruments := make([]string, 0)
 
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker.String()]
 		if !ok {
-			h.logger.Debug("market not found for currency pair", zap.String("currency_pair", cp.String()))
-			return nil, fmt.Errorf("market not found for currency pair: %s", cp.String())
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
-		symbols = append(symbols, market.Ticker)
+		instruments = append(instruments, market.OffChainTicker)
 	}
 
-	h.logger.Debug("subscribing", zap.Any("symbols", symbols))
-	return NewSubscribeRequest(symbols)
+	return NewSubscribeRequest(instruments)
 }
 
 // HeartBeatMessages is not used for Gate.io.
-func (h *WebsocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return nil, nil
 }

@@ -3,51 +3,61 @@ package coinbase
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
-// WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
+// WebSocketHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the Coinbase websocket API.
-type WebSocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Coinbase websocket API.
-	cfg config.ProviderConfig
-
+	// market is the config for the Coinbase API.
+	market mmtypes.MarketConfig
+	// ws is the config for the Coinbase websocket.
+	ws config.WebSocketConfig
 	// Sequence is the current sequence number for the Coinbase websocket API per currency pair.
-	sequence map[slinkytypes.CurrencyPair]int64
+	sequence map[mmtypes.Ticker]int64
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Coinbase.
+// NewWebSocketDataHandler returns a new Coinbase PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	marketCfg mmtypes.MarketConfig,
+	wsCfg config.WebSocketConfig,
+) (types.PriceWebSocketDataHandler, error) {
+	if err := marketCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if marketCfg.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if wsCfg.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
 	}
 
-	return &WebSocketDataHandler{
-		cfg:      cfg,
-		logger:   logger.With(zap.String("web_socket_data_handler", Name)),
-		sequence: make(map[slinkytypes.CurrencyPair]int64),
+	if !wsCfg.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+	}
+
+	if err := wsCfg.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
+	}
+
+	return &WebSocketHandler{
+		logger:   logger,
+		market:   marketCfg,
+		ws:       wsCfg,
+		sequence: make(map[mmtypes.Ticker]int64),
 	}, nil
 }
 
@@ -59,12 +69,12 @@ func NewWebSocketDataHandler(
 //  1. SubscriptionsMessage: This is sent by the Coinbase websocket API after a subscribe message
 //     is sent. This message contains the list of channels that were successfully subscribed to.
 //  2. TickerMessage: This is sent by the Coinbase websocket API when a match happens. This message
-//     contains the price of the currency pair.
-func (h *WebSocketDataHandler) HandleMessage(
+//     contains the price of the ticker.
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp types.PriceResponse
 		msg  BaseMessage
 	)
 
@@ -100,33 +110,31 @@ func (h *WebSocketDataHandler) HandleMessage(
 		resp, err := h.parseTickerResponseMessage(tickerMessage)
 		return resp, nil, err
 	default:
-		h.logger.Debug("received unknown message type", zap.String("type", msg.Type))
 		return resp, nil, fmt.Errorf("invalid message type %s", msg.Type)
 	}
 }
 
 // CreateMessages is used to create a message to send to the data provider. This is used to
-// subscribe to the given currency pairs. This is called when the connection to the data
-// provider is first established.
-func (h *WebSocketDataHandler) CreateMessages(
-	cps []slinkytypes.CurrencyPair,
+// subscribe to the given tickers. This is called when the connection to the data provider is
+// first established.
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker.String()]
 		if !ok {
-			h.logger.Debug("currency pair not found in market configs", zap.String("currency_pair", cp.String()))
-			continue
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
-		instruments = append(instruments, market.Ticker)
+		instruments = append(instruments, market.OffChainTicker)
 	}
 
 	return NewSubscribeRequestMessage(instruments)
 }
 
 // HeartBeatMessages is not used for Coinbase.
-func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return nil, nil
 }

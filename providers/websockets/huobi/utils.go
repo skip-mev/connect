@@ -2,7 +2,8 @@ package huobi
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -39,52 +40,52 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
-	DefaultMarketConfig = config.MarketConfig{
+	DefaultMarketConfig = mmtypes.MarketConfig{
 		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
+		TickerConfigs: map[string]mmtypes.TickerConfig{
 			"ATOM/USDT": {
-				Ticker:       "atomusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
+				Ticker:         constants.ATOM_USDT,
+				OffChainTicker: "atomusdt",
 			},
 			"AVAX/USDT": {
-				Ticker:       "avaxusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
+				Ticker:         constants.AVAX_USDT,
+				OffChainTicker: "avaxusdt",
 			},
 			"BITCOIN/USDC": {
-				Ticker:       "btcusdc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
+				Ticker:         constants.BITCOIN_USDC,
+				OffChainTicker: "btcusdc",
 			},
 			"BITCOIN/USDT": {
-				Ticker:       "btcusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+				Ticker:         constants.BITCOIN_USDT,
+				OffChainTicker: "btcusdt",
 			},
 			"CELESTIA/USDT": {
-				Ticker:       "tiausdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USDT"),
+				Ticker:         constants.CELESTIA_USDT,
+				OffChainTicker: "tiausdt",
 			},
 			"DYDX/USDT": {
-				Ticker:       "dydxusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USDT"),
+				Ticker:         constants.DYDX_USDT,
+				OffChainTicker: "dydxusdt",
 			},
 			"ETHEREUM/BITCOIN": {
-				Ticker:       "ethbtc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
+				Ticker:         constants.ETHEREUM_BITCOIN,
+				OffChainTicker: "ethbtc",
 			},
 			"ETHEREUM/USDC": {
-				Ticker:       "ethusdc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
+				Ticker:         constants.ETHEREUM_USDC,
+				OffChainTicker: "ethusdc",
 			},
 			"ETHEREUM/USDT": {
-				Ticker:       "ethusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+				Ticker:         constants.ETHEREUM_USDT,
+				OffChainTicker: "ethusdt",
 			},
 			"SOLANA/USDT": {
-				Ticker:       "solusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
+				Ticker:         constants.SOLANA_USDT,
+				OffChainTicker: "solusdt",
 			},
 			"USDC/USDT": {
-				Ticker:       "usdcusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
+				Ticker:         constants.USDC_USDT,
+				OffChainTicker: "usdcusdt",
 			},
 		},
 	}
