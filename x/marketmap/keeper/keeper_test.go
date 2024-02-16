@@ -36,7 +36,8 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.initKeeper()
-	s.keeper.SetParams(s.ctx, types.DefaultParams())
+	params := types.NewParams(types.DefaultMarketAuthority, 10)
+	s.Require().NoError(s.keeper.SetParams(s.ctx, params))
 }
 
 func TestKeeperTestSuite(t *testing.T) {

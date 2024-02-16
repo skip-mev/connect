@@ -156,6 +156,19 @@ func (s *KeeperTestSuite) TestParams() {
 		s.Require().Nil(resp)
 	})
 
+	s.Run("unable to process for version lower than current versions", func() {
+		msg := &types.MsgParams{
+			Authority: s.authority.String(),
+			Params: types.NewParams(
+				types.DefaultMarketAuthority,
+				0,
+			),
+		}
+		resp, err := msgServer.Params(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
 	s.Run("accepts a req with no params", func() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
@@ -165,7 +178,7 @@ func (s *KeeperTestSuite) TestParams() {
 		s.Require().NotNil(resp)
 	})
 
-	s.Run("accepts a req with params", func() {
+	s.Run("accepts a req with default params", func() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
 			Params:    types.DefaultParams(),

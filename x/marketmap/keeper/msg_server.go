@@ -39,39 +39,7 @@ func (ms msgServer) CreateMarket(goCtx context.Context, msg *types.MsgCreateMark
 		return nil, fmt.Errorf("request signer %s does not match module market authority %s", msg.Signer, params.MarketAuthority)
 	}
 
-	// check if market already exists
-	aggCfgs, err := ms.k.GetAllAggregationConfigs(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get aggregation configs")
-	}
-
-	for _, cfg := range aggCfgs {
-		if msg.Ticker.CurrencyPair == cfg.Ticker.CurrencyPair {
-			return nil, fmt.Errorf("ticker %s already exists in marketmap", msg.Ticker.CurrencyPair.String())
-		}
-	}
-
-	marketConfigs, err := ms.k.GetAllMarketConfigs(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get market configs")
-	}
-
-	// set market
-	for providerName, offChainTicker := range msg.ProvidersToOffChainTickers {
-		marketConfig, found := marketConfigs[providerName]
-		if !found {
-			// if not found, add new provider
-			marketConfig = types.MarketConfig{
-				Name: providerName,
-			}
-		}
-
-		marketConfig.TickerConfigs[msg.Ticker.CurrencyPair.String()] = types.TickerConfig{
-			Ticker:         msg.Ticker,
-			OffChainTicker: offChainTicker,
-		}
-
-	}
+	// TODO finalize once market map schema is finalized
 
 	return &types.MsgCreateMarketResponse{}, nil
 }
