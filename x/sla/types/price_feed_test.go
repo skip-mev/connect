@@ -12,7 +12,7 @@ import (
 
 var (
 	val = sdk.ConsAddress("validator1")
-	cp  = oracletypes.NewCurrencyPair("BTC", "ETH")
+	cp  = slinkytypes.NewCurrencyPair("BTC", "ETH")
 	id  = "testID"
 )
 
