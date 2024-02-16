@@ -132,7 +132,7 @@ func (k *Keeper) GetParams(ctx sdk.Context) (slatypes.Params, error) {
 
 // SetCurrencyPairs sets the x/sla module's currency pairs. Note, this function
 // is primarily used to remove stale price feeds.
-func (k *Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes.CurrencyPair]struct{}) error {
+func (k *Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[slinkytypes.CurrencyPair]struct{}) error {
 	// Remove all currency pairs that are currently in the x/sla module's state.
 	if err := k.currencyPairs.Clear(ctx, nil); err != nil {
 		return err
@@ -148,7 +148,7 @@ func (k *Keeper) SetCurrencyPairs(ctx sdk.Context, currencyPairs map[oracletypes
 }
 
 // GetCurrencyPairs returns the x/sla module's currency pairs.
-func (k *Keeper) GetCurrencyPairs(ctx sdk.Context) (map[oracletypes.CurrencyPair]struct{}, error) {
+func (k *Keeper) GetCurrencyPairs(ctx sdk.Context) (map[slinkytypes.CurrencyPair]struct{}, error) {
 	iterator, err := k.currencyPairs.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
