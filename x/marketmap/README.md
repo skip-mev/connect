@@ -10,8 +10,8 @@
         * [Version](#version)
 * [Events](#events)
 * [Hooks](#hooks)
-  * [AfterMarketCreated](#aftermarketcreated)
-  * [AfterMarketUpdated](#aftermarketupdated)
+    * [AfterMarketCreated](#aftermarketcreated)
+    * [AfterMarketUpdated](#aftermarketupdated)
 * [Client](#client)
     * [CLI](#cli)
     * [gRPC](#grpc)
@@ -67,7 +67,7 @@ The following hooks can be registered:
 ### AfterMarketCreated
 
 - `AfterMarketCreated(ctx sdk.Context, TODO) error`
-  - Called after a new market is created in `CreateMarket` message server.
+    - Called after a new market is created in `CreateMarket` message server.
 
 ### AfterMarketUpdated
 
