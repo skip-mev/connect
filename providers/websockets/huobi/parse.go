@@ -7,6 +7,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	"go.uber.org/zap"
 )
 
 // parseSubscriptionResponse attempts to parse a subscription message. It returns an error if the message
@@ -21,6 +22,7 @@ func (h *WebSocketHandler) parseSubscriptionResponse(resp SubscriptionResponse) 
 		return nil, fmt.Errorf("invalid ticker returned")
 	}
 
+	h.logger.Debug("successfully subscribed", zap.String("ticker", resp.Subbed))
 	return nil, nil
 }
 

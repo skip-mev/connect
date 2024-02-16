@@ -114,7 +114,6 @@ func (h *WebSocketHandler) HandleMessage(
 		resp, err := h.parseTickerMessage(tickerMsg)
 		return resp, nil, err
 	default:
-		h.logger.Debug("received unknown event", zap.String("event", string(event)))
 		return resp, nil, fmt.Errorf("unknown event type %s", event)
 	}
 }

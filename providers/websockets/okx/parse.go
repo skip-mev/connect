@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -72,7 +71,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 ) (types.PriceResponse, error) {
 	var (
 		resolved   = make(types.ResolvedPrices)
-		unresolved = make(map[mmtypes.Ticker]error)
+		unresolved = make(types.UnResolvedPrices)
 	)
 
 	// The channel must be the index tickers channel.

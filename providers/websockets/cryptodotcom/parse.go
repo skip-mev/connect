@@ -2,14 +2,12 @@ package cryptodotcom
 
 import (
 	"fmt"
-	"math/big"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 // parseInstrumentMessage is used to parse an instrument message received from the Crypto.com
@@ -44,7 +42,7 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, market.Ticker.Decimals); err != nil {
 			unresolved[market.Ticker] = fmt.Errorf("failed to parse price %s: %w", instrument.LatestTradePrice, err)
 		} else {
-			resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
+			resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
 		}
 
 	}

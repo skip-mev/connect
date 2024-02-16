@@ -2,13 +2,11 @@ package gate
 
 import (
 	"fmt"
-	"math/big"
 	"time"
 
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // parseSubscribeResponse attempts to parse a SubscribeResponse to see if it was successful.
@@ -30,15 +28,15 @@ func (h *WebSocketHandler) parseSubscribeResponse(
 // ticker update.
 func (h *WebSocketHandler) parseTickerStream(
 	stream TickerStream,
-) (providertypes.GetResponse[mmtypes.Ticker, *big.Int], error) {
+) (types.PriceResponse, error) {
 	var (
-		resolved   = make(map[mmtypes.Ticker]providertypes.Result[*big.Int])
-		unresolved = make(map[mmtypes.Ticker]error)
+		resolved   = make(types.ResolvedPrices)
+		unresolved = make(types.UnResolvedPrices)
 	)
 
 	// The channel must be the tickers channel.
 	if Channel(stream.Channel) != ChannelTickers {
-		return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved),
+		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("invalid channel %s", stream.Channel)
 	}
 
@@ -46,7 +44,7 @@ func (h *WebSocketHandler) parseTickerStream(
 	inverted := h.market.Invert()
 	market, ok := inverted[stream.Result.CurrencyPair]
 	if !ok {
-		return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved),
+		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("no currency pair found for symbol %s", stream.Result.CurrencyPair)
 	}
 
@@ -55,9 +53,9 @@ func (h *WebSocketHandler) parseTickerStream(
 	price, err := math.Float64StringToBigInt(priceStr, market.Ticker.Decimals)
 	if err != nil {
 		unresolved[market.Ticker] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		return providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, unresolved), unresolved[market.Ticker]
+		return types.NewPriceResponse(resolved, unresolved), unresolved[market.Ticker]
 	}
 
-	resolved[market.Ticker] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse(resolved, unresolved), nil
+	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	return types.NewPriceResponse(resolved, unresolved), nil
 }

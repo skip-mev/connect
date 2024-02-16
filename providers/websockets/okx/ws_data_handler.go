@@ -19,9 +19,9 @@ var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// market is the config for the MEXC API.
+	// market is the config for the OKX API.
 	market mmtypes.MarketConfig
-	// ws is the config for the MEXC websocket.
+	// ws is the config for the OKX websocket.
 	ws config.WebSocketConfig
 }
 

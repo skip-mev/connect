@@ -81,7 +81,7 @@ func TestHandlerMessage(t *testing.T) {
 						Value: big.NewInt(100000000),
 					},
 				},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -120,7 +120,7 @@ func TestHandlerMessage(t *testing.T) {
 						Value: big.NewInt(200000000),
 					},
 				},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -148,7 +148,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -172,7 +172,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -208,7 +208,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
@@ -245,7 +245,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
@@ -281,7 +281,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{},
-				map[mmtypes.Ticker]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,

@@ -103,7 +103,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: types.PriceResponse{
-				UnResolved: map[mmtypes.Ticker]error{
+				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("failed to convert price to big int"),
 				},
 			},
@@ -128,7 +128,7 @@ func TestHandleMessage(t *testing.T) {
 				return bz
 			},
 			resp: types.PriceResponse{
-				UnResolved: map[mmtypes.Ticker]error{
+				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USD: fmt.Errorf("received out of order ticker response message"),
 				},
 			},

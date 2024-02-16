@@ -23,9 +23,9 @@ var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// market is the config for the Gate.io API.
+	// market is the config for the Huobi API.
 	market mmtypes.MarketConfig
-	// ws is the config for the Gate.io websocket.
+	// ws is the config for the Huobi websocket.
 	ws config.WebSocketConfig
 }
 

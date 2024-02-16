@@ -49,7 +49,7 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProvider, error) {
-				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -77,7 +77,7 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProvider, error) {
-				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -93,7 +93,7 @@ func (s *OracleTestSuite) TestProviders() {
 					responses,
 				)
 
-				resolved2 := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+				resolved2 := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(200),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -122,7 +122,7 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProvider, error) {
-				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -150,7 +150,7 @@ func (s *OracleTestSuite) TestProviders() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProvider, error) {
-				resolved := map[mmtypes.Ticker]providertypes.Result[*big.Int]{
+				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: time.Date(1738, 1, 1, 0, 0, 0, 0, time.UTC),
