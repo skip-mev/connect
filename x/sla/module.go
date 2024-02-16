@@ -92,7 +92,7 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	}
 }
 
-// BeginBlock returns an beginblocker for the x/sla module.
+// BeginBlock returns a beginblocker for the x/sla module.
 func (am AppModule) BeginBlock(ctx sdk.Context) ([]cometabci.ValidatorUpdate, error) {
 	return am.k.BeginBlocker(ctx)
 }
