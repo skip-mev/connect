@@ -24,6 +24,10 @@ message Ticker {
   // the ticker valid.
   uint64 min_provider_count = 4;
 
+  // Paths is the list of convertable markets that will be used to convert the
+  // prices of a set of tickers to a common ticker.
+  repeated Path paths = 5 [ (gogoproto.nullable) = false ];
+
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
   string metadata_JSON = 15;
