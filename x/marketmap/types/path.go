@@ -3,6 +3,8 @@ package types
 import (
 	fmt "fmt"
 	"strings"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // NewPathsConfig returns a new PathsConfig instance. PathsConfig represents
@@ -10,7 +12,7 @@ import (
 // prices of a set of tickers to a common ticker.
 //
 // For example, if the oracle receives a price for BTC/USDT and USDT/USD, one
-// possible path to get the price of BTC/USD would would be BTC/USDT -> USDT/USD.
+// possible path to get the price of BTC/USD would be BTC/USDT -> USDT/USD.
 func NewPathsConfig(ticker Ticker, paths ...Path) (PathsConfig, error) {
 	c := PathsConfig{
 		Ticker: ticker,
@@ -60,12 +62,12 @@ func (c *PathsConfig) ValidateBasic() error {
 // are part of the PathsConfig. This is particularly useful for determining the
 // set of markets that are required for a given ticker as well as ensuring
 // that a given set of providers can provide the required markets.
-func (c *PathsConfig) UniqueTickers() map[Ticker]struct{} {
-	seen := make(map[Ticker]struct{})
+func (c *PathsConfig) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
+	seen := make(map[slinkytypes.CurrencyPair]struct{})
 
 	for _, path := range c.Paths {
 		for _, ticker := range path.GetTickers() {
-			seen[ticker] = struct{}{}
+			seen[ticker.CurrencyPair] = struct{}{}
 		}
 	}
 
@@ -162,18 +164,18 @@ func (p *Path) ValidateBasic() error {
 	}
 
 	// Ensure that the path is a directed acyclic graph.
-	seen := map[Ticker]struct{}{
-		first.Ticker: {},
+	seen := map[slinkytypes.CurrencyPair]struct{}{
+		first.Ticker.CurrencyPair: {},
 	}
 	for _, op := range p.Operations[1:] {
 		if err := op.ValidateBasic(); err != nil {
 			return err
 		}
 
-		if _, ok := seen[op.Ticker]; ok {
+		if _, ok := seen[op.Ticker.CurrencyPair]; ok {
 			return fmt.Errorf("path is not a directed acyclic graph")
 		}
-		seen[op.Ticker] = struct{}{}
+		seen[op.Ticker.CurrencyPair] = struct{}{}
 
 		switch {
 		case !op.Invert && quote != op.Ticker.CurrencyPair.Base:

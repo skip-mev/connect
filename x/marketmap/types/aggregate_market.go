@@ -2,6 +2,8 @@ package types
 
 import (
 	fmt "fmt"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // NewAggregateMarketConfig returns a new AggregateMarketConfig instance. The
@@ -17,7 +19,7 @@ import (
 //     aggregation
 //     strategy used by the oracle. The oracle may use a median price, a
 //     weighted average price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggreagted
+//  3. Convert the price of each ticker to a common ticker using the aggregated
 //     ticker
 //     configurations by default. The oracle may use a different aggregation
 //     strategy to convert the price of a ticker to a common ticker.
@@ -50,7 +52,7 @@ func NewAggregateMarketConfig(markets map[string]MarketConfig, tickers map[strin
 func (c *AggregateMarketConfig) ValidateBasic() error {
 	// Track all tickers that are supported by all providers to ensure that
 	// all market conversions are supported by at least one provider.
-	seenTickers := make(map[Ticker]struct{})
+	seenTickers := make(map[slinkytypes.CurrencyPair]struct{})
 	for name, market := range c.MarketConfigs {
 		if err := market.ValidateBasic(); err != nil {
 			return err
@@ -61,7 +63,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 		}
 
 		for _, ticker := range market.Tickers() {
-			seenTickers[ticker] = struct{}{}
+			seenTickers[ticker.CurrencyPair] = struct{}{}
 		}
 	}
 
