@@ -8,4 +8,8 @@ message Params {
   // MarketAuthority is the authority account that is able to control updating
   // the marketmap.
   string market_authority = 1;
+
+  // Version is the schema version for the MarketMap data structure and query
+  // response.
+  uint64 version = 2;
 }
