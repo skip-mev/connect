@@ -54,7 +54,7 @@ message MsgCreateMarketResponse {}
 // MsgParams defines the Msg/Params request type. It contains the
 // new parameters for the x/marketmap module.
 message MsgParams {
-  option (cosmos.msg.v1.signer) = "from_address";
+  option (cosmos.msg.v1.signer) = "authority";
 
   // Params defines the new parameters for the x/marketmap module.
   Params params = 1 [ (gogoproto.nullable) = false ];
