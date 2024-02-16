@@ -9,7 +9,7 @@ type MarketMapHooks interface {
 	AfterMarketUpdated(ctx sdk.Context) error
 }
 
-var _ MarketMapHooks = MultiMarketMapHooks{}
+var _ MarketMapHooks = &MultiMarketMapHooks{}
 
 // MultiMarketMapHooks defines an array of MarketMapHooks which can be executed in sequence.
 type MultiMarketMapHooks []MarketMapHooks
