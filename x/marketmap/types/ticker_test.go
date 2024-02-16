@@ -25,8 +25,65 @@ func TestTicker(t *testing.T) {
 				},
 				Decimals:         8,
 				MinProviderCount: 1,
+				Paths: []types.Path{
+					{
+						Operations: []types.Operation{
+							{
+								Ticker: btcusdt,
+							},
+						},
+					},
+				},
 			},
 			expErr: false,
+		},
+		{
+			name: "valid ticker multiple paths",
+			ticker: types.Ticker{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Decimals:         8,
+				MinProviderCount: 1,
+				Paths: []types.Path{
+					{
+						Operations: []types.Operation{
+							{
+								Ticker: btcusdt,
+							},
+							{
+								Ticker: usdtusd,
+							},
+						},
+					},
+				},
+			},
+			expErr: false,
+		},
+		{
+			name: "invalid paths",
+			ticker: types.Ticker{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Decimals:         8,
+				MinProviderCount: 1,
+				Paths: []types.Path{
+					{
+						Operations: []types.Operation{
+							{
+								Ticker: btcusdt,
+							},
+							{
+								Ticker: ethusdt,
+							},
+						},
+					},
+				},
+			},
+			expErr: true,
 		},
 		{
 			name: "empty base",
