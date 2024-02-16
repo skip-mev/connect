@@ -45,7 +45,7 @@ func (s *KeeperTestSuite) TestGetAllSLAsRequest() {
 	})
 
 	s.Run("can get all SLAs", func() {
-		s.keeper.AddSLAs(s.ctx, []slatypes.PriceFeedSLA{sla1, sla2, sla3})
+		s.Require().NoError(s.keeper.AddSLAs(s.ctx, []slatypes.PriceFeedSLA{sla1, sla2, sla3}))
 
 		req := &slatypes.GetAllSLAsRequest{}
 		resp, err := s.queryServer.GetAllSLAs(s.ctx, req)
@@ -70,8 +70,8 @@ func (s *KeeperTestSuite) TestGetAllSLAsRequest() {
 func (s *KeeperTestSuite) TestGetPriceFeedsRequest() {
 	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
-	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
+	consAddress2 := sdk.ConsAddress("consAddress2")
 
 	id1 := "testId"
 	priceFeed1, err := slatypes.NewPriceFeed(

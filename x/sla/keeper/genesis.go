@@ -8,7 +8,7 @@ import (
 )
 
 // InitGenesis initializes the store state from a genesis state.
-func (k Keeper) InitGenesis(ctx sdk.Context, gs slatypes.GenesisState) {
+func (k *Keeper) InitGenesis(ctx sdk.Context, gs slatypes.GenesisState) {
 	// Validate the genesis state.
 	if err := gs.ValidateBasic(); err != nil {
 		panic(err)
@@ -42,14 +42,14 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs slatypes.GenesisState) {
 }
 
 // ExportGenesis returns the current store state as a genesis state.
-func (k Keeper) ExportGenesis(ctx sdk.Context) *slatypes.GenesisState {
+func (k *Keeper) ExportGenesis(ctx sdk.Context) *slatypes.GenesisState {
 	// Get the set of SLAs.
 	slas, err := k.GetSLAs(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	// Get all of the price feeds.
+	// Get all price feeds.
 	aggFeeds := make([]slatypes.PriceFeed, 0)
 	for _, sla := range slas {
 		feeds, err := k.GetAllPriceFeeds(ctx, sla.ID)

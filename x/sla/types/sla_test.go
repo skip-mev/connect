@@ -193,7 +193,7 @@ func TestQualifies(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		qualifies, err := sla.Qualifies(priceFeed)
@@ -207,12 +207,12 @@ func TestQualifies(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.NoVote)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 		}
 
 		qualifies, err := sla.Qualifies(priceFeed)
@@ -226,12 +226,12 @@ func TestQualifies(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 6; i++ {
-			priceFeed.SetUpdate(slatypes.NoVote)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 		}
 
 		qualifies, err := sla.Qualifies(priceFeed)
@@ -245,17 +245,17 @@ func TestQualifies(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 15; i++ {
-			priceFeed.SetUpdate(slatypes.NoVote)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 		}
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		qualifies, err := sla.Qualifies(priceFeed)
@@ -288,12 +288,12 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote without price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 		}
 
 		uptime, err := sla.GetUptimeFromPriceFeed(priceFeed)
@@ -307,17 +307,17 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote without price for 15 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.NoVote)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 		}
 
 		// Vote without price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 		}
 
 		uptime, err := sla.GetUptimeFromPriceFeed(priceFeed)
@@ -331,16 +331,16 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		for i := 0; i < 15; i++ {
-			priceFeed.SetUpdate(slatypes.NoVote)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 		}
 
 		// Vote without price for 5 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 		}
 
 		uptime, err := sla.GetUptimeFromPriceFeed(priceFeed)
@@ -354,9 +354,9 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		for i := 0; i < 10; i++ {
 			if i%2 == 0 {
-				priceFeed.SetUpdate(slatypes.VoteWithPrice)
+				require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 			} else {
-				priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+				require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 			}
 		}
 
@@ -371,17 +371,17 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote without price for 5 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 		}
 
 		// vote yes for 10 blocks
 		for i := 0; i < 20; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		uptime, err := sla.GetUptimeFromPriceFeed(priceFeed)
@@ -409,17 +409,17 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote without price for 5 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 		}
 
 		// vote yes for 10 blocks
 		for i := 0; i < 20; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// create different strategy that has 40 block window
@@ -471,22 +471,22 @@ func TestGetUptimeFromPriceFeed(t *testing.T) {
 
 		// Vote with price for 5 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// Vote without price for 5 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithoutPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithoutPrice))
 		}
 
 		// vote yes for 10 blocks
 		for i := 0; i < 10; i++ {
-			priceFeed.SetUpdate(slatypes.VoteWithPrice)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.VoteWithPrice))
 		}
 
 		// no vote for 10 blocks
 		for i := 0; i < 5; i++ {
-			priceFeed.SetUpdate(slatypes.NoVote)
+			require.NoError(t, priceFeed.SetUpdate(slatypes.NoVote))
 		}
 
 		sla := slatypes.NewPriceFeedSLA(

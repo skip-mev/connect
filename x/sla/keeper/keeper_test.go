@@ -96,10 +96,10 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 
 	s.stakingKeeper = mocks.NewStakingKeeper(s.T())
 	s.slashingKeeper = mocks.NewSlashingKeeper(s.T())
-	s.authority = sdk.AccAddress([]byte("authority"))
+	s.authority = sdk.AccAddress("authority")
 
 	// Set up keeper
-	keeper := keeper.NewKeeper(
+	k := keeper.NewKeeper(
 		storeService,
 		encodingConfig.Codec,
 		s.authority,
@@ -107,7 +107,7 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 		s.slashingKeeper,
 	)
 
-	keeper.SetParams(s.ctx, slatypes.DefaultParams())
+	s.Require().NoError(k.SetParams(s.ctx, slatypes.DefaultParams()))
 
-	return keeper
+	return k
 }

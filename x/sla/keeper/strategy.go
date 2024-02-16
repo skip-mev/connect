@@ -11,7 +11,7 @@ import (
 // ExecSLA enforces the SLA criteria for all price feeds that it is maintaining.
 // This function is called at the beginning of every block and already assumes that
 // all price feeds have been updated for the current block via the pre-block hook.
-func (k Keeper) ExecSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
+func (k *Keeper) ExecSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
 	// Ensure that the SLA should be checked for the current block height.
 	height := ctx.BlockHeight()
 	if height == 0 || height%int64(sla.Frequency) != 0 {
@@ -66,7 +66,7 @@ func (k Keeper) ExecSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA) error {
 // the given SLA. If the price feed has met the expected uptime, then no action is
 // taken. Otherwise, the validator is slashed by the deviation from the
 // expected uptime.
-func (k Keeper) EnforceSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA, priceFeed slatypes.PriceFeed) error {
+func (k *Keeper) EnforceSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA, priceFeed slatypes.PriceFeed) error {
 	// Ensure that the validator exists. In the event that the validator
 	// does not exist, we will delete the price feed from the store.
 	validator := sdk.ValAddress(priceFeed.Validator)
@@ -78,7 +78,7 @@ func (k Keeper) EnforceSLA(ctx sdk.Context, sla slatypes.PriceFeedSLA, priceFeed
 			"err", err,
 		)
 
-		return k.RemovePriceFeed(ctx, sla.ID, priceFeed.CurrencyPair, sdk.ConsAddress(priceFeed.Validator))
+		return k.RemovePriceFeed(ctx, sla.ID, priceFeed.CurrencyPair, priceFeed.Validator)
 	}
 
 	// Determine the uptime for the price feed.

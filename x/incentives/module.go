@@ -29,8 +29,10 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ appmodule.AppModule   = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModuleBasic = AppModule{}
+	_ module.HasServices    = AppModule{}
+
+	_ appmodule.AppModule = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/incentives module exposes to the

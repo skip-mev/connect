@@ -116,7 +116,7 @@ func (s *KeeperTestSuite) TestMsgRemoveSLAs() {
 	})
 
 	s.Run("removes a sla single sla", func() {
-		s.keeper.SetSLA(s.ctx, sla1)
+		s.Require().NoError(s.keeper.SetSLA(s.ctx, sla1))
 
 		slas, err := s.keeper.GetSLAs(s.ctx)
 		s.Require().NoError(err)
@@ -137,8 +137,8 @@ func (s *KeeperTestSuite) TestMsgRemoveSLAs() {
 	})
 
 	s.Run("removes a sla single sla with some feeds in state", func() {
-		cons1 := sdk.ConsAddress([]byte("cons1"))
-		cons2 := sdk.ConsAddress([]byte("cons2"))
+		cons1 := sdk.ConsAddress("cons1")
+		cons2 := sdk.ConsAddress("cons2")
 		cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
 
 		feed1, err := slatypes.NewPriceFeed(10, cons1, cp1, sla1.ID)
@@ -147,14 +147,14 @@ func (s *KeeperTestSuite) TestMsgRemoveSLAs() {
 		feed2, err := slatypes.NewPriceFeed(10, cons2, cp1, sla1.ID)
 		s.Require().NoError(err)
 
-		s.keeper.SetPriceFeed(s.ctx, feed1)
-		s.keeper.SetPriceFeed(s.ctx, feed2)
+		s.Require().NoError(s.keeper.SetPriceFeed(s.ctx, feed1))
+		s.Require().NoError(s.keeper.SetPriceFeed(s.ctx, feed2))
 
 		feeds, err := s.keeper.GetAllPriceFeeds(s.ctx, sla1.ID)
 		s.Require().NoError(err)
 		s.Require().Len(feeds, 2)
 
-		s.keeper.SetSLA(s.ctx, sla1)
+		s.Require().NoError(s.keeper.SetSLA(s.ctx, sla1))
 		slas, err := s.keeper.GetSLAs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Len(slas, 1)
@@ -178,7 +178,7 @@ func (s *KeeperTestSuite) TestMsgRemoveSLAs() {
 	})
 
 	s.Run("removes multiple slas", func() {
-		s.keeper.AddSLAs(s.ctx, []slatypes.PriceFeedSLA{sla1, sla2, sla3})
+		s.Require().NoError(s.keeper.AddSLAs(s.ctx, []slatypes.PriceFeedSLA{sla1, sla2, sla3}))
 
 		slas, err := s.keeper.GetSLAs(s.ctx)
 		s.Require().NoError(err)
