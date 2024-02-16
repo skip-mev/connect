@@ -7,7 +7,6 @@ import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -21,6 +20,7 @@ import (
 	"github.com/spf13/cobra"
 
 	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/skip-mev/slinky/x/oracle/client/cli"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -178,6 +178,7 @@ type Outputs struct {
 
 	OracleKeeper keeper.Keeper
 	Module       appmodule.AppModule
+	Hooks        marketmaptypes.MarketMapHooksWrapper
 }
 
 func ProvideModule(in Inputs) Outputs {
@@ -195,5 +196,9 @@ func ProvideModule(in Inputs) Outputs {
 
 	m := NewAppModule(in.Cdc, oracleKeeper)
 
-	return Outputs{OracleKeeper: oracleKeeper, Module: m}
+	return Outputs{
+		OracleKeeper: oracleKeeper,
+		Module:       m,
+		Hooks:        marketmaptypes.MarketMapHooksWrapper{MarketMapHooks: oracleKeeper.Hooks()},
+	}
 }
