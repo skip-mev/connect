@@ -152,7 +152,6 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad response",
 			cps: []mmtypes.Ticker{
-
 				btcmog,
 			},
 			response: testutils.CreateResponseFromJSON(

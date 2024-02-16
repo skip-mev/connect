@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/skip-mev/slinky/oracle/types"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 var CtxErrors = map[error]struct{}{
