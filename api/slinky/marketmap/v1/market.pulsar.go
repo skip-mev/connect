@@ -2,10 +2,10 @@
 package marketmapv1
 
 import (
-	v1 "github.com/skip-mev/slinky/api/slinky/types/v1"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
+	v1 "github.com/skip-mev/slinky/api/slinky/types/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -886,500 +886,6 @@ func (x *fastReflection_Ticker) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var _ protoreflect.List = (*_PathsConfig2_1_list)(nil)
-
-type _PathsConfig2_1_list struct {
-	list *[]*Path
-}
-
-func (x *_PathsConfig2_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_PathsConfig2_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_PathsConfig2_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Path)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_PathsConfig2_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Path)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_PathsConfig2_1_list) AppendMutable() protoreflect.Value {
-	v := new(Path)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_PathsConfig2_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_PathsConfig2_1_list) NewElement() protoreflect.Value {
-	v := new(Path)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_PathsConfig2_1_list) IsValid() bool {
-	return x.list != nil
-}
-
-var (
-	md_PathsConfig2       protoreflect.MessageDescriptor
-	fd_PathsConfig2_paths protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_slinky_marketmap_v1_market_proto_init()
-	md_PathsConfig2 = File_slinky_marketmap_v1_market_proto.Messages().ByName("PathsConfig2")
-	fd_PathsConfig2_paths = md_PathsConfig2.Fields().ByName("paths")
-}
-
-var _ protoreflect.Message = (*fastReflection_PathsConfig2)(nil)
-
-type fastReflection_PathsConfig2 PathsConfig2
-
-func (x *PathsConfig2) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_PathsConfig2)(x)
-}
-
-func (x *PathsConfig2) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_PathsConfig2_messageType fastReflection_PathsConfig2_messageType
-var _ protoreflect.MessageType = fastReflection_PathsConfig2_messageType{}
-
-type fastReflection_PathsConfig2_messageType struct{}
-
-func (x fastReflection_PathsConfig2_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_PathsConfig2)(nil)
-}
-func (x fastReflection_PathsConfig2_messageType) New() protoreflect.Message {
-	return new(fastReflection_PathsConfig2)
-}
-func (x fastReflection_PathsConfig2_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_PathsConfig2
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_PathsConfig2) Descriptor() protoreflect.MessageDescriptor {
-	return md_PathsConfig2
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_PathsConfig2) Type() protoreflect.MessageType {
-	return _fastReflection_PathsConfig2_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_PathsConfig2) New() protoreflect.Message {
-	return new(fastReflection_PathsConfig2)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_PathsConfig2) Interface() protoreflect.ProtoMessage {
-	return (*PathsConfig2)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_PathsConfig2) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Paths) != 0 {
-		value := protoreflect.ValueOfList(&_PathsConfig2_1_list{list: &x.Paths})
-		if !f(fd_PathsConfig2_paths, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_PathsConfig2) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.PathsConfig2.paths":
-		return len(x.Paths) != 0
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.PathsConfig2"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.PathsConfig2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_PathsConfig2) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.PathsConfig2.paths":
-		x.Paths = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.PathsConfig2"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.PathsConfig2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_PathsConfig2) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.PathsConfig2.paths":
-		if len(x.Paths) == 0 {
-			return protoreflect.ValueOfList(&_PathsConfig2_1_list{})
-		}
-		listValue := &_PathsConfig2_1_list{list: &x.Paths}
-		return protoreflect.ValueOfList(listValue)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.PathsConfig2"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.PathsConfig2 does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_PathsConfig2) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.PathsConfig2.paths":
-		lv := value.List()
-		clv := lv.(*_PathsConfig2_1_list)
-		x.Paths = *clv.list
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.PathsConfig2"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.PathsConfig2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_PathsConfig2) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.PathsConfig2.paths":
-		if x.Paths == nil {
-			x.Paths = []*Path{}
-		}
-		value := &_PathsConfig2_1_list{list: &x.Paths}
-		return protoreflect.ValueOfList(value)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.PathsConfig2"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.PathsConfig2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_PathsConfig2) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.PathsConfig2.paths":
-		list := []*Path{}
-		return protoreflect.ValueOfList(&_PathsConfig2_1_list{list: &list})
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.PathsConfig2"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.PathsConfig2 does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_PathsConfig2) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.PathsConfig2", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_PathsConfig2) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_PathsConfig2) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_PathsConfig2) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_PathsConfig2) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*PathsConfig2)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if len(x.Paths) > 0 {
-			for _, e := range x.Paths {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*PathsConfig2)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Paths) > 0 {
-			for iNdEx := len(x.Paths) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Paths[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*PathsConfig2)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: PathsConfig2: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: PathsConfig2: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Paths = append(x.Paths, &Path{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Paths[len(x.Paths)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
 var (
 	md_ProviderConfig                  protoreflect.MessageDescriptor
 	fd_ProviderConfig_name             protoreflect.FieldDescriptor
@@ -1402,7 +908,7 @@ func (x *ProviderConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProviderConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1886,7 +1392,7 @@ func (x *TickerConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *TickerConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2477,7 +1983,7 @@ func (x *MarketConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MarketConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[4]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3375,7 +2881,7 @@ func (x *AggregateMarketConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AggregateMarketConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[5]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4254,7 +3760,7 @@ func (x *PathsConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *PathsConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[6]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4825,7 +4331,7 @@ func (x *Path) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Path) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[7]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5249,15 +4755,15 @@ func (x *fastReflection_Path) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_Operation        protoreflect.MessageDescriptor
-	fd_Operation_ticker protoreflect.FieldDescriptor
-	fd_Operation_invert protoreflect.FieldDescriptor
+	md_Operation               protoreflect.MessageDescriptor
+	fd_Operation_currency_pair protoreflect.FieldDescriptor
+	fd_Operation_invert        protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_slinky_marketmap_v1_market_proto_init()
 	md_Operation = File_slinky_marketmap_v1_market_proto.Messages().ByName("Operation")
-	fd_Operation_ticker = md_Operation.Fields().ByName("ticker")
+	fd_Operation_currency_pair = md_Operation.Fields().ByName("currency_pair")
 	fd_Operation_invert = md_Operation.Fields().ByName("invert")
 }
 
@@ -5270,7 +4776,7 @@ func (x *Operation) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Operation) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[8]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5326,9 +4832,9 @@ func (x *fastReflection_Operation) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_Operation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Ticker != nil {
-		value := protoreflect.ValueOfMessage(x.Ticker.ProtoReflect())
-		if !f(fd_Operation_ticker, value) {
+	if x.CurrencyPair != nil {
+		value := protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
+		if !f(fd_Operation_currency_pair, value) {
 			return
 		}
 	}
@@ -5353,8 +4859,8 @@ func (x *fastReflection_Operation) Range(f func(protoreflect.FieldDescriptor, pr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Operation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.ticker":
-		return x.Ticker != nil
+	case "slinky.marketmap.v1.Operation.currency_pair":
+		return x.CurrencyPair != nil
 	case "slinky.marketmap.v1.Operation.invert":
 		return x.Invert != false
 	default:
@@ -5373,8 +4879,8 @@ func (x *fastReflection_Operation) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Operation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.ticker":
-		x.Ticker = nil
+	case "slinky.marketmap.v1.Operation.currency_pair":
+		x.CurrencyPair = nil
 	case "slinky.marketmap.v1.Operation.invert":
 		x.Invert = false
 	default:
@@ -5393,8 +4899,8 @@ func (x *fastReflection_Operation) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Operation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.Operation.ticker":
-		value := x.Ticker
+	case "slinky.marketmap.v1.Operation.currency_pair":
+		value := x.CurrencyPair
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "slinky.marketmap.v1.Operation.invert":
 		value := x.Invert
@@ -5419,8 +4925,8 @@ func (x *fastReflection_Operation) Get(descriptor protoreflect.FieldDescriptor) 
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Operation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.ticker":
-		x.Ticker = value.Message().Interface().(*Ticker)
+	case "slinky.marketmap.v1.Operation.currency_pair":
+		x.CurrencyPair = value.Message().Interface().(*v1.CurrencyPair)
 	case "slinky.marketmap.v1.Operation.invert":
 		x.Invert = value.Bool()
 	default:
@@ -5443,11 +4949,11 @@ func (x *fastReflection_Operation) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Operation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.ticker":
-		if x.Ticker == nil {
-			x.Ticker = new(Ticker)
+	case "slinky.marketmap.v1.Operation.currency_pair":
+		if x.CurrencyPair == nil {
+			x.CurrencyPair = new(v1.CurrencyPair)
 		}
-		return protoreflect.ValueOfMessage(x.Ticker.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
 	case "slinky.marketmap.v1.Operation.invert":
 		panic(fmt.Errorf("field invert of message slinky.marketmap.v1.Operation is not mutable"))
 	default:
@@ -5463,8 +4969,8 @@ func (x *fastReflection_Operation) Mutable(fd protoreflect.FieldDescriptor) prot
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Operation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.ticker":
-		m := new(Ticker)
+	case "slinky.marketmap.v1.Operation.currency_pair":
+		m := new(v1.CurrencyPair)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "slinky.marketmap.v1.Operation.invert":
 		return protoreflect.ValueOfBool(false)
@@ -5537,8 +5043,8 @@ func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if x.Ticker != nil {
-			l = options.Size(x.Ticker)
+		if x.CurrencyPair != nil {
+			l = options.Size(x.CurrencyPair)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.Invert {
@@ -5583,8 +5089,8 @@ func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x10
 		}
-		if x.Ticker != nil {
-			encoded, err := options.Marshal(x.Ticker)
+		if x.CurrencyPair != nil {
+			encoded, err := options.Marshal(x.CurrencyPair)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -5648,7 +5154,7 @@ func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CurrencyPair", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -5675,10 +5181,10 @@ func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.Ticker == nil {
-					x.Ticker = &Ticker{}
+				if x.CurrencyPair == nil {
+					x.CurrencyPair = &v1.CurrencyPair{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Ticker); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.CurrencyPair); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -5838,45 +5344,6 @@ func (x *Ticker) GetMetadata_JSON() string {
 	return ""
 }
 
-// PathsConfig2 represents the list of convertable markets (paths) that will be
-// used to convert the prices of a set of tickers to a common ticker.
-type PathsConfig2 struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Paths is the list of convertable markets that will be used to convert the
-	// prices of a set of tickers to a common ticker.
-	Paths []*Path `protobuf:"bytes,1,rep,name=paths,proto3" json:"paths,omitempty"`
-}
-
-func (x *PathsConfig2) Reset() {
-	*x = PathsConfig2{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *PathsConfig2) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PathsConfig2) ProtoMessage() {}
-
-// Deprecated: Use PathsConfig2.ProtoReflect.Descriptor instead.
-func (*PathsConfig2) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *PathsConfig2) GetPaths() []*Path {
-	if x != nil {
-		return x.Paths
-	}
-	return nil
-}
-
 type ProviderConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5894,7 +5361,7 @@ type ProviderConfig struct {
 func (x *ProviderConfig) Reset() {
 	*x = ProviderConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5908,7 +5375,7 @@ func (*ProviderConfig) ProtoMessage() {}
 
 // Deprecated: Use ProviderConfig.ProtoReflect.Descriptor instead.
 func (*ProviderConfig) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{2}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ProviderConfig) GetName() string {
@@ -5944,7 +5411,7 @@ type TickerConfig struct {
 func (x *TickerConfig) Reset() {
 	*x = TickerConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5958,7 +5425,7 @@ func (*TickerConfig) ProtoMessage() {}
 
 // Deprecated: Use TickerConfig.ProtoReflect.Descriptor instead.
 func (*TickerConfig) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{3}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TickerConfig) GetTicker() *Ticker {
@@ -5998,7 +5465,7 @@ type MarketConfig struct {
 func (x *MarketConfig) Reset() {
 	*x = MarketConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[4]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6012,7 +5479,7 @@ func (*MarketConfig) ProtoMessage() {}
 
 // Deprecated: Use MarketConfig.ProtoReflect.Descriptor instead.
 func (*MarketConfig) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{4}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MarketConfig) GetName() string {
@@ -6083,7 +5550,7 @@ type AggregateMarketConfig struct {
 func (x *AggregateMarketConfig) Reset() {
 	*x = AggregateMarketConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[5]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6097,7 +5564,7 @@ func (*AggregateMarketConfig) ProtoMessage() {}
 
 // Deprecated: Use AggregateMarketConfig.ProtoReflect.Descriptor instead.
 func (*AggregateMarketConfig) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{5}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AggregateMarketConfig) GetMarketConfigs() map[string]*MarketConfig {
@@ -6132,7 +5599,7 @@ type PathsConfig struct {
 func (x *PathsConfig) Reset() {
 	*x = PathsConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[6]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6146,7 +5613,7 @@ func (*PathsConfig) ProtoMessage() {}
 
 // Deprecated: Use PathsConfig.ProtoReflect.Descriptor instead.
 func (*PathsConfig) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{6}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *PathsConfig) GetTicker() *Ticker {
@@ -6178,7 +5645,7 @@ type Path struct {
 func (x *Path) Reset() {
 	*x = Path{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[7]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6192,7 +5659,7 @@ func (*Path) ProtoMessage() {}
 
 // Deprecated: Use Path.ProtoReflect.Descriptor instead.
 func (*Path) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{7}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Path) GetOperations() []*Operation {
@@ -6208,8 +5675,8 @@ type Operation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Ticker is the on-chain representation of the ticker.
-	Ticker *Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker,omitempty"`
+	// CurrencyPair is the on-chain currency pair for this ticker.
+	CurrencyPair *v1.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
 	// Invert is a boolean that indicates whether the price of the ticker should
 	// be inverted.
 	Invert bool `protobuf:"varint,2,opt,name=invert,proto3" json:"invert,omitempty"`
@@ -6218,7 +5685,7 @@ type Operation struct {
 func (x *Operation) Reset() {
 	*x = Operation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[8]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6232,12 +5699,12 @@ func (*Operation) ProtoMessage() {}
 
 // Deprecated: Use Operation.ProtoReflect.Descriptor instead.
 func (*Operation) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{8}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *Operation) GetTicker() *Ticker {
+func (x *Operation) GetCurrencyPair() *v1.CurrencyPair {
 	if x != nil {
-		return x.Ticker
+		return x.CurrencyPair
 	}
 	return nil
 }
@@ -6280,100 +5747,97 @@ var file_slinky_marketmap_v1_market_proto_rawDesc = []byte{
 	0x73, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x4a, 0x53,
 	0x4f, 0x4e, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61,
 	0x74, 0x61, 0x4a, 0x53, 0x4f, 0x4e, 0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00,
-	0x22, 0x45, 0x0a, 0x0c, 0x50, 0x61, 0x74, 0x68, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x32,
-	0x12, 0x35, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x19, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
-	0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
-	0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x22, 0x4e, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x28, 0x0a,
-	0x10, 0x6f, 0x66, 0x66, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x74, 0x69, 0x63, 0x6b, 0x65,
-	0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x6f, 0x66, 0x66, 0x43, 0x68, 0x61, 0x69,
-	0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x73, 0x0a, 0x0c, 0x54, 0x69, 0x63, 0x6b, 0x65,
-	0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x39, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65,
-	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69,
-	0x63, 0x6b, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x74, 0x69, 0x63, 0x6b,
-	0x65, 0x72, 0x12, 0x28, 0x0a, 0x10, 0x6f, 0x66, 0x66, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f,
-	0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x6f, 0x66,
-	0x66, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x8f, 0x02, 0x0a,
-	0x0c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x12, 0x0a,
-	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d,
-	0x65, 0x12, 0x61, 0x0a, 0x0e, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x6e, 0x66,
-	0x69, 0x67, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x34, 0x2e, 0x73, 0x6c, 0x69, 0x6e,
+	0x22, 0x4e, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x28, 0x0a, 0x10, 0x6f, 0x66, 0x66, 0x5f, 0x63, 0x68,
+	0x61, 0x69, 0x6e, 0x5f, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0e, 0x6f, 0x66, 0x66, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72,
+	0x22, 0x73, 0x0a, 0x0c, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x12, 0x39, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
+	0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x42, 0x04, 0xc8,
+	0xde, 0x1f, 0x00, 0x52, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x28, 0x0a, 0x10, 0x6f,
+	0x66, 0x66, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x6f, 0x66, 0x66, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x54,
+	0x69, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x8f, 0x02, 0x0a, 0x0c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x61, 0x0a, 0x0e, 0x74, 0x69,
+	0x63, 0x6b, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x18, 0x02, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x34, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0d,
+	0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x12, 0x23, 0x0a,
+	0x0d, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x18, 0x0f,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x4a, 0x53,
+	0x4f, 0x4e, 0x1a, 0x63, 0x0a, 0x12, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x37, 0x0a, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x6c, 0x69, 0x6e,
 	0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x54, 0x69, 0x63,
-	0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42,
-	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0d, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0x4a, 0x53, 0x4f, 0x4e, 0x1a, 0x63, 0x0a, 0x12, 0x54, 0x69, 0x63,
-	0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12,
+	0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0xb8, 0x03, 0x0a, 0x15, 0x41, 0x67, 0x67, 0x72,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69,
+	0x67, 0x12, 0x6a, 0x0a, 0x0e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x73, 0x6c, 0x69, 0x6e,
+	0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e,
+	0x41, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66,
+	0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0d,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x12, 0x6a, 0x0a,
+	0x0e, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x67, 0x67, 0x72,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69,
+	0x67, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45,
+	0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0d, 0x74, 0x69, 0x63, 0x6b,
+	0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x1a, 0x63, 0x0a, 0x12, 0x4d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12,
 	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65,
 	0x79, 0x12, 0x37, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
 	0x32, 0x21, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0xb8,
-	0x03, 0x0a, 0x15, 0x41, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x6a, 0x0a, 0x0e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x3d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x65,
-	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x4d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42,
-	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0d, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e,
-	0x66, 0x69, 0x67, 0x73, 0x12, 0x6a, 0x0a, 0x0e, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x5f, 0x63,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3d, 0x2e, 0x73,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e,
-	0x76, 0x31, 0x2e, 0x41, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f,
-	0x00, 0x52, 0x0d, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73,
-	0x1a, 0x63, 0x0a, 0x12, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
-	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x37, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61,
-	0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75,
-	0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a, 0x62, 0x0a, 0x12, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b,
-	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x36, 0x0a,
-	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e,
-	0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x7f, 0x0a, 0x0b, 0x50, 0x61, 0x74,
-	0x68, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x39, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b,
-	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b,
-	0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54,
-	0x69, 0x63, 0x6b, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x74, 0x69, 0x63,
-	0x6b, 0x65, 0x72, 0x12, 0x35, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x02, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04, 0xc8,
-	0xde, 0x1f, 0x00, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x22, 0x4c, 0x0a, 0x04, 0x50, 0x61,
-	0x74, 0x68, 0x12, 0x44, 0x0a, 0x0a, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e,
-	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x5e, 0x0a, 0x09, 0x4f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x39, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b,
-	0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72,
-	0x12, 0x16, 0x0a, 0x06, 0x69, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x06, 0x69, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x42, 0xc6, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d,
-	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61,
-	0x70, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x30, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
-	0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x6d, 0x61, 0x70, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x4d, 0x58, 0xaa, 0x02, 0x13, 0x53, 0x6c,
-	0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x13, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x6d, 0x61, 0x70, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
-	0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x15, 0x53, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x3a, 0x3a, 0x56,
-	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a, 0x62,
+	0x0a, 0x12, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x45,
+	0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x36, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68,
+	0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
+	0x38, 0x01, 0x22, 0x7f, 0x0a, 0x0b, 0x50, 0x61, 0x74, 0x68, 0x73, 0x43, 0x6f, 0x6e, 0x66, 0x69,
+	0x67, 0x12, 0x39, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
+	0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x42, 0x04,
+	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x35, 0x0a, 0x05,
+	0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x6c,
+	0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76,
+	0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x70, 0x61,
+	0x74, 0x68, 0x73, 0x22, 0x4c, 0x0a, 0x04, 0x50, 0x61, 0x74, 0x68, 0x12, 0x44, 0x0a, 0x0a, 0x6f,
+	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x1e, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
+	0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
+	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x22, 0x6d, 0x0a, 0x09, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x48,
+	0x0a, 0x0d, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79,
+	0x50, 0x61, 0x69, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72,
+	0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x6e, 0x76, 0x65,
+	0x72, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x69, 0x6e, 0x76, 0x65, 0x72, 0x74,
+	0x42, 0xc6, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x30, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c,
+	0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2f, 0x76,
+	0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x76, 0x31, 0xa2, 0x02, 0x03,
+	0x53, 0x4d, 0x58, 0xaa, 0x02, 0x13, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x13, 0x53, 0x6c, 0x69, 0x6e,
+	0x6b, 0x79, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x5c, 0x56, 0x31, 0xe2,
+	0x02, 0x1f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
+	0x61, 0x70, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0xea, 0x02, 0x15, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x6d, 0x61, 0x70, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -6388,43 +5852,41 @@ func file_slinky_marketmap_v1_market_proto_rawDescGZIP() []byte {
 	return file_slinky_marketmap_v1_market_proto_rawDescData
 }
 
-var file_slinky_marketmap_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_slinky_marketmap_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_slinky_marketmap_v1_market_proto_goTypes = []interface{}{
 	(*Ticker)(nil),                // 0: slinky.marketmap.v1.Ticker
-	(*PathsConfig2)(nil),          // 1: slinky.marketmap.v1.PathsConfig2
-	(*ProviderConfig)(nil),        // 2: slinky.marketmap.v1.ProviderConfig
-	(*TickerConfig)(nil),          // 3: slinky.marketmap.v1.TickerConfig
-	(*MarketConfig)(nil),          // 4: slinky.marketmap.v1.MarketConfig
-	(*AggregateMarketConfig)(nil), // 5: slinky.marketmap.v1.AggregateMarketConfig
-	(*PathsConfig)(nil),           // 6: slinky.marketmap.v1.PathsConfig
-	(*Path)(nil),                  // 7: slinky.marketmap.v1.Path
-	(*Operation)(nil),             // 8: slinky.marketmap.v1.Operation
-	nil,                           // 9: slinky.marketmap.v1.MarketConfig.TickerConfigsEntry
-	nil,                           // 10: slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry
-	nil,                           // 11: slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry
-	(*v1.CurrencyPair)(nil),       // 12: slinky.types.v1.CurrencyPair
+	(*ProviderConfig)(nil),        // 1: slinky.marketmap.v1.ProviderConfig
+	(*TickerConfig)(nil),          // 2: slinky.marketmap.v1.TickerConfig
+	(*MarketConfig)(nil),          // 3: slinky.marketmap.v1.MarketConfig
+	(*AggregateMarketConfig)(nil), // 4: slinky.marketmap.v1.AggregateMarketConfig
+	(*PathsConfig)(nil),           // 5: slinky.marketmap.v1.PathsConfig
+	(*Path)(nil),                  // 6: slinky.marketmap.v1.Path
+	(*Operation)(nil),             // 7: slinky.marketmap.v1.Operation
+	nil,                           // 8: slinky.marketmap.v1.MarketConfig.TickerConfigsEntry
+	nil,                           // 9: slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry
+	nil,                           // 10: slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry
+	(*v1.CurrencyPair)(nil),       // 11: slinky.types.v1.CurrencyPair
 }
 var file_slinky_marketmap_v1_market_proto_depIdxs = []int32{
-	12, // 0: slinky.marketmap.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	7,  // 1: slinky.marketmap.v1.Ticker.paths:type_name -> slinky.marketmap.v1.Path
-	2,  // 2: slinky.marketmap.v1.Ticker.providers:type_name -> slinky.marketmap.v1.ProviderConfig
-	7,  // 3: slinky.marketmap.v1.PathsConfig2.paths:type_name -> slinky.marketmap.v1.Path
-	0,  // 4: slinky.marketmap.v1.TickerConfig.ticker:type_name -> slinky.marketmap.v1.Ticker
-	9,  // 5: slinky.marketmap.v1.MarketConfig.ticker_configs:type_name -> slinky.marketmap.v1.MarketConfig.TickerConfigsEntry
-	10, // 6: slinky.marketmap.v1.AggregateMarketConfig.market_configs:type_name -> slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry
-	11, // 7: slinky.marketmap.v1.AggregateMarketConfig.ticker_configs:type_name -> slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry
-	0,  // 8: slinky.marketmap.v1.PathsConfig.ticker:type_name -> slinky.marketmap.v1.Ticker
-	7,  // 9: slinky.marketmap.v1.PathsConfig.paths:type_name -> slinky.marketmap.v1.Path
-	8,  // 10: slinky.marketmap.v1.Path.operations:type_name -> slinky.marketmap.v1.Operation
-	0,  // 11: slinky.marketmap.v1.Operation.ticker:type_name -> slinky.marketmap.v1.Ticker
-	3,  // 12: slinky.marketmap.v1.MarketConfig.TickerConfigsEntry.value:type_name -> slinky.marketmap.v1.TickerConfig
-	4,  // 13: slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry.value:type_name -> slinky.marketmap.v1.MarketConfig
-	6,  // 14: slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry.value:type_name -> slinky.marketmap.v1.PathsConfig
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	11, // 0: slinky.marketmap.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	6,  // 1: slinky.marketmap.v1.Ticker.paths:type_name -> slinky.marketmap.v1.Path
+	1,  // 2: slinky.marketmap.v1.Ticker.providers:type_name -> slinky.marketmap.v1.ProviderConfig
+	0,  // 3: slinky.marketmap.v1.TickerConfig.ticker:type_name -> slinky.marketmap.v1.Ticker
+	8,  // 4: slinky.marketmap.v1.MarketConfig.ticker_configs:type_name -> slinky.marketmap.v1.MarketConfig.TickerConfigsEntry
+	9,  // 5: slinky.marketmap.v1.AggregateMarketConfig.market_configs:type_name -> slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry
+	10, // 6: slinky.marketmap.v1.AggregateMarketConfig.ticker_configs:type_name -> slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry
+	0,  // 7: slinky.marketmap.v1.PathsConfig.ticker:type_name -> slinky.marketmap.v1.Ticker
+	6,  // 8: slinky.marketmap.v1.PathsConfig.paths:type_name -> slinky.marketmap.v1.Path
+	7,  // 9: slinky.marketmap.v1.Path.operations:type_name -> slinky.marketmap.v1.Operation
+	11, // 10: slinky.marketmap.v1.Operation.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	2,  // 11: slinky.marketmap.v1.MarketConfig.TickerConfigsEntry.value:type_name -> slinky.marketmap.v1.TickerConfig
+	3,  // 12: slinky.marketmap.v1.AggregateMarketConfig.MarketConfigsEntry.value:type_name -> slinky.marketmap.v1.MarketConfig
+	5,  // 13: slinky.marketmap.v1.AggregateMarketConfig.TickerConfigsEntry.value:type_name -> slinky.marketmap.v1.PathsConfig
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_slinky_marketmap_v1_market_proto_init() }
@@ -6446,18 +5908,6 @@ func file_slinky_marketmap_v1_market_proto_init() {
 			}
 		}
 		file_slinky_marketmap_v1_market_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PathsConfig2); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ProviderConfig); i {
 			case 0:
 				return &v.state
@@ -6469,7 +5919,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_marketmap_v1_market_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TickerConfig); i {
 			case 0:
 				return &v.state
@@ -6481,7 +5931,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_marketmap_v1_market_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MarketConfig); i {
 			case 0:
 				return &v.state
@@ -6493,7 +5943,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_marketmap_v1_market_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AggregateMarketConfig); i {
 			case 0:
 				return &v.state
@@ -6505,7 +5955,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_marketmap_v1_market_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PathsConfig); i {
 			case 0:
 				return &v.state
@@ -6517,7 +5967,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_marketmap_v1_market_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Path); i {
 			case 0:
 				return &v.state
@@ -6529,7 +5979,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 				return nil
 			}
 		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_slinky_marketmap_v1_market_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Operation); i {
 			case 0:
 				return &v.state
@@ -6548,7 +5998,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_slinky_marketmap_v1_market_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

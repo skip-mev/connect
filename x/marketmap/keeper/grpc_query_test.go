@@ -15,7 +15,7 @@ func (s *KeeperTestSuite) TestQueryServer() {
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp1}}}},
+			{Operations: []types.Operation{{CurrencyPair: cp1}}},
 		},
 	}
 	btcEthTickerConfig := types.TickerConfig{

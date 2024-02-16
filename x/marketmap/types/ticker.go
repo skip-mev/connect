@@ -60,32 +60,9 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	// validate providers
+	if err := Providers(t.Providers).ValidateBasic(); err != nil {
+		return err
+	}
 
 	return json.IsValid([]byte(t.Metadata_JSON))
-}
-
-// NewTickerConfig returns a new TickerConfig instance. The TickerConfig is
-// the config the provider uses to create mappings between on-chain and off-chain
-// price feeds. The ticker is considered the canonical representation of the price
-// feed and the off-chain ticker is the provider specific representation.
-func NewTickerConfig(ticker Ticker, offChainTicker string) (TickerConfig, error) {
-	config := TickerConfig{
-		Ticker:         ticker,
-		OffChainTicker: offChainTicker,
-	}
-
-	if err := config.ValidateBasic(); err != nil {
-		return TickerConfig{}, err
-	}
-
-	return config, nil
-}
-
-// ValidateBasic performs basic validation on the TickerConfig.
-func (tc *TickerConfig) ValidateBasic() error {
-	if len(tc.OffChainTicker) == 0 {
-		return fmt.Errorf("off chain ticker cannot be empty")
-	}
-
-	return tc.Ticker.ValidateBasic()
 }

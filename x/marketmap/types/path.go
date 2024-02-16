@@ -66,8 +66,8 @@ func (c *PathsConfig) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
 	seen := make(map[slinkytypes.CurrencyPair]struct{})
 
 	for _, path := range c.Paths {
-		for _, ticker := range path.GetTickers() {
-			seen[ticker.CurrencyPair] = struct{}{}
+		for _, cp := range path.GetCurrencyPairs() {
+			seen[cp] = struct{}{}
 		}
 	}
 
@@ -95,42 +95,42 @@ func (p *Path) Match(ticker string) bool {
 	}
 
 	first := p.Operations[0]
-	base := first.Ticker.CurrencyPair.Base
+	base := first.CurrencyPair.Base
 	if first.Invert {
-		base = first.Ticker.CurrencyPair.Quote
+		base = first.CurrencyPair.Quote
 	}
 
 	last := p.Operations[len(p.Operations)-1]
-	quote := last.Ticker.CurrencyPair.Quote
+	quote := last.CurrencyPair.Quote
 	if last.Invert {
-		quote = last.Ticker.CurrencyPair.Base
+		quote = last.CurrencyPair.Base
 	}
 
 	return ticker == fmt.Sprintf("%s/%s", base, quote)
 }
 
-// GetTickers returns the set of tickers in the path. Note that some of the tickers
-// may need to be inverted. This function does NOT return the inverted tickers.
-func (p *Path) GetTickers() []Ticker {
-	tickers := make([]Ticker, len(p.Operations))
+// GetCurrencyPairs returns the set of CurrencyPairs in the path. Note that some of the CurrencyPairs
+// may need to be inverted. This function does NOT return the inverted CurrencyPairs.
+func (p *Path) GetCurrencyPairs() []slinkytypes.CurrencyPair {
+	cps := make([]slinkytypes.CurrencyPair, len(p.Operations))
 	for i, op := range p.Operations {
-		tickers[i] = op.Ticker
+		cps[i] = op.CurrencyPair
 	}
-	return tickers
+	return cps
 }
 
 // ShowRoute returns the route of the path in human-readable format.
 func (p *Path) ShowRoute() string {
 	hops := make([]string, len(p.Operations))
 	for i, op := range p.Operations {
-		base := op.Ticker.CurrencyPair.Base
+		base := op.CurrencyPair.Base
 		if op.Invert {
-			base = op.Ticker.CurrencyPair.Quote
+			base = op.CurrencyPair.Quote
 		}
 
-		quote := op.Ticker.CurrencyPair.Quote
+		quote := op.CurrencyPair.Quote
 		if op.Invert {
-			quote = op.Ticker.CurrencyPair.Base
+			quote = op.CurrencyPair.Base
 		}
 
 		hops[i] = fmt.Sprintf("%s/%s", base, quote)
@@ -158,34 +158,34 @@ func (p *Path) ValidateBasic() error {
 		return nil
 	}
 
-	quote := first.Ticker.CurrencyPair.Quote
+	quote := first.CurrencyPair.Quote
 	if first.Invert {
-		quote = first.Ticker.CurrencyPair.Base
+		quote = first.CurrencyPair.Base
 	}
 
 	// Ensure that the path is a directed acyclic graph.
 	seen := map[slinkytypes.CurrencyPair]struct{}{
-		first.Ticker.CurrencyPair: {},
+		first.CurrencyPair: {},
 	}
 	for _, op := range p.Operations[1:] {
 		if err := op.ValidateBasic(); err != nil {
 			return err
 		}
 
-		if _, ok := seen[op.Ticker.CurrencyPair]; ok {
+		if _, ok := seen[op.CurrencyPair]; ok {
 			return fmt.Errorf("path is not a directed acyclic graph")
 		}
-		seen[op.Ticker.CurrencyPair] = struct{}{}
+		seen[op.CurrencyPair] = struct{}{}
 
 		switch {
-		case !op.Invert && quote != op.Ticker.CurrencyPair.Base:
-			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.Ticker.CurrencyPair.Base)
-		case !op.Invert && quote == op.Ticker.CurrencyPair.Base:
-			quote = op.Ticker.CurrencyPair.Quote
-		case op.Invert && quote != op.Ticker.CurrencyPair.Quote:
-			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.Ticker.CurrencyPair.Quote)
-		case op.Invert && quote == op.Ticker.CurrencyPair.Quote:
-			quote = op.Ticker.CurrencyPair.Base
+		case !op.Invert && quote != op.CurrencyPair.Base:
+			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.CurrencyPair.Base)
+		case !op.Invert && quote == op.CurrencyPair.Base:
+			quote = op.CurrencyPair.Quote
+		case op.Invert && quote != op.CurrencyPair.Quote:
+			return fmt.Errorf("invalid path; expected %s, got %s", quote, op.CurrencyPair.Quote)
+		case op.Invert && quote == op.CurrencyPair.Quote:
+			quote = op.CurrencyPair.Base
 		}
 	}
 
@@ -196,10 +196,10 @@ func (p *Path) ValidateBasic() error {
 // in a path that represents a conversion from one ticker to another. The operation's
 // ticker is a price feed that is supported by a set of providers and may be inverted
 // if necessary.
-func NewOperation(ticker Ticker, invert bool) (Operation, error) {
+func NewOperation(cp slinkytypes.CurrencyPair, invert bool) (Operation, error) {
 	o := Operation{
-		Ticker: ticker,
-		Invert: invert,
+		CurrencyPair: cp,
+		Invert:       invert,
 	}
 
 	if err := o.ValidateBasic(); err != nil {
@@ -211,7 +211,7 @@ func NewOperation(ticker Ticker, invert bool) (Operation, error) {
 
 // ValidateBasic performs basic validation on the Operation.
 func (o *Operation) ValidateBasic() error {
-	return o.Ticker.ValidateBasic()
+	return o.CurrencyPair.ValidateBasic()
 }
 
 type Paths []Path
@@ -252,8 +252,8 @@ func (p Paths) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
 	seen := make(map[slinkytypes.CurrencyPair]struct{})
 
 	for _, path := range p {
-		for _, ticker := range path.GetTickers() {
-			seen[ticker.CurrencyPair] = struct{}{}
+		for _, cp := range path.GetCurrencyPairs() {
+			seen[cp] = struct{}{}
 		}
 	}
 

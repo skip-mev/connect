@@ -36,14 +36,6 @@ message Ticker {
   string metadata_JSON = 15;
 }
 
-// PathsConfig2 represents the list of convertable markets (paths) that will be
-// used to convert the prices of a set of tickers to a common ticker.
-message PathsConfig2 {
-  // Paths is the list of convertable markets that will be used to convert the
-  // prices of a set of tickers to a common ticker.
-  repeated Path paths = 1 [ (gogoproto.nullable) = false ];
-}
-
 message ProviderConfig {
   // Name corresponds to the name of the provider for which the configuration is
   // being set.
@@ -145,8 +137,10 @@ message Path {
 
 // Operation represents the operation configuration for a given ticker.
 message Operation {
-  // Ticker is the on-chain representation of the ticker.
-  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
+  // CurrencyPair is the on-chain currency pair for this ticker.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+      [ (gogoproto.nullable) = false ];
+
   // Invert is a boolean that indicates whether the price of the ticker should
   // be inverted.
   bool invert = 2;

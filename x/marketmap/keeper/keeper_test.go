@@ -107,7 +107,7 @@ func (s *KeeperTestSuite) TestAggregationConfigs() {
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp1}}}},
+			{Operations: []types.Operation{{CurrencyPair: cp1}}},
 		},
 	}
 	cp2 := slinkytypes.CurrencyPair{Base: "ATOM", Quote: "USDC"}
@@ -118,7 +118,7 @@ func (s *KeeperTestSuite) TestAggregationConfigs() {
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp2}}}},
+			{Operations: []types.Operation{{CurrencyPair: cp2}}},
 		},
 	}
 	s.Run("creating valid agg configs passes", func() {
@@ -144,7 +144,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 			MinProviderCount: 0,
 		},
 		Paths: []types.Path{
-			{Operations: []types.Operation{{Ticker: types.Ticker{CurrencyPair: cp1}}}},
+			{Operations: []types.Operation{{CurrencyPair: cp1}}},
 		},
 	}
 	btcEthTickerConfig := types.TickerConfig{

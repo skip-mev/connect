@@ -43,7 +43,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 						{
 							Operations: []types.Operation{
 								{
-									Ticker: btcusdt,
+									CurrencyPair: btcusdt.CurrencyPair,
 								},
 							},
 						},
@@ -72,7 +72,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 						{
 							Operations: []types.Operation{
 								{
-									Ticker: ethusdt,
+									CurrencyPair: ethusdt.CurrencyPair,
 								},
 							},
 						},
@@ -146,7 +146,7 @@ func TestAggregateMarketConfig(t *testing.T) {
 						{
 							Operations: []types.Operation{
 								{
-									Ticker: btcusdt,
+									CurrencyPair: btcusdt.CurrencyPair,
 								},
 							},
 						},
@@ -182,23 +182,15 @@ func TestAggregateMarketConfig(t *testing.T) {
 						{
 							Operations: []types.Operation{
 								{
-									Ticker: types.Ticker{
-										CurrencyPair: slinkytypes.CurrencyPair{
-											Base:  "BITCOIN",
-											Quote: "USDT",
-										},
-										Decimals:         8,
-										MinProviderCount: 1,
+									CurrencyPair: slinkytypes.CurrencyPair{
+										Base:  "BITCOIN",
+										Quote: "USDT",
 									},
 								},
 								{
-									Ticker: types.Ticker{
-										CurrencyPair: slinkytypes.CurrencyPair{
-											Base:  "USDT",
-											Quote: "USD",
-										},
-										Decimals:         8,
-										MinProviderCount: 1,
+									CurrencyPair: slinkytypes.CurrencyPair{
+										Base:  "USDT",
+										Quote: "USD",
 									},
 								},
 							},
