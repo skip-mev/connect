@@ -195,7 +195,7 @@ type Inputs struct {
 type Outputs struct {
 	depinject.Out
 
-	AlertsKeeper keeper.Keeper
+	AlertsKeeper *keeper.Keeper
 	Module       appmodule.AppModule
 }
 
@@ -230,5 +230,5 @@ func ProvideModule(in Inputs) Outputs {
 
 	m := NewAppModule(in.Cdc, *alertsKeeper)
 
-	return Outputs{AlertsKeeper: *alertsKeeper, Module: m}
+	return Outputs{AlertsKeeper: alertsKeeper, Module: m}
 }

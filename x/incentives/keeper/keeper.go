@@ -25,8 +25,8 @@ type (
 func NewKeeper(
 	sk storetypes.StoreKey,
 	incentiveStrategies map[types.Incentive]types.Strategy,
-) Keeper {
-	return Keeper{
+) *Keeper {
+	return &Keeper{
 		storeKey:            sk,
 		incentiveStrategies: incentiveStrategies,
 	}

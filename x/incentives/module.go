@@ -174,7 +174,7 @@ type Inputs struct {
 type Outputs struct {
 	depinject.Out
 
-	IncentivesKeeper keeper.Keeper
+	IncentivesKeeper *keeper.Keeper
 	Module           appmodule.AppModule
 }
 
@@ -184,7 +184,7 @@ func ProvideModule(in Inputs) Outputs {
 		in.IncentiveStrategies,
 	)
 
-	m := NewAppModule(in.Cdc, incentivesKeeper)
+	m := NewAppModule(in.Cdc, *incentivesKeeper)
 
 	return Outputs{IncentivesKeeper: incentivesKeeper, Module: m}
 }

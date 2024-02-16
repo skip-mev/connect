@@ -18,7 +18,7 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	incentivesKeeper keeper.Keeper
+	incentivesKeeper *keeper.Keeper
 	queryServer      keeper.QueryServer
 	key              storetypes.StoreKey
 	ctx              sdk.Context
@@ -32,7 +32,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.key = storetypes.NewKVStoreKey(types.StoreKey)
 	s.ctx = testutil.DefaultContext(s.key, storetypes.NewTransientStoreKey("transient_key"))
 	s.incentivesKeeper = keeper.NewKeeper(s.key, nil)
-	s.queryServer = keeper.NewQueryServer(s.incentivesKeeper)
+	s.queryServer = keeper.NewQueryServer(*s.incentivesKeeper)
 }
 
 func (s *KeeperTestSuite) SetupSubTest() {
@@ -63,7 +63,7 @@ func (s *KeeperTestSuite) SetupSubTest() {
 
 	// Reset the keeper with the new strategies.
 	s.incentivesKeeper = keeper.NewKeeper(s.key, strategies)
-	s.queryServer = keeper.NewQueryServer(s.incentivesKeeper)
+	s.queryServer = keeper.NewQueryServer(*s.incentivesKeeper)
 }
 
 func TestKeeperTestSuite(t *testing.T) {
