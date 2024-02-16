@@ -95,3 +95,10 @@ func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.
 
 	return &types.MsgParamsResponse{}, nil
 }
+
+// Params updates the x/marketmap module's Params.
+func (ms msgServer) Params(_ context.Context, _ *types.MsgParams) (*types.MsgParamsResponse, error) {
+	// TODO finish
+
+	return nil, nil
+}

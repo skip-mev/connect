@@ -23,7 +23,7 @@ func TestValidateBasic(t *testing.T) {
 		},
 		{
 			name:      "invalid authority",
-			params:    types.NewParams("incorrect"),
+			params:    types.NewParams("incorrect", 10),
 			expectErr: true,
 		},
 		{

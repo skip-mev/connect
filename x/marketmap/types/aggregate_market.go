@@ -48,7 +48,7 @@ func NewAggregateMarketConfig(markets map[string]MarketConfig, tickers map[strin
 
 // ValidateBasic performs basic validation on the AggregateMarketConfig.
 func (c *AggregateMarketConfig) ValidateBasic() error {
-	// Track all of the tickers that are supported by all providers to ensure that
+	// Track all tickers that are supported by all providers to ensure that
 	// all market conversions are supported by at least one provider.
 	seenTickers := make(map[Ticker]struct{})
 	for name, market := range c.MarketConfigs {
@@ -65,7 +65,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 		}
 	}
 
-	// Validate all of the conversion paths for each ticker.
+	// Validate all conversion paths for each ticker.
 	for ticker, cfg := range c.TickerConfigs {
 		if err := cfg.ValidateBasic(); err != nil {
 			return err
@@ -76,7 +76,7 @@ func (c *AggregateMarketConfig) ValidateBasic() error {
 			return fmt.Errorf("ticker config key does not match ticker value; expected %s, got %s", ticker, cfg.Ticker.String())
 		}
 
-		// Ensure that all of the tickers in the conversion paths are supported by at least one provider.
+		// Ensure that all tickers in the conversion paths are supported by at least one provider.
 		for ticker := range cfg.UniqueTickers() {
 			if _, ok := seenTickers[ticker]; !ok {
 				return fmt.Errorf("ticker not found in market configs: %s", ticker.String())
