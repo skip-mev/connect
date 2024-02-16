@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -17,10 +18,10 @@ func (k *Keeper) Hooks() Hooks {
 	return Hooks{k}
 }
 
-func (h Hooks) AfterMarketCreated(ctx sdk.Context) error {
+func (h Hooks) AfterMarketCreated(_ sdk.Context) error {
 	return nil
 }
 
-func (h Hooks) AfterMarketUpdated(ctx sdk.Context) error {
+func (h Hooks) AfterMarketUpdated(_ sdk.Context) error {
 	return nil
 }
