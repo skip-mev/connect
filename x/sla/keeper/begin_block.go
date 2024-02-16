@@ -6,9 +6,9 @@ import (
 )
 
 // BeginBlocker is called at the start of every block. This will fetch
-// all of the SLAs from state and execute them against the current set
+// all SLAs from state and execute them against the current set
 // of price feeds the network is maintaining.
-func (k Keeper) BeginBlocker(ctx sdk.Context) ([]cometabci.ValidatorUpdate, error) {
+func (k *Keeper) BeginBlocker(ctx sdk.Context) ([]cometabci.ValidatorUpdate, error) {
 	params, err := k.GetParams(ctx)
 	if err != nil {
 		return nil, err

@@ -13,7 +13,7 @@ func (s *KeeperTestSuite) TestUpdatePriceFeeds() {
 	id := "id"
 	sla := slatypes.NewPriceFeedSLA(id, 10, math.LegacyMustNewDecFromStr("1.0"), math.LegacyMustNewDecFromStr("1.0"), 5, 5)
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
 
 	cp := slinkytypes.NewCurrencyPair("btc", "usd")
 
@@ -141,8 +141,8 @@ func (s *KeeperTestSuite) TestUpdatePriceFeedsForSLA() {
 	id := "id"
 	sla := slatypes.NewPriceFeedSLA(id, 10, math.LegacyMustNewDecFromStr("1.0"), math.LegacyMustNewDecFromStr("1.0"), 5, 5)
 
-	consAddress1 := sdk.ConsAddress([]byte("consAddress1"))
-	consAddress2 := sdk.ConsAddress([]byte("consAddress2"))
+	consAddress1 := sdk.ConsAddress("consAddress1")
+	consAddress2 := sdk.ConsAddress("consAddress2")
 
 	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
 	cp2 := slinkytypes.NewCurrencyPair("eth", "usd")

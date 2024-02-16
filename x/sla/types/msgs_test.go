@@ -18,7 +18,7 @@ func TestMsgAddSLAs(t *testing.T) {
 	})
 
 	t.Run("should accept an empty message with a valid authority address", func(t *testing.T) {
-		msg := types.NewMsgAddSLAs(sdk.AccAddress([]byte("test")).String(), []types.PriceFeedSLA{})
+		msg := types.NewMsgAddSLAs(sdk.AccAddress("test").String(), []types.PriceFeedSLA{})
 		err := msg.ValidateBasic()
 		require.NoError(t, err)
 	})
@@ -51,19 +51,19 @@ func TestMsgAddSLAs(t *testing.T) {
 	)
 
 	t.Run("should reject a message with an invalid sla", func(t *testing.T) {
-		msg := types.NewMsgAddSLAs(sdk.AccAddress([]byte("test")).String(), []types.PriceFeedSLA{invalidSLA})
+		msg := types.NewMsgAddSLAs(sdk.AccAddress("test").String(), []types.PriceFeedSLA{invalidSLA})
 		err := msg.ValidateBasic()
 		require.Error(t, err)
 	})
 
 	t.Run("should reject a message with duplicate slas", func(t *testing.T) {
-		msg := types.NewMsgAddSLAs(sdk.AccAddress([]byte("test")).String(), []types.PriceFeedSLA{validSLA, validSLA})
+		msg := types.NewMsgAddSLAs(sdk.AccAddress("test").String(), []types.PriceFeedSLA{validSLA, validSLA})
 		err := msg.ValidateBasic()
 		require.Error(t, err)
 	})
 
 	t.Run("should accept a message with valid slas", func(t *testing.T) {
-		msg := types.NewMsgAddSLAs(sdk.AccAddress([]byte("test")).String(), []types.PriceFeedSLA{validSLA, validSLA2})
+		msg := types.NewMsgAddSLAs(sdk.AccAddress("test").String(), []types.PriceFeedSLA{validSLA, validSLA2})
 		err := msg.ValidateBasic()
 		require.NoError(t, err)
 	})
@@ -77,19 +77,19 @@ func TestMsgRemoveSLAs(t *testing.T) {
 	})
 
 	t.Run("should accept an empty message with a valid authority address", func(t *testing.T) {
-		msg := types.NewMsgRemoveSLAs(sdk.AccAddress([]byte("test")).String(), []string{})
+		msg := types.NewMsgRemoveSLAs(sdk.AccAddress("test").String(), []string{})
 		err := msg.ValidateBasic()
 		require.NoError(t, err)
 	})
 
 	t.Run("should reject a message with duplicate ids", func(t *testing.T) {
-		msg := types.NewMsgRemoveSLAs(sdk.AccAddress([]byte("test")).String(), []string{"test", "test"})
+		msg := types.NewMsgRemoveSLAs(sdk.AccAddress("test").String(), []string{"test", "test"})
 		err := msg.ValidateBasic()
 		require.Error(t, err)
 	})
 
 	t.Run("should accept a message with valid ids", func(t *testing.T) {
-		msg := types.NewMsgRemoveSLAs(sdk.AccAddress([]byte("test")).String(), []string{"test", "test2"})
+		msg := types.NewMsgRemoveSLAs(sdk.AccAddress("test").String(), []string{"test", "test2"})
 		err := msg.ValidateBasic()
 		require.NoError(t, err)
 	})
@@ -103,7 +103,7 @@ func TestMsgParams(t *testing.T) {
 	})
 
 	t.Run("should accept an empty message with a valid authority address", func(t *testing.T) {
-		msg := types.NewMsgParams(sdk.AccAddress([]byte("test")).String(), types.DefaultParams())
+		msg := types.NewMsgParams(sdk.AccAddress("test").String(), types.DefaultParams())
 		err := msg.ValidateBasic()
 		require.NoError(t, err)
 	})

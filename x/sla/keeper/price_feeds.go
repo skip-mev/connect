@@ -13,7 +13,7 @@ import (
 type PriceFeedCB func(priceFeed slatypes.PriceFeed) error
 
 // SetPriceFeed adds a price feed to the x/sla module's state.
-func (k Keeper) SetPriceFeed(
+func (k *Keeper) SetPriceFeed(
 	ctx sdk.Context,
 	priceFeed slatypes.PriceFeed,
 ) error {
@@ -23,7 +23,7 @@ func (k Keeper) SetPriceFeed(
 
 // GetPriceFeed returns the price feed with the given ID from the x/sla module's
 // state.
-func (k Keeper) GetPriceFeed(
+func (k *Keeper) GetPriceFeed(
 	ctx sdk.Context,
 	slaID string,
 	cp slinkytypes.CurrencyPair,
@@ -35,7 +35,7 @@ func (k Keeper) GetPriceFeed(
 
 // GetAllPriceFeeds returns the set of price feeds that are currently in the
 // x/sla module's state for a given SLA.
-func (k Keeper) GetAllPriceFeeds(ctx sdk.Context, slaID string) ([]slatypes.PriceFeed, error) {
+func (k *Keeper) GetAllPriceFeeds(ctx sdk.Context, slaID string) ([]slatypes.PriceFeed, error) {
 	feeds := make([]slatypes.PriceFeed, 0)
 	cb := func(feed slatypes.PriceFeed) error {
 		feeds = append(feeds, feed)
@@ -51,7 +51,7 @@ func (k Keeper) GetAllPriceFeeds(ctx sdk.Context, slaID string) ([]slatypes.Pric
 
 // RemovePriceFeed removes a price feed from the x/sla module's state. Note,
 // if the price feed does not exist, this function will not return an error.
-func (k Keeper) RemovePriceFeed(
+func (k *Keeper) RemovePriceFeed(
 	ctx sdk.Context,
 	slaID string,
 	cp slinkytypes.CurrencyPair,
@@ -63,7 +63,7 @@ func (k Keeper) RemovePriceFeed(
 
 // RemovePriceFeedByCurrencyPair removes all price feeds that track
 // a given currency pair from the x/sla module's state for a given sla.
-func (k Keeper) RemovePriceFeedByCurrencyPair(
+func (k *Keeper) RemovePriceFeedByCurrencyPair(
 	ctx sdk.Context,
 	slaID string,
 	cp slinkytypes.CurrencyPair,
@@ -74,14 +74,14 @@ func (k Keeper) RemovePriceFeedByCurrencyPair(
 
 // RemovePriceFeedsBySLA removes all price feeds that track a given SLA
 // from the x/sla module's state.
-func (k Keeper) RemovePriceFeedsBySLA(ctx sdk.Context, slaID string) error {
+func (k *Keeper) RemovePriceFeedsBySLA(ctx sdk.Context, slaID string) error {
 	prefix := collections.NewPrefixedTripleRange[string, string, []byte](slaID)
 	return k.priceFeeds.Clear(ctx, prefix)
 }
 
 // ContainsPriceFeed returns true if the x/sla module's state contains
 // a price feed with the given sla ID, currency pair, and validator.
-func (k Keeper) ContainsPriceFeed(
+func (k *Keeper) ContainsPriceFeed(
 	ctx sdk.Context,
 	slaID string,
 	cp slinkytypes.CurrencyPair,
@@ -93,7 +93,7 @@ func (k Keeper) ContainsPriceFeed(
 
 // iteratePriceFeeds iterates over the set of price feeds that
 // are currently in the x/sla module's state and belong to a given SLA.
-func (k Keeper) iteratePriceFeeds(ctx sdk.Context, slaID string, cb PriceFeedCB) error {
+func (k *Keeper) iteratePriceFeeds(ctx sdk.Context, slaID string, cb PriceFeedCB) error {
 	prefix := collections.NewPrefixedTripleRange[string, string, []byte](slaID)
 	iterator, err := k.priceFeeds.Iterate(ctx, prefix)
 	if err != nil {

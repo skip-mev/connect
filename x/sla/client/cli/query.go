@@ -10,7 +10,7 @@ import (
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
-// GetQueryCMD returns the parent command for all x/sla cli query commands.
+// GetQueryCmd returns the parent command for all x/sla cli query commands.
 func GetQueryCmd() *cobra.Command {
 	// create base command
 	cmd := &cobra.Command{
@@ -53,7 +53,7 @@ func GetAllSLAsCmd() *cobra.Command {
 	return cmd
 }
 
-// GetParams returns the cli-command that queries the current SLA parameters.
+// GetParamsCmd returns the cli-command that queries the current SLA parameters.
 func GetParamsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
