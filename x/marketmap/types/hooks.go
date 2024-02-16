@@ -40,3 +40,6 @@ func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context) error {
 
 	return nil
 }
+
+// MarketMapHooksWrapper is a wrapper for modules to inject MarketMapHooks using depinject.
+type MarketMapHooksWrapper struct{ MarketMapHooks }
