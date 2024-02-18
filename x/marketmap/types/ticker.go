@@ -69,12 +69,10 @@ func (t *Ticker) ValidateBasic() error {
 	return json.IsValid([]byte(t.Metadata_JSON))
 }
 
-type Tickers []Ticker
-
 // ValidateBasic validates each ticker and ensures there are no duplicates.
-func (ts Tickers) ValidateBasic() error {
+func (tc *TickersConfig) ValidateBasic() error {
 	seenTickers := make(map[string]struct{})
-	for _, ticker := range ts {
+	for _, ticker := range tc.Tickers {
 		if err := ticker.ValidateBasic(); err != nil {
 			return err
 		}

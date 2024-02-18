@@ -1,8 +1,9 @@
 package types_test
 
 import (
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"testing"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 
 	"github.com/stretchr/testify/require"
 
@@ -17,10 +18,12 @@ func TestGenesisState(t *testing.T) {
 
 	t.Run("good populated genesis state", func(t *testing.T) {
 		gs := types.GenesisState{
-			Tickers: []types.Ticker{
-				ethusdt,
-				btcusdt,
-				usdcusd,
+			Tickers: types.TickersConfig{
+				Tickers: []types.Ticker{
+					ethusdt,
+					btcusdt,
+					usdcusd,
+				},
 			},
 		}
 		require.NoError(t, gs.ValidateBasic())
@@ -28,15 +31,17 @@ func TestGenesisState(t *testing.T) {
 
 	t.Run("bad genesis state", func(t *testing.T) {
 		gs := types.GenesisState{
-			Tickers: []types.Ticker{
-				ethusdt,
-				types.Ticker{
-					CurrencyPair:     slinkytypes.CurrencyPair{},
-					Decimals:         0,
-					MinProviderCount: 0,
-					Paths:            nil,
-					Providers:        nil,
-					Metadata_JSON:    "",
+			Tickers: types.TickersConfig{
+				Tickers: []types.Ticker{
+					ethusdt,
+					{
+						CurrencyPair:     slinkytypes.CurrencyPair{},
+						Decimals:         0,
+						MinProviderCount: 0,
+						Paths:            nil,
+						Providers:        nil,
+						Metadata_JSON:    "",
+					},
 				},
 			},
 		}

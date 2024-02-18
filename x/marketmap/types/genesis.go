@@ -1,13 +1,13 @@
 package types
 
 // NewGenesisState returns an instance of GenesisState.
-func NewGenesisState(tickers ...Ticker) GenesisState {
+func NewGenesisState(tickersConfig TickersConfig) GenesisState {
 	return GenesisState{
-		Tickers: tickers,
+		Tickers: tickersConfig,
 	}
 }
 
 // ValidateBasic performs basic validation on the GenesisState.
 func (gs *GenesisState) ValidateBasic() error {
-	return Tickers(gs.Tickers).ValidateBasic()
+	return gs.Tickers.ValidateBasic()
 }
