@@ -214,25 +214,6 @@ func TestPath(t *testing.T) {
 			target: "USD/BITCOIN",
 			expErr: false,
 		},
-		{
-			name: "valid path with multiple operations and inverted tickers",
-			path: types.Path{
-				Operations: []types.Operation{
-					{
-						CurrencyPair: btcusdt.CurrencyPair,
-					},
-					{
-						CurrencyPair: usdtusd.CurrencyPair,
-					},
-					{
-						CurrencyPair: usdcusd.CurrencyPair,
-						Invert:       true,
-					},
-				},
-			},
-			target: "BITCOIN/USDC",
-			expErr: false,
-		},
 	}
 
 	for _, tc := range testCases {

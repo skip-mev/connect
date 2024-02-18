@@ -27,7 +27,7 @@ func (p Providers) ValidateBasic() error {
 	return nil
 }
 
-// ValidateBasic performs basic validation on a ProviderConfig
+// ValidateBasic performs basic validation on a ProviderConfig.
 func (pc *ProviderConfig) ValidateBasic() error {
 	if len(pc.Name) == 0 {
 		return fmt.Errorf("provider name must not be empty")
