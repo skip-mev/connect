@@ -36,8 +36,8 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 	}
 }
 
-// setLastUpdated sets the lastUpdated field to the current block height.
-func (k Keeper) setLastUpdated(ctx sdk.Context) error {
+// SetLastUpdated sets the lastUpdated field to the current block height.
+func (k Keeper) SetLastUpdated(ctx sdk.Context) error {
 	return k.lastUpdated.Set(ctx, ctx.BlockHeight())
 }
 
@@ -52,11 +52,11 @@ func (k Keeper) GetAllTickers(ctx sdk.Context) ([]types.Ticker, error) {
 	if err != nil {
 		return nil, err
 	}
-	configs, err := iter.Values()
+	tickers, err := iter.Values()
 	if err != nil {
 		return nil, err
 	}
-	return configs, err
+	return tickers, err
 }
 
 // CreateTicker initializes a new Ticker.
@@ -76,5 +76,5 @@ func (k Keeper) CreateTicker(ctx sdk.Context, ticker types.Ticker) error {
 		return err
 	}
 
-	return k.setLastUpdated(ctx)
+	return k.SetLastUpdated(ctx)
 }

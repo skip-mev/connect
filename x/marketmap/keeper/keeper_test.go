@@ -31,7 +31,9 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 	s.authority = sdk.AccAddress("authority")
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key")).WithBlockHeight(10)
-	return keeper.NewKeeper(ss, encCfg.Codec, s.authority)
+	k := keeper.NewKeeper(ss, encCfg.Codec, s.authority)
+	s.Require().NoError(k.SetLastUpdated(s.ctx))
+	return k
 }
 
 func (s *KeeperTestSuite) SetupTest() {
