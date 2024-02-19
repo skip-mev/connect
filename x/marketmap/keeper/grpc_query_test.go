@@ -24,4 +24,22 @@ func (s *KeeperTestSuite) TestQueryServer() {
 
 		s.Require().Equal(expected, resp)
 	})
+
+	s.Run("run query with state", func() {
+		for _, ticker := range tickers {
+			s.Require().NoError(s.keeper.CreateTicker(s.ctx, ticker))
+		}
+
+		resp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
+		s.Require().NoError(err)
+
+		expected := &types.GetMarketMapResponse{
+			MarketMap:   types.TickersConfig{Tickers: tickers},
+			LastUpdated: s.ctx.BlockHeight(),
+		}
+
+		s.Require().Equal(expected.LastUpdated, resp.LastUpdated)
+		s.Require().True(unorderedEqual(expected.MarketMap.Tickers, resp.MarketMap.Tickers))
+
+	})
 }
