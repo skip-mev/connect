@@ -40,6 +40,5 @@ func (s *KeeperTestSuite) TestQueryServer() {
 
 		s.Require().Equal(expected.LastUpdated, resp.LastUpdated)
 		s.Require().True(unorderedEqual(expected.MarketMap.Tickers, resp.MarketMap.Tickers))
-
 	})
 }
