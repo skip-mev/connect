@@ -86,7 +86,14 @@ func TestProviderMarketMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := types.NewProviderMarketMap(tc.providerName, tc.configs)
+			pmap, err := types.NewProviderMarketMap(tc.providerName, tc.configs)
+			if tc.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+
+			err = pmap.ValidateBasic()
 			if tc.expErr {
 				require.Error(t, err)
 			} else {

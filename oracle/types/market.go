@@ -61,3 +61,40 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 		OffChainMap:   offChainMap,
 	}, nil
 }
+
+// ValidateBasic performs basic validation on the provider market map.
+func (pmm ProviderMarketMap) ValidateBasic() error {
+	if len(pmm.Name) == 0 {
+		return fmt.Errorf("provider name cannot be empty")
+	}
+
+	if len(pmm.TickerConfigs) == 0 {
+		return fmt.Errorf("ticker configs cannot be empty")
+	}
+
+	if len(pmm.OffChainMap) != len(pmm.TickerConfigs) {
+		return fmt.Errorf("off-chain map length mismatch")
+	}
+
+	for ticker, config := range pmm.TickerConfigs {
+		if err := ticker.ValidateBasic(); err != nil {
+			return fmt.Errorf("invalid ticker %s: %w", ticker, err)
+		}
+
+		if err := config.ValidateBasic(); err != nil {
+			return fmt.Errorf("invalid provider config for %s: %w", ticker, err)
+
+		}
+
+		t, ok := pmm.OffChainMap[config.OffChainTicker]
+		if !ok {
+			return fmt.Errorf("off-chain ticker %s not found in off-chain map", config.OffChainTicker)
+		}
+
+		if t != ticker {
+			return fmt.Errorf("off-chain ticker %s does not match on-chain ticker %s", config.OffChainTicker, ticker)
+		}
+	}
+
+	return nil
+}
