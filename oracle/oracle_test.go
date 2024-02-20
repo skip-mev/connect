@@ -15,6 +15,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -75,7 +76,7 @@ func (s *OracleTestSuite) SetupTest() {
 		constants.ETHEREUM_USD,
 		constants.ATOM_USD,
 	}
-	s.aggregationFn = aggregator.ComputeMedian()
+	s.aggregationFn = median.ComputeMedian()
 }
 
 func (s *OracleTestSuite) TestStopWithContextCancel() {

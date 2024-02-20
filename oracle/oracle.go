@@ -13,6 +13,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 )
 
@@ -81,7 +82,7 @@ func New(opts ...Option) (*OracleImpl, error) {
 		logger:  zap.NewNop(),
 		metrics: metrics.NewNopMetrics(),
 		priceAggregator: aggregator.NewDataAggregator[string, types.TickerPrices](
-			aggregator.WithAggregateFn(aggregator.ComputeMedian()),
+			aggregator.WithAggregateFn(median.ComputeMedian()),
 		),
 		updateInterval: 1 * time.Second,
 	}

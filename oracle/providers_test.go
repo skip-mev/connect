@@ -55,8 +55,8 @@ func (s *OracleTestSuite) TestProviders() {
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
+				response := types.NewPriceResponse(resolved, nil)
+				responses := []types.PriceResponse{response}
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -83,8 +83,8 @@ func (s *OracleTestSuite) TestProviders() {
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
+				response := types.NewPriceResponse(resolved, nil)
+				responses := []types.PriceResponse{response}
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -99,8 +99,8 @@ func (s *OracleTestSuite) TestProviders() {
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response2 := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved2, nil)
-				responses2 := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response2}
+				response2 := types.NewPriceResponse(resolved2, nil)
+				responses2 := []types.PriceResponse{response2}
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					time.Second*2,
@@ -128,8 +128,8 @@ func (s *OracleTestSuite) TestProviders() {
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
+				response := types.NewPriceResponse(resolved, nil)
+				responses := []types.PriceResponse{response}
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,
@@ -156,8 +156,8 @@ func (s *OracleTestSuite) TestProviders() {
 						Timestamp: time.Date(1738, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
+				response := types.NewPriceResponse(resolved, nil)
+				responses := []types.PriceResponse{response}
 				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
 					s.T(),
 					s.logger,

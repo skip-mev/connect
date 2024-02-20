@@ -15,8 +15,9 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
 
+	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/mocks"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/metrics"
 	server "github.com/skip-mev/slinky/service/servers/oracle"
@@ -123,19 +124,12 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
-	cp1 := slinkytypes.CurrencyPair{
-		Base:  "BTC",
-		Quote: "USD",
-	}
+	ticker1 := constants.BITCOIN_USD
+	ticker2 := constants.ETHEREUM_USD
 
-	cp2 := slinkytypes.CurrencyPair{
-		Base:  "ETH",
-		Quote: "USD",
-	}
-
-	s.mockOracle.On("GetPrices").Return(map[slinkytypes.CurrencyPair]*big.Int{
-		cp1: big.NewInt(100),
-		cp2: big.NewInt(200),
+	s.mockOracle.On("GetPrices").Return(types.TickerPrices{
+		ticker1: big.NewInt(100),
+		ticker2: big.NewInt(200),
 	})
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)
@@ -145,8 +139,8 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().NoError(err)
 
 	// check response
-	s.Require().Equal(resp.Prices[cp1.String()], big.NewInt(100).String())
-	s.Require().Equal(resp.Prices[cp2.String()], big.NewInt(200).String())
+	s.Require().Equal(resp.Prices[ticker1.String()], big.NewInt(100).String())
+	s.Require().Equal(resp.Prices[ticker2.String()], big.NewInt(200).String())
 	// check timestamp
 
 	s.Require().Equal(resp.Timestamp, ts.UTC())
@@ -159,7 +153,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 	s.Require().Equal(http.StatusOK, httpResp.StatusCode)
 	respBz, err := io.ReadAll(httpResp.Body)
 	s.Require().NoError(err)
-	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, cp1.String(), cp2.String()))
+	s.Require().Contains(string(respBz), fmt.Sprintf(`{"prices":{"%s":"100","%s":"200"},"timestamp":`, ticker1.String(), ticker2.String()))
 }
 
 // test that the oracle server closes when expected.

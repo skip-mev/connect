@@ -1,12 +1,10 @@
 package oracle
 
 import (
-	"math/big"
-
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
-func ToReqPrices(prices map[slinkytypes.CurrencyPair]*big.Int) map[string]string {
+func ToReqPrices(prices types.TickerPrices) map[string]string {
 	reqPrices := make(map[string]string, len(prices))
 
 	for cp, price := range prices {

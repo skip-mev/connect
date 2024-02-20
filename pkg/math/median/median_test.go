@@ -1,4 +1,4 @@
-package aggregator_test
+package median_test
 
 import (
 	"math/big"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -93,7 +94,7 @@ func TestComputeMedian(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			medianFn := aggregator.ComputeMedian()
+			medianFn := median.ComputeMedian()
 			prices := medianFn(tc.providerPrices)
 
 			if len(prices) != len(tc.expectedPrices) {
