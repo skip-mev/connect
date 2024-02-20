@@ -4,8 +4,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -13,17 +13,17 @@ import (
 func TestComputeMedian(t *testing.T) {
 	testCases := []struct {
 		name           string
-		providerPrices aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]
+		providerPrices types.ProviderPrices
 		expectedPrices map[mmtypes.Ticker]*big.Int
 	}{
 		{
 			"empty provider prices",
-			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{},
+			types.ProviderPrices{},
 			map[mmtypes.Ticker]*big.Int{},
 		},
 		{
 			"single provider price",
-			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
+			types.ProviderPrices{
 				"provider1": {
 					constants.BITCOIN_USD:  big.NewInt(100),
 					constants.ETHEREUM_USD: big.NewInt(200),
@@ -36,7 +36,7 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"multiple provider prices",
-			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
+			types.ProviderPrices{
 				"provider1": {
 					constants.BITCOIN_USD:  big.NewInt(100),
 					constants.ETHEREUM_USD: big.NewInt(200),
@@ -53,7 +53,7 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"multiple provider prices with different assets",
-			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
+			types.ProviderPrices{
 				"provider1": {
 					constants.BITCOIN_USD:  big.NewInt(100),
 					constants.ETHEREUM_USD: big.NewInt(200),
@@ -71,7 +71,7 @@ func TestComputeMedian(t *testing.T) {
 		},
 		{
 			"odd number of provider prices",
-			aggregator.AggregatedProviderData[string, map[mmtypes.Ticker]*big.Int]{
+			types.ProviderPrices{
 				"provider1": {
 					constants.BITCOIN_USD:  big.NewInt(100),
 					constants.ETHEREUM_USD: big.NewInt(200),

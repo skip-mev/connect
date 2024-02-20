@@ -53,7 +53,11 @@ type (
 	// function is responsible for aggregating the resolved prices into a single
 	// price. The string key is the provider name and the value is the resolved prices
 	// from that provider.
-	PriceAggregationFn = aggregator.AggregateFn[string, map[mmtypes.Ticker]*big.Int]
+	PriceAggregationFn = aggregator.AggregateFn[string, TickerPrices]
+
+	// ProviderPrices is a type alias for the provider prices. This is a map of provider
+	// names to the prices returned by that provider.
+	ProviderPrices = aggregator.AggregatedProviderData[string, TickerPrices]
 )
 
 var (

@@ -6,7 +6,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -18,7 +17,7 @@ func ComputeMedianWithContext(_ sdk.Context) types.PriceAggregationFn {
 // ComputeMedian inputs the aggregated prices from all providers and computes
 // the median price for each asset.
 func ComputeMedian() types.PriceAggregationFn {
-	return func(providers aggregator.AggregatedProviderData[string, types.TickerPrices]) types.TickerPrices {
+	return func(providers types.ProviderPrices) types.TickerPrices {
 		// Aggregate prices across all providers for each asset.
 		pricesByAsset := make(map[mmtypes.Ticker][]*big.Int)
 		for _, providerPrices := range providers {
