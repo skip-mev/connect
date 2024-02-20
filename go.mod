@@ -40,6 +40,7 @@ require (
 	github.com/klauspost/compress v1.17.6
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/prometheus/client_golang v1.18.0
+	github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -55,8 +56,6 @@ require (
 	google.golang.org/protobuf v1.32.0
 	mvdan.cc/gofumpt v0.6.0
 )
-
-require github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
