@@ -18,6 +18,18 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+		Paths: []types.Path{
+			{
+				[]types.Operation{
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "BITCOIN",
+							Quote: "USDT",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	usdtusd = types.Ticker{
@@ -27,6 +39,18 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+		Paths: []types.Path{
+			{
+				[]types.Operation{
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	usdcusd = types.Ticker{
@@ -36,6 +60,18 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+		Paths: []types.Path{
+			{
+				[]types.Operation{
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "USDC",
+							Quote: "USD",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	ethusdt = types.Ticker{
@@ -45,115 +81,20 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+		Paths: []types.Path{
+			{
+				[]types.Operation{
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "ETHEREUM",
+							Quote: "USDT",
+						},
+					},
+				},
+			},
+		},
 	}
 )
-
-func TestPathsConfig(t *testing.T) {
-	testCases := []struct {
-		name   string
-		config types.PathsConfig
-		expErr bool
-	}{
-		{
-			name: "valid paths config",
-			config: types.PathsConfig{
-				Ticker: btcusdt,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								Ticker: btcusdt,
-							},
-						},
-					},
-				},
-			},
-			expErr: false,
-		},
-		{
-			name: "empty paths",
-			config: types.PathsConfig{
-				Ticker: btcusdt,
-				Paths:  []types.Path{},
-			},
-			expErr: true,
-		},
-		{
-			name: "invalid ticker",
-			config: types.PathsConfig{
-				Ticker: types.Ticker{},
-				Paths:  []types.Path{},
-			},
-			expErr: true,
-		},
-		{
-			name: "invalid path",
-			config: types.PathsConfig{
-				Ticker: btcusdt,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								Ticker: types.Ticker{},
-							},
-						},
-					},
-				},
-			},
-			expErr: true,
-		},
-		{
-			name: "invalid path with mismatching ticker",
-			config: types.PathsConfig{
-				Ticker: btcusdt,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								Ticker: ethusdt,
-							},
-						},
-					},
-				},
-			},
-			expErr: true,
-		},
-		{
-			name: "duplicate path",
-			config: types.PathsConfig{
-				Ticker: btcusdt,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								Ticker: btcusdt,
-							},
-						},
-					},
-					{
-						Operations: []types.Operation{
-							{
-								Ticker: btcusdt,
-							},
-						},
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := tc.config.ValidateBasic()
-			if tc.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
 
 func TestPath(t *testing.T) {
 	testCases := []struct {
@@ -173,7 +114,7 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: types.Ticker{},
+						CurrencyPair: slinkytypes.CurrencyPair{},
 					},
 				},
 			},
@@ -185,10 +126,10 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: btcusdt,
+						CurrencyPair: btcusdt.CurrencyPair,
 					},
 					{
-						Ticker: types.Ticker{},
+						CurrencyPair: slinkytypes.CurrencyPair{},
 					},
 				},
 			},
@@ -200,10 +141,10 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: btcusdt,
+						CurrencyPair: btcusdt.CurrencyPair,
 					},
 					{
-						Ticker: ethusdt,
+						CurrencyPair: ethusdt.CurrencyPair,
 					},
 				},
 			},
@@ -215,14 +156,14 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: btcusdt,
+						CurrencyPair: btcusdt.CurrencyPair,
 					},
 					{
-						Ticker: usdtusd,
+						CurrencyPair: usdtusd.CurrencyPair,
 					},
 					{
-						Ticker: usdtusd,
-						Invert: true,
+						CurrencyPair: usdtusd.CurrencyPair,
+						Invert:       true,
 					},
 				},
 			},
@@ -234,7 +175,7 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: btcusdt,
+						CurrencyPair: btcusdt.CurrencyPair,
 					},
 				},
 			},
@@ -246,10 +187,10 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: btcusdt,
+						CurrencyPair: btcusdt.CurrencyPair,
 					},
 					{
-						Ticker: usdtusd,
+						CurrencyPair: usdtusd.CurrencyPair,
 					},
 				},
 			},
@@ -261,35 +202,16 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						Ticker: usdtusd,
-						Invert: true,
+						CurrencyPair: usdtusd.CurrencyPair,
+						Invert:       true,
 					},
 					{
-						Ticker: btcusdt,
-						Invert: true,
+						CurrencyPair: btcusdt.CurrencyPair,
+						Invert:       true,
 					},
 				},
 			},
 			target: "USD/BITCOIN",
-			expErr: false,
-		},
-		{
-			name: "valid path with multiple operations and inverted tickers",
-			path: types.Path{
-				Operations: []types.Operation{
-					{
-						Ticker: btcusdt,
-					},
-					{
-						Ticker: usdtusd,
-					},
-					{
-						Ticker: usdcusd,
-						Invert: true,
-					},
-				},
-			},
-			target: "BITCOIN/USDC",
 			expErr: false,
 		},
 	}
@@ -309,22 +231,18 @@ func TestPath(t *testing.T) {
 
 func TestOperation(t *testing.T) {
 	t.Run("valid operation", func(t *testing.T) {
-		ticker := types.Ticker{
-			CurrencyPair: slinkytypes.CurrencyPair{
-				Base:  "BITCOIN",
-				Quote: "USDT",
-			},
-			Decimals:         8,
-			MinProviderCount: 1,
+		cp := slinkytypes.CurrencyPair{
+			Base:  "BITCOIN",
+			Quote: "USDT",
 		}
 
-		_, err := types.NewOperation(ticker, false)
+		_, err := types.NewOperation(cp, false)
 		require.NoError(t, err)
 	})
 
 	t.Run("invalid operation", func(t *testing.T) {
-		ticker := types.Ticker{}
-		_, err := types.NewOperation(ticker, false)
+		cp := slinkytypes.CurrencyPair{}
+		_, err := types.NewOperation(cp, false)
 		require.Error(t, err)
 	})
 }

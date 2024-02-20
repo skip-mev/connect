@@ -13,28 +13,18 @@ const (
 )
 
 var (
-	// MarketConfigsPrefix is the key prefix for provider MarketConfigs.
-	MarketConfigsPrefix = collections.NewPrefix(0)
-
-	// AggregationConfigsPrefix is the key prefix for PathsConfigs per-Ticker.
-	AggregationConfigsPrefix = collections.NewPrefix(1)
+	// TickersPrefix is the key prefix for Tickers.
+	TickersPrefix = collections.NewPrefix(0)
 
 	// LastUpdatedPrefix is the key prefix for the lastUpdated height.
 	LastUpdatedPrefix = collections.NewPrefix(2)
 
-	// MarketProviderCodec is the collections.KeyCodec value used for the marketConfigs map.
-	MarketProviderCodec = codec.NewStringKeyCodec[MarketProvider]()
-
-	// TickerStringCodec is the collections.KeyCodec value used for the aggregationConfigs map.
-	TickerStringCodec = codec.NewStringKeyCodec[TickerString]()
+	// TickersCodec is the collections.KeyCodec value used for the markets map.
+	TickersCodec = codec.NewStringKeyCodec[TickerString]()
 
 	// LastUpdatedCodec is the collections.KeyCodec value used for the lastUpdated value.
 	LastUpdatedCodec = codec.KeyToValueCodec[int64](codec.NewInt64Key[int64]())
 )
-
-// MarketProvider is the unique name used to key the MarketConfigs in the marketmap module.
-// It is identical to the MarketConfig.Name property which is stored as the value in the Keeper.marketConfigs map.
-type MarketProvider string
 
 // TickerString is the key used to identify unique pairs of Base/Quote with corresponding PathsConfig objects--or in other words AggregationConfigs.
 // The TickerString is identical to Slinky's CurrencyPair.String() output in that it is `Base` and `Quote` joined by `/` i.e. `$BASE/$QUOTE`.

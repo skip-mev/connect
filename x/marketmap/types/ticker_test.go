@@ -25,8 +25,75 @@ func TestTicker(t *testing.T) {
 				},
 				Decimals:         8,
 				MinProviderCount: 1,
+				Paths: []types.Path{
+					{
+						Operations: []types.Operation{
+							{
+								CurrencyPair: btcusdt.CurrencyPair,
+							},
+						},
+					},
+				},
+				Providers: []types.ProviderConfig{
+					{
+						Name:           "binance",
+						OffChainTicker: "btc-usd",
+					},
+					{
+						Name:           "kucoin",
+						OffChainTicker: "btcusd",
+					},
+				},
 			},
 			expErr: false,
+		},
+		{
+			name: "valid ticker multiple paths",
+			ticker: types.Ticker{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USD",
+				},
+				Decimals:         8,
+				MinProviderCount: 1,
+				Paths: []types.Path{
+					{
+						Operations: []types.Operation{
+							{
+								CurrencyPair: btcusdt.CurrencyPair,
+							},
+							{
+								CurrencyPair: usdtusd.CurrencyPair,
+							},
+						},
+					},
+				},
+			},
+			expErr: false,
+		},
+		{
+			name: "invalid paths",
+			ticker: types.Ticker{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Decimals:         8,
+				MinProviderCount: 1,
+				Paths: []types.Path{
+					{
+						Operations: []types.Operation{
+							{
+								CurrencyPair: btcusdt.CurrencyPair,
+							},
+							{
+								CurrencyPair: ethusdt.CurrencyPair,
+							},
+						},
+					},
+				},
+			},
+			expErr: true,
 		},
 		{
 			name: "empty base",
@@ -105,72 +172,6 @@ func TestTicker(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.ticker.ValidateBasic()
-			if tc.expErr {
-				require.Error(t, err)
-				return
-			}
-
-			require.NoError(t, err)
-		})
-	}
-}
-
-func TestTickerConfig(t *testing.T) {
-	testCases := []struct {
-		name         string
-		tickerConfig types.TickerConfig
-		expErr       bool
-	}{
-		{
-			name: "valid ticker config",
-			tickerConfig: types.TickerConfig{
-				Ticker: types.Ticker{
-					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "BITCOIN",
-						Quote: "USDT",
-					},
-					Decimals:         8,
-					MinProviderCount: 1,
-				},
-				OffChainTicker: "BTC/USDT",
-			},
-			expErr: false,
-		},
-		{
-			name: "invalid ticker",
-			tickerConfig: types.TickerConfig{
-				Ticker: types.Ticker{
-					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "",
-						Quote: "USDT",
-					},
-					Decimals:         8,
-					MinProviderCount: 1,
-				},
-				OffChainTicker: "BTC/USDT",
-			},
-			expErr: true,
-		},
-		{
-			name: "invalid off chain ticker",
-			tickerConfig: types.TickerConfig{
-				Ticker: types.Ticker{
-					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "BITCOIN",
-						Quote: "USDT",
-					},
-					Decimals:         8,
-					MinProviderCount: 1,
-				},
-				OffChainTicker: "",
-			},
-			expErr: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			err := tc.tickerConfig.ValidateBasic()
 			if tc.expErr {
 				require.Error(t, err)
 				return
