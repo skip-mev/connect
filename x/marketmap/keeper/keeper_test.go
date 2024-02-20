@@ -137,17 +137,17 @@ var (
 	}
 
 	paths = map[string]types.Paths{
-		btcusdt.String(): {btcusdt.Paths},
-		usdcusd.String(): {usdcusd.Paths},
-		usdtusd.String(): {usdtusd.Paths},
-		ethusdt.String(): {ethusdt.Paths},
+		btcusdt.String(): {Paths: btcusdt.Paths},
+		usdcusd.String(): {Paths: usdcusd.Paths},
+		usdtusd.String(): {Paths: usdtusd.Paths},
+		ethusdt.String(): {Paths: ethusdt.Paths},
 	}
 
 	providers = map[string]types.Providers{
-		btcusdt.String(): {btcusdt.Providers},
-		usdcusd.String(): {usdcusd.Providers},
-		usdtusd.String(): {usdtusd.Providers},
-		ethusdt.String(): {ethusdt.Providers},
+		btcusdt.String(): {Providers: btcusdt.Providers},
+		usdcusd.String(): {Providers: usdcusd.Providers},
+		usdtusd.String(): {Providers: usdtusd.Providers},
+		ethusdt.String(): {Providers: ethusdt.Providers},
 	}
 )
 
