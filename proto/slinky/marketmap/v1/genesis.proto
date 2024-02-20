@@ -10,4 +10,9 @@ message GenesisState {
   // MarketMap defines the global set of market configurations for all providers
   // and markets.
   MarketMap market_map = 1 [ (gogoproto.nullable) = false ];
+
+  // LastUpdated is the last block height that the market map was updated.
+  // This field can be used as an optimization for clients checking if there
+  // is a new update to the map.
+  int64 last_updated = 2;
 }

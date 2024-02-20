@@ -57,14 +57,18 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	// validate paths
-	// if err := t.Paths.ValidateBasic(t.CurrencyPair); err != nil {
-	//	return err
-	// }
+	// TODO move
+	paths := Paths{t.Paths}
+	if err := paths.ValidateBasic(t.CurrencyPair); err != nil {
+		return err
+	}
 
 	// validate providers
-	// if err := t.Providers.ValidateBasic(); err != nil {
-	//	return err
-	// }
+	// TODO move
+	providers := Providers{t.Providers}
+	if err := providers.ValidateBasic(); err != nil {
+		return err
+	}
 
 	return json.IsValid([]byte(t.Metadata_JSON))
 }
