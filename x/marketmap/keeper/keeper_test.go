@@ -29,10 +29,16 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
+
 	s.authority = sdk.AccAddress("authority")
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key")).WithBlockHeight(10)
+
 	k := keeper.NewKeeper(ss, encCfg.Codec, s.authority)
 	s.Require().NoError(k.SetLastUpdated(s.ctx))
+
+	params := types.NewParams(types.DefaultMarketAuthority, 10)
+	s.Require().NoError(k.SetParams(s.ctx, params))
+
 	return k
 }
 
@@ -254,5 +260,18 @@ func (s *KeeperTestSuite) TestGets() {
 
 		s.Require().Equal(len(providers), len(got))
 		s.Require().Equal(providers, got)
+	})
+}
+
+func (s *KeeperTestSuite) TestSetParams() {
+	params := types.DefaultParams()
+
+	s.Run("can set and get params", func() {
+		err := s.keeper.SetParams(s.ctx, params)
+		s.Require().NoError(err)
+
+		params2, err := s.keeper.GetParams(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(params, params2)
 	})
 }

@@ -24,6 +24,7 @@ func (s *KeeperTestSuite) TestQueryServer() {
 				Providers: make(map[string]types.Providers),
 			},
 			LastUpdated: s.ctx.BlockHeight(),
+			Version:     10,
 		}
 
 		s.Require().Equal(expected, resp)
@@ -56,5 +57,24 @@ func (s *KeeperTestSuite) TestQueryServer() {
 
 		s.Require().Equal(expected.LastUpdated, resp.LastUpdated)
 		s.Require().Equal(expected.MarketMap, resp.MarketMap)
+	})
+}
+
+func (s *KeeperTestSuite) TestQueryServerParams() {
+	params := types.DefaultParams()
+	s.Require().NoError(s.keeper.SetParams(s.ctx, params))
+
+	qs := keeper.NewQueryServer(s.keeper)
+
+	s.Run("run valid request", func() {
+		resp, err := qs.Params(s.ctx, &types.ParamsRequest{})
+		s.Require().NoError(err)
+
+		s.Require().Equal(params, resp.Params)
+	})
+
+	s.Run("run invalid nil request", func() {
+		_, err := qs.Params(s.ctx, nil)
+		s.Require().Error(err)
 	})
 }
