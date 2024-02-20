@@ -32,13 +32,6 @@ message Ticker {
   // the ticker valid.
   uint64 min_provider_count = 4;
 
-  // Paths is the list of convertable markets that will be used to convert the
-  // prices of a set of tickers to a common ticker.
-  repeated Path paths = 5 [ (gogoproto.nullable) = false ];
-
-  // Providers is the list of provider configurations for the given ticker.
-  repeated ProviderConfig providers = 6 [ (gogoproto.nullable) = false ];
-
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
   string metadata_JSON = 15;
@@ -86,9 +79,14 @@ message Providers {
 }
 
 message MarketMap {
-  // Tickers is the full list of markets and their associated configurations to
+  // Tickers is the full list of tickers and their associated configurations to
   // be stored on-chain.
   map<string, Ticker> tickers = 1 [ (gogoproto.nullable) = false ];
+
+  // Paths is a map from CurrencyPair to all paths that resolve to that pair
   map<string, Paths> paths = 2 [ (gogoproto.nullable) = false ];
+
+  // Providers is a map from CurrencyPair to each of to provider-specific
+  // configs associated with it.
   map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
 }
