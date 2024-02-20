@@ -23,14 +23,14 @@ func TestGenesisState(t *testing.T) {
 					usdcusd.String(): usdcusd,
 				},
 				Paths: map[string]types.Paths{
-					ethusdt.String(): {ethusdt.Paths},
-					btcusdt.String(): {btcusdt.Paths},
-					usdcusd.String(): {usdcusd.Paths},
+					ethusdt.String(): ethusdtPaths,
+					btcusdt.String(): btcusdtPaths,
+					usdcusd.String(): usdcusdPaths,
 				},
 				Providers: map[string]types.Providers{
-					ethusdt.String(): {ethusdt.Providers},
-					btcusdt.String(): {btcusdt.Providers},
-					usdcusd.String(): {usdcusd.Providers},
+					ethusdt.String(): ethusdtProviders,
+					btcusdt.String(): btcusdtProviders,
+					usdcusd.String(): usdcusdProviders,
 				},
 			},
 		}
@@ -46,14 +46,14 @@ func TestGenesisState(t *testing.T) {
 					usdcusd.String(): usdcusd,
 				},
 				Paths: map[string]types.Paths{
-					ethusdt.String(): {ethusdt.Paths},
-					btcusdt.String(): {btcusdt.Paths},
-					usdcusd.String(): {usdcusd.Paths},
+					ethusdt.String(): ethusdtPaths,
+					btcusdt.String(): btcusdtPaths,
+					usdcusd.String(): usdcusdPaths,
 				},
 				Providers: map[string]types.Providers{
-					usdtusd.String(): {usdtusd.Providers},
-					btcusdt.String(): {btcusdt.Providers},
-					usdcusd.String(): {usdcusd.Providers},
+					usdtusd.String(): usdtusdProviders,
+					btcusdt.String(): btcusdtProviders,
+					usdcusd.String(): usdcusdProviders,
 				},
 			},
 		}

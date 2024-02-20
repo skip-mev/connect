@@ -509,115 +509,11 @@ func (x *fastReflection_TickersConfig) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var _ protoreflect.List = (*_Ticker_5_list)(nil)
-
-type _Ticker_5_list struct {
-	list *[]*Path
-}
-
-func (x *_Ticker_5_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Ticker_5_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Ticker_5_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Path)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Ticker_5_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Path)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Ticker_5_list) AppendMutable() protoreflect.Value {
-	v := new(Path)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Ticker_5_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Ticker_5_list) NewElement() protoreflect.Value {
-	v := new(Path)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Ticker_5_list) IsValid() bool {
-	return x.list != nil
-}
-
-var _ protoreflect.List = (*_Ticker_6_list)(nil)
-
-type _Ticker_6_list struct {
-	list *[]*ProviderConfig
-}
-
-func (x *_Ticker_6_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Ticker_6_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Ticker_6_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ProviderConfig)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Ticker_6_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ProviderConfig)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Ticker_6_list) AppendMutable() protoreflect.Value {
-	v := new(ProviderConfig)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Ticker_6_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Ticker_6_list) NewElement() protoreflect.Value {
-	v := new(ProviderConfig)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Ticker_6_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
 	md_Ticker                    protoreflect.MessageDescriptor
 	fd_Ticker_currency_pair      protoreflect.FieldDescriptor
 	fd_Ticker_decimals           protoreflect.FieldDescriptor
 	fd_Ticker_min_provider_count protoreflect.FieldDescriptor
-	fd_Ticker_paths              protoreflect.FieldDescriptor
-	fd_Ticker_providers          protoreflect.FieldDescriptor
 	fd_Ticker_metadata_JSON      protoreflect.FieldDescriptor
 )
 
@@ -627,8 +523,6 @@ func init() {
 	fd_Ticker_currency_pair = md_Ticker.Fields().ByName("currency_pair")
 	fd_Ticker_decimals = md_Ticker.Fields().ByName("decimals")
 	fd_Ticker_min_provider_count = md_Ticker.Fields().ByName("min_provider_count")
-	fd_Ticker_paths = md_Ticker.Fields().ByName("paths")
-	fd_Ticker_providers = md_Ticker.Fields().ByName("providers")
 	fd_Ticker_metadata_JSON = md_Ticker.Fields().ByName("metadata_JSON")
 }
 
@@ -715,18 +609,6 @@ func (x *fastReflection_Ticker) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if len(x.Paths) != 0 {
-		value := protoreflect.ValueOfList(&_Ticker_5_list{list: &x.Paths})
-		if !f(fd_Ticker_paths, value) {
-			return
-		}
-	}
-	if len(x.Providers) != 0 {
-		value := protoreflect.ValueOfList(&_Ticker_6_list{list: &x.Providers})
-		if !f(fd_Ticker_providers, value) {
-			return
-		}
-	}
 	if x.Metadata_JSON != "" {
 		value := protoreflect.ValueOfString(x.Metadata_JSON)
 		if !f(fd_Ticker_metadata_JSON, value) {
@@ -754,10 +636,6 @@ func (x *fastReflection_Ticker) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Decimals != uint64(0)
 	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		return x.MinProviderCount != uint64(0)
-	case "slinky.marketmap.v1.Ticker.paths":
-		return len(x.Paths) != 0
-	case "slinky.marketmap.v1.Ticker.providers":
-		return len(x.Providers) != 0
 	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		return x.Metadata_JSON != ""
 	default:
@@ -782,10 +660,6 @@ func (x *fastReflection_Ticker) Clear(fd protoreflect.FieldDescriptor) {
 		x.Decimals = uint64(0)
 	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		x.MinProviderCount = uint64(0)
-	case "slinky.marketmap.v1.Ticker.paths":
-		x.Paths = nil
-	case "slinky.marketmap.v1.Ticker.providers":
-		x.Providers = nil
 	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		x.Metadata_JSON = ""
 	default:
@@ -813,18 +687,6 @@ func (x *fastReflection_Ticker) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		value := x.MinProviderCount
 		return protoreflect.ValueOfUint64(value)
-	case "slinky.marketmap.v1.Ticker.paths":
-		if len(x.Paths) == 0 {
-			return protoreflect.ValueOfList(&_Ticker_5_list{})
-		}
-		listValue := &_Ticker_5_list{list: &x.Paths}
-		return protoreflect.ValueOfList(listValue)
-	case "slinky.marketmap.v1.Ticker.providers":
-		if len(x.Providers) == 0 {
-			return protoreflect.ValueOfList(&_Ticker_6_list{})
-		}
-		listValue := &_Ticker_6_list{list: &x.Providers}
-		return protoreflect.ValueOfList(listValue)
 	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		value := x.Metadata_JSON
 		return protoreflect.ValueOfString(value)
@@ -854,14 +716,6 @@ func (x *fastReflection_Ticker) Set(fd protoreflect.FieldDescriptor, value proto
 		x.Decimals = value.Uint()
 	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		x.MinProviderCount = value.Uint()
-	case "slinky.marketmap.v1.Ticker.paths":
-		lv := value.List()
-		clv := lv.(*_Ticker_5_list)
-		x.Paths = *clv.list
-	case "slinky.marketmap.v1.Ticker.providers":
-		lv := value.List()
-		clv := lv.(*_Ticker_6_list)
-		x.Providers = *clv.list
 	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		x.Metadata_JSON = value.Interface().(string)
 	default:
@@ -889,18 +743,6 @@ func (x *fastReflection_Ticker) Mutable(fd protoreflect.FieldDescriptor) protore
 			x.CurrencyPair = new(v1.CurrencyPair)
 		}
 		return protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
-	case "slinky.marketmap.v1.Ticker.paths":
-		if x.Paths == nil {
-			x.Paths = []*Path{}
-		}
-		value := &_Ticker_5_list{list: &x.Paths}
-		return protoreflect.ValueOfList(value)
-	case "slinky.marketmap.v1.Ticker.providers":
-		if x.Providers == nil {
-			x.Providers = []*ProviderConfig{}
-		}
-		value := &_Ticker_6_list{list: &x.Providers}
-		return protoreflect.ValueOfList(value)
 	case "slinky.marketmap.v1.Ticker.decimals":
 		panic(fmt.Errorf("field decimals of message slinky.marketmap.v1.Ticker is not mutable"))
 	case "slinky.marketmap.v1.Ticker.min_provider_count":
@@ -927,12 +769,6 @@ func (x *fastReflection_Ticker) NewField(fd protoreflect.FieldDescriptor) protor
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "slinky.marketmap.v1.Ticker.paths":
-		list := []*Path{}
-		return protoreflect.ValueOfList(&_Ticker_5_list{list: &list})
-	case "slinky.marketmap.v1.Ticker.providers":
-		list := []*ProviderConfig{}
-		return protoreflect.ValueOfList(&_Ticker_6_list{list: &list})
 	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		return protoreflect.ValueOfString("")
 	default:
@@ -1014,18 +850,6 @@ func (x *fastReflection_Ticker) ProtoMethods() *protoiface.Methods {
 		if x.MinProviderCount != 0 {
 			n += 1 + runtime.Sov(uint64(x.MinProviderCount))
 		}
-		if len(x.Paths) > 0 {
-			for _, e := range x.Paths {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if len(x.Providers) > 0 {
-			for _, e := range x.Providers {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
 		l = len(x.Metadata_JSON)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -1065,38 +889,6 @@ func (x *fastReflection_Ticker) ProtoMethods() *protoiface.Methods {
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Metadata_JSON)))
 			i--
 			dAtA[i] = 0x7a
-		}
-		if len(x.Providers) > 0 {
-			for iNdEx := len(x.Providers) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Providers[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x32
-			}
-		}
-		if len(x.Paths) > 0 {
-			for iNdEx := len(x.Paths) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Paths[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x2a
-			}
 		}
 		if x.MinProviderCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.MinProviderCount))
@@ -1245,74 +1037,6 @@ func (x *fastReflection_Ticker) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Paths = append(x.Paths, &Path{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Paths[len(x.Paths)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 6:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Providers", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Providers = append(x.Providers, &ProviderConfig{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Providers[len(x.Providers)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			case 15:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata_JSON", wireType)
@@ -5237,11 +4961,6 @@ type Ticker struct {
 	// MinProviderCount is the minimum number of providers required to consider
 	// the ticker valid.
 	MinProviderCount uint64 `protobuf:"varint,4,opt,name=min_provider_count,json=minProviderCount,proto3" json:"min_provider_count,omitempty"`
-	// Paths is the list of convertable markets that will be used to convert the
-	// prices of a set of tickers to a common ticker.
-	Paths []*Path `protobuf:"bytes,5,rep,name=paths,proto3" json:"paths,omitempty"`
-	// Providers is the list of provider configurations for the given ticker.
-	Providers []*ProviderConfig `protobuf:"bytes,6,rep,name=providers,proto3" json:"providers,omitempty"`
 	// MetadataJSON is a string of JSON that encodes any extra configuration
 	// for the given ticker.
 	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
@@ -5286,20 +5005,6 @@ func (x *Ticker) GetMinProviderCount() uint64 {
 		return x.MinProviderCount
 	}
 	return 0
-}
-
-func (x *Ticker) GetPaths() []*Path {
-	if x != nil {
-		return x.Paths
-	}
-	return nil
-}
-
-func (x *Ticker) GetProviders() []*ProviderConfig {
-	if x != nil {
-		return x.Providers
-	}
-	return nil
 }
 
 func (x *Ticker) GetMetadata_JSON() string {
@@ -5521,10 +5226,13 @@ type MarketMap struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Tickers is the full list of markets and their associated configurations to
+	// Tickers is the full list of tickers and their associated configurations to
 	// be stored on-chain.
-	Tickers   map[string]*Ticker    `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	Paths     map[string]*Paths     `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Tickers map[string]*Ticker `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Paths is a map from CurrencyPair to all paths that resolve to that pair
+	Paths map[string]*Paths `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Providers is a map from CurrencyPair to each of to provider-specific
+	// configs associated with it.
 	Providers map[string]*Providers `protobuf:"bytes,3,rep,name=providers,proto3" json:"providers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -5584,7 +5292,7 @@ var file_slinky_marketmap_v1_market_proto_rawDesc = []byte{
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61,
 	0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65,
 	0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x73,
-	0x22, 0xcb, 0x02, 0x0a, 0x06, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x48, 0x0a, 0x0d, 0x63,
+	0x22, 0xcb, 0x01, 0x0a, 0x06, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x48, 0x0a, 0x0d, 0x63,
 	0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79, 0x70, 0x65,
 	0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69,
@@ -5594,14 +5302,6 @@ var file_slinky_marketmap_v1_market_proto_rawDesc = []byte{
 	0x73, 0x12, 0x2c, 0x0a, 0x12, 0x6d, 0x69, 0x6e, 0x5f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
 	0x72, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x6d,
 	0x69, 0x6e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12,
-	0x35, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19,
-	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61,
-	0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
-	0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x12, 0x47, 0x0a, 0x09, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64,
-	0x65, 0x72, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x04,
-	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x12,
 	0x23, 0x0a, 0x0d, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x4a, 0x53, 0x4f, 0x4e,
 	0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
 	0x4a, 0x53, 0x4f, 0x4e, 0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x22, 0x4e,
@@ -5709,23 +5409,21 @@ var file_slinky_marketmap_v1_market_proto_goTypes = []interface{}{
 var file_slinky_marketmap_v1_market_proto_depIdxs = []int32{
 	1,  // 0: slinky.marketmap.v1.TickersConfig.tickers:type_name -> slinky.marketmap.v1.Ticker
 	11, // 1: slinky.marketmap.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	3,  // 2: slinky.marketmap.v1.Ticker.paths:type_name -> slinky.marketmap.v1.Path
-	2,  // 3: slinky.marketmap.v1.Ticker.providers:type_name -> slinky.marketmap.v1.ProviderConfig
-	4,  // 4: slinky.marketmap.v1.Path.operations:type_name -> slinky.marketmap.v1.Operation
-	11, // 5: slinky.marketmap.v1.Operation.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	3,  // 6: slinky.marketmap.v1.Paths.paths:type_name -> slinky.marketmap.v1.Path
-	2,  // 7: slinky.marketmap.v1.Providers.providers:type_name -> slinky.marketmap.v1.ProviderConfig
-	8,  // 8: slinky.marketmap.v1.MarketMap.tickers:type_name -> slinky.marketmap.v1.MarketMap.TickersEntry
-	9,  // 9: slinky.marketmap.v1.MarketMap.paths:type_name -> slinky.marketmap.v1.MarketMap.PathsEntry
-	10, // 10: slinky.marketmap.v1.MarketMap.providers:type_name -> slinky.marketmap.v1.MarketMap.ProvidersEntry
-	1,  // 11: slinky.marketmap.v1.MarketMap.TickersEntry.value:type_name -> slinky.marketmap.v1.Ticker
-	5,  // 12: slinky.marketmap.v1.MarketMap.PathsEntry.value:type_name -> slinky.marketmap.v1.Paths
-	6,  // 13: slinky.marketmap.v1.MarketMap.ProvidersEntry.value:type_name -> slinky.marketmap.v1.Providers
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	4,  // 2: slinky.marketmap.v1.Path.operations:type_name -> slinky.marketmap.v1.Operation
+	11, // 3: slinky.marketmap.v1.Operation.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	3,  // 4: slinky.marketmap.v1.Paths.paths:type_name -> slinky.marketmap.v1.Path
+	2,  // 5: slinky.marketmap.v1.Providers.providers:type_name -> slinky.marketmap.v1.ProviderConfig
+	8,  // 6: slinky.marketmap.v1.MarketMap.tickers:type_name -> slinky.marketmap.v1.MarketMap.TickersEntry
+	9,  // 7: slinky.marketmap.v1.MarketMap.paths:type_name -> slinky.marketmap.v1.MarketMap.PathsEntry
+	10, // 8: slinky.marketmap.v1.MarketMap.providers:type_name -> slinky.marketmap.v1.MarketMap.ProvidersEntry
+	1,  // 9: slinky.marketmap.v1.MarketMap.TickersEntry.value:type_name -> slinky.marketmap.v1.Ticker
+	5,  // 10: slinky.marketmap.v1.MarketMap.PathsEntry.value:type_name -> slinky.marketmap.v1.Paths
+	6,  // 11: slinky.marketmap.v1.MarketMap.ProvidersEntry.value:type_name -> slinky.marketmap.v1.Providers
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_slinky_marketmap_v1_market_proto_init() }

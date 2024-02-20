@@ -35,12 +35,15 @@ func (s *KeeperTestSuite) TestQueryServer() {
 			Paths:     make(map[string]types.Paths),
 			Providers: make(map[string]types.Providers),
 		}
-		for _, ticker := range tickers {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, types.Paths{Paths: ticker.Paths}, types.Providers{Providers: ticker.Providers}))
+		for _, ticker := range markets.tickers {
+			marketPaths, ok := markets.paths[ticker.String()]
+			s.Require().True(ok)
+			marketProviders, ok := markets.providers[ticker.String()]
+			s.Require().True(ok)
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
 			expectedMarketMap.Tickers[ticker.String()] = ticker
-			expectedMarketMap.Paths[ticker.String()] = types.Paths{Paths: ticker.Paths}
-			expectedMarketMap.Providers[ticker.String()] = types.Providers{Providers: ticker.Providers}
-
+			expectedMarketMap.Paths[ticker.String()] = marketPaths
+			expectedMarketMap.Providers[ticker.String()] = marketProviders
 		}
 
 		resp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})

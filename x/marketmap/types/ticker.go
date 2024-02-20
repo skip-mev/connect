@@ -56,19 +56,5 @@ func (t *Ticker) ValidateBasic() error {
 		return err
 	}
 
-	// validate paths
-	// TODO move
-	paths := Paths{t.Paths}
-	if err := paths.ValidateBasic(t.CurrencyPair); err != nil {
-		return err
-	}
-
-	// validate providers
-	// TODO move
-	providers := Providers{t.Providers}
-	if err := providers.ValidateBasic(); err != nil {
-		return err
-	}
-
 	return json.IsValid([]byte(t.Metadata_JSON))
 }

@@ -18,9 +18,12 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	btcusdtPaths = types.Paths{
 		Paths: []types.Path{
 			{
-				[]types.Operation{
+				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "BITCOIN",
@@ -32,6 +35,15 @@ var (
 		},
 	}
 
+	btcusdtProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "btc-usdt",
+			},
+		},
+	}
+
 	usdtusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "USDT",
@@ -39,9 +51,12 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	usdtusdPaths = types.Paths{
 		Paths: []types.Path{
 			{
-				[]types.Operation{
+				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "USDT",
@@ -53,6 +68,15 @@ var (
 		},
 	}
 
+	usdtusdProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdt-usd",
+			},
+		},
+	}
+
 	usdcusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "USDC",
@@ -60,9 +84,12 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	usdcusdPaths = types.Paths{
 		Paths: []types.Path{
 			{
-				[]types.Operation{
+				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "USDC",
@@ -74,6 +101,15 @@ var (
 		},
 	}
 
+	usdcusdProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdc-usd",
+			},
+		},
+	}
+
 	ethusdt = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "ETHEREUM",
@@ -81,9 +117,12 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	ethusdtPaths = types.Paths{
 		Paths: []types.Path{
 			{
-				[]types.Operation{
+				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "ETHEREUM",
@@ -94,7 +133,83 @@ var (
 			},
 		},
 	}
+
+	ethusdtProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "eth-usdt",
+			},
+		},
+	}
+
+	tickers = map[string]types.Ticker{
+		btcusdt.String(): btcusdt,
+		usdcusd.String(): usdcusd,
+		usdtusd.String(): usdtusd,
+		ethusdt.String(): ethusdt,
+	}
+
+	paths = map[string]types.Paths{
+		btcusdt.String(): btcusdtPaths,
+		usdcusd.String(): usdcusdPaths,
+		usdtusd.String(): usdtusdPaths,
+		ethusdt.String(): ethusdtPaths,
+	}
+
+	providers = map[string]types.Providers{
+		btcusdt.String(): btcusdtProviders,
+		usdcusd.String(): usdcusdProviders,
+		usdtusd.String(): usdtusdProviders,
+		ethusdt.String(): ethusdtProviders,
+	}
+
+	markets = struct {
+		tickers   map[string]types.Ticker
+		paths     map[string]types.Paths
+		providers map[string]types.Providers
+	}{
+		tickers:   tickers,
+		paths:     paths,
+		providers: providers,
+	}
+
+	_ = markets
 )
+
+func TestPaths(t *testing.T) {
+	testCases := []struct {
+		name         string
+		paths        types.Paths
+		currencyPair slinkytypes.CurrencyPair
+		expErr       bool
+	}{
+		{
+			name:         "valid",
+			paths:        btcusdtPaths,
+			currencyPair: btcusdt.CurrencyPair,
+			expErr:       false,
+		},
+		{
+			name:         "invalid",
+			paths:        types.Paths{},
+			currencyPair: btcusdt.CurrencyPair,
+			expErr:       true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.paths.ValidateBasic(tc.currencyPair)
+			if tc.expErr {
+				require.Error(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+		})
+	}
+}
 
 func TestPath(t *testing.T) {
 	testCases := []struct {
