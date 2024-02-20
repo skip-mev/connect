@@ -3,10 +3,9 @@ package types_test
 import (
 	"testing"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-
 	"github.com/stretchr/testify/require"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -25,75 +24,8 @@ func TestTicker(t *testing.T) {
 				},
 				Decimals:         8,
 				MinProviderCount: 1,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								CurrencyPair: btcusdt.CurrencyPair,
-							},
-						},
-					},
-				},
-				Providers: []types.ProviderConfig{
-					{
-						Name:           "binance",
-						OffChainTicker: "btc-usd",
-					},
-					{
-						Name:           "kucoin",
-						OffChainTicker: "btcusd",
-					},
-				},
 			},
 			expErr: false,
-		},
-		{
-			name: "valid ticker multiple paths",
-			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "BITCOIN",
-					Quote: "USD",
-				},
-				Decimals:         8,
-				MinProviderCount: 1,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								CurrencyPair: btcusdt.CurrencyPair,
-							},
-							{
-								CurrencyPair: usdtusd.CurrencyPair,
-							},
-						},
-					},
-				},
-			},
-			expErr: false,
-		},
-		{
-			name: "invalid paths",
-			ticker: types.Ticker{
-				CurrencyPair: slinkytypes.CurrencyPair{
-					Base:  "BITCOIN",
-					Quote: "USDT",
-				},
-				Decimals:         8,
-				MinProviderCount: 1,
-				Paths: []types.Path{
-					{
-						Operations: []types.Operation{
-							{
-								CurrencyPair: btcusdt.CurrencyPair,
-							},
-							{
-								CurrencyPair: ethusdt.CurrencyPair,
-							},
-						},
-					},
-				},
-			},
-			expErr: true,
 		},
 		{
 			name: "empty base",
