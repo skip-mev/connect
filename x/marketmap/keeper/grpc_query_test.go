@@ -5,16 +5,16 @@ import (
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func (s *KeeperTestSuite) TestQueryServer() {
+func (s *KeeperTestSuite) TestMarketMap() {
 	qs := keeper.NewQueryServer(s.keeper)
 
 	s.Run("invalid for nil request", func() {
-		_, err := qs.GetMarketMap(s.ctx, nil)
+		_, err := qs.MarketMap(s.ctx, nil)
 		s.Require().Error(err)
 	})
 
 	s.Run("run query with no state", func() {
-		resp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
+		resp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 		s.Require().NoError(err)
 
 		expected := &types.GetMarketMapResponse{
@@ -47,7 +47,7 @@ func (s *KeeperTestSuite) TestQueryServer() {
 			expectedMarketMap.Providers[ticker.String()] = marketProviders
 		}
 
-		resp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
+		resp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 		s.Require().NoError(err)
 
 		expected := &types.GetMarketMapResponse{
@@ -60,7 +60,7 @@ func (s *KeeperTestSuite) TestQueryServer() {
 	})
 }
 
-func (s *KeeperTestSuite) TestQueryServerParams() {
+func (s *KeeperTestSuite) TestParams() {
 	params := types.DefaultParams()
 	s.Require().NoError(s.keeper.SetParams(s.ctx, params))
 
@@ -75,6 +75,30 @@ func (s *KeeperTestSuite) TestQueryServerParams() {
 
 	s.Run("run invalid nil request", func() {
 		_, err := qs.Params(s.ctx, nil)
+		s.Require().Error(err)
+	})
+}
+
+func (s *KeeperTestSuite) TestLastUpdated() {
+	qs := keeper.NewQueryServer(s.keeper)
+	// set initial states
+	for _, ticker := range markets.tickers {
+		marketPaths, ok := markets.paths[ticker.String()]
+		s.Require().True(ok)
+		marketProviders, ok := markets.providers[ticker.String()]
+		s.Require().True(ok)
+		s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
+	}
+
+	s.Run("run valid request", func() {
+		resp, err := qs.LastUpdated(s.ctx, &types.GetLastUpdatedRequest{})
+		s.Require().NoError(err)
+
+		s.Require().Equal(s.ctx.BlockHeight(), resp.LastUpdated)
+	})
+
+	s.Run("run invalid nil request", func() {
+		_, err := qs.LastUpdated(s.ctx, nil)
 		s.Require().Error(err)
 	})
 }
