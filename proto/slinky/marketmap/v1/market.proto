@@ -6,6 +6,14 @@ option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 import "gogoproto/gogo.proto";
 import "slinky/types/v1/currency_pair.proto";
 
+// TickersConfig is the full list of markets and their associated configurations
+// to be stored on-chain.
+message TickersConfig {
+  // Tickers is the full list of markets and their associated configurations to
+  // be stored on-chain.
+  repeated Ticker tickers = 1 [ (gogoproto.nullable) = false ];
+}
+
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
 // feed is scaled to a number of decimal places and has a minimum number of
 // providers required to consider the ticker valid.
@@ -24,89 +32,27 @@ message Ticker {
   // the ticker valid.
   uint64 min_provider_count = 4;
 
+  // Paths is the list of convertable markets that will be used to convert the
+  // prices of a set of tickers to a common ticker.
+  repeated Path paths = 5 [ (gogoproto.nullable) = false ];
+
+  // Providers is the list of provider configurations for the given ticker.
+  repeated ProviderConfig providers = 6 [ (gogoproto.nullable) = false ];
+
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
   string metadata_JSON = 15;
 }
 
-// TickerConfig is the config the provider uses to create mappings between
-// on-chain and off-chain tickers.
-message TickerConfig {
-  // Ticker is the cannonical representation of the ticker/market i.e.
-  // BITCOIN/USD.
-  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
+message ProviderConfig {
+  // Name corresponds to the name of the provider for which the configuration is
+  // being set.
+  string name = 1;
+
   // OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
   // The off-chain ticker is unique to a given provider and is used to fetch the
   // price of the ticker from the provider.
   string off_chain_ticker = 2;
-}
-
-// MarketConfig represents the provider specific configurations for different
-// markets and the associated markets they are traded on.
-message MarketConfig {
-  // Name corresponds to the name of the provider for which the configuration is
-  // being set.
-  string name = 1;
-  // TickerConfigs is the config the provider uses to create mappings between
-  // on-chain and off-chain tickers. In particular, this config maps the
-  // on-chain ticker representation (i.e. BITCOIN/USD) to the off-chain ticker
-  // representation (i.e. BTC/USD).
-  map<string, TickerConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
-
-  // MetadataJSON is a string of JSON that encodes any extra configuration
-  // for the given market.
-  string metadata_JSON = 15;
-}
-
-// AggregateMarketConfig represents the global set of market configurations for
-// all providers that will be utilized off-chain as well as how tickers will be
-// resolved to a final price. Each ticker can have a list of convertable markets
-// that will be used to convert the prices of a set of tickers to a common
-// ticker.
-//
-// Price aggregation broadly follows the following steps:
-//  1. Fetch prices for each ticker from the providers.
-//  2. Calculate the final price for each ticker. This is dependent on the
-//  aggregation
-//     strategy used by the oracle. The oracle may use a median price, a
-//     weighted average price, etc.
-//  3. Convert the price of each ticker to a common ticker using the aggregated
-//  ticker
-//     configurations by default. The oracle may use a different aggregation
-//     strategy to convert the price of a ticker to a common ticker.
-//
-// For example, the oracle may be configured with the feeds:
-//   - BTC/USDT
-//   - USDT/USD
-//   - BTC/USDC
-//   - USDC/USD
-//
-// The aggregated ticker may be:
-//   - BTC/USD: (calculate a median price from the following convertable
-//   markets)
-//     1. BTC/USDT -> USDT/USD = BTC/USD
-//     2. BTC/USDC -> USDC/USD = BTC/USD
-message AggregateMarketConfig {
-  // MarketConfigs maps provider names to their respective market
-  // configurations.
-  map<string, MarketConfig> market_configs = 1 [ (gogoproto.nullable) = false ];
-  // TickerConfigs maps tickers to the list of convertable markets that will be
-  // used to convert the price of a set of tickers to a common ticker. This
-  // allows developers to manually specify the exact set of tickers that will be
-  // used to calculate the final price of a ticker. However, it is possible that
-  // other aggregation strategies can be used.
-  map<string, PathsConfig> ticker_configs = 2 [ (gogoproto.nullable) = false ];
-}
-
-// PathsConfig represents the list of convertable markets (paths) that will be
-// used to convert the prices of a set of tickers to a common ticker.
-message PathsConfig {
-  // Ticker is the on-chain representation of the ticker. This is the target
-  // ticker that the prices of the set of tickers will be converted to.
-  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
-  // Paths is the list of convertable markets that will be used to convert the
-  // prices of a set of tickers to a common ticker.
-  repeated Path paths = 2 [ (gogoproto.nullable) = false ];
 }
 
 // Path is the list of convertable markets that will be used to convert the
@@ -119,8 +65,10 @@ message Path {
 
 // Operation represents the operation configuration for a given ticker.
 message Operation {
-  // Ticker is the on-chain representation of the ticker.
-  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
+  // CurrencyPair is the on-chain currency pair for this ticker.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+      [ (gogoproto.nullable) = false ];
+
   // Invert is a boolean that indicates whether the price of the ticker should
   // be inverted.
   bool invert = 2;

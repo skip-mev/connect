@@ -14,6 +14,8 @@ const (
 	// DefaultMinProviderCount is the minimum number of providers required for a
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
+	// MaxPathLength is the maximum length of a path for a ticker conversion.
+	MaxPathLength = 2
 )
 
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
@@ -54,31 +56,33 @@ func (t *Ticker) ValidateBasic() error {
 		return err
 	}
 
+	// validate paths
+	if err := Paths(t.Paths).ValidateBasic(t.CurrencyPair); err != nil {
+		return err
+	}
+
+	// validate providers
+	if err := Providers(t.Providers).ValidateBasic(); err != nil {
+		return err
+	}
+
 	return json.IsValid([]byte(t.Metadata_JSON))
 }
 
-// NewTickerConfig returns a new TickerConfig instance. The TickerConfig is
-// the config the provider uses to create mappings between on-chain and off-chain
-// price feeds. The ticker is considered the canonical representation of the price
-// feed and the off-chain ticker is the provider specific representation.
-func NewTickerConfig(ticker Ticker, offChainTicker string) (TickerConfig, error) {
-	config := TickerConfig{
-		Ticker:         ticker,
-		OffChainTicker: offChainTicker,
+// ValidateBasic validates each ticker and ensures there are no duplicates.
+func (tc *TickersConfig) ValidateBasic() error {
+	seenTickers := make(map[string]struct{})
+	for _, ticker := range tc.Tickers {
+		if err := ticker.ValidateBasic(); err != nil {
+			return err
+		}
+
+		if _, found := seenTickers[ticker.String()]; found {
+			return fmt.Errorf("duplicate ticker for %s found", ticker.String())
+		}
+
+		seenTickers[ticker.String()] = struct{}{}
 	}
 
-	if err := config.ValidateBasic(); err != nil {
-		return TickerConfig{}, err
-	}
-
-	return config, nil
-}
-
-// ValidateBasic performs basic validation on the TickerConfig.
-func (tc *TickerConfig) ValidateBasic() error {
-	if len(tc.OffChainTicker) == 0 {
-		return fmt.Errorf("off chain ticker cannot be empty")
-	}
-
-	return tc.Ticker.ValidateBasic()
+	return nil
 }

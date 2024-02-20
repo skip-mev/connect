@@ -27,14 +27,14 @@ func (q queryServerImpl) GetMarketMap(goCtx context.Context, req *types.GetMarke
 	// unwrap the context
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	mm, err := q.k.GetMarketMap(ctx)
+	tickers, err := q.k.GetAllTickers(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	lastUpdated, err := q.k.GetLastUpdated(ctx)
 	return &types.GetMarketMapResponse{
-			MarketMap:   *mm,
+			MarketMap:   types.TickersConfig{Tickers: tickers},
 			LastUpdated: lastUpdated,
 		},
 		err
