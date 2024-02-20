@@ -37,7 +37,7 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 }
 
 // ExportGenesis retrieves the genesis from state.
-func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
+func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	tickers, err := k.GetAllTickersMap(ctx)
 	if err != nil {
 		panic(err)
