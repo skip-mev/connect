@@ -57,32 +57,18 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	// validate paths
-	if err := Paths(t.Paths).ValidateBasic(t.CurrencyPair); err != nil {
+	// TODO move
+	paths := Paths{t.Paths}
+	if err := paths.ValidateBasic(t.CurrencyPair); err != nil {
 		return err
 	}
 
 	// validate providers
-	if err := Providers(t.Providers).ValidateBasic(); err != nil {
+	// TODO move
+	providers := Providers{t.Providers}
+	if err := providers.ValidateBasic(); err != nil {
 		return err
 	}
 
 	return json.IsValid([]byte(t.Metadata_JSON))
-}
-
-// ValidateBasic validates each ticker and ensures there are no duplicates.
-func (tc *TickersConfig) ValidateBasic() error {
-	seenTickers := make(map[string]struct{})
-	for _, ticker := range tc.Tickers {
-		if err := ticker.ValidateBasic(); err != nil {
-			return err
-		}
-
-		if _, found := seenTickers[ticker.String()]; found {
-			return fmt.Errorf("duplicate ticker for %s found", ticker.String())
-		}
-
-		seenTickers[ticker.String()] = struct{}{}
-	}
-
-	return nil
 }

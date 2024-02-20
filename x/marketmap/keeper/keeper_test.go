@@ -129,15 +129,29 @@ var (
 		},
 	}
 
-	tickers = []types.Ticker{
-		btcusdt,
-		usdcusd,
-		usdtusd,
-		ethusdt,
+	tickers = map[string]types.Ticker{
+		btcusdt.String(): btcusdt,
+		usdcusd.String(): usdcusd,
+		usdtusd.String(): usdtusd,
+		ethusdt.String(): ethusdt,
+	}
+
+	paths = map[string]types.Paths{
+		btcusdt.String(): {Paths: btcusdt.Paths},
+		usdcusd.String(): {Paths: usdcusd.Paths},
+		usdtusd.String(): {Paths: usdtusd.Paths},
+		ethusdt.String(): {Paths: ethusdt.Paths},
+	}
+
+	providers = map[string]types.Providers{
+		btcusdt.String(): {Providers: btcusdt.Providers},
+		usdcusd.String(): {Providers: usdcusd.Providers},
+		usdtusd.String(): {Providers: usdtusd.Providers},
+		ethusdt.String(): {Providers: ethusdt.Providers},
 	}
 )
 
-func (s *KeeperTestSuite) TestTickers() {
+func (s *KeeperTestSuite) TestGets() {
 	s.Run("get no tickers", func() {
 		got, err := s.keeper.GetAllTickers(s.ctx)
 		s.Require().NoError(err)
@@ -146,7 +160,7 @@ func (s *KeeperTestSuite) TestTickers() {
 
 	s.Run("setup initial markets", func() {
 		for _, ticker := range tickers {
-			s.Require().NoError(s.keeper.CreateTicker(s.ctx, ticker))
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, types.Paths{Paths: ticker.Paths}, types.Providers{Providers: ticker.Providers}))
 		}
 
 		s.Run("unable to set markets again", func() {
@@ -157,26 +171,26 @@ func (s *KeeperTestSuite) TestTickers() {
 	})
 
 	s.Run("get all tickers", func() {
-		got, err := s.keeper.GetAllTickers(s.ctx)
+		got, err := s.keeper.GetAllTickersMap(s.ctx)
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(tickers), len(got))
-		s.Require().True(unorderedEqual(tickers, got))
+		s.Require().Equal(tickers, got)
 	})
-}
 
-func unorderedEqual(first, second []types.Ticker) bool {
-	if len(first) != len(second) {
-		return false
-	}
-	exists := make(map[string]bool)
-	for _, value := range first {
-		exists[value.String()] = true
-	}
-	for _, value := range second {
-		if !exists[value.String()] {
-			return false
-		}
-	}
-	return true
+	s.Run("get all paths", func() {
+		got, err := s.keeper.GetAllPathsMap(s.ctx)
+		s.Require().NoError(err)
+
+		s.Require().Equal(len(paths), len(got))
+		s.Require().Equal(paths, got)
+	})
+
+	s.Run("get all providers", func() {
+		got, err := s.keeper.GetAllProvidersMap(s.ctx)
+		s.Require().NoError(err)
+
+		s.Require().Equal(len(providers), len(got))
+		s.Require().Equal(providers, got)
+	})
 }
