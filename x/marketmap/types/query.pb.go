@@ -76,6 +76,9 @@ type GetMarketMapResponse struct {
 	// This field can be used as an optimization for clients checking if there
 	// is a new update to the map.
 	LastUpdated int64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	// Version is the schema version for the MarketMap data structure and query
+	// response.
+	Version uint64 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
 }
 
 func (m *GetMarketMapResponse) Reset()         { *m = GetMarketMapResponse{} }
@@ -125,35 +128,132 @@ func (m *GetMarketMapResponse) GetLastUpdated() int64 {
 	return 0
 }
 
+func (m *GetMarketMapResponse) GetVersion() uint64 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+type ParamsRequest struct {
+}
+
+func (m *ParamsRequest) Reset()         { *m = ParamsRequest{} }
+func (m *ParamsRequest) String() string { return proto.CompactTextString(m) }
+func (*ParamsRequest) ProtoMessage()    {}
+func (*ParamsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b5d6ff68f3c474a0, []int{2}
+}
+func (m *ParamsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ParamsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ParamsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ParamsRequest.Merge(m, src)
+}
+func (m *ParamsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *ParamsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ParamsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ParamsRequest proto.InternalMessageInfo
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+type ParamsResponse struct {
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+}
+
+func (m *ParamsResponse) Reset()         { *m = ParamsResponse{} }
+func (m *ParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*ParamsResponse) ProtoMessage()    {}
+func (*ParamsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b5d6ff68f3c474a0, []int{3}
+}
+func (m *ParamsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ParamsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ParamsResponse.Merge(m, src)
+}
+func (m *ParamsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *ParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ParamsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ParamsResponse proto.InternalMessageInfo
+
+func (m *ParamsResponse) GetParams() Params {
+	if m != nil {
+		return m.Params
+	}
+	return Params{}
+}
+
 func init() {
 	proto.RegisterType((*GetMarketMapRequest)(nil), "slinky.marketmap.v1.GetMarketMapRequest")
 	proto.RegisterType((*GetMarketMapResponse)(nil), "slinky.marketmap.v1.GetMarketMapResponse")
+	proto.RegisterType((*ParamsRequest)(nil), "slinky.marketmap.v1.ParamsRequest")
+	proto.RegisterType((*ParamsResponse)(nil), "slinky.marketmap.v1.ParamsResponse")
 }
 
 func init() { proto.RegisterFile("slinky/marketmap/v1/query.proto", fileDescriptor_b5d6ff68f3c474a0) }
 
 var fileDescriptor_b5d6ff68f3c474a0 = []byte{
-	// 319 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x90, 0x3d, 0x4b, 0x03, 0x31,
-	0x18, 0x80, 0x2f, 0xf5, 0x03, 0x4c, 0x3b, 0xa5, 0x15, 0x4a, 0x91, 0xf4, 0xec, 0x20, 0x15, 0x34,
-	0xa1, 0xf5, 0x1f, 0x54, 0xd0, 0xa9, 0x83, 0x05, 0x17, 0x97, 0x92, 0xda, 0x70, 0x1e, 0x6d, 0x2e,
-	0x69, 0x93, 0x3b, 0xbc, 0xc5, 0xc1, 0xd5, 0x45, 0x10, 0xff, 0x53, 0xc7, 0x82, 0x8b, 0x93, 0xc8,
-	0x9d, 0x3f, 0x44, 0xee, 0x62, 0x4b, 0x85, 0x13, 0xdc, 0x92, 0xe7, 0x7d, 0xde, 0x4f, 0xd8, 0xd4,
-	0x53, 0x3f, 0x98, 0xc4, 0x54, 0xb0, 0xf9, 0x84, 0x1b, 0xc1, 0x14, 0x8d, 0x3a, 0x74, 0x16, 0xf2,
-	0x79, 0x4c, 0xd4, 0x5c, 0x1a, 0x89, 0xaa, 0x56, 0x20, 0x6b, 0x81, 0x44, 0x9d, 0x46, 0xcd, 0x93,
-	0x9e, 0xcc, 0xe3, 0x34, 0x7b, 0x59, 0xb5, 0x71, 0xe0, 0x49, 0xe9, 0x4d, 0x39, 0x65, 0xca, 0xa7,
-	0x2c, 0x08, 0xa4, 0x61, 0xc6, 0x97, 0x81, 0xfe, 0x89, 0xba, 0x45, 0x9d, 0xec, 0xc7, 0x1a, 0xad,
-	0x7d, 0x58, 0xbd, 0xe4, 0xa6, 0x9f, 0xa3, 0x3e, 0x53, 0x03, 0x3e, 0x0b, 0xb9, 0x36, 0xad, 0x07,
-	0x58, 0xfb, 0x8d, 0xb5, 0x92, 0x81, 0xe6, 0xe8, 0x1c, 0x42, 0x9b, 0x3e, 0x14, 0x4c, 0xd5, 0x81,
-	0x0b, 0xda, 0xe5, 0x2e, 0x26, 0x05, 0xe3, 0x92, 0x75, 0x6e, 0x6f, 0x7b, 0xf1, 0xd1, 0x74, 0x06,
-	0x7b, 0x62, 0x05, 0xd0, 0x21, 0xac, 0x4c, 0x99, 0x36, 0xc3, 0x50, 0x8d, 0x99, 0xe1, 0xe3, 0x7a,
-	0xc9, 0x05, 0xed, 0xad, 0x41, 0x39, 0x63, 0xd7, 0x16, 0x75, 0x5f, 0x01, 0xdc, 0xb9, 0xca, 0x2e,
-	0x82, 0x9e, 0x00, 0xac, 0x6c, 0x8e, 0x82, 0xda, 0x85, 0xed, 0x0a, 0x96, 0x68, 0x1c, 0xff, 0xc3,
-	0xb4, 0x7b, 0xb5, 0x8e, 0x1e, 0xdf, 0xbe, 0x5e, 0x4a, 0x2e, 0xc2, 0xf4, 0xef, 0x8b, 0x09, 0xa6,
-	0x7a, 0x17, 0x8b, 0x04, 0x83, 0x65, 0x82, 0xc1, 0x67, 0x82, 0xc1, 0x73, 0x8a, 0x9d, 0x65, 0x8a,
-	0x9d, 0xf7, 0x14, 0x3b, 0x37, 0x27, 0x9e, 0x6f, 0xee, 0xc2, 0x11, 0xb9, 0x95, 0x82, 0xea, 0x89,
-	0xaf, 0x4e, 0x05, 0x8f, 0x56, 0xc5, 0xee, 0x37, 0xca, 0x99, 0x58, 0x71, 0x3d, 0xda, 0xcd, 0xaf,
-	0x7f, 0xf6, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x8e, 0x13, 0x2f, 0xe8, 0x0b, 0x02, 0x00, 0x00,
+	// 404 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0xeb, 0xd3, 0x30,
+	0x18, 0x6d, 0xf6, 0x9b, 0x13, 0xb3, 0xa9, 0x90, 0x4d, 0x28, 0x9b, 0x66, 0xb5, 0x03, 0xa9, 0xa0,
+	0x0d, 0x9b, 0x27, 0xaf, 0x13, 0xf4, 0x20, 0x03, 0x2d, 0x78, 0xf1, 0x32, 0x32, 0x17, 0x6a, 0xd9,
+	0xd2, 0x64, 0x4d, 0x5a, 0xdc, 0xd5, 0xab, 0x08, 0x82, 0x17, 0xff, 0xa4, 0x1d, 0x07, 0x5e, 0x3c,
+	0x89, 0x6c, 0xfe, 0x21, 0xb2, 0xa6, 0x1d, 0x13, 0xba, 0xf1, 0xbb, 0x25, 0xef, 0x7b, 0xdf, 0xfb,
+	0xde, 0x4b, 0x3e, 0xd8, 0x57, 0xcb, 0x28, 0x5e, 0xac, 0x09, 0xa7, 0xc9, 0x82, 0x69, 0x4e, 0x25,
+	0xc9, 0x86, 0x64, 0x95, 0xb2, 0x64, 0xed, 0xcb, 0x44, 0x68, 0x81, 0xda, 0x86, 0xe0, 0x1f, 0x09,
+	0x7e, 0x36, 0xec, 0x76, 0x42, 0x11, 0x8a, 0xbc, 0x4e, 0x0e, 0x27, 0x43, 0xed, 0xde, 0x0f, 0x85,
+	0x08, 0x97, 0x8c, 0x50, 0x19, 0x11, 0x1a, 0xc7, 0x42, 0x53, 0x1d, 0x89, 0x58, 0x15, 0x55, 0xa7,
+	0x6a, 0x92, 0xb9, 0x5c, 0x62, 0x48, 0x9a, 0x50, 0x5e, 0x68, 0xb8, 0xf7, 0x60, 0xfb, 0x15, 0xd3,
+	0x93, 0xbc, 0x3e, 0xa1, 0x32, 0x60, 0xab, 0x94, 0x29, 0xed, 0xfe, 0x00, 0xb0, 0xf3, 0x3f, 0xae,
+	0xa4, 0x88, 0x15, 0x43, 0x2f, 0x20, 0x34, 0x62, 0x53, 0x4e, 0xa5, 0x0d, 0x1c, 0xe0, 0x35, 0x47,
+	0xd8, 0xaf, 0x48, 0xe4, 0x1f, 0x7b, 0xc7, 0xf5, 0xcd, 0xef, 0xbe, 0x15, 0xdc, 0xe2, 0x25, 0x80,
+	0x1e, 0xc2, 0xd6, 0x92, 0x2a, 0x3d, 0x4d, 0xe5, 0x9c, 0x6a, 0x36, 0xb7, 0x6b, 0x0e, 0xf0, 0xae,
+	0x82, 0xe6, 0x01, 0x7b, 0x67, 0x20, 0x64, 0xc3, 0x9b, 0x19, 0x4b, 0x54, 0x24, 0x62, 0xfb, 0xca,
+	0x01, 0x5e, 0x3d, 0x28, 0xaf, 0xee, 0x5d, 0x78, 0xfb, 0x4d, 0x9e, 0xa0, 0xf4, 0xfa, 0x1a, 0xde,
+	0x29, 0x81, 0xc2, 0xe4, 0x73, 0xd8, 0x30, 0x21, 0x0b, 0x83, 0xbd, 0x4a, 0x83, 0xa6, 0xa9, 0x70,
+	0x57, 0x34, 0x8c, 0xbe, 0xd6, 0xe0, 0x8d, 0xb7, 0x87, 0xcf, 0x42, 0x5f, 0x00, 0x6c, 0x9d, 0x3e,
+	0x01, 0xf2, 0x2a, 0x55, 0x2a, 0x5e, 0xaf, 0xfb, 0xf8, 0x1a, 0x4c, 0x63, 0xd5, 0x7d, 0xf4, 0xf9,
+	0xe7, 0xdf, 0xef, 0x35, 0x07, 0x61, 0x72, 0xfe, 0x33, 0x39, 0x95, 0x28, 0x83, 0x0d, 0xe3, 0x17,
+	0xb9, 0x17, 0xc2, 0x94, 0x06, 0x06, 0x17, 0x39, 0xc5, 0xe8, 0x41, 0x3e, 0xfa, 0x01, 0xea, 0x91,
+	0xf3, 0x5b, 0x32, 0x7e, 0xb9, 0xd9, 0x61, 0xb0, 0xdd, 0x61, 0xf0, 0x67, 0x87, 0xc1, 0xb7, 0x3d,
+	0xb6, 0xb6, 0x7b, 0x6c, 0xfd, 0xda, 0x63, 0xeb, 0xfd, 0x93, 0x30, 0xd2, 0x1f, 0xd3, 0x99, 0xff,
+	0x41, 0x70, 0xa2, 0x16, 0x91, 0x7c, 0xca, 0x59, 0x56, 0x2a, 0x7d, 0x3a, 0xd1, 0xd2, 0x6b, 0xc9,
+	0xd4, 0xac, 0x91, 0xaf, 0xdb, 0xb3, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x00, 0x09, 0x6d, 0xbe,
+	0x1e, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -171,6 +271,8 @@ type QueryClient interface {
 	// GetMarketMap returns the full market map stored in the x/marketmap
 	// module.
 	GetMarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
+	// Params returns the current x/marketmap module parameters.
+	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
 }
 
 type queryClient struct {
@@ -190,11 +292,22 @@ func (c *queryClient) GetMarketMap(ctx context.Context, in *GetMarketMapRequest,
 	return out, nil
 }
 
+func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error) {
+	out := new(ParamsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Query/Params", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// GetMarketMap returns the full market map stored in the x/marketmap
 	// module.
 	GetMarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
+	// Params returns the current x/marketmap module parameters.
+	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -203,6 +316,9 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) GetMarketMap(ctx context.Context, req *GetMarketMapRequest) (*GetMarketMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMarketMap not implemented")
+}
+func (*UnimplementedQueryServer) Params(ctx context.Context, req *ParamsRequest) (*ParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -227,6 +343,24 @@ func _Query_GetMarketMap_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.marketmap.v1.Query/Params",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Params(ctx, req.(*ParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "slinky.marketmap.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -234,6 +368,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMarketMap",
 			Handler:    _Query_GetMarketMap_Handler,
+		},
+		{
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -283,6 +421,11 @@ func (m *GetMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.Version != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Version))
+		i--
+		dAtA[i] = 0x18
+	}
 	if m.LastUpdated != 0 {
 		i = encodeVarintQuery(dAtA, i, uint64(m.LastUpdated))
 		i--
@@ -290,6 +433,62 @@ func (m *GetMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	{
 		size, err := m.MarketMap.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *ParamsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ParamsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *ParamsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -332,6 +531,29 @@ func (m *GetMarketMapResponse) Size() (n int) {
 	if m.LastUpdated != 0 {
 		n += 1 + sovQuery(uint64(m.LastUpdated))
 	}
+	if m.Version != 0 {
+		n += 1 + sovQuery(uint64(m.Version))
+	}
+	return n
+}
+
+func (m *ParamsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *ParamsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Params.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -472,6 +694,158 @@ func (m *GetMarketMapResponse) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			m.Version = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Version |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ParamsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ParamsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ParamsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ParamsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

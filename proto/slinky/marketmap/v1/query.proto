@@ -4,6 +4,7 @@ package slinky.marketmap.v1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "slinky/marketmap/v1/market.proto";
+import "slinky/marketmap/v1/params.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
@@ -13,6 +14,13 @@ service Query {
   // module.
   rpc GetMarketMap(GetMarketMapRequest) returns (GetMarketMapResponse) {
     option (google.api.http).get = "/slinky/marketmap/v1/marketmap";
+  }
+
+  // Params returns the current x/marketmap module parameters.
+  rpc Params(ParamsRequest) returns (ParamsResponse) {
+    option (google.api.http) = {
+      get : "/slinky/marketmap/v1/params"
+    };
   }
 }
 
@@ -30,4 +38,14 @@ message GetMarketMapResponse {
   // This field can be used as an optimization for clients checking if there
   // is a new update to the map.
   int64 last_updated = 2;
+
+  // Version is the schema version for the MarketMap data structure and query
+  // response.
+  uint64 version = 3;
 }
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message ParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message ParamsResponse { Params params = 1 [ (gogoproto.nullable) = false ]; }
