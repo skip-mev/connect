@@ -13,10 +13,13 @@ const (
 	DefaultVersion = 0
 )
 
+// DefaultMarketAuthority is the default value for the market authority Param.
+var DefaultMarketAuthority = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+
 // DefaultParams returns default marketmap parameters.
 func DefaultParams() Params {
 	return Params{
-		MarketAuthority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		MarketAuthority: DefaultMarketAuthority,
 		Version:         DefaultVersion,
 	}
 }

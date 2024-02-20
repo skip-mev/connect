@@ -38,6 +38,10 @@ message GetMarketMapResponse {
   // This field can be used as an optimization for clients checking if there
   // is a new update to the map.
   int64 last_updated = 2;
+
+  // Version is the schema version for the MarketMap data structure and query
+  // response.
+  uint64 version = 3;
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
