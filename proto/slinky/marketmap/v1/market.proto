@@ -73,3 +73,22 @@ message Operation {
   // be inverted.
   bool invert = 2;
 }
+
+message Paths {
+  // Paths is the list of convertable markets that will be used to convert the
+  // prices of a set of tickers to a common ticker.
+  repeated Path paths = 1 [ (gogoproto.nullable) = false ];
+}
+
+message Providers {
+  // Providers is the list of provider configurations for the given ticker.
+  repeated ProviderConfig providers = 1 [ (gogoproto.nullable) = false ];
+}
+
+message MarketMap {
+  // Tickers is the full list of markets and their associated configurations to
+  // be stored on-chain.
+  map<string, Ticker> tickers = 1 [ (gogoproto.nullable) = false ];
+  map<string, Paths> paths = 2 [ (gogoproto.nullable) = false ];
+  map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
+}
