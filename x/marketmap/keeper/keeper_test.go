@@ -177,6 +177,45 @@ var (
 		},
 	}
 
+	mogbtc = types.Ticker{
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "MOG",
+			Quote: "USDT",
+		},
+		Decimals:         18,
+		MinProviderCount: 1,
+	}
+
+	mogbtcPaths = types.Paths{
+		Paths: []types.Path{
+			{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "MOG",
+							Quote: "USDT",
+						},
+					},
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "BTC",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	mogbtcProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "mog-btc",
+			},
+		},
+	}
+
 	tickers = map[string]types.Ticker{
 		btcusdt.String(): btcusdt,
 		usdcusd.String(): usdcusd,
@@ -230,6 +269,10 @@ func (s *KeeperTestSuite) TestGets() {
 				s.Require().ErrorIs(s.keeper.CreateTicker(s.ctx, ticker), types.NewTickerAlreadyExistsError(types.TickerString(ticker.String())))
 			}
 		})
+	})
+
+	s.Run("unable to create market with paths not in state", func() {
+		s.Require().Error(s.keeper.CreateMarket(s.ctx, mogbtc, mogbtcPaths, mogbtcProviders))
 	})
 
 	s.Run("get all tickers", func() {
