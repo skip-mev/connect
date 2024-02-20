@@ -186,6 +186,7 @@ cloud.google.com/go/workflows v1.6.0/go.mod h1:6t9F5h/unJz41YqfBmqSASJSXccBLtD1V
 cloud.google.com/go/workflows v1.7.0/go.mod h1:JhSrZuVZWuiDfKEFxU0/F1PQjmpnpcoISEXH2bcHC3M=
 cosmossdk.io/api v0.7.2 h1:BO3i5fvKMKvfaUiMkCznxViuBEfyWA/k6w2eAF6q1C4=
 cosmossdk.io/api v0.7.2/go.mod h1:IcxpYS5fMemZGqyYtErK7OqvdM0C8kdW3dq8Q/XIG38=
+cosmossdk.io/api v0.7.3/go.mod h1:IcxpYS5fMemZGqyYtErK7OqvdM0C8kdW3dq8Q/XIG38=
 cosmossdk.io/client/v2 v2.0.0-beta.1 h1:XkHh1lhrLYIT9zKl7cIOXUXg2hdhtjTPBUfqERNA1/Q=
 cosmossdk.io/client/v2 v2.0.0-beta.1/go.mod h1:JEUSu9moNZQ4kU3ir1DKD5eU4bllmAexrGWjmb9k8qU=
 cosmossdk.io/collections v0.4.0 h1:PFmwj2W8szgpD5nOd8GWH6AbYNi1f2J6akWXJ7P5t9s=
@@ -359,6 +360,7 @@ github.com/cosmos/cosmos-db v1.0.0 h1:EVcQZ+qYag7W6uorBKFPvX6gRjw6Uq2hIh4hCWjuQ0
 github.com/cosmos/cosmos-db v1.0.0/go.mod h1:iBvi1TtqaedwLdcrZVYRSSCb6eSy61NLj4UNmdIgs0U=
 github.com/cosmos/cosmos-proto v1.0.0-beta.3 h1:VitvZ1lPORTVxkmF2fAp3IiA61xVwArQYKXTdEcpW6o=
 github.com/cosmos/cosmos-proto v1.0.0-beta.3/go.mod h1:t8IASdLaAq+bbHbjq4p960BvcTqtwuAxid3b/2rOD6I=
+github.com/cosmos/cosmos-proto v1.0.0-beta.4/go.mod h1:oeB+FyVzG3XrQJbJng0EnV8Vljfk9XvTIpGILNU/9Co=
 github.com/cosmos/cosmos-sdk v0.50.3 h1:zP0AXm54ws2t2qVWvcQhEYVafhOAREU2QL0gnbwjvXw=
 github.com/cosmos/cosmos-sdk v0.50.3/go.mod h1:tlrkY1sntOt1q0OX/rqF0zRJtmXNoffAS6VFTcky+w8=
 github.com/cosmos/cosmos-sdk v0.50.4-0.20240125183858-0abf94a334e3/go.mod h1:0D9mrUy1eAUMQuvYzf2xvhEPk2ta9w7XH1zcYvyFiuM=
@@ -614,6 +616,7 @@ github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.4.0 h1:MtMxsa51/r9yyhkyLsVeVt0B+BGQZzpQiTQ4eHZ8bc4=
 github.com/google/uuid v1.4.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/googleapis/enterprise-certificate-proxy v0.0.0-20220520183353-fd19c99a87aa/go.mod h1:17drOmN3MwGY7t0e+Ei9b45FFGA3fBs3x36SsCg1hq8=
 github.com/googleapis/enterprise-certificate-proxy v0.1.0/go.mod h1:17drOmN3MwGY7t0e+Ei9b45FFGA3fBs3x36SsCg1hq8=
 github.com/googleapis/enterprise-certificate-proxy v0.2.0/go.mod h1:8C0jb7/mgJe/9KK8Lm7X9ctZC2t60YyIpYEI16jx0Qg=
@@ -1451,6 +1454,7 @@ golang.org/x/tools v0.1.5/go.mod h1:o0xws9oXOQQZyjljx8fwUC0k7L1pTE6eaCbjGeHmOkk=
 golang.org/x/tools v0.1.12/go.mod h1:hNGJHUnrk76NpqgfD5Aqm5Crs+Hm0VOH/i9J2+nxYbc=
 golang.org/x/tools v0.17.0 h1:FvmRgNOcs3kOa+T20R1uhfP9F6HgG2mfxDv1vrx1Htc=
 golang.org/x/tools v0.17.0/go.mod h1:xsh6VxdV005rRVaS6SSAf9oiAqljS7UZUacMZ8Bnsps=
+golang.org/x/tools v0.18.0/go.mod h1:GL7B4CwcLLeo59yx/9UWWuNOW1n3VZ4f5axWfML7Lcg=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
