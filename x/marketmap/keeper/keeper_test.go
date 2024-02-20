@@ -52,6 +52,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	btcusdtPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -66,6 +69,15 @@ var (
 		},
 	}
 
+	btcusdtProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "btc-usdt",
+			},
+		},
+	}
+
 	usdtusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "USDT",
@@ -73,6 +85,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	usdtusdPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -87,6 +102,15 @@ var (
 		},
 	}
 
+	usdtusdProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdt-usd",
+			},
+		},
+	}
+
 	usdcusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "USDC",
@@ -94,6 +118,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	usdcusdPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -108,6 +135,15 @@ var (
 		},
 	}
 
+	usdcusdProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdc-usd",
+			},
+		},
+	}
+
 	ethusdt = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "ETHEREUM",
@@ -115,6 +151,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	ethusdtPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -129,15 +168,48 @@ var (
 		},
 	}
 
-	tickers = []types.Ticker{
-		btcusdt,
-		usdcusd,
-		usdtusd,
-		ethusdt,
+	ethusdtProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "eth-usdt",
+			},
+		},
+	}
+
+	tickers = map[string]types.Ticker{
+		btcusdt.String(): btcusdt,
+		usdcusd.String(): usdcusd,
+		usdtusd.String(): usdtusd,
+		ethusdt.String(): ethusdt,
+	}
+
+	paths = map[string]types.Paths{
+		btcusdt.String(): btcusdtPaths,
+		usdcusd.String(): usdcusdPaths,
+		usdtusd.String(): usdtusdPaths,
+		ethusdt.String(): ethusdtPaths,
+	}
+
+	providers = map[string]types.Providers{
+		btcusdt.String(): btcusdtProviders,
+		usdcusd.String(): usdcusdProviders,
+		usdtusd.String(): usdtusdProviders,
+		ethusdt.String(): ethusdtProviders,
+	}
+
+	markets = struct {
+		tickers   map[string]types.Ticker
+		paths     map[string]types.Paths
+		providers map[string]types.Providers
+	}{
+		tickers:   tickers,
+		paths:     paths,
+		providers: providers,
 	}
 )
 
-func (s *KeeperTestSuite) TestTickers() {
+func (s *KeeperTestSuite) TestGets() {
 	s.Run("get no tickers", func() {
 		got, err := s.keeper.GetAllTickers(s.ctx)
 		s.Require().NoError(err)
@@ -145,38 +217,42 @@ func (s *KeeperTestSuite) TestTickers() {
 	})
 
 	s.Run("setup initial markets", func() {
-		for _, ticker := range tickers {
-			s.Require().NoError(s.keeper.CreateTicker(s.ctx, ticker))
+		for _, ticker := range markets.tickers {
+			marketPaths, ok := markets.paths[ticker.String()]
+			s.Require().True(ok)
+			marketProviders, ok := markets.providers[ticker.String()]
+			s.Require().True(ok)
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
 		}
 
 		s.Run("unable to set markets again", func() {
-			for _, ticker := range tickers {
+			for _, ticker := range markets.tickers {
 				s.Require().ErrorIs(s.keeper.CreateTicker(s.ctx, ticker), types.NewTickerAlreadyExistsError(types.TickerString(ticker.String())))
 			}
 		})
 	})
 
 	s.Run("get all tickers", func() {
-		got, err := s.keeper.GetAllTickers(s.ctx)
+		got, err := s.keeper.GetAllTickersMap(s.ctx)
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(tickers), len(got))
-		s.Require().True(unorderedEqual(tickers, got))
+		s.Require().Equal(tickers, got)
 	})
-}
 
-func unorderedEqual(first, second []types.Ticker) bool {
-	if len(first) != len(second) {
-		return false
-	}
-	exists := make(map[string]bool)
-	for _, value := range first {
-		exists[value.String()] = true
-	}
-	for _, value := range second {
-		if !exists[value.String()] {
-			return false
-		}
-	}
-	return true
+	s.Run("get all paths", func() {
+		got, err := s.keeper.GetAllPathsMap(s.ctx)
+		s.Require().NoError(err)
+
+		s.Require().Equal(len(paths), len(got))
+		s.Require().Equal(paths, got)
+	})
+
+	s.Run("get all providers", func() {
+		got, err := s.keeper.GetAllProvidersMap(s.ctx)
+		s.Require().NoError(err)
+
+		s.Require().Equal(len(providers), len(got))
+		s.Require().Equal(providers, got)
+	})
 }

@@ -151,17 +151,15 @@ func (o *Operation) ValidateBasic() error {
 	return o.CurrencyPair.ValidateBasic()
 }
 
-type Paths []Path
-
 // ValidateBasic performs basic validation on the Paths.
-func (p Paths) ValidateBasic(cp slinkytypes.CurrencyPair) error {
-	if len(p) == 0 {
+func (p *Paths) ValidateBasic(cp slinkytypes.CurrencyPair) error {
+	if len(p.Paths) == 0 {
 		return fmt.Errorf("at least one path is required for a ticker to be calculated")
 	}
 
 	// Track the routes to ensure that there are no duplicates.
 	routes := make(map[string]struct{})
-	for _, path := range p {
+	for _, path := range p.Paths {
 		if err := path.ValidateBasic(); err != nil {
 			return err
 		}
@@ -185,10 +183,10 @@ func (p Paths) ValidateBasic(cp slinkytypes.CurrencyPair) error {
 // are part of the Paths. This is particularly useful for determining the
 // set of markets that are required for a given ticker as well as ensuring
 // that a given set of providers can provide the required markets.
-func (p Paths) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
+func (p *Paths) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
 	seen := make(map[slinkytypes.CurrencyPair]struct{})
 
-	for _, path := range p {
+	for _, path := range p.Paths {
 		for _, cp := range path.GetCurrencyPairs() {
 			seen[cp] = struct{}{}
 		}
