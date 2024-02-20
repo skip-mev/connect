@@ -173,6 +173,8 @@ var (
 		paths:     paths,
 		providers: providers,
 	}
+
+	_ = markets
 )
 
 func TestPaths(t *testing.T) {
