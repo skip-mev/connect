@@ -105,19 +105,6 @@ func (k *Keeper) CreateTicker(ctx sdk.Context, ticker types.Ticker) error {
 	return k.tickers.Set(ctx, types.TickerString(ticker.String()), ticker)
 }
 
-// GetAllProviders returns the set of Providers objects currently stored in state.
-func (k *Keeper) GetAllProviders(ctx sdk.Context) ([]types.Providers, error) {
-	iter, err := k.providers.Iterate(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	providers, err := iter.Values()
-	if err != nil {
-		return nil, err
-	}
-	return providers, err
-}
-
 // GetAllProvidersMap returns the set of Providers objects currently stored in state
 // as a map[TickerString] -> Providers.
 func (k *Keeper) GetAllProvidersMap(ctx sdk.Context) (map[string]types.Providers, error) {
@@ -151,19 +138,6 @@ func (k *Keeper) CreateProviders(ctx sdk.Context, providers types.Providers, tic
 	}
 	// Create the config
 	return k.providers.Set(ctx, types.TickerString(ticker.String()), providers)
-}
-
-// GetAllPaths returns the set of Paths objects currently stored in state.
-func (k *Keeper) GetAllPaths(ctx sdk.Context) ([]types.Paths, error) {
-	iter, err := k.paths.Iterate(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	paths, err := iter.Values()
-	if err != nil {
-		return nil, err
-	}
-	return paths, err
 }
 
 // GetAllPathsMap returns the set of Paths objects currently stored in state
