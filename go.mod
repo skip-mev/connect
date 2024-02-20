@@ -56,6 +56,8 @@ require (
 	mvdan.cc/gofumpt v0.6.0
 )
 
+require github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
+
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
