@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// GetMarketMap returns the full market map stored in the x/marketmap
+	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
 	MarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
 	// GetLastUpdated last height the market map was updated at.
@@ -76,7 +76,7 @@ func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grp
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// GetMarketMap returns the full market map stored in the x/marketmap
+	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
 	MarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
 	// GetLastUpdated last height the market map was updated at.
