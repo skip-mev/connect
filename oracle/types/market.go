@@ -11,9 +11,10 @@ type (
 	// provider configurations.
 	TickerToProviderConfig = map[mmtypes.Ticker]mmtypes.ProviderConfig
 
-	// ProviderMarketMap is a type alias for the provider market map. This is a map of
-	// tickers to their respective markets. Provides simple bidirectional mapping between
-	// on-chain and off-chain markets.
+	// ProviderMarketMap provides a simple adapter of what the market map module expects
+	// from a provider and how the provider configures its markets. It provides a bi-directional
+	// mapping between on-chain and off-chain markets. Every ProviderMarketMap is expected to be
+	// constructed from a given market map module configuration.
 	ProviderMarketMap struct {
 		// Name is the name of the provider.
 		Name string
@@ -33,8 +34,24 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 		return ProviderMarketMap{}, fmt.Errorf("ticker configs cannot be empty")
 	}
 
-	offChainMap := make(map[string]mmtypes.Ticker, len(tickerConfigs))
+	if len(name) == 0 {
+		return ProviderMarketMap{}, fmt.Errorf("provider name cannot be empty")
+	}
+
+	offChainMap := make(map[string]mmtypes.Ticker)
 	for ticker, config := range tickerConfigs {
+		if err := ticker.ValidateBasic(); err != nil {
+			return ProviderMarketMap{}, fmt.Errorf("invalid ticker %s: %w", ticker, err)
+		}
+
+		if err := config.ValidateBasic(); err != nil {
+			return ProviderMarketMap{}, fmt.Errorf("invalid provider config for %s: %w", ticker, err)
+		}
+
+		if config.Name != name {
+			return ProviderMarketMap{}, fmt.Errorf("expected provider config name %s, got %s", name, config.Name)
+		}
+
 		offChainMap[config.OffChainTicker] = ticker
 	}
 
@@ -43,23 +60,4 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 		TickerConfigs: tickerConfigs,
 		OffChainMap:   offChainMap,
 	}, nil
-}
-
-// ValidateBasic validates the provider market map.
-func (pmm *ProviderMarketMap) ValidateBasic() error {
-	for ticker, config := range pmm.TickerConfigs {
-		if config.Name != pmm.Name {
-			return fmt.Errorf("expected provider config name %s, got %s", pmm.Name, config.Name)
-		}
-
-		if err := config.ValidateBasic(); err != nil {
-			return fmt.Errorf("invalid config for ticker %s: %w", ticker.String(), err)
-		}
-	}
-
-	if len(pmm.OffChainMap) != len(pmm.TickerConfigs) {
-		return fmt.Errorf("off-chain map length does not match ticker configs length")
-	}
-
-	return nil
 }
