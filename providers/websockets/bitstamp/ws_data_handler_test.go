@@ -139,7 +139,10 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, bitstamp.DefaultMarketConfig, bitstamp.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(bitstamp.Name, bitstamp.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, marketConfig, bitstamp.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -227,10 +230,13 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := bitstamp.NewWebSocketDataHandler(logger, bitstamp.DefaultMarketConfig, bitstamp.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(bitstamp.Name, bitstamp.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, marketConfig, bitstamp.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
@@ -242,10 +248,13 @@ func TestCreateMessages(t *testing.T) {
 }
 
 func TestHeartBeat(t *testing.T) {
-	handler, err := bitstamp.NewWebSocketDataHandler(logger, bitstamp.DefaultMarketConfig, bitstamp.DefaultWebSocketConfig)
+	marketConfig, err := types.NewProviderMarketMap(bitstamp.Name, bitstamp.DefaultMarketConfig)
 	require.NoError(t, err)
 
-	msgs, err := handler.HeartBeatMessages()
+	wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, marketConfig, bitstamp.DefaultWebSocketConfig)
+	require.NoError(t, err)
+
+	msgs, err := wsHandler.HeartBeatMessages()
 	require.NoError(t, err)
 
 	msg := handlers.WebsocketEncodedMessage([]byte(`{"event":"bts:heartbeat"}`))

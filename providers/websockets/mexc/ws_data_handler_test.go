@@ -127,7 +127,10 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultMarketConfig, mexc.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -203,10 +206,13 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultMarketConfig, mexc.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
@@ -217,14 +223,17 @@ func TestCreateMessages(t *testing.T) {
 }
 
 func TestHeartBeatMessages(t *testing.T) {
-	handler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultMarketConfig, mexc.DefaultWebSocketConfig)
+	marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
+	require.NoError(t, err)
+
+	wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
 	require.NoError(t, err)
 
 	expected := []handlers.WebsocketEncodedMessage{
 		[]byte(`{"id":0,"code":0,"msg":"PING"}`),
 	}
 
-	msgs, err := handler.HeartBeatMessages()
+	msgs, err := wsHandler.HeartBeatMessages()
 	require.NoError(t, err)
 	require.Equal(t, expected, msgs)
 }

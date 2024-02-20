@@ -91,8 +91,7 @@ func (h *WebSocketHandler) parseTickerMessage(
 	}
 
 	// Get the ticker from the instrument.
-	inverted := h.market.Invert()
-	market, ok := inverted[resp.Pair]
+	ticker, ok := h.market.OffChainMap[resp.Pair]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("no ticker found for instrument %s", resp.Pair)
@@ -106,13 +105,13 @@ func (h *WebSocketHandler) parseTickerMessage(
 
 	// Parse the price update.
 	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
-	price, err := math.Float64StringToBigInt(priceStr, market.Ticker.Decimals)
+	price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
 	if err != nil {
-		unResolved[market.Ticker] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		return types.NewPriceResponse(resolved, unResolved), unResolved[market.Ticker]
+		unResolved[ticker] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+		return types.NewPriceResponse(resolved, unResolved), unResolved[ticker]
 	}
 
-	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	return types.NewPriceResponse(resolved, unResolved), nil
 }
 

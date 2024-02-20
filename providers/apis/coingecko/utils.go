@@ -7,6 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -52,41 +53,38 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for CoinGecko.
-	DefaultMarketConfig = mmtypes.MarketConfig{
-		Name: Name,
-		TickerConfigs: map[string]mmtypes.TickerConfig{
-			"ATOM/USD": {
-				Ticker:         constants.ATOM_USD,
-				OffChainTicker: "cosmos/usd",
-			},
-			"BITCOIN/USD": {
-				Ticker:         constants.BITCOIN_USD,
-				OffChainTicker: "bitcoin/usd",
-			},
-			"CELESTIA/USD": {
-				Ticker:         constants.CELESTIA_USD,
-				OffChainTicker: "celestia/usd",
-			},
-			"DYDX/USD": {
-				Ticker:         constants.DYDX_USD,
-				OffChainTicker: "dydx-chain/usd",
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:         constants.ETHEREUM_BITCOIN,
-				OffChainTicker: "ethereum/btc",
-			},
-			"ETHEREUM/USD": {
-				Ticker:         constants.ETHEREUM_USD,
-				OffChainTicker: "ethereum/usd",
-			},
-			"OSMOSIS/USD": {
-				Ticker:         constants.OSMOSIS_USD,
-				OffChainTicker: "osmosis/usd",
-			},
-			"SOLANA/USD": {
-				Ticker:         constants.SOLANA_USD,
-				OffChainTicker: "solana/usd",
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USD: {
+			Name:           Name,
+			OffChainTicker: "cosmos/usd",
+		},
+		constants.BITCOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "bitcoin/usd",
+		},
+		constants.CELESTIA_USD: {
+			Name:           Name,
+			OffChainTicker: "celestia/usd",
+		},
+		constants.DYDX_USD: {
+			Name:           Name,
+			OffChainTicker: "dydx-chain/usd",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ethereum/btc",
+		},
+		constants.ETHEREUM_USD: {
+			Name:           Name,
+			OffChainTicker: "ethereum/usd",
+		},
+		constants.OSMOSIS_USD: {
+			Name:           Name,
+			OffChainTicker: "osmosis/usd",
+		},
+		constants.SOLANA_USD: {
+			Name:           Name,
+			OffChainTicker: "solana/usd",
 		},
 	}
 )
@@ -126,7 +124,7 @@ func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []mmtypes.Ticker) (stri
 	// Iterate through every currency pair and add the base and quote to the
 	// unique bases and quotes list as long as they are supported.
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker.String()]
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
 			return "", "", fmt.Errorf("ticker %s is not supported", ticker.String())
 		}

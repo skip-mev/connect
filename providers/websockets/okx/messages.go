@@ -185,7 +185,7 @@ type IndexTickersResponseMessage struct {
 // IndexTicker is the index ticker data.
 type IndexTicker struct {
 	// InstrumentID is the instrument ID.
-	InstrumentID string `json:"instId" validate:"required"`
+	ID string `json:"instId" validate:"required"`
 
 	// IndexPrice is the index price.
 	IndexPrice string `json:"idxPx" validate:"required"`

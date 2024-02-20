@@ -64,8 +64,8 @@ func TestHandlerMessage(t *testing.T) {
 					},
 					Data: []okx.IndexTicker{
 						{
-							InstrumentID: "BTC-USDT",
-							IndexPrice:   "1",
+							ID:         "BTC-USDT",
+							IndexPrice: "1",
 						},
 					},
 				}
@@ -96,12 +96,12 @@ func TestHandlerMessage(t *testing.T) {
 					},
 					Data: []okx.IndexTicker{
 						{
-							InstrumentID: "BTC-USDT",
-							IndexPrice:   "1",
+							ID:         "BTC-USDT",
+							IndexPrice: "1",
 						},
 						{
-							InstrumentID: "ETH-USDT",
-							IndexPrice:   "2",
+							ID:         "ETH-USDT",
+							IndexPrice: "2",
 						},
 					},
 				}
@@ -135,8 +135,8 @@ func TestHandlerMessage(t *testing.T) {
 					},
 					Data: []okx.IndexTicker{
 						{
-							InstrumentID: "MOG-USDT",
-							IndexPrice:   "1",
+							ID:         "MOG-USDT",
+							IndexPrice: "1",
 						},
 					},
 				}
@@ -290,7 +290,10 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := okx.NewWebSocketDataHandler(logger, okx.DefaultMarketConfig, okx.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(okx.Name, okx.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := okx.NewWebSocketDataHandler(logger, marketConfig, okx.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -397,10 +400,13 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := okx.NewWebSocketDataHandler(logger, okx.DefaultMarketConfig, okx.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(okx.Name, okx.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := okx.NewWebSocketDataHandler(logger, marketConfig, okx.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return

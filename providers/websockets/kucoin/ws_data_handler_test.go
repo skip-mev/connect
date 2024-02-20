@@ -253,7 +253,10 @@ func TestHandleMessage(t *testing.T) {
 		},
 	}
 
-	handler, err := kucoin.NewWebSocketDataHandler(logger, kucoin.DefaultMarketConfig, kucoin.DefaultWebSocketConfig)
+	marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultMarketConfig)
+	require.NoError(t, err)
+
+	handler, err := kucoin.NewWebSocketDataHandler(logger, marketConfig, kucoin.DefaultWebSocketConfig)
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -372,7 +375,10 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kucoin.NewWebSocketDataHandler(logger, kucoin.DefaultMarketConfig, kucoin.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			handler, err := kucoin.NewWebSocketDataHandler(logger, marketConfig, kucoin.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			actual, err := handler.CreateMessages(tc.cps)

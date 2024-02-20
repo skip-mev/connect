@@ -19,8 +19,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		unResolved = make(types.UnResolvedPrices)
 	)
 
-	inverted := h.market.Invert()
-	market, ok := inverted[msg.Data.Symbol]
+	ticker, ok := h.market.OffChainMap[msg.Data.Symbol]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("unknown ticker %s", msg.Data.Symbol)
@@ -29,17 +28,17 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	// Ensure that the channel received is the ticker channel.
 	if !strings.HasPrefix(msg.Channel, string(MiniTickerChannel)) {
 		err := fmt.Errorf("invalid channel %s", msg.Channel)
-		unResolved[market.Ticker] = err
+		unResolved[ticker] = err
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price.
-	price, err := math.Float64StringToBigInt(msg.Data.Price, market.Ticker.Decimals)
+	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[market.Ticker] = err
+		unResolved[ticker] = err
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
-	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	return types.NewPriceResponse(resolved, unResolved), nil
 }

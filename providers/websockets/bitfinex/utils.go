@@ -3,7 +3,7 @@ package bitfinex
 import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -36,29 +36,26 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.
-	DefaultMarketConfig = mmtypes.MarketConfig{
-		Name: Name,
-		TickerConfigs: map[string]mmtypes.TickerConfig{
-			"BITCOIN/USD": {
-				Ticker:         constants.BITCOIN_USD,
-				OffChainTicker: "BTCUSD",
-			},
-			"CELESTIA/USD": {
-				Ticker:         constants.CELESTIA_USD,
-				OffChainTicker: "TIAUSD",
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:         constants.ETHEREUM_BITCOIN,
-				OffChainTicker: "ETHBTC",
-			},
-			"ETHEREUM/USD": {
-				Ticker:         constants.ETHEREUM_USD,
-				OffChainTicker: "ETHUSD",
-			},
-			"SOLANA/USD": {
-				Ticker:         constants.SOLANA_USD,
-				OffChainTicker: "SOLUSD",
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.BITCOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "BTCUSD",
+		},
+		constants.CELESTIA_USD: {
+			Name:           Name,
+			OffChainTicker: "TIAUSD",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETHBTC",
+		},
+		constants.ETHEREUM_USD: {
+			Name:           Name,
+			OffChainTicker: "ETHUSD",
+		},
+		constants.SOLANA_USD: {
+			Name:           Name,
+			OffChainTicker: "SOLUSD",
 		},
 	}
 )

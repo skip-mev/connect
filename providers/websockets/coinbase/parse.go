@@ -22,15 +22,14 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	)
 
 	// Determine if the ticker is valid.
-	inverted := h.market.Invert()
-	market, ok := inverted[msg.Ticker]
+	ticker, ok := h.market.OffChainMap[msg.Ticker]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("got response for an unsupported market %s", msg.Ticker)
 	}
 
 	// Determine if the sequence number is valid.
-	sequence, ok := h.sequence[market.Ticker]
+	sequence, ok := h.sequence[ticker]
 	switch {
 	case !ok || sequence < msg.Sequence:
 		// If the sequence number is not found, then this is the first message
@@ -38,23 +37,23 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		// sequence number received. Additionally, if the sequence number is
 		// greater than the sequence number currently stored, then this message
 		// was received in order.
-		h.sequence[market.Ticker] = msg.Sequence
+		h.sequence[ticker] = msg.Sequence
 	default:
 		// If the sequence number is greater than the sequence number received,
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
-		unResolved[market.Ticker] = err
+		unResolved[ticker] = err
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price to a big int.
-	price, err := math.Float64StringToBigInt(msg.Price, market.Ticker.Decimals)
+	price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[market.Ticker] = err
+		unResolved[ticker] = err
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the time to a time object and resolve the price into the response.
-	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	return types.NewPriceResponse(resolved, unResolved), nil
 }

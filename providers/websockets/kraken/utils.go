@@ -5,7 +5,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -43,77 +43,74 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.
-	DefaultMarketConfig = mmtypes.MarketConfig{
-		Name: Name,
-		TickerConfigs: map[string]mmtypes.TickerConfig{
-			"ATOM/USD": {
-				Ticker:         constants.ATOM_USD,
-				OffChainTicker: "ATOM/USD",
-			},
-			"AVAX/USD": {
-				Ticker:         constants.AVAX_USD,
-				OffChainTicker: "AVAX/USD",
-			},
-			"AVAX/USDT": {
-				Ticker:         constants.AVAX_USDT,
-				OffChainTicker: "AVAX/USDT",
-			},
-			"BITCOIN/USD": {
-				Ticker:         constants.BITCOIN_USD,
-				OffChainTicker: "XBT/USD",
-			},
-			"BITCOIN/USDC": {
-				Ticker:         constants.BITCOIN_USDC,
-				OffChainTicker: "XBT/USDC",
-			},
-			"BITCOIN/USDT": {
-				Ticker:         constants.BITCOIN_USDT,
-				OffChainTicker: "XBT/USDT",
-			},
-			"CELESTIA/USD": {
-				Ticker:         constants.CELESTIA_USD,
-				OffChainTicker: "TIA/USD",
-			},
-			"DYDX/USD": {
-				Ticker:         constants.DYDX_USD,
-				OffChainTicker: "DYDX/USD",
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:         constants.ETHEREUM_BITCOIN,
-				OffChainTicker: "ETH/XBT",
-			},
-			"ETHEREUM/USD": {
-				Ticker:         constants.ETHEREUM_USD,
-				OffChainTicker: "ETH/USD",
-			},
-			"ETHEREUM/USDC": {
-				Ticker:         constants.ETHEREUM_USDC,
-				OffChainTicker: "ETH/USDC",
-			},
-			"ETHEREUM/USDT": {
-				Ticker:         constants.ETHEREUM_USDT,
-				OffChainTicker: "ETH/USDT",
-			},
-			"SOLANA/USD": {
-				Ticker:         constants.SOLANA_USD,
-				OffChainTicker: "SOL/USD",
-			},
-			"SOLANA/USDT": {
-				Ticker:         constants.SOLANA_USDT,
-				OffChainTicker: "SOL/USDT",
-			},
-			"USDC/USD": {
-				Ticker:         constants.USDC_USD,
-				OffChainTicker: "USDC/USD",
-			},
-			"USDC/USDT": {
-				Ticker:         constants.USDC_USDT,
-				OffChainTicker: "USDC/USDT",
-			},
-			"USDT/USD": {
-				Ticker:         constants.USDT_USD,
-				OffChainTicker: "USDT/USD",
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USD: {
+			Name:           Name,
+			OffChainTicker: "ATOM/USD",
+		},
+		constants.AVAX_USD: {
+			Name:           Name,
+			OffChainTicker: "AVAX/USD",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAX/USDT",
+		},
+		constants.BITCOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "BITCOIN/USD",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "BITCOIN/USDC",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BITCOIN/USDT",
+		},
+		constants.CELESTIA_USD: {
+			Name:           Name,
+			OffChainTicker: "CELESTIA/USD",
+		},
+		constants.DYDX_USD: {
+			Name:           Name,
+			OffChainTicker: "DYDX/USD",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETHEREUM/BITCOIN",
+		},
+		constants.ETHEREUM_USD: {
+			Name:           Name,
+			OffChainTicker: "ETHEREUM/USD",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ETHEREUM/USDC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETHEREUM/USDT",
+		},
+		constants.SOLANA_USD: {
+			Name:           Name,
+			OffChainTicker: "SOLANA/USD",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOLANA/USDT",
+		},
+		constants.USDC_USD: {
+			Name:           Name,
+			OffChainTicker: "USDC/USD",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDC/USDT",
+		},
+		constants.USDT_USD: {
+			Name:           Name,
+			OffChainTicker: "USDT/USD",
 		},
 	}
 )

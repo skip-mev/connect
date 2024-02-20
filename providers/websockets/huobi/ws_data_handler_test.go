@@ -243,7 +243,10 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := huobi.NewWebSocketDataHandler(logger, huobi.DefaultMarketConfig, huobi.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(huobi.Name, huobi.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := huobi.NewWebSocketDataHandler(logger, marketConfig, huobi.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -328,10 +331,13 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := huobi.NewWebSocketDataHandler(logger, huobi.DefaultMarketConfig, huobi.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(huobi.Name, huobi.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := huobi.NewWebSocketDataHandler(logger, marketConfig, huobi.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return

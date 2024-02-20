@@ -198,7 +198,10 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := gate.NewWebSocketDataHandler(logger, gate.DefaultMarketConfig, gate.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(gate.Name, gate.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := gate.NewWebSocketDataHandler(logger, marketConfig, gate.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -301,7 +304,10 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := gate.NewWebSocketDataHandler(logger, gate.DefaultMarketConfig, gate.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(gate.Name, gate.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			handler, err := gate.NewWebSocketDataHandler(logger, marketConfig, gate.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := handler.CreateMessages(tc.cps)

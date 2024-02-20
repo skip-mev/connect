@@ -90,13 +90,12 @@ func (h *WebSocketHandler) handleStream(
 
 	// first element is always channel id
 	channelID := int(baseStream[indexChannelID].(float64))
-	market, ok := h.channelMap[channelID]
+	ticker, ok := h.channelMap[channelID]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("received stream for unknown channel id %v", channelID)
 	}
 
-	ticker := market.Ticker
 	h.logger.Debug("received stream", zap.Int("channel_id", channelID), zap.String("ticker", ticker.String()))
 
 	// check if it is a heartbeat
@@ -124,13 +123,12 @@ func (h *WebSocketHandler) handleStream(
 }
 
 // updateChannelMap updates the internal map for the given channelID and ticker.
-func (h *WebSocketHandler) updateChannelMap(channelID int, ticker string) error {
-	inverted := h.market.Invert()
-	market, ok := inverted[ticker]
+func (h *WebSocketHandler) updateChannelMap(channelID int, offChainTicker string) error {
+	ticker, ok := h.market.OffChainMap[offChainTicker]
 	if !ok {
-		return fmt.Errorf("unable to find market for currency pair: %s", ticker)
+		return fmt.Errorf("unknown ticker %s", offChainTicker)
 	}
 
-	h.channelMap[channelID] = market
+	h.channelMap[channelID] = ticker
 	return nil
 }

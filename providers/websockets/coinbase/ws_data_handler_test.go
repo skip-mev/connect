@@ -165,7 +165,10 @@ func TestHandleMessage(t *testing.T) {
 		},
 	}
 
-	wsHandler, err := coinbase.NewWebSocketDataHandler(logger, coinbase.DefaultMarketConfig, coinbase.DefaultWebSocketConfig)
+	marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
+	require.NoError(t, err)
+
+	wsHandler, err := coinbase.NewWebSocketDataHandler(logger, marketConfig, coinbase.DefaultWebSocketConfig)
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -279,10 +282,13 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := coinbase.NewWebSocketDataHandler(logger, coinbase.DefaultMarketConfig, coinbase.DefaultWebSocketConfig)
+			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := coinbase.NewWebSocketDataHandler(logger, marketConfig, coinbase.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
