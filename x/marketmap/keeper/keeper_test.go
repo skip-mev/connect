@@ -52,6 +52,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	btcusdtPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -66,6 +69,15 @@ var (
 		},
 	}
 
+	btcusdtProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "btc-usdt",
+			},
+		},
+	}
+
 	usdtusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "USDT",
@@ -73,6 +85,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	usdtusdPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -87,6 +102,15 @@ var (
 		},
 	}
 
+	usdtusdProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdt-usd",
+			},
+		},
+	}
+
 	usdcusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "USDC",
@@ -94,6 +118,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	usdcusdPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -108,6 +135,15 @@ var (
 		},
 	}
 
+	usdcusdProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdc-usd",
+			},
+		},
+	}
+
 	ethusdt = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "ETHEREUM",
@@ -115,6 +151,9 @@ var (
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
+	}
+
+	ethusdtPaths = types.Paths{
 		Paths: []types.Path{
 			{
 				Operations: []types.Operation{
@@ -129,6 +168,15 @@ var (
 		},
 	}
 
+	ethusdtProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "eth-usdt",
+			},
+		},
+	}
+
 	tickers = map[string]types.Ticker{
 		btcusdt.String(): btcusdt,
 		usdcusd.String(): usdcusd,
@@ -137,17 +185,27 @@ var (
 	}
 
 	paths = map[string]types.Paths{
-		btcusdt.String(): {Paths: btcusdt.Paths},
-		usdcusd.String(): {Paths: usdcusd.Paths},
-		usdtusd.String(): {Paths: usdtusd.Paths},
-		ethusdt.String(): {Paths: ethusdt.Paths},
+		btcusdt.String(): btcusdtPaths,
+		usdcusd.String(): usdcusdPaths,
+		usdtusd.String(): usdtusdPaths,
+		ethusdt.String(): ethusdtPaths,
 	}
 
 	providers = map[string]types.Providers{
-		btcusdt.String(): {Providers: btcusdt.Providers},
-		usdcusd.String(): {Providers: usdcusd.Providers},
-		usdtusd.String(): {Providers: usdtusd.Providers},
-		ethusdt.String(): {Providers: ethusdt.Providers},
+		btcusdt.String(): btcusdtProviders,
+		usdcusd.String(): usdcusdProviders,
+		usdtusd.String(): usdtusdProviders,
+		ethusdt.String(): ethusdtProviders,
+	}
+
+	markets = struct {
+		tickers   map[string]types.Ticker
+		paths     map[string]types.Paths
+		providers map[string]types.Providers
+	}{
+		tickers:   tickers,
+		paths:     paths,
+		providers: providers,
 	}
 )
 
@@ -159,12 +217,17 @@ func (s *KeeperTestSuite) TestGets() {
 	})
 
 	s.Run("setup initial markets", func() {
-		for _, ticker := range tickers {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, types.Paths{Paths: ticker.Paths}, types.Providers{Providers: ticker.Providers}))
+		for _, ticker := range markets.tickers {
+			marketPaths, ok := markets.paths[ticker.String()]
+			s.Require().True(ok)
+			marketProviders, ok := markets.providers[ticker.String()]
+			s.Require().True(ok)
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
 		}
 
 		s.Run("unable to set markets again", func() {
-			for _, ticker := range tickers {
+			for _, ticker := range markets.tickers {
+
 				s.Require().ErrorIs(s.keeper.CreateTicker(s.ctx, ticker), types.NewTickerAlreadyExistsError(types.TickerString(ticker.String())))
 			}
 		})
