@@ -1,10 +1,15 @@
 package keeper
 
 import (
+	"fmt"
+
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -178,6 +183,33 @@ func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ti
 // CreateMarket sets the ticker, paths, and providers for a given market.  It also
 // sets the LastUpdated field to the current block height.
 func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.Paths, providers types.Providers) error {
+	// check that all paths already exist in the keeper store:
+	for _, path := range paths.Paths {
+		for _, op := range path.Operations {
+			cp := op.CurrencyPair
+			if op.Invert {
+				cp = slinkytypes.CurrencyPair{
+					Base:  cp.Quote,
+					Quote: cp.Base,
+				}
+			}
+
+			// if the path is the ticker string itself, skip
+			if cp.String() == ticker.CurrencyPair.String() {
+				continue
+			}
+
+			has, err := k.tickers.Has(ctx, types.TickerString(cp.String()))
+			if err != nil {
+				return err
+			}
+
+			if !has {
+				return fmt.Errorf("currency pair %s in path %s does not exist", cp.String(), path.ShowRoute())
+			}
+		}
+	}
+
 	if err := k.CreateTicker(ctx, ticker); err != nil {
 		return err
 	}
