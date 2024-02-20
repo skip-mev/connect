@@ -70,6 +70,26 @@ func (k *Keeper) GetAllTickers(ctx sdk.Context) ([]types.Ticker, error) {
 	return tickers, err
 }
 
+// GetAllTickersMap returns the set of Ticker objects currently stored in state
+// as a map[TickerString] -> Tickers.
+func (k *Keeper) GetAllTickersMap(ctx sdk.Context) (map[string]types.Ticker, error) {
+	iter, err := k.tickers.Iterate(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	keyValues, err := iter.KeyValues()
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]types.Ticker, len(keyValues))
+	for _, keyValue := range keyValues {
+		m[string(keyValue.Key)] = keyValue.Value
+	}
+
+	return m, nil
+}
+
 // CreateTicker initializes a new Ticker.
 // The Ticker.String corresponds to a market, and must be unique.
 func (k *Keeper) CreateTicker(ctx sdk.Context, ticker types.Ticker) error {
@@ -98,6 +118,26 @@ func (k *Keeper) GetAllProviders(ctx sdk.Context) ([]types.Providers, error) {
 	return providers, err
 }
 
+// GetAllProvidersMap returns the set of Providers objects currently stored in state
+// as a map[TickerString] -> Providers.
+func (k *Keeper) GetAllProvidersMap(ctx sdk.Context) (map[string]types.Providers, error) {
+	iter, err := k.providers.Iterate(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	keyValues, err := iter.KeyValues()
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]types.Providers, len(keyValues))
+	for _, keyValue := range keyValues {
+		m[string(keyValue.Key)] = keyValue.Value
+	}
+
+	return m, nil
+}
+
 // CreateProviders initializes a new providers.
 // The Ticker.String corresponds to a market, and must be unique.
 func (k *Keeper) CreateProviders(ctx sdk.Context, providers types.Providers, ticker types.Ticker) error {
@@ -124,6 +164,26 @@ func (k *Keeper) GetAllPaths(ctx sdk.Context) ([]types.Paths, error) {
 		return nil, err
 	}
 	return paths, err
+}
+
+// GetAllPathsMap returns the set of Paths objects currently stored in state
+// as a map[TickerString] -> Paths.
+func (k *Keeper) GetAllPathsMap(ctx sdk.Context) (map[string]types.Paths, error) {
+	iter, err := k.paths.Iterate(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	keyValues, err := iter.KeyValues()
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]types.Paths, len(keyValues))
+	for _, keyValue := range keyValues {
+		m[string(keyValue.Key)] = keyValue.Value
+	}
+
+	return m, nil
 }
 
 // CreatePaths initializes a new Paths.
