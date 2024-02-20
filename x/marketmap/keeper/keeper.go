@@ -202,7 +202,7 @@ func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ti
 }
 
 // CreateMarket sets the ticker, paths, and providers for a given market.  It also
-// sets the LastUpdated field to the current block height.ff
+// sets the LastUpdated field to the current block height.
 func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.Paths, providers types.Providers) error {
 	if err := k.CreateTicker(ctx, ticker); err != nil {
 		return err

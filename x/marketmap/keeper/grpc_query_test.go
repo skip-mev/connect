@@ -18,7 +18,11 @@ func (s *KeeperTestSuite) TestQueryServer() {
 		s.Require().NoError(err)
 
 		expected := &types.GetMarketMapResponse{
-			MarketMap:   types.TickersConfig{Tickers: nil},
+			MarketMap: types.MarketMap{
+				Tickers:   make(map[string]types.Ticker),
+				Paths:     make(map[string]types.Paths),
+				Providers: make(map[string]types.Providers),
+			},
 			LastUpdated: s.ctx.BlockHeight(),
 		}
 
@@ -26,19 +30,28 @@ func (s *KeeperTestSuite) TestQueryServer() {
 	})
 
 	s.Run("run query with state", func() {
+		expectedMarketMap := types.MarketMap{
+			Tickers:   make(map[string]types.Ticker),
+			Paths:     make(map[string]types.Paths),
+			Providers: make(map[string]types.Providers),
+		}
 		for _, ticker := range tickers {
-			s.Require().NoError(s.keeper.CreateTicker(s.ctx, ticker))
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, types.Paths{Paths: ticker.Paths}, types.Providers{Providers: ticker.Providers}))
+			expectedMarketMap.Tickers[ticker.String()] = ticker
+			expectedMarketMap.Paths[ticker.String()] = types.Paths{Paths: ticker.Paths}
+			expectedMarketMap.Providers[ticker.String()] = types.Providers{Providers: ticker.Providers}
+
 		}
 
 		resp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
 		s.Require().NoError(err)
 
 		expected := &types.GetMarketMapResponse{
-			MarketMap:   types.TickersConfig{Tickers: tickers},
+			MarketMap:   expectedMarketMap,
 			LastUpdated: s.ctx.BlockHeight(),
 		}
 
 		s.Require().Equal(expected.LastUpdated, resp.LastUpdated)
-		s.Require().True(unorderedEqual(expected.MarketMap.Tickers, resp.MarketMap.Tickers))
+		s.Require().Equal(expected.MarketMap, resp.MarketMap)
 	})
 }
