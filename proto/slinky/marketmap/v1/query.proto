@@ -12,8 +12,13 @@ option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 service Query {
   // GetMarketMap returns the full market map stored in the x/marketmap
   // module.
-  rpc GetMarketMap(GetMarketMapRequest) returns (GetMarketMapResponse) {
+  rpc MarketMap(GetMarketMapRequest) returns (GetMarketMapResponse) {
     option (google.api.http).get = "/slinky/marketmap/v1/marketmap";
+  }
+
+  // GetLastUpdated last height the market map was updated at.
+  rpc LastUpdated(GetLastUpdatedRequest) returns (GetLastUpdatedResponse) {
+    option (google.api.http).get = "/slinky/marketmap/v1/last_updated";
   }
 
   // Params returns the current x/marketmap module parameters.
@@ -44,8 +49,16 @@ message GetMarketMapResponse {
   uint64 version = 3;
 }
 
-// QueryParamsRequest is the request type for the Query/Params RPC method.
+// ParamsRequest is the request type for the Query/Params RPC method.
 message ParamsRequest {}
 
-// QueryParamsResponse is the response type for the Query/Params RPC method.
+// ParamsResponse is the response type for the Query/Params RPC method.
 message ParamsResponse { Params params = 1 [ (gogoproto.nullable) = false ]; }
+
+// GetLastUpdatedRequest is the request type for the Query/LastUpdated RPC
+// method.
+message GetLastUpdatedRequest {}
+
+// GetLastUpdatedResponse is the response type for the Query/LastUpdated RPC
+// method.
+message GetLastUpdatedResponse { int64 last_updated = 1; }
