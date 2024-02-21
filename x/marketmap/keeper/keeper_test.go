@@ -180,7 +180,7 @@ var (
 	mogbtc = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
 			Base:  "MOG",
-			Quote: "USDT",
+			Quote: "BTC",
 		},
 		Decimals:         18,
 		MinProviderCount: 1,
@@ -193,12 +193,6 @@ var (
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "MOG",
-							Quote: "USDT",
-						},
-					},
-					{
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDT",
 							Quote: "BTC",
 						},
 					},
