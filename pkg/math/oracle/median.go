@@ -79,14 +79,6 @@ func (m *MedianAggregator) AggregateFn() types.PriceAggregationFn {
 		aggregatedMedians := m.GetConvertedPrices(feedMedians)
 		m.logger.Info("calculated median prices for converted price feeds", zap.Int("num_prices", len(aggregatedMedians)))
 
-		for ticker, price := range aggregatedMedians {
-			m.logger.Info(
-				"got converted median price",
-				zap.String("ticker", ticker.String()),
-				zap.String("price", price.String()),
-			)
-		}
-
 		// Replace the median prices for each ticker with the aggregated median prices.
 		// This will overwrite the median prices for each ticker with the final aggregated median prices.
 		// This is necessary because the conversion markets may not be provided for all tickers.
@@ -196,7 +188,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 		// Calculate the converted price.
 		convertedPrice, err := m.CalculateConvertedPrice(ticker, path, medians)
 		if err != nil {
-			m.logger.Error(
+			m.logger.Debug(
 				"failed to calculate converted price",
 				zap.Error(err),
 				zap.String("ticker", ticker.String()),
@@ -220,12 +212,12 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 	medians types.TickerPrices,
 ) (*big.Int, error) {
 	if err := path.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid path: %w", err)
+		return nil, err
 	}
 
 	// Ensure that the conversion is valid.
 	if !path.Match(target.String()) {
-		return nil, fmt.Errorf("invalid conversion path: %s", path.String())
+		return nil, fmt.Errorf("path does not match target %s: %s", target.String(), path.String())
 	}
 
 	// Scalers for the number of decimals.
