@@ -18,10 +18,11 @@ func (k *Keeper) Hooks() Hooks {
 	return Hooks{k}
 }
 
-func (h Hooks) AfterMarketCreated(_ sdk.Context, ticker marketmaptypes.Ticker) error {
-	// TODO finish
-
-	return nil
+// AfterMarketCreated is the marketmap hook for x/oracle that is run after a market is created in
+// the marketmap.  After the market is created, a currency pair and its state are initialized in the
+// oracle module.
+func (h Hooks) AfterMarketCreated(ctx sdk.Context, ticker marketmaptypes.Ticker) error {
+	return h.k.CreateCurrencyPair(ctx, ticker.CurrencyPair)
 }
 
 func (h Hooks) AfterMarketUpdated(_ sdk.Context, ticker marketmaptypes.Ticker) error {
