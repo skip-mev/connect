@@ -19,3 +19,16 @@ func NewGenesisState(
 func (gs *GenesisState) ValidateBasic() error {
 	return gs.MarketMap.ValidateBasic()
 }
+
+// DefaultGenesisState returns the default genesis of the marathon.
+func DefaultGenesisState() *GenesisState {
+	return &GenesisState{
+		MarketMap: MarketMap{
+			Tickers:   make(map[string]Ticker),
+			Paths:     make(map[string]Paths),
+			Providers: make(map[string]Providers),
+		},
+		LastUpdated: 0,
+		Params:      DefaultParams(),
+	}
+}

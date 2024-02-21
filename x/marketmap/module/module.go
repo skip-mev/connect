@@ -57,6 +57,23 @@ func (amb AppModuleBasic) RegisterGRPCGatewayRoutes(cliCtx client.Context, mux *
 	}
 }
 
+// DefaultGenesis returns default genesis state as raw bytes for the marketmap
+// module.
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	gs := types.DefaultGenesisState()
+	return cdc.MustMarshalJSON(gs)
+}
+
+// ValidateGenesis performs genesis state validation for the marketmap module.
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
+	var gs types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
+		return err
+	}
+
+	return gs.ValidateBasic()
+}
+
 // AppModule is the actual app module for x/marketmap.
 type AppModule struct {
 	AppModuleBasic
