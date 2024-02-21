@@ -223,23 +223,28 @@ func main() {
 	}
 }
 
+// createMarketMap creates a market map given all of the local market configurations for
+// each provider as well as the custom conversion markets. We do so to ensure that the
+// oracle is always started using the market map that is expected to be stored by the
+// market map module.
 func createMarketMap() (mmtypes.MarketMap, error) {
 	var (
 		// Tickers defines a map of tickers to their respective ticker configurations. This
 		// contains all of the tickers that are supported by the oracle.
 		tickers = make(map[string]mmtypes.Ticker)
 		// TickersToProviders defines a map of tickers to their respective providers. This
-		// contains all of the providers that are supported by the oracle and the markets that
-		// they support.
+		// contains all of the providers that are supported per ticker.
 		tickersToProviders = make(map[string]mmtypes.Providers)
 		// OptionalTickerPaths defines a map of tickers to their respective conversion markets
-		// that should be utilized to determine a final price.
+		// that should be utilized to determine a final price. Not that this is optional as the
+		// aggregation function utilized by the oracle may not require conversion markets to be
+		// specified.
 		optionalTickerPaths = make(map[string]mmtypes.Paths)
 	)
 
 	// Iterate through all of the provider ticker configurations and update the
 	// tickers and tickers to providers maps.
-	for _, providerConfig := range ProviderToMarkets {
+	for name, providerConfig := range ProviderToMarkets {
 		for ticker, config := range providerConfig {
 			tickerStr := ticker.String()
 
@@ -249,7 +254,8 @@ func createMarketMap() (mmtypes.MarketMap, error) {
 				tickers[tickerStr] = ticker
 			} else {
 				if t != ticker {
-					return mmtypes.MarketMap{}, fmt.Errorf("ticker %s already exists with different configuration", tickerStr)
+					return mmtypes.MarketMap{},
+						fmt.Errorf("ticker %s already exists with different configuration for provider %s", tickerStr, name)
 				}
 			}
 

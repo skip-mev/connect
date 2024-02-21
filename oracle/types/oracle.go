@@ -15,12 +15,6 @@ type (
 	// PriceProviderFactory is a type alias for the price provider factory.
 	PriceProviderFactory = factory.ProviderFactory[mmtypes.Ticker, *big.Int]
 
-	// PriceAPIQueryHandlerFactory is a type alias for the price API query handler factory.
-	PriceAPIQueryHandlerFactory = factory.APIQueryHandlerFactory[mmtypes.Ticker, *big.Int]
-
-	// PriceWebSocketQueryHandlerFactory is a type alias for the price web socket query handler factory.
-	PriceWebSocketQueryHandlerFactory = factory.WebSocketQueryHandlerFactory[mmtypes.Ticker, *big.Int]
-
 	// PriceProvider is a type alias for the price provider.
 	PriceProvider = providertypes.Provider[mmtypes.Ticker, *big.Int]
 

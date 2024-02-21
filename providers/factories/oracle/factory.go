@@ -68,8 +68,7 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[mmtypes
 
 			switch {
 			case p.API.Enabled:
-				factory := APIQueryHandlerFactory(providerMarketMap)
-				queryHandler, err := factory(f.logger, p, apiMetrics)
+				queryHandler, err := APIQueryHandlerFactory(f.logger, p, apiMetrics, providerMarketMap)
 				if err != nil {
 					return nil, fmt.Errorf("failed to create %s's API query handler: %w", p.Name, err)
 				}
@@ -89,8 +88,7 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[mmtypes
 
 				providers[i] = provider
 			case p.WebSocket.Enabled:
-				factory := WebSocketQueryHandlerFactory(providerMarketMap)
-				queryHandler, err := factory(f.logger, p, wsMetrics)
+				queryHandler, err := WebSocketQueryHandlerFactory(f.logger, p, wsMetrics, providerMarketMap)
 				if err != nil {
 					return nil, fmt.Errorf("failed to create %s's web socket query handler: %w", p.Name, err)
 				}

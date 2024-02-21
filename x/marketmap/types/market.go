@@ -20,9 +20,13 @@ func (mm *MarketMap) ValidateBasic() error {
 	}
 
 	cps := make(map[types.CurrencyPair]struct{})
-	for _, ticker := range mm.Tickers {
+	for tickerStr, ticker := range mm.Tickers {
 		if err := ticker.ValidateBasic(); err != nil {
 			return err
+		}
+
+		if tickerStr != ticker.String() {
+			return fmt.Errorf("ticker string %s does not match ticker %s", tickerStr, ticker.String())
 		}
 
 		providers, ok := mm.Providers[ticker.String()]

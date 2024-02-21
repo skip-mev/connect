@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"fmt"
 
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -30,6 +29,34 @@ type (
 		OffChainMap map[string]mmtypes.Ticker
 	}
 )
+
+// ProviderMarketMapFromMarketMap returns a provider market map from a market map provided by the
+// market map module.
+func ProviderMarketMapFromMarketMap(name string, marketMap mmtypes.MarketMap) (ProviderMarketMap, error) {
+	if err := marketMap.ValidateBasic(); err != nil {
+		return ProviderMarketMap{}, fmt.Errorf("invalid market map: %w", err)
+	}
+
+	// Iterate over the providers and their respective tickers.
+	tickers := make(TickerToProviderConfig)
+	for tickerStr, config := range marketMap.Providers {
+		ticker, ok := marketMap.Tickers[tickerStr]
+		if !ok {
+			return ProviderMarketMap{}, fmt.Errorf("ticker %s not found in market map", tickerStr)
+		}
+
+		for _, provider := range config.Providers {
+			if provider.Name != name {
+				continue
+			}
+
+			tickers[ticker] = provider
+			break
+		}
+	}
+
+	return NewProviderMarketMap(name, tickers)
+}
 
 // NewProviderMarketMap returns a new provider market map.
 func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (ProviderMarketMap, error) {
@@ -74,33 +101,6 @@ func (pmm ProviderMarketMap) GetTickers() []mmtypes.Ticker {
 	return tickers
 }
 
-// ProviderMarketMapFromMarketMap returns a provider market map from a market map provided by the
-// market map module.
-func ProviderMarketMapFromMarketMap(name string, marketMap mmtypes.MarketMap) (ProviderMarketMap, error) {
-	if err := marketMap.ValidateBasic(); err != nil {
-		return ProviderMarketMap{}, fmt.Errorf("invalid market map: %w", err)
-	}
-
-	// Iterate over the providers and their respective tickers.
-	tickers := make(TickerToProviderConfig)
-	for tickerStr, config := range marketMap.Providers {
-		ticker, ok := marketMap.Tickers[tickerStr]
-		if !ok {
-			return ProviderMarketMap{}, fmt.Errorf("ticker %s not found in market map", tickerStr)
-		}
-
-		for _, provider := range config.Providers {
-			if provider.Name != name {
-				continue
-			}
-
-			tickers[ticker] = provider
-		}
-	}
-
-	return NewProviderMarketMap(name, tickers)
-}
-
 // ValidateBasic performs basic validation on the provider market map.
 func (pmm ProviderMarketMap) ValidateBasic() error {
 	if len(pmm.Name) == 0 {
@@ -137,7 +137,6 @@ func (pmm ProviderMarketMap) ValidateBasic() error {
 
 	return nil
 }
-
 
 // ReadMarketConfigFromFile reads a market map configuration from a file at the given path.
 func ReadMarketConfigFromFile(path string) (mmtypes.MarketMap, error) {

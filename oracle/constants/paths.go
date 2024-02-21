@@ -4,6 +4,11 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+// DISCLAIMER: The conversion paths are defined based on the available markets
+// on the supported exchanges. Additionally, whether the conversion paths are
+// utilized is dependent on the aggregation function that the main oracle
+// utilizes. Please consult the oracle documentation for more information.
+
 var (
 	// ATOM_USD_PATHS defines the conversion paths for ATOM to USD.
 	//
