@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
@@ -59,7 +58,6 @@ type OracleTestSuite struct {
 
 	// Oracle config
 	currencyPairs []mmtypes.Ticker
-	aggregationFn aggregator.AggregateFn[string, types.TickerPrices]
 }
 
 func TestOracleSuite(t *testing.T) {
@@ -75,7 +73,6 @@ func (s *OracleTestSuite) SetupTest() {
 		constants.ETHEREUM_USD,
 		constants.ATOM_USD,
 	}
-	s.aggregationFn = aggregator.ComputeMedian()
 }
 
 func (s *OracleTestSuite) TestStopWithContextCancel() {

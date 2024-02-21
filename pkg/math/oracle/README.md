@@ -2,7 +2,7 @@
 
 ## Overview
 
-The aggregation function defined in this package is used to convert a set of price feeds into a common set of prices. This is done by converting all prices to a common decimal precision and then aggregating the prices based on the price feed conversions defined for each price feed.
+The aggregation function defined in this package is used to convert a set of price feeds into a common set of prices. This is done by converting all prices to a common decimal precision and then aggregating the prices based on the price feed conversions defined for each price feed. Note that only tickers that provide an optional set of Paths will be considered for the following conversion aggregation. If a ticker does not have a set of paths, the final price outputted will be the median of the price feeds.
 
 ## Conversion
 

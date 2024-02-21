@@ -10,10 +10,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
@@ -86,8 +86,8 @@ func main() {
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                          // Replace with custom providers.
-		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
+		oracle.WithProviders(providers),                      // Replace with custom providers.
+		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithLogger(logger),
 	)

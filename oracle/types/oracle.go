@@ -3,6 +3,7 @@ package types
 import (
 	"math/big"
 
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -53,6 +54,18 @@ type (
 	// TickerPrices is a type alias for the map of prices. This is a map of tickers i.e.
 	// BTC/USD, ETH/USD, etc. to their respective prices.
 	TickerPrices = map[mmtypes.Ticker]*big.Int
+
+	// PriceAggregator is a type alias for the price aggregator. This is responsible for
+	// aggregating the resolved prices from the price providers.
+	PriceAggregator = aggregator.DataAggregator[string, TickerPrices]
+
+	// PriceAggregationFn is a type alias for the price aggregation function. This function
+	// is used to aggregate the resolved prices from the price providers.
+	PriceAggregationFn = aggregator.AggregateFn[string, TickerPrices]
+
+	// AggregatedProviderPrices is a type alias for the aggregated provider prices. This is
+	// a map of provider names to their respective ticker prices.
+	AggregatedProviderPrices = aggregator.AggregatedProviderData[string, TickerPrices]
 )
 
 var (
@@ -75,4 +88,7 @@ var (
 	// NewPriceWebSocketQueryHandler is a function alias for the new web socket query handler meant to be
 	// used by the price providers.
 	NewPriceWebSocketQueryHandler = wshandlers.NewWebSocketQueryHandler[mmtypes.Ticker, *big.Int]
+
+	// NewPriceAggregator is a function alias for the new price aggregator.
+	NewPriceAggregator = aggregator.NewDataAggregator[string, TickerPrices]
 )

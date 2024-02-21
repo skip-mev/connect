@@ -16,7 +16,7 @@ const (
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
 	// MaxPathLength is the maximum length of a path for a ticker conversion.
-	MaxPathLength = 2
+	MaxPathLength = 3
 )
 
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
