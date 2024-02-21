@@ -18,11 +18,11 @@ const ScaledDecimals = 36
 // standard number of decimals. We scale the price to the standard number of decimals for ease
 // of comparison.
 func ScaleUpCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error) {
-	diff := ScaledDecimals - decimals
-	if diff < 0 {
-		return nil, fmt.Errorf("cannot scale down price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
+	if decimals > ScaledDecimals {
+		return nil, fmt.Errorf("cannot scale up price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
 	}
 
+	diff := ScaledDecimals - decimals
 	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(int64(diff)), nil)
 	return new(big.Int).Mul(price, exp), nil
 }
@@ -35,11 +35,11 @@ func ScaleUpCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error)
 // NOTE: This function should only be used on prices that have already been scaled to the standard
 // number of decimals. The output of this returns the price to its expected number of decimals.
 func ScaleDownCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error) {
-	diff := ScaledDecimals - decimals
-	if diff < 0 {
+	if decimals > ScaledDecimals {
 		return nil, fmt.Errorf("cannot scale down price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
 	}
 
+	diff := ScaledDecimals - decimals
 	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(int64(diff)), nil)
 	return new(big.Int).Div(price, exp), nil
 }

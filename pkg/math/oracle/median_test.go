@@ -20,7 +20,7 @@ var (
 	// within 1e-10 of the expected price.
 	acceptableDelta = 1e-10
 
-	usdtbtc = mmtypes.NewTicker("USDT", "BITCOIN", 8, 1)
+	usdtbtc = mmtypes.NewTicker("USDT", "BTC", 8, 1)
 
 	logger, _ = zap.NewDevelopment()
 	marketmap = mmtypes.MarketMap{
