@@ -6,10 +6,10 @@ import (
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -42,12 +42,11 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 	sb := collections.NewSchemaBuilder(ss)
 
 	return Keeper{
-		cdc:       cdc,
-		authority: authority,
-		tickers:   collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
-		paths:     collections.NewMap(sb, types.PathsPrefix, "paths", types.TickersCodec, codec.CollValue[types.Paths](cdc)),
-		providers: collections.NewMap(sb, types.ProvidersPrefix, "providers", types.TickersCodec, codec.CollValue[types.Providers](cdc)),
-
+		cdc:         cdc,
+		authority:   authority,
+		tickers:     collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
+		paths:       collections.NewMap(sb, types.PathsPrefix, "paths", types.TickersCodec, codec.CollValue[types.Paths](cdc)),
+		providers:   collections.NewMap(sb, types.ProvidersPrefix, "providers", types.TickersCodec, codec.CollValue[types.Providers](cdc)),
 		lastUpdated: collections.NewItem[int64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
 	}
 }
@@ -183,33 +182,6 @@ func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ti
 // CreateMarket sets the ticker, paths, and providers for a given market.  It also
 // sets the LastUpdated field to the current block height.
 func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.Paths, providers types.Providers) error {
-	// check that all paths already exist in the keeper store:
-	for _, path := range paths.Paths {
-		for _, op := range path.Operations {
-			cp := op.CurrencyPair
-			if op.Invert {
-				cp = slinkytypes.CurrencyPair{
-					Base:  cp.Quote,
-					Quote: cp.Base,
-				}
-			}
-
-			// if the path is the ticker string itself, skip
-			if cp.String() == ticker.CurrencyPair.String() {
-				continue
-			}
-
-			has, err := k.tickers.Has(ctx, types.TickerString(cp.String()))
-			if err != nil {
-				return err
-			}
-
-			if !has {
-				return fmt.Errorf("currency pair %s in path %s does not exist", cp.String(), path.ShowRoute())
-			}
-		}
-	}
-
 	if err := k.CreateTicker(ctx, ticker); err != nil {
 		return err
 	}
@@ -223,4 +195,33 @@ func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.
 	}
 
 	return k.SetLastUpdated(ctx)
+}
+
+// ValidateUpdate is called after keeper modifications have been made to the market map to verify that
+// the aggregate of all updates has led to a valid state.
+func (k *Keeper) ValidateUpdate(ctx sdk.Context, creates []types.CreateMarket) error {
+	for _, create := range creates {
+		// check that all paths already exist in the keeper store:
+		for _, path := range create.Paths.Paths {
+			for _, op := range path.Operations {
+				cp := op.CurrencyPair
+				if op.Invert {
+					cp = slinkytypes.CurrencyPair{
+						Base:  cp.Quote,
+						Quote: cp.Base,
+					}
+				}
+
+				has, err := k.tickers.Has(ctx, types.TickerString(cp.String()))
+				if err != nil {
+					return err
+				}
+
+				if !has {
+					return fmt.Errorf("currency pair %s in path %s does not exist", cp.String(), path.ShowRoute())
+				}
+			}
+		}
+	}
+	return nil
 }

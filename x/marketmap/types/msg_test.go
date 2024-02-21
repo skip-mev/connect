@@ -24,44 +24,48 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 
 	tcs := []struct {
 		name       string
-		msg        types.MsgCreateMarket
+		msg        types.MsgUpdateMarketMap
 		expectPass bool
 	}{
 		{
 			"if the signer is not an acc-address - fail",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: "invalid",
 			},
 			false,
 		},
 		{
 			"invalid ticker - fail",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: sample.Address(sample.Rand()),
-				Ticker: types.Ticker{
-					CurrencyPair:     validCurrencyPair,
-					Decimals:         0,
-					MinProviderCount: 0,
-				},
-				Providers: types.Providers{
-					Providers: []types.ProviderConfig{
-						{
-							Name:           "kucoin",
-							OffChainTicker: "btc-eth",
+				CreateMarkets: []types.CreateMarket{
+					{
+						Ticker: types.Ticker{
+							CurrencyPair:     validCurrencyPair,
+							Decimals:         0,
+							MinProviderCount: 0,
 						},
-						{
-							Name:           "mexc",
-							OffChainTicker: "btceth",
-						},
-					},
-				},
-				Paths: types.Paths{
-					Paths: []types.Path{
-						{
-							Operations: []types.Operation{
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
 								{
-									CurrencyPair: validTicker.CurrencyPair,
-									Invert:       false,
+									Name:           "kucoin",
+									OffChainTicker: "btc-eth",
+								},
+								{
+									Name:           "mexc",
+									OffChainTicker: "btceth",
+								},
+							},
+						},
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: validTicker.CurrencyPair,
+											Invert:       false,
+										},
+									},
 								},
 							},
 						},
@@ -72,24 +76,28 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid num providers - fail",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: sample.Address(sample.Rand()),
-				Ticker: validTicker,
-				Providers: types.Providers{
-					Providers: []types.ProviderConfig{
-						{
-							Name:           "kucoin",
-							OffChainTicker: "btc-eth",
-						},
-					},
-				},
-				Paths: types.Paths{
-					Paths: []types.Path{
-						{
-							Operations: []types.Operation{
+				CreateMarkets: []types.CreateMarket{
+					{
+						Ticker: validTicker,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
 								{
-									CurrencyPair: validTicker.CurrencyPair,
-									Invert:       false,
+									Name:           "kucoin",
+									OffChainTicker: "btc-eth",
+								},
+							},
+						},
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: validTicker.CurrencyPair,
+											Invert:       false,
+										},
+									},
 								},
 							},
 						},
@@ -100,28 +108,32 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid empty offchain ticker - fail",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: sample.Address(sample.Rand()),
-				Ticker: validTicker,
-				Providers: types.Providers{
-					Providers: []types.ProviderConfig{
-						{
-							Name:           "kucoin",
-							OffChainTicker: "btc-eth",
-						},
-						{
-							Name:           "mexc",
-							OffChainTicker: "",
-						},
-					},
-				},
-				Paths: types.Paths{
-					Paths: []types.Path{
-						{
-							Operations: []types.Operation{
+				CreateMarkets: []types.CreateMarket{
+					{
+						Ticker: validTicker,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
 								{
-									CurrencyPair: validTicker.CurrencyPair,
-									Invert:       false,
+									Name:           "kucoin",
+									OffChainTicker: "btc-eth",
+								},
+								{
+									Name:           "mexc",
+									OffChainTicker: "",
+								},
+							},
+						},
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: validTicker.CurrencyPair,
+											Invert:       false,
+										},
+									},
 								},
 							},
 						},
@@ -132,72 +144,84 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid no paths - fail",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: sample.Address(sample.Rand()),
-				Ticker: validTicker,
-				Providers: types.Providers{
-					Providers: []types.ProviderConfig{
-						{
-							Name:           "kucoin",
-							OffChainTicker: "btc-eth",
+				CreateMarkets: []types.CreateMarket{
+					{
+						Ticker: validTicker,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           "kucoin",
+									OffChainTicker: "btc-eth",
+								},
+								{
+									Name:           "mexc",
+									OffChainTicker: "",
+								},
+							},
 						},
-						{
-							Name:           "mexc",
-							OffChainTicker: "",
-						},
+						Paths: types.Paths{},
 					},
 				},
-				Paths: types.Paths{},
 			},
 			false,
 		},
 		{
 			"invalid path - fail",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: sample.Address(sample.Rand()),
-				Ticker: validTicker,
-				Providers: types.Providers{
-					Providers: []types.ProviderConfig{
-						{
-							Name:           "kucoin",
-							OffChainTicker: "btc-eth",
+				CreateMarkets: []types.CreateMarket{
+					{
+						Ticker: validTicker,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           "kucoin",
+									OffChainTicker: "btc-eth",
+								},
+								{
+									Name:           "mexc",
+									OffChainTicker: "",
+								},
+							},
 						},
-						{
-							Name:           "mexc",
-							OffChainTicker: "",
+						Paths: types.Paths{
+							Paths: make([]types.Path, 0),
 						},
 					},
-				},
-				Paths: types.Paths{
-					Paths: make([]types.Path, 0),
 				},
 			},
 			false,
 		},
 		{
 			"valid message",
-			types.MsgCreateMarket{
+			types.MsgUpdateMarketMap{
 				Signer: sample.Address(sample.Rand()),
-				Ticker: validTicker,
-				Providers: types.Providers{
-					Providers: []types.ProviderConfig{
-						{
-							Name:           "kucoin",
-							OffChainTicker: "btc-eth",
-						},
-						{
-							Name:           "mexc",
-							OffChainTicker: "btceth",
-						},
-					},
-				},
-				Paths: types.Paths{
-					Paths: []types.Path{
-						{
-							Operations: []types.Operation{
+				CreateMarkets: []types.CreateMarket{
+					{
+						Ticker: validTicker,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
 								{
-									CurrencyPair: validTicker.CurrencyPair,
-									Invert:       false,
+									Name:           "kucoin",
+									OffChainTicker: "btc-eth",
+								},
+								{
+									Name:           "mexc",
+									OffChainTicker: "btceth",
+								},
+							},
+						},
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: validTicker.CurrencyPair,
+											Invert:       false,
+										},
+									},
 								},
 							},
 						},

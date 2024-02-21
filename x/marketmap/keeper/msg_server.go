@@ -22,8 +22,8 @@ func NewMsgServer(k Keeper) types.MsgServer {
 
 var _ types.MsgServer = (*msgServer)(nil)
 
-// CreateMarket creates a market from the given message.
-func (ms msgServer) CreateMarket(goCtx context.Context, msg *types.MsgCreateMarket) (*types.MsgCreateMarketResponse, error) {
+// UpdateMarketMap updates the marketmap from the given message.
+func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateMarketMap) (*types.MsgUpdateMarketMapResponse, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
 	}
@@ -41,10 +41,24 @@ func (ms msgServer) CreateMarket(goCtx context.Context, msg *types.MsgCreateMark
 	//	return nil, fmt.Errorf("request signer %s does not match module market authority %s", msg.Signer, params.MarketAuthority)
 	// }
 
-	err := ms.k.CreateMarket(ctx, msg.Ticker, msg.Paths, msg.Providers)
-	if err != nil {
-		return nil, err
+	// create markets
+	for _, market := range msg.CreateMarkets {
+		err := ms.k.CreateMarket(ctx, market.Ticker, market.Paths, market.Providers)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO: call creation hooks
 	}
 
-	return &types.MsgCreateMarketResponse{}, nil
+	// update markets
+	// TODO
+
+	// validate that the new state of the marketmap is valid
+	err := ms.k.ValidateUpdate(ctx, msg.CreateMarkets)
+	if err != nil {
+		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
+	}
+
+	return &types.MsgUpdateMarketMapResponse{}, nil
 }

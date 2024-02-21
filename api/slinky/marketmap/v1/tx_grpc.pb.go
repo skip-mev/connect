@@ -19,15 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_CreateMarket_FullMethodName = "/slinky.marketmap.v1.Msg/CreateMarket"
+	Msg_UpdateMarketMap_FullMethodName = "/slinky.marketmap.v1.Msg/UpdateMarketMap"
 )
 
 // MsgClient is the client API for Msg service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateMarkets creates markets from the given message.
-	CreateMarket(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error)
+	// UpdateMarketMap creates markets from the given message.
+	UpdateMarketMap(ctx context.Context, in *MsgUpdateMarketMap, opts ...grpc.CallOption) (*MsgUpdateMarketMapResponse, error)
 }
 
 type msgClient struct {
@@ -38,9 +38,9 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error) {
-	out := new(MsgCreateMarketsResponse)
-	err := c.cc.Invoke(ctx, Msg_CreateMarket_FullMethodName, in, out, opts...)
+func (c *msgClient) UpdateMarketMap(ctx context.Context, in *MsgUpdateMarketMap, opts ...grpc.CallOption) (*MsgUpdateMarketMapResponse, error) {
+	out := new(MsgUpdateMarketMapResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateMarketMap_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +51,8 @@ func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarkets, opts
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// CreateMarkets creates markets from the given message.
-	CreateMarket(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error)
+	// UpdateMarketMap creates markets from the given message.
+	UpdateMarketMap(context.Context, *MsgUpdateMarketMap) (*MsgUpdateMarketMapResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -60,8 +60,8 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (UnimplementedMsgServer) CreateMarket(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateMarket not implemented")
+func (UnimplementedMsgServer) UpdateMarketMap(context.Context, *MsgUpdateMarketMap) (*MsgUpdateMarketMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMarketMap not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -76,20 +76,20 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 	s.RegisterService(&Msg_ServiceDesc, srv)
 }
 
-func _Msg_CreateMarket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateMarkets)
+func _Msg_UpdateMarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateMarketMap)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateMarket(ctx, in)
+		return srv.(MsgServer).UpdateMarketMap(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_CreateMarket_FullMethodName,
+		FullMethod: Msg_UpdateMarketMap_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateMarket(ctx, req.(*MsgCreateMarkets))
+		return srv.(MsgServer).UpdateMarketMap(ctx, req.(*MsgUpdateMarketMap))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -102,8 +102,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateMarket",
-			Handler:    _Msg_CreateMarket_Handler,
+			MethodName: "UpdateMarketMap",
+			Handler:    _Msg_UpdateMarketMap_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
