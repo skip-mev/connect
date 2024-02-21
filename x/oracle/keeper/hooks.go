@@ -18,10 +18,14 @@ func (k *Keeper) Hooks() Hooks {
 	return Hooks{k}
 }
 
-func (h Hooks) AfterMarketCreated(_ sdk.Context) error {
+func (h Hooks) AfterMarketCreated(_ sdk.Context, ticker marketmaptypes.Ticker) error {
+	// TODO finish
+
 	return nil
 }
 
-func (h Hooks) AfterMarketUpdated(_ sdk.Context) error {
+func (h Hooks) AfterMarketUpdated(_ sdk.Context, ticker marketmaptypes.Ticker) error {
+	// TODO finish
+
 	return nil
 }
