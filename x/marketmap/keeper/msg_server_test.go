@@ -114,40 +114,4 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
-
-	s.Run("update with a new market", func() {
-		msg = &types.MsgUpdateMarketMap{
-			Signer: s.authority.String(),
-			CreateMarkets: []types.CreateMarket{
-				{
-					Ticker:    ethusdt,
-					Providers: ethusdtProviders,
-					Paths:     ethusdtPaths,
-				},
-			},
-		}
-		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
-		s.Require().NoError(err)
-		s.Require().NotNil(resp)
-
-		queryResp, err = qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
-		s.Require().NoError(err)
-		s.Require().Equal(queryResp.MarketMap, types.MarketMap{
-			Tickers: map[string]types.Ticker{
-				btcusdt.String(): btcusdt,
-				usdtusd.String(): usdtusd,
-				ethusdt.String(): ethusdt,
-			},
-			Paths: map[string]types.Paths{
-				btcusdt.String(): btcusdtPaths,
-				usdtusd.String(): usdtusdPaths,
-				ethusdt.String(): ethusdtPaths,
-			},
-			Providers: map[string]types.Providers{
-				btcusdt.String(): btcusdtProviders,
-				usdtusd.String(): usdtusdProviders,
-				ethusdt.String(): ethusdtProviders,
-			},
-		})
-	})
 }

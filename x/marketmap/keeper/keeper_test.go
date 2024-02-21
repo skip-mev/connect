@@ -177,6 +177,39 @@ var (
 		},
 	}
 
+	mogbtc = types.Ticker{
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "MOG",
+			Quote: "BTC",
+		},
+		Decimals:         18,
+		MinProviderCount: 1,
+	}
+
+	mogbtcPaths = types.Paths{
+		Paths: []types.Path{
+			{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: slinkytypes.CurrencyPair{
+							Base:  "MOG",
+							Quote: "BTC",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	mogbtcProviders = types.Providers{
+		Providers: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "mog-btc",
+			},
+		},
+	}
+
 	tickers = map[string]types.Ticker{
 		btcusdt.String(): btcusdt,
 		usdcusd.String(): usdcusd,
