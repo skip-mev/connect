@@ -69,8 +69,37 @@ TODO BLO-920
 
 ### gRPC
 
-TODO BLO-919
+A user can query the `marketmap` module using gRPC endpoints.
 
-### Rest
+#### MarketMap
 
-TODO BLO-919
+The `MarketMap` endpoint queries the full state of the market map as well as associated information such as
+`LastUpdated` and `Version`.
+
+Example:
+
+```shell
+grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/MarketMap
+```
+
+#### LastUpdated
+
+The `LastUpdated` endpoint queries the last block height that the market map was updated.
+This can be consumed by oracle service providers to recognize when their local configurations
+must be updated using the heavier `MarketMap` query.
+
+Example:
+
+```shell
+grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/LastUpdated
+```
+
+#### Params
+
+The params command allows users to query values set as marketmap parameters.
+
+Example:
+
+```shell
+grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/Params
+```
