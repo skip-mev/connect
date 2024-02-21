@@ -19,14 +19,14 @@ var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 // atomic in that it must request data from the Coinbase API sequentially for each ticker.
 type APIHandler struct {
 	// market is the config for the Coinbase API.
-	market mmtypes.MarketConfig
+	market types.ProviderMarketMap
 	// api is the config for the Coinbase API.
 	api config.APIConfig
 }
 
 // NewAPIHandler returns a new Coinbase PriceAPIDataHandler.
 func NewAPIHandler(
-	market mmtypes.MarketConfig,
+	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
 	if err := market.ValidateBasic(); err != nil {
@@ -69,7 +69,7 @@ func (h *APIHandler) CreateURL(
 	// Ensure that the base and quote currencies are supported by the Coinbase API and
 	// are configured for the handler.
 	ticker := tickers[0]
-	market, ok := h.market.TickerConfigs[ticker.String()]
+	market, ok := h.market.TickerConfigs[ticker]
 	if !ok {
 		return "", fmt.Errorf("unknown ticker %s", ticker.String())
 	}
@@ -89,7 +89,7 @@ func (h *APIHandler) ParseResponse(
 
 	// Check if this ticker is supported by the Coinbase market config.
 	ticker := tickers[0]
-	_, ok := h.market.TickerConfigs[ticker.String()]
+	_, ok := h.market.TickerConfigs[ticker]
 	if !ok {
 		return types.NewPriceResponseWithErr(tickers, fmt.Errorf("unknown ticker %s", ticker.String()))
 	}

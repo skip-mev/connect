@@ -21,7 +21,7 @@ type WebSocketHandler struct {
 	logger *zap.Logger
 
 	// market is the config for the MEXC API.
-	market mmtypes.MarketConfig
+	market types.ProviderMarketMap
 	// ws is the config for the MEXC websocket.
 	ws config.WebSocketConfig
 }
@@ -29,33 +29,33 @@ type WebSocketHandler struct {
 // NewWebSocketDataHandler returns a new MEXC PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	marketCfg mmtypes.MarketConfig,
-	wsCfg config.WebSocketConfig,
+	market types.ProviderMarketMap,
+	ws config.WebSocketConfig,
 ) (types.PriceWebSocketDataHandler, error) {
-	if err := marketCfg.ValidateBasic(); err != nil {
+	if err := market.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if marketCfg.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	if wsCfg.Name != Name {
-		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
+	if ws.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, ws.Name)
 	}
 
-	if !wsCfg.Enabled {
+	if !ws.Enabled {
 		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
 	}
 
-	if err := wsCfg.ValidateBasic(); err != nil {
+	if err := ws.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
 	}
 
 	return &WebSocketHandler{
 		logger: logger,
-		market: marketCfg,
-		ws:     wsCfg,
+		market: market,
+		ws:     ws,
 	}, nil
 }
 
@@ -116,7 +116,7 @@ func (h *WebSocketHandler) CreateMessages(
 	instruments := make([]string, 0)
 
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker.String()]
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
 			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}

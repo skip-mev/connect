@@ -54,7 +54,10 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(binance.DefaultNonUSMarketConfig, binance.DefaultNonUSAPIConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultNonUSMarketConfig)
+			require.NoError(t, err)
+
+			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -104,7 +107,10 @@ func TestCreateURL_US(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(binance.DefaultUSMarketConfig, binance.DefaultUSAPIConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSMarketConfig)
+			require.NoError(t, err)
+
+			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultUSAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -227,7 +233,10 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(binance.DefaultNonUSMarketConfig, binance.DefaultNonUSAPIConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSMarketConfig)
+			require.NoError(t, err)
+
+			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)
 			require.NoError(t, err)
 
 			now := time.Now()

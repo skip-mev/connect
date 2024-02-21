@@ -20,14 +20,14 @@ var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
 	// market is the config for the Binance API.
-	market mmtypes.MarketConfig
+	market types.ProviderMarketMap
 	// api is the config for the Binance API.
 	api config.APIConfig
 }
 
 // NewAPIHandler returns a new Binance PriceAPIDataHandler.
 func NewAPIHandler(
-	market mmtypes.MarketConfig,
+	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
 	if err := market.ValidateBasic(); err != nil {
@@ -63,7 +63,7 @@ func (h *APIHandler) CreateURL(
 ) (string, error) {
 	var tickerStrings string
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker.String()]
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
 			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
 		}
@@ -100,21 +100,20 @@ func (h *APIHandler) ParseResponse(
 		unresolved = make(types.UnResolvedPrices)
 	)
 
-	inverted := h.market.Invert()
 	for _, data := range result {
 		// Filter out the responses that are not expected.
-		market, ok := inverted[data.Symbol]
+		ticker, ok := h.market.OffChainMap[data.Symbol]
 		if !ok {
 			continue
 		}
 
-		price, err := math.Float64StringToBigInt(data.Price, market.Ticker.Decimals)
+		price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
 		if err != nil {
-			unresolved[market.Ticker] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			unresolved[ticker] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
 			continue
 		}
 
-		resolved[market.Ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = types.NewPriceResult(price, time.Now())
 	}
 
 	// Add currency pairs that received no response to the unresolved map.

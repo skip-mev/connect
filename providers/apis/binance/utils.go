@@ -7,7 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 // NOTE: All documentation for this file can be located on the Binance GitHub
@@ -59,96 +59,90 @@ var (
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
-	DefaultUSMarketConfig = mmtypes.MarketConfig{
-		Name: Name,
-		TickerConfigs: map[string]mmtypes.TickerConfig{
-			"ATOM/USDT": {
-				Ticker:         constants.ATOM_USDT,
-				OffChainTicker: "ATOMUSDT",
-			},
-			"AVAX/USDT": {
-				Ticker:         constants.AVAX_USDT,
-				OffChainTicker: "AVAXUSDT",
-			},
-			"BITCOIN/USDC": {
-				Ticker:         constants.BITCOIN_USDC,
-				OffChainTicker: "BTCUSDC",
-			},
-			"BITCOIN/USDT": {
-				Ticker:         constants.BITCOIN_USDT,
-				OffChainTicker: "BTCUSDT",
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:         constants.ETHEREUM_BITCOIN,
-				OffChainTicker: "ETHBTC",
-			},
-			"ETHEREUM/USDC": {
-				Ticker:         constants.ETHEREUM_USDC,
-				OffChainTicker: "ETHUSDC",
-			},
-			"ETHEREUM/USDT": {
-				Ticker:         constants.ETHEREUM_USDT,
-				OffChainTicker: "ETHUSDT",
-			},
-			"SOLANA/USDC": {
-				Ticker:         constants.SOLANA_USDC,
-				OffChainTicker: "SOLUSDC",
-			},
-			"SOLANA/USDT": {
-				Ticker:         constants.SOLANA_USDT,
-				OffChainTicker: "SOLUSDT",
-			},
-			"USDC/USDT": {
-				Ticker:         constants.USDC_USDT,
-				OffChainTicker: "USDCUSDT",
-			},
+	DefaultUSMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ATOMUSDT",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAXUSDT",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDC",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDT",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETHBTC",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDT",
+		},
+		constants.SOLANA_USDC: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDC",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDT",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDCUSDT",
 		},
 	}
 
 	// DefaultNonUSMarketConfig is the default market configuration for Binance.
-	DefaultNonUSMarketConfig = mmtypes.MarketConfig{
-		Name: Name,
-		TickerConfigs: map[string]mmtypes.TickerConfig{
-			"ATOM/USDT": {
-				Ticker:         constants.ATOM_USDT,
-				OffChainTicker: "ATOMUSDT",
-			},
-			"AVAX/USDT": {
-				Ticker:         constants.AVAX_USDT,
-				OffChainTicker: "AVAXUSDT",
-			},
-			"BITCOIN/USDC": {
-				Ticker:         constants.BITCOIN_USDC,
-				OffChainTicker: "BTCUSDC",
-			},
-			"BITCOIN/USDT": {
-				Ticker:         constants.BITCOIN_USDT,
-				OffChainTicker: "BTCUSDT",
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:         constants.ETHEREUM_BITCOIN,
-				OffChainTicker: "ETHBTC",
-			},
-			"ETHEREUM/USDC": {
-				Ticker:         constants.ETHEREUM_USDC,
-				OffChainTicker: "ETHUSDC",
-			},
-			"ETHEREUM/USDT": {
-				Ticker:         constants.ETHEREUM_USDT,
-				OffChainTicker: "ETHUSDT",
-			},
-			"SOLANA/USDC": {
-				Ticker:         constants.SOLANA_USDC,
-				OffChainTicker: "SOLUSDC",
-			},
-			"SOLANA/USDT": {
-				Ticker:         constants.SOLANA_USDT,
-				OffChainTicker: "SOLUSDT",
-			},
-			"USDC/USDT": {
-				Ticker:         constants.USDC_USDT,
-				OffChainTicker: "USDCUSDT",
-			},
+	DefaultNonUSMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ATOMUSDT",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAXUSDT",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDC",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDT",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETHBTC",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDT",
+		},
+		constants.SOLANA_USDC: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDC",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDT",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDCUSDT",
 		},
 	}
 )

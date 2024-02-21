@@ -17,14 +17,14 @@ var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 // APIHandler implements the PriceAPIDataHandler interface for CoinGecko.
 type APIHandler struct {
 	// marketCfg is the config for the CoinGecko API.
-	market mmtypes.MarketConfig
+	market types.ProviderMarketMap
 	// apiCfg is the config for the CoinGecko API.
 	api config.APIConfig
 }
 
 // NewAPIHandler returns a new CoinGecko PriceAPIDataHandler.
 func NewAPIHandler(
-	market mmtypes.MarketConfig,
+	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
 	if err := market.ValidateBasic(); err != nil {
@@ -94,21 +94,20 @@ func (h *APIHandler) ParseResponse(
 	)
 
 	// Filter out the responses that are not expected.
-	inverted := h.market.Invert()
 	for base, quotes := range result {
 		for quote, price := range quotes {
 			// The ticker is represented as base/quote.
-			ticker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
+			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			market, ok := inverted[ticker]
+			ticker, ok := h.market.OffChainMap[offChainTicker]
 			if !ok {
 				continue
 			}
 
 			// Resolve the price.
-			price := math.Float64ToBigInt(price, market.Ticker.Decimals)
-			resolved[market.Ticker] = types.NewPriceResult(price, time.Now())
+			price := math.Float64ToBigInt(price, ticker.Decimals)
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
 		}
 	}
 

@@ -3,7 +3,7 @@ package huobi
 import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -40,53 +40,50 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
-	DefaultMarketConfig = mmtypes.MarketConfig{
-		Name: Name,
-		TickerConfigs: map[string]mmtypes.TickerConfig{
-			"ATOM/USDT": {
-				Ticker:         constants.ATOM_USDT,
-				OffChainTicker: "atomusdt",
-			},
-			"AVAX/USDT": {
-				Ticker:         constants.AVAX_USDT,
-				OffChainTicker: "avaxusdt",
-			},
-			"BITCOIN/USDC": {
-				Ticker:         constants.BITCOIN_USDC,
-				OffChainTicker: "btcusdc",
-			},
-			"BITCOIN/USDT": {
-				Ticker:         constants.BITCOIN_USDT,
-				OffChainTicker: "btcusdt",
-			},
-			"CELESTIA/USDT": {
-				Ticker:         constants.CELESTIA_USDT,
-				OffChainTicker: "tiausdt",
-			},
-			"DYDX/USDT": {
-				Ticker:         constants.DYDX_USDT,
-				OffChainTicker: "dydxusdt",
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:         constants.ETHEREUM_BITCOIN,
-				OffChainTicker: "ethbtc",
-			},
-			"ETHEREUM/USDC": {
-				Ticker:         constants.ETHEREUM_USDC,
-				OffChainTicker: "ethusdc",
-			},
-			"ETHEREUM/USDT": {
-				Ticker:         constants.ETHEREUM_USDT,
-				OffChainTicker: "ethusdt",
-			},
-			"SOLANA/USDT": {
-				Ticker:         constants.SOLANA_USDT,
-				OffChainTicker: "solusdt",
-			},
-			"USDC/USDT": {
-				Ticker:         constants.USDC_USDT,
-				OffChainTicker: "usdcusdt",
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "atomusdt",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "avaxusdt",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "btcusdc",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "btcusdt",
+		},
+		constants.CELESTIA_USDT: {
+			Name:           Name,
+			OffChainTicker: "tiausdt",
+		},
+		constants.DYDX_USDT: {
+			Name:           Name,
+			OffChainTicker: "dydxusdt",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ethbtc",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ethusdc",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ethusdt",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "solusdt",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "usdcusdt",
 		},
 	}
 )

@@ -21,7 +21,7 @@ type WebSocketHandler struct {
 	logger *zap.Logger
 
 	// market is the config for the ByBit API.
-	market mmtypes.MarketConfig
+	market types.ProviderMarketMap
 	// ws is the config for the ByBit websocket.
 	ws config.WebSocketConfig
 }
@@ -29,33 +29,33 @@ type WebSocketHandler struct {
 // NewWebSocketDataHandler returns a new ByBit PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	marketCfg mmtypes.MarketConfig,
-	wsCfg config.WebSocketConfig,
+	market types.ProviderMarketMap,
+	ws config.WebSocketConfig,
 ) (types.PriceWebSocketDataHandler, error) {
-	if err := marketCfg.ValidateBasic(); err != nil {
+	if err := market.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if marketCfg.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, marketCfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	if wsCfg.Name != Name {
-		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, wsCfg.Name)
+	if ws.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, ws.Name)
 	}
 
-	if !wsCfg.Enabled {
+	if !ws.Enabled {
 		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
 	}
 
-	if err := wsCfg.ValidateBasic(); err != nil {
+	if err := ws.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
 	}
 
 	return &WebSocketHandler{
 		logger: logger,
-		market: marketCfg,
-		ws:     wsCfg,
+		market: market,
+		ws:     ws,
 	}, nil
 }
 
@@ -124,14 +124,14 @@ func (h *WebSocketHandler) HandleMessage(
 // Only the tickers that are specified in the config are subscribed to. The only channel that is
 // subscribed to is the index tickers channel - which supports spot markets.
 func (h *WebSocketHandler) CreateMessages(
-	cps []mmtypes.Ticker,
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	pairs := make([]string, 0)
 
-	for _, cp := range cps {
-		market, ok := h.market.TickerConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
-			return nil, fmt.Errorf("ticker not found in market configs %s", cp.String())
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
 		pairs = append(pairs, string(TickerChannel)+"."+market.OffChainTicker)

@@ -27,7 +27,7 @@ type MockAPIHandler struct {
 // the config. Notice this method expects the market configuration map to the offchain ticker
 // to the desired price.
 func NewAPIHandler(
-	market mmtypes.MarketConfig,
+	market types.ProviderMarketMap,
 ) (types.PriceAPIDataHandler, error) {
 	if market.Name != Name {
 		return nil, fmt.Errorf("expected market config name to be %s, got %s", Name, market.Name)
@@ -38,14 +38,14 @@ func NewAPIHandler(
 		tickers:       make([]mmtypes.Ticker, 0),
 	}
 
-	for cpString, market := range market.TickerConfigs {
-		price, converted := big.NewInt(0).SetString(market.OffChainTicker, 10)
+	for ticker, config := range market.TickerConfigs {
+		price, converted := big.NewInt(0).SetString(config.OffChainTicker, 10)
 		if !converted {
-			return nil, fmt.Errorf("failed to parse price %s for ticker %s", price, cpString)
+			return nil, fmt.Errorf("failed to parse price %s for ticker %s", price, config.OffChainTicker)
 		}
 
-		s.exchangeRates[market.Ticker] = price
-		s.tickers = append(s.tickers, market.Ticker)
+		s.exchangeRates[ticker] = price
+		s.tickers = append(s.tickers, ticker)
 	}
 
 	return &s, nil

@@ -47,21 +47,20 @@ func (h *WebSocketHandler) parseTickerUpdate(
 			fmt.Errorf("invalid topic %s", resp.Topic)
 	}
 
-	data := resp.Data
 	// Iterate through all the tickers and add them to the response.
-	inverted := h.market.Invert()
-	market, ok := inverted[data.Symbol]
+	data := resp.Data
+	ticker, ok := h.market.OffChainMap[data.Symbol]
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved), fmt.Errorf("unknown ticker %s", data.Symbol)
 	}
 
 	// Convert the price to a big.Int.
-	price, err := math.Float64StringToBigInt(data.LastPrice, market.Ticker.Decimals)
+	price, err := math.Float64StringToBigInt(data.LastPrice, ticker.Decimals)
 	if err != nil {
-		unresolved[market.Ticker] = fmt.Errorf("failed to convert price to big.Int: %w", err)
+		unresolved[ticker] = fmt.Errorf("failed to convert price to big.Int: %w", err)
 		return types.NewPriceResponse(resolved, unresolved), nil
 	}
 
-	resolved[market.Ticker] = types.NewPriceResult(price, time.Now().UTC())
+	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	return types.NewPriceResponse(resolved, unresolved), nil
 }
