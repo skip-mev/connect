@@ -34,7 +34,6 @@ func WebSocketQueryHandlerFactory(
 	wsMetrics wsmetrics.WebSocketMetrics,
 	marketMap types.ProviderMarketMap,
 ) (types.PriceWebSocketQueryHandler, error) {
-	// Validate the provider config.
 	err := cfg.ValidateBasic()
 	if err != nil {
 		return nil, err

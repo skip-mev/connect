@@ -93,7 +93,7 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 }
 
 // GetTickers returns the tickers from the provider market map.
-func (pmm ProviderMarketMap) GetTickers() []mmtypes.Ticker {
+func (pmm *ProviderMarketMap) GetTickers() []mmtypes.Ticker {
 	tickers := make([]mmtypes.Ticker, 0, len(pmm.TickerConfigs))
 	for ticker := range pmm.TickerConfigs {
 		tickers = append(tickers, ticker)
@@ -102,7 +102,7 @@ func (pmm ProviderMarketMap) GetTickers() []mmtypes.Ticker {
 }
 
 // ValidateBasic performs basic validation on the provider market map.
-func (pmm ProviderMarketMap) ValidateBasic() error {
+func (pmm *ProviderMarketMap) ValidateBasic() error {
 	if len(pmm.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
 	}
@@ -122,7 +122,6 @@ func (pmm ProviderMarketMap) ValidateBasic() error {
 
 		if err := config.ValidateBasic(); err != nil {
 			return fmt.Errorf("invalid provider config for %s: %w", ticker, err)
-
 		}
 
 		t, ok := pmm.OffChainMap[config.OffChainTicker]
@@ -154,11 +153,9 @@ func ReadMarketConfigFromFile(path string) (mmtypes.MarketMap, error) {
 		return config, fmt.Errorf("error unmarshalling config JSON: %w", err)
 	}
 
-	// Optionally, validate the config if needed
 	if err := config.ValidateBasic(); err != nil {
 		return config, fmt.Errorf("error validating config: %w", err)
 	}
 
-	// Return the populated config struct
 	return config, nil
 }
