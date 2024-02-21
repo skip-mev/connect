@@ -225,6 +225,10 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 	zero := big.NewInt(0)
 
 	operations := path.Operations
+	if len(operations) == 0 {
+		return zero, fmt.Errorf("no operations in path")
+	}
+
 	first := operations[0]
 	cp := first.CurrencyPair
 
