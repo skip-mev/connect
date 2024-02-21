@@ -28,7 +28,7 @@ func DefaultGenesisState() *GenesisState {
 			Paths:     make(map[string]Paths),
 			Providers: make(map[string]Providers),
 		},
-		LastUpdated: 0,
+		LastUpdated: 1,
 		Params:      DefaultParams(),
 	}
 }

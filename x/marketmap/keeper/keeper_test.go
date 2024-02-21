@@ -34,7 +34,7 @@ func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key")).WithBlockHeight(10)
 
 	k := keeper.NewKeeper(ss, encCfg.Codec, s.authority)
-	s.Require().NoError(k.SetLastUpdated(s.ctx))
+	s.Require().NoError(k.SetLastUpdated(s.ctx, s.ctx.BlockHeight()))
 
 	params := types.NewParams(types.DefaultMarketAuthority, 10)
 	s.Require().NoError(k.SetParams(s.ctx, params))

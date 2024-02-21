@@ -59,8 +59,8 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 }
 
 // SetLastUpdated sets the lastUpdated field to the current block height.
-func (k *Keeper) SetLastUpdated(ctx sdk.Context) error {
-	return k.lastUpdated.Set(ctx, ctx.BlockHeight())
+func (k *Keeper) SetLastUpdated(ctx sdk.Context, height int64) error {
+	return k.lastUpdated.Set(ctx, height)
 }
 
 // GetLastUpdated gets the last block-height the market map was updated.
@@ -201,15 +201,15 @@ func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.
 		return err
 	}
 
-	return k.SetLastUpdated(ctx)
+	return k.SetLastUpdated(ctx, ctx.BlockHeight())
 }
 
 // SetParams sets the x/marketmap module's parameters.
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
+func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 	return k.params.Set(ctx, params)
 }
 
 // GetParams returns the x/marketmap module's parameters.
-func (k Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
+func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	return k.params.Get(ctx)
 }

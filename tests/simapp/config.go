@@ -136,6 +136,7 @@ var (
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
 						alerttypes.ModuleName,
+						marketmaptypes.ModuleName,
 					},
 					EndBlockers: []string{
 						crisistypes.ModuleName,
@@ -144,9 +145,10 @@ var (
 						genutiltypes.ModuleName,
 						group.ModuleName,
 						oracletypes.ModuleName,
-						// alert Endblock must precede incentives types EndBlocker (issued incentives shld be executed same block)
+						// alert Endblock must precede incentives types EndBlocker (issued incentives should be executed same block)
 						alerttypes.ModuleName,
 						incentivetypes.ModuleName,
+						marketmaptypes.ModuleName,
 					},
 					OverrideStoreKeys: []*runtimev1alpha1.StoreKeyConfig{
 						{
@@ -177,6 +179,7 @@ var (
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
 						alerttypes.ModuleName,
+						marketmaptypes.ModuleName,
 					},
 					// When ExportGenesis is not specified, the export genesis module order
 					// is equal to the init genesis order

@@ -94,6 +94,14 @@ Example:
 grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/LastUpdated
 ```
 
+Example response"
+
+```shell
+{
+  "lastUpdated": "1"
+}
+```
+
 #### Params
 
 The params command allows users to query values set as marketmap parameters.
@@ -102,4 +110,14 @@ Example:
 
 ```shell
 grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/Params
+```
+
+Example response:
+
+```shell
+{
+  "params": {
+    "marketAuthority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+  }
+}
 ```
