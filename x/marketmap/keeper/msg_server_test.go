@@ -87,24 +87,25 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 				{
 					Ticker:    ethusdt,
 					Providers: ethusdtProviders,
-					Paths: types.Paths{Paths: []types.Path{
-						{
-							Operations: []types.Operation{
-								{
-									CurrencyPair: slinkytypes.CurrencyPair{
-										Base:  "ETHEREUM",
-										Quote: "MOG",
+					Paths: types.Paths{
+						Paths: []types.Path{
+							{
+								Operations: []types.Operation{
+									{
+										CurrencyPair: slinkytypes.CurrencyPair{
+											Base:  "ETHEREUM",
+											Quote: "MOG",
+										},
 									},
-								},
-								{
-									CurrencyPair: slinkytypes.CurrencyPair{
-										Base:  "MOG",
-										Quote: "USDT",
+									{
+										CurrencyPair: slinkytypes.CurrencyPair{
+											Base:  "MOG",
+											Quote: "USDT",
+										},
 									},
 								},
 							},
 						},
-					},
 					},
 				},
 			},
