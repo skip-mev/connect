@@ -82,6 +82,60 @@ Example:
 grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/MarketMap
 ```
 
+Example response:
+
+```json
+{
+  "marketMap": {
+    "tickers": {
+      "BITCOIN/USD": {
+        "currencyPair": {
+          "Base": "BITCOIN",
+          "Quote": "USD"
+        },
+        "decimals": "8",
+        "minProviderCount": "3"
+      }
+    },
+    "paths": {
+      "BITCOIN/USD": {
+        "paths": [
+          {
+            "operations": [
+              {
+                "currencyPair": {
+                  "Base": "BITCOIN",
+                  "Quote": "USD"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "providers": {
+      "BITCOIN/USD": {
+        "providers": [
+          {
+            "name": "kucoin",
+            "offChainTicker": "btc_usd"
+          },
+          {
+            "name": "mexc",
+            "offChainTicker": "btc-usd"
+          },
+          {
+            "name": "binance",
+            "offChainTicker": "BTCUSD"
+          }
+        ]
+      }
+    }
+  },
+  "lastUpdated": "1"
+}
+```
+
 #### LastUpdated
 
 The `LastUpdated` endpoint queries the last block height that the market map was updated.
@@ -94,9 +148,9 @@ Example:
 grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/LastUpdated
 ```
 
-Example response"
+Example response:
 
-```shell
+```json
 {
   "lastUpdated": "1"
 }
@@ -114,7 +168,7 @@ grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/Params
 
 Example response:
 
-```shell
+```json
 {
   "params": {
     "marketAuthority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"

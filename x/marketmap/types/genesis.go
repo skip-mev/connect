@@ -20,7 +20,7 @@ func (gs *GenesisState) ValidateBasic() error {
 	return gs.MarketMap.ValidateBasic()
 }
 
-// DefaultGenesisState returns the default genesis of the marathon.
+// DefaultGenesisState returns the default genesis of the marketmap module.
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
 		MarketMap: MarketMap{
