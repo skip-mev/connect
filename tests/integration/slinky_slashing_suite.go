@@ -18,6 +18,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -1172,16 +1173,16 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			nodes := s.chain.Nodes()
 
 			// update the first node to report incorrect Prices (too high)
-			s.Require().NoError(UpdateNodePrices(nodes[0], cp, 152))
+			s.Require().NoError(UpdateNodePrices(nodes[0], constants.BITCOIN_USD, 152))
 
 			// update the second node to report incorrect Prices (too low)
-			s.Require().NoError(UpdateNodePrices(nodes[1], cp, 148))
+			s.Require().NoError(UpdateNodePrices(nodes[1], constants.BITCOIN_USD, 148))
 
 			// update the third node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[2], cp, honestPrice))
+			s.Require().NoError(UpdateNodePrices(nodes[2], constants.BITCOIN_USD, honestPrice))
 
 			// update the fourth node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[3], cp, honestPrice))
+			s.Require().NoError(UpdateNodePrices(nodes[3], constants.BITCOIN_USD, honestPrice))
 		})
 
 		validatorsPreSlash, err := QueryValidators(s.chain)

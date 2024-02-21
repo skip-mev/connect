@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 // NOTE: All documentation for this file can be located on the Binance GitHub
@@ -26,7 +27,7 @@ const (
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
 	// by US users. Note that the US URL does not support all the currency pairs that
 	// the Non-US URL supports.
-	US_URL = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s" //nolint
+	US_URL = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s"
 
 	Quotation    = "%22"
 	Separator    = ","
@@ -58,96 +59,90 @@ var (
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
-	DefaultUSMarketConfig = config.MarketConfig{
-		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"ATOM/USDT": {
-				Ticker:       "ATOMUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
-			},
-			"AVAX/USDT": {
-				Ticker:       "AVAXUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
-			},
-			"BITCOIN/USDC": {
-				Ticker:       "BTCUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
-			},
-			"BITCOIN/USDT": {
-				Ticker:       "BTCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"ETHEREUM/USDC": {
-				Ticker:       "ETHUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
-			},
-			"ETHEREUM/USDT": {
-				Ticker:       "ETHUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-			},
-			"SOLANA/USDC": {
-				Ticker:       "SOLUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
-			},
-			"SOLANA/USDT": {
-				Ticker:       "SOLUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
-			},
-			"USDC/USDT": {
-				Ticker:       "USDCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
-			},
+	DefaultUSMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ATOMUSDT",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAXUSDT",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDC",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDT",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETHBTC",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDT",
+		},
+		constants.SOLANA_USDC: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDC",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDT",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDCUSDT",
 		},
 	}
 
 	// DefaultNonUSMarketConfig is the default market configuration for Binance.
-	DefaultNonUSMarketConfig = config.MarketConfig{
-		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"ATOM/USDT": {
-				Ticker:       "ATOMUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
-			},
-			"AVAX/USDT": {
-				Ticker:       "AVAXUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
-			},
-			"BITCOIN/USDC": {
-				Ticker:       "BTCUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
-			},
-			"BITCOIN/USDT": {
-				Ticker:       "BTCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETHBTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"ETHEREUM/USDC": {
-				Ticker:       "ETHUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
-			},
-			"ETHEREUM/USDT": {
-				Ticker:       "ETHUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-			},
-			"SOLANA/USDC": {
-				Ticker:       "SOLUSDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
-			},
-			"SOLANA/USDT": {
-				Ticker:       "SOLUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
-			},
-			"USDC/USDT": {
-				Ticker:       "USDCUSDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
-			},
+	DefaultNonUSMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ATOMUSDT",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAXUSDT",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDC",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTCUSDT",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETHBTC",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETHUSDT",
+		},
+		constants.SOLANA_USDC: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDC",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOLUSDT",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDCUSDT",
 		},
 	}
 )

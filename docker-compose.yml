@@ -10,7 +10,8 @@ services:
       context: .
       dockerfile: contrib/images/slinky.e2e.oracle.Dockerfile
     volumes:
-      - ./config/local/oracle.toml:/oracle/config.toml
+      - ./config/local/oracle.json:/oracle/oracle.json
+      - ./config/local/market.json:/oracle/market.json
     ports:
       - "8080:8080" # main oracle port
       - "8002:8002" # oracle metrics port

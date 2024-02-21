@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains the [configuration file](./oracle.toml) for the local oracle instance. To update the configuration, edit the `LocalConfig` in [generate_toml.go](./generate_toml.go) and run the following command:
+This directory contains the [configuration file](./oracle.json) for the local oracle instance as well as [market map file](./market.json) that contains all markets that are supported by the oracle. To update the set of provider's utilized, update the `LocalOracleConfig` in `generate.go`. To update the set of markets supported, update the `ProvidersToMarkets` in `generate.go`. To add a custom conversion path, update the `TickerPaths` in `generate.go`.
 
 ```bash
 make update-local-config
