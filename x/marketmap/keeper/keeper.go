@@ -5,12 +5,10 @@ import (
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
-
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
