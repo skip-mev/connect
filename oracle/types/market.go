@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"fmt"
 
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -136,6 +137,7 @@ func (pmm ProviderMarketMap) ValidateBasic() error {
 
 	return nil
 }
+
 
 // ReadMarketConfigFromFile reads a market map configuration from a file at the given path.
 func ReadMarketConfigFromFile(path string) (mmtypes.MarketMap, error) {
