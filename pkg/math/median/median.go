@@ -1,4 +1,4 @@
-package aggregator
+package median
 
 import (
 	"math/big"
@@ -10,14 +10,14 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func ComputeMedianWithContext(_ sdk.Context) AggregateFn[string, types.TickerPrices] {
+func ComputeMedianWithContext(_ sdk.Context) types.PriceAggregationFn {
 	return ComputeMedian()
 }
 
 // ComputeMedian inputs the aggregated prices from all providers and computes
 // the median price for each asset.
-func ComputeMedian() AggregateFn[string, types.TickerPrices] {
-	return func(providers AggregatedProviderData[string, types.TickerPrices]) types.TickerPrices {
+func ComputeMedian() types.PriceAggregationFn {
+	return func(providers types.AggregatedProviderPrices) types.TickerPrices {
 		// Aggregate prices across all providers for each asset.
 		pricesByAsset := make(map[mmtypes.Ticker][]*big.Int)
 		for _, providerPrices := range providers {

@@ -13,6 +13,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 )
 
@@ -57,7 +58,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *aggregator.DataAggregator[string, types.TickerPrices]
+	priceAggregator *types.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
@@ -80,8 +81,8 @@ func New(opts ...Option) (*OracleImpl, error) {
 		closer:  ssync.NewCloser(),
 		logger:  zap.NewNop(),
 		metrics: metrics.NewNopMetrics(),
-		priceAggregator: aggregator.NewDataAggregator[string, types.TickerPrices](
-			aggregator.WithAggregateFn(aggregator.ComputeMedian()),
+		priceAggregator: types.NewPriceAggregator(
+			aggregator.WithAggregateFn(median.ComputeMedian()),
 		),
 		updateInterval: 1 * time.Second,
 	}
