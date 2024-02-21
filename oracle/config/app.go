@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"net/url"
 	"time"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -80,10 +79,6 @@ type AppConfig struct {
 func (c *AppConfig) ValidateBasic() error {
 	if !c.Enabled {
 		return nil
-	}
-
-	if _, err := url.ParseRequestURI(c.OracleAddress); err != nil {
-		return fmt.Errorf("oracle address must be valid: %w", err)
 	}
 
 	if c.ClientTimeout <= 0 {
