@@ -122,7 +122,6 @@ func (pmm ProviderMarketMap) ValidateBasic() error {
 
 		if err := config.ValidateBasic(); err != nil {
 			return fmt.Errorf("invalid provider config for %s: %w", ticker, err)
-
 		}
 
 		t, ok := pmm.OffChainMap[config.OffChainTicker]

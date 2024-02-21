@@ -19,7 +19,7 @@ const (
 	URL = "wss://ws-feed.exchange.coinbase.com"
 
 	// URL_SANDBOX is the sandbox Coinbase Websocket URL.
-	URL_SANDBOX = "wss://ws-feed-public.sandbox.exchange.coinbase.com" //nolint
+	URL_SANDBOX = "wss://ws-feed-public.sandbox.exchange.coinbase.com"
 )
 
 const (

@@ -27,7 +27,7 @@ const (
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
 	// by US users. Note that the US URL does not support all the currency pairs that
 	// the Non-US URL supports.
-	US_URL = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s" //nolint
+	US_URL = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s"
 
 	Quotation    = "%22"
 	Separator    = ","

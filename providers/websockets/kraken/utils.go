@@ -20,7 +20,7 @@ const (
 	URL = "wss://ws.kraken.com"
 
 	// URL_BETA is the demo websocket URL for Kraken.
-	URL_BETA = "wss://beta-ws.kraken.com" //nolint
+	URL_BETA = "wss://beta-ws.kraken.com"
 )
 
 var (

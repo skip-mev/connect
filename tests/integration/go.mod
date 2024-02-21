@@ -6,7 +6,9 @@ replace (
 	github.com/strangelove-ventures/interchaintest/v8 => github.com/skip-mev/interchaintest/v8 v8.0.1-0.20231220192514-051193d277eb // TODO(nikhil): move away from skip fork when possible
 )
 
-go 1.21
+go 1.22
+
+toolchain go1.22.0
 
 require (
 	cosmossdk.io/math v1.2.0
