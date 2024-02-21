@@ -10,9 +10,10 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
+	"github.com/skip-mev/slinky/oracle/types"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
@@ -21,7 +22,8 @@ import (
 var (
 	host          = flag.String("host", "localhost", "host for the grpc-service to listen on")
 	port          = flag.String("port", "8080", "port for the grpc-service to listen on")
-	oracleCfgPath = flag.String("oracle-config-path", "oracle_config.toml", "path to the oracle config file")
+	oracleCfgPath = flag.String("oracle-config-path", "oracle_config.json", "path to the oracle config file")
+	marketCfgPath = flag.String("market-config-path", "market_config.json", "path to the market config file")
 )
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -45,6 +47,12 @@ func main() {
 		return
 	}
 
+	marketCfg, err := types.ReadMarketConfigFromFile(*marketCfgPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to read market config file: %s\n", err.Error())
+		return
+	}
+
 	var logger *zap.Logger
 	if !cfg.Production {
 		logger, err = zap.NewDevelopment()
@@ -60,17 +68,10 @@ func main() {
 		}
 	}
 
-	// Create the API and websocket query handler factories. These are used to create the
-	// data collection handlers for the providers. To read more about what these query handlers
-	// do, see the documentation for the `providers/base` package.
-	apiFactory := oraclefactory.APIQueryHandlerFactory()      // Replace with custom API factory.
-	wsFactory := oraclefactory.WebSocketQueryHandlerFactory() // Replace with custom websocket factory.
-
 	// Create the providers using the default provider factory.
 	generator, err := oraclefactory.NewDefaultProviderFactory(
 		logger,
-		apiFactory,
-		wsFactory,
+		marketCfg,
 	)
 	if err != nil {
 		logger.Error("failed to create provider factory", zap.Error(err))
@@ -82,19 +83,11 @@ func main() {
 		logger.Error("failed to create providers", zap.Error(err))
 		return
 	}
-
-	// Create the conversion market aggregator.
-	aggregator, err := oraclemath.NewMedianAggregator(logger, cfg.Market)
-	if err != nil {
-		logger.Error("failed to create median aggregator", zap.Error(err))
-		return
-	}
-
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                        // Replace with custom providers.
-		oracle.WithAggregateFunction(aggregator.AggregateFn()), // Replace with custom aggregation function.
+		oracle.WithProviders(providers),                          // Replace with custom providers.
+		oracle.WithAggregateFunction(aggregator.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithLogger(logger),
 	)
@@ -109,9 +102,7 @@ func main() {
 	// cancel oracle on interrupt or terminate
 	go func() {
 		<-sigs
-		logger.Info(
-			"received interrupt or terminate signal, closing oracle",
-		)
+		logger.Info("received interrupt or terminate signal, closing oracle")
 
 		cancel()
 	}()

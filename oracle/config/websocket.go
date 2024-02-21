@@ -96,13 +96,13 @@ type WebSocketConfig struct {
 	// After a read has timed out, the websocket connection state is corrupt and
 	// all future reads will return an error. A zero value for t means reads will
 	// not time out.
-	ReadTimeout time.Duration `json:"readDeadline"`
+	ReadTimeout time.Duration `json:"readTimeout"`
 
 	// WriteTimeout sets the write deadline on the underlying network
 	// connection. After a write has timed out, the websocket state is corrupt and
 	// all future writes will return an error. A zero value for t means writes will
 	// not time out.
-	WriteTimeout time.Duration `json:"writeDeadline"`
+	WriteTimeout time.Duration `json:"writeTimeout"`
 
 	// PingInterval is the interval to ping the server. Note that a ping interval
 	// of 0 disables pings.

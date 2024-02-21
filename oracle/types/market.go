@@ -1,7 +1,9 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -62,6 +64,42 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 	}, nil
 }
 
+// GetTickers returns the tickers from the provider market map.
+func (pmm ProviderMarketMap) GetTickers() []mmtypes.Ticker {
+	tickers := make([]mmtypes.Ticker, 0, len(pmm.TickerConfigs))
+	for ticker := range pmm.TickerConfigs {
+		tickers = append(tickers, ticker)
+	}
+	return tickers
+}
+
+// ProviderMarketMapFromMarketMap returns a provider market map from a market map provided by the
+// market map module.
+func ProviderMarketMapFromMarketMap(name string, marketMap mmtypes.MarketMap) (ProviderMarketMap, error) {
+	if err := marketMap.ValidateBasic(); err != nil {
+		return ProviderMarketMap{}, fmt.Errorf("invalid market map: %w", err)
+	}
+
+	// Iterate over the providers and their respective tickers.
+	tickers := make(TickerToProviderConfig)
+	for tickerStr, config := range marketMap.Providers {
+		ticker, ok := marketMap.Tickers[tickerStr]
+		if !ok {
+			return ProviderMarketMap{}, fmt.Errorf("ticker %s not found in market map", tickerStr)
+		}
+
+		for _, provider := range config.Providers {
+			if provider.Name != name {
+				continue
+			}
+
+			tickers[ticker] = provider
+		}
+	}
+
+	return NewProviderMarketMap(name, tickers)
+}
+
 // ValidateBasic performs basic validation on the provider market map.
 func (pmm ProviderMarketMap) ValidateBasic() error {
 	if len(pmm.Name) == 0 {
@@ -97,4 +135,29 @@ func (pmm ProviderMarketMap) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+// ReadMarketConfigFromFile reads a market map configuration from a file at the given path.
+func ReadMarketConfigFromFile(path string) (mmtypes.MarketMap, error) {
+	// Initialize the struct to hold the configuration
+	var config mmtypes.MarketMap
+
+	// Read the entire file at the given path
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return config, fmt.Errorf("error reading config file: %w", err)
+	}
+
+	// Unmarshal the JSON data into the config struct
+	if err := json.Unmarshal(data, &config); err != nil {
+		return config, fmt.Errorf("error unmarshalling config JSON: %w", err)
+	}
+
+	// Optionally, validate the config if needed
+	if err := config.ValidateBasic(); err != nil {
+		return config, fmt.Errorf("error validating config: %w", err)
+	}
+
+	// Return the populated config struct
+	return config, nil
 }

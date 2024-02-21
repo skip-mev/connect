@@ -2,28 +2,30 @@ package oracle
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/static"
-	"github.com/skip-mev/slinky/providers/types/factory"
 )
 
 // APIQueryHandlerFactory returns a sample implementation of the API query handler factory.
 // Specifically, this factory function returns API query handlers that are used to fetch data from
 // the price providers.
-func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, cfg config.ProviderConfig, metrics metrics.APIMetrics) (apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int], error) {
+func APIQueryHandlerFactory(marketMap types.ProviderMarketMap) types.PriceAPIQueryHandlerFactory {
+	return func(
+		logger *zap.Logger,
+		cfg config.ProviderConfig,
+		metrics metrics.APIMetrics,
+	) (types.PriceAPIQueryHandler, error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()
 		if err != nil {
@@ -33,27 +35,27 @@ func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[slinkytypes.Currenc
 		// Create the underlying client that will be used to fetch data from the API. This client
 		// will limit the number of concurrent connections and uses the configured timeout to
 		// ensure requests do not hang.
-		cps := cfg.Market.GetCurrencyPairs()
-		maxCons := math.Min(len(cps), cfg.API.MaxQueries)
+		tickers := marketMap.GetTickers()
+		maxCons := math.Min(len(tickers), cfg.API.MaxQueries)
 		client := &http.Client{
 			Transport: &http.Transport{MaxConnsPerHost: maxCons},
 			Timeout:   cfg.API.Timeout,
 		}
 
 		var (
-			apiDataHandler apihandlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int]
+			apiDataHandler types.PriceAPIDataHandler
 			requestHandler apihandlers.RequestHandler
 		)
 
 		switch cfg.Name {
 		case binance.Name:
-			apiDataHandler, err = binance.NewAPIHandler(cfg)
+			apiDataHandler, err = binance.NewAPIHandler(marketMap, cfg.API)
 		case coinbaseapi.Name:
-			apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg)
+			apiDataHandler, err = coinbaseapi.NewAPIHandler(marketMap, cfg.API)
 		case coingecko.Name:
-			apiDataHandler, err = coingecko.NewAPIHandler(cfg)
+			apiDataHandler, err = coingecko.NewAPIHandler(marketMap, cfg.API)
 		case static.Name:
-			apiDataHandler, err = static.NewAPIHandler(cfg)
+			apiDataHandler, err = static.NewAPIHandler(marketMap)
 			if err != nil {
 				return nil, err
 			}
@@ -75,7 +77,7 @@ func APIQueryHandlerFactory() factory.APIQueryHandlerFactory[slinkytypes.Currenc
 		}
 
 		// Create the API query handler which encapsulates all of the fetching and parsing logic.
-		return apihandlers.NewAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](
+		return types.NewPriceAPIQueryHandler(
 			logger,
 			cfg.API,
 			requestHandler,

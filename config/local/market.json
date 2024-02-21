@@ -1,0 +1,1536 @@
+{
+  "tickers": {
+    "ATOM/USD": {
+      "currency_pair": {
+        "Base": "ATOM",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "ATOM/USDC": {
+      "currency_pair": {
+        "Base": "ATOM",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "ATOM/USDT": {
+      "currency_pair": {
+        "Base": "ATOM",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "AVAX/USD": {
+      "currency_pair": {
+        "Base": "AVAX",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "AVAX/USDC": {
+      "currency_pair": {
+        "Base": "AVAX",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "AVAX/USDT": {
+      "currency_pair": {
+        "Base": "AVAX",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "BITCOIN/USD": {
+      "currency_pair": {
+        "Base": "BITCOIN",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "BITCOIN/USDC": {
+      "currency_pair": {
+        "Base": "BITCOIN",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "BITCOIN/USDT": {
+      "currency_pair": {
+        "Base": "BITCOIN",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "CELESTIA/USD": {
+      "currency_pair": {
+        "Base": "CELESTIA",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "CELESTIA/USDC": {
+      "currency_pair": {
+        "Base": "CELESTIA",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "CELESTIA/USDT": {
+      "currency_pair": {
+        "Base": "CELESTIA",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "DYDX/USD": {
+      "currency_pair": {
+        "Base": "DYDX",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "DYDX/USDC": {
+      "currency_pair": {
+        "Base": "DYDX",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "DYDX/USDT": {
+      "currency_pair": {
+        "Base": "DYDX",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "ETHEREUM/BITCOIN": {
+      "currency_pair": {
+        "Base": "ETHEREUM",
+        "Quote": "BITCOIN"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "ETHEREUM/USD": {
+      "currency_pair": {
+        "Base": "ETHEREUM",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "ETHEREUM/USDC": {
+      "currency_pair": {
+        "Base": "ETHEREUM",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "ETHEREUM/USDT": {
+      "currency_pair": {
+        "Base": "ETHEREUM",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "OSMOSIS/USD": {
+      "currency_pair": {
+        "Base": "OSMOSIS",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "OSMOSIS/USDC": {
+      "currency_pair": {
+        "Base": "OSMOSIS",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "OSMOSIS/USDT": {
+      "currency_pair": {
+        "Base": "OSMOSIS",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "SOLANA/USD": {
+      "currency_pair": {
+        "Base": "SOLANA",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "SOLANA/USDC": {
+      "currency_pair": {
+        "Base": "SOLANA",
+        "Quote": "USDC"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "SOLANA/USDT": {
+      "currency_pair": {
+        "Base": "SOLANA",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "USDC/USD": {
+      "currency_pair": {
+        "Base": "USDC",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "USDC/USDT": {
+      "currency_pair": {
+        "Base": "USDC",
+        "Quote": "USDT"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    },
+    "USDT/USD": {
+      "currency_pair": {
+        "Base": "USDT",
+        "Quote": "USD"
+      },
+      "decimals": 8,
+      "min_provider_count": 1
+    }
+  },
+  "paths": {
+    "ATOM/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "ATOM",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "ATOM",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "ATOM",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "AVAX/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "AVAX",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "AVAX",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "AVAX",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "BITCOIN/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "BITCOIN",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "BITCOIN",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "BITCOIN",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "CELESTIA/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "CELESTIA",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "CELESTIA",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "CELESTIA",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "DYDX/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "DYDX",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "DYDX",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "DYDX",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "ETHEREUM/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "ETHEREUM",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "ETHEREUM",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "ETHEREUM",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "OSMOSIS/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "OSMOSIS",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "OSMOSIS",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "OSMOSIS",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "SOLANA/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "SOLANA",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "SOLANA",
+                "Quote": "USDT"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDT",
+                "Quote": "USD"
+              }
+            }
+          ]
+        },
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "SOLANA",
+                "Quote": "USDC"
+              }
+            },
+            {
+              "currency_pair": {
+                "Base": "USDC",
+                "Quote": "USD"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "providers": {
+    "ATOM/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "cosmos/usd"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ATOM-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "ATOMUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ATOM-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "ATOM/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ATOM-USD"
+        }
+      ]
+    },
+    "ATOM/USDC": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "ATOMUSDC"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ATOM-USDC"
+        }
+      ]
+    },
+    "ATOM/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "ATOM_USDT"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "ATOM_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "atomusdt"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ATOM-USDT"
+        }
+      ]
+    },
+    "AVAX/USD": {
+      "providers": [
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "avaxusd"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "AVAX-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "AVAXUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "AVAX-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "AVAX/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "AVAX-USD"
+        }
+      ]
+    },
+    "AVAX/USDC": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "AVAXUSDC"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "AVAXUSDC"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "AVAX-USDC"
+        }
+      ]
+    },
+    "AVAX/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "AVAX_USDT"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "AVAX_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "avaxusdt"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "AVAX/USDT"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "AVAX-USDT"
+        }
+      ]
+    },
+    "BITCOIN/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "bitcoin/usd"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "btcusd"
+        },
+        {
+          "name": "bitfinex",
+          "off_chain_ticker": "BTCUSD"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "BTC-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "BTCUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "BTC-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "BITCOIN/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "BTC-USD"
+        }
+      ]
+    },
+    "BITCOIN/USDC": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "BTCUSDC"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "btcusdc"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "BTCUSDC"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "BTCUSDC"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "btcusdc"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "BITCOIN/USDC"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "BTC-USDC"
+        }
+      ]
+    },
+    "BITCOIN/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "BTCUSDT"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "btcusdt"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "BTC_USDT"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "BTCUSDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "BTC_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "BTCUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "btcusdt"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "BITCOIN/USDT"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "BTC-USDT"
+        }
+      ]
+    },
+    "CELESTIA/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "celestia/usd"
+        },
+        {
+          "name": "bitfinex",
+          "off_chain_ticker": "TIAUSD"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "TIA-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "TIAUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "TIA-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "CELESTIA/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "TIA-USD"
+        }
+      ]
+    },
+    "CELESTIA/USDC": {
+      "providers": [
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "TIA-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "TIA-USDC"
+        }
+      ]
+    },
+    "CELESTIA/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "TIA-USDT"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "TIA_USDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "TIA-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "TIA_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "TIA-USDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "tiausdt"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "TIA-USDT"
+        }
+      ]
+    },
+    "DYDX/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "dydx-chain/usd"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "DYDX-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "DYDXUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "DYDX-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "DYDX/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "DYDX-USD"
+        }
+      ]
+    },
+    "DYDX/USDC": {
+      "providers": [
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "DYDX-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "DYDX-USDC"
+        }
+      ]
+    },
+    "DYDX/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "DYDX_USDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "DYDX_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "DYDXUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "dydxusdt"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "DYDX-USDT"
+        }
+      ]
+    },
+    "ETHEREUM/BITCOIN": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "ethereum/btc"
+        },
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "ETHBTC"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "ethbtc"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "ETH_BTC"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "ETHBTC"
+        },
+        {
+          "name": "bitfinex",
+          "off_chain_ticker": "ETHBTC"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "ETH_BTC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "ethbtc"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "ETHEREUM/BITCOIN"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ETH-BTC"
+        }
+      ]
+    },
+    "ETHEREUM/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "ethereum/usd"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "ethusd"
+        },
+        {
+          "name": "bitfinex",
+          "off_chain_ticker": "ETHUSD"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ETH-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "ETHUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ETH-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "ETHEREUM/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ETH-USD"
+        }
+      ]
+    },
+    "ETHEREUM/USDC": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "ETH-USDC"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ETH-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ETH-USDC"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "ethusdc"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "ETHEREUM/USDC"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ETH-USDC"
+        }
+      ]
+    },
+    "ETHEREUM/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "ETH-USDT"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "ethusdt"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "ETH_USDT"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "ETH-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "ETH_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "ETH-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "ethusdt"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "ETHEREUM/USDT"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "ETH-USDT"
+        }
+      ]
+    },
+    "OSMOSIS/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "osmosis/usd"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "OSMO-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "OSMO_USD"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "OSMO-USD"
+        }
+      ]
+    },
+    "OSMOSIS/USDC": {
+      "providers": [
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "OSMO-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "OSMO-USDC"
+        }
+      ]
+    },
+    "OSMOSIS/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "OSMO-USDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "OSMO-USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "OSMO-USDT"
+        }
+      ]
+    },
+    "SOLANA/USD": {
+      "providers": [
+        {
+          "name": "coingecko",
+          "off_chain_ticker": "solana/usd"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "solusd"
+        },
+        {
+          "name": "bitfinex",
+          "off_chain_ticker": "SOLUSD"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "SOL-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "SOLUSD-PERP"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "SOL-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "SOLANA/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "SOL-USD"
+        }
+      ]
+    },
+    "SOLANA/USDC": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "SOL-USDC"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "SOLUSDC"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "SOL_USDC"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "SOLUSDC"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "SOL-USDC"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "SOL-USDC"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "SOLUSDC"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "SOL-USDC"
+        }
+      ]
+    },
+    "SOLANA/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "SOL-USDT"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "SOL_USDT"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "SOL-USDT"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "SOL_USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "SOL-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "solusdt"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "SOLANA/USDT"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "SOL-USDT"
+        }
+      ]
+    },
+    "USDC/USD": {
+      "providers": [
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "usdcusd"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "USDC-USD"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "USDC-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "USDC/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "USDC-USD"
+        }
+      ]
+    },
+    "USDC/USDT": {
+      "providers": [
+        {
+          "name": "kucoin",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "binance",
+          "off_chain_ticker": "USDCUSDT"
+        },
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "usdcusdt"
+        },
+        {
+          "name": "gate.io",
+          "off_chain_ticker": "USDC_USDT"
+        },
+        {
+          "name": "mexc",
+          "off_chain_ticker": "USDCUSDT"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "bybit",
+          "off_chain_ticker": "USDCUSDT"
+        },
+        {
+          "name": "huobi",
+          "off_chain_ticker": "usdcusdt"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "USDC/USDT"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "USDC-USDT"
+        }
+      ]
+    },
+    "USDT/USD": {
+      "providers": [
+        {
+          "name": "bitstamp",
+          "off_chain_ticker": "usdtusd"
+        },
+        {
+          "name": "coinbase_websocket",
+          "off_chain_ticker": "USDT-USD"
+        },
+        {
+          "name": "crypto_dot_com",
+          "off_chain_ticker": "USDT_USD"
+        },
+        {
+          "name": "coinbase",
+          "off_chain_ticker": "USDT-USD"
+        },
+        {
+          "name": "kraken",
+          "off_chain_ticker": "USDT/USD"
+        },
+        {
+          "name": "okx",
+          "off_chain_ticker": "USDT-USD"
+        }
+      ]
+    }
+  }
+}

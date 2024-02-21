@@ -2,18 +2,16 @@ package oracle
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
-	"github.com/skip-mev/slinky/providers/types/factory"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -30,8 +28,12 @@ import (
 // WebSocketQueryHandlerFactory returns a sample implementation of the websocket query handler
 // factory. Specifically, this factory function returns websocket query handlers that are used to
 // fetch data from the price providers.
-func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[slinkytypes.CurrencyPair, *big.Int] {
-	return func(logger *zap.Logger, cfg config.ProviderConfig, wsMetrics wsmetrics.WebSocketMetrics) (wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int], error) {
+func WebSocketQueryHandlerFactory(marketMap types.ProviderMarketMap) types.PriceWebSocketQueryHandlerFactory {
+	return func(
+		logger *zap.Logger,
+		cfg config.ProviderConfig,
+		wsMetrics wsmetrics.WebSocketMetrics,
+	) (types.PriceWebSocketQueryHandler, error) {
 		// Validate the provider config.
 		err := cfg.ValidateBasic()
 		if err != nil {
@@ -40,8 +42,8 @@ func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[slinkyt
 
 		// Create the underlying client that can be utilized by websocket providers that need to
 		// interact with an API.
-		cps := cfg.Market.GetCurrencyPairs()
-		maxCons := math.Min(len(cps), cfg.API.MaxQueries)
+		tickers := marketMap.GetTickers()
+		maxCons := math.Min(len(tickers), cfg.API.MaxQueries)
 		client := &http.Client{
 			Transport: &http.Transport{MaxConnsPerHost: maxCons},
 			Timeout:   cfg.API.Timeout,
@@ -49,30 +51,30 @@ func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[slinkyt
 
 		var (
 			requestHandler apihandlers.RequestHandler
-			wsDataHandler  wshandlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int]
+			wsDataHandler  types.PriceWebSocketDataHandler
 			connHandler    wshandlers.WebSocketConnHandler
 		)
 
 		switch cfg.Name {
 		case bitfinex.Name:
-			wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case bitstamp.Name:
-			wsDataHandler, err = bitstamp.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = bitstamp.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case bybit.Name:
-			wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case coinbasews.Name:
-			wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case cryptodotcom.Name:
-			wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case gate.Name:
-			wsDataHandler, err = gate.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = gate.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case huobi.Name:
-			wsDataHandler, err = huobi.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = huobi.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case kraken.Name:
-			wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case kucoin.Name:
 			// Create the KuCoin websocket data handler.
-			wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 			if err != nil {
 				return nil, err
 			}
@@ -92,9 +94,9 @@ func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[slinkyt
 				wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
 			)
 		case mexc.Name:
-			wsDataHandler, err = mexc.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = mexc.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		case okx.Name:
-			wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg)
+			wsDataHandler, err = okx.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
 		default:
 			return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 		}
@@ -111,7 +113,7 @@ func WebSocketQueryHandlerFactory() factory.WebSocketQueryHandlerFactory[slinkyt
 		}
 
 		// Create the websocket query handler which encapsulates all fetching and parsing logic.
-		return wshandlers.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](
+		return types.NewPriceWebSocketQueryHandler(
 			logger,
 			cfg.WebSocket,
 			wsDataHandler,
