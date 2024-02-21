@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 
 	// set a market in the map
 	s.Run("unable to process nil request", func() {
-		resp, err := msgServer.UpdateMarketMap(s.ctx, nil)
+		resp, err = msgServer.UpdateMarketMap(s.ctx, nil)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
@@ -65,7 +65,7 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 	// })
 
 	s.Run("unable to create market that already exists", func() {
-		msg := &types.MsgUpdateMarketMap{
+		msg = &types.MsgUpdateMarketMap{
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
@@ -75,13 +75,13 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 				},
 			},
 		}
-		resp, err := msgServer.UpdateMarketMap(s.ctx, msg)
+		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
 
 	s.Run("unable to create market with paths that are not on chain tickers", func() {
-		msg := &types.MsgUpdateMarketMap{
+		msg = &types.MsgUpdateMarketMap{
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
@@ -109,13 +109,13 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 				},
 			},
 		}
-		resp, err := msgServer.UpdateMarketMap(s.ctx, msg)
+		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
 
 	s.Run("update with a new market", func() {
-		msg := &types.MsgUpdateMarketMap{
+		msg = &types.MsgUpdateMarketMap{
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
@@ -125,11 +125,11 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 				},
 			},
 		}
-		resp, err := msgServer.UpdateMarketMap(s.ctx, msg)
+		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
 		s.Require().NoError(err)
 		s.Require().NotNil(resp)
 
-		queryResp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
+		queryResp, err = qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
 		s.Require().NoError(err)
 		s.Require().Equal(queryResp.MarketMap, types.MarketMap{
 			Tickers: map[string]types.Ticker{
