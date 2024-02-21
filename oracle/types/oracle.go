@@ -3,6 +3,7 @@ package types
 import (
 	"math/big"
 
+	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -32,6 +33,11 @@ type (
 	// and unresolved prices.
 	PriceWebSocketDataHandler = wshandlers.WebSocketDataHandler[mmtypes.Ticker, *big.Int]
 
+	// PriceWebSocketQueryHandler is a type alias for the price web socket query handler.
+	// This is responsible for building the web socket query for the price provider and
+	// returning the resolved and unresolved prices.
+	PriceWebSocketQueryHandler = wshandlers.WebSocketQueryHandler[mmtypes.Ticker, *big.Int]
+
 	// PriceResponse is a type alias for the price response. A price response is
 	// composed of a map of resolved prices and a map of unresolved prices. Resolved
 	// prices are the prices that were successfully fetched from the API, while
@@ -58,4 +64,15 @@ var (
 
 	// NewPriceResponseWithErr is a function alias for the new price response with errors.
 	NewPriceResponseWithErr = providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int]
+
+	// NewPriceProvider is a function alias for the new price provider.
+	NewPriceProvider = base.NewProvider[mmtypes.Ticker, *big.Int]
+
+	// NewPriceAPIQueryHandler is a function alias for the new API query handler meant to be
+	// used by the price providers.
+	NewPriceAPIQueryHandler = apihandlers.NewAPIQueryHandler[mmtypes.Ticker, *big.Int]
+
+	// NewPriceWebSocketQueryHandler is a function alias for the new web socket query handler meant to be
+	// used by the price providers.
+	NewPriceWebSocketQueryHandler = wshandlers.NewWebSocketQueryHandler[mmtypes.Ticker, *big.Int]
 )
