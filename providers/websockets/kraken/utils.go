@@ -58,19 +58,19 @@ var (
 		},
 		constants.BITCOIN_USD: {
 			Name:           Name,
-			OffChainTicker: "BITCOIN/USD",
+			OffChainTicker: "XBT/USD",
 		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
-			OffChainTicker: "BITCOIN/USDC",
+			OffChainTicker: "XBT/USDC",
 		},
 		constants.BITCOIN_USDT: {
 			Name:           Name,
-			OffChainTicker: "BITCOIN/USDT",
+			OffChainTicker: "XBT/USDT",
 		},
 		constants.CELESTIA_USD: {
 			Name:           Name,
-			OffChainTicker: "CELESTIA/USD",
+			OffChainTicker: "TIA/USD",
 		},
 		constants.DYDX_USD: {
 			Name:           Name,
@@ -78,27 +78,27 @@ var (
 		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
-			OffChainTicker: "ETHEREUM/BITCOIN",
+			OffChainTicker: "ETH/XBT",
 		},
 		constants.ETHEREUM_USD: {
 			Name:           Name,
-			OffChainTicker: "ETHEREUM/USD",
+			OffChainTicker: "ETH/USD",
 		},
 		constants.ETHEREUM_USDC: {
 			Name:           Name,
-			OffChainTicker: "ETHEREUM/USDC",
+			OffChainTicker: "ETH/USDC",
 		},
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
-			OffChainTicker: "ETHEREUM/USDT",
+			OffChainTicker: "ETH/USDT",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,
-			OffChainTicker: "SOLANA/USD",
+			OffChainTicker: "SOL/USD",
 		},
 		constants.SOLANA_USDT: {
 			Name:           Name,
-			OffChainTicker: "SOLANA/USDT",
+			OffChainTicker: "SOL/USDT",
 		},
 		constants.USDC_USD: {
 			Name:           Name,

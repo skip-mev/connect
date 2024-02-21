@@ -102,7 +102,7 @@ func main() {
 	// cancel oracle on interrupt or terminate
 	go func() {
 		<-sigs
-		logger.Info("received interrupt or terminate signal, closing oracle")
+		logger.Info("received interrupt or terminate signal; closing oracle")
 
 		cancel()
 	}()

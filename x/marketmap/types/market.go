@@ -16,7 +16,7 @@ import (
 // 5. Each operation (ticker) in each path is supported by the market map.
 func (mm *MarketMap) ValidateBasic() error {
 	if len(mm.Tickers) != len(mm.Providers) {
-		return fmt.Errorf("each ticker must have a corresponding provider supporting it")
+		return fmt.Errorf("each ticker must have a corresponding provider list supporting it")
 	}
 
 	cps := make(map[types.CurrencyPair]struct{})
