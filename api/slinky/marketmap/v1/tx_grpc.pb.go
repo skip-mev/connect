@@ -26,8 +26,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateMarket creates a market from the given message.
-	CreateMarket(ctx context.Context, in *MsgCreateMarket, opts ...grpc.CallOption) (*MsgCreateMarketResponse, error)
+	// CreateMarkets creates markets from the given message.
+	CreateMarket(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error)
 }
 
 type msgClient struct {
@@ -38,8 +38,8 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarket, opts ...grpc.CallOption) (*MsgCreateMarketResponse, error) {
-	out := new(MsgCreateMarketResponse)
+func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error) {
+	out := new(MsgCreateMarketsResponse)
 	err := c.cc.Invoke(ctx, Msg_CreateMarket_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -51,8 +51,8 @@ func (c *msgClient) CreateMarket(ctx context.Context, in *MsgCreateMarket, opts 
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// CreateMarket creates a market from the given message.
-	CreateMarket(context.Context, *MsgCreateMarket) (*MsgCreateMarketResponse, error)
+	// CreateMarkets creates markets from the given message.
+	CreateMarket(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -60,7 +60,7 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (UnimplementedMsgServer) CreateMarket(context.Context, *MsgCreateMarket) (*MsgCreateMarketResponse, error) {
+func (UnimplementedMsgServer) CreateMarket(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMarket not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
@@ -77,7 +77,7 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 }
 
 func _Msg_CreateMarket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateMarket)
+	in := new(MsgCreateMarkets)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func _Msg_CreateMarket_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Msg_CreateMarket_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateMarket(ctx, req.(*MsgCreateMarket))
+		return srv.(MsgServer).CreateMarket(ctx, req.(*MsgCreateMarkets))
 	}
 	return interceptor(ctx, in, info, handler)
 }
