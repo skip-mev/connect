@@ -25,7 +25,7 @@ func (h Hooks) AfterMarketCreated(ctx sdk.Context, ticker marketmaptypes.Ticker)
 	return h.k.CreateCurrencyPair(ctx, ticker.CurrencyPair)
 }
 
-func (h Hooks) AfterMarketUpdated(_ sdk.Context, ticker marketmaptypes.Ticker) error {
+func (h Hooks) AfterMarketUpdated(_ sdk.Context, _ marketmaptypes.Ticker) error {
 	// TODO finish
 
 	return nil
