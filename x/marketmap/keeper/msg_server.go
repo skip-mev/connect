@@ -55,7 +55,7 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 	// TODO
 
 	// validate that the new state of the marketmap is valid
-	err := ms.k.ValidateUpdate(ctx, msg.CreateMarkets)
+	err := ms.k.ValidateState(ctx, msg.CreateMarkets)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}

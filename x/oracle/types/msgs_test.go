@@ -12,7 +12,7 @@ import (
 
 func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
 	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress([]byte("abc")).String()
+	auth := sdk.AccAddress("abc").String()
 	msg := types.NewMsgAddCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
@@ -21,7 +21,7 @@ func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
 
 func TestGetSignersMsgRemoveCurrencyPairs(t *testing.T) {
 	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress([]byte("abc")).String()
+	auth := sdk.AccAddress("abc").String()
 	msg := types.NewMsgRemoveCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()

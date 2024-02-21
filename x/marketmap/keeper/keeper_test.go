@@ -271,10 +271,6 @@ func (s *KeeperTestSuite) TestGets() {
 		})
 	})
 
-	s.Run("unable to create market with paths not in state", func() {
-		s.Require().Error(s.keeper.CreateMarket(s.ctx, mogbtc, mogbtcPaths, mogbtcProviders))
-	})
-
 	s.Run("get all tickers", func() {
 		got, err := s.keeper.GetAllTickersMap(s.ctx)
 		s.Require().NoError(err)

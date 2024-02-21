@@ -197,9 +197,9 @@ func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.
 	return k.SetLastUpdated(ctx)
 }
 
-// ValidateUpdate is called after keeper modifications have been made to the market map to verify that
+// ValidateState is called after keeper modifications have been made to the market map to verify that
 // the aggregate of all updates has led to a valid state.
-func (k *Keeper) ValidateUpdate(ctx sdk.Context, creates []types.CreateMarket) error {
+func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) error {
 	for _, create := range creates {
 		// check that all paths already exist in the keeper store:
 		for _, path := range create.Paths.Paths {
