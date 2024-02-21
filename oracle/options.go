@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"math/big"
 	"time"
 
 	"go.uber.org/zap"
@@ -9,8 +8,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 // Option is a function that can be used to configure an Oracle.
@@ -57,20 +55,20 @@ func WithMetricsConfig(config config.MetricsConfig) Option {
 }
 
 // WithAggregateFunction sets the aggregate function on the Oracle.
-func WithAggregateFunction(fn aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int]) Option {
+func WithAggregateFunction(fn aggregator.AggregateFn[string, types.TickerPrices]) Option {
 	return func(o *OracleImpl) {
 		if fn == nil {
 			panic("cannot set aggregate function on nil aggregator")
 		}
 
-		o.priceAggregator = aggregator.NewDataAggregator[string, map[slinkytypes.CurrencyPair]*big.Int](
+		o.priceAggregator = aggregator.NewDataAggregator[string, types.TickerPrices](
 			aggregator.WithAggregateFn(fn),
 		)
 	}
 }
 
 // WithDataAggregator sets the data aggregator on the Oracle.
-func WithDataAggregator(agg *aggregator.DataAggregator[string, map[slinkytypes.CurrencyPair]*big.Int]) Option {
+func WithDataAggregator(agg *aggregator.DataAggregator[string, types.TickerPrices]) Option {
 	return func(o *OracleImpl) {
 		if agg == nil {
 			panic("cannot set nil aggregator")
@@ -81,7 +79,7 @@ func WithDataAggregator(agg *aggregator.DataAggregator[string, map[slinkytypes.C
 }
 
 // WithProviders sets the providers on the Oracle.
-func WithProviders(providers []providertypes.Provider[slinkytypes.CurrencyPair, *big.Int]) Option {
+func WithProviders(providers []types.PriceProvider) Option {
 	return func(o *OracleImpl) {
 		o.providers = providers
 	}

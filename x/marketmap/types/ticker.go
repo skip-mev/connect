@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/skip-mev/slinky/pkg/json"
 
@@ -15,31 +16,25 @@ const (
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
 	// MaxPathLength is the maximum length of a path for a ticker conversion.
-	MaxPathLength = 2
+	MaxPathLength = 3
 )
 
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
 // a given asset pair i.e. BTC/USD. The price feed is scaled to a number of decimal
 // places and has a minimum number of providers required to consider the ticker valid.
-func NewTicker(base, quote string, decimals, minProviderCount uint64) (Ticker, error) {
-	t := Ticker{
+func NewTicker(base, quote string, decimals, minProviderCount uint64) Ticker {
+	return Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  base,
-			Quote: quote,
+			Base:  strings.ToUpper(base),
+			Quote: strings.ToUpper(quote),
 		},
 		Decimals:         decimals,
 		MinProviderCount: minProviderCount,
 	}
-
-	if err := t.ValidateBasic(); err != nil {
-		return Ticker{}, err
-	}
-
-	return t, nil
 }
 
 // String returns a string representation of the Ticker.
-func (t *Ticker) String() string {
+func (t Ticker) String() string {
 	return t.CurrencyPair.String()
 }
 

@@ -59,63 +59,63 @@ const (
 // WebSocketConfig defines a config for a websocket based data provider.
 type WebSocketConfig struct {
 	// Enabled is a flag that indicates whether the provider is websocket based.
-	Enabled bool `mapstructure:"enabled" toml:"enabled"`
+	Enabled bool `json:"enabled"`
 
 	// MaxBufferSize is the maximum number of messages that the provider will buffer
 	// at any given time. If the provider receives more messages than this, it will
 	// block receiving messages until the buffer is cleared.
-	MaxBufferSize int `mapstructure:"max_buffer_size" toml:"max_buffer_size"`
+	MaxBufferSize int `json:"maxBufferSize"`
 
 	// ReconnectionTimeout is the timeout for the provider to attempt to reconnect
 	// to the websocket endpoint.
-	ReconnectionTimeout time.Duration `mapstructure:"reconnection_timeout" toml:"reconnection_timeout"`
+	ReconnectionTimeout time.Duration `json:"reconnectionTimeout"`
 
 	// WSS is the websocket endpoint for the provider.
-	WSS string `mapstructure:"wss" toml:"wss"`
+	WSS string `json:"wss"`
 
 	// Name is the name of the provider that corresponds to this config.
-	Name string `mapstructure:"name" toml:"name"`
+	Name string `json:"name"`
 
 	// ReadBufferSize specifies the I/O read buffer size. if a buffer size of 0 is
 	// specified, then a default buffer size is used.
-	ReadBufferSize int `mapstructure:"read_buffer_size" toml:"read_buffer_size"`
+	ReadBufferSize int `json:"readBufferSize"`
 
 	// WriteBufferSize specifies the I/O write buffer size. if a buffer size of 0 is
 	// specified, then a default buffer size is used.
-	WriteBufferSize int `mapstructure:"write_buffer_size" toml:"write_buffer_size"`
+	WriteBufferSize int `json:"writeBufferSize"`
 
 	// HandshakeTimeout specifies the duration for the handshake to complete.
-	HandshakeTimeout time.Duration `mapstructure:"handshake_timeout" toml:"handshake_timeout"`
+	HandshakeTimeout time.Duration `json:"handshakeTimeout"`
 
 	// EnableCompression specifies if the client should attempt to negotiate per
 	// message compression (RFC 7692). Setting this value to true does not guarantee
 	// that compression will be supported. Note that enabling compression may
-	EnableCompression bool `mapstructure:"enable_compression" toml:"enable_compression"`
+	EnableCompression bool `json:"enableCompression"`
 
 	// ReadTimeout sets the read deadline on the underlying network connection.
 	// After a read has timed out, the websocket connection state is corrupt and
 	// all future reads will return an error. A zero value for t means reads will
 	// not time out.
-	ReadTimeout time.Duration `mapstructure:"read_deadline" toml:"read_deadline"`
+	ReadTimeout time.Duration `json:"readTimeout"`
 
 	// WriteTimeout sets the write deadline on the underlying network
 	// connection. After a write has timed out, the websocket state is corrupt and
 	// all future writes will return an error. A zero value for t means writes will
 	// not time out.
-	WriteTimeout time.Duration `mapstructure:"write_deadline" toml:"write_deadline"`
+	WriteTimeout time.Duration `json:"writeTimeout"`
 
 	// PingInterval is the interval to ping the server. Note that a ping interval
 	// of 0 disables pings.
-	PingInterval time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
+	PingInterval time.Duration `json:"pingInterval"`
 
 	// MaxReadErrorCount is the maximum number of read errors that the provider
 	// will tolerate before closing the connection and attempting to reconnect.
-	MaxReadErrorCount int `mapstructure:"max_read_error_count" toml:"max_read_error_count"`
+	MaxReadErrorCount int `json:"maxReadErrorCount"`
 
 	// MaxSubscriptionsPerConnection is the maximum amount of subscriptions that
 	// can be assigned to a single connection for this provider.  The null value (0),
 	// indicates that there is no limit per connection.
-	MaxSubscriptionsPerConnection int `mapstructure:"max_subscriptions_per_connection" toml:"max_subscriptions_per_connection"`
+	MaxSubscriptionsPerConnection int `json:"maxSubscriptionsPerConnection"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.

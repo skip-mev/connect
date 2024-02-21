@@ -21,6 +21,7 @@ import (
 	"github.com/skip-mev/slinky/service/metrics"
 	server "github.com/skip-mev/slinky/service/servers/oracle"
 	stypes "github.com/skip-mev/slinky/service/servers/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -123,17 +124,23 @@ func (s *ServerTestSuite) TestOracleServerTimeout() {
 func (s *ServerTestSuite) TestOracleServerPrices() {
 	// set the mock oracle to return price-data
 	s.mockOracle.On("IsRunning").Return(true)
-	cp1 := slinkytypes.CurrencyPair{
-		Base:  "BTC",
-		Quote: "USD",
+	cp1 := mmtypes.Ticker{
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "BTC",
+			Quote: "USD",
+		},
+		Decimals: 8,
 	}
 
-	cp2 := slinkytypes.CurrencyPair{
-		Base:  "ETH",
-		Quote: "USD",
+	cp2 := mmtypes.Ticker{
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "ETH",
+			Quote: "USD",
+		},
+		Decimals: 8,
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[slinkytypes.CurrencyPair]*big.Int{
+	s.mockOracle.On("GetPrices").Return(map[mmtypes.Ticker]*big.Int{
 		cp1: big.NewInt(100),
 		cp2: big.NewInt(200),
 	})
