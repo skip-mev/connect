@@ -31,7 +31,7 @@ type QueryClient interface {
 	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
 	MarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
-	// GetLastUpdated last height the market map was updated at.
+	// LastUpdated returns the last height the market map was updated at.
 	LastUpdated(ctx context.Context, in *GetLastUpdatedRequest, opts ...grpc.CallOption) (*GetLastUpdatedResponse, error)
 	// Params returns the current x/marketmap module parameters.
 	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
@@ -79,7 +79,7 @@ type QueryServer interface {
 	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
 	MarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
-	// GetLastUpdated last height the market map was updated at.
+	// LastUpdated returns the last height the market map was updated at.
 	LastUpdated(context.Context, *GetLastUpdatedRequest) (*GetLastUpdatedResponse, error)
 	// Params returns the current x/marketmap module parameters.
 	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
