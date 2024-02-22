@@ -33,7 +33,7 @@ var (
 		Enabled:    true,
 		Timeout:    time.Millisecond * 250,
 		Interval:   time.Millisecond * 500,
-		MaxQueries: 1,
+		MaxQueries: 100,
 		URL:        "localhost:8080",
 		Name:       "api",
 	}
@@ -601,33 +601,26 @@ func TestAPIProviderLoop(t *testing.T) {
 		{
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				fn := func(responseCh chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]) {
-					resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-						pairs[0]: {
-							Value:     big.NewInt(100),
-							Timestamp: respTime,
-						},
-					}
-					resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
-
-					logger.Debug("sending response", zap.String("response", resp.String()))
-					responseCh <- resp
-
-					resolved = map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-						pairs[0]: {
-							Value:     big.NewInt(200),
-							Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
-						},
-					}
-					resp = providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
-
-					logger.Debug("sending response", zap.String("response", resp.String()))
-					responseCh <- resp
+				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: respTime,
+					},
 				}
+				resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
-				return testutils.CreateAPIQueryHandlerWithResponseFn[slinkytypes.CurrencyPair, *big.Int](
+				resolved2 := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(200),
+						Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+					},
+				}
+				resp2 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved2, nil)
+
+				return testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 					t,
-					fn,
+					logger,
+					[]providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{resp, resp2},
 				)
 			},
 			pairs: []slinkytypes.CurrencyPair{
