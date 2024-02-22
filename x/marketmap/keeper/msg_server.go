@@ -31,15 +31,14 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: add check when params are added
-	// params, err := ms.k.GetParams(ctx)
-	// if err != nil {
-	//	return nil, fmt.Errorf("unable to get marketmap params: %w", err)
-	// }
-	//
-	// if msg.Signer != params.MarketAuthority {
-	//	return nil, fmt.Errorf("request signer %s does not match module market authority %s", msg.Signer, params.MarketAuthority)
-	// }
+	params, err := ms.k.GetParams(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get marketmap params: %w", err)
+	}
+
+	if msg.Signer != params.MarketAuthority {
+		return nil, fmt.Errorf("request signer %s does not match module market authority %s", msg.Signer, params.MarketAuthority)
+	}
 
 	// create markets
 	for _, market := range msg.CreateMarkets {
