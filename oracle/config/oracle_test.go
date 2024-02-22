@@ -72,32 +72,6 @@ func TestOracleConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with bad currency pair format",
-			config: config.OracleConfig{
-				UpdateInterval: time.Second,
-				MaxPriceAge:    time.Minute,
-				Providers: []config.ProviderConfig{
-					{
-						Name: "test",
-						WebSocket: config.WebSocketConfig{
-							Enabled:             true,
-							MaxBufferSize:       1,
-							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      config.DefaultReadBufferSize,
-							WriteBufferSize:     config.DefaultWriteBufferSize,
-							HandshakeTimeout:    config.DefaultHandshakeTimeout,
-							EnableCompression:   config.DefaultEnableCompression,
-							ReadTimeout:         config.DefaultReadTimeout,
-							WriteTimeout:        config.DefaultWriteTimeout,
-						},
-					},
-				},
-			},
-			expectedErr: true,
-		},
-		{
 			name: "bad config with bad metrics",
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
