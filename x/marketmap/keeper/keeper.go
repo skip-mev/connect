@@ -1,11 +1,14 @@
 package keeper
 
 import (
+	"fmt"
+
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -215,4 +218,33 @@ func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 // GetParams returns the x/marketmap module's parameters.
 func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	return k.params.Get(ctx)
+}
+
+// ValidateState is called after keeper modifications have been made to the market map to verify that
+// the aggregate of all updates has led to a valid state.
+func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) error {
+	for _, create := range creates {
+		// check that all paths already exist in the keeper store:
+		for _, path := range create.Paths.Paths {
+			for _, op := range path.Operations {
+				cp := op.CurrencyPair
+				if op.Invert {
+					cp = slinkytypes.CurrencyPair{
+						Base:  cp.Quote,
+						Quote: cp.Base,
+					}
+				}
+
+				has, err := k.tickers.Has(ctx, types.TickerString(cp.String()))
+				if err != nil {
+					return err
+				}
+
+				if !has {
+					return fmt.Errorf("currency pair %s in path %s does not exist", cp.String(), path.ShowRoute())
+				}
+			}
+		}
+	}
+	return nil
 }
