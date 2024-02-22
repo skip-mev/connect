@@ -15,7 +15,6 @@ type msgServer struct {
 }
 
 // NewMsgServer returns the default implementation of the x/marketmap message service.
-// NewMsgServer returns the default implementation of the x/marketmap message service.
 func NewMsgServer(k Keeper) types.MsgServer {
 	return &msgServer{k}
 }
