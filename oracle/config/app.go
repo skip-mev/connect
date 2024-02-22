@@ -81,6 +81,10 @@ func (c *AppConfig) ValidateBasic() error {
 		return nil
 	}
 
+	if len(c.OracleAddress) == 0 {
+		return fmt.Errorf("oracle address must not be empty")
+    }
+
 	if c.ClientTimeout <= 0 {
 		return fmt.Errorf("oracle client timeout must be greater than 0")
 	}
