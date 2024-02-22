@@ -4,12 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" //nolint: gosec
 
 	"go.uber.org/zap"
 
@@ -143,7 +143,7 @@ func main() {
 		// Start pprof server
 		go func() {
 			logger.Info("Starting pprof server", zap.String("endpoint", endpoint))
-			if err := http.ListenAndServe(endpoint, nil); err != nil {
+			if err := http.ListenAndServe(endpoint, nil); err != nil { //nolint: gosec
 				logger.Error("pprof server failed", zap.Error(err))
 			}
 		}()
