@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -38,7 +38,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 		5,
 	)
 
-	cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
+	cp1 := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 	consAddress1 := sdk.ConsAddress("consAddress1")
 	consAddress2 := sdk.ConsAddress("consAddress2")
@@ -239,7 +239,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		5,
 	)
 
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
 
 	consAddress1 := sdk.ConsAddress("consAddress1")
 	consAddress2 := sdk.ConsAddress("consAddress2")

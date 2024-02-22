@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // BankKeeper defines the expected interface that the bank-keeper dependency must implement.
@@ -25,7 +25,7 @@ type BankKeeper interface {
 //
 //go:generate mockery --name OracleKeeper --output ./mocks/ --case underscore
 type OracleKeeper interface {
-	HasCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair) bool
+	HasCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) bool
 }
 
 // StakingKeeper defines the expected interface that the staking-keeper dependency must implement.

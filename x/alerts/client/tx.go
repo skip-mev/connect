@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // GetTxCmd returns the parent command for all x/alerts cli transaction commands.
@@ -53,7 +53,7 @@ Create a new alert with the specified height, sender, and currency-pair.
 			}
 
 			// get the currency-pair
-			cp, err := oracletypes.CurrencyPairFromString(args[2])
+			cp, err := slinkytypes.CurrencyPairFromString(args[2])
 			if err != nil {
 				return err
 			}

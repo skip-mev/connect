@@ -2,46 +2,43 @@ package mexc
 
 import (
 	"fmt"
-	"math/big"
 	"strings"
 	"time"
 
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // parseTickerResponseMessage parses a price update received from the MEXC websocket
 // and returns a GetResponse.
-func (h *WebSocketDataHandler) parseTickerResponseMessage(
+func (h *WebSocketHandler) parseTickerResponseMessage(
 	msg TickerResponseMessage,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], error) {
+) (types.PriceResponse, error) {
 	var (
-		resolved   = make(map[oracletypes.CurrencyPair]providertypes.Result[*big.Int])
-		unResolved = make(map[oracletypes.CurrencyPair]error)
+		resolved   = make(types.ResolvedPrices)
+		unResolved = make(types.UnResolvedPrices)
 	)
 
-	market, ok := h.cfg.Market.TickerToMarketConfigs[msg.Data.Symbol]
+	ticker, ok := h.market.OffChainMap[msg.Data.Symbol]
 	if !ok {
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved),
+		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("unknown ticker %s", msg.Data.Symbol)
 	}
 
 	// Ensure that the channel received is the ticker channel.
-	cp := market.CurrencyPair
 	if !strings.HasPrefix(msg.Channel, string(MiniTickerChannel)) {
 		err := fmt.Errorf("invalid channel %s", msg.Channel)
-		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		unResolved[ticker] = err
+		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price.
-	price, err := math.Float64StringToBigInt(msg.Data.Price, cp.Decimals())
+	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[cp] = err
-		return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), err
+		unResolved[ticker] = err
+		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
-	resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now().UTC())
-	return providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](resolved, unResolved), nil
+	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+	return types.NewPriceResponse(resolved, unResolved), nil
 }

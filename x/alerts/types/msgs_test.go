@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func TestMsgAlertValidateBasic(t *testing.T) {
@@ -27,13 +27,13 @@ func TestMsgAlertValidateBasic(t *testing.T) {
 			*types.NewMsgAlert(types.Alert{
 				Height:       0,
 				Signer:       "",
-				CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 			}),
 			false,
 		},
 		{
 			"if the alert is valid, the message is valid",
-			*types.NewMsgAlert(types.NewAlert(0, sdk.AccAddress("cosmos1"), oracletypes.NewCurrencyPair("BTC", "USD"))),
+			*types.NewMsgAlert(types.NewAlert(0, sdk.AccAddress("cosmos1"), slinkytypes.NewCurrencyPair("BTC", "USD"))),
 			true,
 		},
 	}
@@ -55,7 +55,7 @@ func TestMsgAlertGetSigners(t *testing.T) {
 	signer := sdk.AccAddress("cosmos1")
 
 	// create a message with signer
-	msg := types.NewMsgAlert(types.NewAlert(0, signer, oracletypes.NewCurrencyPair("BTC", "USD")))
+	msg := types.NewMsgAlert(types.NewAlert(0, signer, slinkytypes.NewCurrencyPair("BTC", "USD")))
 	signers := msg.GetSigners()
 	assert.Equal(t, []sdk.AccAddress{signer}, signers)
 }
@@ -69,7 +69,7 @@ func TestMsgConclusion(t *testing.T) {
 		Alert: types.Alert{
 			Height:       1,
 			Signer:       sdk.AccAddress("cosmos1").String(),
-			CurrencyPair: oracletypes.NewCurrencyPair("BTC", "USD"),
+			CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 		},
 		PriceBound: types.PriceBound{
 			High: big.NewInt(1).String(),

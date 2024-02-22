@@ -7,7 +7,7 @@ import (
 	"github.com/cometbft/cometbft/crypto/tmhash"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracledata "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 const AlertUIDLen = 20
@@ -35,7 +35,7 @@ func (cs ConclusionStatus) String() string {
 }
 
 // NewAlert returns a new Alert.
-func NewAlert(height uint64, signer sdk.AccAddress, cp oracledata.CurrencyPair) Alert {
+func NewAlert(height uint64, signer sdk.AccAddress, cp slinkytypes.CurrencyPair) Alert {
 	return Alert{
 		Height:       height,
 		Signer:       signer.String(),
