@@ -10,6 +10,8 @@
         * [Version](#version)
 * [Events](#events)
 * [Hooks](#hooks)
+    * [AfterMarketCreated](#aftermarketcreated)
+    * [AfterMarketUpdated](#aftermarketupdated)
 * [Client](#client)
     * [CLI](#cli)
     * [gRPC](#grpc)
@@ -38,8 +40,7 @@ keeper authority address.
 
 The `x/marketmap` module contains the following parameters:
 
-| Key             | Type   | Example                                        |
- |-----------------|--------|------------------------------------------------|
+| Key               | Type     | Example                                          |
 | MarketAuthority | string | "cosmos1vq93x443c0fznuf6...q4jd28ke6r46p999s0" |
 | Version         | uint64 | 20                                             |
 
@@ -59,6 +60,18 @@ TODO BLO-921
 
 ## Hooks
 
+Other modules can register routines to execute after a certain event has occurred in `x/marketmap`.
+The following hooks can be registered:
+
+### AfterMarketCreated
+
+* `AfterMarketCreated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
+    * Called after a new market is created in `CreateMarket` message server.
+
+### AfterMarketUpdated
+
+* `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
+    * Called after a new market is updated in `UpdateMarket` message server.
 TODO BLO-866
 
 ## Client

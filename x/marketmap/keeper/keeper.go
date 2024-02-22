@@ -19,6 +19,9 @@ type Keeper struct {
 	// module authority
 	authority sdk.AccAddress
 
+	// registered hooks
+	hooks types.MarketMapHooks
+
 	// tickers is keyed by CurrencyPair string (BASE/QUOTE) and contains
 	// the list of all Tickers.
 	tickers collections.Map[types.TickerString, types.Ticker]

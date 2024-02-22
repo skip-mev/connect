@@ -203,7 +203,6 @@ func (k Keeper) CreateCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair)
 	}
 
 	state := types.NewCurrencyPairState(id, 0, nil)
-
 	return k.currencyPairs.Set(ctx, cp.String(), state)
 }
 
