@@ -27,7 +27,6 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 		return nil, fmt.Errorf("unable to process nil msg")
 	}
 
-	// Update the module's parameters.
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// TODO: add check when params are added
