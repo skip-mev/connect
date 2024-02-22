@@ -40,8 +40,7 @@ message MsgUpdateMarketMap {
 
   option (gogoproto.equal) = false;
 
-  // Signer is the signer of this transaction (notice, this may not always be a
-  // node from the SecondTier)
+  // Signer is the signer of this transaction.
   string signer = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
 
   // CreateMarkets is the list of all markets to be created for the given

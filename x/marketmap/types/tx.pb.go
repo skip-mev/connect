@@ -101,8 +101,7 @@ func (m *CreateMarket) GetPaths() Paths {
 // MsgUpdateMarketMap defines a message carrying a payload for updating the
 // x/marketmap module.
 type MsgUpdateMarketMap struct {
-	// Signer is the signer of this transaction (notice, this may not always be a
-	// node from the SecondTier)
+	// Signer is the signer of this transaction.
 	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// CreateMarkets is the list of all markets to be created for the given
 	// transaction.

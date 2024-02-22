@@ -1601,8 +1601,7 @@ type MsgUpdateMarketMap struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Signer is the signer of this transaction (notice, this may not always be a
-	// node from the SecondTier)
+	// Signer is the signer of this transaction.
 	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// CreateMarkets is the list of all markets to be created for the given
 	// transaction.
