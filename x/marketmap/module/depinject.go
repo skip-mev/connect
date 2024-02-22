@@ -14,6 +14,13 @@ import (
 
 var _ depinject.OnePerModuleType = AppModule{}
 
+func init() {
+	appmodule.Register(
+		&marketmapmodulev1.Module{},
+		appmodule.Provide(ProvideModule),
+	)
+}
+
 // Inputs contains the dependencies required for module construction.
 type Inputs struct {
 	depinject.In

@@ -139,13 +139,13 @@ build-configs: build-test-app
 	jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
-# this will set the enviornment variable for running locally
+# this will set the environment variable for running locally
 start-app:
 	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level info --home $(HOMEDIR)
 
 
 # build-and-start-app builds a slinky simulation application binary in the build folder
-# and initializes a single validator configuration. If desired, users can suppliment
+# and initializes a single validator configuration. If desired, users can supplement
 # other addresses using "genesis add-genesis-account address 10000000000000000000000000stake".
 # This will allow users to bootstrap their wallet with a balance.
 build-and-start-app: build-configs start-app
@@ -188,7 +188,7 @@ protoVer=0.13.5
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
-proto-all: proto-format proto-gen proto-pulsar-gen
+proto-all: proto-format proto-gen proto-pulsar-gen format
 
 proto-gen:
 	@echo "Generating Protobuf files"
@@ -209,7 +209,7 @@ proto-check-breaking:
 
 proto-update-deps:
 	@echo "Updating Protobuf dependencies"
-	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
+	@$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
 .PHONY: proto-all proto-gen proto-pulsar-gen proto-format proto-lint proto-check-breaking proto-update-deps
 

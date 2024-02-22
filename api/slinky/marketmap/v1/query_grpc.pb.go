@@ -19,16 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_GetMarketMap_FullMethodName = "/slinky.marketmap.v1.Query/GetMarketMap"
+	Query_MarketMap_FullMethodName   = "/slinky.marketmap.v1.Query/MarketMap"
+	Query_LastUpdated_FullMethodName = "/slinky.marketmap.v1.Query/LastUpdated"
+	Query_Params_FullMethodName      = "/slinky.marketmap.v1.Query/Params"
 )
 
 // QueryClient is the client API for Query service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// GetMarketMap returns the full market map stored in the x/marketmap
+	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
-	GetMarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
+	MarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
+	// LastUpdated returns the last height the market map was updated at.
+	LastUpdated(ctx context.Context, in *GetLastUpdatedRequest, opts ...grpc.CallOption) (*GetLastUpdatedResponse, error)
+	// Params returns the current x/marketmap module parameters.
+	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
 }
 
 type queryClient struct {
@@ -39,9 +45,27 @@ func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) GetMarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error) {
+func (c *queryClient) MarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error) {
 	out := new(GetMarketMapResponse)
-	err := c.cc.Invoke(ctx, Query_GetMarketMap_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Query_MarketMap_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) LastUpdated(ctx context.Context, in *GetLastUpdatedRequest, opts ...grpc.CallOption) (*GetLastUpdatedResponse, error) {
+	out := new(GetLastUpdatedResponse)
+	err := c.cc.Invoke(ctx, Query_LastUpdated_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error) {
+	out := new(ParamsResponse)
+	err := c.cc.Invoke(ctx, Query_Params_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +76,13 @@ func (c *queryClient) GetMarketMap(ctx context.Context, in *GetMarketMapRequest,
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// GetMarketMap returns the full market map stored in the x/marketmap
+	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
-	GetMarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
+	MarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
+	// LastUpdated returns the last height the market map was updated at.
+	LastUpdated(context.Context, *GetLastUpdatedRequest) (*GetLastUpdatedResponse, error)
+	// Params returns the current x/marketmap module parameters.
+	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -62,8 +90,14 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (UnimplementedQueryServer) GetMarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMarketMap not implemented")
+func (UnimplementedQueryServer) MarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketMap not implemented")
+}
+func (UnimplementedQueryServer) LastUpdated(context.Context, *GetLastUpdatedRequest) (*GetLastUpdatedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LastUpdated not implemented")
+}
+func (UnimplementedQueryServer) Params(context.Context, *ParamsRequest) (*ParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -78,20 +112,56 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 	s.RegisterService(&Query_ServiceDesc, srv)
 }
 
-func _Query_GetMarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Query_MarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMarketMapRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetMarketMap(ctx, in)
+		return srv.(QueryServer).MarketMap(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_GetMarketMap_FullMethodName,
+		FullMethod: Query_MarketMap_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetMarketMap(ctx, req.(*GetMarketMapRequest))
+		return srv.(QueryServer).MarketMap(ctx, req.(*GetMarketMapRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_LastUpdated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLastUpdatedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).LastUpdated(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_LastUpdated_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).LastUpdated(ctx, req.(*GetLastUpdatedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Params(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Params_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Params(ctx, req.(*ParamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -104,8 +174,16 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetMarketMap",
-			Handler:    _Query_GetMarketMap_Handler,
+			MethodName: "MarketMap",
+			Handler:    _Query_MarketMap_Handler,
+		},
+		{
+			MethodName: "LastUpdated",
+			Handler:    _Query_LastUpdated_Handler,
+		},
+		{
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
