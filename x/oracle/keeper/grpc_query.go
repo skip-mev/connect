@@ -95,7 +95,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	return &types.GetPriceResponse{
 		Price:    &qpn.QuotePrice,
 		Nonce:    qpn.Nonce(),
-		Decimals: uint64(cp.Decimals()),
+		Decimals: ticker.Decimals,
 		Id:       id,
 	}, nil
 }
