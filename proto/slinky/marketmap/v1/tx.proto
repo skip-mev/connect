@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "amino/amino.proto";
 import "slinky/marketmap/v1/market.proto";
+import "slinky/marketmap/v1/params.proto";
 
 option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
@@ -15,6 +16,9 @@ service Msg {
 
   // UpdateMarketMap creates markets from the given message.
   rpc UpdateMarketMap(MsgUpdateMarketMap) returns (MsgUpdateMarketMapResponse);
+
+  // Params defines a method for updating the x/marketmap module parameters.
+  rpc Params(MsgParams) returns (MsgParamsResponse);
 }
 
 // CreateMarket contains all information needed to create a new market.
@@ -50,3 +54,18 @@ message MsgUpdateMarketMap {
 
 // MsgUpdateMarketMapResponse is the response message for MsgUpdateMarketMap.
 message MsgUpdateMarketMapResponse {}
+
+// MsgParams defines the Msg/Params request type. It contains the
+// new parameters for the x/marketmap module.
+message MsgParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // Params defines the new parameters for the x/marketmap module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  // Authority defines the authority that is updating the x/marketmap module
+  // parameters.
+  string authority = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgParamsResponse defines the Msg/Params response type.
+message MsgParamsResponse {}

@@ -530,7 +530,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 		s.Run("wait for 10 blocks after commit height of first alert, and expect it to be pruned", func() {
 			// wait for commitheight + 10
-			height, err := ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{alert2})
+			height, err = ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{alert2})
 			s.Require().NoError(err)
 
 			// check that height > commitHeight + 10
@@ -546,7 +546,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 		s.Run("wait for blocksToPrune blocks after commit height of second alert, and expect it to be pruned", func() {
 			// wait for commitheight + 10
-			height, err := ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{})
+			height, err = ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{})
 			s.Require().NoError(err)
 
 			// check that height > commitHeight + 10
@@ -562,7 +562,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	})
 
 	s.Run("test that after an alert is concluded, the alerts pruning height is updated", func() {
-		cc, close, err := GetChainGRPC(s.chain)
+		cc, close, err = GetChainGRPC(s.chain)
 		s.Require().NoError(err)
 
 		defer close()

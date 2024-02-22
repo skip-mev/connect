@@ -36,7 +36,7 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	k := keeper.NewKeeper(ss, encCfg.Codec, s.authority)
 	s.Require().NoError(k.SetLastUpdated(s.ctx, s.ctx.BlockHeight()))
 
-	params := types.NewParams(types.DefaultMarketAuthority, 10)
+	params := types.NewParams(s.authority.String(), 10)
 	s.Require().NoError(k.SetParams(s.ctx, params))
 
 	return k

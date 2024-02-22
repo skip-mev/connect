@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"math/big"
 	"sort"
 	"strconv"
@@ -18,7 +19,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/pelletier/go-toml"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -56,6 +56,7 @@ var (
 )
 
 // construct the network from a spec
+
 // ChainBuilderFromChainSpec creates an interchaintest chain builder factory given a ChainSpec
 // and returns the associated chain
 func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *cosmos.CosmosChain {
@@ -547,4 +548,18 @@ func (vv validatorVotes) Less(i, j int) bool {
 
 	// break ties by the sum of the prices for each validator
 	return iTotalPrice < jTotalPrice
+}
+
+// UpdateMarketMapParams creates + submits the proposal to update the marketmap params, votes for the prop w/ all nodes,
+// and waits for the proposal to pass.
+func UpdateMarketMapParams(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, params mmtypes.Params) (string, error) {
+	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&mmtypes.Msg{
+		Authority: authority,
+		Params:    params,
+	}}...)
+	if err != nil {
+		return "", err
+	}
+
+	return propId, PassProposal(chain, propId, timeout)
 }
