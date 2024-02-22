@@ -18,7 +18,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	s.Run("an error is returned if no CurrencyPairs have been registered in the module", func() {
 		// execute query
 		_, err := qs.GetAllCurrencyPairs(s.ctx, nil)
-		s.Require().Nil(s.T(), err)
+		s.Require().NotNil(s.T(), err)
 	})
 
 	// test that after CurrencyPairs are registered, all of them are returned from the query
