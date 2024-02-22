@@ -3,57 +3,64 @@ package coingecko
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/base/api/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*APIHandler)(nil)
+var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
-// APIHandler implements the Base Provider API handler interface for CoinGecko.
-// This provider can be configured to support API based fetching, however, the provider
-// does not require it.
+// APIHandler implements the PriceAPIDataHandler interface for CoinGecko.
 type APIHandler struct {
-	// cfg is the provider config.
-	cfg config.ProviderConfig
+	// marketCfg is the config for the CoinGecko API.
+	market types.ProviderMarketMap
+	// apiCfg is the config for the CoinGecko API.
+	api config.APIConfig
 }
 
-// NewAPIHandler returns a new CoinGecko API handler.
+// NewAPIHandler returns a new CoinGecko PriceAPIDataHandler.
 func NewAPIHandler(
-	cfg config.ProviderConfig,
-) (handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	market types.ProviderMarketMap,
+	api config.APIConfig,
+) (types.PriceAPIDataHandler, error) {
+	if err := market.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.API.Enabled {
-		return nil, fmt.Errorf("api is not enabled for provider %s", cfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("expected provider config name %s, got %s", Name, cfg.Name)
+	if api.Name != Name {
+		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", Name)
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config for %s: %w", Name, err)
 	}
 
 	return &APIHandler{
-		cfg: cfg,
+		market: market,
+		api:    api,
 	}, nil
 }
 
 // CreateURL returns the URL that is used to fetch data from the CoinGecko API for the
-// given currency pairs. The CoinGecko API supports fetching spot prices for multiple
-// currency pairs in a single request. The URL that is generated automatically populates
-// the API key if it is set.
+// given tickers. The CoinGecko API supports fetching spot prices for multiple tickers
+// in a single request.
 func (h *APIHandler) CreateURL(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 ) (string, error) {
 	// Create a list of base currencies and quote currencies.
-	bases, quotes, err := h.getUniqueBaseAndQuoteDenoms(cps)
+	bases, quotes, err := h.getUniqueBaseAndQuoteDenoms(tickers)
 	if err != nil {
 		return "", err
 	}
@@ -64,64 +71,53 @@ func (h *APIHandler) CreateURL(
 	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)
 
 	// Otherwise, we just return the base url with the endpoint.
-	return fmt.Sprintf("%s%s", h.cfg.API.URL, finalEndpoint), nil
+	return fmt.Sprintf("%s%s", h.api.URL, finalEndpoint), nil
 }
 
 // ParseResponse parses the response from the CoinGecko API. The response is expected
 // to match every base currency with every quote currency. As such, we need to filter
 // out the responses that are not expected. Note that the response will only return
-// a response for the inputted currency pairs.
+// a response for the inputted tickers.
 func (h *APIHandler) ParseResponse(
-	cps []slinkytypes.CurrencyPair,
+	tickers []mmtypes.Ticker,
 	resp *http.Response,
-) providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int] {
+) types.PriceResponse {
 	// Parse the response.
 	var result CoinGeckoResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return providertypes.NewGetResponseWithErr[slinkytypes.CurrencyPair, *big.Int](cps, err)
+		return types.NewPriceResponseWithErr(tickers, err)
 	}
 
 	var (
-		resolved   = make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
-		unresolved = make(map[slinkytypes.CurrencyPair]error)
+		resolved   = make(types.ResolvedPrices)
+		unresolved = make(types.UnResolvedPrices)
 	)
-
-	// Map each of the currency pairs for easy lookup.
-	configCPs := config.NewMarketConfig()
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
-		if !ok {
-			continue
-		}
-
-		configCPs.CurrencyPairToMarketConfigs[cp.String()] = market
-	}
 
 	// Filter out the responses that are not expected.
 	for base, quotes := range result {
 		for quote, price := range quotes {
 			// The ticker is represented as base/quote.
-			ticker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
+			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			market, ok := h.cfg.Market.TickerToMarketConfigs[ticker]
+			ticker, ok := h.market.OffChainMap[offChainTicker]
 			if !ok {
 				continue
 			}
 
 			// Resolve the price.
-			cp := market.CurrencyPair
-			price := math.Float64ToBigInt(price, cp.Decimals())
-			resolved[cp] = providertypes.NewResult[*big.Int](price, time.Now())
-			delete(configCPs.CurrencyPairToMarketConfigs, cp.String())
+			price := math.Float64ToBigInt(price, ticker.Decimals)
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
 		}
 	}
 
-	// If there are any currency pairs that were not resolved, we need to add them
-	// to the unresolved map.
-	for _, market := range configCPs.CurrencyPairToMarketConfigs {
-		unresolved[market.CurrencyPair] = fmt.Errorf("currency pair %s did not get a response", market.CurrencyPair.String())
+	// Add all of the expected tickers that did not return a response to the unresolved
+	// map.
+	for _, ticker := range tickers {
+		if _, resolvedOk := resolved[ticker]; !resolvedOk {
+			unresolved[ticker] = fmt.Errorf("no response")
+		}
 	}
 
-	return providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, unresolved)
+	return types.NewPriceResponse(resolved, unresolved)
 }

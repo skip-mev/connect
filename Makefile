@@ -10,7 +10,8 @@ PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 DOCKER_COMPOSE := $(shell which docker-compose)
-ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.toml
+ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.json
+MARKET_CONFIG_FILE ?= $(CURDIR)/config/local/market.json
 CONFIG_DIR ?= $(CURDIR)/config
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
@@ -26,7 +27,7 @@ build:
 	go build -o ./build/ ./...
 
 run-oracle-server: build update-local-config
-	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE}
+	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
 	./build/client --host localhost --port 8080

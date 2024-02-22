@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -58,69 +59,66 @@ var (
 	}
 
 	// DefaultMarketConfig defines the default market config for Kucoin.
-	DefaultMarketConfig = config.MarketConfig{
-		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"ATOM/USDC": {
-				Ticker:       "ATOM-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDC"),
-			},
-			"ATOM/USDT": {
-				Ticker:       "ATOM-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USDT"),
-			},
-			"AVAX/USDC": {
-				Ticker:       "AVAX-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDC"),
-			},
-			"AVAX/USDT": {
-				Ticker:       "AVAX-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USDT"),
-			},
-			"BITCOIN/USDC": {
-				Ticker:       "BTC-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
-			},
-			"BITCOIN/USDT": {
-				Ticker:       "BTC-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-			},
-			"CELESTIA/USDT": {
-				Ticker:       "TIA-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USDT"),
-			},
-			"DYDX/USDT": {
-				Ticker:       "DYDX-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USDT"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETH-BTC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"ETHEREUM/USDC": {
-				Ticker:       "ETH-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDC"),
-			},
-			"ETHEREUM/USDT": {
-				Ticker:       "ETH-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-			},
-			"OSMOSIS/USDT": {
-				Ticker:       "OSMO-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USDT"),
-			},
-			"SOLANA/USDC": {
-				Ticker:       "SOL-USDC",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDC"),
-			},
-			"SOLANA/USDT": {
-				Ticker:       "SOL-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USDT"),
-			},
-			"USDC/USDT": {
-				Ticker:       "USDC-USDT",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ATOM-USDC",
+		},
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ATOM-USDT",
+		},
+		constants.AVAX_USDC: {
+			Name:           Name,
+			OffChainTicker: "AVAX-USDC",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAX-USDT",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "BTC-USDC",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTC-USDT",
+		},
+		constants.CELESTIA_USDT: {
+			Name:           Name,
+			OffChainTicker: "TIA-USDT",
+		},
+		constants.DYDX_USDT: {
+			Name:           Name,
+			OffChainTicker: "DYDX-USDT",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETH-BTC",
+		},
+		constants.ETHEREUM_USDC: {
+			Name:           Name,
+			OffChainTicker: "ETH-USDC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETH-USDT",
+		},
+		constants.OSMOSIS_USDT: {
+			Name:           Name,
+			OffChainTicker: "OSMO-USDT",
+		},
+		constants.SOLANA_USDC: {
+			Name:           Name,
+			OffChainTicker: "SOL-USDC",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOL-USDT",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDC-USDT",
 		},
 	}
 )

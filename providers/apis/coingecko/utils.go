@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // NOTE: All documentation for this file can be located on the CoinGecko
@@ -51,41 +53,38 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for CoinGecko.
-	DefaultMarketConfig = config.MarketConfig{
-		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"ATOM/USD": {
-				Ticker:       "cosmos/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ATOM", "USD"),
-			},
-			"BITCOIN/USD": {
-				Ticker:       "bitcoin/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"CELESTIA/USD": {
-				Ticker:       "celestia/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("CELESTIA", "USD"),
-			},
-			"DYDX/USD": {
-				Ticker:       "dydx-chain/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("DYDX", "USD"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ethereum/btc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ethereum/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
-			"OSMOSIS/USD": {
-				Ticker:       "osmosis/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("OSMOSIS", "USD"),
-			},
-			"SOLANA/USD": {
-				Ticker:       "solana/usd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USD: {
+			Name:           Name,
+			OffChainTicker: "cosmos/usd",
+		},
+		constants.BITCOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "bitcoin/usd",
+		},
+		constants.CELESTIA_USD: {
+			Name:           Name,
+			OffChainTicker: "celestia/usd",
+		},
+		constants.DYDX_USD: {
+			Name:           Name,
+			OffChainTicker: "dydx-chain/usd",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ethereum/btc",
+		},
+		constants.ETHEREUM_USD: {
+			Name:           Name,
+			OffChainTicker: "ethereum/usd",
+		},
+		constants.OSMOSIS_USD: {
+			Name:           Name,
+			OffChainTicker: "osmosis/usd",
+		},
+		constants.SOLANA_USD: {
+			Name:           Name,
+			OffChainTicker: "solana/usd",
 		},
 	}
 )
@@ -107,12 +106,12 @@ type (
 )
 
 // getUniqueBaseAndQuoteDenoms returns a list of unique base and quote denoms
-// from a list of currency pairs. Note that this function will only return the
-// denoms that are configured for the handler. If any of the currency pairs are
-// not configured, they will not be fetched.
-func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []slinkytypes.CurrencyPair) (string, string, error) {
-	if len(pairs) == 0 {
-		return "", "", fmt.Errorf("no currency pairs specified")
+// from a list of tickers. Note that this function will only return the denoms
+// that are configured for the handler. If any of the tickers are not configured,
+// they will not be fetched.
+func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []mmtypes.Ticker) (string, string, error) {
+	if len(tickers) == 0 {
+		return "", "", fmt.Errorf("no tickers specified")
 	}
 
 	// Create a map of unique base and quote denoms.
@@ -124,16 +123,16 @@ func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []slinkytypes.CurrencyPai
 
 	// Iterate through every currency pair and add the base and quote to the
 	// unique bases and quotes list as long as they are supported.
-	for _, cp := range pairs {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
-			continue
+			return "", "", fmt.Errorf("ticker %s is not supported", ticker.String())
 		}
 
 		// Split the market ticker into the base and quote currencies.
-		split := strings.Split(market.Ticker, TickerSeparator)
+		split := strings.Split(market.OffChainTicker, TickerSeparator)
 		if len(split) != 2 {
-			continue
+			return "", "", fmt.Errorf("ticker %s is not formatted correctly", ticker.String())
 		}
 
 		base := split[0]
@@ -149,8 +148,7 @@ func (h *APIHandler) getUniqueBaseAndQuoteDenoms(pairs []slinkytypes.CurrencyPai
 		}
 	}
 
-	// If there are no bases or quotes, then none of the currency pairs are
-	// supported.
+	// If there are no bases or quotes, then none of the tickers are supported.
 	if len(bases) == 0 {
 		return "", "", fmt.Errorf("none of the base currencies are supported")
 	}

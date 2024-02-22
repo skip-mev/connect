@@ -16,20 +16,19 @@ type msgServer struct {
 }
 
 // NewMsgServer returns the default implementation of the x/marketmap message service.
-// NewMsgServer returns the default implementation of the x/marketmap message service.
 func NewMsgServer(k Keeper) types.MsgServer {
 	return &msgServer{k}
 }
 
 var _ types.MsgServer = (*msgServer)(nil)
 
-// UpdateMarketMap updates the marketmap from the given message.
+// UpdateMarketMap updates the marketmap from the given message.  All updates are made to the market map and then
+// the resulting final state is checked to verify that the end state is valid.
 func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateMarketMap) (*types.MsgUpdateMarketMapResponse, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
 	}
 
-	// Update the module's parameters.
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// TODO: add check when params are added

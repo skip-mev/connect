@@ -28,10 +28,6 @@ func (m *MsgUpdateMarketMap) ValidateBasic() error {
 			return err
 		}
 
-		if len(market.Paths.Paths) == 0 {
-			return fmt.Errorf("at least one path is required for a ticker to be calculated")
-		}
-
 		for _, path := range market.Paths.Paths {
 			if err := path.ValidateBasic(); err != nil {
 				return err
@@ -47,15 +43,15 @@ func (m *MsgUpdateMarketMap) ValidateBasic() error {
 
 		seenProviders := make(map[string]struct{})
 		for _, provider := range market.Providers.Providers {
+			if err := provider.ValidateBasic(); err != nil {
+				return err
+			}
+
 			// check for duplicate providers
 			if _, seen := seenProviders[provider.Name]; seen {
 				return fmt.Errorf("duplicate provider found: %s", provider.Name)
 			}
 			seenProviders[provider.Name] = struct{}{}
-
-			if provider.OffChainTicker == "" {
-				return fmt.Errorf("got empty off chain ticker for provider %s", provider.Name)
-			}
 		}
 	}
 

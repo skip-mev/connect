@@ -7,9 +7,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -18,94 +20,73 @@ var (
 	// within 1e-10 of the expected price.
 	acceptableDelta = 1e-10
 
+	usdtbtc = mmtypes.NewTicker("USDT", "BTC", 8, 1)
+
 	logger, _ = zap.NewDevelopment()
-	cfg       = config.AggregateMarketConfig{
-		Feeds: map[string]config.FeedConfig{
-			"BITCOIN/USD": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+	marketmap = mmtypes.MarketMap{
+		Tickers: map[string]mmtypes.Ticker{
+			constants.BITCOIN_USD.String():      constants.BITCOIN_USD,
+			constants.BITCOIN_USDC.String():     constants.BITCOIN_USDC,
+			constants.BITCOIN_USDT.String():     constants.BITCOIN_USDT,
+			constants.USDC_USD.String():         constants.USDC_USD,
+			constants.USDT_USD.String():         constants.USDT_USD,
+			constants.ETHEREUM_USD.String():     constants.ETHEREUM_USD,
+			constants.ETHEREUM_USDT.String():    constants.ETHEREUM_USDT,
+			constants.ETHEREUM_BITCOIN.String(): constants.ETHEREUM_BITCOIN,
+			usdtbtc.String():                    usdtbtc,
+		},
+		Providers: map[string]mmtypes.Providers{
+			constants.BITCOIN_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
+				},
 			},
-			"BITCOIN/USDT": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
+			constants.BITCOIN_USDC.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.BITCOIN_USDC],
+				},
 			},
-			"USDT/USD": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			constants.BITCOIN_USDT.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.BITCOIN_USDT],
+				},
 			},
-			"ETHEREUM/USDT": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			constants.USDC_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.USDC_USD],
+				},
 			},
-			"BITCOIN/ETHEREUM": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
+			constants.USDT_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.USDT_USD],
+				},
 			},
-			"USDT/ETHEREUM": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "ETHEREUM"),
+			constants.ETHEREUM_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
+				},
 			},
-			"ETHEREUM/USD": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
+			constants.ETHEREUM_USDT.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.ETHEREUM_USDT],
+				},
+			},
+			constants.ETHEREUM_BITCOIN.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.ETHEREUM_BITCOIN],
+				},
+			},
+			usdtbtc.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					{
+						Name:           "coinbase",
+						OffChainTicker: "USDT/BTC",
+					},
+				},
 			},
 		},
-		AggregatedFeeds: map[string]config.AggregateFeedConfig{
-			"BITCOIN/USD": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-				Conversions: []config.Conversions{
-					{
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-						},
-					},
-					{
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-						},
-					},
-					{
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-						},
-					},
-					{
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "ETHEREUM"),
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-						},
-					},
-				},
-			},
-			"ETHEREUM/USD": {
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-				Conversions: []config.Conversions{
-					{
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-						},
-					},
-					{
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "ETHEREUM"),
-							Invert:       true,
-						},
-						{
-							CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-						},
-					},
-				},
-			},
+		Paths: map[string]mmtypes.Paths{
+			constants.BITCOIN_USD.String(): constants.BITCOIN_USD_PATHS,
 		},
 	}
 )
@@ -113,97 +94,91 @@ var (
 func TestMedian(t *testing.T) {
 	testCases := []struct {
 		name              string
-		pricesPerProvider map[string]map[slinkytypes.CurrencyPair]*big.Int
-		expected          map[slinkytypes.CurrencyPair]*big.Int
+		pricesPerProvider types.AggregatedProviderPrices
+		expected          types.TickerPrices
 	}{
 		{
 			name: "no prices",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
+			pricesPerProvider: types.AggregatedProviderPrices{
 				"coinbase": {},
 			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{},
+			expected: types.TickerPrices{},
 		},
 		{
 			name: "single resolved price",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
+			pricesPerProvider: types.AggregatedProviderPrices{
 				"coinbase": {
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(40_000, 8),
+					constants.BITCOIN_USD: createPrice(40_000, 8),
 				},
 			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(40_000, 8),
+			expected: types.TickerPrices{
+				constants.BITCOIN_USD: createPrice(40_000, 8),
 			},
 		},
 		{
 			name: "must convert to get a single final price",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
+			pricesPerProvider: types.AggregatedProviderPrices{
 				"coinbase": {
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(40_000, 8),
-					slinkytypes.NewCurrencyPair("USDT", "USD"):     createPrice(1.1, 8),
+					constants.BITCOIN_USDT: createPrice(40_000, 8),
+					constants.USDT_USD:     createPrice(1.1, 8),
 				},
 			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(44_000, 8),
+			expected: types.TickerPrices{
+				constants.BITCOIN_USD:  createPrice(44_000, 8),
+				constants.BITCOIN_USDT: createPrice(40_000, 8),
+				constants.USDT_USD:     createPrice(1.1, 8),
 			},
 		},
 		{
 			name: "calculates median price between two separate conversions",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
+			pricesPerProvider: types.AggregatedProviderPrices{
 				"coinbase": {
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"):  createPrice(40_000, 8),
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(40_000, 8),
-					slinkytypes.NewCurrencyPair("USDT", "USD"):     createPrice(1.1, 8),
+					constants.BITCOIN_USD:  createPrice(40_000, 8),
+					constants.BITCOIN_USDT: createPrice(40_000, 8),
+					constants.USDT_USD:     createPrice(1.1, 8),
 				},
 			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(42_000, 8), // median average of 40_000 and 44_000
+			expected: types.TickerPrices{
+				constants.BITCOIN_USD:  createPrice(42_000, 8), // median average of 40_000 and 44_000
+				constants.BITCOIN_USDT: createPrice(40_000, 8),
+				constants.USDT_USD:     createPrice(1.1, 8),
 			},
 		},
 		{
 			name: "calculates median price between three separate conversions",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
+			pricesPerProvider: types.AggregatedProviderPrices{
 				"coinbase": {
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"):      createPrice(40_000, 8),
-					slinkytypes.NewCurrencyPair("BITCOIN", "USDT"):     createPrice(40_000, 8),
-					slinkytypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.1, 8),
-					slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(22, 18),
-					slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, 8),
+					constants.BITCOIN_USD:  createPrice(40_000, 8),
+					constants.BITCOIN_USDT: createPrice(40_000, 8),
+					constants.USDT_USD:     createPrice(1.1, 8),
+					constants.BITCOIN_USDC: createPrice(40_000, 8),
+					constants.USDC_USD:     createPrice(1.2, 8),
 				},
 			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"):  createPrice(44_000, 8), // median average of 40_000, 44_000, and 48_400
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): createPrice(2_200, 8),
-			},
-		},
-		{
-			name: "calculates median price with an inverted price",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
-				"coinbase": {
-					slinkytypes.NewCurrencyPair("USDT", "ETHEREUM"): createPrice(0.0005, 18),
-					slinkytypes.NewCurrencyPair("USDT", "USD"): createPrice(1.1,
-						8),
-				},
-			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USD"): createPrice(2_200, 8),
+			expected: types.TickerPrices{
+				constants.BITCOIN_USD:  createPrice(44_000, 8), // median of 40_000, 44_000, and 48_000
+				constants.BITCOIN_USDT: createPrice(40_000, 8),
+				constants.USDT_USD:     createPrice(1.1, 8),
+				constants.BITCOIN_USDC: createPrice(40_000, 8),
+				constants.USDC_USD:     createPrice(1.2, 8),
 			},
 		},
 		{
 			name: "calculates median price with a price of 0",
-			pricesPerProvider: map[string]map[slinkytypes.CurrencyPair]*big.Int{
+			pricesPerProvider: types.AggregatedProviderPrices{
 				"coinbase": {
-					slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(0, 8),
+					constants.BITCOIN_USD: createPrice(0, 8),
 				},
 			},
-			expected: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(0, 8),
+			expected: types.TickerPrices{
+				constants.BITCOIN_USD: createPrice(0, 8),
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			median, err := oracle.NewMedianAggregator(logger, cfg)
+			median, err := oracle.NewMedianAggregator(logger, marketmap)
 			require.NoError(t, err)
 
 			aggFn := median.AggregateFn()
@@ -212,6 +187,7 @@ func TestMedian(t *testing.T) {
 			for cp, expectedPrice := range tc.expected {
 				actualPrice, ok := prices[cp]
 				require.True(t, ok)
+
 				verifyPrice(t, expectedPrice, actualPrice)
 			}
 		})
@@ -221,214 +197,239 @@ func TestMedian(t *testing.T) {
 func TestCalculateConvertedPrices(t *testing.T) {
 	testCases := []struct {
 		name          string
-		outcome       slinkytypes.CurrencyPair
-		operations    []config.Conversion
-		medians       map[slinkytypes.CurrencyPair]*big.Int
+		outcome       mmtypes.Ticker
+		operations    mmtypes.Path
+		medians       types.TickerPrices
 		expected      *big.Int
 		expectedError bool
 	}{
 		{
 			name:       "no operations",
-			outcome:    slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(40_000, 8),
+			outcome:    constants.BITCOIN_USD,
+			operations: mmtypes.Path{},
+			medians: types.TickerPrices{
+				constants.BITCOIN_USD: createPrice(40_000, 8),
 			},
 			expected:      nil,
 			expectedError: true,
 		},
 		{
 			name:    "not enough median prices",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(40_000, 8),
+			medians: types.TickerPrices{
+				constants.BITCOIN_USDT: createPrice(40_000, 8),
 			},
 			expected:      nil,
 			expectedError: true,
 		},
 		{
 			name:    "successful conversion directly from a median price",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USD"): createPrice(40_000, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.BITCOIN_USD: createPrice(40_000, oracle.ScaledDecimals),
 			},
 			expected:      createPrice(40_000, oracle.ScaledDecimals),
 			expectedError: false,
 		},
 		{
 			name:    "successful conversion from converted prices",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(40_000, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("USDT", "USD"):     createPrice(1.2, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.BITCOIN_USDT: createPrice(40_000, oracle.ScaledDecimals),
+				constants.USDT_USD:     createPrice(1.2, oracle.ScaledDecimals),
 			},
 			expected:      createPrice(48_000, oracle.ScaledDecimals),
 			expectedError: false,
 		},
 		{
 			name:    "successful conversion from converted prices with an inverted price",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "BITCOIN"),
-					Invert:       true,
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: usdtbtc.CurrencyPair,
+						Invert:       true,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("USDT", "BITCOIN"): createPrice(0.000025, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("USDT", "USD"):     createPrice(1.2, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				usdtbtc:            createPrice(0.000025, oracle.ScaledDecimals),
+				constants.USDT_USD: createPrice(1.2, oracle.ScaledDecimals),
 			},
 			expected:      createPrice(48_000, oracle.ScaledDecimals),
 			expectedError: false,
 		},
 		{
 			name:    "successful conversion from with reasonably small numbers",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(0.0000000000004, oracle.ScaledDecimals), // 4e-13
-				slinkytypes.NewCurrencyPair("USDT", "USD"):     createPrice(0.0000000000012, oracle.ScaledDecimals), // 1.2e-12
+			medians: types.TickerPrices{
+				constants.BITCOIN_USDT: createPrice(0.0000000000004, oracle.ScaledDecimals), // 4e-13
+				constants.USDT_USD:     createPrice(0.0000000000012, oracle.ScaledDecimals), // 1.2e-12
 			},
 			expected:      createPrice(0.00000000000000000000000048, oracle.ScaledDecimals),
 			expectedError: false,
 		},
 		{
 			name:    "successful conversion from with reasonably large numbers",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "USDT"): createPrice(40_000_000_000_000_000, oracle.ScaledDecimals), // 4e16 + scaled to 40 decimals
-				slinkytypes.NewCurrencyPair("USDT", "USD"):     createPrice(1_200_000, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.BITCOIN_USDT: createPrice(40_000_000_000_000_000, oracle.ScaledDecimals), // 4e16 + scaled to 40 decimals
+				constants.USDT_USD:     createPrice(1_200_000, oracle.ScaledDecimals),
 			},
 			expected:      createPrice(48_000_000_000_000_000_000_000, oracle.ScaledDecimals),
 			expectedError: false,
 		},
 		{
-			name:    "successful conversion with 3 conversion operations",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			name:    "successful conversion with 3 conversion operations and an inversion",
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.ETHEREUM_BITCOIN.CurrencyPair,
+						Invert:       true,
+					},
+					{
+						CurrencyPair: constants.ETHEREUM_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(20, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.ETHEREUM_BITCOIN: createPrice(5, oracle.ScaledDecimals-2),
+				constants.ETHEREUM_USDT:    createPrice(2000, oracle.ScaledDecimals),
+				constants.USDT_USD:         createPrice(1.2, oracle.ScaledDecimals),
 			},
 			expected:      createPrice(48_000, oracle.ScaledDecimals),
 			expectedError: false,
 		},
 		{
 			name:    "path contains a price of 0 at the start",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.ETHEREUM_BITCOIN.CurrencyPair,
+						Invert:       true,
+					},
+					{
+						CurrencyPair: constants.ETHEREUM_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(0, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.ETHEREUM_BITCOIN: createPrice(0, oracle.ScaledDecimals),
+				constants.ETHEREUM_USDT:    createPrice(2000, oracle.ScaledDecimals),
+				constants.USDT_USD:         createPrice(1.2, oracle.ScaledDecimals),
 			},
 			expected:      big.NewInt(0),
 			expectedError: false,
 		},
 		{
 			name:    "path contains a price of 0 in the middle",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.ETHEREUM_BITCOIN.CurrencyPair,
+						Invert:       true,
+					},
+					{
+						CurrencyPair: constants.ETHEREUM_USDT.CurrencyPair,
+					},
+					{
+						CurrencyPair: constants.USDT_USD.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(20, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(0, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("USDT", "USD"):         createPrice(1.2, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.ETHEREUM_BITCOIN: createPrice(20, oracle.ScaledDecimals),
+				constants.ETHEREUM_USDT:    createPrice(0, oracle.ScaledDecimals),
+				constants.USDT_USD:         createPrice(1.2, oracle.ScaledDecimals),
 			},
 			expected:      big.NewInt(0),
 			expectedError: false,
 		},
 		{
 			name:    "conversion path is invalid",
-			outcome: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			operations: []config.Conversion{
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"),
-				},
-				{
-					CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			outcome: constants.BITCOIN_USD,
+			operations: mmtypes.Path{
+				Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: constants.ETHEREUM_BITCOIN.CurrencyPair,
+						Invert:       true,
+					},
+					{
+						CurrencyPair: constants.ETHEREUM_USDT.CurrencyPair,
+					},
 				},
 			},
-			medians: map[slinkytypes.CurrencyPair]*big.Int{
-				slinkytypes.NewCurrencyPair("BITCOIN", "ETHEREUM"): createPrice(20, oracle.ScaledDecimals),
-				slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"):    createPrice(2000, oracle.ScaledDecimals),
+			medians: types.TickerPrices{
+				constants.ETHEREUM_BITCOIN: createPrice(20, oracle.ScaledDecimals),
+				constants.ETHEREUM_USDT:    createPrice(2000, oracle.ScaledDecimals),
 			},
 			expected:      nil,
 			expectedError: true,
 		},
 	}
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			aggregator, err := oracle.NewMedianAggregator(logger, cfg)
+			aggregator, err := oracle.NewMedianAggregator(logger, marketmap)
 			require.NoError(t, err)
 
 			price, err := aggregator.CalculateConvertedPrice(tc.outcome, tc.operations, tc.medians)
@@ -482,7 +483,7 @@ func verifyPrice(t *testing.T, expected, actual *big.Int) {
 }
 
 // createPrice creates a price with the given number of decimals.
-func createPrice(price float64, decimals int64) *big.Int {
+func createPrice(price float64, decimals uint64) *big.Int {
 	// Convert the price to a big float so we can perform the multiplication.
 	floatPrice := big.NewFloat(price)
 
