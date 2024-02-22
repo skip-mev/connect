@@ -3,51 +3,61 @@ package kucoin
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
 // WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
 // handle messages received from the KuCoin websocket API.
-type WebSocketDataHandler struct {
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the KuCoin websocket API.
-	cfg config.ProviderConfig
-
+	// market is the config for the KuCoin API.
+	market types.ProviderMarketMap
+	// ws is the config for the KuCoin websocket.
+	ws config.WebSocketConfig
 	// sequences is a map of currency pair to sequence number.
-	sequences map[slinkytypes.CurrencyPair]int64
+	sequences map[mmtypes.Ticker]int64
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for KuCoin.
+// NewWebSocketDataHandler returns a new Kucoin PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[slinkytypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	market types.ProviderMarketMap,
+	ws config.WebSocketConfig,
+) (types.PriceWebSocketDataHandler, error) {
+	if err := market.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if ws.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, ws.Name)
 	}
 
-	return &WebSocketDataHandler{
-		cfg:       cfg,
-		logger:    logger.With(zap.String("web_socket_data_handler", Name)),
-		sequences: make(map[slinkytypes.CurrencyPair]int64),
+	if !ws.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+	}
+
+	if err := ws.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
+	}
+
+	return &WebSocketHandler{
+		logger:    logger,
+		market:    market,
+		ws:        ws,
+		sequences: make(map[mmtypes.Ticker]int64),
 	}, nil
 }
 
@@ -62,11 +72,11 @@ func NewWebSocketDataHandler(
 //  3. AckMessage: This is sent by the KuCoin websocket in response to a subscribe
 //     message.
 //  4. Message: This is sent by the KuCoin websocket when a match happens.
-func (h *WebSocketDataHandler) HandleMessage(
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
+		resp types.PriceResponse
 		msg  BaseMessage
 	)
 
@@ -102,7 +112,6 @@ func (h *WebSocketDataHandler) HandleMessage(
 
 		return resp, nil, nil
 	default:
-		h.logger.Debug("received invalid message type", zap.String("message_type", string(msgType)))
 		return resp, nil, fmt.Errorf("invalid message type %s", msgType)
 	}
 }
@@ -110,19 +119,18 @@ func (h *WebSocketDataHandler) HandleMessage(
 // CreateMessages is used to create the initial set of subscribe messages to send to the
 // KuCoin websocket API. The subscribe messages are created based on the currency pairs
 // that are configured for the provider.
-func (h *WebSocketDataHandler) CreateMessages(
-	cps []slinkytypes.CurrencyPair,
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
-			h.logger.Warn("currency pair not found in market configs", zap.String("currency_pair", cp.String()))
-			continue
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
-		instruments = append(instruments, market.Ticker)
+		instruments = append(instruments, market.OffChainTicker)
 	}
 
 	return NewSubscribeRequestMessage(instruments)
@@ -133,6 +141,6 @@ func (h *WebSocketDataHandler) CreateMessages(
 // should be around 10 seconds, however, this is dynamic. As such, the websocket connection
 // handler will determine both the credentials and desired ping interval during the pre-dial
 // hook.
-func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return NewHeartbeatMessage()
 }

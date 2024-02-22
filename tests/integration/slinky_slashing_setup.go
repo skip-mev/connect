@@ -2,7 +2,7 @@ package integration
 
 import (
 	"context"
-	"math/big"
+	"fmt"
 	"time"
 
 	"cosmossdk.io/math"
@@ -22,8 +22,9 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/static"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const gasPrice = 100
@@ -157,15 +158,14 @@ func QueryValidators(chain *cosmos.CosmosChain) ([]stakingtypes.Validator, error
 }
 
 // UpdateNodePrices updates the price reported for a given ticker, from a specified node
-func UpdateNodePrices(node *cosmos.ChainNode, ticker slinkytypes.CurrencyPair, price int64) error {
+func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64) error {
 	if err := StopOracle(node); err != nil {
 		return err
 	}
 
-	oracle := GetOracleSideCar(node)
-	oracleConfig := DefaultOracleConfig(node)
+	oracleConfig := DefaultOracleConfig()
 	oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
-		Name: "static-mock-provider",
+		Name: static.Name,
 		API: oracleconfig.APIConfig{
 			Enabled:    true,
 			Timeout:    250 * time.Millisecond,
@@ -173,41 +173,28 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker slinkytypes.CurrencyPair, p
 			MaxQueries: 1,
 			URL:        "http://un-used-url.com",
 			Atomic:     true,
-			Name:       "static-mock-provider",
-		},
-		Market: oracleconfig.MarketConfig{
-			Name: "static-mock-provider",
-			CurrencyPairToMarketConfigs: map[string]oracleconfig.CurrencyPairMarketConfig{
-				ticker.String(): {
-					Ticker:       big.NewInt(price).String(),
-					CurrencyPair: ticker,
-				},
-			},
+			Name:       static.Name,
 		},
 	})
 
-	oracleConfig.Market = oracleconfig.AggregateMarketConfig{
-		Feeds: map[string]oracleconfig.FeedConfig{
-			ticker.String(): {
-				CurrencyPair: ticker,
-			},
+	marketConfig := mmtypes.MarketMap{
+		Tickers: map[string]mmtypes.Ticker{
+			ticker.String(): ticker,
 		},
-		AggregatedFeeds: map[string]oracleconfig.AggregateFeedConfig{
+		Providers: map[string]mmtypes.Providers{
 			ticker.String(): {
-				CurrencyPair: ticker,
-				Conversions: []oracleconfig.Conversions{
+				Providers: []mmtypes.ProviderConfig{
 					{
-						{
-							CurrencyPair: ticker,
-							Invert:       false,
-						},
+						Name:           static.Name,
+						OffChainTicker: fmt.Sprintf("%d", price),
 					},
 				},
 			},
 		},
 	}
-	SetOracleConfigsOnOracle(oracle, oracleConfig)
 
+	oracle := GetOracleSideCar(node)
+	SetOracleConfigsOnOracle(oracle, oracleConfig, marketConfig)
 	return RestartOracle(node)
 }
 
