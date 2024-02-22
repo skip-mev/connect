@@ -65,10 +65,38 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 	// TODO
 
 	// validate that the new state of the marketmap is valid
-	err := ms.k.ValidateState(ctx, msg.CreateMarkets)
+	err = ms.k.ValidateState(ctx, msg.CreateMarkets)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
 	return &types.MsgUpdateMarketMapResponse{}, nil
+}
+
+// Params updates the x/marketmap module's Params.
+func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.MsgParamsResponse, error) {
+	if msg == nil {
+		return nil, fmt.Errorf("unable to process nil msg")
+	}
+
+	// Update the module's parameters.
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	params, err := ms.k.GetParams(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if msg.Authority != ms.k.authority.String() {
+		return nil, fmt.Errorf("request authority %s does not match module keeper authority %s", msg.Authority, ms.k.authority.String())
+	}
+
+	if msg.Params.Version < params.Version {
+		return nil, fmt.Errorf("request version %d is less than current params version %d", msg.Params.Version, params.Version)
+	}
+
+	if err := ms.k.SetParams(ctx, msg.Params); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgParamsResponse{}, nil
 }
