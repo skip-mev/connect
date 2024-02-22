@@ -8,22 +8,27 @@ import (
 	"os/signal"
 	"syscall"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/median"
+	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 )
 
 var (
-	host          = flag.String("host", "localhost", "host for the grpc-service to listen on")
+	host          = flag.String("host", "0.0.0.0", "host for the grpc-service to listen on")
 	port          = flag.String("port", "8080", "port for the grpc-service to listen on")
 	oracleCfgPath = flag.String("oracle-config-path", "oracle_config.json", "path to the oracle config file")
 	marketCfgPath = flag.String("market-config-path", "market_config.json", "path to the market config file")
+	runPprof      = flag.Bool("run-pprof", false, "run pprof server")
+	profilePort   = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
 )
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -83,11 +88,18 @@ func main() {
 		logger.Error("failed to create providers", zap.Error(err))
 		return
 	}
+
+	priceAggregator, err := oraclemath.NewMedianAggregator(logger, marketCfg)
+	if err != nil {
+		logger.Error("failed to create price aggregator", zap.Error(err))
+		return
+	}
+
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                      // Replace with custom providers.
-		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
+		oracle.WithProviders(providers),                             // Replace with custom providers.
+		oracle.WithAggregateFunction(priceAggregator.AggregateFn()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithLogger(logger),
 	)
@@ -123,6 +135,17 @@ func main() {
 			<-ctx.Done()
 			logger.Info("stopping prometheus metrics")
 			ps.Close()
+		}()
+	}
+
+	if *runPprof {
+		endpoint := fmt.Sprintf("%s:%s", *host, *profilePort)
+		// Start pprof server
+		go func() {
+			logger.Info("Starting pprof server", zap.String("endpoint", endpoint))
+			if err := http.ListenAndServe(endpoint, nil); err != nil {
+				logger.Error("pprof server failed", zap.Error(err))
+			}
 		}()
 	}
 
