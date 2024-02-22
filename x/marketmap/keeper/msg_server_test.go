@@ -6,7 +6,7 @@ import (
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func (s *KeeperTestSuite) TestCreateMarket() {
+func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 	msgServer := keeper.NewMsgServer(s.keeper)
 	qs := keeper.NewQueryServer(s.keeper)
 
@@ -115,7 +115,7 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 	})
 }
 
-func (s *KeeperTestSuite) TestParams() {
+func (s *KeeperTestSuite) TestMsgServerParams() {
 	msgServer := keeper.NewMsgServer(s.keeper)
 
 	s.Run("unable to process nil request", func() {
