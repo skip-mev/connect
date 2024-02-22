@@ -114,3 +114,61 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 		s.Require().Nil(resp)
 	})
 }
+
+func (s *KeeperTestSuite) TestParams() {
+	msgServer := keeper.NewMsgServer(s.keeper)
+
+	s.Run("unable to process nil request", func() {
+		resp, err := msgServer.Params(s.ctx, nil)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for invalid authority", func() {
+		msg := &types.MsgParams{
+			Authority: "invalid",
+		}
+		resp, err := msgServer.Params(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for version lower than current versions", func() {
+		msg := &types.MsgParams{
+			Authority: s.authority.String(),
+			Params: types.NewParams(
+				types.DefaultMarketAuthority,
+				0,
+			),
+		}
+		resp, err := msgServer.Params(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process a req with no params", func() {
+		msg := &types.MsgParams{
+			Authority: s.authority.String(),
+		}
+		resp, err := msgServer.Params(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("accepts a req with valid params", func() {
+		msg := &types.MsgParams{
+			Authority: s.authority.String(),
+			Params: types.NewParams(
+				types.DefaultMarketAuthority,
+				11,
+			),
+		}
+		resp, err := msgServer.Params(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		params, err := s.keeper.GetParams(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(msg.Params, params)
+	})
+}
