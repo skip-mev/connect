@@ -30,7 +30,7 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 	s.Require().NoError(err)
 	s.Require().NotNil(resp)
 
-	queryResp, err := qs.GetMarketMap(s.ctx, &types.GetMarketMapRequest{})
+	queryResp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(queryResp.MarketMap, types.MarketMap{
 		Tickers: map[string]types.Ticker{
