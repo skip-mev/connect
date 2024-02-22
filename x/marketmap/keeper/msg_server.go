@@ -21,7 +21,8 @@ func NewMsgServer(k Keeper) types.MsgServer {
 
 var _ types.MsgServer = (*msgServer)(nil)
 
-// UpdateMarketMap updates the marketmap from the given message.
+// UpdateMarketMap updates the marketmap from the given message.  All updates are made to the market map and then
+// the resulting final state is checked to verify that the end state is valid.
 func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateMarketMap) (*types.MsgUpdateMarketMapResponse, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
