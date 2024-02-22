@@ -4,8 +4,10 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -40,15 +42,15 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 		ms := keeper.NewMsgServer(s.oracleKeeper)
 		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
 			CurrencyPairs: []slinkytypes.CurrencyPair{cp1, cp2, cp3},
-			Authority:     sdk.AccAddress([]byte(moduleAuth)).String(),
+			Authority:     sdk.AccAddress(moduleAuth).String(),
 		})
 		s.Require().Nil(err)
 
 		// manually insert a new CurrencyPair as well
-		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
 			Base:  "GG",
 			Quote: "HH",
-		}, types.QuotePrice{Price: sdkmath.NewInt(100)})
+		}, types.QuotePrice{Price: sdkmath.NewInt(100)}))
 
 		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}
 
@@ -92,18 +94,21 @@ func (s *KeeperTestSuite) TestGetPrice() {
 
 	tcs := []struct {
 		name       string
+		setup      func()
 		req        *types.GetPriceRequest
 		res        *types.GetPriceResponse
 		expectPass bool
 	}{
 		{
 			"if the request is nil, expect failure - fail",
+			func() {},
 			nil,
 			nil,
 			false,
 		},
 		{
 			"if the currency pair selector is nil, expect failure - fail",
+			func() {},
 			&types.GetPriceRequest{
 				CurrencyPairSelector: nil,
 			},
@@ -112,6 +117,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		},
 		{
 			"if the currency pair selector's currency pair is nil, expect failure - fail",
+			func() {},
 			&types.GetPriceRequest{
 				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: nil},
 			},
@@ -120,6 +126,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		},
 		{
 			"if the query is for a currency pair that does not exist fail - fail",
+			func() {},
 			&types.GetPriceRequest{
 				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "DD/EE"},
 			},
@@ -128,6 +135,14 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		},
 		{
 			"if the query is for a currency-pair with no price, only the nonce (0) is returned - pass",
+			func() {
+				s.mockMarketMapKeeper.On("GetTicker", mock.Anything, mock.Anything).Return(marketmaptypes.Ticker{
+					CurrencyPair:     slinkytypes.CurrencyPair{Base: "CC", Quote: "BB"},
+					Decimals:         8,
+					MinProviderCount: 3,
+					Metadata_JSON:    "",
+				}, nil).Once()
+			},
 			&types.GetPriceRequest{
 				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "CC/BB"},
 			},
@@ -140,6 +155,14 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		},
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
+			func() {
+				s.mockMarketMapKeeper.On("GetTicker", mock.Anything, mock.Anything).Return(marketmaptypes.Ticker{
+					CurrencyPair:     slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"},
+					Decimals:         18,
+					MinProviderCount: 3,
+					Metadata_JSON:    "",
+				}, nil).Once()
+			},
 			&types.GetPriceRequest{
 				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"}},
 			},
@@ -159,18 +182,20 @@ func (s *KeeperTestSuite) TestGetPrice() {
 
 	for _, tc := range tcs {
 		s.Run(tc.name, func() {
+			tc.setup()
+
 			// get the response + error from the query
 			res, err := qs.GetPrice(s.ctx, tc.req)
 			if !tc.expectPass {
-				assert.NotNil(s.T(), err)
+				s.Require().NotNil(err)
 				return
 			}
 
 			// otherwise, assert no error, and check response
-			assert.Nil(s.T(), err)
+			s.Require().Nil(err)
 
 			// check response
-			assert.Equal(s.T(), res.Nonce, tc.res.Nonce)
+			s.Require().Equal(res.Nonce, tc.res.Nonce)
 
 			// check price if possible
 			if tc.res.Price != nil {
@@ -178,10 +203,10 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			}
 
 			// check decimals
-			assert.Equal(s.T(), tc.res.Decimals, res.Decimals)
+			s.Require().Equal(tc.res.Decimals, res.Decimals)
 
 			// check id
-			assert.Equal(s.T(), tc.res.Id, res.Id)
+			s.Require().Equal(tc.res.Id, res.Id)
 		})
 	}
 }

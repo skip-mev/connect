@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/skip-mev/slinky/x/oracle/types/mocks"
+
 	sdkmath "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -22,20 +24,22 @@ const (
 	moduleAuth = "authority"
 )
 
-var moduleAuthAddr = sdk.AccAddress([]byte(moduleAuth))
+var moduleAuthAddr = sdk.AccAddress(moduleAuth)
 
 type KeeperTestSuite struct {
 	suite.Suite
 
-	oracleKeeper keeper.Keeper
-	ctx          sdk.Context
+	oracleKeeper        keeper.Keeper
+	mockMarketMapKeeper *mocks.MarketMapKeeper
+	ctx                 sdk.Context
 }
 
 func (s *KeeperTestSuite) SetupTest() {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
-	s.oracleKeeper = keeper.NewKeeper(ss, encCfg.Codec, moduleAuthAddr)
+	s.mockMarketMapKeeper = mocks.NewMarketMapKeeper(s.T())
+	s.oracleKeeper = keeper.NewKeeper(ss, encCfg.Codec, s.mockMarketMapKeeper, moduleAuthAddr)
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
 }
 
