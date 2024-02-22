@@ -109,7 +109,7 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 					},
 				},
 			},
-		}
+		}SF
 		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)

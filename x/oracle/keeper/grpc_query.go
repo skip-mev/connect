@@ -78,12 +78,17 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	// get the QuotePrice + nonce for the given CurrencyPair
 	qpn, err := q.k.GetPriceWithNonceForCurrencyPair(ctx, cp)
 	if err != nil {
-		return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %v, the module is not tracking this CurrencyPair", cp)
+		return nil, fmt.Errorf("no price / nonce reported for CurrencyPair: %s, the module is not tracking this CurrencyPair", cp.String())
 	}
 
 	id, ok := q.k.GetIDForCurrencyPair(ctx, cp)
 	if !ok {
-		return nil, fmt.Errorf("no ID found for CurrencyPair: %v", cp)
+		return nil, fmt.Errorf("no ID found for CurrencyPair: %s", cp.String())
+	}
+
+	ticker, err := k.mmKeeper.GetTicker(ctx, cp.String())
+	if err != nil {
+		return nil, fmt.Errorf("no ticker for CurrencyPair")
 	}
 
 	// return the QuotePrice + Nonce
@@ -95,7 +100,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 	}, nil
 }
 
-// GetPrice gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
+// GetPrices gets the array of the QuotePrice and the nonce for the QuotePrice for a given CurrencyPairs.
 func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesRequest) (_ *types.GetPricesResponse, err error) {
 	var cp slinkytypes.CurrencyPair
 
