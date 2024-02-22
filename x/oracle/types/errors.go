@@ -2,9 +2,11 @@ package types
 
 import (
 	"fmt"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
-func NewCurrencyPairNotExistError(cp CurrencyPair) CurrencyPairNotExistError {
+func NewCurrencyPairNotExistError(cp slinkytypes.CurrencyPair) CurrencyPairNotExistError {
 	return CurrencyPairNotExistError{cp.String()}
 }
 
@@ -16,7 +18,7 @@ func (e CurrencyPairNotExistError) Error() string {
 	return fmt.Sprintf("nonce is not stored for CurrencyPair: %s", e.cp)
 }
 
-func NewQuotePriceNotExistError(cp CurrencyPair) QuotePriceNotExistError {
+func NewQuotePriceNotExistError(cp slinkytypes.CurrencyPair) QuotePriceNotExistError {
 	return QuotePriceNotExistError{cp.String()}
 }
 
@@ -32,7 +34,7 @@ type CurrencyPairAlreadyExistsError struct {
 	cp string
 }
 
-func NewCurrencyPairAlreadyExistsError(cp CurrencyPair) CurrencyPairAlreadyExistsError {
+func NewCurrencyPairAlreadyExistsError(cp slinkytypes.CurrencyPair) CurrencyPairAlreadyExistsError {
 	return CurrencyPairAlreadyExistsError{cp.String()}
 }
 

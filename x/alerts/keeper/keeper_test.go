@@ -15,11 +15,11 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/stretchr/testify/suite"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/mocks"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type KeeperTestSuite struct {
@@ -70,11 +70,11 @@ func TestKeeperTestSuite(t *testing.T) {
 // test that we can set / remove / get alerts from the keeper.
 func (s *KeeperTestSuite) TestAlerts() {
 	alert := alerttypes.NewAlertWithStatus(
-		alerttypes.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		alerttypes.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		alerttypes.NewAlertStatus(1, 2, time.Now(), alerttypes.Unconcluded),
 	)
 	alert2 := alerttypes.NewAlertWithStatus(
-		alerttypes.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		alerttypes.NewAlert(2, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		alerttypes.NewAlertStatus(2, 3, time.Now(), alerttypes.Unconcluded),
 	)
 	// set an alert in the keeper
@@ -120,15 +120,15 @@ func (s *KeeperTestSuite) TestAlerts() {
 func (s *KeeperTestSuite) TestGetAllAlerts() {
 	// set some alerts in the keeper
 	alert := alerttypes.NewAlertWithStatus(
-		alerttypes.NewAlert(1, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		alerttypes.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		alerttypes.NewAlertStatus(1, 2, time.Now(), alerttypes.Unconcluded),
 	)
 	alert2 := alerttypes.NewAlertWithStatus(
-		alerttypes.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		alerttypes.NewAlert(2, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		alerttypes.NewAlertStatus(2, 3, time.Now(), alerttypes.Unconcluded),
 	)
 	alert3 := alerttypes.NewAlertWithStatus(
-		alerttypes.NewAlert(2, sdk.AccAddress("test"), oracletypes.NewCurrencyPair("BTC", "USD")),
+		alerttypes.NewAlert(2, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 		alerttypes.NewAlertStatus(2, 3, time.Now(), alerttypes.Unconcluded),
 	)
 

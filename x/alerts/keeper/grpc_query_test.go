@@ -3,22 +3,22 @@ package keeper_test
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func (s *KeeperTestSuite) TestQueryServer() {
 	s.Run("Alerts", func() {
 		// add a concluded alert to state
 		concludedAlert := types.NewAlertWithStatus(
-			types.NewAlert(1, sdk.AccAddress("abc1"), oracletypes.NewCurrencyPair("BTC", "USD")),
+			types.NewAlert(1, sdk.AccAddress("abc1"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 			types.NewAlertStatus(1, 1, s.ctx.BlockTime(), types.Concluded),
 		)
 
 		// add an unconcluded alert to state
 		unconcludedAlert := types.NewAlertWithStatus(
-			types.NewAlert(2, sdk.AccAddress("abc2"), oracletypes.NewCurrencyPair("BTC", "USD")),
+			types.NewAlert(2, sdk.AccAddress("abc2"), slinkytypes.NewCurrencyPair("BTC", "USD")),
 			types.NewAlertStatus(1, 1, s.ctx.BlockTime(), types.Unconcluded),
 		)
 

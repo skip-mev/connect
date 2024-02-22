@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -45,7 +46,7 @@ func GetPriceCmd() *cobra.Command {
 			}
 
 			// retrieve CurrencyPair from arguments
-			cp := types.NewCurrencyPair(args[0], args[1])
+			cp := slinkytypes.NewCurrencyPair(args[0], args[1])
 
 			// create client
 			qc := types.NewQueryClient(clientCtx)

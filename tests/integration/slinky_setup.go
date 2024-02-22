@@ -3,6 +3,7 @@ package integration
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"sort"
@@ -31,11 +32,14 @@ import (
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 const (
-	oracleConfigPath = "oracle.toml"
+	oracleConfigPath = "oracle.json"
+	marketMapPath    = "market.json"
 	appConfigPath    = "config/app.toml"
 )
 
@@ -73,7 +77,7 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 }
 
 // SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
-func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.OracleConfig) {
+func SetOracleConfigsOnApp(node *cosmos.ChainNode) {
 	oracle := GetOracleSideCar(node)
 
 	// read the app config from the node
@@ -109,18 +113,6 @@ func SetOracleConfigsOnApp(node *cosmos.ChainNode, oracleConfig oracleconfig.Ora
 
 	// Write back the app config.
 	err = node.WriteFile(context.Background(), bz, appConfigPath)
-	if err != nil {
-		panic(err)
-	}
-
-	// marshal the oracle config
-	bz, err = toml.Marshal(oracleConfig)
-	if err != nil {
-		panic(err)
-	}
-
-	// write the oracle config to the node
-	err = node.WriteFile(context.Background(), bz, oracleConfigPath)
 	if err != nil {
 		panic(err)
 	}
@@ -172,15 +164,28 @@ func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *int
 func SetOracleConfigsOnOracle(
 	oracle *cosmos.SidecarProcess,
 	oracleCfg oracleconfig.OracleConfig,
+	marketCfg mmtypes.MarketMap,
 ) {
 	// marshal the oracle config
-	bz, err := toml.Marshal(oracleCfg)
+	bz, err := json.Marshal(oracleCfg)
 	if err != nil {
 		panic(err)
 	}
 
 	// write the oracle config to the node
 	err = oracle.WriteFile(context.Background(), bz, oracleConfigPath)
+	if err != nil {
+		panic(err)
+	}
+
+	// marshal the market map config
+	bz, err = json.Marshal(marketCfg)
+	if err != nil {
+		panic(err)
+	}
+
+	// write the market map config to the node
+	err = oracle.WriteFile(context.Background(), bz, marketMapPath)
 	if err != nil {
 		panic(err)
 	}
@@ -259,7 +264,7 @@ func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyP
 }
 
 // QueryCurrencyPair queries the price for the given currency-pair given a desired height to query from
-func QueryCurrencyPair(chain *cosmos.CosmosChain, cp oracletypes.CurrencyPair, height uint64) (*oracletypes.QuotePrice, int64, error) {
+func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, height uint64) (*oracletypes.QuotePrice, int64, error) {
 	grpcAddr := chain.GetHostGRPCAddress()
 
 	// create the client
@@ -333,7 +338,7 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...oracletypes.CurrencyPair) error {
+func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
 	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
 		Authority:     authority,
 		CurrencyPairs: cps,

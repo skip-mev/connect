@@ -3,6 +3,7 @@ package oracle
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -12,6 +13,6 @@ import (
 //
 //go:generate mockery --name Keeper --filename mock_oracle_keeper.go
 type Keeper interface { //golint:ignore
-	GetAllCurrencyPairs(ctx sdk.Context) []oracletypes.CurrencyPair
-	SetPriceForCurrencyPair(ctx sdk.Context, cp oracletypes.CurrencyPair, qp oracletypes.QuotePrice) error
+	GetAllCurrencyPairs(ctx sdk.Context) []slinkytypes.CurrencyPair
+	SetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair, qp oracletypes.QuotePrice) error
 }

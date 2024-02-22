@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -16,7 +16,7 @@ const (
 )
 
 func (s *KeeperTestSuite) TestSetPriceFeed() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
 
 	consAddress1 := sdk.ConsAddress("consAddress1")
 	consAddress2 := sdk.ConsAddress("consAddress2")
@@ -90,7 +90,7 @@ func (s *KeeperTestSuite) TestSetPriceFeed() {
 }
 
 func (s *KeeperTestSuite) TestRemovePriceFeeds() {
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
+	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
 
 	consAddress1 := sdk.ConsAddress("consAddress1")
 	consAddress2 := sdk.ConsAddress("consAddress2")
@@ -186,7 +186,7 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		s.Require().False(contains)
 	})
 
-	cp2 := oracletypes.NewCurrencyPair("mog", "usd")
+	cp2 := slinkytypes.NewCurrencyPair("mog", "usd")
 	priceFeed3, err := slatypes.NewPriceFeed(
 		10,
 		consAddress1,
@@ -238,7 +238,7 @@ func (s *KeeperTestSuite) TestRemovePriceFeeds() {
 		checkEquality(s.T(), priceFeed3, feeds[0])
 	})
 
-	cp3 := oracletypes.NewCurrencyPair("gds", "4L")
+	cp3 := slinkytypes.NewCurrencyPair("gds", "4L")
 
 	s.Run("different currency pairs are not affected", func() {
 		priceFeed1 := priceFeed1

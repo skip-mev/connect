@@ -6,13 +6,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
 var (
 	val = sdk.ConsAddress("validator1")
-	cp  = oracletypes.NewCurrencyPair("BTC", "ETH")
+	cp  = slinkytypes.NewCurrencyPair("BTC", "ETH")
 	id  = "testID"
 )
 
@@ -384,7 +384,7 @@ func TestPriceFeedValidateBasic(t *testing.T) {
 	})
 
 	t.Run("invalid currency pair", func(t *testing.T) {
-		priceFeed, err := slatypes.NewPriceFeed(10, val, oracletypes.CurrencyPair{}, id)
+		priceFeed, err := slatypes.NewPriceFeed(10, val, slinkytypes.CurrencyPair{}, id)
 		require.NoError(t, err)
 		require.Error(t, priceFeed.ValidateBasic())
 	})

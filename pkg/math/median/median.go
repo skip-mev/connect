@@ -1,4 +1,4 @@
-package aggregator
+package median
 
 import (
 	"math/big"
@@ -6,19 +6,20 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func ComputeMedianWithContext(_ sdk.Context) AggregateFn[string, map[types.CurrencyPair]*big.Int] {
+func ComputeMedianWithContext(_ sdk.Context) types.PriceAggregationFn {
 	return ComputeMedian()
 }
 
 // ComputeMedian inputs the aggregated prices from all providers and computes
 // the median price for each asset.
-func ComputeMedian() AggregateFn[string, map[types.CurrencyPair]*big.Int] {
-	return func(providers AggregatedProviderData[string, map[types.CurrencyPair]*big.Int]) map[types.CurrencyPair]*big.Int {
+func ComputeMedian() types.PriceAggregationFn {
+	return func(providers types.AggregatedProviderPrices) types.TickerPrices {
 		// Aggregate prices across all providers for each asset.
-		pricesByAsset := make(map[types.CurrencyPair][]*big.Int)
+		pricesByAsset := make(map[mmtypes.Ticker][]*big.Int)
 		for _, providerPrices := range providers {
 			for cp, price := range providerPrices {
 				// Only include prices that are not nil
@@ -35,7 +36,7 @@ func ComputeMedian() AggregateFn[string, map[types.CurrencyPair]*big.Int] {
 			}
 		}
 
-		medianPrices := make(map[types.CurrencyPair]*big.Int)
+		medianPrices := make(types.TickerPrices)
 
 		// Iterate through all assets and compute the median price
 		for cp, prices := range pricesByAsset {

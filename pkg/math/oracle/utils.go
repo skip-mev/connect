@@ -17,13 +17,13 @@ const ScaledDecimals = 36
 // NOTE: This function should only be used on prices that have not already been scaled to the
 // standard number of decimals. We scale the price to the standard number of decimals for ease
 // of comparison.
-func ScaleUpCurrencyPairPrice(decimals int64, price *big.Int) (*big.Int, error) {
-	diff := ScaledDecimals - decimals
-	if diff < 0 {
-		return nil, fmt.Errorf("cannot scale down price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
+func ScaleUpCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error) {
+	if decimals > ScaledDecimals {
+		return nil, fmt.Errorf("cannot scale up price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
 	}
 
-	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(diff), nil)
+	diff := ScaledDecimals - decimals
+	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(int64(diff)), nil)
 	return new(big.Int).Mul(price, exp), nil
 }
 
@@ -34,13 +34,13 @@ func ScaleUpCurrencyPairPrice(decimals int64, price *big.Int) (*big.Int, error) 
 //
 // NOTE: This function should only be used on prices that have already been scaled to the standard
 // number of decimals. The output of this returns the price to its expected number of decimals.
-func ScaleDownCurrencyPairPrice(decimals int64, price *big.Int) (*big.Int, error) {
-	diff := ScaledDecimals - decimals
-	if diff < 0 {
+func ScaleDownCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error) {
+	if decimals > ScaledDecimals {
 		return nil, fmt.Errorf("cannot scale down price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
 	}
 
-	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(diff), nil)
+	diff := ScaledDecimals - decimals
+	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(int64(diff)), nil)
 	return new(big.Int).Div(price, exp), nil
 }
 
@@ -51,7 +51,7 @@ func ScaleDownCurrencyPairPrice(decimals int64, price *big.Int) (*big.Int, error
 //
 // NOTE: This function should only be used on prices that have already been scaled
 // to the standard number of decimals.
-func InvertCurrencyPairPrice(price *big.Int, decimals int64) *big.Int {
+func InvertCurrencyPairPrice(price *big.Int, decimals uint64) *big.Int {
 	one := ScaledOne(decimals)
 
 	// Convert the price to a big.Float so we can perform the division
@@ -69,6 +69,6 @@ func InvertCurrencyPairPrice(price *big.Int, decimals int64) *big.Int {
 
 // ScaledOne returns a big.Int that represents the number 1 scaled to the standard
 // number of decimals.
-func ScaledOne(decimals int64) *big.Int {
-	return big.NewInt(1).Exp(big.NewInt(10), big.NewInt(decimals), nil)
+func ScaledOne(decimals uint64) *big.Int {
+	return big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
 }
