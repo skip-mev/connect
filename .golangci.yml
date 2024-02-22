@@ -63,9 +63,12 @@ issues:
     - text: "Use of weak random number generator"
       linters:
         - gosec
-    # - text: "ST1003:"
-    #   linters:
-    #     - stylecheck
+    - text: "Don't use ALL_CAPS in Go names"
+      linters:
+        - revive
+    - text: "ST1003:"
+      linters:
+        - stylecheck
     # - text: "ST1016:"
     #   linters:
     #     - stylecheck

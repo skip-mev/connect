@@ -47,8 +47,9 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"     // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
 
-	_ "github.com/skip-mev/slinky/x/incentives" // import for side-effects
-	_ "github.com/skip-mev/slinky/x/oracle"     // import for side-effects
+	_ "github.com/skip-mev/slinky/x/incentives"       // import for side-effects
+	_ "github.com/skip-mev/slinky/x/marketmap/module" // import for side-effects
+	_ "github.com/skip-mev/slinky/x/oracle"           // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -72,9 +73,11 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -133,6 +136,7 @@ var (
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
 						alerttypes.ModuleName,
+						marketmaptypes.ModuleName,
 					},
 					EndBlockers: []string{
 						crisistypes.ModuleName,
@@ -141,9 +145,10 @@ var (
 						genutiltypes.ModuleName,
 						group.ModuleName,
 						oracletypes.ModuleName,
-						// alert Endblock must precede incentives types EndBlocker (issued incentives shld be executed same block)
+						// alert Endblock must precede incentives types EndBlocker (issued incentives should be executed same block)
 						alerttypes.ModuleName,
 						incentivetypes.ModuleName,
+						marketmaptypes.ModuleName,
 					},
 					OverrideStoreKeys: []*runtimev1alpha1.StoreKeyConfig{
 						{
@@ -174,6 +179,7 @@ var (
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
 						alerttypes.ModuleName,
+						marketmaptypes.ModuleName,
 					},
 					// When ExportGenesis is not specified, the export genesis module order
 					// is equal to the init genesis order
@@ -272,6 +278,12 @@ var (
 			{
 				Name: alerttypes.ModuleName,
 				Config: appconfig.WrapAny(&alertmodulev1.Module{
+					Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+				}),
+			},
+			{
+				Name: marketmaptypes.ModuleName,
+				Config: appconfig.WrapAny(&marketmapmodulev1.Module{
 					Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				}),
 			},

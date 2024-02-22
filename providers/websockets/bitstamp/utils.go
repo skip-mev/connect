@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -38,53 +39,50 @@ var (
 	}
 
 	// DefaultMarketConfig returns the default market config for bitstamp.
-	DefaultMarketConfig = config.MarketConfig{
-		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"AVAX/USD": {
-				Ticker:       "avaxusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("AVAX", "USD"),
-			},
-			"BITCOIN/USD": {
-				Ticker:       "btcusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USD"),
-			},
-			"BITCOIN/USDC": {
-				Ticker:       "btcusdc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDC"),
-			},
-			"BITCOIN/USDT": {
-				Ticker:       "btcusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("BITCOIN", "USDT"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ethbtc",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"ETHEREUM/USD": {
-				Ticker:       "ethusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USD"),
-			},
-			"ETHEREUM/USDT": {
-				Ticker:       "ethusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("ETHEREUM", "USDT"),
-			},
-			"SOLANA/USD": {
-				Ticker:       "solusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("SOLANA", "USD"),
-			},
-			"USDC/USD": {
-				Ticker:       "usdcusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USD"),
-			},
-			"USDC/USDT": {
-				Ticker:       "usdcusdt",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDC", "USDT"),
-			},
-			"USDT/USD": {
-				Ticker:       "usdtusd",
-				CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.AVAX_USD: {
+			Name:           Name,
+			OffChainTicker: "avaxusd",
+		},
+		constants.BITCOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "btcusd",
+		},
+		constants.BITCOIN_USDC: {
+			Name:           Name,
+			OffChainTicker: "btcusdc",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "btcusdt",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ethbtc",
+		},
+		constants.ETHEREUM_USD: {
+			Name:           Name,
+			OffChainTicker: "ethusd",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ethusdt",
+		},
+		constants.SOLANA_USD: {
+			Name:           Name,
+			OffChainTicker: "solusd",
+		},
+		constants.USDC_USD: {
+			Name:           Name,
+			OffChainTicker: "usdcusd",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "usdcusdt",
+		},
+		constants.USDT_USD: {
+			Name:           Name,
+			OffChainTicker: "usdtusd",
 		},
 	}
 )

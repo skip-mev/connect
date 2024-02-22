@@ -10,8 +10,11 @@
         * [Version](#version)
 * [Events](#events)
 * [Hooks](#hooks)
+<<<<<<< HEAD
     * [AfterMarketCreated](#aftermarketcreated)
     * [AfterMarketUpdated](#aftermarketupdated)
+=======
+>>>>>>> feat/marketmap
 * [Client](#client)
     * [CLI](#cli)
     * [gRPC](#grpc)
@@ -41,7 +44,11 @@ keeper authority address.
 The `x/marketmap` module contains the following parameters:
 
 | Key             | Type   | Example                                        |
+<<<<<<< HEAD
 |-----------------|--------|------------------------------------------------|
+=======
+ |-----------------|--------|------------------------------------------------|
+>>>>>>> feat/marketmap
 | MarketAuthority | string | "cosmos1vq93x443c0fznuf6...q4jd28ke6r46p999s0" |
 | Version         | uint64 | 20                                             |
 
@@ -61,6 +68,7 @@ TODO BLO-921
 
 ## Hooks
 
+<<<<<<< HEAD
 Other modules can register routines to execute after a certain event has occurred in `x/marketmap`.
 The following hooks can be registered:
 
@@ -73,6 +81,9 @@ The following hooks can be registered:
 
 * `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
     * Called after a new market is updated in `UpdateMarket` message server.
+=======
+TODO BLO-866
+>>>>>>> feat/marketmap
 
 ## Client
 
@@ -82,8 +93,117 @@ TODO BLO-920
 
 ### gRPC
 
+<<<<<<< HEAD
 TODO BLO-919
 
 ### Rest
 
 TODO BLO-919
+=======
+A user can query the `marketmap` module using gRPC endpoints.
+
+#### MarketMap
+
+The `MarketMap` endpoint queries the full state of the market map as well as associated information such as
+`LastUpdated` and `Version`.
+
+Example:
+
+```shell
+grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/MarketMap
+```
+
+Example response:
+
+```json
+{
+  "marketMap": {
+    "tickers": {
+      "BITCOIN/USD": {
+        "currencyPair": {
+          "Base": "BITCOIN",
+          "Quote": "USD"
+        },
+        "decimals": "8",
+        "minProviderCount": "3"
+      }
+    },
+    "paths": {
+      "BITCOIN/USD": {
+        "paths": [
+          {
+            "operations": [
+              {
+                "currencyPair": {
+                  "Base": "BITCOIN",
+                  "Quote": "USD"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "providers": {
+      "BITCOIN/USD": {
+        "providers": [
+          {
+            "name": "kucoin",
+            "offChainTicker": "btc_usd"
+          },
+          {
+            "name": "mexc",
+            "offChainTicker": "btc-usd"
+          },
+          {
+            "name": "binance",
+            "offChainTicker": "BTCUSD"
+          }
+        ]
+      }
+    }
+  },
+  "lastUpdated": "1"
+}
+```
+
+#### LastUpdated
+
+The `LastUpdated` endpoint queries the last block height that the market map was updated.
+This can be consumed by oracle service providers to recognize when their local configurations
+must be updated using the heavier `MarketMap` query.
+
+Example:
+
+```shell
+grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/LastUpdated
+```
+
+Example response:
+
+```json
+{
+  "lastUpdated": "1"
+}
+```
+
+#### Params
+
+The params command allows users to query values set as marketmap parameters.
+
+Example:
+
+```shell
+grpcurl -plaintext localhost:9090 slinky.marketmap.v1.Query/Params
+```
+
+Example response:
+
+```json
+{
+  "params": {
+    "marketAuthority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+  }
+}
+```
+>>>>>>> feat/marketmap
