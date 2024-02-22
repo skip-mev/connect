@@ -10,48 +10,23 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	providerCfg = config.ProviderConfig{
-		Name:      cryptodotcom.Name,
-		WebSocket: cryptodotcom.DefaultWebSocketConfig,
-		Market: config.MarketConfig{
-			Name: cryptodotcom.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
-					Ticker:       "BTCUSD-PERP",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-				"ETHEREUM/USD": {
-					Ticker:       "ETHUSD-PERP",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				},
-				"SOLANA/USD": {
-					Ticker:       "SOLUSD-PERP",
-					CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USD"),
-				},
-			},
-		},
-	}
-
-	btcusd = oracletypes.NewCurrencyPair("BITCOIN", "USD")
-	ethusd = oracletypes.NewCurrencyPair("ETHEREUM", "USD")
-	solusd = oracletypes.NewCurrencyPair("SOLANA", "USD")
-
 	logger = zap.NewExample()
+	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
 )
 
 func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
 		name         string
 		msg          func() []byte
-		resp         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp         types.PriceResponse
 		expUpdateMsg func() []handlers.WebsocketEncodedMessage
 		expErr       bool
 	}{
@@ -60,7 +35,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`no rizz message`)
 			},
-			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:         types.PriceResponse{},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
@@ -74,7 +49,7 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:         types.PriceResponse{},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
@@ -89,7 +64,7 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp:         providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:         types.PriceResponse{},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:       true,
 		},
@@ -105,7 +80,7 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				msg := cryptodotcom.HeartBeatResponseMessage{
 					ID:     42069,
@@ -132,7 +107,7 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -158,11 +133,11 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					btcusd: providertypes.NewResult[*big.Int](big.NewInt(4206900000000), time.Now()),
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					constants.BITCOIN_USD: types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
 				},
-				UnResolved: map[oracletypes.CurrencyPair]error{},
+				UnResolved: types.UnResolvedPrices{},
 			},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
@@ -189,7 +164,7 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -223,13 +198,13 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					btcusd: providertypes.NewResult[*big.Int](big.NewInt(4206900000000), time.Now()),
-					ethusd: providertypes.NewResult[*big.Int](big.NewInt(200000000000), time.Now()),
-					solusd: providertypes.NewResult[*big.Int](big.NewInt(100000000000), time.Now()),
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					constants.BITCOIN_USD:  types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
+					constants.ETHEREUM_USD: types.NewPriceResult(big.NewInt(200000000000), time.Now()),
+					constants.SOLANA_USD:   types.NewPriceResult(big.NewInt(100000000000), time.Now()),
 				},
-				UnResolved: map[oracletypes.CurrencyPair]error{},
+				UnResolved: types.UnResolvedPrices{},
 			},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
@@ -260,12 +235,12 @@ func TestHandleMessage(t *testing.T) {
 				require.NoError(t, err)
 				return bz
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					btcusd: providertypes.NewResult[*big.Int](big.NewInt(4206900000000), time.Now()),
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					constants.BITCOIN_USD: types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
 				},
-				UnResolved: map[oracletypes.CurrencyPair]error{
-					solusd: fmt.Errorf("failed to parse price $42,069.00: invalid syntax"),
+				UnResolved: types.UnResolvedPrices{
+					constants.SOLANA_USD: fmt.Errorf("failed to parse price $42,069.00: invalid syntax"),
 				},
 			},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {
@@ -277,7 +252,10 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, providerCfg)
+			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, marketConfig, cryptodotcom.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -307,19 +285,21 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		msg         cryptodotcom.InstrumentRequestMessage
 		expectedErr bool
 	}{
 		{
 			name:        "no currency pairs",
-			cps:         []oracletypes.CurrencyPair{},
+			cps:         []mmtypes.Ticker{},
 			msg:         cryptodotcom.InstrumentRequestMessage{},
 			expectedErr: true,
 		},
 		{
 			name: "one currency pair",
-			cps:  []oracletypes.CurrencyPair{btcusd},
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
 				Params: cryptodotcom.InstrumentParams{
@@ -330,7 +310,11 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs",
-			cps:  []oracletypes.CurrencyPair{btcusd, ethusd, solusd},
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
+				constants.SOLANA_USD,
+			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
 				Params: cryptodotcom.InstrumentParams{
@@ -345,20 +329,26 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one found and one not found",
-			cps:  []oracletypes.CurrencyPair{btcusd, oracletypes.NewCurrencyPair("MOG", "USD")},
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				mogusd,
+			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
 				Params: cryptodotcom.InstrumentParams{
 					Channels: []string{"ticker.BTCUSD-PERP"},
 				},
 			},
-			expectedErr: false,
+			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, providerCfg)
+			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, marketConfig, cryptodotcom.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

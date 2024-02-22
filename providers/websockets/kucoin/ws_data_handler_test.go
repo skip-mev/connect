@@ -10,19 +10,23 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var logger = zap.NewExample()
+var (
+	logger = zap.NewExample()
+	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+)
 
 func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
 		msg         func() []byte
-		resp        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp        types.PriceResponse
 		updateMsg   func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
@@ -31,7 +35,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte("invalid")
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: true,
 		},
@@ -43,7 +47,7 @@ func TestHandleMessage(t *testing.T) {
 					"type": "welcome"
 				}`)
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: false,
 		},
@@ -55,7 +59,7 @@ func TestHandleMessage(t *testing.T) {
 					"type": "pong"
 				}`)
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: false,
 		},
@@ -67,7 +71,7 @@ func TestHandleMessage(t *testing.T) {
 					"type": "ack"
 				}`)
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: false,
 		},
@@ -79,7 +83,7 @@ func TestHandleMessage(t *testing.T) {
 					"type": "unknown"
 				}`)
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: true,
 		},
@@ -93,7 +97,7 @@ func TestHandleMessage(t *testing.T) {
 					"data": "invalid"
 				}`)
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: true,
 		},
@@ -111,9 +115,9 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					constants.BITCOIN_USDT: {
 						Value: big.NewInt(10000000),
 					},
 				},
@@ -137,9 +141,9 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				UnResolved: map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("err"),
+			resp: types.PriceResponse{
+				UnResolved: types.UnResolvedPrices{
+					constants.BITCOIN_USDT: fmt.Errorf("err"),
 				},
 			},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
@@ -161,9 +165,9 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				UnResolved: map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("received out of order ticker response message"),
+			resp: types.PriceResponse{
+				UnResolved: types.UnResolvedPrices{
+					constants.BITCOIN_USDT: fmt.Errorf("received out of order ticker response message"),
 				},
 			},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
@@ -184,7 +188,7 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp:        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:        types.PriceResponse{},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
 			expectedErr: true,
 		},
@@ -201,9 +205,9 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				UnResolved: map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"),
+			resp: types.PriceResponse{
+				UnResolved: types.UnResolvedPrices{
+					constants.BITCOIN_USDT: fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"),
 				},
 			},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
@@ -222,7 +226,7 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -241,7 +245,7 @@ func TestHandleMessage(t *testing.T) {
 					}
 				}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -249,7 +253,10 @@ func TestHandleMessage(t *testing.T) {
 		},
 	}
 
-	handler, err := kucoin.NewWebSocketDataHandler(logger, providerCfg)
+	marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultMarketConfig)
+	require.NoError(t, err)
+
+	handler, err := kucoin.NewWebSocketDataHandler(logger, marketConfig, kucoin.DefaultWebSocketConfig)
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -290,13 +297,13 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessages(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []oracletypes.CurrencyPair{},
+			cps:  []mmtypes.Ticker{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -304,8 +311,8 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kucoin.SubscribeRequestMessage{
@@ -328,9 +335,9 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kucoin.SubscribeRequestMessage{
@@ -354,36 +361,24 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs with one not found in market configs",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USDT,
+				constants.ETHEREUM_USDT,
+				mogusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
-				msg := kucoin.SubscribeRequestMessage{
-					Type: string(kucoin.SubscribeMessage),
-					Topic: fmt.Sprintf(
-						"%s%s,%s",
-						kucoin.TickerTopic,
-						"BTC-USDT",
-						"ETH-USDT",
-					),
-					PrivateChannel: false,
-					Response:       false,
-				}
-
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return []handlers.WebsocketEncodedMessage{bz}
+				return nil
 			},
-			expectedErr: false,
+			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kucoin.NewWebSocketDataHandler(logger, providerCfg)
+			marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			handler, err := kucoin.NewWebSocketDataHandler(logger, marketConfig, kucoin.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			actual, err := handler.CreateMessages(tc.cps)

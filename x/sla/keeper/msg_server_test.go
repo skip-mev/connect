@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
@@ -139,7 +139,7 @@ func (s *KeeperTestSuite) TestMsgRemoveSLAs() {
 	s.Run("removes a sla single sla with some feeds in state", func() {
 		cons1 := sdk.ConsAddress("cons1")
 		cons2 := sdk.ConsAddress("cons2")
-		cp1 := oracletypes.NewCurrencyPair("BTC", "USD")
+		cp1 := slinkytypes.NewCurrencyPair("BTC", "USD")
 
 		feed1, err := slatypes.NewPriceFeed(10, cons1, cp1, sla1.ID)
 		s.Require().NoError(err)

@@ -7,7 +7,7 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,22 +18,22 @@ type CurrencyPairStrategy struct {
 }
 
 // FromID provides a mock function with given fields: ctx, id
-func (_m *CurrencyPairStrategy) FromID(ctx types.Context, id uint64) (oracletypes.CurrencyPair, error) {
+func (_m *CurrencyPairStrategy) FromID(ctx types.Context, id uint64) (pkgtypes.CurrencyPair, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FromID")
 	}
 
-	var r0 oracletypes.CurrencyPair
+	var r0 pkgtypes.CurrencyPair
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, uint64) (oracletypes.CurrencyPair, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, uint64) (pkgtypes.CurrencyPair, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, uint64) oracletypes.CurrencyPair); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, uint64) pkgtypes.CurrencyPair); ok {
 		r0 = rf(ctx, id)
 	} else {
-		r0 = ret.Get(0).(oracletypes.CurrencyPair)
+		r0 = ret.Get(0).(pkgtypes.CurrencyPair)
 	}
 
 	if rf, ok := ret.Get(1).(func(types.Context, uint64) error); ok {
@@ -46,7 +46,7 @@ func (_m *CurrencyPairStrategy) FromID(ctx types.Context, id uint64) (oracletype
 }
 
 // GetDecodedPrice provides a mock function with given fields: ctx, cp, priceBytes
-func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp oracletypes.CurrencyPair, priceBytes []byte) (*big.Int, error) {
+func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp pkgtypes.CurrencyPair, priceBytes []byte) (*big.Int, error) {
 	ret := _m.Called(ctx, cp, priceBytes)
 
 	if len(ret) == 0 {
@@ -55,10 +55,10 @@ func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp oracletype
 
 	var r0 *big.Int
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, []byte) (*big.Int, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair, []byte) (*big.Int, error)); ok {
 		return rf(ctx, cp, priceBytes)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, []byte) *big.Int); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair, []byte) *big.Int); ok {
 		r0 = rf(ctx, cp, priceBytes)
 	} else {
 		if ret.Get(0) != nil {
@@ -66,7 +66,7 @@ func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp oracletype
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair, []byte) error); ok {
+	if rf, ok := ret.Get(1).(func(types.Context, pkgtypes.CurrencyPair, []byte) error); ok {
 		r1 = rf(ctx, cp, priceBytes)
 	} else {
 		r1 = ret.Error(1)
@@ -76,7 +76,7 @@ func (_m *CurrencyPairStrategy) GetDecodedPrice(ctx types.Context, cp oracletype
 }
 
 // GetEncodedPrice provides a mock function with given fields: ctx, cp, price
-func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp oracletypes.CurrencyPair, price *big.Int) ([]byte, error) {
+func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp pkgtypes.CurrencyPair, price *big.Int) ([]byte, error) {
 	ret := _m.Called(ctx, cp, price)
 
 	if len(ret) == 0 {
@@ -85,10 +85,10 @@ func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp oracletype
 
 	var r0 []byte
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, *big.Int) ([]byte, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair, *big.Int) ([]byte, error)); ok {
 		return rf(ctx, cp, price)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair, *big.Int) []byte); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair, *big.Int) []byte); ok {
 		r0 = rf(ctx, cp, price)
 	} else {
 		if ret.Get(0) != nil {
@@ -96,7 +96,7 @@ func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp oracletype
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair, *big.Int) error); ok {
+	if rf, ok := ret.Get(1).(func(types.Context, pkgtypes.CurrencyPair, *big.Int) error); ok {
 		r1 = rf(ctx, cp, price)
 	} else {
 		r1 = ret.Error(1)
@@ -106,7 +106,7 @@ func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp oracletype
 }
 
 // ID provides a mock function with given fields: ctx, cp
-func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp oracletypes.CurrencyPair) (uint64, error) {
+func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp pkgtypes.CurrencyPair) (uint64, error) {
 	ret := _m.Called(ctx, cp)
 
 	if len(ret) == 0 {
@@ -115,16 +115,16 @@ func (_m *CurrencyPairStrategy) ID(ctx types.Context, cp oracletypes.CurrencyPai
 
 	var r0 uint64
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) (uint64, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair) (uint64, error)); ok {
 		return rf(ctx, cp)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, oracletypes.CurrencyPair) uint64); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, pkgtypes.CurrencyPair) uint64); ok {
 		r0 = rf(ctx, cp)
 	} else {
 		r0 = ret.Get(0).(uint64)
 	}
 
-	if rf, ok := ret.Get(1).(func(types.Context, oracletypes.CurrencyPair) error); ok {
+	if rf, ok := ret.Get(1).(func(types.Context, pkgtypes.CurrencyPair) error); ok {
 		r1 = rf(ctx, cp)
 	} else {
 		r1 = ret.Error(1)

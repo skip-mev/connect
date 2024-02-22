@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -22,15 +23,15 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	// test that after CurrencyPairs are registered, all of them are returned from the query
 	s.Run("after CurrencyPairs are registered, all of them are returned from the query", func() {
 		// insert multiple currency Pairs
-		cp1 := types.CurrencyPair{
+		cp1 := slinkytypes.CurrencyPair{
 			Base:  "AA",
 			Quote: "BB",
 		}
-		cp2 := types.CurrencyPair{
+		cp2 := slinkytypes.CurrencyPair{
 			Base:  "CC",
 			Quote: "DD",
 		}
-		cp3 := types.CurrencyPair{
+		cp3 := slinkytypes.CurrencyPair{
 			Base:  "EE",
 			Quote: "FF",
 		}
@@ -38,13 +39,13 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 		// insert into module
 		ms := keeper.NewMsgServer(s.oracleKeeper)
 		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
-			CurrencyPairs: []types.CurrencyPair{cp1, cp2, cp3},
+			CurrencyPairs: []slinkytypes.CurrencyPair{cp1, cp2, cp3},
 			Authority:     sdk.AccAddress(moduleAuth).String(),
 		})
 		s.Require().Nil(err)
 
 		// manually insert a new CurrencyPair as well
-		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, types.CurrencyPair{
+		s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
 			Base:  "GG",
 			Quote: "HH",
 		}, types.QuotePrice{Price: sdkmath.NewInt(100)})
@@ -67,7 +68,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 	// set CPs on genesis for testing
 	cpg := []types.CurrencyPairGenesis{
 		{
-			CurrencyPair: types.CurrencyPair{
+			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "ETHEREUM",
 			},
@@ -78,7 +79,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			Id:    2,
 		},
 		{
-			CurrencyPair: types.CurrencyPair{
+			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "CC",
 				Quote: "BB",
 			},
@@ -140,7 +141,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &types.CurrencyPair{Base: "AA", Quote: "ETHEREUM"}},
+				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"}},
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,

@@ -13,8 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type MultiSigConclusionTestSuite struct {
@@ -141,7 +141,7 @@ func (s *MultiSigConclusionTestSuite) TestConclusion() {
 		High: high.String(),
 	}
 	s.Run("test ValidateBasic()", func() {
-		alert := types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("A", "B"))
+		alert := types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("A", "B"))
 
 		cases := []struct {
 			name       string
@@ -223,7 +223,7 @@ func (s *MultiSigConclusionTestSuite) TestConclusion() {
 	s.Run("test Verify()", func() {
 		params, err := types.NewMultiSigVerificationParams(s.pks)
 		s.Require().NoError(err)
-		alert := types.NewAlert(1, sdk.AccAddress("abc"), oracletypes.NewCurrencyPair("A", "B"))
+		alert := types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("A", "B"))
 
 		s.Run("invalid params - fail", func() {
 			msc := types.MultiSigConclusion{}

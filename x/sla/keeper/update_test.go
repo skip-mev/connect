@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	slakeeper "github.com/skip-mev/slinky/x/sla/keeper"
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
@@ -15,7 +15,7 @@ func (s *KeeperTestSuite) TestUpdatePriceFeeds() {
 
 	consAddress1 := sdk.ConsAddress("consAddress1")
 
-	cp := oracletypes.NewCurrencyPair("btc", "usd")
+	cp := slinkytypes.NewCurrencyPair("btc", "usd")
 
 	priceFeedUpdates := slakeeper.NewPriceFeedUpdates()
 	priceFeedUpdates.CurrencyPairs[cp] = struct{}{}
@@ -25,7 +25,7 @@ func (s *KeeperTestSuite) TestUpdatePriceFeeds() {
 
 	priceFeedUpdates.ValidatorUpdates[consAddress1.String()] = validatorUpdates
 
-	cps := make(map[oracletypes.CurrencyPair]struct{})
+	cps := make(map[slinkytypes.CurrencyPair]struct{})
 	cps[cp] = struct{}{}
 
 	s.Run("correctly updates price feeds with updates", func() {
@@ -144,8 +144,8 @@ func (s *KeeperTestSuite) TestUpdatePriceFeedsForSLA() {
 	consAddress1 := sdk.ConsAddress("consAddress1")
 	consAddress2 := sdk.ConsAddress("consAddress2")
 
-	cp1 := oracletypes.NewCurrencyPair("btc", "usd")
-	cp2 := oracletypes.NewCurrencyPair("eth", "usd")
+	cp1 := slinkytypes.NewCurrencyPair("btc", "usd")
+	cp2 := slinkytypes.NewCurrencyPair("eth", "usd")
 
 	s.Run("correctly updates price feeds with no updates", func() {
 		updates := slakeeper.NewPriceFeedUpdates()

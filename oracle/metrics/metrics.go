@@ -30,10 +30,10 @@ type Metrics interface {
 	AddTick()
 
 	// UpdatePrice price updates the price for the given pairID for the provider.
-	UpdatePrice(name, handlerType, pairID string, decimals int, price float64)
+	UpdatePrice(name, handlerType, pairID string, decimals uint64, price float64)
 
 	// UpdateAggregatePrice updates the aggregated price for the given pairID.
-	UpdateAggregatePrice(pairID string, decimals int, price float64)
+	UpdateAggregatePrice(pairID string, decimals uint64, price float64)
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
@@ -92,11 +92,11 @@ func (m *noOpOracleMetrics) AddTick() {
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
-func (m *noOpOracleMetrics) UpdatePrice(_, _, _ string, _ int, _ float64) {
+func (m *noOpOracleMetrics) UpdatePrice(_, _, _ string, _ uint64, _ float64) {
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
-func (m *noOpOracleMetrics) UpdateAggregatePrice(string, int, float64) {
+func (m *noOpOracleMetrics) UpdateAggregatePrice(string, uint64, float64) {
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
@@ -107,7 +107,7 @@ func (m *OracleMetricsImpl) AddTick() {
 // UpdatePrice price updates the price for the given pairID for the provider.
 func (m *OracleMetricsImpl) UpdatePrice(
 	providerName, handlerType, pairID string,
-	decimals int,
+	decimals uint64,
 	price float64,
 ) {
 	m.prices.With(prometheus.Labels{
@@ -122,7 +122,7 @@ func (m *OracleMetricsImpl) UpdatePrice(
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
 func (m *OracleMetricsImpl) UpdateAggregatePrice(
 	pairID string,
-	decimals int,
+	decimals uint64,
 	price float64,
 ) {
 	m.aggregatePrices.With(prometheus.Labels{

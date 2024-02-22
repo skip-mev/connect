@@ -12,7 +12,7 @@ func BenchmarkFloat64StringToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    string
-		base     int
+		base     uint64
 		expected *big.Int
 	}{
 		{
@@ -60,7 +60,7 @@ func BenchmarkFloat64ToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    float64
-		base     int
+		base     uint64
 		expected *big.Int
 	}{
 		{
@@ -108,7 +108,7 @@ func BenchmarkBigFloatToBigInt(b *testing.B) {
 	testCases := []struct {
 		name     string
 		input    *big.Float
-		base     int
+		base     uint64
 		expected *big.Int
 	}{
 		{

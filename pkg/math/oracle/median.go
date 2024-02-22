@@ -6,20 +6,25 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// MedianAggregator is an aggregator that calculates the median price for each currency pair,
-// resolved from the median prices of all price feeds.
+// MedianAggregator is an aggregator that calculates the median price for each ticker,
+// resolved from the median prices of all price feeds. Specifically, this aggregator
+// first resolves the median prices for all price feeds, and then calculates the median
+// price for each ticker using the conversion markets. If no conversion markets are provided
+// for a certain ticker, the final aggregated price will be the median of the prices calculated
+// from the raw price feeds.
 type MedianAggregator struct {
 	logger *zap.Logger
-	cfg    config.AggregateMarketConfig
+	cfg    mmtypes.MarketMap
 }
 
 // NewMedianAggregator returns a new Median aggregator.
-func NewMedianAggregator(logger *zap.Logger, cfg config.AggregateMarketConfig) (*MedianAggregator, error) {
+func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggregator, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -36,7 +41,9 @@ func NewMedianAggregator(logger *zap.Logger, cfg config.AggregateMarketConfig) (
 
 // AggregateFn returns the aggregate function for the median price calculation. Specifically, this
 // aggregation function first resolves the median prices for all price feeds, and then calculates
-// the median price for each currency pair using the conversion markets.
+// the median price for each ticker using the conversion markets. If no conversion markets are provided
+// for a certain ticker, the final aggregated price will be the median of the prices calculated from
+// the raw price feeds.
 //
 // For example, if the oracle receives price updates for
 //   - BTC/USDT
@@ -54,86 +61,116 @@ func NewMedianAggregator(logger *zap.Logger, cfg config.AggregateMarketConfig) (
 //
 // The final median price for BTC/USD will be the median of the prices calculated from the above
 // calculations.
-func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[oracletypes.CurrencyPair]*big.Int] {
-	return func(
-		feedsPerProvider aggregator.AggregatedProviderData[string, map[oracletypes.CurrencyPair]*big.Int],
-	) map[oracletypes.CurrencyPair]*big.Int {
+func (m *MedianAggregator) AggregateFn() types.PriceAggregationFn {
+	return func(feedsPerProvider types.AggregatedProviderPrices) types.TickerPrices {
 		// Calculate the median price for each price feed.
-		feedMedians := aggregator.ComputeMedian()(feedsPerProvider)
+		feedMedians := median.ComputeMedian()(feedsPerProvider)
 		m.logger.Info("calculated median prices for raw price feeds", zap.Int("num_prices", len(feedMedians)))
 
-		// Scale all of the medians to a common number of decimals. This does not lose precision.
-		scaledMedians := make(map[oracletypes.CurrencyPair]*big.Int)
-		for cp, price := range feedMedians {
-			scaledPrice, err := ScaleUpCurrencyPairPrice(int64(cp.Decimals()), price)
-			if err != nil {
-				m.logger.Error(
-					"failed to scale price",
-					zap.Error(err),
-					zap.String("currency_pair", cp.String()),
-					zap.Int("decimals", cp.Decimals()),
-					zap.String("price", price.String()),
-				)
-
-				continue
-			}
-
-			scaledMedians[cp] = scaledPrice
-		}
-
-		// Determine the final aggregated price for each currency pair.
-		aggregatedMedians := make(map[oracletypes.CurrencyPair]*big.Int)
-		for _, cfg := range m.cfg.AggregatedFeeds {
-			// Get the converted prices for set of convertable markets.
-			// ex. BTC/USDT * USDT/USD = BTC/USD
-			//     BTC/USDC * USDC/USD = BTC/USD
-			convertedPrices := m.CalculateConvertedPrices(cfg, scaledMedians)
-
-			// If there were no converted prices, log an error and continue.
-			cp := cfg.CurrencyPair
-			if len(convertedPrices) == 0 {
-				m.logger.Error("no converted prices", zap.String("currency_pair", cp.String()))
-				continue
-			}
-
-			// Take the median of the converted prices.
-			aggregatedMedians[cp] = aggregator.CalculateMedian(convertedPrices)
+		for ticker, price := range feedMedians {
 			m.logger.Info(
-				"calculated median price",
-				zap.String("currency_pair", cp.String()),
-				zap.String("price", aggregatedMedians[cp].String()),
-				zap.Any("converted_prices", convertedPrices),
+				"got median price",
+				zap.String("ticker", ticker.String()),
+				zap.String("price", price.String()),
 			)
 		}
 
-		// Scale all of the aggregated medians back to the original number of decimals.
-		for cp, price := range aggregatedMedians {
-			unscaledPrice, err := ScaleDownCurrencyPairPrice(int64(cp.Decimals()), price)
-			if err != nil {
-				m.logger.Error(
-					"failed to scale price",
-					zap.Error(err),
-					zap.String("currency_pair", cp.String()),
-					zap.Int("decimals", cp.Decimals()),
-					zap.String("price", price.String()),
-				)
+		// Calculate the converted prices for each ticker using the conversion markets.
+		aggregatedMedians := m.GetConvertedPrices(feedMedians)
+		m.logger.Info("calculated median prices for converted price feeds", zap.Int("num_prices", len(aggregatedMedians)))
 
-				continue
-			}
-
+		// Replace the median prices for each ticker with the aggregated median prices.
+		// This will overwrite the median prices for each ticker with the final aggregated median prices.
+		// This is necessary because the conversion markets may not be provided for all tickers.
+		for ticker, price := range aggregatedMedians {
 			m.logger.Info(
-				"calculated final scaled median price",
-				zap.String("currency_pair", cp.String()),
-				zap.String("price", unscaledPrice.String()),
+				"replacing median price",
+				zap.String("ticker", ticker.String()),
+				zap.String("price", price.String()),
 			)
-			aggregatedMedians[cp] = unscaledPrice
+
+			feedMedians[ticker] = price
 		}
 
-		return aggregatedMedians
+		return feedMedians
 	}
 }
 
-// CalculateConvertedPrices calculates the converted prices for each currency pair using the
+// GetConvertedPrices returns the converted prices for each ticker using the provided median
+// prices and the conversion markets.
+func (m *MedianAggregator) GetConvertedPrices(feedMedians types.TickerPrices) types.TickerPrices {
+	// Scale all of the medians to a common number of decimals. This does not lose precision.
+	scaledMedians := make(types.TickerPrices)
+	for ticker, price := range feedMedians {
+		scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
+		if err != nil {
+			m.logger.Error(
+				"failed to scale price",
+				zap.Error(err),
+				zap.String("ticker", ticker.String()),
+				zap.Uint64("decimals", ticker.Decimals),
+				zap.String("price", price.String()),
+			)
+
+			continue
+		}
+
+		scaledMedians[ticker] = scaledPrice
+	}
+
+	// Determine the final aggregated price for each ticker, specifically only for the tickers
+	// that have a set of conversion markets.
+	aggregatedMedians := make(types.TickerPrices)
+	for tickerStr, paths := range m.cfg.Paths {
+		ticker, ok := m.cfg.Tickers[tickerStr]
+		if !ok {
+			m.logger.Error(
+				"failed to get ticker",
+				zap.String("ticker", tickerStr),
+			)
+
+			continue
+		}
+
+		// Get the converted prices for set of convertable markets.
+		// ex. BTC/USDT * USDT/USD = BTC/USD
+		//     BTC/USDC * USDC/USD = BTC/USD
+		convertedPrices := m.CalculateConvertedPrices(ticker, paths, scaledMedians)
+
+		// If there were no converted prices, log an error and continue. In this case,
+		// the final aggregated price will be the median of the prices calculated from the raw
+		// price feeds - if any.
+		if len(convertedPrices) == 0 {
+			m.logger.Error("no converted prices", zap.String("ticker", ticker.String()))
+			continue
+		}
+
+		// Take the median of the converted prices.
+		aggregatedMedians[ticker] = median.CalculateMedian(convertedPrices)
+	}
+
+	// Scale all of the aggregated medians back to the original number of decimals.
+	for ticker, price := range aggregatedMedians {
+		unscaledPrice, err := ScaleDownCurrencyPairPrice(ticker.Decimals, price)
+		if err != nil {
+			m.logger.Error(
+				"failed to scale price",
+				zap.Error(err),
+				zap.String("ticker", ticker.String()),
+				zap.Uint64("decimals", ticker.Decimals),
+				zap.String("price", price.String()),
+			)
+
+			continue
+		}
+
+		aggregatedMedians[ticker] = unscaledPrice
+	}
+
+	return aggregatedMedians
+}
+
+// CalculateConvertedPrices calculates the converted prices for each ticker using the
 // provided median prices and the conversion markets.
 //
 // For example, if the oracle receives a price for BTC/USDT and USDT/USD, it can use the conversion
@@ -141,21 +178,21 @@ func (m *MedianAggregator) AggregateFn() aggregator.AggregateFn[string, map[orac
 // the median prices for BTC/USDT and USDT/USD, and the conversions would contain a sorted list of
 // operations to convert the price of BTC/USDT to BTC/USD i.e. BTC/USDT * USDT/USD = BTC/USD.
 func (m *MedianAggregator) CalculateConvertedPrices(
-	cfg config.AggregateFeedConfig,
-	medians map[oracletypes.CurrencyPair]*big.Int,
+	ticker mmtypes.Ticker,
+	paths mmtypes.Paths,
+	medians types.TickerPrices,
 ) []*big.Int {
 	convertedPrices := make([]*big.Int, 0)
-	cp := cfg.CurrencyPair
 
-	for _, conversion := range cfg.Conversions {
+	for _, path := range paths.Paths {
 		// Calculate the converted price.
-		convertedPrice, err := m.CalculateConvertedPrice(cp, conversion, medians)
+		convertedPrice, err := m.CalculateConvertedPrice(ticker, path, medians)
 		if err != nil {
-			m.logger.Error(
+			m.logger.Debug(
 				"failed to calculate converted price",
 				zap.Error(err),
-				zap.String("currency_pair", cp.String()),
-				zap.Any("conversions", conversion),
+				zap.String("ticker", ticker.String()),
+				zap.Any("conversions", path),
 			)
 
 			continue
@@ -167,33 +204,38 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 	return convertedPrices
 }
 
-// CalculateConvertedPrice converts a set of median prices to a target currency pair using a set of
+// CalculateConvertedPrice converts a set of median prices to a target ticker using a set of
 // conversion operations.
 func (m *MedianAggregator) CalculateConvertedPrice(
-	target oracletypes.CurrencyPair,
-	operations []config.Conversion,
-	medians map[oracletypes.CurrencyPair]*big.Int,
+	target mmtypes.Ticker,
+	path mmtypes.Path,
+	medians types.TickerPrices,
 ) (*big.Int, error) {
-	if len(operations) == 0 {
-		return nil, fmt.Errorf("no conversion operations")
+	if err := path.ValidateBasic(); err != nil {
+		return nil, err
 	}
 
 	// Ensure that the conversion is valid.
-	if err := config.CheckSort(target, operations); err != nil {
-		return nil, err
+	if !path.Match(target.String()) {
+		return nil, fmt.Errorf("path does not match target %s: %s", target.String(), path.String())
 	}
 
 	// Scalers for the number of decimals.
 	one := ScaledOne(ScaledDecimals)
 	zero := big.NewInt(0)
 
+	operations := path.Operations
+	if len(operations) == 0 {
+		return zero, fmt.Errorf("no operations in path")
+	}
+
 	first := operations[0]
 	cp := first.CurrencyPair
 
 	// Get the median price for the first feed.
-	price, ok := medians[cp]
-	if !ok {
-		return nil, fmt.Errorf("missing median price for feed %s", first.CurrencyPair.String())
+	price, err := m.getMedianPrice(cp, medians)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get median price for feed %s: %w", cp.String(), err)
 	}
 
 	if price.Cmp(zero) == 0 {
@@ -205,10 +247,10 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		price = InvertCurrencyPairPrice(price, ScaledDecimals)
 	}
 
-	m.logger.Info(
+	m.logger.Debug(
 		"got median price",
-		zap.String("target_currency_pair", target.String()),
-		zap.String("current_currency_pair", cp.String()),
+		zap.String("target_ticker", target.String()),
+		zap.String("current_ticker", cp.String()),
 		zap.String("tracking_price", price.String()),
 		zap.String("median_price", price.String()),
 	)
@@ -216,9 +258,9 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 	for _, feed := range operations[1:] {
 		// Get the median price for the feed.
 		cp := feed.CurrencyPair
-		median, ok := medians[cp]
-		if !ok {
-			return nil, fmt.Errorf("missing median price for feed %s", feed.CurrencyPair.String())
+		median, err := m.getMedianPrice(cp, medians)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get median price for feed %s: %w", cp.String(), err)
 		}
 
 		if median.Cmp(zero) == 0 {
@@ -234,20 +276,36 @@ func (m *MedianAggregator) CalculateConvertedPrice(
 		price = price.Mul(price, median)
 		price = price.Div(price, one)
 
-		m.logger.Info(
+		m.logger.Debug(
 			"got median price",
-			zap.String("target_currency_pair", target.String()),
-			zap.String("conversion_currency_pair", cp.String()),
+			zap.String("target_ticker", target.String()),
+			zap.String("conversion_ticker", cp.String()),
 			zap.String("tracking_price", price.String()),
 			zap.String("median_price", median.String()),
 		)
 	}
 
-	m.logger.Info(
+	m.logger.Debug(
 		"calculated converted price",
-		zap.String("target_currency_pair", target.String()),
+		zap.String("target_ticker", target.String()),
 		zap.String("price", price.String()),
 	)
+
+	return price, nil
+}
+
+// getMedianPrice returns the median price for a given ticker from the provided prices.
+func (m *MedianAggregator) getMedianPrice(cp slinkytypes.CurrencyPair, prices types.TickerPrices) (*big.Int, error) {
+	ticker, ok := m.cfg.Tickers[cp.String()]
+	if !ok {
+		return nil, fmt.Errorf("invalid ticker: %s", cp.String())
+	}
+
+	// Get the price for the ticker.
+	price, ok := prices[ticker]
+	if !ok {
+		return nil, fmt.Errorf("missing price for ticker %s", ticker.String())
+	}
 
 	return price, nil
 }

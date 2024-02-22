@@ -3,7 +3,6 @@ package oracle
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -13,9 +12,9 @@ import (
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/metrics"
+	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 var _ Oracle = (*OracleImpl)(nil)
@@ -26,7 +25,7 @@ var _ Oracle = (*OracleImpl)(nil)
 type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
-	GetPrices() map[oracletypes.CurrencyPair]*big.Int
+	GetPrices() types.TickerPrices
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -44,7 +43,7 @@ type OracleImpl struct { //nolint
 	// Each provider is responsible for fetching prices for a given set of
 	// currency pairs (base, quote). The oracle will fetch prices from each
 	// provider concurrently.
-	providers []providertypes.Provider[oracletypes.CurrencyPair, *big.Int]
+	providers []types.PriceProvider
 
 	// providerCh is the channel that the oracle will use to signal whether all of the
 	// providers are running or not.
@@ -59,7 +58,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *aggregator.DataAggregator[string, map[oracletypes.CurrencyPair]*big.Int]
+	priceAggregator *types.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
@@ -82,8 +81,8 @@ func New(opts ...Option) (*OracleImpl, error) {
 		closer:  ssync.NewCloser(),
 		logger:  zap.NewNop(),
 		metrics: metrics.NewNopMetrics(),
-		priceAggregator: aggregator.NewDataAggregator[string, map[oracletypes.CurrencyPair]*big.Int](
-			aggregator.WithAggregateFn(aggregator.ComputeMedian()),
+		priceAggregator: types.NewPriceAggregator(
+			aggregator.WithAggregateFn(median.ComputeMedian()),
 		),
 		updateInterval: 1 * time.Second,
 	}
@@ -182,23 +181,32 @@ func (o *OracleImpl) tick() {
 
 // fetchPrices retrieves the latest prices from a given provider and updates the aggregator
 // iff the price age is less than the update interval.
-func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.CurrencyPair, *big.Int]) {
+func (o *OracleImpl) fetchPrices(provider types.PriceProvider) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("provider panicked", zap.Error(fmt.Errorf("%v", r)))
 		}
 	}()
 
-	o.logger.Info("retrieving prices", zap.String("provider", provider.Name()), zap.String("data handler type", string(provider.Type())))
+	o.logger.Info(
+		"retrieving prices",
+		zap.String("provider", provider.Name()),
+		zap.String("data handler type",
+			string(provider.Type())),
+	)
 
 	// Fetch and set prices from the provider.
 	prices := provider.GetData()
 	if prices == nil {
-		o.logger.Info("provider returned nil prices", zap.String("provider", provider.Name()), zap.String("data handler type", string(provider.Type())))
+		o.logger.Info(
+			"provider returned nil prices",
+			zap.String("provider", provider.Name()),
+			zap.String("data handler type", string(provider.Type())),
+		)
 		return
 	}
 
-	timeFilteredPrices := make(map[oracletypes.CurrencyPair]*big.Int)
+	timeFilteredPrices := make(types.TickerPrices)
 	for pair, result := range prices {
 		floatValue, _ := result.Value.Float64() // we ignore the accuracy in this conversion
 
@@ -207,7 +215,7 @@ func (o *OracleImpl) fetchPrices(provider providertypes.Provider[oracletypes.Cur
 			provider.Name(),
 			string(provider.Type()),
 			strings.ToLower(pair.String()),
-			pair.Decimals(),
+			pair.Decimals,
 			floatValue,
 		)
 
@@ -260,7 +268,7 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *OracleImpl) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
+func (o *OracleImpl) GetPrices() types.TickerPrices {
 	prices := o.priceAggregator.GetAggregatedData()
 
 	// set metrics in background
@@ -270,7 +278,7 @@ func (o *OracleImpl) GetPrices() map[oracletypes.CurrencyPair]*big.Int {
 
 			o.metrics.UpdateAggregatePrice(
 				strings.ToLower(cp.String()),
-				cp.Decimals(),
+				cp.Decimals,
 				floatValue,
 			)
 		}
