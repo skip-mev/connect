@@ -86,7 +86,7 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 		return nil, fmt.Errorf("no ID found for CurrencyPair: %s", cp.String())
 	}
 
-	ticker, err := k.mmKeeper.GetTicker(ctx, cp.String())
+	ticker, err := q.k.mmKeeper.GetTicker(ctx, cp.String())
 	if err != nil {
 		return nil, fmt.Errorf("no ticker for CurrencyPair")
 	}

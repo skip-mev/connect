@@ -50,6 +50,9 @@ type Keeper struct {
 	storeService store.KVStoreService
 	cdc          codec.BinaryCodec
 
+	// expected keepers
+	mmKeeper types.MarketMapKeeper
+
 	// schema
 	nextCurrencyPairID collections.Sequence
 	currencyPairs      *collections.IndexedMap[string, types.CurrencyPairState, *oracleIndices]
@@ -66,6 +69,7 @@ type Keeper struct {
 func NewKeeper(
 	ss store.KVStoreService,
 	cdc codec.BinaryCodec,
+	mmKeeper types.MarketMapKeeper,
 	authority sdk.AccAddress,
 ) Keeper {
 	// create a new schema builder
@@ -82,6 +86,7 @@ func NewKeeper(
 		storeService:       ss,
 		cdc:                cdc,
 		authority:          authority,
+		mmKeeper:           mmKeeper,
 		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
 		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
 		idIndex:            idMulti,
