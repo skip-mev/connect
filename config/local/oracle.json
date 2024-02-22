@@ -1,5 +1,6 @@
 {
   "updateInterval": 1500000000,
+  "maxPriceAge": 90000000000,
   "providers": [
     {
       "name": "binance",

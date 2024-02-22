@@ -18,7 +18,7 @@ type OracleConfig struct {
 	// MaxPriceAge is the maximum age of a price that the oracle will consider valid. If a
 	// price is older than this, the oracle will not consider it valid and will not return it in /prices
 	// requests.
-	MaxPriceAge time.Duration `mapstructure:"max_price_age" toml:"max_price_age"`
+	MaxPriceAge time.Duration `"json:"maxPriceAge"`
 
 	// Providers is the list of providers that the oracle will fetch prices from.
 	Providers []ProviderConfig `json:"providers"`
