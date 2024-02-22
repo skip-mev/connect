@@ -76,7 +76,7 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 	return cosmosChain
 }
 
-// SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
+// SetOracleConfigsOnApp writes the oracle configuration to the given node's application config.
 func SetOracleConfigsOnApp(node *cosmos.ChainNode) {
 	oracle := GetOracleSideCar(node)
 
@@ -244,7 +244,7 @@ func GetChainGRPC(chain *cosmos.CosmosChain) (cc *grpc.ClientConn, close func(),
 	return cc, func() { cc.Close() }, nil
 }
 
-// QueryCurrencyPair queries the chain for the given CurrencyPair, this method returns the grpc response from the module
+// QueryCurrencyPairs queries the chain for the given CurrencyPair, this method returns the grpc response from the module
 func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyPairsResponse, error) {
 	// get grpc address
 	grpcAddr := chain.GetHostGRPCAddress()
