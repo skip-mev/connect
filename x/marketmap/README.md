@@ -10,11 +10,8 @@
         * [Version](#version)
 * [Events](#events)
 * [Hooks](#hooks)
-<<<<<<< HEAD
     * [AfterMarketCreated](#aftermarketcreated)
     * [AfterMarketUpdated](#aftermarketupdated)
-=======
->>>>>>> feat/marketmap
 * [Client](#client)
     * [CLI](#cli)
     * [gRPC](#grpc)
@@ -43,12 +40,7 @@ keeper authority address.
 
 The `x/marketmap` module contains the following parameters:
 
-| Key             | Type   | Example                                        |
-<<<<<<< HEAD
-|-----------------|--------|------------------------------------------------|
-=======
- |-----------------|--------|------------------------------------------------|
->>>>>>> feat/marketmap
+| Key               | Type     | Example                                          |
 | MarketAuthority | string | "cosmos1vq93x443c0fznuf6...q4jd28ke6r46p999s0" |
 | Version         | uint64 | 20                                             |
 
@@ -68,7 +60,6 @@ TODO BLO-921
 
 ## Hooks
 
-<<<<<<< HEAD
 Other modules can register routines to execute after a certain event has occurred in `x/marketmap`.
 The following hooks can be registered:
 
@@ -81,9 +72,7 @@ The following hooks can be registered:
 
 * `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
     * Called after a new market is updated in `UpdateMarket` message server.
-=======
 TODO BLO-866
->>>>>>> feat/marketmap
 
 ## Client
 
@@ -93,13 +82,6 @@ TODO BLO-920
 
 ### gRPC
 
-<<<<<<< HEAD
-TODO BLO-919
-
-### Rest
-
-TODO BLO-919
-=======
 A user can query the `marketmap` module using gRPC endpoints.
 
 #### MarketMap
@@ -206,4 +188,3 @@ Example response:
   }
 }
 ```
->>>>>>> feat/marketmap
