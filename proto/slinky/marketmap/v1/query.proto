@@ -16,7 +16,7 @@ service Query {
     option (google.api.http).get = "/slinky/marketmap/v1/marketmap";
   }
 
-  // GetLastUpdated last height the market map was updated at.
+  // LastUpdated returns the last height the market map was updated at.
   rpc LastUpdated(GetLastUpdatedRequest) returns (GetLastUpdatedResponse) {
     option (google.api.http).get = "/slinky/marketmap/v1/last_updated";
   }
