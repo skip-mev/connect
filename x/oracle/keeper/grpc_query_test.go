@@ -3,7 +3,6 @@ package keeper_test
 import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
@@ -19,7 +18,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	s.Run("an error is returned if no CurrencyPairs have been registered in the module", func() {
 		// execute query
 		_, err := qs.GetAllCurrencyPairs(s.ctx, nil)
-		assert.Nil(s.T(), err)
+		s.Require().Nil(s.T(), err)
 	})
 
 	// test that after CurrencyPairs are registered, all of them are returned from the query
