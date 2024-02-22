@@ -125,6 +125,9 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	wg.SetLimit(cap(responseCh))
 	h.logger.Debug("setting concurrency limit", zap.Int("limit", cap(responseCh)))
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
 	// we need to make a request for each ID.
 	var tasks []func() error
