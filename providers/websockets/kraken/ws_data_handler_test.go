@@ -2,47 +2,29 @@ package kraken_test
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
 	logger = zap.NewExample()
-
-	cfg = config.ProviderConfig{
-		Name:      kraken.Name,
-		WebSocket: kraken.DefaultWebSocketConfig,
-		Market: config.MarketConfig{
-			Name: kraken.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
-					Ticker:       "XBT/USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-				"ETHEREUM/USD": {
-					Ticker:       "ETH/USD",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				},
-			},
-		},
-	}
+	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
 )
 
 func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
 		msg         func() []byte
-		resp        providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp        types.PriceResponse
 		updateMsg   func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
@@ -51,13 +33,13 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`[340,{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"c":["42694.60000","0.00455773"],"v":["2068.49653432","2075.61202911"],"p":["42596.41907","42598.31137"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"ticker","XBT/USD"]`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					constants.BITCOIN_USD: {
 						Value: big.NewInt(4259641907000),
 					},
 				},
-				UnResolved: map[oracletypes.CurrencyPair]error{},
+				UnResolved: types.UnResolvedPrices{},
 			},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
@@ -69,7 +51,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`[340,{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"c":["42694.60000","0.00455773"],"v":["2068.49653432","2075.61202911"],"p":["42596.41907","42598.31137"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"ticker"]`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -80,7 +62,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`[340,{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"c":["42694.60000","0.00455773"],"v":["2068.49653432","2075.61202911"],"p":["42596.41907","42598.31137"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"book", "XBT/USD"]`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -91,7 +73,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`[340,{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"c":["42694.60000","0.00455773"],"v":["2068.49653432","2075.61202911"],"p":["42596.41907","42598.31137"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"ticker","MOG/USD"]`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -102,7 +84,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`[340,{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"v":["2068.49653432","2075.61202911"],"p":["42596.41907"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"ticker","XBT/USD"]`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -113,7 +95,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`[340,{"a":["42694.60000",31,"31.27308189"],"b":["42694.50000",1,"1.01355072"],"v":["2068.49653432","2075.61202911"],"p":["$42,596.41907","42598.31137"],"t":[21771,22049],"l":["42190.20000","42190.20000"],"h":["43165.00000","43165.00000"],"o":["43134.70000","43159.20000"]},"ticker","XBT/USD"]`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -124,7 +106,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"connectionID": 1234, "event": "systemStatus", "status": "online", "version": "1.0.0"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -135,7 +117,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"connectionID": 1234, "event": "systemStatus", "status": "offline", "version": "1.0.0"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -146,7 +128,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"connectionID": 1234, "event": "heartbeat"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -157,7 +139,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"channelID": 1234, "event": "subscriptionStatus", "pair": "XBT/USD", "status": "subscribed", "subscription": {"name": "ticker"}, "channelName": "ticker"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -168,7 +150,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"errorMessage": "Subscription depth not supported", "event": "subscriptionStatus", "pair": "XBT/USD", "status": "error", "subscription": {"name": "ticker"}, "channelName": "ticker"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
 					Event: string(kraken.SubscribeEvent),
@@ -190,7 +172,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"channelID": 1234, "event": "subscriptionStatus", "pair": "XBT/USD", "status": "unknown", "subscription": {"name": "ticker"}, "channelName": "ticker"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -201,7 +183,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event": "unknown"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -211,7 +193,10 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kraken.NewWebSocketDataHandler(logger, cfg)
+			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			handler, err := kraken.NewWebSocketDataHandler(logger, marketConfig, kraken.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := handler.HandleMessage(tc.msg())
@@ -244,13 +229,13 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []oracletypes.CurrencyPair{},
+			cps:  []mmtypes.Ticker{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -258,8 +243,8 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "single currency pair",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -279,9 +264,9 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -301,9 +286,9 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one known and one unknown currency pair",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				mogusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -319,13 +304,16 @@ func TestCreateMessage(t *testing.T) {
 
 				return []handlers.WebsocketEncodedMessage{bz}
 			},
-			expectedErr: false,
+			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := kraken.NewWebSocketDataHandler(logger, cfg)
+			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			handler, err := kraken.NewWebSocketDataHandler(logger, marketConfig, kraken.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			actual, err := handler.CreateMessages(tc.cps)
@@ -388,7 +376,6 @@ func TestDecodeTickerResponseMessage(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual, err := kraken.DecodeTickerResponseMessage([]byte(tc.response))
-			fmt.Println(actual, err)
 			if tc.expErr {
 				require.Error(t, err)
 				return

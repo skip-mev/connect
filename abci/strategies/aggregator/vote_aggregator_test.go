@@ -18,19 +18,19 @@ import (
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted/mocks"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 var (
-	btcUSD = oracletypes.CurrencyPair{
+	btcUSD = slinkytypes.CurrencyPair{
 		Base:  "BTC",
 		Quote: "USD",
 	}
-	ethUSD = oracletypes.CurrencyPair{
+	ethUSD = slinkytypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "USD",
 	}
-	ethBTC = oracletypes.CurrencyPair{
+	ethBTC = slinkytypes.CurrencyPair{
 		Base:  "ETH",
 		Quote: "BTC",
 	}

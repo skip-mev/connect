@@ -1,3 +1,3 @@
-//go:generate go run ./local/generate_toml.go --oracle-config-path ./local/oracle.toml
+//go:generate go run ./local/generate.go --oracle-config-path ./local/oracle.json --market-config-path ./local/market.json
 
 package config

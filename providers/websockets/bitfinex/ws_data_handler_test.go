@@ -8,35 +8,17 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	providerCfg = config.ProviderConfig{
-		Name:      bitfinex.Name,
-		WebSocket: bitfinex.DefaultWebSocketConfig,
-		Market: config.MarketConfig{
-			Name: bitfinex.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USDT": {
-					Ticker:       "BTCUSDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				},
-				"ETHEREUM/USDT": {
-					Ticker:       "ETHUSDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
-				},
-			},
-		},
-	}
-
+	mogusd     = mmtypes.NewTicker("MOG", "USD", 8, 1)
 	channelBTC = 111
-
-	logger = zap.NewExample()
+	logger     = zap.NewExample()
 )
 
 func rawStringToBz(raw string) []byte {
@@ -48,7 +30,7 @@ func TestHandlerMessage(t *testing.T) {
 		name          string
 		preRun        func() []byte
 		msg           func() []byte
-		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp          types.PriceResponse
 		updateMessage func() []handlers.WebsocketEncodedMessage
 		expErr        bool
 	}{
@@ -58,7 +40,7 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte("invalid message")
 			},
-			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+			resp:          types.NewPriceResponse(nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -75,7 +57,7 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp:          providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](nil, nil),
+			resp:          types.NewPriceResponse(nil, nil),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -86,7 +68,7 @@ func TestHandlerMessage(t *testing.T) {
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribed)},
 					Channel:     string(bitfinex.ChannelTicker),
 					ChannelID:   channelBTC,
-					Pair:        "BTCUSDT",
+					Pair:        "BTCUSD",
 				}
 
 				bz, err := json.Marshal(msg)
@@ -97,13 +79,13 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return rawStringToBz(`[111,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USDT"): {
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{
+					constants.BITCOIN_USD: {
 						Value: big.NewInt(100000000),
 					},
 				},
-				map[oracletypes.CurrencyPair]error{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -114,9 +96,9 @@ func TestHandlerMessage(t *testing.T) {
 			msg: func() []byte {
 				return rawStringToBz(`[0,[14957,68.17328796,14958,55.29588132,-659,-0.0422,1.0,53723.08813995,16494,14454]]`)
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
@@ -129,7 +111,7 @@ func TestHandlerMessage(t *testing.T) {
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribed)},
 					Channel:     string(bitfinex.ChannelTicker),
 					ChannelID:   channelBTC,
-					Pair:        "BTCUSDT",
+					Pair:        "BTCUSD",
 				}
 
 				bz, err := json.Marshal(msg)
@@ -137,9 +119,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
@@ -159,9 +141,9 @@ func TestHandlerMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: providertypes.NewGetResponse[oracletypes.CurrencyPair, *big.Int](
-				map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{},
-				map[oracletypes.CurrencyPair]error{},
+			resp: types.NewPriceResponse(
+				types.ResolvedPrices{},
+				types.UnResolvedPrices{},
 			),
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
@@ -170,7 +152,10 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := bitfinex.NewWebSocketDataHandler(logger, providerCfg)
+			marketConfig, err := types.NewProviderMarketMap(bitfinex.Name, bitfinex.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := bitfinex.NewWebSocketDataHandler(logger, marketConfig, bitfinex.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			if tc.preRun() != nil {
@@ -205,13 +190,13 @@ func TestHandlerMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []oracletypes.CurrencyPair{},
+			cps:  []mmtypes.Ticker{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -219,14 +204,14 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := bitfinex.SubscribeMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribe)},
 					Channel:     string(bitfinex.ChannelTicker),
-					Symbol:      "BTCUSDT",
+					Symbol:      "BTCUSD",
 				}
 
 				bz, err := json.Marshal(msg)
@@ -238,15 +223,15 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "two currency pairs",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := bitfinex.SubscribeMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribe)},
 					Channel:     string(bitfinex.ChannelTicker),
-					Symbol:      "BTCUSDT",
+					Symbol:      "BTCUSD",
 				}
 				bz1, err := json.Marshal(msg)
 				require.NoError(t, err)
@@ -254,7 +239,7 @@ func TestCreateMessage(t *testing.T) {
 				msg = bitfinex.SubscribeMessage{
 					BaseMessage: bitfinex.BaseMessage{Event: string(bitfinex.EventSubscribe)},
 					Channel:     string(bitfinex.ChannelTicker),
-					Symbol:      "ETHUSDT",
+					Symbol:      "ETHUSD",
 				}
 				bz2, err := json.Marshal(msg)
 				require.NoError(t, err)
@@ -265,8 +250,8 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair not in config",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USDT"),
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
@@ -277,10 +262,13 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := bitfinex.NewWebSocketDataHandler(logger, providerCfg)
+			marketConfig, err := types.NewProviderMarketMap(bitfinex.Name, bitfinex.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := bitfinex.NewWebSocketDataHandler(logger, marketConfig, bitfinex.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return

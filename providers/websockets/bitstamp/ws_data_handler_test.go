@@ -8,20 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	cfg = config.ProviderConfig{
-		Name:      bitstamp.Name,
-		WebSocket: bitstamp.DefaultWebSocketConfig,
-		Market:    bitstamp.DefaultMarketConfig,
-	}
-
+	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
 	logger = zap.NewExample()
 )
 
@@ -29,7 +24,7 @@ func TestHandleMessage(t *testing.T) {
 	testCases := []struct {
 		name          string
 		msg           func() []byte
-		resp          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp          types.PriceResponse
 		updateMessage func() []handlers.WebsocketEncodedMessage
 		expErr        bool
 	}{
@@ -38,7 +33,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"unknown"}`)
 			},
-			resp:          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:          types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        true,
 		},
@@ -47,7 +42,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"bts:heartbeat"}`)
 			},
-			resp:          providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp:          types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
 			expErr:        false,
 		},
@@ -56,7 +51,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"bts:request_reconnect"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{
 					[]byte(`{"event":"bts:request_reconnect"}`),
@@ -69,7 +64,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"bts:subscription_succeeded","channel":"live_trades_btcusd"}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -80,9 +75,9 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"trade","channel":"live_trades_btcusd","data":{"microtimestamp":"1612185600000000","amount":"0.00000001","buy_order_id":0,"sell_order_id":0,"amount_str":"0.00000001","price_str":"100000.00","timestamp":"1612185600","price":"100000.00","type":1,"id":123456789}}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				Resolved: map[oracletypes.CurrencyPair]providertypes.Result[*big.Int]{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): {
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					constants.BITCOIN_USD: {
 						Value: big.NewInt(10000000000000),
 					},
 				},
@@ -97,7 +92,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"trade","channel":"futures_ethusd","data":{"microtimestamp":"1612185600000000","amount":"0.00000001","buy_order_id":0,"sell_order_id":0,"amount_str":"0.00000001","price_str":"100000.00","timestamp":"1612185600","price":"100000.00","type":1,"id":123456789}}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -108,7 +103,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"trade","channel":"live_trades_","data":{"microtimestamp":"1612185600000000","amount":"0.00000001","buy_order_id":0,"sell_order_id":0,"amount_str":"0.00000001","price_str":"100000.00","timestamp":"1612185600","price":"100000.00","type":1,"id":123456789}}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -119,7 +114,7 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"trade","channel":"live_trades_mogusd","data":{"microtimestamp":"1612185600000000","amount":"0.00000001","buy_order_id":0,"sell_order_id":0,"amount_str":"0.00000001","price_str":"100000.00","timestamp":"1612185600","price":"100000.00","type":1,"id":123456789}}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{},
+			resp: types.PriceResponse{},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -130,9 +125,9 @@ func TestHandleMessage(t *testing.T) {
 			msg: func() []byte {
 				return []byte(`{"event":"trade","channel":"live_trades_btcusd","data":{"microtimestamp":"1612185600000000","amount":"0.00000001","buy_order_id":0,"sell_order_id":0,"amount_str":"0.00000001","price_str":"bad","timestamp":"1612185600","price":"bad","type":1,"id":123456789}}`)
 			},
-			resp: providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]{
-				UnResolved: map[oracletypes.CurrencyPair]error{
-					oracletypes.NewCurrencyPair("BITCOIN", "USD"): fmt.Errorf("error"),
+			resp: types.PriceResponse{
+				UnResolved: types.UnResolvedPrices{
+					constants.BITCOIN_USD: fmt.Errorf("error"),
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -144,11 +139,13 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, cfg)
+			marketConfig, err := types.NewProviderMarketMap(bitstamp.Name, bitstamp.DefaultMarketConfig)
+			require.NoError(t, err)
+
+			wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, marketConfig, bitstamp.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
-			fmt.Println(err)
 			if tc.expErr {
 				require.Error(t, err)
 
@@ -181,13 +178,13 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessages(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []oracletypes.CurrencyPair
+		cps         []mmtypes.Ticker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []oracletypes.CurrencyPair{},
+			cps:  []mmtypes.Ticker{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -195,7 +192,9 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps:  []oracletypes.CurrencyPair{oracletypes.NewCurrencyPair("BITCOIN", "USD")},
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{
 					[]byte(`{"event":"bts:subscribe","data":{"channel":"live_trades_btcusd"}}`),
@@ -205,9 +204,9 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "two currency pairs",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
+			cps: []mmtypes.Ticker{
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{
@@ -219,8 +218,8 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "unsupported currency pair",
-			cps: []oracletypes.CurrencyPair{
-				oracletypes.NewCurrencyPair("MOG", "USD"),
+			cps: []mmtypes.Ticker{
+				mogusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
@@ -231,10 +230,13 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := bitstamp.NewWebSocketDataHandler(logger, cfg)
+			marketConfig, err := types.NewProviderMarketMap(bitstamp.Name, bitstamp.DefaultMarketConfig)
 			require.NoError(t, err)
 
-			msgs, err := handler.CreateMessages(tc.cps)
+			wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, marketConfig, bitstamp.DefaultWebSocketConfig)
+			require.NoError(t, err)
+
+			msgs, err := wsHandler.CreateMessages(tc.cps)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
@@ -246,10 +248,13 @@ func TestCreateMessages(t *testing.T) {
 }
 
 func TestHeartBeat(t *testing.T) {
-	handler, err := bitstamp.NewWebSocketDataHandler(logger, cfg)
+	marketConfig, err := types.NewProviderMarketMap(bitstamp.Name, bitstamp.DefaultMarketConfig)
 	require.NoError(t, err)
 
-	msgs, err := handler.HeartBeatMessages()
+	wsHandler, err := bitstamp.NewWebSocketDataHandler(logger, marketConfig, bitstamp.DefaultWebSocketConfig)
+	require.NoError(t, err)
+
+	msgs, err := wsHandler.HeartBeatMessages()
 	require.NoError(t, err)
 
 	msg := handlers.WebsocketEncodedMessage([]byte(`{"event":"bts:heartbeat"}`))

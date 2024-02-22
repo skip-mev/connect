@@ -3,47 +3,58 @@ package bitstamp
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int] = (*WebSocketDataHandler)(nil)
+var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 
-// WebSocketDataHandler implements the WebSocketDataHandler interface. This is used to
-// handle messages received from the Coinbase websocket API.
-type WebSocketDataHandler struct {
+// WebSocketHandler implements the WebSocketDataHandler interface. This is used to
+// handle messages received from the Bitstamp websocket API.
+type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// config is the config for the Coinbase websocket API.
-	cfg config.ProviderConfig
+	// market is the config for the Bitstamp API.
+	market types.ProviderMarketMap
+	// ws is the config for the Bitstamp websocket.
+	ws config.WebSocketConfig
 }
 
-// NewWebSocketDataHandler returns a new WebSocketDataHandler implementation for Bitstamp.
+// NewWebSocketDataHandler returns a new Bitstamp PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	cfg config.ProviderConfig,
-) (handlers.WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int], error) {
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid provider config %w", err)
+	market types.ProviderMarketMap,
+	ws config.WebSocketConfig,
+) (types.PriceWebSocketDataHandler, error) {
+	if err := market.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	if !cfg.WebSocket.Enabled {
-		return nil, fmt.Errorf("websocket is not enabled for provider %s", cfg.Name)
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	if cfg.Name != Name {
-		return nil, fmt.Errorf("invalid provider name %s", cfg.Name)
+	if ws.Name != Name {
+		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, ws.Name)
 	}
 
-	return &WebSocketDataHandler{
-		cfg:    cfg,
-		logger: logger.With(zap.String("web_socket_data_handler", Name)),
+	if !ws.Enabled {
+		return nil, fmt.Errorf("websocket config for %s is not enabled", Name)
+	}
+
+	if err := ws.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid websocket config for %s: %w", Name, err)
+	}
+
+	return &WebSocketHandler{
+		logger: logger,
+		market: market,
+		ws:     ws,
 	}, nil
 }
 
@@ -60,11 +71,11 @@ func NewWebSocketDataHandler(
 //  4. TradeEvent: This is a trade event. This event is sent from the server to the
 //     client letting the client know that a trade has occurred. This event contains
 //     the price information for the trade.
-func (h *WebSocketDataHandler) HandleMessage(
+func (h *WebSocketHandler) HandleMessage(
 	message []byte,
-) (providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int], []handlers.WebsocketEncodedMessage, error) {
+) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp providertypes.GetResponse[oracletypes.CurrencyPair, *big.Int]
+		resp types.PriceResponse
 		msg  BaseMessage
 	)
 
@@ -91,7 +102,7 @@ func (h *WebSocketDataHandler) HandleMessage(
 		h.logger.Debug("successfully subscribed to channel", zap.String("channel", subscriptionMsg.Channel))
 		return resp, nil, nil
 	case TradeEvent:
-		h.logger.Debug("received trade event")
+		h.logger.Debug("received ticker event")
 
 		var tickerMsg TickerResponseMessage
 		if err := json.Unmarshal(message, &tickerMsg); err != nil {
@@ -102,26 +113,24 @@ func (h *WebSocketDataHandler) HandleMessage(
 		resp, err := h.parseTickerMessage(tickerMsg)
 		return resp, nil, err
 	default:
-		h.logger.Debug("received unknown event", zap.String("event", string(event)))
 		return resp, nil, fmt.Errorf("unknown event type %s", event)
 	}
 }
 
 // CreateMessages creates the messages to send to the Bitstamp websocket API. The
-// messages are used to subscribe to the live trades channel for the specified currency
-// pairs.
-func (h *WebSocketDataHandler) CreateMessages(
-	cps []oracletypes.CurrencyPair,
+// messages are used to subscribe to the live trades channel for the specified tickers.
+func (h *WebSocketHandler) CreateMessages(
+	tickers []mmtypes.Ticker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
-	for _, cp := range cps {
-		market, ok := h.cfg.Market.CurrencyPairToMarketConfigs[cp.String()]
+	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
-			return nil, fmt.Errorf("currency pair not found in market configs %s", cp.String())
+			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
 		}
 
-		instruments = append(instruments, fmt.Sprintf("%s%s", TickerChannel, market.Ticker))
+		instruments = append(instruments, fmt.Sprintf("%s%s", TickerChannel, market.OffChainTicker))
 	}
 
 	return NewSubscriptionRequestMessages(instruments)
@@ -129,6 +138,6 @@ func (h *WebSocketDataHandler) CreateMessages(
 
 // HeartBeatMessages is used to create the heartbeat messages to send to the Bitstamp
 // websocket API.
-func (h *WebSocketDataHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
+func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return NewHeartbeatRequestMessage()
 }

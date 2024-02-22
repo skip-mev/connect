@@ -7,16 +7,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"cosmossdk.io/log"
-	dbm "github.com/cosmos/cosmos-db"
-	"go.uber.org/zap"
-
 	"cosmossdk.io/depinject"
+	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
 	circuitkeeper "cosmossdk.io/x/circuit/keeper"
 	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
-
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -61,6 +58,7 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"go.uber.org/zap"
 
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/proposals"
@@ -76,6 +74,8 @@ import (
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
 	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
+	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
+	marketmapmodule "github.com/skip-mev/slinky/x/marketmap/module"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )
@@ -116,6 +116,7 @@ var (
 		oracle.AppModuleBasic{},
 		incentives.AppModuleBasic{},
 		alerts.AppModuleBasic{},
+		marketmapmodule.AppModuleBasic{},
 	)
 )
 
@@ -152,6 +153,7 @@ type SimApp struct {
 	OracleKeeper          oraclekeeper.Keeper
 	IncentivesKeeper      incentiveskeeper.Keeper
 	AlertsKeeper          alertskeeper.Keeper
+	MarketMapKeeper       marketmapkeeper.Keeper
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -198,12 +200,12 @@ func NewSimApp(
 				// AUTH
 				//
 				// For providing a custom function required in auth to generate custom account types
-				// add it below. By default the auth module uses simulation.RandomGenesisAccounts.
+				// add it below. By default, the auth module uses simulation.RandomGenesisAccounts.
 				//
 				// authtypes.RandomGenesisAccountsFn(simulation.RandomGenesisAccounts),
 
 				// For providing a custom a base account type add it below.
-				// By default the auth module uses authtypes.ProtoBaseAccount().
+				// By default, the auth module uses authtypes.ProtoBaseAccount().
 				//
 				// func() sdk.AccountI { return authtypes.ProtoBaseAccount() },
 
@@ -241,6 +243,7 @@ func NewSimApp(
 		&app.OracleKeeper,
 		&app.IncentivesKeeper,
 		&app.AlertsKeeper,
+		&app.MarketMapKeeper,
 	); err != nil {
 		panic(err)
 	}

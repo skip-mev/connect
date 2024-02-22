@@ -15,31 +15,9 @@ import (
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
-var (
-	providerCfg = config.ProviderConfig{
-		Name:      kucoin.Name,
-		API:       kucoin.DefaultAPIConfig,
-		WebSocket: kucoin.DefaultWebSocketConfig,
-		Market: config.MarketConfig{
-			Name: kucoin.Name,
-			CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-				"BITCOIN/USD": {
-					Ticker:       "BTC-USDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USD"),
-				},
-				"ETHEREUM/USD": {
-					Ticker:       "ETH-USDT",
-					CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USD"),
-				},
-			},
-		},
-	}
-
-	postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)
-)
+var postURL = fmt.Sprintf("%s%s", kucoin.URL, kucoin.BulletPublicEndpoint)
 
 func TestPreDialHook(t *testing.T) {
 	testCases := []struct {
@@ -182,10 +160,10 @@ func TestPreDialHook(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			connHandler, err := wshandlers.NewWebSocketHandlerImpl(providerCfg.WebSocket)
+			connHandler, err := wshandlers.NewWebSocketHandlerImpl(kucoin.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
-			hook := kucoin.PreDialHook(providerCfg.API, tc.requestHandler())
+			hook := kucoin.PreDialHook(kucoin.DefaultAPIConfig, tc.requestHandler())
 			err = hook(connHandler)
 			if tc.expectErr {
 				require.Error(t, err)

@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -34,49 +35,46 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Gate.io.
-	DefaultMarketConfig = config.MarketConfig{
-		Name: Name,
-		CurrencyPairToMarketConfigs: map[string]config.CurrencyPairMarketConfig{
-			"ATOM/USDT": {
-				Ticker:       "ATOM_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ATOM", "USDT"),
-			},
-			"AVAX/USDT": {
-				Ticker:       "AVAX_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("AVAX", "USDT"),
-			},
-			"BITCOIN/USDT": {
-				Ticker:       "BTC_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("BITCOIN", "USDT"),
-			},
-			"CELESTIA/USDT": {
-				Ticker:       "TIA_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("CELESTIA", "USDT"),
-			},
-			"DYDX/USDT": {
-				Ticker:       "DYDX_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("DYDX", "USDT"),
-			},
-			"ETHEREUM/BITCOIN": {
-				Ticker:       "ETH_BTC",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "BITCOIN"),
-			},
-			"ETHEREUM/USDT": {
-				Ticker:       "ETH_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("ETHEREUM", "USDT"),
-			},
-			"SOLANA/USDC": {
-				Ticker:       "SOL_USDC",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDC"),
-			},
-			"SOLANA/USDT": {
-				Ticker:       "SOL_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("SOLANA", "USDT"),
-			},
-			"USDC/USDT": {
-				Ticker:       "USDC_USDT",
-				CurrencyPair: oracletypes.NewCurrencyPair("USDC", "USDT"),
-			},
+	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ATOM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ATOM_USDT",
+		},
+		constants.AVAX_USDT: {
+			Name:           Name,
+			OffChainTicker: "AVAX_USDT",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTC_USDT",
+		},
+		constants.CELESTIA_USDT: {
+			Name:           Name,
+			OffChainTicker: "TIA_USDT",
+		},
+		constants.DYDX_USDT: {
+			Name:           Name,
+			OffChainTicker: "DYDX_USDT",
+		},
+		constants.ETHEREUM_BITCOIN: {
+			Name:           Name,
+			OffChainTicker: "ETH_BTC",
+		},
+		constants.ETHEREUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETH_USDT",
+		},
+		constants.SOLANA_USDC: {
+			Name:           Name,
+			OffChainTicker: "SOL_USDC",
+		},
+		constants.SOLANA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SOL_USDT",
+		},
+		constants.USDC_USDT: {
+			Name:           Name,
+			OffChainTicker: "USDC_USDT",
 		},
 	}
 )

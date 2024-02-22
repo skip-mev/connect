@@ -1,4 +1,3 @@
-
 # this script is for generating protobuf files for the new google.golang.org/protobuf API
 
 set -eo pipefail
@@ -17,7 +16,22 @@ echo "Generating API module"
 (cd proto; buf generate --template buf.gen.pulsar.yaml)
 
 echo "fixing alerts.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/alerts/v1/alerts.pulsar.go && rm ./api/slinky/alerts/v1/alerts.pulsar.go.bak
 sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/alerts/v1/alerts.pulsar.go && rm ./api/slinky/alerts/v1/alerts.pulsar.go.bak
 
 echo "fixing sla.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/sla/v1/genesis.pulsar.go && rm ./api/slinky/sla/v1/genesis.pulsar.go.bak
 sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/sla/v1/genesis.pulsar.go && rm ./api/slinky/sla/v1/genesis.pulsar.go.bak
+
+echo "fixing types.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/types/v1/currency_pair.pulsar.go && rm ./api/slinky/types/v1/currency_pair.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/types/v1/currency_pair.pulsar.go && rm ./api/slinky/types/v1/currency_pair.pulsar.go.bak
+
+echo "fixing oracle.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/oracle/v1/query.pulsar.go && rm ./api/slinky/oracle/v1/query.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/oracle/v1/tx.pulsar.go && rm ./api/slinky/oracle/v1/tx.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/oracle/v1/genesis.pulsar.go && rm ./api/slinky/oracle/v1/genesis.pulsar.go.bak
+
+echo "fixing market.pulsar.go"
+sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/marketmap/v1/market.pulsar.go && rm ./api/slinky/marketmap/v1/market.pulsar.go.bak
+sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/marketmap/v1/market.pulsar.go && rm ./api/slinky/marketmap/v1/market.pulsar.go.bak

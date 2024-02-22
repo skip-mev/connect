@@ -14,8 +14,10 @@ import (
 	"github.com/skip-mev/petri/provider/v2/docker"
 	"github.com/skip-mev/petri/types/v2"
 
-	"github.com/skip-mev/slinky/tests/simapp"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
+	"github.com/skip-mev/slinky/tests/simapp"
 )
 
 func GetChainConfig() types.ChainConfig {
@@ -128,7 +130,7 @@ func GetGenesisModifier() types.GenesisModifier {
 			Key: "app_state.oracle.currency_pair_genesis",
 			Value: []oracletypes.CurrencyPairGenesis{
 				{
-					CurrencyPair: oracletypes.CurrencyPair{
+					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "BITCOIN",
 						Quote: "USD",
 					},

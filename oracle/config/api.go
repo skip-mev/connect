@@ -8,29 +8,29 @@ import (
 // APIConfig defines a config for an API based data provider.
 type APIConfig struct {
 	// Enabled is a flag that indicates whether the provider is API based.
-	Enabled bool `mapstructure:"enabled" toml:"enabled"`
+	Enabled bool `json:"enabled"`
 
 	// Timeout is the amount of time the provider should wait for a response from
 	// its API before timing out.
-	Timeout time.Duration `mapstructure:"timeout" toml:"timeout"`
+	Timeout time.Duration `json:"timeout"`
 
 	// Interval is the interval at which the provider should update the prices.
-	Interval time.Duration `mapstructure:"interval" toml:"interval"`
+	Interval time.Duration `json:"interval"`
 
 	// MaxQueries is the maximum number of queries that the provider will make
 	// within the interval. If the provider makes more queries than this, it will
 	// stop making queries until the next interval.
-	MaxQueries int `mapstructure:"max_queries" toml:"max_queries"`
+	MaxQueries int `json:"maxQueries"`
 
 	// Atomic is a flag that indicates whether the provider can fulfill its queries
 	// in a single request.
-	Atomic bool `mapstructure:"atomic" toml:"atomic"`
+	Atomic bool `json:"atomic"`
 
 	// URL is the URL that is used to fetch data from the API.
-	URL string `mapstructure:"url" toml:"url"`
+	URL string `json:"url"`
 
 	// Name is the name of the provider that corresponds to this config.
-	Name string `mapstructure:"name" toml:"name"`
+	Name string `json:"name"`
 }
 
 // ValidateBasic performs basic validation of the API config.
