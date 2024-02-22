@@ -74,6 +74,11 @@ func (k *Keeper) GetLastUpdated(ctx sdk.Context) (int64, error) {
 	return k.lastUpdated.Get(ctx)
 }
 
+// GetTicker returns a ticker from the store by its currency pair string ID.
+func (k *Keeper) GetTicker(ctx sdk.Context, tickerStr string) (types.Ticker, error) {
+	return k.tickers.Get(ctx, types.TickerString(tickerStr))
+}
+
 // GetAllTickers returns the set of Ticker objects currently stored in state.
 func (k *Keeper) GetAllTickers(ctx sdk.Context) ([]types.Ticker, error) {
 	iter, err := k.tickers.Iterate(ctx, nil)
