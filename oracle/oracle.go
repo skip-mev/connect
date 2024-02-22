@@ -271,18 +271,15 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 func (o *OracleImpl) GetPrices() types.TickerPrices {
 	prices := o.priceAggregator.GetAggregatedData()
 
-	// set metrics in background
-	go func() {
-		for cp, price := range prices {
-			floatValue, _ := price.Float64() // we ignore the accuracy in this conversion
+	for cp, price := range prices {
+		floatValue, _ := price.Float64() // we ignore the accuracy in this conversion
 
-			o.metrics.UpdateAggregatePrice(
-				strings.ToLower(cp.String()),
-				cp.Decimals,
-				floatValue,
-			)
-		}
-	}()
+		o.metrics.UpdateAggregatePrice(
+			strings.ToLower(cp.String()),
+			cp.Decimals,
+			floatValue,
+		)
+	}
 
 	return prices
 }

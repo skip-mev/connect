@@ -89,19 +89,8 @@ func (p *Provider[K, V]) attemptAPIDataUpdate(
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, p.apiCfg.Timeout)
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				p.logger.Error("panic in query handler", zap.Any("panic", r))
-			}
-			cancel()
-			p.logger.Debug("finished query handler")
-		}()
-
-		// Start the query handler. The handler must respect the context timeout.
-		p.logger.Debug("starting query handler", zap.Int("num_ids", len(ids)))
-		handler.Query(ctx, ids, responseCh)
-	}()
+	defer cancel()
+	handler.Query(ctx, ids, responseCh)
 }
 
 // startMultiplexWebsocket is the main loop for web socket providers. It is responsible for
