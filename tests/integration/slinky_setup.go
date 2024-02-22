@@ -339,10 +339,30 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
-		Authority:     authority,
-		CurrencyPairs: cps,
-	}}...)
+	creates := make([]mmtypes.CreateMarket, len(cps))
+	for i, cp := range cps {
+		creates[i] = mmtypes.CreateMarket{
+			Ticker: mmtypes.Ticker{
+				CurrencyPair:     cp,
+				Decimals:         8,
+				MinProviderCount: 1,
+				Metadata_JSON:    "",
+			},
+			Providers: mmtypes.Providers{Providers: []mmtypes.ProviderConfig{
+				{
+					Name:           "mexc",
+					OffChainTicker: cp.String(),
+				},
+			}},
+		}
+	}
+
+	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{
+		&mmtypes.MsgUpdateMarketMap{
+			Signer:        authority,
+			CreateMarkets: creates,
+		},
+	}...)
 	if err != nil {
 		return err
 	}

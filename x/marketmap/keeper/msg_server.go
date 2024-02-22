@@ -12,11 +12,11 @@ import (
 
 // msgServer is the default implementation of the x/marketmap MsgService.
 type msgServer struct {
-	k Keeper
+	k *Keeper
 }
 
 // NewMsgServer returns the default implementation of the x/marketmap message service.
-func NewMsgServer(k Keeper) types.MsgServer {
+func NewMsgServer(k *Keeper) types.MsgServer {
 	return &msgServer{k}
 }
 

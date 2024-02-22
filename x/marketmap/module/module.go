@@ -77,7 +77,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 // AppModule is the actual app module for x/marketmap.
 type AppModule struct {
 	AppModuleBasic
-	k keeper.Keeper
+	k *keeper.Keeper
 }
 
 // InitGenesis performs the genesis initialization for the x/marketmap module. It determines the
@@ -104,8 +104,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 
 // RegisterServices registers the module's services with the app's module configurator.
 func (am AppModule) RegisterServices(cfc module.Configurator) {
-	// register MsgServer TODO
-	// types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(am.k))
+	// register MsgServer
+	types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(am.k))
 
 	// register Query Service
 	types.RegisterQueryServer(cfc.QueryServer(), keeper.NewQueryServer(am.k))
@@ -121,7 +121,7 @@ func (am AppModule) IsOnePerModuleType() {}
 func (am AppModule) IsAppModule() {}
 
 // NewAppModule constructs a new application module for the x/marketmap module.
-func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Codec, k *keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{
 			cdc: cdc,

@@ -153,7 +153,7 @@ type SimApp struct {
 	OracleKeeper          oraclekeeper.Keeper
 	IncentivesKeeper      incentiveskeeper.Keeper
 	AlertsKeeper          alertskeeper.Keeper
-	MarketMapKeeper       marketmapkeeper.Keeper
+	MarketMapKeeper       *marketmapkeeper.Keeper
 
 	// simulation manager
 	sm *module.SimulationManager
@@ -240,10 +240,10 @@ func NewSimApp(
 		&app.GroupKeeper,
 		&app.ConsensusParamsKeeper,
 		&app.CircuitBreakerKeeper,
+		&app.MarketMapKeeper,
 		&app.OracleKeeper,
 		&app.IncentivesKeeper,
 		&app.AlertsKeeper,
-		&app.MarketMapKeeper,
 	); err != nil {
 		panic(err)
 	}

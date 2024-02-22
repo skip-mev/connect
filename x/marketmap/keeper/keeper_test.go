@@ -22,10 +22,10 @@ type KeeperTestSuite struct {
 
 	// Keeper variables
 	authority sdk.AccAddress
-	keeper    keeper.Keeper
+	keeper    *keeper.Keeper
 }
 
-func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
+func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	key := storetypes.NewKVStoreKey(types.StoreKey)
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()

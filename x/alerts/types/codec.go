@@ -18,7 +18,7 @@ func init() {
 	cryptocodec.RegisterInterfaces(ir)
 }
 
-// RegisterLegacyAminoCodec registers the necessary x/authz interfaces and concrete types
+// RegisterLegacyAminoCodec registers the necessary x/alerts interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// register the conclusion interfaces / MultiSigConclusion implementation

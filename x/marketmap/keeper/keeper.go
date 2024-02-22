@@ -42,7 +42,7 @@ type Keeper struct {
 }
 
 // NewKeeper initializes the keeper and its backing stores.
-func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) Keeper {
+func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) *Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
 	// Create the collections item that will track the module parameters.
@@ -53,7 +53,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 		codec.CollValue[types.Params](cdc),
 	)
 
-	return Keeper{
+	return &Keeper{
 		cdc:         cdc,
 		authority:   authority,
 		tickers:     collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
