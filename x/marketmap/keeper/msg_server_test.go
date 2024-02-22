@@ -47,22 +47,21 @@ func (s *KeeperTestSuite) TestCreateMarket() {
 		},
 	})
 
+	s.Run("unable to process for invalid authority", func() {
+		msg = &types.MsgUpdateMarketMap{
+			Signer: "invalid",
+		}
+		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
 	// set a market in the map
 	s.Run("unable to process nil request", func() {
 		resp, err = msgServer.UpdateMarketMap(s.ctx, nil)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
-
-	// TODO add with params
-	// s.Run("unable to process for invalid authority", func() {
-	//	msg := &types.MsgUpdateMarketMap{
-	//		Signer: "invalid",
-	//	}
-	//	resp, err := msgServer.UpdateMarketMap(s.ctx, msg)
-	//	s.Require().Error(err)
-	// 	s.Require().Nil(resp)
-	// })
 
 	s.Run("unable to create market that already exists", func() {
 		msg = &types.MsgUpdateMarketMap{
