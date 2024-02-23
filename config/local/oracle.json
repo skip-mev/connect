@@ -1,5 +1,6 @@
 {
   "updateInterval": 1500000000,
+  "maxPriceAge": 120000000000,
   "providers": [
     {
       "name": "binance",
@@ -394,7 +395,7 @@
       }
     }
   ],
-  "production": false,
+  "production": true,
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true

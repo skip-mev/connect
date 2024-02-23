@@ -19,6 +19,7 @@ func TestOracleConfig(t *testing.T) {
 			name: "good config",
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
+				MaxPriceAge:    time.Minute,
 				Providers: []config.ProviderConfig{
 					{
 						Name: "test",
@@ -41,6 +42,31 @@ func TestOracleConfig(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name: "bad config w/ no max-price-age",
+			config: config.OracleConfig{
+				UpdateInterval: time.Second,
+				Providers: []config.ProviderConfig{
+					{
+						Name: "test",
+						WebSocket: config.WebSocketConfig{
+							Enabled:             true,
+							MaxBufferSize:       1,
+							ReconnectionTimeout: time.Second,
+							WSS:                 "wss://test.com",
+							Name:                "test",
+							ReadBufferSize:      config.DefaultReadBufferSize,
+							WriteBufferSize:     config.DefaultWriteBufferSize,
+							HandshakeTimeout:    config.DefaultHandshakeTimeout,
+							EnableCompression:   config.DefaultEnableCompression,
+							ReadTimeout:         config.DefaultReadTimeout,
+							WriteTimeout:        config.DefaultWriteTimeout,
+						},
+					},
+				},
+			},
+			expectedErr: true,
+		},
+		{
 			name:        "bad config with no update interval",
 			config:      config.OracleConfig{},
 			expectedErr: true,
@@ -49,6 +75,7 @@ func TestOracleConfig(t *testing.T) {
 			name: "bad config with bad metrics",
 			config: config.OracleConfig{
 				UpdateInterval: time.Second,
+				MaxPriceAge:    time.Minute,
 				Providers: []config.ProviderConfig{
 					{
 						Name: "test",
