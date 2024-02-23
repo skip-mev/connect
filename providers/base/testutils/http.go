@@ -2,6 +2,7 @@ package testutils
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"testing"
@@ -35,11 +36,16 @@ func CreateAPIQueryHandlerWithGetResponses[K providertypes.ResponseKey, V provid
 	handler := handlermocks.NewQueryHandler[K, V](t)
 
 	handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
+		ctx := args.Get(0).(context.Context)
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
 
 		for _, resp := range responses {
-			logger.Debug("sending response", zap.String("response", resp.String()))
-			responseCh <- resp
+			select {
+			case <-ctx.Done():
+				return
+			case responseCh <- resp:
+				logger.Debug("sending response", zap.String("response", resp.String()))
+			}
 		}
 	}).Maybe()
 

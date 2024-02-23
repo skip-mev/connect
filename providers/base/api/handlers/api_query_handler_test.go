@@ -46,7 +46,7 @@ var (
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
 		Interval:   1 * time.Second,
-		MaxQueries: 1,
+		MaxQueries: 3,
 		Atomic:     false,
 		URL:        constantURL,
 		Name:       "handler1",
@@ -59,7 +59,6 @@ func TestAPIQueryHandler(t *testing.T) {
 		requestHandler func() handlers.RequestHandler
 		apiHandler     func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int]
 		metrics        func() metrics.APIMetrics
-		capacity       int
 		ids            []slinkytypes.CurrencyPair
 		atomic         bool
 		responses      providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]
@@ -77,9 +76,8 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 				return m
 			},
-			capacity: 0,
-			ids:      []slinkytypes.CurrencyPair{},
-			atomic:   false,
+			ids:    []slinkytypes.CurrencyPair{},
+			atomic: false,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved:   map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]error{},
@@ -90,7 +88,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -123,9 +121,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 1,
-			ids:      []slinkytypes.CurrencyPair{btcusd},
-			atomic:   true,
+			ids:    []slinkytypes.CurrencyPair{btcusd},
+			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -140,7 +137,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -173,9 +170,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 1,
-			ids:      []slinkytypes.CurrencyPair{btcusd},
-			atomic:   false,
+			ids:    []slinkytypes.CurrencyPair{btcusd},
+			atomic: false,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -190,7 +186,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newRateLimitResponse(), nil).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(newRateLimitResponse(), nil).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -209,9 +205,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 1,
-			ids:      []slinkytypes.CurrencyPair{btcusd},
-			atomic:   true,
+			ids:    []slinkytypes.CurrencyPair{btcusd},
+			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]error{
@@ -224,7 +219,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newUnexpectedStatusCodeResponse(), nil).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(newUnexpectedStatusCodeResponse(), nil).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -243,9 +238,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 1,
-			ids:      []slinkytypes.CurrencyPair{btcusd},
-			atomic:   true,
+			ids:    []slinkytypes.CurrencyPair{btcusd},
+			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]error{
@@ -258,7 +252,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(nil, fmt.Errorf("client has no rizz")).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(nil, fmt.Errorf("client has no rizz")).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -277,9 +271,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 1,
-			ids:      []slinkytypes.CurrencyPair{btcusd},
-			atomic:   true,
+			ids:    []slinkytypes.CurrencyPair{btcusd},
+			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]error{
@@ -292,7 +285,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -333,9 +326,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 3,
-			ids:      []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
-			atomic:   true,
+			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -356,7 +348,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(3)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(3).After(1 * time.Second)
 
 				return h
 			},
@@ -413,9 +405,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 3,
-			ids:      []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
-			atomic:   false,
+			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			atomic: false,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -436,8 +427,8 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(2)
-				h.On("Do", mock.Anything, constantURL+"eth").Return(newRateLimitResponse(), nil).Times(1)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(2).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL+"eth").Return(newRateLimitResponse(), nil).Times(1).After(1 * time.Second)
 
 				return h
 			},
@@ -483,9 +474,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 3,
-			ids:      []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
-			atomic:   false,
+			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			atomic: false,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -563,9 +553,8 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				return m
 			},
-			capacity: 1,
-			ids:      []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
-			atomic:   false,
+			ids:    []slinkytypes.CurrencyPair{btcusd, ethusd, atomusd},
+			atomic: false,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -601,7 +590,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], tc.capacity)
+			responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], len(tc.ids))
 			go func() {
 				handler.Query(context.Background(), tc.ids, responseCh)
 				close(responseCh)

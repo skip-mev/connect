@@ -64,10 +64,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "ethusd",
 		},
-		constants.ETHEREUM_USDT: {
-			Name:           Name,
-			OffChainTicker: "ethusdt",
-		},
 		constants.SOLANA_USD: {
 			Name:           Name,
 			OffChainTicker: "solusd",

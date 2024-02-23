@@ -118,12 +118,14 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		h.logger.Debug("finished api query handler")
 	}()
 
-	// Set the concurrency limit based on the capacity of the channel. This is done
-	// to ensure the query handler does not exceed the rate limit parameters of the
-	// data provider.
+	// Set the concurrency limit based on the maximum number of queries allowed for a single
+	// interval.
 	wg := errgroup.Group{}
-	wg.SetLimit(cap(responseCh))
-	h.logger.Debug("setting concurrency limit", zap.Int("limit", cap(responseCh)))
+	wg.SetLimit(h.config.MaxQueries)
+	h.logger.Debug("setting concurrency limit", zap.Int("limit", h.config.MaxQueries))
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
 	// we need to make a request for each ID.
