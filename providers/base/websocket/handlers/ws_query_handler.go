@@ -120,6 +120,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 		return nil
 	}
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
 	if err := h.start(); err != nil {
