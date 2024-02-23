@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	sdkmath "cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/mock"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
@@ -24,26 +23,18 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 	// test that after CurrencyPairs are registered, all of them are returned from the query
 	s.Run("after CurrencyPairs are registered, all of them are returned from the query", func() {
 		// insert multiple currency Pairs
-		cp1 := slinkytypes.CurrencyPair{
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
 			Base:  "AA",
 			Quote: "BB",
-		}
-		cp2 := slinkytypes.CurrencyPair{
+		}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
 			Base:  "CC",
 			Quote: "DD",
-		}
-		cp3 := slinkytypes.CurrencyPair{
+		}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
 			Base:  "EE",
 			Quote: "FF",
-		}
-
-		// insert into module
-		ms := keeper.NewMsgServer(s.oracleKeeper)
-		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
-			CurrencyPairs: []slinkytypes.CurrencyPair{cp1, cp2, cp3},
-			Authority:     sdk.AccAddress(moduleAuth).String(),
-		})
-		s.Require().Nil(err)
+		}))
 
 		// manually insert a new CurrencyPair as well
 		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{

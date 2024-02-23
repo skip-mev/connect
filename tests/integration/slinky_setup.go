@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/rand"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -365,17 +366,26 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 		}
 	}
 
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), s.user.KeyName(), []sdk.Msg{&mmtypes.MsgUpdateMarketMap{
-		Signer:        s.authority.String(),
+	msg := &mmtypes.MsgUpdateMarketMap{
+		Signer:        s.user.FormattedAddress(),
 		CreateMarkets: creates,
-	}}...)
+	}
+
+	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
+
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
 		return err
 	}
 
-	if err = PassProposal(chain, propId, timeout); err != nil {
-		return fmt.Errorf("unable to pass marketmap proposal: %w", err)
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
 	}
+
 	return nil
 }
 

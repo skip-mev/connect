@@ -47,6 +47,14 @@ func TestKeeperTestSuite(t *testing.T) {
 	suite.Run(t, new(KeeperTestSuite))
 }
 
+func (s *KeeperTestSuite) SetupWithNoMMKeeper() {
+	key := storetypes.NewKVStoreKey(types.StoreKey)
+	ss := runtime.NewKVStoreService(key)
+	encCfg := moduletestutil.MakeTestEncodingConfig()
+	s.oracleKeeper = keeper.NewKeeper(ss, encCfg.Codec, nil, moduleAuthAddr)
+	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
+}
+
 func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 	tcs := []struct {
 		name       string
