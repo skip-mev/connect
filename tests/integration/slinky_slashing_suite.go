@@ -57,7 +57,7 @@ func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
 func (s *SlinkySlashingIntegrationSuite) SetupTest() {
 	s.TearDownSuite()
 	// remove cps
-	s.SlinkyIntegrationSuite.SetupTest()
+	s.SetupSuite()
 
 	// get the validators after the slashing
 	validators, err := QueryValidators(s.chain)
