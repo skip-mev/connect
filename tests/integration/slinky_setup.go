@@ -389,20 +389,6 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 	return nil
 }
 
-// RemoveCurrencyPairs creates + submits the proposal to remove the given currency-pairs from state, votes for the prop w/ all nodes,
-// and waits for the proposal to pass.
-func RemoveCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cpIDs ...string) error {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgRemoveCurrencyPairs{
-		Authority:       authority,
-		CurrencyPairIds: cpIDs,
-	}}...)
-	if err != nil {
-		return err
-	}
-
-	return PassProposal(chain, propId, timeout)
-}
-
 // QueryProposal queries the chain for a given proposal
 func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryProposalResponse, error) {
 	// get grpc address

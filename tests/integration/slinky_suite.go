@@ -170,11 +170,8 @@ func (s *SlinkyIntegrationSuite) TearDownSuite() {
 }
 
 func (s *SlinkyIntegrationSuite) SetupTest() {
-	// query for all currency-pairs
-	resp, err := QueryCurrencyPairs(s.chain)
-	s.Require().NoError(err)
-
-	s.T().Log("Removing all currency-pairs", resp.CurrencyPairs)
+	s.TearDownSuite()
+	s.SetupSuite()
 
 	// reset the oracle services
 	// start all oracles
@@ -186,17 +183,6 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 		s.Require().NoError(RestartOracle(node))
 	}
 
-	if len(resp.CurrencyPairs) == 0 {
-		return
-	}
-
-	ids := make([]string, len(resp.CurrencyPairs))
-	for i, cp := range resp.CurrencyPairs {
-		ids[i] = cp.String()
-	}
-
-	// remove all currency-pairs
-	s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, ids...))
 }
 
 type SlinkyOracleIntegrationSuite struct {
@@ -232,16 +218,6 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 1)
 		s.Require().Equal(resp.CurrencyPairs[0].Base, "BTC")
 		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
-	})
-
-	// remove the currency-pair from state and check the Prices for that currency-pair are no longer reported
-	s.Run("Remove a currency-pair and check Prices", func() {
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{slinkytypes.CurrencyPairString("BTC", "USD")}...))
-
-		// check that the currency-pair is added to state
-		resp, err := QueryCurrencyPairs(s.chain)
-		s.Require().NoError(err)
-		s.Require().True(len(resp.CurrencyPairs) == 0)
 	})
 
 	s.Run("Add multiple Currency Pairs", func() {

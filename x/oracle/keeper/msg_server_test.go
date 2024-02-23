@@ -209,7 +209,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 		{
 			"if the authority is correct + formatted, and the currency pairs are valid - pass",
 			&types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte(moduleAuth)).String(),
+				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairIds: []string{
 					"AA/BB", "CC/DD",
 				},

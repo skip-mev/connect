@@ -55,6 +55,7 @@ func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
 }
 
 func (s *SlinkySlashingIntegrationSuite) SetupTest() {
+	s.TearDownSuite()
 	// remove cps
 	s.SlinkyIntegrationSuite.SetupTest()
 
@@ -241,10 +242,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 				CurrencyPairId: slinkytypes.CurrencyPairString("BTC", "USD"),
 			},
 		})
-		if err == nil {
-			// remove the currency-pair
-			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.String()}...))
-		}
+		s.Require().NoError(err)
 
 		// get the current height
 		height, err := s.chain.Height(context.Background())
@@ -259,7 +257,10 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			alerttypes.NewAlert(
 				height-1,
 				alertSubmitter,
-				cp,
+				slinkytypes.CurrencyPair{
+					Base:  "MOG",
+					Quote: "GOM",
+				},
 			),
 		)
 		s.Require().NoError(err)

@@ -59,11 +59,8 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 			sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
 			sdk.NewAttribute(types.AttributeKeyMetadata, market.Ticker.Metadata_JSON),
 			sdk.NewAttribute(types.AttributeKeyProviders, market.Providers.String()),
+			sdk.NewAttribute(types.AttributeKeyPaths, market.Paths.String()),
 		)
-		if market.Paths.Paths != nil {
-			event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyPaths, market.Paths.String()))
-		}
-
 		ctx.EventManager().EmitEvent(event)
 	}
 

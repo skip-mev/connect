@@ -144,7 +144,7 @@ func (k Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
 	return k.nextCurrencyPairID.Peek(ctx)
 }
 
-// GetNonceForCurrency Pair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
+// GetNonceForCurrencyPair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
 func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error) {
 	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
