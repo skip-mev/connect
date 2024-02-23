@@ -87,10 +87,10 @@ var (
 
 	// LocalConfig defines a readable config for local development. Any changes to this
 	// file should be reflected in oracle.json. To update the oracle.json file, run
-	// `make update-local-config`. This will update any changes to the oracle.toml file
+	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
 	LocalOracleConfig = config.OracleConfig{
-		Production: false,
+		Production: true,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
@@ -99,6 +99,7 @@ var (
 			PrometheusServerAddress: "0.0.0.0:8002",
 		},
 		UpdateInterval: 1500 * time.Millisecond,
+		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
 			// ---------------------Start API Providers--------------------	//
