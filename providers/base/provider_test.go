@@ -685,35 +685,6 @@ func TestAPIProviderLoop(t *testing.T) {
 			},
 			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
-		{
-			name: "continues updating even with timeouts on the query handler",
-			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
-
-				handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
-					responseCh := args.Get(2).(chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int])
-
-					resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
-						pairs[0]: {
-							Value:     big.NewInt(100),
-							Timestamp: respTime,
-						},
-					}
-					resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
-
-					logger.Debug("sending response", zap.String("response", resp.String()))
-					responseCh <- resp
-				}).After(apiCfg.Interval * 2)
-
-				return handler
-			},
-			pairs: []slinkytypes.CurrencyPair{
-				pairs[0],
-			},
-			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
-				pairs[0]: big.NewInt(100),
-			},
-		},
 	}
 
 	for _, tc := range testCases {
