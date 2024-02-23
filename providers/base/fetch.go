@@ -10,7 +10,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/pkg/math"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -23,10 +22,8 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 	var responseCh chan providertypes.GetResponse[K, V]
 	switch {
 	case p.api != nil:
-		// The buffer size is set to the minimum of the number of IDs and the max number of queries.
-		// This is to ensure that the response channel does not block the query handler and that the
-		// query handler does not exceed the rate limit parameters of the provider.
-		responseCh = make(chan providertypes.GetResponse[K, V], math.Min(len(p.GetIDs()), p.apiCfg.MaxQueries))
+		// If the provider is an API provider, then the buffer size is set to the number of IDs.
+		responseCh = make(chan providertypes.GetResponse[K, V], len(p.GetIDs()))
 	case p.ws != nil:
 		// Otherwise, the buffer size is set to the max buffer size configured for the websocket.
 		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
@@ -89,19 +86,8 @@ func (p *Provider[K, V]) attemptAPIDataUpdate(
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, p.apiCfg.Timeout)
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				p.logger.Error("panic in query handler", zap.Any("panic", r))
-			}
-			cancel()
-			p.logger.Debug("finished query handler")
-		}()
-
-		// Start the query handler. The handler must respect the context timeout.
-		p.logger.Debug("starting query handler", zap.Int("num_ids", len(ids)))
-		handler.Query(ctx, ids, responseCh)
-	}()
+	defer cancel()
+	handler.Query(ctx, ids, responseCh)
 }
 
 // startMultiplexWebsocket is the main loop for web socket providers. It is responsible for

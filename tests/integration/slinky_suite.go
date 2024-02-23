@@ -56,6 +56,7 @@ func DefaultOracleConfig() oracleconfig.OracleConfig {
 	// Create the oracle config
 	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
+		MaxPriceAge:    1 * time.Minute,
 	}
 
 	return oracleConfig
