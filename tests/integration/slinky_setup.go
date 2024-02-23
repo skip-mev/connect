@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/BurntSushi/toml"
 	"math/big"
 	"sort"
 	"strconv"
@@ -19,6 +18,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	"github.com/pelletier/go-toml/v2"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -339,7 +339,7 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
+func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
 	creates := make([]mmtypes.CreateMarket, len(cps))
 	for i, cp := range cps {
 		creates[i] = mmtypes.CreateMarket{
@@ -358,17 +358,17 @@ func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposi
 		}
 	}
 
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{
-		&mmtypes.MsgUpdateMarketMap{
-			Signer:        authority,
-			CreateMarkets: creates,
-		},
-	}...)
-	if err != nil {
-		return err
-	}
+	tx := CreateTx(s.T(), s.chain, user, gasPrice, &mmtypes.MsgUpdateMarketMap{
+		Signer:        authority,
+		CreateMarkets: creates,
+	})
 
-	return PassProposal(chain, propId, timeout)
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
+
+	// broadcast the tx
+	_, err := client.BroadcastTxCommit(context.Background(), tx)
+	return err
 }
 
 // RemoveCurrencyPairs creates + submits the proposal to remove the given currency-pairs from state, votes for the prop w/ all nodes,
@@ -553,7 +553,7 @@ func (vv validatorVotes) Less(i, j int) bool {
 // UpdateMarketMapParams creates + submits the proposal to update the marketmap params, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func UpdateMarketMapParams(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, params mmtypes.Params) (string, error) {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&mmtypes.Msg{
+	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&mmtypes.MsgParams{
 		Authority: authority,
 		Params:    params,
 	}}...)

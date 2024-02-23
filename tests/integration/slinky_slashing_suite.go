@@ -290,7 +290,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		})
 		if err != nil {
 			// remove the currency-pair
-			s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+			s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user.FormattedAddress(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 		}
 
 		alertSubmitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -401,7 +401,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	})
 	if err != nil {
 		// remove the currency-pair
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 	}
 	// add pruning params with updated max-block-age
 
@@ -846,7 +846,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	})
 	if err != nil {
 		// add the currency-pair
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 	}
 
 	// get the id for the currency-pair

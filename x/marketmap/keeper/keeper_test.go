@@ -23,6 +23,8 @@ type KeeperTestSuite struct {
 	// Keeper variables
 	authority sdk.AccAddress
 	keeper    *keeper.Keeper
+
+	hooks types.MarketMapHooks
 }
 
 func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
@@ -38,6 +40,9 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 
 	params := types.NewParams(s.authority.String(), 10)
 	s.Require().NoError(k.SetParams(s.ctx, params))
+
+	s.hooks = types.MultiMarketMapHooks{}
+	k.SetHooks(s.hooks)
 
 	return k
 }

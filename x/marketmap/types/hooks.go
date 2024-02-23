@@ -14,11 +14,6 @@ var _ MarketMapHooks = &MultiMarketMapHooks{}
 // MultiMarketMapHooks defines an array of MarketMapHooks which can be executed in sequence.
 type MultiMarketMapHooks []MarketMapHooks
 
-// NewMultiMarketMapHooks creates a MultiMarketMapHooks object from a variadic amount of MarketMapHooks.
-func NewMultiMarketMapHooks(hooks ...MarketMapHooks) MultiMarketMapHooks {
-	return hooks
-}
-
 // AfterMarketCreated calls all AfterMarketCreated hooks registered to the MultiMarketMapHooks.
 func (mh MultiMarketMapHooks) AfterMarketCreated(ctx sdk.Context, ticker Ticker) error {
 	for i := range mh {

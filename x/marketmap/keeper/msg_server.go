@@ -42,15 +42,19 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 
 	// create markets
 	for _, market := range msg.CreateMarkets {
-		err := ms.k.CreateMarket(ctx, market.Ticker, market.Paths, market.Providers)
+		err = ms.k.CreateMarket(ctx, market.Ticker, market.Paths, market.Providers)
 		if err != nil {
 			return nil, err
 		}
 
-		// TODO: call creation hooks
+		err = ms.k.hooks.AfterMarketCreated(ctx, market.Ticker)
+		if err != nil {
+			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
+		}
 
 		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(types.EventTypeCreateMarket,
+			sdk.NewEvent(
+				types.EventTypeCreateMarket,
 				sdk.NewAttribute(types.AttributeKeyCurrencyPair, market.Ticker.String()),
 				sdk.NewAttribute(types.AttributeKeyDecimals, strconv.FormatUint(market.Ticker.Decimals, 10)),
 				sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
