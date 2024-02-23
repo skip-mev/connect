@@ -57,6 +57,8 @@ require (
 	mvdan.cc/gofumpt v0.6.0
 )
 
+require golang.org/x/vuln v1.0.4
+
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
