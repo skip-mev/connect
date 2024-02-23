@@ -25,6 +25,17 @@ func WithUpdateInterval(updateInterval time.Duration) Option {
 	}
 }
 
+// WithMaxCacheAge sets the max cache age on the Oracle.
+func WithMaxCacheAge(maxCacheAge time.Duration) Option {
+	return func(o *OracleImpl) {
+		if maxCacheAge <= 0 {
+			panic("max cache age must be positive")
+		}
+
+		o.maxCacheAge = maxCacheAge
+	}
+}
+
 // WithLogger sets the logger on the Oracle.
 func WithLogger(logger *zap.Logger) Option {
 	return func(o *OracleImpl) {

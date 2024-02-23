@@ -116,7 +116,8 @@ func (h *WebSocketHandler) CreateMessages(
 	for _, ticker := range tickers {
 		market, ok := h.market.TickerConfigs[ticker]
 		if !ok {
-			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
+			h.logger.Debug("market not found for currency pair", zap.String("ticker", ticker.String()))
+			continue
 		}
 
 		instruments = append(instruments, market.OffChainTicker)
