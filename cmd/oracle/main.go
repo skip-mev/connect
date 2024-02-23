@@ -89,6 +89,7 @@ func main() {
 		oracle.WithProviders(providers),                      // Replace with custom providers.
 		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
+		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
 		oracle.WithLogger(logger),
 	)
 	if err != nil {

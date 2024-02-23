@@ -66,6 +66,9 @@ type OracleImpl struct { //nolint
 	// updateInterval is the interval at which the oracle will fetch prices from
 	// each provider.
 	updateInterval time.Duration
+
+	// maxCacheAge is the longest amount of time a price will stay in our cache
+	maxCacheAge time.Duration
 }
 
 // New returns a new instance of an Oracle. The oracle inputs providers that are
@@ -85,6 +88,7 @@ func New(opts ...Option) (*OracleImpl, error) {
 			aggregator.WithAggregateFn(median.ComputeMedian()),
 		),
 		updateInterval: 1 * time.Second,
+		maxCacheAge:    time.Minute, // default max cache age is 1 minute
 	}
 
 	for _, opt := range opts {
@@ -219,9 +223,9 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProvider) {
 			floatValue,
 		)
 
-		// If the price is older than the update interval, skip it.
+		// If the price is older than the maxCacheAge, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
-		if diff > o.updateInterval {
+		if diff > o.maxCacheAge {
 			o.logger.Debug(
 				"skipping price",
 				zap.String("provider", provider.Name()),

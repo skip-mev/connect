@@ -15,6 +15,11 @@ type OracleConfig struct {
 	// UpdateInterval is the interval at which the oracle will fetch prices from providers.
 	UpdateInterval time.Duration `json:"updateInterval"`
 
+	// MaxPriceAge is the maximum age of a price that the oracle will consider valid. If a
+	// price is older than this, the oracle will not consider it valid and will not return it in /prices
+	// requests.
+	MaxPriceAge time.Duration `json:"maxPriceAge"`
+
 	// Providers is the list of providers that the oracle will fetch prices from.
 	Providers []ProviderConfig `json:"providers"`
 
@@ -30,6 +35,10 @@ type OracleConfig struct {
 func (c *OracleConfig) ValidateBasic() error {
 	if c.UpdateInterval <= 0 {
 		return fmt.Errorf("oracle update interval must be greater than 0")
+	}
+
+	if c.MaxPriceAge <= 0 {
+		return fmt.Errorf("oracle max price age must be greater than 0")
 	}
 
 	for _, p := range c.Providers {

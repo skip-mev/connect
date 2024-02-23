@@ -99,6 +99,7 @@ var (
 			PrometheusServerAddress: "0.0.0.0:8002",
 		},
 		UpdateInterval: 1500 * time.Millisecond,
+		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
 			// ---------------------Start API Providers--------------------	//
