@@ -152,7 +152,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.user = users[0]
 
 	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
-		MarketAuthority: s.user.FormattedAddress(),
+		MarketAuthority: s.authority.String(),
 		Version:         0,
 	})
 	s.Require().NoError(err, resp)
@@ -219,7 +219,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user.FormattedAddress(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 			{
 				Base:  "BTC",
 				Quote: "USD",
@@ -247,7 +247,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add multiple Currency Pairs and remove 1", func() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
 		cp2 := slinkytypes.NewCurrencyPair("BTC", "USD")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user.FormattedAddress(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 			cp1, cp2,
 		}...))
 
@@ -270,7 +270,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	eth_usdc := constants.ETHEREUM_USDC
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user.FormattedAddress(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 		eth_usdc.CurrencyPair,
 	}...))
 
@@ -488,7 +488,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		eth_usd.CurrencyPair,
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user.FormattedAddress(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
 
 	cc, close, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)

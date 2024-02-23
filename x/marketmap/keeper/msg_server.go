@@ -52,17 +52,19 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
 		}
 
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeCreateMarket,
-				sdk.NewAttribute(types.AttributeKeyCurrencyPair, market.Ticker.String()),
-				sdk.NewAttribute(types.AttributeKeyDecimals, strconv.FormatUint(market.Ticker.Decimals, 10)),
-				sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
-				sdk.NewAttribute(types.AttributeKeyMetadata, market.Ticker.Metadata_JSON),
-				sdk.NewAttribute(types.AttributeKeyPaths, market.Paths.String()),
-				sdk.NewAttribute(types.AttributeKeyProviders, market.Providers.String()),
-			),
+		event := sdk.NewEvent(
+			types.EventTypeCreateMarket,
+			sdk.NewAttribute(types.AttributeKeyCurrencyPair, market.Ticker.String()),
+			sdk.NewAttribute(types.AttributeKeyDecimals, strconv.FormatUint(market.Ticker.Decimals, 10)),
+			sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
+			sdk.NewAttribute(types.AttributeKeyMetadata, market.Ticker.Metadata_JSON),
+			sdk.NewAttribute(types.AttributeKeyProviders, market.Providers.String()),
 		)
+		if market.Paths.Paths != nil {
+			event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyPaths, market.Paths.String()))
+		}
+
+		ctx.EventManager().EmitEvent(event)
 	}
 
 	// update markets

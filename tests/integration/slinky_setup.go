@@ -332,7 +332,12 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 	// wait for the proposal to pass
 	if err := WaitForProposalStatus(chain, propId, timeout, govtypesv1.StatusPassed); err != nil {
-		return fmt.Errorf("proposal did not pass: %v", err)
+		prop, queryErr := QueryProposal(chain, propId)
+		if queryErr != nil {
+			return queryErr
+		}
+
+		return fmt.Errorf("proposal did not pass: %v, status: %v", err, prop.Proposal.FailedReason)
 	}
 	return nil
 }
@@ -340,6 +345,18 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
+	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
+		Authority:     authority,
+		CurrencyPairs: cps,
+	}}...)
+	if err != nil {
+		return err
+	}
+
+	if err = PassProposal(chain, propId, timeout); err != nil {
+		return fmt.Errorf("unable to pass oracle proposal: %w", err)
+	}
+
 	creates := make([]mmtypes.CreateMarket, len(cps))
 	for i, cp := range cps {
 		creates[i] = mmtypes.CreateMarket{
@@ -349,26 +366,32 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 				MinProviderCount: 1,
 				Metadata_JSON:    "",
 			},
-			Providers: mmtypes.Providers{Providers: []mmtypes.ProviderConfig{
-				{
-					Name:           "mexc",
-					OffChainTicker: cp.String(),
+			Providers: mmtypes.Providers{
+				Providers: []mmtypes.ProviderConfig{
+					{
+						Name:           "mexc",
+						OffChainTicker: cp.String(),
+					},
 				},
-			}},
+			},
+			Paths: mmtypes.Paths{
+				Paths: []mmtypes.Path{},
+			},
 		}
 	}
 
-	tx := CreateTx(s.T(), s.chain, user, gasPrice, &mmtypes.MsgUpdateMarketMap{
-		Signer:        authority,
+	propId, err = SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), s.user.KeyName(), []sdk.Msg{&mmtypes.MsgUpdateMarketMap{
+		Signer:        s.authority.String(),
 		CreateMarkets: creates,
-	})
+	}}...)
+	if err != nil {
+		return err
+	}
 
-	// get an rpc endpoint for the chain
-	client := chain.Nodes()[0].Client
-
-	// broadcast the tx
-	_, err := client.BroadcastTxCommit(context.Background(), tx)
-	return err
+	if err = PassProposal(chain, propId, timeout); err != nil {
+		return fmt.Errorf("unable to pass marketmap proposal: %w", err)
+	}
+	return nil
 }
 
 // RemoveCurrencyPairs creates + submits the proposal to remove the given currency-pairs from state, votes for the prop w/ all nodes,

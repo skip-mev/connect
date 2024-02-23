@@ -290,7 +290,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		})
 		if err != nil {
 			// remove the currency-pair
-			s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user.FormattedAddress(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+			s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
 		}
 
 		alertSubmitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
