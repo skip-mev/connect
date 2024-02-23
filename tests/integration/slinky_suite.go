@@ -182,7 +182,6 @@ func (s *SlinkyIntegrationSuite) SetupTest() {
 		SetOracleConfigsOnOracle(GetOracleSideCar(node), oCfg, mCfg)
 		s.Require().NoError(RestartOracle(node))
 	}
-
 }
 
 type SlinkyOracleIntegrationSuite struct {
