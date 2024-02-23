@@ -62,10 +62,19 @@ func (h *APIHandler) ParseResponse(
 		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("expected one chain, got %d", len(chains)))
 	}
 
+	if resp == nil {
+		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("nil response"))
+	}
+
 	// Parse the response body into a market map object.
 	var market mmtypes.GetMarketMapResponse
 	if err := json.NewDecoder(resp.Body).Decode(&market); err != nil {
 		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("failed to parse market map response: %w", err))
+	}
+
+	// Validate the market map response.
+	if err := market.MarketMap.ValidateBasic(); err != nil {
+		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("invalid market map response: %w", err))
 	}
 
 	// Ensure the chain id in the response matches the chain id in the request.

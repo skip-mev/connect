@@ -15,7 +15,7 @@ import (
 )
 
 // DefaultMarketMapProvider returns a sample implementation of the market map provider. This provider
-// is responsible for fetching updates to the cannonical market map from the x/marketmap module.
+// is responsible for fetching updates to the canonical market map from the x/marketmap module.
 func DefaultMarketMapProvider(
 	logger *zap.Logger,
 	providerMetrics providermetrics.ProviderMetrics,

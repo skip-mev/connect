@@ -39,8 +39,11 @@ type (
 	// represent the resolved and unresolved market map data.
 	MarketMapResponse = providertypes.GetResponse[Chain, *mmtypes.GetMarketMapResponse]
 
+	// MarketMapResult is a type alias for the market map result.
+	MarketMapResult = providertypes.Result[*mmtypes.GetMarketMapResponse]
+
 	// ResolvedMarketMap is a type alias for the resolved market map.
-	ResolvedMarketMap = map[Chain]providertypes.Result[*mmtypes.GetMarketMapResponse]
+	ResolvedMarketMap = map[Chain]MarketMapResult
 
 	// UnResolvedMarketMap is a type alias for the unresolved market map.
 	UnResolvedMarketMap = map[Chain]error
