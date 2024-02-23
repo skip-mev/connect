@@ -276,6 +276,9 @@ func NewSimApp(
 
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
+	// set hooks
+	app.MarketMapKeeper.SetHooks(app.OracleKeeper.Hooks())
+
 	//----------------------------------------------------------------------//
 	//						  ORACLE INITIALIZATION 						//
 	//----------------------------------------------------------------------//

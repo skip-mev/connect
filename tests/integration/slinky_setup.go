@@ -345,18 +345,6 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
-		Authority:     authority,
-		CurrencyPairs: cps,
-	}}...)
-	if err != nil {
-		return err
-	}
-
-	if err = PassProposal(chain, propId, timeout); err != nil {
-		return fmt.Errorf("unable to pass oracle proposal: %w", err)
-	}
-
 	creates := make([]mmtypes.CreateMarket, len(cps))
 	for i, cp := range cps {
 		creates[i] = mmtypes.CreateMarket{
@@ -374,13 +362,10 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 					},
 				},
 			},
-			Paths: mmtypes.Paths{
-				Paths: []mmtypes.Path{},
-			},
 		}
 	}
 
-	propId, err = SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), s.user.KeyName(), []sdk.Msg{&mmtypes.MsgUpdateMarketMap{
+	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), s.user.KeyName(), []sdk.Msg{&mmtypes.MsgUpdateMarketMap{
 		Signer:        s.authority.String(),
 		CreateMarkets: creates,
 	}}...)

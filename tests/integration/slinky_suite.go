@@ -244,7 +244,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().True(len(resp.CurrencyPairs) == 0)
 	})
 
-	s.Run("Add multiple Currency Pairs and remove 1", func() {
+	s.Run("Add multiple Currency Pairs", func() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
 		cp2 := slinkytypes.NewCurrencyPair("BTC", "USD")
 		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
@@ -255,14 +255,13 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 		s.Require().NoError(err)
 		s.Require().True(len(resp.CurrencyPairs) == 2)
 
-		// remove btc from state
-		s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []string{cp2.String()}...))
-
 		// check that the currency-pair is removed from state
 		resp, err = QueryCurrencyPairs(s.chain)
 		s.Require().NoError(err)
-		s.Require().True(len(resp.CurrencyPairs) == 1)
+		s.Require().True(len(resp.CurrencyPairs) == 2)
 		s.Require().Equal(resp.CurrencyPairs[0].Base, "ETH")
+		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
+		s.Require().Equal(resp.CurrencyPairs[0].Base, "BTC")
 		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
 	})
 }

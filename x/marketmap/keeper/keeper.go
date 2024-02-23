@@ -185,10 +185,6 @@ func (k *Keeper) GetAllPathsMap(ctx sdk.Context) (map[string]types.Paths, error)
 // CreatePaths initializes a new Paths.
 // The Ticker.String corresponds to a market, and must be unique.
 func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ticker) error {
-	if paths.Paths == nil {
-		paths.Paths = make([]types.Path, 0)
-	}
-
 	// Check if MarketConfig already exists for the provider
 	alreadyExists, err := k.paths.Has(ctx, types.TickerString(ticker.String()))
 	if err != nil {
