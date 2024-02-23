@@ -14,10 +14,10 @@ const (
 // DefaultAPIConfig returns the default configuration for the MarketMap API.
 var DefaultAPIConfig = config.APIConfig{
 	Name:       Name,
-	Atomic:     false,
+	Atomic:     true,
 	Enabled:    true,
 	Timeout:    500 * time.Millisecond,
 	Interval:   1 * time.Second,
-	MaxQueries: 5,
+	MaxQueries: 1,
 	URL:        "http://localhost:1317/slinky/marketmap/v1/marketmap",
 }
