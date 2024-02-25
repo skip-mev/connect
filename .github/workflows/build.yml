@@ -1,4 +1,4 @@
-name: Deploy server
+name: Build Slinky docker images
 
 on:
   push:
