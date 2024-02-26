@@ -56,7 +56,18 @@ must always be greater than the current value.
 
 ## Events
 
-TODO BLO-921
+The marketmap module emits the following events:
+
+### CreateMarket
+
+| Attribute Key      | Attribute Value |
+|--------------------|-----------------|
+| currency_pair      | {CurrencyPair}  |
+| decimals           | {uint64}        |
+| min_provider_count | {uint64}        |
+| metadata           | {json string}   |
+| providers          | {[]Provider}    |
+| paths              | {[]Path]}       |
 
 ## Hooks
 
