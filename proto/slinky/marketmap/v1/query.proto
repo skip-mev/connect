@@ -47,6 +47,9 @@ message GetMarketMapResponse {
   // Version is the schema version for the MarketMap data structure and query
   // response.
   uint64 version = 3;
+
+  // ChainId is the chain identifier for the market map.
+  string chain_id = 4;
 }
 
 // ParamsRequest is the request type for the Query/Params RPC method.
