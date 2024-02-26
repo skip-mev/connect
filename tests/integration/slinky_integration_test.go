@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/skip-mev/slinky/x/incentives"
+	marketmapmodule "github.com/skip-mev/slinky/x/marketmap/module"
+	"github.com/skip-mev/slinky/x/sla"
+
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -41,6 +45,9 @@ var (
 		gov.AppModuleBasic{},
 		alerts.AppModuleBasic{},
 		auth.AppModuleBasic{},
+		marketmapmodule.AppModuleBasic{},
+		incentives.AppModuleBasic{},
+		sla.AppModuleBasic{},
 	)
 
 	VotingPeriod     = "10s"
