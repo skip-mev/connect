@@ -62,7 +62,7 @@ install:
 docker-build:
 	@echo "Building E2E Docker image..."
 	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
-	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.e2e.oracle.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.Dockerfile .
 
 .PHONY: docker-build
 

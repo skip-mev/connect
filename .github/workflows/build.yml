@@ -12,7 +12,8 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.e2e.oracle.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}]
+        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"},
+                {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
     runs-on: ubuntu-latest
     env:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
