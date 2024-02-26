@@ -106,6 +106,5 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 		gotProviders, err := s.keeper.GetAllProvidersMap(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(gs.MarketMap.Providers, gotProviders)
-
 	})
 }

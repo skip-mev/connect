@@ -30,5 +30,4 @@ func TestProviderConfigValidateBasic(t *testing.T) {
 		}
 		require.Error(t, pc.ValidateBasic())
 	})
-
 }
