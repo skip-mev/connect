@@ -56,6 +56,7 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.GetMarketMa
 			},
 			LastUpdated: lastUpdated,
 			Version:     params.Version,
+			ChainId:     ctx.ChainID(),
 		},
 		err
 }
