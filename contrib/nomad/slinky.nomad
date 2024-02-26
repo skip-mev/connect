@@ -23,8 +23,6 @@ job "slinky-dev" {
       tags = [
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-sidecar-dev-http-service.rule=Host(`slinky-sidecar-dev-http.skip-internal.money`)",
-        "traefik.http.routers.slinky-sidecar-dev-http-service.entrypoints=internal",
       ]
     }
 
@@ -112,6 +110,10 @@ job "slinky-dev" {
       name = "slinky-simapp-dev-lcd-service"
       port = "1317"
 
+      connect {
+          sidecar_service {}
+      }
+
       tags = [
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
@@ -123,6 +125,10 @@ job "slinky-dev" {
     service {
       name = "slinky-simapp-dev-app-metrics-service"
       port = "8001"
+
+      connect {
+          sidecar_service {}
+      }
 
       tags = [
         "metrics",
