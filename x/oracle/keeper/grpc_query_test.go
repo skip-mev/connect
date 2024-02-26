@@ -34,7 +34,7 @@ func (s *KeeperTestSuite) TestGetAllCurrencyPairs() {
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
 			Base:  "EE",
 			Quote: "FF",
-		}
+		}))
 
 		// manually insert a new CurrencyPair as well
 		s.Require().NoError(s.oracleKeeper.SetPriceForCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
