@@ -199,22 +199,16 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 		// init genesis
 		s.oracleKeeper.InitGenesis(s.ctx, gs)
 
-		// add un-initialized CurrencyPairs
-		ms := keeper.NewMsgServer(s.oracleKeeper)
-		_, err := ms.AddCurrencyPairs(s.ctx, &types.MsgAddCurrencyPairs{
-			Authority: moduleAuthAddr.String(),
-			CurrencyPairs: []slinkytypes.CurrencyPair{
-				{
-					Base:  "EE",
-					Quote: "FF",
-				},
-				{
-					Base:  "GG",
-					Quote: "HH",
-				},
-			},
-		})
-		s.Require().Nil(err)
+		// add currency pairs
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+			Base:  "EE",
+			Quote: "FF",
+		}))
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
+			Base:  "GG",
+			Quote: "HH",
+		}))
 
 		// setup expected values
 		expectedCurrencyPairs := map[string]struct{}{"AA/BB": {}, "CC/DD": {}, "EE/FF": {}, "GG/HH": {}}

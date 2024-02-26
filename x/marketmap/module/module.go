@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/gorilla/mux"
+
 	"cosmossdk.io/core/appmodule"
 
 	cometabci "github.com/cometbft/cometbft/abci/types"
@@ -74,10 +76,18 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	return gs.ValidateBasic()
 }
 
+// RegisterRESTRoutes does nothing as no RESTful routes exist for the marketmap module (outside of those served via the grpc-gateway).
+func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
+
+// RegisterInvariants registers the invariants of the marketmap module. If an invariant
+// deviates from its predicted value, the InvariantRegistry triggers appropriate
+// logic (most often the chain will be halted). No invariants exist for the marketmap module.
+func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+
 // AppModule is the actual app module for x/marketmap.
 type AppModule struct {
 	AppModuleBasic
-	k keeper.Keeper
+	k *keeper.Keeper
 }
 
 // InitGenesis performs the genesis initialization for the x/marketmap module. It determines the
@@ -104,8 +114,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 
 // RegisterServices registers the module's services with the app's module configurator.
 func (am AppModule) RegisterServices(cfc module.Configurator) {
-	// register MsgServer TODO
-	// types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(am.k))
+	// register MsgServer
+	types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(am.k))
 
 	// register Query Service
 	types.RegisterQueryServer(cfc.QueryServer(), keeper.NewQueryServer(am.k))
@@ -121,7 +131,7 @@ func (am AppModule) IsOnePerModuleType() {}
 func (am AppModule) IsAppModule() {}
 
 // NewAppModule constructs a new application module for the x/marketmap module.
-func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Codec, k *keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{
 			cdc: cdc,

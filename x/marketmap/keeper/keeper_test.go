@@ -3,6 +3,9 @@ package keeper_test
 import (
 	"testing"
 
+	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -21,23 +24,44 @@ type KeeperTestSuite struct {
 	ctx sdk.Context
 
 	// Keeper variables
-	authority sdk.AccAddress
-	keeper    keeper.Keeper
+	authority    sdk.AccAddress
+	keeper       *keeper.Keeper
+	oracleKeeper oraclekeeper.Keeper
+
+	hooks types.MarketMapHooks
 }
 
-func (s *KeeperTestSuite) initKeeper() keeper.Keeper {
-	key := storetypes.NewKVStoreKey(types.StoreKey)
-	ss := runtime.NewKVStoreService(key)
+func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
+	mmKey := storetypes.NewKVStoreKey(types.StoreKey)
+	oracleKey := storetypes.NewKVStoreKey(oracletypes.StoreKey)
+	mmSS := runtime.NewKVStoreService(mmKey)
+	oracleSS := runtime.NewKVStoreService(oracleKey)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
-	s.authority = sdk.AccAddress("authority")
-	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key")).WithBlockHeight(10)
+	keys := map[string]*storetypes.KVStoreKey{
+		types.StoreKey:       mmKey,
+		oracletypes.StoreKey: oracleKey,
+	}
 
-	k := keeper.NewKeeper(ss, encCfg.Codec, s.authority)
+	transientKeys := map[string]*storetypes.TransientStoreKey{
+		types.StoreKey:       storetypes.NewTransientStoreKey("transient_mm"),
+		oracletypes.StoreKey: storetypes.NewTransientStoreKey("transient_oracle"),
+	}
+
+	s.authority = sdk.AccAddress("authority")
+	s.ctx = testutil.DefaultContextWithKeys(keys, transientKeys, nil).WithBlockHeight(10)
+
+	k := keeper.NewKeeper(mmSS, encCfg.Codec, s.authority)
 	s.Require().NoError(k.SetLastUpdated(s.ctx, s.ctx.BlockHeight()))
 
 	params := types.NewParams(s.authority.String(), 10)
 	s.Require().NoError(k.SetParams(s.ctx, params))
+
+	s.oracleKeeper = oraclekeeper.NewKeeper(oracleSS, encCfg.Codec, k, s.authority)
+	s.hooks = types.MultiMarketMapHooks{
+		s.oracleKeeper.Hooks(),
+	}
+	k.SetHooks(s.hooks)
 
 	return k
 }
