@@ -101,14 +101,72 @@ func TestComputeMedian(t *testing.T) {
 
 			for asset, expectedPrice := range tc.expectedPrices {
 				price, ok := prices[asset]
-				if !ok {
-					t.Fatalf("expected price for asset %s", asset)
-				}
-
-				if price.Cmp(expectedPrice) != 0 {
-					t.Fatalf("expected price %s, got %s", expectedPrice, price)
-				}
+				require.True(t, ok)
+				require.Equal(t, expectedPrice, price)
 			}
+		})
+	}
+}
+
+func TestSortBigInts(t *testing.T) {
+	testCases := []struct {
+		name     string
+		values   []*big.Int
+		expected []*big.Int
+	}{
+		{
+			name: "do nothing for nil slice",
+		},
+		{
+			name: "sort a slice",
+			values: []*big.Int{
+				big.NewInt(10),
+				big.NewInt(-2),
+				big.NewInt(100),
+				big.NewInt(0),
+				big.NewInt(0),
+			},
+			expected: []*big.Int{
+				big.NewInt(-2),
+				big.NewInt(0),
+				big.NewInt(0),
+				big.NewInt(10),
+				big.NewInt(100),
+			},
+		},
+		{
+			name: "do nothing for same values",
+			values: []*big.Int{
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(-2),
+				big.NewInt(100),
+				big.NewInt(0),
+				big.NewInt(0),
+			},
+			expected: []*big.Int{
+				big.NewInt(-2),
+				big.NewInt(0),
+				big.NewInt(0),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(10),
+				big.NewInt(100),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			median.SortBigInts(tc.values)
+			require.Equal(t, tc.expected, tc.values)
 		})
 	}
 }
