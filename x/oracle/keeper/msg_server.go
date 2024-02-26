@@ -31,6 +31,10 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 		return nil, fmt.Errorf("message cannot be empty")
 	}
 
+	if m.k.mmKeeper != nil {
+		return nil, fmt.Errorf("x/oracle message server is disabled when using x/marketmap")
+	}
+
 	// check that the authority of the message is the authority of the module
 	if req.Authority != m.k.authority.String() {
 		return nil, fmt.Errorf("message validation failed: authority %s is not module authority %s", req.Authority, m.k.authority)
@@ -56,6 +60,10 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 	// check validity of message
 	if req == nil {
 		return nil, fmt.Errorf("message cannot be empty")
+	}
+
+	if m.k.mmKeeper != nil {
+		return nil, fmt.Errorf("x/oracle message server is disabled when using x/marketmap")
 	}
 
 	// check that the authority of the message is the authority of the module
