@@ -18,8 +18,6 @@ jobs:
     env:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
       repo_name: skip-mev/${{ matrix.image.name }}
-    outputs:
-      ${{ matrix.image.name }}-image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -61,6 +59,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+      - uses: cloudposse/github-action-matrix-outputs-write@0.3.1
+        id: out
+        with:
+          matrix-step-name: github-action-matrix-outputs-read
+          matrix-key: ${{ matrix.image.name }}
+          outputs: |-
+            image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
@@ -92,7 +97,11 @@ jobs:
           jwtGithubAudience: sigstore
           secrets: |
             nomad/creds/slinky-pipeline-dev secret_id | NOMAD_TOKEN
+      - uses: cloudposse/github-action-matrix-outputs-read@main
+        id: matrix_output
+        with:
+          matrix-step-name: github-action-matrix-outputs-read
       - name: Deploy image to Nomad
         env:
           NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
-        run: make CHAIN_IMAGE=${{ needs.build.outputs["slinky-testapp-image"] }} SIDECAR_IMAGE=${{ needs.build.outputs["slinky-e2e-sidecar-image"] }} deploy-dev
+        run: make CHAIN_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image["slinky-testapp"] }} SIDECAR_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image["slinky-e2e-sidecar-image"] }} deploy-dev
