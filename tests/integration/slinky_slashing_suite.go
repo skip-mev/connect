@@ -234,7 +234,10 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		// check if the BTC/USD currency pair exists
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-			CurrencyPair: cp,
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BTC",
+				Quote: "USD",
+			},
 		})
 		s.Require().NoError(err)
 
