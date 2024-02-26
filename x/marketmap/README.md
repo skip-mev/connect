@@ -72,13 +72,8 @@ The following hooks can be registered:
 
 * `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
     * Called after a new market is updated in `UpdateMarket` message server.
-TODO BLO-866
 
 ## Client
-
-### CLI
-
-TODO BLO-920
 
 ### gRPC
 
@@ -171,7 +166,7 @@ Example response:
 
 #### Params
 
-The params command allows users to query values set as marketmap parameters.
+The params query allows users to query values set as marketmap parameters.
 
 Example:
 
@@ -187,4 +182,29 @@ Example response:
     "marketAuthority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
   }
 }
+```
+
+### CLI
+
+A user can query the `marketmap` module using the CLI.
+
+#### MarketMap
+
+The `MarketMap` endpoint queries the full state of the market map as well as associated information such as
+`LastUpdated` and `Version`.
+
+Example:
+
+```shell
+  slinkyd q marketmap market-map
+```
+
+#### Params
+
+The params query allows users to query values set as marketmap parameters.
+
+Example:
+
+```shell
+  slinkyd q marketmap params
 ```

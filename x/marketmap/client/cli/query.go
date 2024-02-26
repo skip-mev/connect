@@ -21,6 +21,7 @@ func GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(
 		CmdQueryParams(),
 		CmdQueryMarketMap(),
+		CmdQueryLastUpdated(),
 	)
 
 	return cmd
@@ -65,6 +66,31 @@ func CmdQueryMarketMap() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.MarketMap(clientCtx.CmdContext, &types.GetMarketMapRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func CmdQueryLastUpdated() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "last-updated",
+		Short: "Query the last height the market map was updated at",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.LastUpdated(clientCtx.CmdContext, &types.GetLastUpdatedRequest{})
 			if err != nil {
 				return err
 			}
