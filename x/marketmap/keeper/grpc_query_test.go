@@ -7,6 +7,7 @@ import (
 
 func (s *KeeperTestSuite) TestMarketMap() {
 	qs := keeper.NewQueryServer(s.keeper)
+	s.ctx = s.ctx.WithChainID("test-chain")
 
 	s.Run("invalid for nil request", func() {
 		_, err := qs.MarketMap(s.ctx, nil)
@@ -25,6 +26,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 			},
 			LastUpdated: s.ctx.BlockHeight(),
 			Version:     10,
+			ChainId:     "test-chain",
 		}
 
 		s.Require().Equal(expected, resp)
@@ -53,6 +55,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 		expected := &types.GetMarketMapResponse{
 			MarketMap:   expectedMarketMap,
 			LastUpdated: s.ctx.BlockHeight(),
+			ChainId:     "test-chain",
 		}
 
 		s.Require().Equal(expected.LastUpdated, resp.LastUpdated)
