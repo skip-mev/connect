@@ -75,6 +75,12 @@ jobs:
           uri: 'https://releases.hashicorp.com/levant/0.3.2/levant_0.3.2_linux_amd64.zip'
           name: 'levant'
           version: 'v0.3.2'
+      - name: Connect to Tailnet
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_SECRET }}
+          tags: tag:githubactions
       - name: Import Secrets
         id: import-secrets
         uses: hashicorp/vault-action@v2
@@ -87,12 +93,6 @@ jobs:
           jwtGithubAudience: sigstore
           secrets: |
             nomad/creds/slinky-pipeline-dev secret_id | NOMAD_TOKEN
-      - name: Connect to Tailnet
-        uses: tailscale/github-action@v2
-        with:
-          oauth-client-id: ${{ secrets.TAILSCALE_ID }}
-          oauth-secret: ${{ secrets.TAILSCALE_SECRET }}
-          tags: tag:githubactions
       - name: Deploy image to Nomad
         env:
           NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
