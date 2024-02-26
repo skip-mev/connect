@@ -13,7 +13,7 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	// register the msg-types
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateMarketMap{}, "slinky/x/marketmap/MsgUpdateMarketMap")
-	// legacy.RegisterAminoMsg(cdc, &MsgParams{}, "slinky/x/marketmap/MsgParams")
+	legacy.RegisterAminoMsg(cdc, &MsgParams{}, "slinky/x/marketmap/MsgParams")
 }
 
 // RegisterInterfaces registers the x/marketmap messages + message service w/ the InterfaceRegistry (registry).
@@ -21,7 +21,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	// register the implementations of Msg-type
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdateMarketMap{},
-		// &MsgParams{},
+		&MsgParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

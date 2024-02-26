@@ -293,7 +293,7 @@ func (k Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp slinkytypes.Cur
 }
 
 // GetDecimalsForCurrencyPair gets the decimals used for the given currency pair.  If the market map is not enabled
-// with the x/oracle module, the legacy Decimals function is used
+// with the x/oracle module, the legacy Decimals function is used.
 func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (decimals uint64, err error) {
 	if k.mmKeeper == nil {
 		return uint64(cp.LegacyDecimals()), nil
