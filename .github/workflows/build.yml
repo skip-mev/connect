@@ -104,4 +104,4 @@ jobs:
       - name: Deploy image to Nomad
         env:
           NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
-        run: make CHAIN_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-testapp'] }} SIDECAR_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-e2e-sidecar-image'] }} deploy-dev
+        run: make CHAIN_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-testapp'] }} SIDECAR_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-e2e-sidecar'] }} deploy-dev
