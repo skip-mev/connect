@@ -64,6 +64,6 @@ func (mm *MarketMap) ValidateBasic() error {
 }
 
 // String returns the string representation of the market map.
-func (mm MarketMap) String() string {
-	return fmt.Sprintf("MarketMap{Tickers: %v, Providers: %v, Paths: %v}", mm.Tickers, mm.Providers, mm.Paths)
+func (mm *MarketMap) String() string {
+	return fmt.Sprintf("MarketMap: {Tickers: %v, Providers: %v, Paths: %v}", mm.Tickers, mm.Providers, mm.Paths)
 }

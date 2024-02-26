@@ -11,7 +11,7 @@ go 1.22
 toolchain go1.22.0
 
 require (
-	cosmossdk.io/math v1.2.0
+	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.5
 	github.com/cosmos/cosmos-sdk v0.50.4-0.20240125183858-0abf94a334e3
 	github.com/pelletier/go-toml v1.9.5
