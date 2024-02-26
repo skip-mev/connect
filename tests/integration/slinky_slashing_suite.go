@@ -221,8 +221,6 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 		defer close()
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
-
 		// update the max-block-age
 		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 			AlertParams: alerttypes.AlertParams{
