@@ -53,7 +53,7 @@ func GetPriceCmd() *cobra.Command {
 
 			// query for prices
 			res, err := qc.GetPrice(cmd.Context(), &types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &cp},
+				CurrencyPair: cp,
 			})
 			if err != nil {
 				return err

@@ -103,33 +103,29 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			false,
 		},
 		{
-			"if the currency pair selector is nil, expect failure - fail",
+			"if the currency pair is empty, expect failure - fail",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: nil,
+				CurrencyPair: slinkytypes.CurrencyPair{},
 			},
 			nil,
 			false,
 		},
 		{
-			"if the currency pair selector's currency pair is nil, expect failure - fail",
-			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: nil},
+			name: "if the query is for a currency pair that does not exist fail - fail",
+			req: &types.GetPriceRequest{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "DD",
+					Quote: "EE",
+				},
 			},
-			nil,
-			false,
-		},
-		{
-			"if the query is for a currency pair that does not exist fail - fail",
-			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "DD/EE"},
-			},
-			nil,
-			false,
 		},
 		{
 			"if the query is for a currency-pair with no price, only the nonce (0) is returned - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPairId{CurrencyPairId: "CC/BB"},
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "CC",
+					Quote: "BB",
+				},
 			},
 			&types.GetPriceResponse{
 				Nonce:    0,
@@ -141,7 +137,10 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			&types.GetPriceRequest{
-				CurrencyPairSelector: &types.GetPriceRequest_CurrencyPair{CurrencyPair: &slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"}},
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "AA",
+					Quote: "ETHEREUM",
+				},
 			},
 			&types.GetPriceResponse{
 				Nonce: 12,
