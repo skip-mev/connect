@@ -122,7 +122,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	s.mockMetrics = metricmock.NewMetrics(s.T())
 
 	// Create the oracle keeper
-	s.oracleKeeper = testutils.CreateTestOracleKeeperWithGenesis(s.ctx, s.key, s.genesis)
+	s.oracleKeeper = testutils.CreateTestOracleKeeperWithGenesis(s.T(), s.ctx, s.key, s.genesis)
 
 	s.cpID = currencypairmock.NewCurrencyPairStrategy(s.T())
 

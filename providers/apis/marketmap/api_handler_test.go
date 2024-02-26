@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (
