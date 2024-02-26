@@ -15,7 +15,6 @@
 * [Client](#client)
     * [CLI](#cli)
     * [gRPC](#grpc)
-    * [REST](#rest)
 
 ## Concepts
 
@@ -197,6 +196,18 @@ Example:
 
 ```shell
   slinkyd q marketmap market-map
+```
+
+#### LastUpdated
+
+The `LastUpdated` query queries the last block height that the market map was updated.
+This can be consumed by oracle service providers to recognize when their local configurations
+must be updated using the heavier `MarketMap` query.
+
+Example:
+
+```shell
+  slinkyd q marketmap last-updated
 ```
 
 #### Params
