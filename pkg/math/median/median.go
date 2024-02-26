@@ -66,16 +66,16 @@ func CalculateMedian(values []*big.Int) *big.Int {
 		}
 	})
 
-	middle := len(values) / 2
+	middleIndex := len(values) / 2
 
 	// Calculate the median.
 	numValues := len(values)
 	var median *big.Int
-	if numValues%2 == 0 {
-		median = new(big.Int).Add(values[middle-1], values[middle])
+	if numValues%2 == 0 { // even
+		median = new(big.Int).Add(values[middleIndex-1], values[middleIndex])
 		median = median.Div(median, new(big.Int).SetUint64(2))
-	} else {
-		median = values[middle]
+	} else { // odd
+		median = values[middleIndex]
 	}
 
 	return median

@@ -1,6 +1,7 @@
 package median_test
 
 import (
+	"github.com/stretchr/testify/require"
 	"math/big"
 	"testing"
 
@@ -96,10 +97,7 @@ func TestComputeMedian(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			medianFn := median.ComputeMedian()
 			prices := medianFn(tc.providerPrices)
-
-			if len(prices) != len(tc.expectedPrices) {
-				t.Fatalf("expected %d prices, got %d", len(tc.expectedPrices), len(prices))
-			}
+			require.Equal(t, len(tc.expectedPrices), len(prices))
 
 			for asset, expectedPrice := range tc.expectedPrices {
 				price, ok := prices[asset]
