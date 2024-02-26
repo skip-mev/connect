@@ -65,6 +65,8 @@ jobs:
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
