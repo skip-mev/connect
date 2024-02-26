@@ -67,6 +67,7 @@ job "slinky-dev" {
 
       config {
         image = "[[ .sidecar_image ]]"
+        entrypoint = ["oracle", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json", "--host", "0.0.0.0", "--port", "8080"]
       }
 
       resources {
@@ -144,21 +145,23 @@ job "slinky-dev" {
     task "init" {
       driver = "docker"
 
+      volume_mount {
+        volume      = "data"
+        destination = "/src/slinky/tests/.slinkyd"
+        read_only   = false
+      }
+
       config {
-        image   = "[[ .chain_image ]]"
+        image      = "[[ .chain_image ]]"
         entrypoint = ["sh", "-c", "/tmp/init.sh"]
-        volumes = ["local/tmp/data:/src/slinky/tests/.slinkyd", "local/tmp/init.sh:/tmp/init.sh"]
+        volumes    = ["local/tmp/init.sh:/tmp/init.sh"]
       }
 
       template {
         data = <<EOH
 #!/bin/sh
-if [ -f /.slinkyd/config/app.toml ]; then
-  exit 0
-fi
-
 make build-configs
-sed -i 's\oracle:8080\localhost:8080\g' tests/.slinkyd/config/app.toml
+sed -i 's\oracle:8080\localhost:8080\g' /src/slinky/tests/.slinkyd/config/app.toml
         EOH
 
         perms = "777"
@@ -175,11 +178,15 @@ sed -i 's\oracle:8080\localhost:8080\g' tests/.slinkyd/config/app.toml
     task "chain" {
       driver = "docker"
 
+      volume_mount {
+        volume      = "data"
+        destination = "/src/slinky/tests/.slinkyd"
+        read_only   = false
+      }
+
       config {
-        image   = "[[ .chain_image ]]"
-        command = "make"
-        args    = ["start-app"]
-        volumes = ["local/tmp/data:/src/slinky/tests/.slinkyd"]
+        image      = "[[ .chain_image ]]"
+        entrypoint = ["make", "start-app"]
       }
 
       resources {

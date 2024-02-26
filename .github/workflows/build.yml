@@ -18,6 +18,9 @@ jobs:
     env:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
       repo_name: skip-mev/${{ matrix.image.name }}
+    outputs:
+      dev_sidecar_image: ${{ matrix.image.name == 'slinky-e2e-sidecar' && steps.meta.outputs.tags[0] || '' }}
+      dev_chain_image: ${{ matrix.image.name == 'slinky-testapp' && steps.meta.outputs.tags[0] || '' }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -59,3 +62,36 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - uses: supplypike/setup-bin@v3
+        with:
+          uri: 'https://releases.hashicorp.com/levant/0.3.2/levant_0.3.2_linux_amd64.zip'
+          name: 'levant'
+          version: 'v0.3.2'
+      - name: Import Secrets
+        id: import-secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://skip-vault-private-vault-d06595c8.c5ddaa90.z1.hashicorp.cloud:8200
+          role: "slinky-pipeline-dev-role"
+          path: "gha"
+          namespace: "admin/engineering"
+          method: jwt
+          jwtGithubAudience: sigstore
+          secrets: |
+            nomad/creds/slinky-pipeline-dev secret_id | NOMAD_TOKEN
+      - name: Connect to Tailnet
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_SECRET }}
+          tags: tag:githubactions
+      - name: Deploy image to Nomad
+        env:
+          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+        run: make CHAIN_IMAGE=${{ needs.build.outputs.dev_chain_image }} SIDECAR_IMAGE=${{ needs.build.outputs.dev_sidecar_image }} deploy-server
