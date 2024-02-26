@@ -30,6 +30,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 	s.Require().NoError(err)
 	s.Require().NotNil(resp)
 
+	// query the market map
 	queryResp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(queryResp.MarketMap, types.MarketMap{
@@ -46,6 +47,10 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 			usdtusd.String(): usdtusdProviders,
 		},
 	})
+
+	// query the oracle module to see if they were created via hooks
+	cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.CurrencyPair, usdtusd.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
 		msg = &types.MsgUpdateMarketMap{

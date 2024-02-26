@@ -10,11 +10,11 @@ import (
 )
 
 type queryServerImpl struct {
-	k Keeper
+	k *Keeper
 }
 
 // NewQueryServer returns an implementation of the x/marketmap QueryServer.
-func NewQueryServer(k Keeper) types.QueryServer {
+func NewQueryServer(k *Keeper) types.QueryServer {
 	return &queryServerImpl{k}
 }
 

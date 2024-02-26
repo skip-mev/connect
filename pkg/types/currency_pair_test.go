@@ -130,7 +130,7 @@ func TestDecimals(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.cp.Decimals(), tc.dec)
+			assert.Equal(t, tc.cp.LegacyDecimals(), tc.dec)
 		})
 	}
 }

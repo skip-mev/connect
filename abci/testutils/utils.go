@@ -15,22 +15,26 @@ import (
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/types/mocks"
 )
 
 // CreateTestOracleKeeperWithGenesis creates a test oracle keeper with the given genesis state.
-func CreateTestOracleKeeperWithGenesis(ctx sdk.Context, key *storetypes.KVStoreKey, genesis oracletypes.GenesisState) keeper.Keeper {
+func CreateTestOracleKeeperWithGenesis(t *testing.T, ctx sdk.Context, key *storetypes.KVStoreKey, genesis oracletypes.GenesisState) keeper.Keeper {
+	t.Helper()
+
 	ss := runtime.NewKVStoreService(key)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
-	keeper := keeper.NewKeeper(
+	k := keeper.NewKeeper(
 		ss,
 		encCfg.Codec,
-		sdk.AccAddress([]byte("authority")),
+		mocks.NewMarketMapKeeper(t),
+		sdk.AccAddress("authority"),
 	)
 
-	keeper.InitGenesis(ctx, genesis)
+	k.InitGenesis(ctx, genesis)
 
-	return keeper
+	return k
 }
 
 // CreateExtendedCommitInfo creates an extended commit info with the given commit info.

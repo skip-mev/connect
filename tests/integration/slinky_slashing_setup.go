@@ -3,7 +3,10 @@ package integration
 import (
 	"context"
 	"fmt"
+	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
@@ -45,7 +48,7 @@ func UpdateAlertParams(chain *cosmos.CosmosChain, authority, denom string, depos
 
 // SubmitAlert submits an alert to the chain, submitted by the given address
 func (s *SlinkySlashingIntegrationSuite) SubmitAlert(user cosmos.User, alert alerttypes.Alert) (*coretypes.ResultBroadcastTxCommit, error) {
-	tx := s.CreateTx(user, gasPrice, alerttypes.NewMsgAlert(
+	tx := CreateTx(s.T(), s.chain, user, gasPrice, alerttypes.NewMsgAlert(
 		alert,
 	))
 
@@ -61,7 +64,7 @@ func (s *SlinkySlashingIntegrationSuite) SubmitConclusion(user cosmos.User, conc
 	addr, err := sdk.AccAddressFromBech32(user.FormattedAddress())
 	s.Require().NoError(err)
 
-	tx := s.CreateTx(user, gasPrice, alerttypes.NewMsgConclusion(
+	tx := CreateTx(s.T(), s.chain, user, gasPrice, alerttypes.NewMsgConclusion(
 		conclusion,
 		addr,
 	))
@@ -75,7 +78,7 @@ func (s *SlinkySlashingIntegrationSuite) SubmitConclusion(user cosmos.User, conc
 func (s *SlinkySlashingIntegrationSuite) Delegate(user cosmos.User, validatorOperator string, tokens sdk.Coin) (*coretypes.ResultBroadcastTxCommit, error) {
 	msg := stakingtypes.NewMsgDelegate(user.FormattedAddress(), validatorOperator, tokens)
 
-	tx := s.CreateTx(user, gasPrice, msg)
+	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
 
 	// get an rpc endpoint for the chain
 	client := s.chain.Nodes()[0].Client
@@ -83,38 +86,38 @@ func (s *SlinkySlashingIntegrationSuite) Delegate(user cosmos.User, validatorOpe
 }
 
 // CreateTx creates a new transaction to be signed by the given user, including a provided set of messages
-func (s *SlinkySlashingIntegrationSuite) CreateTx(user cosmos.User, GasPrice int64, msgs ...sdk.Msg) []byte {
-	bc := cosmos.NewBroadcaster(s.T(), s.chain)
+func CreateTx(t *testing.T, chain *cosmos.CosmosChain, user cosmos.User, GasPrice int64, msgs ...sdk.Msg) []byte {
+	bc := cosmos.NewBroadcaster(t, chain)
 
 	ctx := context.Background()
 	// create tx factory + Client Context
 	txf, err := bc.GetFactory(ctx, user)
-	s.Require().NoError(err)
+	require.NoError(t, err)
 
 	cc, err := bc.GetClientContext(ctx, user)
-	s.Require().NoError(err)
+	require.NoError(t, err)
 
 	txf = txf.WithSimulateAndExecute(true)
 
 	txf, err = txf.Prepare(cc)
-	s.Require().NoError(err)
+	require.NoError(t, err)
 
 	// get gas for tx
 	txf.WithGas(25000000)
 
 	// update sequence number
 	txf = txf.WithSequence(txf.Sequence())
-	txf = txf.WithGasPrices(sdk.NewDecCoins(sdk.NewDecCoin(s.chain.Config().Denom, math.NewInt(GasPrice))).String())
+	txf = txf.WithGasPrices(sdk.NewDecCoins(sdk.NewDecCoin(chain.Config().Denom, math.NewInt(GasPrice))).String())
 
 	// sign the tx
 	txBuilder, err := txf.BuildUnsignedTx(msgs...)
-	s.Require().NoError(err)
+	require.NoError(t, err)
 
-	s.Require().NoError(tx.Sign(cc.CmdContext, txf, cc.GetFromName(), txBuilder, true))
+	require.NoError(t, tx.Sign(cc.CmdContext, txf, cc.GetFromName(), txBuilder, true))
 
 	// encode and return
 	bz, err := cc.TxConfig.TxEncoder()(txBuilder.GetTx())
-	s.Require().NoError(err)
+	require.NoError(t, err)
 	return bz
 }
 
@@ -137,7 +140,7 @@ func CreateKey(typ PrivKeyType) cryptotypes.PrivKey {
 	}
 }
 
-// QueryValidators queries for all of the network's validators
+// QueryValidators queries for all network's validators
 func QueryValidators(chain *cosmos.CosmosChain) ([]stakingtypes.Validator, error) {
 	// get grpc client of the node
 	grpcAddr := chain.GetHostGRPCAddress()
