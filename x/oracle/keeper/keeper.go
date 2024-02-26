@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"errors"
+	"fmt"
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/collections/indexes"
@@ -50,6 +51,9 @@ type Keeper struct {
 	storeService store.KVStoreService
 	cdc          codec.BinaryCodec
 
+	// expected keepers
+	mmKeeper types.MarketMapKeeper
+
 	// schema
 	nextCurrencyPairID collections.Sequence
 	currencyPairs      *collections.IndexedMap[string, types.CurrencyPairState, *oracleIndices]
@@ -66,6 +70,7 @@ type Keeper struct {
 func NewKeeper(
 	ss store.KVStoreService,
 	cdc codec.BinaryCodec,
+	mmKeeper types.MarketMapKeeper,
 	authority sdk.AccAddress,
 ) Keeper {
 	// create a new schema builder
@@ -82,6 +87,7 @@ func NewKeeper(
 		storeService:       ss,
 		cdc:                cdc,
 		authority:          authority,
+		mmKeeper:           mmKeeper,
 		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
 		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
 		idIndex:            idMulti,
@@ -139,7 +145,7 @@ func (k Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
 	return k.nextCurrencyPairID.Peek(ctx)
 }
 
-// GetNonceForCurrency Pair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
+// GetNonceForCurrencyPair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
 func (k Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error) {
 	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
@@ -284,4 +290,19 @@ func (k Keeper) IterateCurrencyPairs(ctx sdk.Context, cb func(cp slinkytypes.Cur
 	}
 
 	return nil
+}
+
+// GetDecimalsForCurrencyPair gets the decimals used for the given currency pair.  If the market map is not enabled
+// with the x/oracle module, the legacy Decimals function is used.
+func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (decimals uint64, err error) {
+	if k.mmKeeper == nil {
+		return uint64(cp.LegacyDecimals()), nil
+	}
+
+	ticker, err := k.mmKeeper.GetTicker(ctx, cp.String())
+	if err != nil {
+		return 0, fmt.Errorf("no ticker for CurrencyPair: %w", err)
+	}
+
+	return ticker.Decimals, nil
 }

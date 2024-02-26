@@ -42,7 +42,7 @@ type Keeper struct {
 }
 
 // NewKeeper initializes the keeper and its backing stores.
-func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) Keeper {
+func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.AccAddress) *Keeper {
 	sb := collections.NewSchemaBuilder(ss)
 
 	// Create the collections item that will track the module parameters.
@@ -53,7 +53,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 		codec.CollValue[types.Params](cdc),
 	)
 
-	return Keeper{
+	return &Keeper{
 		cdc:         cdc,
 		authority:   authority,
 		tickers:     collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
@@ -72,6 +72,11 @@ func (k *Keeper) SetLastUpdated(ctx sdk.Context, height int64) error {
 // GetLastUpdated gets the last block-height the market map was updated.
 func (k *Keeper) GetLastUpdated(ctx sdk.Context) (int64, error) {
 	return k.lastUpdated.Get(ctx)
+}
+
+// GetTicker returns a ticker from the store by its currency pair string ID.
+func (k *Keeper) GetTicker(ctx sdk.Context, tickerStr string) (types.Ticker, error) {
+	return k.tickers.Get(ctx, types.TickerString(tickerStr))
 }
 
 // GetAllTickers returns the set of Ticker objects currently stored in state.

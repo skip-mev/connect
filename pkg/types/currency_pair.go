@@ -58,9 +58,9 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 	return cp, cp.ValidateBasic()
 }
 
-// Decimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
-// the number of decimals is 18. Otherwise, the decimals will be reported to 8.
-func (cp *CurrencyPair) Decimals() int {
+// LegacyDecimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
+// the number of decimals is 18. Otherwise, the decimals will be reorted to 8.
+func (cp *CurrencyPair) LegacyDecimals() int {
 	if strings.ToUpper(cp.Quote) == ethereum {
 		return 18
 	}

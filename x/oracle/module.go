@@ -168,6 +168,9 @@ func init() {
 type Inputs struct {
 	depinject.In
 
+	// keepers
+	types.MarketMapKeeper
+
 	// module-dependencies
 	Config       *oraclemodulev1.Module
 	Cdc          codec.Codec
@@ -192,6 +195,7 @@ func ProvideModule(in Inputs) Outputs {
 	oracleKeeper := keeper.NewKeeper(
 		in.StoreService,
 		in.Cdc,
+		in.MarketMapKeeper,
 		authority,
 	)
 

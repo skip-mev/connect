@@ -13,6 +13,8 @@ import (
 )
 
 func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
+	s.SetupWithNoMMKeeper()
+
 	tcs := []struct {
 		name       string
 		req        *types.MsgAddCurrencyPairs
@@ -138,6 +140,8 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 }
 
 func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
+	s.SetupWithNoMMKeeper()
+
 	// insert CurrencyPairs that will be deleted in the test-cases
 	cp1 := slinkytypes.CurrencyPair{
 		Base:  "AA",
