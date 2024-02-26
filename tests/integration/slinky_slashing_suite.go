@@ -237,9 +237,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		// check if the BTC/USD currency pair exists
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: slinkytypes.CurrencyPairString("BTC", "USD"),
-			},
+			CurrencyPair: cp,
 		})
 		if err == nil {
 			// remove the currency-pair
@@ -284,9 +282,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		// check if the BTC/USD currency pair exists
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-			CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-				CurrencyPairId: cp.String(),
-			},
+			CurrencyPair: cp,
 		})
 		if err != nil {
 			// remove the currency-pair
@@ -395,9 +391,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	// expect that the above currency-pair is in state, so we can submit alerts that reference it
 	oraclesClient := oracletypes.NewQueryClient(cc)
 	_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-			CurrencyPairId: cp.String(),
-		},
+		CurrencyPair: cp,
 	})
 	if err != nil {
 		// remove the currency-pair
@@ -840,9 +834,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	oraclesClient := oracletypes.NewQueryClient(cc)
 	ctx := context.Background()
 	_, err = oraclesClient.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPairId{
-			CurrencyPairId: cp.String(),
-		},
+		CurrencyPair: cp,
 	})
 	if err != nil {
 		// add the currency-pair
