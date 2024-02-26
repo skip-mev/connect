@@ -41,7 +41,7 @@ type Inputs struct {
 type Outputs struct {
 	depinject.Out
 
-	MarketMapKeeper keeper.Keeper
+	MarketMapKeeper *keeper.Keeper
 	Module          appmodule.AppModule
 }
 

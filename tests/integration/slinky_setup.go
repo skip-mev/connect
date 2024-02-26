@@ -13,12 +13,13 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/rand"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml/v2"
 	interchaintest "github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -56,6 +57,7 @@ var (
 )
 
 // construct the network from a spec
+
 // ChainBuilderFromChainSpec creates an interchaintest chain builder factory given a ChainSpec
 // and returns the associated chain
 func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *cosmos.CosmosChain {
@@ -76,7 +78,7 @@ func ChainBuilderFromChainSpec(t *testing.T, spec *interchaintest.ChainSpec) *co
 	return cosmosChain
 }
 
-// SetOracleConfigOnApp writes the oracle configuration to the given node's application config.
+// SetOracleConfigsOnApp writes the oracle configuration to the given node's application config.
 func SetOracleConfigsOnApp(node *cosmos.ChainNode) {
 	oracle := GetOracleSideCar(node)
 
@@ -244,7 +246,7 @@ func GetChainGRPC(chain *cosmos.CosmosChain) (cc *grpc.ClientConn, close func(),
 	return cc, func() { cc.Close() }, nil
 }
 
-// QueryCurrencyPair queries the chain for the given CurrencyPair, this method returns the grpc response from the module
+// QueryCurrencyPairs queries the chain for the given CurrencyPair, this method returns the grpc response from the module
 func QueryCurrencyPairs(chain *cosmos.CosmosChain) (*oracletypes.GetAllCurrencyPairsResponse, error) {
 	// get grpc address
 	grpcAddr := chain.GetHostGRPCAddress()
@@ -329,37 +331,60 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 	// wait for the proposal to pass
 	if err := WaitForProposalStatus(chain, propId, timeout, govtypesv1.StatusPassed); err != nil {
-		return fmt.Errorf("proposal did not pass: %v", err)
+		prop, queryErr := QueryProposal(chain, propId)
+		if queryErr != nil {
+			return queryErr
+		}
+
+		return fmt.Errorf("proposal did not pass: %v, status: %v", err, prop.Proposal.FailedReason)
 	}
 	return nil
 }
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgAddCurrencyPairs{
-		Authority:     authority,
-		CurrencyPairs: cps,
-	}}...)
+func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
+	creates := make([]mmtypes.CreateMarket, len(cps))
+	for i, cp := range cps {
+		creates[i] = mmtypes.CreateMarket{
+			Ticker: mmtypes.Ticker{
+				CurrencyPair:     cp,
+				Decimals:         8,
+				MinProviderCount: 1,
+				Metadata_JSON:    "",
+			},
+			Providers: mmtypes.Providers{
+				Providers: []mmtypes.ProviderConfig{
+					{
+						Name:           "mexc",
+						OffChainTicker: cp.String(),
+					},
+				},
+			},
+		}
+	}
+
+	msg := &mmtypes.MsgUpdateMarketMap{
+		Signer:        s.user.FormattedAddress(),
+		CreateMarkets: creates,
+	}
+
+	tx := CreateTx(s.T(), s.chain, user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
+
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
 		return err
 	}
 
-	return PassProposal(chain, propId, timeout)
-}
-
-// RemoveCurrencyPairs creates + submits the proposal to remove the given currency-pairs from state, votes for the prop w/ all nodes,
-// and waits for the proposal to pass.
-func RemoveCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cpIDs ...string) error {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&oracletypes.MsgRemoveCurrencyPairs{
-		Authority:       authority,
-		CurrencyPairIds: cpIDs,
-	}}...)
-	if err != nil {
-		return err
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
 	}
 
-	return PassProposal(chain, propId, timeout)
+	return nil
 }
 
 // QueryProposal queries the chain for a given proposal
@@ -525,4 +550,18 @@ func (vv validatorVotes) Less(i, j int) bool {
 
 	// break ties by the sum of the prices for each validator
 	return iTotalPrice < jTotalPrice
+}
+
+// UpdateMarketMapParams creates + submits the proposal to update the marketmap params, votes for the prop w/ all nodes,
+// and waits for the proposal to pass.
+func UpdateMarketMapParams(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, params mmtypes.Params) (string, error) {
+	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&mmtypes.MsgParams{
+		Authority: authority,
+		Params:    params,
+	}}...)
+	if err != nil {
+		return "", err
+	}
+
+	return propId, PassProposal(chain, propId, timeout)
 }

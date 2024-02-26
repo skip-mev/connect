@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.5
 	github.com/cosmos/cosmos-sdk v0.50.4-0.20240125183858-0abf94a334e3
-	github.com/pelletier/go-toml v1.9.5
+	github.com/pelletier/go-toml/v2 v2.1.1
 	github.com/skip-mev/slinky v0.0.0-00010101000000-000000000000
 	github.com/strangelove-ventures/interchaintest/v8 v8.0.0
 	github.com/stretchr/testify v1.8.4
@@ -157,7 +157,7 @@ require (
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
+	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/petermattis/goid v0.0.0-20230904192822-1876fd5063bc // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect

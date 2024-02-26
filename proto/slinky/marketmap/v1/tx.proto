@@ -40,7 +40,7 @@ message CreateMarket {
 // x/marketmap module.
 message MsgUpdateMarketMap {
   option (cosmos.msg.v1.signer) = "signer";
-  option (amino.name) = "slinky/x/marketmap/MsgCreateMarkets";
+  option (amino.name) = "slinky/x/marketmap/MsgUpdateMarketMap";
 
   option (gogoproto.equal) = false;
 

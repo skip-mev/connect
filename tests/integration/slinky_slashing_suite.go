@@ -43,6 +43,8 @@ func NewSlinkySlashingIntegrationSuite(ss *SlinkyIntegrationSuite) *SlinkySlashi
 }
 
 func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
+	s.SlinkyIntegrationSuite.TearDownSuite()
+
 	s.SlinkyIntegrationSuite.SetupSuite()
 
 	// initialize multiSigUsers
@@ -55,9 +57,6 @@ func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
 }
 
 func (s *SlinkySlashingIntegrationSuite) SetupTest() {
-	// remove cps
-	s.SlinkyIntegrationSuite.SetupTest()
-
 	// get the validators after the slashing
 	validators, err := QueryValidators(s.chain)
 	s.Require().NoError(err)
@@ -71,8 +70,8 @@ func (s *SlinkySlashingIntegrationSuite) SetupTest() {
 			resp, err := s.Delegate(s.multiSigUser1, validator.OperatorAddress, toStake)
 			s.Require().NoError(err)
 
-			s.Require().Equal(resp.CheckTx.Code, uint32(0))
-			s.Require().Equal(resp.TxResult.Code, uint32(0))
+			s.Require().Equal(uint32(0), resp.CheckTx.Code)
+			s.Require().Equal(uint32(0), resp.TxResult.Code)
 		}
 	}
 
@@ -222,8 +221,6 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 		defer close()
 
-		cp := slinkytypes.NewCurrencyPair("BTC", "USD")
-
 		// update the max-block-age
 		_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, alerttypes.Params{
 			AlertParams: alerttypes.AlertParams{
@@ -239,10 +236,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
 			CurrencyPair: cp,
 		})
-		if err == nil {
-			// remove the currency-pair
-			s.Require().NoError(RemoveCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, []string{cp.String()}...))
-		}
+		s.Require().NoError(err)
 
 		// get the current height
 		height, err := s.chain.Height(context.Background())
@@ -257,14 +251,17 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			alerttypes.NewAlert(
 				height-1,
 				alertSubmitter,
-				cp,
+				slinkytypes.CurrencyPair{
+					Base:  "MOG",
+					Quote: "GOM",
+				},
 			),
 		)
 		s.Require().NoError(err)
 
 		// check the response from the chain
 		s.Require().Equal(resp.TxResult.Code, uint32(1))
-		s.Require().True(strings.Contains(resp.TxResult.Log, fmt.Sprintf("currency pair %v does not exist", cp)))
+		s.Require().True(strings.Contains(resp.TxResult.Log, fmt.Sprint("currency pair MOG/GOM does not exist")), resp.TxResult.Log)
 	})
 
 	// submit the alert (the max block-age set previously will suffice)
@@ -285,8 +282,8 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			CurrencyPair: cp,
 		})
 		if err != nil {
-			// remove the currency-pair
-			s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+			// add if there was an error
+			s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cp))
 		}
 
 		alertSubmitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -395,7 +392,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	})
 	if err != nil {
 		// remove the currency-pair
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cp))
 	}
 	// add pruning params with updated max-block-age
 
@@ -524,7 +521,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 		s.Run("wait for 10 blocks after commit height of first alert, and expect it to be pruned", func() {
 			// wait for commitheight + 10
-			height, err := ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{alert2})
+			height, err = ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{alert2})
 			s.Require().NoError(err)
 
 			// check that height > commitHeight + 10
@@ -540,7 +537,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 		s.Run("wait for blocksToPrune blocks after commit height of second alert, and expect it to be pruned", func() {
 			// wait for commitheight + 10
-			height, err := ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{})
+			height, err = ExpectAlerts(s.chain, s.blockTime*3, []alerttypes.Alert{})
 			s.Require().NoError(err)
 
 			// check that height > commitHeight + 10
@@ -556,7 +553,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	})
 
 	s.Run("test that after an alert is concluded, the alerts pruning height is updated", func() {
-		cc, close, err := GetChainGRPC(s.chain)
+		cc, close, err = GetChainGRPC(s.chain)
 		s.Require().NoError(err)
 
 		defer close()
@@ -838,7 +835,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	})
 	if err != nil {
 		// add the currency-pair
-		s.Require().NoError(AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, cp))
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cp))
 	}
 
 	// get the id for the currency-pair
