@@ -86,16 +86,16 @@ func (q queryServer) GetPrice(goCtx context.Context, req *types.GetPriceRequest)
 		return nil, fmt.Errorf("no ID found for CurrencyPair: %s", cp.String())
 	}
 
-	ticker, err := q.k.mmKeeper.GetTicker(ctx, cp.String())
+	decimals, err := q.k.GetDecimalsForCurrencyPair(ctx, cp)
 	if err != nil {
-		return nil, fmt.Errorf("no ticker for CurrencyPair")
+		return nil, err
 	}
 
 	// return the QuotePrice + Nonce
 	return &types.GetPriceResponse{
 		Price:    &qpn.QuotePrice,
 		Nonce:    qpn.Nonce(),
-		Decimals: ticker.Decimals,
+		Decimals: decimals,
 		Id:       id,
 	}, nil
 }
@@ -130,10 +130,15 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 			return nil, fmt.Errorf("no ID found for CurrencyPair: %v", cp)
 		}
 
+		decimals, err := q.k.GetDecimalsForCurrencyPair(ctx, cp)
+		if err != nil {
+			return nil, err
+		}
+
 		prices = append(prices, types.GetPriceResponse{
 			Price:    &qpn.QuotePrice,
 			Nonce:    qpn.Nonce(),
-			Decimals: uint64(cp.Decimals()),
+			Decimals: decimals,
 			Id:       id,
 		})
 	}
