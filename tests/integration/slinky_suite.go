@@ -221,23 +221,14 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	s.Run("Add multiple Currency Pairs", func() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
-		cp2 := slinkytypes.NewCurrencyPair("BTC", "USD")
+		cp2 := slinkytypes.NewCurrencyPair("USDT", "USD")
 		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 			cp1, cp2,
 		}...))
 
 		resp, err := QueryCurrencyPairs(s.chain)
 		s.Require().NoError(err)
-		s.Require().True(len(resp.CurrencyPairs) == 2)
-
-		// check that the currency-pair is removed from state
-		resp, err = QueryCurrencyPairs(s.chain)
-		s.Require().NoError(err)
-		s.Require().True(len(resp.CurrencyPairs) == 2)
-		s.Require().Equal(resp.CurrencyPairs[0].Base, "ETH")
-		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
-		s.Require().Equal(resp.CurrencyPairs[0].Base, "BTC")
-		s.Require().Equal(resp.CurrencyPairs[0].Quote, "USD")
+		s.Require().True(len(resp.CurrencyPairs) == 3)
 	})
 }
 

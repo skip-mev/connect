@@ -43,6 +43,8 @@ func NewSlinkySlashingIntegrationSuite(ss *SlinkyIntegrationSuite) *SlinkySlashi
 }
 
 func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
+	s.SlinkyIntegrationSuite.TearDownSuite()
+
 	s.SlinkyIntegrationSuite.SetupSuite()
 
 	// initialize multiSigUsers
@@ -55,10 +57,6 @@ func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
 }
 
 func (s *SlinkySlashingIntegrationSuite) SetupTest() {
-	s.TearDownSuite()
-	// remove cps
-	s.SetupSuite()
-
 	// get the validators after the slashing
 	validators, err := QueryValidators(s.chain)
 	s.Require().NoError(err)
@@ -72,8 +70,8 @@ func (s *SlinkySlashingIntegrationSuite) SetupTest() {
 			resp, err := s.Delegate(s.multiSigUser1, validator.OperatorAddress, toStake)
 			s.Require().NoError(err)
 
-			s.Require().Equal(resp.CheckTx.Code, uint32(0))
-			s.Require().Equal(resp.TxResult.Code, uint32(0))
+			s.Require().Equal(uint32(0), resp.CheckTx.Code)
+			s.Require().Equal(uint32(0), resp.TxResult.Code)
 		}
 	}
 
@@ -267,7 +265,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 
 		// check the response from the chain
 		s.Require().Equal(resp.TxResult.Code, uint32(1))
-		s.Require().True(strings.Contains(resp.TxResult.Log, fmt.Sprintf("currency pair %v does not exist", cp)))
+		s.Require().True(strings.Contains(resp.TxResult.Log, fmt.Sprint("currency pair MOG/GOM does not exist")), resp.TxResult.Log)
 	})
 
 	// submit the alert (the max block-age set previously will suffice)
@@ -290,7 +288,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			},
 		})
 		if err != nil {
-			// remove the currency-pair
+			// add if there was an error
 			s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cp))
 		}
 
