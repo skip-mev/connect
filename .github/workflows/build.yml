@@ -85,18 +85,6 @@ jobs:
           oauth-client-id: ${{ secrets.TAILSCALE_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_SECRET }}
           tags: tag:githubactions
-      - name: Import Secrets
-        id: import-secrets
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://skip-vault-private-vault-d06595c8.c5ddaa90.z1.hashicorp.cloud:8200
-          role: "slinky-pipeline-dev-role"
-          path: "gha"
-          namespace: "admin/engineering"
-          method: jwt
-          jwtGithubAudience: sigstore
-          secrets: |
-            nomad/creds/slinky-pipeline-dev secret_id | NOMAD_TOKEN
       - uses: cloudposse/github-action-matrix-outputs-read@main
         id: matrix_output
         with:
