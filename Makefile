@@ -138,7 +138,7 @@ build-configs:
 	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
 	./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
 	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BITCOIN", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BTC", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 	jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
