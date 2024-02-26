@@ -19,8 +19,7 @@ jobs:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
       repo_name: skip-mev/${{ matrix.image.name }}
     outputs:
-      dev_sidecar_image: ${{ matrix.image.name == 'slinky-e2e-sidecar' && steps.meta.outputs.tags || '' }}
-      dev_chain_image: ${{ matrix.image.name == 'slinky-testapp' && steps.meta.outputs.tags || '' }}
+      ${{ matrix.image.name }}-image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -96,4 +95,4 @@ jobs:
       - name: Deploy image to Nomad
         env:
           NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
-        run: make CHAIN_IMAGE=${{ needs.build.outputs.dev_chain_image }} SIDECAR_IMAGE=${{ needs.build.outputs.dev_sidecar_image }} deploy-dev
+        run: make CHAIN_IMAGE=${{ needs.build.outputs["slinky-testapp-image"] }} SIDECAR_IMAGE=${{ needs.build.outputs["slinky-e2e-sidecar-image"] }} deploy-dev
