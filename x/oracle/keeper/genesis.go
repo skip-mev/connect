@@ -27,7 +27,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	}
 
 	// set the next ID to state
-	k.nextCurrencyPairID.Set(ctx, gs.NextId)
+	if err := k.nextCurrencyPairID.Set(ctx, gs.NextId); err != nil {
+		panic(fmt.Errorf("error in genesis: %w", err))
+	}
 }
 
 // ExportGenesis retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.
