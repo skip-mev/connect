@@ -20,7 +20,7 @@ jobs:
       repo_name: skip-mev/${{ matrix.image.name }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -74,7 +74,7 @@ jobs:
       id-token: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: supplypike/setup-bin@v3
         with:
           uri: 'https://releases.hashicorp.com/levant/0.3.2/levant_0.3.2_linux_amd64.zip'
