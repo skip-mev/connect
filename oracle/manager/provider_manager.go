@@ -61,9 +61,6 @@ type (
 		// is enabled iff it is configured with a market map and the market map has tickers.
 		Enabled bool
 	}
-
-	// Option is a functional option for the market map state.
-	Option func(*ProviderManager)
 )
 
 // NewProviderManager returns a new provider manager.

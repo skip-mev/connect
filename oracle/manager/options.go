@@ -7,6 +7,9 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+// Option is a functional option for the market map state.
+type Option func(*ProviderManager)
+
 // WithLogger sets the logger for the provider manager.
 func WithLogger(logger *zap.Logger) Option {
 	return func(m *ProviderManager) {

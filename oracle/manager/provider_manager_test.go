@@ -6,11 +6,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/manager"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestInit(t *testing.T) {
@@ -29,11 +32,17 @@ func TestInit(t *testing.T) {
 		state := manager.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
-		for name, pState := range state {
-			require.Equal(t, name, pState.Provider.Name())
-			require.False(t, pState.Enabled)
-			require.Equal(t, 0, len(pState.Market.GetTickers()))
-		}
+		coinbaseState, ok := state[coinbase.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, false, coinbaseState)
+
+		okxState, ok := state[okx.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, okx.Name, false, providertypes.WebSockets, false, okxState)
+
+		binanceState, ok := state[binance.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
 	})
 
 	t.Run("creates some providers with a marketmap", func(t *testing.T) {
@@ -52,24 +61,20 @@ func TestInit(t *testing.T) {
 		state := manager.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
+		expectedTickers := []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}
+
 		coinbaseState, ok := state[coinbase.Name]
 		require.True(t, ok)
-		require.Equal(t, coinbaseState.Provider.Name(), coinbase.Name)
-		require.True(t, coinbaseState.Enabled)
-		require.Equal(t, 2, len(coinbaseState.Market.GetTickers()))
+		checkProviderState(t, expectedTickers, coinbase.Name, true, providertypes.API, false, coinbaseState)
 
 		okxState, ok := state[okx.Name]
 		require.True(t, ok)
-		require.Equal(t, okxState.Provider.Name(), okx.Name)
-		require.True(t, okxState.Enabled)
-		require.Equal(t, 2, len(okxState.Market.GetTickers()))
+		checkProviderState(t, expectedTickers, okx.Name, true, providertypes.WebSockets, false, okxState)
 
 		// Ensure that the provider that is not supported by the marketmap is not enabled.
 		binanceState, ok := state[binance.Name]
 		require.True(t, ok)
-		require.Equal(t, binanceState.Provider.Name(), binance.Name)
-		require.False(t, binanceState.Enabled)
-		require.Equal(t, 0, len(binanceState.Market.GetTickers()))
+		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
 	})
 
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {

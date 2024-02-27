@@ -1,16 +1,20 @@
 package manager_test
 
 import (
+	"testing"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/manager"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -61,3 +65,41 @@ var (
 		},
 	}
 )
+
+func checkProviderState(
+	t *testing.T,
+	expectedTickers []mmtypes.Ticker,
+	expectedName string,
+	enabled bool,
+	expectedType providertypes.ProviderType,
+	isRunning bool,
+	state manager.ProviderState,
+) {
+	// Ensure that the provider is enabled and supports the expected tickers.
+	provider := state.Provider
+	require.Equal(t, expectedName, provider.Name())
+	require.Equal(t, expectedType, provider.Type())
+
+	ids := provider.GetIDs()
+	require.Equal(t, len(expectedTickers), len(ids))
+	seenTickers := make(map[mmtypes.Ticker]bool)
+	for _, id := range ids {
+		seenTickers[id] = true
+	}
+	for _, ticker := range expectedTickers {
+		require.True(t, seenTickers[ticker])
+	}
+
+	// Check the market map.
+	market := state.Market
+	require.Equal(t, len(expectedTickers), len(market.GetTickers()))
+	for _, ticker := range market.GetTickers() {
+		require.True(t, seenTickers[ticker])
+	}
+
+	// Ensure that the provider is enabled/disabled.
+	require.Equal(t, enabled, state.Enabled)
+
+	// Ensure that the provider is running/no-running.
+	require.Equal(t, isRunning, provider.IsRunning())
+}
