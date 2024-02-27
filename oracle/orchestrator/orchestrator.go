@@ -63,8 +63,8 @@ type (
 	}
 )
 
-// NewProviderManager returns a new provider orchestrator.
-func NewProviderManager(
+// NewProviderOrchestrator returns a new provider orchestrator.
+func NewProviderOrchestrator(
 	cfg config.OracleConfig,
 	opts ...Option,
 ) (*ProviderOrchestrator, error) {

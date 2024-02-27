@@ -18,7 +18,7 @@ import (
 
 func TestInit(t *testing.T) {
 	t.Run("creates all providers without a marketmap", func(t *testing.T) {
-		o, err := orchestrator.NewProviderManager(
+		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
@@ -46,7 +46,7 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("creates some providers with a marketmap", func(t *testing.T) {
-		o, err := orchestrator.NewProviderManager(
+		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
@@ -78,7 +78,7 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {
-		o, err := orchestrator.NewProviderManager(
+		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
@@ -91,7 +91,7 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when the WebSocket query handler factory is not set", func(t *testing.T) {
-		o, err := orchestrator.NewProviderManager(
+		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
@@ -117,7 +117,7 @@ func TestInit(t *testing.T) {
 			},
 		})
 
-		o, err := orchestrator.NewProviderManager(
+		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
@@ -140,7 +140,7 @@ func TestInit(t *testing.T) {
 			WebSocket: okx,
 		})
 
-		o, err := orchestrator.NewProviderManager(
+		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
