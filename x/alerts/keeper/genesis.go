@@ -8,7 +8,7 @@ import (
 
 // InitGenesis initializes the module state from a GenesisState object. Specifically, this method sets the
 // params to state and adds all alerts from the genesis state to state.
-func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
+func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	// validate the genesis state
 	if err := gs.ValidateBasic(); err != nil {
 		panic(err)
@@ -29,7 +29,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 
 // ExportGenesis returns a GenesisState object containing the current module state. Specifically, this method
 // returns the current params and all alerts in state.
-func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
+func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	// get the params
 	params := k.GetParams(ctx)
 

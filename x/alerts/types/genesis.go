@@ -23,7 +23,7 @@ func NewGenesisState(params Params, alerts []AlertWithStatus) GenesisState {
 
 // ValidateBasic performs stateless validation on the GenesisState, specifically it
 // validates that the Params are valid, and that each of the alerts is also valid.
-func (gs GenesisState) ValidateBasic() error {
+func (gs *GenesisState) ValidateBasic() error {
 	// validate the genesis-state
 	if err := gs.Params.Validate(); err != nil {
 		return err
