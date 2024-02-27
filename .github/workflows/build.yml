@@ -68,6 +68,7 @@ jobs:
             image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
   deploy:
     needs: [build]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       id-token: write

@@ -9,9 +9,9 @@ services:
     build:
       context: .
       dockerfile: contrib/images/slinky.sidecar.e2e.Dockerfile
-    # volumes:
-    #   - ./config/local/oracle.json:/oracle/oracle.json
-    #   - ./config/local/market.json:/oracle/market.json
+    volumes:
+      - ./config/local/oracle.json:/oracle/oracle.json
+      - ./config/local/market.json:/oracle/market.json
     entrypoint: [
       "oracle", 
       "--oracle-config-path", "/etc/slinky/default_config/oracle.json", 

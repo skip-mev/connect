@@ -23,6 +23,8 @@ job "slinky-dev" {
       tags = [
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
+        "traefik.http.routers.slinky-sidecar-dev-http-service.rule=Host(`slinky-sidecar-dev-http.skip-internal.money`)",
+        "traefik.http.routers.slinky-sidecar-dev-http-service.entrypoints=internal",
       ]
     }
 
@@ -166,6 +168,8 @@ job "slinky-dev" {
       template {
         data = <<EOH
 #!/bin/sh
+rm -rf tests/.slinkyd/**
+
 make build-configs
 sed -i 's\oracle:8080\localhost:8080\g' /src/slinky/tests/.slinkyd/config/app.toml
         EOH
