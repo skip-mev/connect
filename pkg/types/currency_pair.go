@@ -17,7 +17,7 @@ func NewCurrencyPair(base, quote string) CurrencyPair {
 	}
 }
 
-// ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e
+// ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e.
 // Base + Quote are non-empty, and are in upper-case.
 func (cp *CurrencyPair) ValidateBasic() error {
 	// strings must be valid
@@ -58,7 +58,7 @@ func CurrencyPairFromString(s string) (CurrencyPair, error) {
 	return cp, cp.ValidateBasic()
 }
 
-// Decimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
+// LegacyDecimals returns the number of decimals that the quote will be reported to. If the quote is Ethereum, then
 // the number of decimals is 18. Otherwise, the decimals will be reorted to 8.
 func (cp *CurrencyPair) LegacyDecimals() int {
 	if strings.ToUpper(cp.Quote) == ethereum {
