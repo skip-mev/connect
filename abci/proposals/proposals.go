@@ -13,7 +13,6 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -46,10 +45,6 @@ type ProposalHandler struct {
 	// extendedCommitCodec is used to decode extended commit info.
 	extendedCommitCodec codec.ExtendedCommitCodec
 
-	// currencyPairStrategy is the strategy used to determine the price information
-	// from a given oracle vote extension.
-	currencyPairStrategy currencypair.CurrencyPairStrategy
-
 	// metrics is responsible for reporting / aggregating consensus-specific
 	// metrics for this validator.
 	metrics servicemetrics.Metrics
@@ -68,7 +63,6 @@ func NewProposalHandler(
 	validateVoteExtensionsFn ve.ValidateVoteExtensionsFn,
 	voteExtensionCodec codec.VoteExtensionCodec,
 	extendedCommitInfoCodec codec.ExtendedCommitCodec,
-	currencyPairStrategy currencypair.CurrencyPairStrategy,
 	metrics servicemetrics.Metrics,
 	opts ...Option,
 ) *ProposalHandler {
@@ -79,7 +73,6 @@ func NewProposalHandler(
 		validateVoteExtensionsFn: validateVoteExtensionsFn,
 		voteExtensionCodec:       voteExtensionCodec,
 		extendedCommitCodec:      extendedCommitInfoCodec,
-		currencyPairStrategy:     currencyPairStrategy,
 		metrics:                  metrics,
 	}
 

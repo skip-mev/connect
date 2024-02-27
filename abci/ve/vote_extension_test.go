@@ -384,81 +384,12 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 				}
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
-				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil)
-
-				cpStrategy.On("FromID", mock.Anything, uint64(1)).Return(ethUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, ethUSD, twoHundred.Bytes()).Return(twoHundred, nil)
-
-				return cpStrategy
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
 				Status: cometabci.ResponseVerifyVoteExtension_ACCEPT,
 			},
 			expectedError: false,
-		},
-		{
-			name: "invalid vote extension with bad id",
-			getReq: func() *cometabci.RequestVerifyVoteExtension {
-				prices := map[uint64][]byte{
-					0: oneHundred.Bytes(),
-				}
-
-				ve, err := testutils.CreateVoteExtensionBytes(
-					prices,
-					codec,
-				)
-				s.Require().NoError(err)
-
-				return &cometabci.RequestVerifyVoteExtension{
-					VoteExtension: ve,
-					Height:        1,
-				}
-			},
-			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
-				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, fmt.Errorf("error"))
-
-				return cpStrategy
-			},
-			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
-				Status: cometabci.ResponseVerifyVoteExtension_REJECT,
-			},
-			expectedError: true,
-		},
-		{
-			name: "invalid vote extension with bad price",
-			getReq: func() *cometabci.RequestVerifyVoteExtension {
-				prices := map[uint64][]byte{
-					0: oneHundred.Bytes(),
-				}
-
-				ve, err := testutils.CreateVoteExtensionBytes(
-					prices,
-					codec,
-				)
-				s.Require().NoError(err)
-
-				return &cometabci.RequestVerifyVoteExtension{
-					VoteExtension: ve,
-					Height:        1,
-				}
-			},
-			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
-				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, oneHundred.Bytes()).Return(nil, fmt.Errorf("error"))
-
-				return cpStrategy
-			},
-			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
-				Status: cometabci.ResponseVerifyVoteExtension_REJECT,
-			},
-			expectedError: true,
 		},
 		{
 			name: "vote extension with no prices",

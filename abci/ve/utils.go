@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
 )
@@ -15,7 +14,6 @@ import (
 // ValidateOracleVoteExtension validates the vote extension provided by a validator.
 func ValidateOracleVoteExtension(
 	ve vetypes.OracleVoteExtension,
-	strategy currencypair.CurrencyPairStrategy,
 ) error {
 	// Verify prices are valid.
 	for _, bz := range ve.Prices {
