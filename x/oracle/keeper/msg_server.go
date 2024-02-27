@@ -46,7 +46,10 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 		// only set the currency-pair if it does not already exist in state
 		if !m.k.HasCurrencyPair(ctx, cp) {
 			// set to state, initial nonce will be zero (no price updates have been made for this CurrencyPair)
-			m.k.CreateCurrencyPair(ctx, cp)
+			err := m.k.CreateCurrencyPair(ctx, cp)
+			if err != nil {
+				return nil, fmt.Errorf("error creating currency pair state: %w", err)
+			}
 		}
 	}
 
