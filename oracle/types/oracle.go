@@ -3,21 +3,47 @@ package types
 import (
 	"math/big"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/aggregator"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/types/factory"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 type (
-	// PriceProviderFactory is a type alias for the price provider factory.
-	PriceProviderFactory = factory.ProviderFactory[mmtypes.Ticker, *big.Int]
+	// PriceProviderFactory is a type alias for the price provider factory. This
+	// specifically only returns price providers that implement the provider interface
+	// and the additional base provider methods.
+	PriceProviderFactory = factory.BaseProviderFactory[mmtypes.Ticker, *big.Int]
 
-	// PriceProvider is a type alias for the price provider.
-	PriceProvider = providertypes.Provider[mmtypes.Ticker, *big.Int]
+	// PriceProviderFactory is a type alias for the price provider factory. This
+	// specifically only returns price providers that implement the provider interface.
+	PriceProviderFactoryI = factory.ProviderFactory[mmtypes.Ticker, *big.Int]
+
+	// PriceProvider is a type alias for the base price provider. This specifically
+	// implements the provider interface for the price provider along with the
+	// additional base provider methods.
+	PriceProvider = base.Provider[mmtypes.Ticker, *big.Int]
+
+	// PriceProviderI is a type alias for the price provider. This specifically
+	// implements the provider interface for the price provider.
+	PriceProviderI = providertypes.Provider[mmtypes.Ticker, *big.Int]
+
+	// PriceAPIQueryHandlerFactory is a type alias for the price API query handler factory.
+	// This is responsible for creating the API query handler for the price provider.
+	PriceAPIQueryHandlerFactory = func(
+		logger *zap.Logger,
+		cfg config.ProviderConfig,
+		apiMetrics apimetrics.APIMetrics,
+		pMarketMap ProviderMarketMap,
+	) (PriceAPIQueryHandler, error)
 
 	// PriceAPIDataHandler is a type alias for the price API data handler. This
 	// is responsible for parsing http responses and returning the resolved
@@ -28,6 +54,15 @@ type (
 	// is responsible for building the API query for the price provider and
 	// returning the resolved and unresolved prices.
 	PriceAPIQueryHandler = apihandlers.APIQueryHandler[mmtypes.Ticker, *big.Int]
+
+	// PriceWebSocketQueryHandlerFactory is a type alias for the price web socket query handler factory.
+	// This is responsible for creating the web socket query handler for the price provider.
+	PriceWebSocketQueryHandlerFactory = func(
+		logger *zap.Logger,
+		cfg config.ProviderConfig,
+		wsMetrics wsmetrics.WebSocketMetrics,
+		pMarketMap ProviderMarketMap,
+	) (PriceWebSocketQueryHandler, error)
 
 	// PriceWebSocketDataHandler is a type alias for the price web socket data handler.
 	// This is responsible for parsing web socket messages and returning the resolved
