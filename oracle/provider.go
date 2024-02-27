@@ -32,7 +32,7 @@ func (o *OracleImpl) StartProviders(ctx context.Context) {
 // to concurrently run until the context is canceled.
 func (o *OracleImpl) execProviderFn(
 	ctx context.Context,
-	p types.PriceProvider,
+	p types.PriceProviderI,
 ) func() error {
 	return func() error {
 		defer func() {
