@@ -24,7 +24,7 @@ const (
 	Ed25519Type   = "ed25519"
 )
 
-// NewMultiSigConclusion creates the parameters necessary for verification of a MultiSigConclusion. This method will
+// NewMultiSigVerificationParams creates the parameters necessary for verification of a MultiSigConclusion. This method will
 // derive the addresses corresponding to the provided public-keys, and will store the address -> public key mapping,
 // this method will fail if no public-keys are given, or if duplicates are provided.
 func NewMultiSigVerificationParams(pks []cryptotypes.PubKey) (ConclusionVerificationParams, error) {
@@ -67,7 +67,7 @@ func NewMultiSigVerificationParams(pks []cryptotypes.PubKey) (ConclusionVerifica
 // It also checks that there is at least 1 signer. This method also validates that the signers are not duplicated.
 //
 // NOTICE: the public-keys given must be of type secp2561k1, secp256r1, or ed25519.
-func (params MultiSigConclusionVerificationParams) ValidateBasic() error {
+func (params *MultiSigConclusionVerificationParams) ValidateBasic() error {
 	// check that there is at least 1 signer
 	if len(params.Signers) == 0 {
 		return fmt.Errorf("no signers provided")
@@ -128,7 +128,7 @@ func validatePkType(pkv cryptotypes.PubKey) error {
 
 // ValidateBasic validates the Conclusion. Specifically, it validates that the signers are valid bech32 addresses, and that the
 // sub-fields are non-nil.
-func (c MultiSigConclusion) ValidateBasic() error {
+func (c *MultiSigConclusion) ValidateBasic() error {
 	// check that the alert is valid
 	if err := c.Alert.ValidateBasic(); err != nil {
 		return err
@@ -143,7 +143,7 @@ func (c MultiSigConclusion) ValidateBasic() error {
 		return fmt.Errorf("no signatures provided")
 	}
 
-	// check that each signer is a vlaid bech32 address
+	// check that each signer is a valid bech32 address
 	for _, signature := range c.Signatures {
 		if _, err := sdk.AccAddressFromBech32(signature.Signer); err != nil {
 			return err
@@ -154,7 +154,7 @@ func (c MultiSigConclusion) ValidateBasic() error {
 }
 
 // Verify verifies the conclusion. Specifically, it verifies that the signatures are valid, and that the oracle-data is valid.
-func (c MultiSigConclusion) Verify(params ConclusionVerificationParams) error {
+func (c *MultiSigConclusion) Verify(params ConclusionVerificationParams) error {
 	// check that the params are valid
 	if err := params.ValidateBasic(); err != nil {
 		return err
@@ -212,9 +212,9 @@ func signaturesToSignersMap(signatures []Signature) map[string][]byte {
 	return signaturesMap
 }
 
-// SignBytes returns the bytes that should be signed by the signers. I.e the 20-byte truncated hash of the marshalled oracle-data,
+// SignBytes returns the bytes that should be signed by the signers, i.e. the 20-byte truncated hash of the marshalled oracle-data,
 // the alert UID, the price-bound, and the status.
-func (c MultiSigConclusion) SignBytes() ([]byte, error) {
+func (c *MultiSigConclusion) SignBytes() ([]byte, error) {
 	bz := make([]byte, 0)
 
 	// append oracle-data
