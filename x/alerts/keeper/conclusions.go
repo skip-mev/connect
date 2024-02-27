@@ -18,7 +18,7 @@ const (
 // ConcludeAlert takes an Alert and status. This method returns the Alert's bond to the Alert's owner if the Alert
 // is concluded with positive status, if the alert is concluded with negative status, the bond is burned.
 // Finally, the alert's status is set to Concluded, and it's purge height is set to alert.Height + AlertParams.MaxBlockAge.
-func (k Keeper) ConcludeAlert(ctx sdk.Context, alertToConclude types.Alert, status ConclusionStatus) error {
+func (k *Keeper) ConcludeAlert(ctx sdk.Context, alertToConclude types.Alert, status ConclusionStatus) error {
 	// check that the alert is valid
 	if err := alertToConclude.ValidateBasic(); err != nil {
 		return err
@@ -61,7 +61,7 @@ func (k Keeper) ConcludeAlert(ctx sdk.Context, alertToConclude types.Alert, stat
 }
 
 // unescrowBond sends the bond at the module account back to the alert's signer.
-func (k Keeper) unescrowBond(ctx sdk.Context, a types.Alert, bond sdk.Coin) error {
+func (k *Keeper) unescrowBond(ctx sdk.Context, a types.Alert, bond sdk.Coin) error {
 	alertSigner, err := sdk.AccAddressFromBech32(a.Signer)
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (k Keeper) unescrowBond(ctx sdk.Context, a types.Alert, bond sdk.Coin) erro
 }
 
 // burnBond burns the bond stored at the module account's address.
-func (k Keeper) burnBond(ctx sdk.Context, bond sdk.Coin) error {
+func (k *Keeper) burnBond(ctx sdk.Context, bond sdk.Coin) error {
 	// burn the coins
 	return k.bankKeeper.BurnCoins(
 		ctx,

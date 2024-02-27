@@ -99,8 +99,8 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if x.LastUpdated != int64(0) {
-		value := protoreflect.ValueOfInt64(x.LastUpdated)
+	if x.LastUpdated != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LastUpdated)
 		if !f(fd_GenesisState_last_updated, value) {
 			return
 		}
@@ -129,7 +129,7 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 	case "slinky.marketmap.v1.GenesisState.market_map":
 		return x.MarketMap != nil
 	case "slinky.marketmap.v1.GenesisState.last_updated":
-		return x.LastUpdated != int64(0)
+		return x.LastUpdated != uint64(0)
 	case "slinky.marketmap.v1.GenesisState.params":
 		return x.Params != nil
 	default:
@@ -151,7 +151,7 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 	case "slinky.marketmap.v1.GenesisState.market_map":
 		x.MarketMap = nil
 	case "slinky.marketmap.v1.GenesisState.last_updated":
-		x.LastUpdated = int64(0)
+		x.LastUpdated = uint64(0)
 	case "slinky.marketmap.v1.GenesisState.params":
 		x.Params = nil
 	default:
@@ -175,7 +175,7 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "slinky.marketmap.v1.GenesisState.last_updated":
 		value := x.LastUpdated
-		return protoreflect.ValueOfInt64(value)
+		return protoreflect.ValueOfUint64(value)
 	case "slinky.marketmap.v1.GenesisState.params":
 		value := x.Params
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -202,7 +202,7 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 	case "slinky.marketmap.v1.GenesisState.market_map":
 		x.MarketMap = value.Message().Interface().(*MarketMap)
 	case "slinky.marketmap.v1.GenesisState.last_updated":
-		x.LastUpdated = value.Int()
+		x.LastUpdated = value.Uint()
 	case "slinky.marketmap.v1.GenesisState.params":
 		x.Params = value.Message().Interface().(*Params)
 	default:
@@ -254,7 +254,7 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 		m := new(MarketMap)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "slinky.marketmap.v1.GenesisState.last_updated":
-		return protoreflect.ValueOfInt64(int64(0))
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "slinky.marketmap.v1.GenesisState.params":
 		m := new(Params)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -499,7 +499,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.LastUpdated |= int64(b&0x7F) << shift
+					x.LastUpdated |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -600,7 +600,7 @@ type GenesisState struct {
 	// LastUpdated is the last block height that the market map was updated.
 	// This field can be used as an optimization for clients checking if there
 	// is a new update to the map.
-	LastUpdated int64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	LastUpdated uint64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
 	// Params are the parameters for the x/marketmap module.
 	Params *Params `protobuf:"bytes,3,opt,name=params,proto3" json:"params,omitempty"`
 }
@@ -632,7 +632,7 @@ func (x *GenesisState) GetMarketMap() *MarketMap {
 	return nil
 }
 
-func (x *GenesisState) GetLastUpdated() int64 {
+func (x *GenesisState) GetLastUpdated() uint64 {
 	if x != nil {
 		return x.LastUpdated
 	}
@@ -664,7 +664,7 @@ var file_slinky_marketmap_v1_genesis_proto_rawDesc = []byte{
 	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61,
 	0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x6d,
 	0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x12, 0x21, 0x0a, 0x0c, 0x6c, 0x61, 0x73, 0x74,
-	0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b,
+	0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b,
 	0x6c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x39, 0x0a, 0x06, 0x70,
 	0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c,
 	0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76,

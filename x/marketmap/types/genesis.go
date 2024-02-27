@@ -2,22 +2,24 @@ package types
 
 // NewGenesisState returns an instance of GenesisState.
 func NewGenesisState(
-	tickers map[string]Ticker,
-	paths map[string]Paths,
-	providers map[string]Providers,
+	marketMap MarketMap,
+	lastUpdated uint64,
+	params Params,
 ) GenesisState {
 	return GenesisState{
-		MarketMap: MarketMap{
-			Tickers:   tickers,
-			Paths:     paths,
-			Providers: providers,
-		},
+		MarketMap:   marketMap,
+		LastUpdated: lastUpdated,
+		Params:      params,
 	}
 }
 
 // ValidateBasic performs basic validation on the GenesisState.
 func (gs *GenesisState) ValidateBasic() error {
-	return gs.MarketMap.ValidateBasic()
+	if err := gs.MarketMap.ValidateBasic(); err != nil {
+		return err
+	}
+
+	return gs.Params.ValidateBasic()
 }
 
 // DefaultGenesisState returns the default genesis of the marketmap module.
@@ -28,7 +30,7 @@ func DefaultGenesisState() *GenesisState {
 			Paths:     make(map[string]Paths),
 			Providers: make(map[string]Providers),
 		},
-		LastUpdated: 1,
+		LastUpdated: 0,
 		Params:      DefaultParams(),
 	}
 }

@@ -19,6 +19,9 @@ GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
 
+LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
+NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
+
 ###############################################################################
 ###                               build                                     ###
 ###############################################################################
@@ -62,7 +65,7 @@ install:
 docker-build:
 	@echo "Building E2E Docker image..."
 	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
-	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.e2e.oracle.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.Dockerfile .
 
 .PHONY: docker-build
 
@@ -127,7 +130,7 @@ $(BUILD_DIR)/:
 	mkdir -p $(BUILD_DIR)/
 
 # build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
-build-configs: build-test-app
+build-configs:
 	./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
 	./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
 	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
@@ -135,7 +138,7 @@ build-configs: build-test-app
 	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
 	./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
 	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BITCOIN", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BTC", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 	jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
@@ -266,3 +269,16 @@ format:
 	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*mocks*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run golang.org/x/tools/cmd/goimports -w -local github.com/skip-mev/slinky
 
 .PHONY: format
+
+###############################################################################
+###                                dev-deploy                               ###
+###############################################################################
+
+deploy-dev:
+	touch ${LEVANT_VAR_FILE}
+	yq e -i '.sidecar_image |= "${SIDECAR_IMAGE}"' ${LEVANT_VAR_FILE}
+	yq e -i '.chain_image |= "${CHAIN_IMAGE}"' ${LEVANT_VAR_FILE}
+	levant deploy -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_SLINKY}
+
+.PHONY: deploy-dev
+

@@ -58,13 +58,13 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 			keeper.Negative,
 			func(ctx sdk.Context) {
 				// set the alert with concluded AlertStatus
-				s.alertKeeper.SetAlert(
+				s.Require().NoError(s.alertKeeper.SetAlert(
 					ctx,
 					types.NewAlertWithStatus(
 						types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 						types.NewAlertStatus(1, 1, time.Now(), types.Concluded),
 					),
-				)
+				))
 			},
 			fmt.Errorf("alert already concluded"),
 			types.AlertWithStatus{},
@@ -75,13 +75,13 @@ func (s *KeeperTestSuite) TestConcludeAlert() {
 			keeper.ConclusionStatus(3),
 			func(ctx sdk.Context) {
 				// set the alert with concluded AlertStatus
-				s.alertKeeper.SetAlert(
+				s.Require().NoError(s.alertKeeper.SetAlert(
 					ctx,
 					types.NewAlertWithStatus(
 						types.NewAlert(1, sdk.AccAddress("abc"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 						types.NewAlertStatus(1, 1, time.Now(), types.Unconcluded),
 					),
-				)
+				))
 			},
 			fmt.Errorf("invalid status: 3"),
 			types.AlertWithStatus{},

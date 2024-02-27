@@ -44,7 +44,7 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 		{
 			"if any of the currency pairs are invalid - fail",
 			types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{Base: "A"},
 				},
@@ -54,7 +54,7 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 		{
 			"if all currency pairs are valid + authority is valid - pass",
 			types.MsgAddCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{Base: "A", Quote: "B"},
 					{Base: "C", Quote: "D"},
@@ -92,7 +92,7 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		{
 			"if any of the currency pairs are invalid - fail",
 			types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairIds: []string{
 					"AA",
 				},
@@ -102,7 +102,7 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		{
 			"if all currency pairs are valid + authority is valid - pass",
 			types.MsgRemoveCurrencyPairs{
-				Authority: sdk.AccAddress([]byte("abc")).String(),
+				Authority: sdk.AccAddress("abc").String(),
 				CurrencyPairIds: []string{
 					slinkytypes.CurrencyPairString("A", "B"),
 					slinkytypes.CurrencyPairString("C", "D"),
