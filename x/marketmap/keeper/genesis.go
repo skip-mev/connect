@@ -9,6 +9,9 @@ import (
 )
 
 // InitGenesis initializes the genesis state. Panics if there is an error.
+// Any modules that integrate with x/marketmap must set their InitGenesis to occur before the x/marketmap
+// module's InitGenesis.  This is so that logic any consuming modules may want to implement in AfterMarketGenesis
+// will be run properly.
 func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	// validate the genesis
 	if err := gs.ValidateBasic(); err != nil {
