@@ -174,6 +174,7 @@ var (
 						oracletypes.ModuleName,
 						incentivetypes.ModuleName,
 						alerttypes.ModuleName,
+						// market map genesis must be called AFTER all consuming modules (i.e. x/oracle, etc.)
 						marketmaptypes.ModuleName,
 					},
 					// When ExportGenesis is not specified, the export genesis module order

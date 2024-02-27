@@ -27,9 +27,8 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	}
 
 	// set the next ID to state
-	err := k.nextCurrencyPairID.Set(ctx, gs.NextId)
-	if err != nil {
-		panic(err)
+	if err := k.nextCurrencyPairID.Set(ctx, gs.NextId); err != nil {
+		panic(fmt.Errorf("error in genesis: %w", err))
 	}
 }
 
