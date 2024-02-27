@@ -14,8 +14,8 @@ import (
 //	It is used to determine which Alerts are to be purged, and if they should be purged, the alerts will be removed from state.
 //
 // If the AlertStatus of the Alert is concluded, nothing will be done. If the AlertStatus
-// is Unconcluded, the alert will be Concluded positively (i.e the bond will be returned to the bond-address).
-func (k Keeper) EndBlocker(goCtx context.Context) ([]cmtabci.ValidatorUpdate, error) {
+// is Unconcluded, the alert will be Concluded positively (i.e, the bond will be returned to the bond-address).
+func (k *Keeper) EndBlocker(goCtx context.Context) ([]cmtabci.ValidatorUpdate, error) {
 	// unwrap the context
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

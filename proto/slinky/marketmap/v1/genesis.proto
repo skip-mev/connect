@@ -16,7 +16,7 @@ message GenesisState {
   // LastUpdated is the last block height that the market map was updated.
   // This field can be used as an optimization for clients checking if there
   // is a new update to the map.
-  int64 last_updated = 2;
+  uint64 last_updated = 2;
 
   // Params are the parameters for the x/marketmap module.
   Params params = 3 [ (gogoproto.nullable) = false ];

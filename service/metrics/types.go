@@ -1,9 +1,11 @@
 package metrics
 
 const (
-	// Metric namespace.
+	// AppNamespace is the metric namespace.
 	AppNamespace = "app"
+
 	// Metrics labels.
+
 	TickerLabel           = "ticker"
 	InclusionLabel        = "included"
 	ProviderLabel         = "provider"
@@ -76,7 +78,7 @@ func (a ABCIMethod) String() string {
 	}
 }
 
-// ReportStatus is an identifier for the status of a report, this is used to label what kind of report a validator has given, i.e
+// ReportStatus is an identifier for the status of a report, this is used to label what kind of report a validator has given, i.e.
 // absent, missing_price, with_price.
 type ReportStatus int
 

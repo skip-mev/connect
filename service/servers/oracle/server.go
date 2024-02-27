@@ -80,7 +80,7 @@ func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 // StartServer starts the oracle gRPC server on the given host and port. The server is killed on any errors from the listener, or if ctx is cancelled.
-// This method returns an error via any failure from the listener. This is a blocking call, i.e until the server is closed or the server errors,
+// This method returns an error via any failure from the listener. This is a blocking call, i.e. until the server is closed or the server errors,
 // this method will block.
 func (os *OracleServer) StartServer(ctx context.Context, host, port string) error {
 	serverEndpoint := fmt.Sprintf("%s:%s", host, port)

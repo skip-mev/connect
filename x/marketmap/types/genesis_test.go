@@ -9,9 +9,16 @@ import (
 )
 
 func TestGenesisState(t *testing.T) {
-	t.Run("good empty genesis state", func(t *testing.T) {
+	t.Run("invalid empty genesis state - fail", func(t *testing.T) {
 		gs := types.GenesisState{}
-		require.NoError(t, gs.ValidateBasic())
+		require.Error(t, gs.ValidateBasic())
+	})
+
+	t.Run("invalid params - fail", func(t *testing.T) {
+		gs := types.DefaultGenesisState()
+
+		gs.Params.MarketAuthority = "invalid"
+		require.Error(t, gs.ValidateBasic())
 	})
 
 	t.Run("good populated genesis state", func(t *testing.T) {
@@ -33,6 +40,7 @@ func TestGenesisState(t *testing.T) {
 					usdcusd.String(): usdcusdProviders,
 				},
 			},
+			Params: types.DefaultParams(),
 		}
 		require.NoError(t, gs.ValidateBasic())
 	})

@@ -1,7 +1,7 @@
 package types
 
 import (
-	fmt "fmt"
+	"fmt"
 	"strings"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
