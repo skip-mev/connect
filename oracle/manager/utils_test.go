@@ -75,6 +75,8 @@ func checkProviderState(
 	isRunning bool,
 	state manager.ProviderState,
 ) {
+	t.Helper()
+
 	// Ensure that the provider is enabled and supports the expected tickers.
 	provider := state.Provider
 	require.Equal(t, expectedName, provider.Name())
