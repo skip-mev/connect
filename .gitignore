@@ -33,3 +33,4 @@ run.go
 # ide
 .idea/*
 .vscode/*
+**/.DS_Store
