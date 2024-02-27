@@ -247,7 +247,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_REJECT}, err
 		}
 
-		if err := ValidateOracleVoteExtension(ctx, voteExtension, h.currencyPairStrategy); err != nil {
+		if err := ValidateOracleVoteExtension(voteExtension, h.currencyPairStrategy); err != nil {
 			h.logger.Error(
 				"failed to validate vote extension",
 				"height", req.Height,

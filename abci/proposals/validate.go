@@ -44,7 +44,7 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 		}
 
 		// The vote extension are from the previous block.
-		if err := ve.ValidateOracleVoteExtension(ctx, voteExt, h.currencyPairStrategy); err != nil {
+		if err := ve.ValidateOracleVoteExtension(voteExt, h.currencyPairStrategy); err != nil {
 			h.logger.Error(
 				"failed to validate oracle vote extension",
 				"height", height,
