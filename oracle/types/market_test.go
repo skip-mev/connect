@@ -21,7 +21,7 @@ func TestProviderMarketMap(t *testing.T) {
 			name:         "empty configs",
 			providerName: "test",
 			configs:      types.TickerToProviderConfig{},
-			expErr:       true,
+			expErr:       false,
 		},
 		{
 			name:         "empty provider name",
