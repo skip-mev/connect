@@ -3,13 +3,14 @@ package manager_test
 import (
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 var (
@@ -38,7 +39,7 @@ var (
 		},
 	}
 
-	// Coinbase and OKX are supported by the marketmap
+	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
 		Tickers: map[string]mmtypes.Ticker{
 			constants.BITCOIN_USD.String():  constants.BITCOIN_USD,

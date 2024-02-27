@@ -115,8 +115,12 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 			name:         "empty market map",
 			marketMap:    mmtypes.MarketMap{},
 			providerName: "coinbase",
-			expectedMap:  types.ProviderMarketMap{},
-			expErr:       true,
+			expectedMap: types.ProviderMarketMap{
+				Name:          "coinbase",
+				TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
+				OffChainMap:   map[string]mmtypes.Ticker{},
+			},
+			expErr: false,
 		},
 		{
 			name: "valid market map with no entries for the given provider",
@@ -136,8 +140,12 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 				},
 			},
 			providerName: "coinbase",
-			expectedMap:  types.ProviderMarketMap{},
-			expErr:       true,
+			expectedMap: types.ProviderMarketMap{
+				Name:          "coinbase",
+				TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
+				OffChainMap:   map[string]mmtypes.Ticker{},
+			},
+			expErr: false,
 		},
 		{
 			name: "valid market map with entries for the given provider",
@@ -227,7 +235,9 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tc.expectedMap, pmap)
+				require.Equal(t, tc.expectedMap.Name, pmap.Name)
+				require.Equal(t, tc.expectedMap.TickerConfigs, pmap.TickerConfigs)
+				require.Equal(t, tc.expectedMap.OffChainMap, pmap.OffChainMap)
 			}
 		})
 	}

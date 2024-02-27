@@ -64,6 +64,14 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 		return ProviderMarketMap{}, fmt.Errorf("provider name cannot be empty")
 	}
 
+	if len(tickerConfigs) == 0 {
+		return ProviderMarketMap{
+			Name:          name,
+			TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
+			OffChainMap:   make(map[string]mmtypes.Ticker),
+		}, nil
+	}
+
 	offChainMap := make(map[string]mmtypes.Ticker)
 	for ticker, config := range tickerConfigs {
 		if err := ticker.ValidateBasic(); err != nil {

@@ -128,9 +128,7 @@ func (m *ProviderManager) CreateProviderState(
 		return ProviderState{}, fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
 
-	var (
-		provider *types.PriceProvider
-	)
+	var provider *types.PriceProvider
 	switch {
 	case cfg.API.Enabled:
 		if m.apiQueryHandlerFactory == nil {
