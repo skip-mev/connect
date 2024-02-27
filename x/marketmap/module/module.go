@@ -4,18 +4,18 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/gorilla/mux"
-
 	"cosmossdk.io/core/appmodule"
-
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
 
+	"github.com/skip-mev/slinky/x/marketmap/client/cli"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -38,6 +38,16 @@ type AppModuleBasic struct {
 // Name returns the canonical name of the module.
 func (amb AppModuleBasic) Name() string {
 	return types.ModuleName
+}
+
+// GetTxCmd is a no-op, as no txs are registered for submission (apart from messages that can only be executed by governance).
+func (amb AppModuleBasic) GetTxCmd() *cobra.Command {
+	return nil
+}
+
+// GetQueryCmd returns the x/oracle module base query cli-command.
+func (amb AppModuleBasic) GetQueryCmd() *cobra.Command {
+	return cli.GetQueryCmd()
 }
 
 // RegisterLegacyAminoCodec registers the necessary types from the x/marketmap module for amino serialization.
