@@ -41,7 +41,6 @@ import (
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -243,8 +242,8 @@ func initRootCmd(
 	)
 }
 
-func addModuleInitFlags(startCmd *cobra.Command) {
-	crisis.AddModuleInitFlags(startCmd)
+func addModuleInitFlags(cmd *cobra.Command) {
+	cmd.Flags().Bool(flagCrisisDummy, true, "dummy flag for crisis module")
 }
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter.

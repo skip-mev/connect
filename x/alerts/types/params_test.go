@@ -27,70 +27,62 @@ func TestParamsValidation(t *testing.T) {
 
 	cases := []testCase{
 		{
-			"not-enabled, but bond amount is non-zero - fail",
-			types.NewParams(
-				types.AlertParams{false, sdk.NewCoin("test", math.NewInt(1000000)), 0}, nil, types.PruningParams{}),
-			false,
+			name: "not-enabled, but bond amount is non-zero - fail",
+			params: types.NewParams(
+				types.AlertParams{BondAmount: sdk.NewCoin("test", math.NewInt(1000000))}, nil, types.PruningParams{}),
 		},
 		{
-			"not enabled and bond amount is zero - pass",
-			types.NewParams(types.AlertParams{false, sdk.NewCoin("test", math.NewInt(0)), 0}, nil, types.PruningParams{}),
-			true,
+			name:   "not enabled and bond amount is zero - pass",
+			params: types.NewParams(types.AlertParams{BondAmount: sdk.NewCoin("test", math.NewInt(0))}, nil, types.PruningParams{}),
+			valid:  true,
 		},
 		{
-			"not enabled and max-block-age is non-zero -fail",
-			types.NewParams(types.AlertParams{false, sdk.NewCoin("test", math.NewInt(0)), 1}, nil, types.PruningParams{}),
-			false,
+			name:   "not enabled and max-block-age is non-zero -fail",
+			params: types.NewParams(types.AlertParams{BondAmount: sdk.NewCoin("test", math.NewInt(0)), MaxBlockAge: 1}, nil, types.PruningParams{}),
 		},
 		{
-			"enabled, but max-block-age is zero - fail",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1)), 0}, nil, types.PruningParams{}),
-			false,
+			name:   "enabled, but max-block-age is zero - fail",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1))}, nil, types.PruningParams{}),
 		},
 		{
-			"enabled, but bond amount is zero - fail",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(0)), 1}, nil, types.PruningParams{}),
-			false,
+			name:   "enabled, but bond amount is zero - fail",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(0)), MaxBlockAge: 1}, nil, types.PruningParams{}),
 		},
 		{
-			"enabled, but bond amount is negative - fail",
-			types.NewParams(types.AlertParams{true, sdk.Coin{Denom: "test", Amount: math.NewInt(-1)}, 1}, nil, types.PruningParams{}),
-			false,
+			name:   "enabled, but bond amount is negative - fail",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.Coin{Denom: "test", Amount: math.NewInt(-1)}, MaxBlockAge: 1}, nil, types.PruningParams{}),
 		},
 		{
-			"enabled, but bond amount is non-zero - pass",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{}),
-			true,
+			name:   "enabled, but bond amount is non-zero - pass",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{}),
+			valid:  true,
 		},
 		{
-			"valid alert params, but invalid conclusion verification params - fail",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, &types.MultiSigConclusionVerificationParams{
+			name: "valid alert params, but invalid conclusion verification params - fail",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, &types.MultiSigConclusionVerificationParams{
 				Signers: []*codectypes.Any{pkany, pkany},
 			}, types.PruningParams{}),
-			false,
 		},
 		{
-			"valid alert params, but invalid pruning params (disabled + non-zero blocks-to-prune) - fail",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{
+			name: "valid alert params, but invalid pruning params (disabled + non-zero blocks-to-prune) - fail",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{
 				Enabled:       false,
 				BlocksToPrune: 10,
 			}),
-			false,
 		},
 		{
-			"valid alert params, but invalid pruning params (enabled + zero blocks-to-prune) - fail",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{
+			name: "valid alert params, but invalid pruning params (enabled + zero blocks-to-prune) - fail",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{
 				Enabled: true,
 			}),
-			false,
 		},
 		{
-			"valid alert params, and valid pruning params (enabled + non-zero blocks-to-prune) - pass",
-			types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{
+			name: "valid alert params, and valid pruning params (enabled + non-zero blocks-to-prune) - pass",
+			params: types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{
 				Enabled:       true,
 				BlocksToPrune: 10,
 			}),
-			true,
+			valid: true,
 		},
 	}
 

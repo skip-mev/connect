@@ -51,9 +51,8 @@ func ComputeMedian() types.PriceAggregationFn {
 	}
 }
 
-// CalculateMedian calculates the median from a list of big.Ints. Returns an
-// average if the number of values is even.
-func CalculateMedian(values []*big.Int) *big.Int {
+// SortBigInts is a stable slices sort for an array of big.Ints.
+func SortBigInts(values []*big.Int) {
 	// Sort the values.
 	sort.SliceStable(values, func(i, j int) bool {
 		switch values[i].Cmp(values[j]) {
@@ -65,17 +64,23 @@ func CalculateMedian(values []*big.Int) *big.Int {
 			return true
 		}
 	})
+}
 
-	middle := len(values) / 2
+// CalculateMedian calculates the median from a list of big.Ints. Returns an
+// average if the number of values is even.
+func CalculateMedian(values []*big.Int) *big.Int {
+	SortBigInts(values)
+
+	middleIndex := len(values) / 2
 
 	// Calculate the median.
 	numValues := len(values)
 	var median *big.Int
-	if numValues%2 == 0 {
-		median = new(big.Int).Add(values[middle-1], values[middle])
+	if numValues%2 == 0 { // even
+		median = new(big.Int).Add(values[middleIndex-1], values[middleIndex])
 		median = median.Div(median, new(big.Int).SetUint64(2))
-	} else {
-		median = values[middle]
+	} else { // odd
+		median = values[middleIndex]
 	}
 
 	return median
