@@ -1,7 +1,9 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/skip-mev/slinky/x/marketmap/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 func (s *KeeperTestSuite) TestInitGenesisInvalidGenesis() {
@@ -61,6 +63,34 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 	})
 
 	s.Run("init valid genesis with fields", func() {
+		// first register x/oracle genesis
+		ogs := oracletypes.DefaultGenesisState()
+		ogs.NextId = 3
+		ogs.CurrencyPairGenesis = []oracletypes.CurrencyPairGenesis{
+			{
+				CurrencyPair:      ethusdt.CurrencyPair,
+				CurrencyPairPrice: &oracletypes.QuotePrice{Price: sdkmath.NewInt(19)},
+				Nonce:             0,
+				Id:                0,
+			},
+			{
+				CurrencyPair:      btcusdt.CurrencyPair,
+				CurrencyPairPrice: &oracletypes.QuotePrice{Price: sdkmath.NewInt(19)},
+				Nonce:             0,
+				Id:                1,
+			},
+			{
+				CurrencyPair:      usdcusd.CurrencyPair,
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+				Id:                2,
+			},
+		}
+
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *ogs)
+		})
+
 		gs := types.DefaultGenesisState()
 		gs.MarketMap = types.MarketMap{
 			Tickers: map[string]types.Ticker{
