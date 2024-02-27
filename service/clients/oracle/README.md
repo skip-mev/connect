@@ -22,7 +22,7 @@ type OracleClient interface {
 
 There are two types of clients that are supported:
 
-* [**Vanilla GRPC oracle client**](./client.go) - This client is responsible for fetching data from a oracle that is aggregating price data. It implements a GRPC client that connects to the oracle service and fetches the latest prices.
+* [**Vanilla GRPC oracle client**](./client.go) - This client is responsible for fetching data from an oracle that is aggregating price data. It implements a GRPC client that connects to the oracle service and fetches the latest prices.
 * [**Metrics GRPC oracle client**](./client.go) - This client implements the same functionality as the vanilla GRPC oracle client, but also exposes metrics that can be scraped by Prometheus.
 
 To enable the metrics GRPC client, please read over the [oracle configurations](../../../oracle/config/README.md) documentation.
