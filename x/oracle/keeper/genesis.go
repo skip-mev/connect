@@ -30,12 +30,6 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	if err := k.nextCurrencyPairID.Set(ctx, gs.NextId); err != nil {
 		panic(fmt.Errorf("error in genesis: %w", err))
 	}
-
-	// verify CPs are in marketmap state if using the market map module
-	if k.mmKeeper != nil {
-		for _, cpg := range gs.CurrencyPairGenesis {
-			if
-		}
 }
 
 // ExportGenesis retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.
