@@ -976,7 +976,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				}, nil
 			},
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
 				time.Sleep(100 * time.Millisecond)
 				return nil
 			},
@@ -1013,7 +1013,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			log.NewTestLogger(s.T()),
 			nil,
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				time.Sleep(100 * time.Millisecond)
 				return fmt.Errorf("error in validate vote extensions")
 			},
@@ -1055,7 +1055,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				time.Sleep(200 * time.Millisecond)
 				return &cometabci.ResponseProcessProposal{}, nil
 			},
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				// simulate a long-running validate vote extensions
 				time.Sleep(100 * time.Millisecond)
 				return nil
@@ -1091,7 +1091,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			log.NewTestLogger(s.T()),
 			nil,
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				time.Sleep(100 * time.Millisecond)
 				return fmt.Errorf("error in validate vote extensions")
 			},
@@ -1135,7 +1135,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1165,7 +1165,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, prepareErr
 			},
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1199,7 +1199,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				return extCommitError
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1232,7 +1232,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1443,7 +1443,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			func(_ sdk.Context, _ *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 				return nil, nil
 			},
-			func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 				return validateErr
 			},
 			nil,
@@ -1479,7 +1479,7 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 		func(_ sdk.Context, _ *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 			return nil, nil
 		},
-		func(_ sdk.Context, _ int64, _ cometabci.ExtendedCommitInfo) error {
+		func(_ sdk.Context,  _ cometabci.ExtendedCommitInfo) error {
 			return nil
 		},
 		nil,
