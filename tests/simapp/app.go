@@ -353,7 +353,6 @@ func NewSimApp(
 			compression.NewDefaultExtendedCommitCodec(),
 			compression.NewZStdCompressor(),
 		),
-		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
 		oracleMetrics,
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
