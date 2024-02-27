@@ -73,9 +73,9 @@ type ValidateVoteExtensionsFn func(
 ) error
 
 // NewDefaultValidateVoteExtensionsFn returns a new DefaultValidateVoteExtensionsFn.
-func NewDefaultValidateVoteExtensionsFn(chainID string, validatorStore baseapp.ValidatorStore) ValidateVoteExtensionsFn {
+func NewDefaultValidateVoteExtensionsFn(validatorStore baseapp.ValidatorStore) ValidateVoteExtensionsFn {
 	return func(ctx sdk.Context, height int64, info cometabci.ExtendedCommitInfo) error {
-		return baseapp.ValidateVoteExtensions(ctx, validatorStore, height, chainID, info)
+		return baseapp.ValidateVoteExtensions(ctx, validatorStore, info)
 	}
 }
 

@@ -349,7 +349,7 @@ func NewSimApp(
 		app.Logger(),
 		baseapp.NoOpPrepareProposal(),
 		baseapp.NoOpProcessProposal(),
-		ve.NewDefaultValidateVoteExtensionsFn(app.ChainID(), app.StakingKeeper),
+		ve.NewDefaultValidateVoteExtensionsFn(app.StakingKeeper),
 		compression.NewCompressionVoteExtensionCodec(
 			compression.NewDefaultVoteExtensionCodec(),
 			compression.NewZLibCompressor(),
