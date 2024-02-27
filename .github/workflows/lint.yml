@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.21.0
+          go-version: 1.22.0
       - uses: actions/checkout@v4
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v4
@@ -37,3 +37,23 @@ jobs:
         uses: avto-dev/markdown-lint@v1
         with:
           args: "**/*.md"
+  govulncheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.0
+          cache: true
+          cache-dependency-path: go.sum
+      - uses: technote-space/get-diff-action@v6.1.2
+        id: git_diff
+        with:
+          PATTERNS: |
+            **/*.go
+            go.mod
+            go.sum
+      - name: govulncheck
+        if: env.GIT_DIFF
+        run: |
+          make govulncheck

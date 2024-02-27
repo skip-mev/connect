@@ -30,7 +30,92 @@ The data is stored in a `MarketMap` data structure which can be queried and cons
 
 ### MarketMap
 
-TODO need to finalize data structure
+The market map data is as follows:
+
+```protobuf
+// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
+// feed is scaled to a number of decimal places and has a minimum number of
+// providers required to consider the ticker valid.
+message Ticker {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  // CurrencyPair is the currency pair for this ticker.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+      [ (gogoproto.nullable) = false ];
+
+  // Decimals is the number of decimal places for the ticker. The number of
+  // decimal places is used to convert the price to a human-readable format.
+  uint64 decimals = 3;
+  // MinProviderCount is the minimum number of providers required to consider
+  // the ticker valid.
+  uint64 min_provider_count = 4;
+
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given ticker.
+  string metadata_JSON = 15;
+}
+
+message ProviderConfig {
+  // Name corresponds to the name of the provider for which the configuration is
+  // being set.
+  string name = 1;
+
+  // OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
+  // The off-chain ticker is unique to a given provider and is used to fetch the
+  // price of the ticker from the provider.
+  string off_chain_ticker = 2;
+}
+
+// Path is the list of convertable markets that will be used to convert the
+// prices of a set of tickers to a common ticker.
+message Path {
+  // Operations is an ordered list of operations that will be taken. These must
+  // be topologically sorted to ensure that the conversion is possible i.e. DAG.
+  repeated Operation operations = 1 [ (gogoproto.nullable) = false ];
+}
+
+// Operation represents the operation configuration for a given ticker.
+message Operation {
+  // CurrencyPair is the on-chain currency pair for this ticker.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+      [ (gogoproto.nullable) = false ];
+
+  // Invert is a boolean that indicates whether the price of the ticker should
+  // be inverted.
+  bool invert = 2;
+}
+
+message Paths {
+  // Paths is the list of convertable markets that will be used to convert the
+  // prices of a set of tickers to a common ticker.
+  repeated Path paths = 1 [ (gogoproto.nullable) = false ];
+}
+
+message Providers {
+  // Providers is the list of provider configurations for the given ticker.
+  repeated ProviderConfig providers = 1 [ (gogoproto.nullable) = false ];
+}
+
+message MarketMap {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  // Tickers is the full list of tickers and their associated configurations
+  // to be stored on-chain.
+  map<string, Ticker> tickers = 1 [ (gogoproto.nullable) = false ];
+
+  // Paths is a map from CurrencyPair to all paths that resolve to that pair
+  map<string, Paths> paths = 2 [ (gogoproto.nullable) = false ];
+
+  // Providers is a map from CurrencyPair to each of to provider-specific
+  // configs associated with it.
+  map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
+}
+```
+
+The `MarketMap` message itself is not stored in state.  Rather, ticker strings are used as key prefixes
+so that the data can be stored in a map-like structure, while retaining determinism.
 
 ### Params
 
@@ -55,7 +140,18 @@ must always be greater than the current value.
 
 ## Events
 
-TODO BLO-921
+The marketmap module emits the following events:
+
+### CreateMarket
+
+| Attribute Key      | Attribute Value |
+|--------------------|-----------------|
+| currency_pair      | {CurrencyPair}  |
+| decimals           | {uint64}        |
+| min_provider_count | {uint64}        |
+| metadata           | {json string}   |
+| providers          | {[]Provider}    |
+| paths              | {[]Path]}       |
 
 ## Hooks
 
