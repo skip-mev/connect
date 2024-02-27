@@ -60,12 +60,16 @@ func ProviderMarketMapFromMarketMap(name string, marketMap mmtypes.MarketMap) (P
 
 // NewProviderMarketMap returns a new provider market map.
 func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (ProviderMarketMap, error) {
-	if len(tickerConfigs) == 0 {
-		return ProviderMarketMap{}, fmt.Errorf("ticker configs cannot be empty")
-	}
-
 	if len(name) == 0 {
 		return ProviderMarketMap{}, fmt.Errorf("provider name cannot be empty")
+	}
+
+	if len(tickerConfigs) == 0 {
+		return ProviderMarketMap{
+			Name:          name,
+			TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
+			OffChainMap:   make(map[string]mmtypes.Ticker),
+		}, nil
 	}
 
 	offChainMap := make(map[string]mmtypes.Ticker)
@@ -106,11 +110,6 @@ func (pmm *ProviderMarketMap) ValidateBasic() error {
 	if len(pmm.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
 	}
-
-	if len(pmm.TickerConfigs) == 0 {
-		return fmt.Errorf("ticker configs cannot be empty")
-	}
-
 	if len(pmm.OffChainMap) != len(pmm.TickerConfigs) {
 		return fmt.Errorf("off-chain map length mismatch")
 	}

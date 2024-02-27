@@ -90,7 +90,7 @@ func WithDataAggregator(agg *aggregator.DataAggregator[string, types.TickerPrice
 }
 
 // WithProviders sets the providers on the Oracle.
-func WithProviders(providers []types.PriceProvider) Option {
+func WithProviders(providers []types.PriceProviderI) Option {
 	return func(o *OracleImpl) {
 		o.providers = providers
 	}
