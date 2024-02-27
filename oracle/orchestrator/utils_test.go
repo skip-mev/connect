@@ -104,4 +104,7 @@ func checkProviderState(
 
 	// Ensure that the provider is running/no-running.
 	require.Equal(t, isRunning, provider.IsRunning())
+
+	// By default, all providers should be configured with a config updater.
+	require.NotNil(t, provider.GetConfigUpdater())
 }
