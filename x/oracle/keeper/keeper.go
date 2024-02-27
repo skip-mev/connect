@@ -18,7 +18,7 @@ type oracleIndices struct {
 	// idUnique is a uniqueness constraint on the IDs of CurrencyPairs. i.e id -> CurrencyPair.String() -> CurrencyPairState
 	idUnique *indexes.Unique[uint64, string, types.CurrencyPairState]
 
-	// idMulti is a multi-index on the IDs of CurrencyPairs, i.e id -> CurrencyPair.String() -> CurrencyPairState
+	// idMulti is a multi-index on the IDs of CurrencyPairs, i.e. id -> CurrencyPair.String() -> CurrencyPairState
 	idMulti *indexes.Multi[uint64, string, types.CurrencyPairState]
 }
 

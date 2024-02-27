@@ -21,22 +21,21 @@ func TestGenesisValidation(t *testing.T) {
 
 	cases := []testCase{
 		{
-			"genesis with invalid params - fail",
-			types.GenesisState{
-				Params: types.NewParams(types.AlertParams{false, sdk.NewCoin("test", math.NewInt(1000000)), 0}, nil, types.PruningParams{}),
+			name: "genesis with invalid params - fail",
+			genesis: types.GenesisState{
+				Params: types.NewParams(types.AlertParams{BondAmount: sdk.NewCoin("test", math.NewInt(1000000))}, nil, types.PruningParams{}),
 			},
-			false,
 		},
 		{
-			"genesis with valid params - pass",
-			types.GenesisState{
-				Params: types.NewParams(types.AlertParams{false, sdk.NewCoin("test", math.NewInt(0)), 0}, nil, types.PruningParams{}),
+			name: "genesis with valid params - pass",
+			genesis: types.GenesisState{
+				Params: types.NewParams(types.AlertParams{BondAmount: sdk.NewCoin("test", math.NewInt(0))}, nil, types.PruningParams{}),
 			},
-			true,
+			valid: true,
 		},
 		{
-			"genesis with an invalid alert - fail",
-			types.NewGenesisState(types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
+			name: "genesis with an invalid alert - fail",
+			genesis: types.NewGenesisState(types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
 				types.NewAlertWithStatus(
 					types.Alert{
 						Height: 1,
@@ -49,11 +48,10 @@ func TestGenesisValidation(t *testing.T) {
 					types.NewAlertStatus(1, 2, time.Now(), 1),
 				),
 			}),
-			false,
 		},
 		{
-			"genesis with duplicate alerts - fail",
-			types.NewGenesisState(types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
+			name: "genesis with duplicate alerts - fail",
+			genesis: types.NewGenesisState(types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
 				types.NewAlertWithStatus(
 					types.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(1, 2, time.Now(), 1),
@@ -63,11 +61,10 @@ func TestGenesisValidation(t *testing.T) {
 					types.NewAlertStatus(1, 2, time.Now(), 0),
 				),
 			}),
-			false,
 		},
 		{
-			"genesis with valid non-duplicatge alerts - pass",
-			types.NewGenesisState(types.NewParams(types.AlertParams{true, sdk.NewCoin("test", math.NewInt(1000000)), 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
+			name: "genesis with valid non-duplicate alerts - pass",
+			genesis: types.NewGenesisState(types.NewParams(types.AlertParams{Enabled: true, BondAmount: sdk.NewCoin("test", math.NewInt(1000000)), MaxBlockAge: 1}, nil, types.PruningParams{}), []types.AlertWithStatus{
 				types.NewAlertWithStatus(
 					types.NewAlert(1, sdk.AccAddress("test"), slinkytypes.NewCurrencyPair("BASE", "QUOTE")),
 					types.NewAlertStatus(1, 2, time.Now(), 1),
@@ -77,7 +74,7 @@ func TestGenesisValidation(t *testing.T) {
 					types.NewAlertStatus(1, 2, time.Now(), 0),
 				),
 			}),
-			true,
+			valid: true,
 		},
 	}
 

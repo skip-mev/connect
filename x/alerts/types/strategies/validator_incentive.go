@@ -34,7 +34,7 @@ func NewValidatorAlertIncentive(validator cmtabci.Validator, alertHeight uint64,
 
 // ValidateBasic does a basic stateless validation check on the ValidatorAlertIncentive. Specifically, this method
 // checks that the validator's address is valid, and it's power is non-negative.
-func (b ValidatorAlertIncentive) ValidateBasic() error {
+func (b *ValidatorAlertIncentive) ValidateBasic() error {
 	// the only check we can do statelessly is that the validator address is non-nil
 	if b.Validator.Address == nil {
 		return fmt.Errorf("validator address cannot be nil")
@@ -54,12 +54,12 @@ func (b ValidatorAlertIncentive) ValidateBasic() error {
 }
 
 // Type returns the type of the incentive.
-func (b ValidatorAlertIncentive) Type() string {
+func (b *ValidatorAlertIncentive) Type() string {
 	return ValidatorAlertIncentiveType
 }
 
 // Copy returns a copy of the incentive.
-func (b ValidatorAlertIncentive) Copy() incentivetypes.Incentive {
+func (b *ValidatorAlertIncentive) Copy() incentivetypes.Incentive {
 	val := b.Validator
 
 	val.Address = make([]byte, len(b.Validator.Address))

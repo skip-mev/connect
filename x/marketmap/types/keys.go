@@ -32,7 +32,7 @@ var (
 	TickersCodec = codec.NewStringKeyCodec[TickerString]()
 
 	// LastUpdatedCodec is the collections.KeyCodec value used for the lastUpdated value.
-	LastUpdatedCodec = codec.KeyToValueCodec[int64](codec.NewInt64Key[int64]())
+	LastUpdatedCodec = codec.KeyToValueCodec[uint64](codec.NewUint64Key[uint64]())
 )
 
 // TickerString is the key used to identify unique pairs of Base/Quote with corresponding PathsConfig objects--or in other words AggregationConfigs.

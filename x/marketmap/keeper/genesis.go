@@ -11,7 +11,7 @@ import (
 // InitGenesis initializes the genesis state. Panics if there is an error.
 func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	// validate the genesis
-	if err := gs.MarketMap.ValidateBasic(); err != nil {
+	if err := gs.ValidateBasic(); err != nil {
 		panic(err)
 	}
 
