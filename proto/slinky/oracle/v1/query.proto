@@ -38,14 +38,9 @@ message GetAllCurrencyPairsResponse {
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
 // CurrencyPair in the format base/quote
 message GetPriceRequest {
-  // CurrencyPairSelector represents the types that the user may provide to the
-  // request to identify a CurrencyPair
-  oneof currency_pair_selector {
-    // CurrencyPair type
-    slinky.types.v1.CurrencyPair currency_pair = 1;
-    // string representation of the CurrencyPair
-    string currency_pair_id = 2;
-  }
+  // CurrencyPair represents the pair that the user wishes to query.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+      [ (gogoproto.nullable) = false ];
 }
 
 // GetPriceResponse is the response from the GetPrice grpc method exposed from
