@@ -663,9 +663,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 func getIDForCurrencyPair(ctx context.Context, client oracletypes.QueryClient, cp slinkytypes.CurrencyPair) (uint64, error) {
 	// query for the given currency pair
 	resp, err := client.GetPrice(ctx, &oracletypes.GetPriceRequest{
-		CurrencyPairSelector: &oracletypes.GetPriceRequest_CurrencyPair{
-			CurrencyPair: &cp,
-		},
+		CurrencyPair: cp,
 	})
 	if err != nil {
 		return 0, err
