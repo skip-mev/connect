@@ -21,17 +21,6 @@ func (s *KeeperTestSuite) TestInitGenesisInvalidGenesis() {
 		})
 	})
 
-	s.Run("test that init genesis with invalid lastupdated - fails", func() {
-		// create a fake genesis state with invalid lastupdated
-		gs := types.DefaultGenesisState()
-		gs.LastUpdated = -1
-
-		// assert that InitGenesis panics
-		s.Require().Panics(func() {
-			s.keeper.InitGenesis(s.ctx, *gs)
-		})
-	})
-
 	s.Run("test that init genesis with invalid duplicate runs - fails", func() {
 		// create a valid genesis
 		gs := types.DefaultGenesisState()

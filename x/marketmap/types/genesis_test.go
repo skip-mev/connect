@@ -14,13 +14,6 @@ func TestGenesisState(t *testing.T) {
 		require.Error(t, gs.ValidateBasic())
 	})
 
-	t.Run("negative lastupdated - fail", func(t *testing.T) {
-		gs := types.DefaultGenesisState()
-
-		gs.LastUpdated = -1
-		require.Error(t, gs.ValidateBasic())
-	})
-
 	t.Run("invalid params - fail", func(t *testing.T) {
 		gs := types.DefaultGenesisState()
 

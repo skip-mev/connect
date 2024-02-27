@@ -1,11 +1,9 @@
 package types
 
-import "fmt"
-
 // NewGenesisState returns an instance of GenesisState.
 func NewGenesisState(
 	marketMap MarketMap,
-	lastUpdated int64,
+	lastUpdated uint64,
 	params Params,
 ) GenesisState {
 	return GenesisState{
@@ -21,10 +19,6 @@ func (gs *GenesisState) ValidateBasic() error {
 		return err
 	}
 
-	if gs.LastUpdated < 0 {
-		return fmt.Errorf("LastUpdated height cannot be less than 0, got %d", gs.LastUpdated)
-	}
-
 	return gs.Params.ValidateBasic()
 }
 
@@ -36,7 +30,7 @@ func DefaultGenesisState() *GenesisState {
 			Paths:     make(map[string]Paths),
 			Providers: make(map[string]Providers),
 		},
-		LastUpdated: 1,
+		LastUpdated: 0,
 		Params:      DefaultParams(),
 	}
 }
