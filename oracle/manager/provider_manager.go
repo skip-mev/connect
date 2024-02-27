@@ -48,12 +48,12 @@ type (
 	}
 
 	ProviderState struct {
-		// provider is the price provider implementation.
-		provider *types.PriceProvider
-		// market is the market map for the provider.
-		market types.ProviderMarketMap
-		// enabled is a flag that indicates whether the provider is enabled.
-		enabled bool
+		// Provider is the price provider implementation.
+		Provider *types.PriceProvider
+		// Market is the market map for the provider.
+		Market types.ProviderMarketMap
+		// Enabled is a flag that indicates whether the provider is enabled.
+		Enabled bool
 	}
 
 	// Option is a functional option for the market map state.
@@ -70,17 +70,16 @@ func NewProviderManager(
 	}
 
 	manager := &ProviderManager{
-		cfg:       cfg,
-		providers: make(map[string]ProviderState),
-		logger:    zap.NewNop(),
+		cfg:             cfg,
+		providers:       make(map[string]ProviderState),
+		logger:          zap.NewNop(),
+		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
+		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
+		providerMetrics: providermetrics.NewProviderMetricsFromConfig(cfg.Metrics),
 	}
 
 	for _, opt := range opts {
 		opt(manager)
-	}
-
-	if err := manager.Init(); err != nil {
-		return nil, err
 	}
 
 	return manager, nil
@@ -100,42 +99,42 @@ func (m *ProviderManager) Init() error {
 		// Initialize the provider.
 		state, err := m.CreateProviderState(providerCfg)
 		if err != nil {
-			return fmt.Errorf("failed to create provider state: %w", err)
+			m.logger.Error("failed to create provider state", zap.Error(err))
+			return err
 		}
 
 		// Add the provider to the manager.
 		m.providers[providerCfg.Name] = state
+		m.logger.Info(
+			"created provider state",
+			zap.String("provider", providerCfg.Name),
+			zap.Bool("enabled", state.Enabled),
+			zap.Int("num_tickers", len(state.Market.GetTickers())),
+		)
 	}
 
 	return nil
 }
 
-// CreateProviderState creates a provider state for the given provider.
+// CreateProviderState creates a provider state for the given provider. This constructs the
+// query handler, based on the provider's type and configuration. The provider state is then
+// enabled/disabled based on whether the provider is configured to support any of the tickers.
 func (m *ProviderManager) CreateProviderState(
 	cfg config.ProviderConfig,
 ) (ProviderState, error) {
-	// Create the provider state.
-	state := ProviderState{}
-
 	// Create the provider market map.
 	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, m.marketMap)
 	if err != nil {
 		return ProviderState{}, fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
 
-	state.market = market
-	if len(market.GetTickers()) != 0 {
-		state.enabled = true
-	}
-
-	// Create the provider.
 	var (
 		provider *types.PriceProvider
 	)
 	switch {
 	case cfg.API.Enabled:
 		if m.apiQueryHandlerFactory == nil {
-			return ProviderState{}, fmt.Errorf("api query handler factory is not set")
+			return ProviderState{}, fmt.Errorf("cannot create provider; api query handler factory is not set")
 		}
 
 		queryHandler, err := m.apiQueryHandlerFactory(m.logger, cfg, m.apiMetrics, market)
@@ -156,7 +155,7 @@ func (m *ProviderManager) CreateProviderState(
 		}
 	case cfg.WebSocket.Enabled:
 		if m.webSocketQueryHandlerFactory == nil {
-			return ProviderState{}, fmt.Errorf("web socket query handler factory is not set")
+			return ProviderState{}, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
 		}
 
 		queryHandler, err := m.webSocketQueryHandlerFactory(m.logger, cfg, m.wsMetrics, market)
@@ -179,22 +178,18 @@ func (m *ProviderManager) CreateProviderState(
 		return ProviderState{}, fmt.Errorf("provider %s has no enabled query handlers", cfg.Name)
 	}
 
-	state.provider = provider
-	return state, nil
+	return ProviderState{
+		Provider: provider,
+		Market:   market,
+		Enabled:  len(market.GetTickers()) > 0,
+	}, nil
 }
 
 // GetProviders returns all of the providers that are configured on the manager. Specifically, this
 // will return all of the providers that are enabled.
-func (m *ProviderManager) GetProviders() []*types.PriceProvider {
+func (m *ProviderManager) GetProviderState() map[string]ProviderState {
 	m.mut.Lock()
 	defer m.mut.Unlock()
 
-	providers := make([]*types.PriceProvider, 0, len(m.providers))
-	for _, state := range m.providers {
-		if state.enabled {
-			providers = append(providers, state.provider)
-		}
-	}
-
-	return providers
+	return m.providers
 }

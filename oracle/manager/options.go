@@ -4,9 +4,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
-	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
-	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -17,7 +14,7 @@ func WithLogger(logger *zap.Logger) Option {
 			panic("logger cannot be nil")
 		}
 
-		m.logger = logger
+		m.logger = logger.With(zap.String("process", "provider manager"))
 	}
 }
 
@@ -51,38 +48,5 @@ func WithWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFa
 		}
 
 		m.webSocketQueryHandlerFactory = factory
-	}
-}
-
-// WithWebSocketMetrics sets the websocket metrics for the provider manager.
-func WithWebSocketMetrics(metrics wsmetrics.WebSocketMetrics) Option {
-	return func(m *ProviderManager) {
-		if metrics == nil {
-			panic("websocket metrics cannot be nil")
-		}
-
-		m.wsMetrics = metrics
-	}
-}
-
-// WithAPIMetrics sets the API metrics for the provider manager.
-func WithAPIMetrics(metrics apimetrics.APIMetrics) Option {
-	return func(m *ProviderManager) {
-		if metrics == nil {
-			panic("api metrics cannot be nil")
-		}
-
-		m.apiMetrics = metrics
-	}
-}
-
-// WithProviderMetrics sets the provider metrics for the provider manager.
-func WithProviderMetrics(metrics providermetrics.ProviderMetrics) Option {
-	return func(m *ProviderManager) {
-		if metrics == nil {
-			panic("provider metrics cannot be nil")
-		}
-
-		m.providerMetrics = metrics
 	}
 }
