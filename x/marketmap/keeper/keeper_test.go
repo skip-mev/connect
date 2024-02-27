@@ -52,7 +52,7 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	s.ctx = testutil.DefaultContextWithKeys(keys, transientKeys, nil).WithBlockHeight(10)
 
 	k := keeper.NewKeeper(mmSS, encCfg.Codec, s.authority)
-	s.Require().NoError(k.SetLastUpdated(s.ctx, s.ctx.BlockHeight()))
+	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight())))
 
 	params := types.NewParams(s.authority.String(), 10)
 	s.Require().NoError(k.SetParams(s.ctx, params))

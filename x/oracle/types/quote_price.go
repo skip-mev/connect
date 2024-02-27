@@ -24,7 +24,7 @@ func (q *QuotePriceWithNonce) Nonce() uint64 {
 	return q.nonce
 }
 
-// ValidateBasic validates that the QuotePrice is valid, i.e that the price is non-negative.
+// ValidateBasic validates that the QuotePrice is valid, i.e. that the price is non-negative.
 func (qp QuotePrice) ValidateBasic() error {
 	// Check that the price is non-negative
 	if qp.Price.IsNegative() {

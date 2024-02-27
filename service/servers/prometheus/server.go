@@ -1,6 +1,7 @@
 package prometheus
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -29,7 +30,7 @@ type PrometheusServer struct { //nolint
 	logger *zap.Logger
 }
 
-// StartPrometheusServer creates a prometheus server if the metrics are enabled and
+// NewPrometheusServer creates a prometheus server if the metrics are enabled and
 // address is set, and valid. Notice, this method does not start the server.
 func NewPrometheusServer(prometheusAddress string, logger *zap.Logger) (*PrometheusServer, error) {
 	// get the prometheus server address
@@ -66,10 +67,10 @@ func NewPrometheusServer(prometheusAddress string, logger *zap.Logger) (*Prometh
 	return ps, nil
 }
 
-// Start will spawn an http server that will handle requests to /metrics
+// Start will spawn a http server that will handle requests to /metrics
 // and serves the metrics registered in the DefaultRegisterer.
 func (ps *PrometheusServer) Start() {
-	if err := ps.srv.ListenAndServe(); err != http.ErrServerClosed {
+	if err := ps.srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		ps.logger.Info("prometheus server error", zap.Error(err))
 	} else {
 		ps.logger.Info("prometheus server closed")
