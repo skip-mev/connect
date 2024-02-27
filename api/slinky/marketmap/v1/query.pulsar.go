@@ -458,8 +458,8 @@ func (x *fastReflection_GetMarketMapResponse) Range(f func(protoreflect.FieldDes
 			return
 		}
 	}
-	if x.LastUpdated != int64(0) {
-		value := protoreflect.ValueOfInt64(x.LastUpdated)
+	if x.LastUpdated != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LastUpdated)
 		if !f(fd_GetMarketMapResponse_last_updated, value) {
 			return
 		}
@@ -494,7 +494,7 @@ func (x *fastReflection_GetMarketMapResponse) Has(fd protoreflect.FieldDescripto
 	case "slinky.marketmap.v1.GetMarketMapResponse.market_map":
 		return x.MarketMap != nil
 	case "slinky.marketmap.v1.GetMarketMapResponse.last_updated":
-		return x.LastUpdated != int64(0)
+		return x.LastUpdated != uint64(0)
 	case "slinky.marketmap.v1.GetMarketMapResponse.version":
 		return x.Version != uint64(0)
 	case "slinky.marketmap.v1.GetMarketMapResponse.chain_id":
@@ -518,7 +518,7 @@ func (x *fastReflection_GetMarketMapResponse) Clear(fd protoreflect.FieldDescrip
 	case "slinky.marketmap.v1.GetMarketMapResponse.market_map":
 		x.MarketMap = nil
 	case "slinky.marketmap.v1.GetMarketMapResponse.last_updated":
-		x.LastUpdated = int64(0)
+		x.LastUpdated = uint64(0)
 	case "slinky.marketmap.v1.GetMarketMapResponse.version":
 		x.Version = uint64(0)
 	case "slinky.marketmap.v1.GetMarketMapResponse.chain_id":
@@ -544,7 +544,7 @@ func (x *fastReflection_GetMarketMapResponse) Get(descriptor protoreflect.FieldD
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "slinky.marketmap.v1.GetMarketMapResponse.last_updated":
 		value := x.LastUpdated
-		return protoreflect.ValueOfInt64(value)
+		return protoreflect.ValueOfUint64(value)
 	case "slinky.marketmap.v1.GetMarketMapResponse.version":
 		value := x.Version
 		return protoreflect.ValueOfUint64(value)
@@ -574,7 +574,7 @@ func (x *fastReflection_GetMarketMapResponse) Set(fd protoreflect.FieldDescripto
 	case "slinky.marketmap.v1.GetMarketMapResponse.market_map":
 		x.MarketMap = value.Message().Interface().(*MarketMap)
 	case "slinky.marketmap.v1.GetMarketMapResponse.last_updated":
-		x.LastUpdated = value.Int()
+		x.LastUpdated = value.Uint()
 	case "slinky.marketmap.v1.GetMarketMapResponse.version":
 		x.Version = value.Uint()
 	case "slinky.marketmap.v1.GetMarketMapResponse.chain_id":
@@ -627,7 +627,7 @@ func (x *fastReflection_GetMarketMapResponse) NewField(fd protoreflect.FieldDesc
 		m := new(MarketMap)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "slinky.marketmap.v1.GetMarketMapResponse.last_updated":
-		return protoreflect.ValueOfInt64(int64(0))
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "slinky.marketmap.v1.GetMarketMapResponse.version":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "slinky.marketmap.v1.GetMarketMapResponse.chain_id":
@@ -874,7 +874,7 @@ func (x *fastReflection_GetMarketMapResponse) ProtoMethods() *protoiface.Methods
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.LastUpdated |= int64(b&0x7F) << shift
+					x.LastUpdated |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -2188,8 +2188,8 @@ func (x *fastReflection_GetLastUpdatedResponse) Interface() protoreflect.ProtoMe
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_GetLastUpdatedResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.LastUpdated != int64(0) {
-		value := protoreflect.ValueOfInt64(x.LastUpdated)
+	if x.LastUpdated != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LastUpdated)
 		if !f(fd_GetLastUpdatedResponse_last_updated, value) {
 			return
 		}
@@ -2210,7 +2210,7 @@ func (x *fastReflection_GetLastUpdatedResponse) Range(f func(protoreflect.FieldD
 func (x *fastReflection_GetLastUpdatedResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "slinky.marketmap.v1.GetLastUpdatedResponse.last_updated":
-		return x.LastUpdated != int64(0)
+		return x.LastUpdated != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GetLastUpdatedResponse"))
@@ -2228,7 +2228,7 @@ func (x *fastReflection_GetLastUpdatedResponse) Has(fd protoreflect.FieldDescrip
 func (x *fastReflection_GetLastUpdatedResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "slinky.marketmap.v1.GetLastUpdatedResponse.last_updated":
-		x.LastUpdated = int64(0)
+		x.LastUpdated = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GetLastUpdatedResponse"))
@@ -2247,7 +2247,7 @@ func (x *fastReflection_GetLastUpdatedResponse) Get(descriptor protoreflect.Fiel
 	switch descriptor.FullName() {
 	case "slinky.marketmap.v1.GetLastUpdatedResponse.last_updated":
 		value := x.LastUpdated
-		return protoreflect.ValueOfInt64(value)
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GetLastUpdatedResponse"))
@@ -2269,7 +2269,7 @@ func (x *fastReflection_GetLastUpdatedResponse) Get(descriptor protoreflect.Fiel
 func (x *fastReflection_GetLastUpdatedResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "slinky.marketmap.v1.GetLastUpdatedResponse.last_updated":
-		x.LastUpdated = value.Int()
+		x.LastUpdated = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GetLastUpdatedResponse"))
@@ -2306,7 +2306,7 @@ func (x *fastReflection_GetLastUpdatedResponse) Mutable(fd protoreflect.FieldDes
 func (x *fastReflection_GetLastUpdatedResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "slinky.marketmap.v1.GetLastUpdatedResponse.last_updated":
-		return protoreflect.ValueOfInt64(int64(0))
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GetLastUpdatedResponse"))
@@ -2476,7 +2476,7 @@ func (x *fastReflection_GetLastUpdatedResponse) ProtoMethods() *protoiface.Metho
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.LastUpdated |= int64(b&0x7F) << shift
+					x.LastUpdated |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -2569,7 +2569,7 @@ type GetMarketMapResponse struct {
 	// LastUpdated is the last block height that the market map was updated.
 	// This field can be used as an optimization for clients checking if there
 	// is a new update to the map.
-	LastUpdated int64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	LastUpdated uint64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
 	// Version is the schema version for the MarketMap data structure and query
 	// response.
 	Version uint64 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
@@ -2604,7 +2604,7 @@ func (x *GetMarketMapResponse) GetMarketMap() *MarketMap {
 	return nil
 }
 
-func (x *GetMarketMapResponse) GetLastUpdated() int64 {
+func (x *GetMarketMapResponse) GetLastUpdated() uint64 {
 	if x != nil {
 		return x.LastUpdated
 	}
@@ -2723,7 +2723,7 @@ type GetLastUpdatedResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	LastUpdated int64 `protobuf:"varint,1,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	LastUpdated uint64 `protobuf:"varint,1,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
 }
 
 func (x *GetLastUpdatedResponse) Reset() {
@@ -2746,7 +2746,7 @@ func (*GetLastUpdatedResponse) Descriptor() ([]byte, []int) {
 	return file_slinky_marketmap_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetLastUpdatedResponse) GetLastUpdated() int64 {
+func (x *GetLastUpdatedResponse) GetLastUpdated() uint64 {
 	if x != nil {
 		return x.LastUpdated
 	}
@@ -2775,7 +2775,7 @@ var file_slinky_marketmap_v1_query_proto_rawDesc = []byte{
 	0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d,
 	0x61, 0x70, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
 	0x4d, 0x61, 0x70, 0x12, 0x21, 0x0a, 0x0c, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x75, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x6c, 0x61, 0x73, 0x74, 0x55,
+	0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x6c, 0x61, 0x73, 0x74, 0x55,
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
 	0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e,
 	0x12, 0x19, 0x0a, 0x08, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01,
@@ -2790,7 +2790,7 @@ var file_slinky_marketmap_v1_query_proto_rawDesc = []byte{
 	0x73, 0x74, 0x22, 0x3b, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x4c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64,
 	0x61, 0x74, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x21, 0x0a, 0x0c,
 	0x6c, 0x61, 0x73, 0x74, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x03, 0x52, 0x0b, 0x6c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x32,
+	0x28, 0x04, 0x52, 0x0b, 0x6c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x32,
 	0x9e, 0x03, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x88, 0x01, 0x0a, 0x09, 0x4d, 0x61,
 	0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x12, 0x28, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
 	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65,

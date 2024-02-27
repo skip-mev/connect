@@ -42,7 +42,7 @@ message GetMarketMapResponse {
   // LastUpdated is the last block height that the market map was updated.
   // This field can be used as an optimization for clients checking if there
   // is a new update to the map.
-  int64 last_updated = 2;
+  uint64 last_updated = 2;
 
   // Version is the schema version for the MarketMap data structure and query
   // response.
@@ -64,4 +64,4 @@ message GetLastUpdatedRequest {}
 
 // GetLastUpdatedResponse is the response type for the Query/LastUpdated RPC
 // method.
-message GetLastUpdatedResponse { int64 last_updated = 1; }
+message GetLastUpdatedResponse { uint64 last_updated = 1; }
