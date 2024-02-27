@@ -38,6 +38,10 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	if err := k.SetParams(ctx, gs.Params); err != nil {
 		panic(err)
 	}
+
+	if err := k.hooks.AfterMarketGenesis(ctx, gs.MarketMap.Tickers); err != nil {
+		panic(err)
+	}
 }
 
 // ExportGenesis retrieves the genesis from state.

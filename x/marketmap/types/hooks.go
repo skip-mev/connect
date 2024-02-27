@@ -9,7 +9,7 @@ type MarketMapHooks interface {
 	AfterMarketUpdated(ctx sdk.Context, ticker Ticker) error
 
 	// AfterMarketGenesis is called after x/marketmap init genesis.
-	AfterMarketGenesis(ctx sdk.Context, tickers []Ticker) error
+	AfterMarketGenesis(ctx sdk.Context, tickers map[string]Ticker) error
 }
 
 var _ MarketMapHooks = &MultiMarketMapHooks{}
@@ -40,7 +40,7 @@ func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context, ticker Ticker)
 }
 
 // AfterMarketGenesis calls all AfterMarketGenesis hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, tickers []Ticker) error {
+func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, tickers map[string]Ticker) error {
 	for i := range mh {
 		if err := mh[i].AfterMarketGenesis(ctx, tickers); err != nil {
 			return err

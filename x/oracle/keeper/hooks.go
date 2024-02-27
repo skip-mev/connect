@@ -34,7 +34,7 @@ func (h Hooks) AfterMarketUpdated(_ sdk.Context, _ marketmaptypes.Ticker) error 
 
 // AfterMarketGenesis verifies that all tickers set in the x/marketmap genesis are registered in
 // the x/oracle module.
-func (h Hooks) AfterMarketGenesis(ctx sdk.Context, tickers []marketmaptypes.Ticker) error {
+func (h Hooks) AfterMarketGenesis(ctx sdk.Context, tickers map[string]marketmaptypes.Ticker) error {
 	for _, ticker := range tickers {
 		if !h.k.HasCurrencyPair(ctx, ticker.CurrencyPair) {
 			return fmt.Errorf("currency pair %s is registered in x/marketmap but not in x/oracle", ticker.String())
