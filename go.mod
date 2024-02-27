@@ -51,6 +51,7 @@ require (
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
 	golang.org/x/net v0.21.0
 	golang.org/x/sync v0.6.0
+	golang.org/x/vuln v1.0.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80
 	google.golang.org/grpc v1.62.0
 	google.golang.org/protobuf v1.32.0
