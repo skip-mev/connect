@@ -17,7 +17,7 @@ func WithLogger(logger *zap.Logger) Option {
 			panic("logger cannot be nil")
 		}
 
-		m.logger = logger.With(zap.String("process", "provider orchestrator"))
+		m.logger = logger.With(zap.String("process", "provider_orchestrator"))
 	}
 }
 

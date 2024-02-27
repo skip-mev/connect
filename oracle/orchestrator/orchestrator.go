@@ -55,7 +55,7 @@ type (
 	ProviderState struct {
 		// Provider is the price provider implementation.
 		Provider *types.PriceProvider
-		// Market is the market map for the provider.
+		// Market is the market map view for the provider.
 		Market types.ProviderMarketMap
 		// Enabled is a flag that indicates whether the provider is enabled. A provider
 		// is enabled iff it is configured with a market map and the market map has tickers.
