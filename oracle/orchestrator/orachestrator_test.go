@@ -99,8 +99,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
-		require.Error(t, err)
+		require.Error(t, o.Init())
 	})
 
 	t.Run("errors when a provider is not supported by the api query handler factory", func(t *testing.T) {
@@ -126,8 +125,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
-		require.Error(t, err)
+		require.Error(t, o.Init())
 	})
 
 	t.Run("errors when a provider is not supported by the web socket query handler factory", func(t *testing.T) {
@@ -149,7 +147,6 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
-		require.Error(t, err)
+		require.Error(t, o.Init())
 	})
 }

@@ -8,7 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	manager "github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -73,7 +73,7 @@ func checkProviderState(
 	enabled bool,
 	expectedType providertypes.ProviderType,
 	isRunning bool,
-	state manager.ProviderState,
+	state orchestrator.ProviderState,
 ) {
 	t.Helper()
 
