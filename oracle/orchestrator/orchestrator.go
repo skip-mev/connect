@@ -94,21 +94,21 @@ func NewProviderManager(
 // 1. This will initialize the provider.
 // 2. Create the provider specific market map, if configured with a marketmap.
 // 3. Enable the provider if the provider is included in the oracle config and marketmap.
-func (m *ProviderOrchestrator) Init() error {
-	m.mut.Lock()
-	defer m.mut.Unlock()
+func (o *ProviderOrchestrator) Init() error {
+	o.mut.Lock()
+	defer o.mut.Unlock()
 
-	for _, providerCfg := range m.cfg.Providers {
+	for _, providerCfg := range o.cfg.Providers {
 		// Initialize the provider.
-		state, err := m.CreateProviderState(providerCfg)
+		state, err := o.CreateProviderState(providerCfg)
 		if err != nil {
-			m.logger.Error("failed to create provider state", zap.Error(err))
+			o.logger.Error("failed to create provider state", zap.Error(err))
 			return err
 		}
 
 		// Add the provider to the orchestrator.
-		m.providers[providerCfg.Name] = state
-		m.logger.Info(
+		o.providers[providerCfg.Name] = state
+		o.logger.Info(
 			"created provider state",
 			zap.String("provider", providerCfg.Name),
 			zap.Bool("enabled", state.Enabled),
@@ -122,12 +122,12 @@ func (m *ProviderOrchestrator) Init() error {
 // CreateProviderState creates a provider state for the given provider. This constructs the
 // query handler, based on the provider's type and configuration. The provider state is then
 // enabled/disabled based on whether the provider is configured to support any of the tickers.
-func (m *ProviderOrchestrator) CreateProviderState(
+func (o *ProviderOrchestrator) CreateProviderState(
 	cfg config.ProviderConfig,
 ) (ProviderState, error) {
 	// Create the provider market map. This creates the tickers the provider is configured to
 	// support.
-	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, m.marketMap)
+	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, o.marketMap)
 	if err != nil {
 		return ProviderState{}, fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
@@ -136,43 +136,43 @@ func (m *ProviderOrchestrator) CreateProviderState(
 	var provider *types.PriceProvider
 	switch {
 	case cfg.API.Enabled:
-		if m.apiQueryHandlerFactory == nil {
+		if o.apiQueryHandlerFactory == nil {
 			return ProviderState{}, fmt.Errorf("cannot create provider; api query handler factory is not set")
 		}
 
-		queryHandler, err := m.apiQueryHandlerFactory(m.logger, cfg, m.apiMetrics, market)
+		queryHandler, err := o.apiQueryHandlerFactory(o.logger, cfg, o.apiMetrics, market)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's API query handler: %w", cfg.Name, err)
 		}
 
 		provider, err = types.NewPriceProvider(
 			base.WithName[mmtypes.Ticker, *big.Int](cfg.Name),
-			base.WithLogger[mmtypes.Ticker, *big.Int](m.logger),
+			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
 			base.WithAPIQueryHandler(queryHandler),
 			base.WithAPIConfig[mmtypes.Ticker, *big.Int](cfg.API),
 			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
-			base.WithMetrics[mmtypes.Ticker, *big.Int](m.providerMetrics),
+			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
 		)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
 		}
 	case cfg.WebSocket.Enabled:
-		if m.webSocketQueryHandlerFactory == nil {
+		if o.webSocketQueryHandlerFactory == nil {
 			return ProviderState{}, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
 		}
 
-		queryHandler, err := m.webSocketQueryHandlerFactory(m.logger, cfg, m.wsMetrics, market)
+		queryHandler, err := o.webSocketQueryHandlerFactory(o.logger, cfg, o.wsMetrics, market)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's web socket query handler: %w", cfg.Name, err)
 		}
 
 		provider, err = types.NewPriceProvider(
 			base.WithName[mmtypes.Ticker, *big.Int](cfg.Name),
-			base.WithLogger[mmtypes.Ticker, *big.Int](m.logger),
+			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
 			base.WithWebSocketQueryHandler(queryHandler),
 			base.WithWebSocketConfig[mmtypes.Ticker, *big.Int](cfg.WebSocket),
 			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
-			base.WithMetrics[mmtypes.Ticker, *big.Int](m.providerMetrics),
+			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
 		)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
@@ -189,9 +189,9 @@ func (m *ProviderOrchestrator) CreateProviderState(
 }
 
 // GetProviderState returns all of the providers and their state.
-func (m *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
-	m.mut.Lock()
-	defer m.mut.Unlock()
+func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
+	o.mut.Lock()
+	defer o.mut.Unlock()
 
-	return m.providers
+	return o.providers
 }
