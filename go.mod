@@ -19,7 +19,7 @@ require (
 	cosmossdk.io/x/tx v0.13.0
 	cosmossdk.io/x/upgrade v0.1.1
 	github.com/BurntSushi/toml v1.3.2 // indirect
-	github.com/alecthomas/assert/v2 v2.6.0
+	github.com/alecthomas/assert/v2 v2.6.0 // indirect
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.5
@@ -82,7 +82,6 @@ require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.0 // indirect
 	github.com/alecthomas/go-check-sumtype v0.1.4 // indirect
-	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.2 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect

@@ -3,7 +3,7 @@ package types_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
@@ -61,9 +61,9 @@ func TestValidateBasic(t *testing.T) {
 			err := tc.cp.ValidateBasic()
 			switch tc.expectPass {
 			case true:
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			default:
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			}
 		})
 	}
@@ -101,10 +101,10 @@ func TestToFromString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			cp, err := slinkytypes.CurrencyPairFromString(tc.cps)
 			if tc.expectPass {
-				assert.Nil(t, err)
-				assert.Equal(t, cp, tc.cp)
+				require.Nil(t, err)
+				require.Equal(t, cp, tc.cp)
 			} else {
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			}
 		})
 	}
@@ -130,7 +130,7 @@ func TestDecimals(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.cp.LegacyDecimals(), tc.dec)
+			require.Equal(t, tc.cp.LegacyDecimals(), tc.dec)
 		})
 	}
 }

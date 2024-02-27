@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/types"
@@ -16,7 +16,7 @@ func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
 	msg := types.NewMsgAddCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
-	assert.Equal(t, signer[0].String(), auth)
+	require.Equal(t, signer[0].String(), auth)
 }
 
 func TestGetSignersMsgRemoveCurrencyPairs(t *testing.T) {
@@ -25,7 +25,7 @@ func TestGetSignersMsgRemoveCurrencyPairs(t *testing.T) {
 	msg := types.NewMsgRemoveCurrencyPairs(auth, nil)
 	// get signers
 	signer := msg.GetSigners()
-	assert.Equal(t, signer[0].String(), auth)
+	require.Equal(t, signer[0].String(), auth)
 }
 
 func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
@@ -68,9 +68,9 @@ func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.msg.ValidateBasic()
 			if !tc.expectPass {
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			}
 		})
 	}
@@ -116,9 +116,9 @@ func TestValidateBasicMsgRemoveCurrencyPairs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.msg.ValidateBasic()
 			if !tc.expectPass {
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			} else {
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			}
 		})
 	}
