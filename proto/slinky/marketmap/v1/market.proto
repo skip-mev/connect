@@ -6,14 +6,6 @@ option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 import "gogoproto/gogo.proto";
 import "slinky/types/v1/currency_pair.proto";
 
-// TickersConfig is the full list of markets and their associated configurations
-// to be stored on-chain.
-message TickersConfig {
-  // Tickers is the full list of markets and their associated configurations to
-  // be stored on-chain.
-  repeated Ticker tickers = 1 [ (gogoproto.nullable) = false ];
-}
-
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
 // feed is scaled to a number of decimal places and has a minimum number of
 // providers required to consider the ticker valid.
