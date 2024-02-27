@@ -43,7 +43,7 @@ type OracleImpl struct { //nolint
 	// Each provider is responsible for fetching prices for a given set of
 	// currency pairs (base, quote). The oracle will fetch prices from each
 	// provider concurrently.
-	providers []types.PriceProvider
+	providers []types.PriceProviderI
 
 	// providerCh is the channel that the oracle will use to signal whether all of the
 	// providers are running or not.
@@ -185,7 +185,7 @@ func (o *OracleImpl) tick() {
 
 // fetchPrices retrieves the latest prices from a given provider and updates the aggregator
 // iff the price age is less than the update interval.
-func (o *OracleImpl) fetchPrices(provider types.PriceProvider) {
+func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("provider panicked", zap.Error(fmt.Errorf("%v", r)))
