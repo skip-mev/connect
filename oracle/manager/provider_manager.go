@@ -17,8 +17,10 @@ import (
 )
 
 type (
-	// ProviderManager is a stateful manager that is responsible for updating the
-	// oracle and its providers with the latest market map changes.
+	// ProviderManager is a stateful manager that is responsible for maintaining all of the
+	// providers that the oracle is using. This includes initializing the providers, creating
+	// the provider specific market map, and enabling/disabling the providers based on the
+	// oracle configuration and market map.
 	ProviderManager struct {
 		mut    sync.Mutex
 		logger *zap.Logger
@@ -37,7 +39,8 @@ type (
 		//
 		// apiQueryHandler factory is a factory function that creates API query handlers.
 		apiQueryHandlerFactory types.PriceAPIQueryHandlerFactory
-		// webSocketQueryHandlerFactory is a factory function that creates websocket query handlers.
+		// webSocketQueryHandlerFactory is a factory function that creates websocket query
+		// handlers.
 		webSocketQueryHandlerFactory types.PriceWebSocketQueryHandlerFactory
 		// wsMetrics is the web socket metrics.
 		wsMetrics wsmetrics.WebSocketMetrics
@@ -47,12 +50,15 @@ type (
 		providerMetrics providermetrics.ProviderMetrics
 	}
 
+	// ProviderState is the state of a provider. This includes the provider implementation,
+	// the provider specific market map, and whether the provider is enabled.
 	ProviderState struct {
 		// Provider is the price provider implementation.
 		Provider *types.PriceProvider
 		// Market is the market map for the provider.
 		Market types.ProviderMarketMap
-		// Enabled is a flag that indicates whether the provider is enabled.
+		// Enabled is a flag that indicates whether the provider is enabled. A provider
+		// is enabled iff it is configured with a market map and the market map has tickers.
 		Enabled bool
 	}
 
@@ -88,7 +94,7 @@ func NewProviderManager(
 // Init initializes the all of the providers that are configured via the oracle config. Specifically,
 // this will:
 //
-// 1. This will initialize the provider,
+// 1. This will initialize the provider.
 // 2. Create the provider specific market map, if configured with a marketmap.
 // 3. Enable the provider if the provider is included in the oracle config and marketmap.
 func (m *ProviderManager) Init() error {
@@ -122,12 +128,14 @@ func (m *ProviderManager) Init() error {
 func (m *ProviderManager) CreateProviderState(
 	cfg config.ProviderConfig,
 ) (ProviderState, error) {
-	// Create the provider market map.
+	// Create the provider market map. This creates the tickers the provider is configured to
+	// support.
 	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, m.marketMap)
 	if err != nil {
 		return ProviderState{}, fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
 
+	// Select the query handler based on the provider's configuration.
 	var provider *types.PriceProvider
 	switch {
 	case cfg.API.Enabled:
@@ -183,8 +191,8 @@ func (m *ProviderManager) CreateProviderState(
 	}, nil
 }
 
-// GetProviders returns all of the providers that are configured on the manager. Specifically, this
-// will return all of the providers that are enabled.
+// GetProviderState returns all of the providers and their state
+.
 func (m *ProviderManager) GetProviderState() map[string]ProviderState {
 	m.mut.Lock()
 	defer m.mut.Unlock()
