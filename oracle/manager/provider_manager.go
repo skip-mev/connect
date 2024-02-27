@@ -191,8 +191,7 @@ func (m *ProviderManager) CreateProviderState(
 	}, nil
 }
 
-// GetProviderState returns all of the providers and their state
-.
+// GetProviderState returns all of the providers and their state.
 func (m *ProviderManager) GetProviderState() map[string]ProviderState {
 	m.mut.Lock()
 	defer m.mut.Unlock()

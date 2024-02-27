@@ -20,8 +20,8 @@ type (
 		config.OracleConfig,
 	) ([]providertypes.Provider[K, V], error)
 
-	// BaseProviderFactory inputs the provider configuration and returns a base provider. The factory
-	// should case on all the different provider configurations and return the appropriate base provider.
+	// BaseProviderFactory inputs the provider configuration and returns a set of base providers. The factory
+	// should case on all the different provider configurations and return the appropriate base providers.
 	BaseProviderFactory[K providertypes.ResponseKey, V providertypes.ResponseValue] func(
 		logger *zap.Logger,
 		cfg config.OracleConfig,
