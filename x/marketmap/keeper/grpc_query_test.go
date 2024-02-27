@@ -24,7 +24,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 				Paths:     make(map[string]types.Paths),
 				Providers: make(map[string]types.Providers),
 			},
-			LastUpdated: s.ctx.BlockHeight(),
+			LastUpdated: uint64(s.ctx.BlockHeight()),
 			Version:     10,
 			ChainId:     "test-chain",
 		}
@@ -54,7 +54,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 
 		expected := &types.GetMarketMapResponse{
 			MarketMap:   expectedMarketMap,
-			LastUpdated: s.ctx.BlockHeight(),
+			LastUpdated: uint64(s.ctx.BlockHeight()),
 			ChainId:     "test-chain",
 		}
 
@@ -97,7 +97,7 @@ func (s *KeeperTestSuite) TestLastUpdated() {
 		resp, err := qs.LastUpdated(s.ctx, &types.GetLastUpdatedRequest{})
 		s.Require().NoError(err)
 
-		s.Require().Equal(s.ctx.BlockHeight(), resp.LastUpdated)
+		s.Require().Equal(uint64(s.ctx.BlockHeight()), resp.LastUpdated)
 	})
 
 	s.Run("run invalid nil request", func() {

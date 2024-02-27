@@ -12,7 +12,8 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.e2e.oracle.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}]
+        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"},
+                {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
     runs-on: ubuntu-latest
     env:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
@@ -58,3 +59,38 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+      - uses: cloudposse/github-action-matrix-outputs-write@0.3.1
+        id: out
+        with:
+          matrix-step-name: github-action-matrix-outputs-read
+          matrix-key: ${{ matrix.image.name }}
+          outputs: |-
+            image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+  deploy:
+    needs: [build]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - uses: supplypike/setup-bin@v3
+        with:
+          uri: 'https://releases.hashicorp.com/levant/0.3.2/levant_0.3.2_linux_amd64.zip'
+          name: 'levant'
+          version: 'v0.3.2'
+      - name: Connect to Tailnet
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_SECRET }}
+          tags: tag:githubactions
+      - uses: cloudposse/github-action-matrix-outputs-read@main
+        id: matrix_output
+        with:
+          matrix-step-name: github-action-matrix-outputs-read
+      - name: Deploy image to Nomad
+        env:
+          NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+        run: make CHAIN_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-testapp'] }} SIDECAR_IMAGE=${{ fromJSON(steps.matrix_output.outputs.result).image['slinky-e2e-sidecar'] }} deploy-dev
