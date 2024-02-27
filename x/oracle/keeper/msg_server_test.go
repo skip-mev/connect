@@ -5,7 +5,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
@@ -178,15 +178,15 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 	// sanity check, assert existence of cps
 	// cp1
 	qpn, err := s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp1)
-	assert.Nil(s.T(), err)
-	assert.Equal(s.T(), qpn.Nonce(), uint64(100))
-	assert.Equal(s.T(), qpn.Price.Int64(), int64(100))
+	require.Nil(s.T(), err)
+	require.Equal(s.T(), qpn.Nonce(), uint64(100))
+	require.Equal(s.T(), qpn.Price.Int64(), int64(100))
 
 	// cp2
 	qpn, err = s.oracleKeeper.GetPriceWithNonceForCurrencyPair(s.ctx, cp2)
-	assert.Nil(s.T(), err)
-	assert.Equal(s.T(), qpn.Nonce(), uint64(101))
-	assert.Equal(s.T(), qpn.Price.Int64(), int64(100))
+	require.Nil(s.T(), err)
+	require.Equal(s.T(), qpn.Nonce(), uint64(101))
+	require.Equal(s.T(), qpn.Price.Int64(), int64(100))
 
 	// define test-cases
 	tcs := []struct {
@@ -225,21 +225,21 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			_, err := ms.RemoveCurrencyPairs(s.ctx, tc.req)
 
 			if !tc.expectPass {
-				assert.NotNil(s.T(), err)
+				require.NotNil(s.T(), err)
 				return
 			}
 
 			// otherwise, assert no error
-			assert.Nil(s.T(), err)
+			require.Nil(s.T(), err)
 
 			// check that all currency-pairs were removed
 			for _, cps := range tc.req.CurrencyPairIds {
 				// get currency pair from request
 				cp, err := slinkytypes.CurrencyPairFromString(cps)
-				assert.Nil(s.T(), err)
+				require.Nil(s.T(), err)
 
 				// assert that currency-pair was removed
-				assert.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cp))
+				require.False(t, s.oracleKeeper.HasCurrencyPair(s.ctx, cp))
 			}
 		})
 	}
