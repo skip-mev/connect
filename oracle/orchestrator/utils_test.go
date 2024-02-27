@@ -1,4 +1,4 @@
-package manager_test
+package orchestrator_test
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/manager"
+	manager "github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	providertypes "github.com/skip-mev/slinky/providers/types"

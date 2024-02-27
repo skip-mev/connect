@@ -1,4 +1,4 @@
-package manager_test
+package orchestrator_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/manager"
+	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
@@ -18,18 +18,18 @@ import (
 
 func TestInit(t *testing.T) {
 	t.Run("creates all providers without a marketmap", func(t *testing.T) {
-		manager, err := manager.NewProviderManager(
+		o, err := orchestrator.NewProviderManager(
 			oracleCfg,
-			manager.WithLogger(logger),
-			manager.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			manager.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithLogger(logger),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
-		err = manager.Init()
+		err = o.Init()
 		require.NoError(t, err)
 
-		state := manager.GetProviderState()
+		state := o.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
 		coinbaseState, ok := state[coinbase.Name]
@@ -46,19 +46,19 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("creates some providers with a marketmap", func(t *testing.T) {
-		manager, err := manager.NewProviderManager(
+		o, err := orchestrator.NewProviderManager(
 			oracleCfg,
-			manager.WithLogger(logger),
-			manager.WithMarketMap(marketMap),
-			manager.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			manager.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithLogger(logger),
+			orchestrator.WithMarketMap(marketMap),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
-		err = manager.Init()
+		err = o.Init()
 		require.NoError(t, err)
 
-		state := manager.GetProviderState()
+		state := o.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
 		expectedTickers := []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}
@@ -78,28 +78,28 @@ func TestInit(t *testing.T) {
 	})
 
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {
-		manager, err := manager.NewProviderManager(
+		o, err := orchestrator.NewProviderManager(
 			oracleCfg,
-			manager.WithLogger(logger),
-			manager.WithMarketMap(marketMap),
-			manager.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithLogger(logger),
+			orchestrator.WithMarketMap(marketMap),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
-		err = manager.Init()
+		err = o.Init()
 		require.Error(t, err)
 	})
 
 	t.Run("errors when the WebSocket query handler factory is not set", func(t *testing.T) {
-		manager, err := manager.NewProviderManager(
+		o, err := orchestrator.NewProviderManager(
 			oracleCfg,
-			manager.WithLogger(logger),
-			manager.WithMarketMap(marketMap),
-			manager.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithLogger(logger),
+			orchestrator.WithMarketMap(marketMap),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
-		err = manager.Init()
+		err = o.Init()
 		require.Error(t, err)
 	})
 
@@ -117,16 +117,16 @@ func TestInit(t *testing.T) {
 			},
 		})
 
-		manager, err := manager.NewProviderManager(
+		o, err := orchestrator.NewProviderManager(
 			cfg,
-			manager.WithLogger(logger),
-			manager.WithMarketMap(marketMap),
-			manager.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			manager.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithLogger(logger),
+			orchestrator.WithMarketMap(marketMap),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
-		err = manager.Init()
+		err = o.Init()
 		require.Error(t, err)
 	})
 
@@ -140,16 +140,16 @@ func TestInit(t *testing.T) {
 			WebSocket: okx,
 		})
 
-		manager, err := manager.NewProviderManager(
+		o, err := orchestrator.NewProviderManager(
 			cfg,
-			manager.WithLogger(logger),
-			manager.WithMarketMap(marketMap),
-			manager.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			manager.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithLogger(logger),
+			orchestrator.WithMarketMap(marketMap),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
-		err = manager.Init()
+		err = o.Init()
 		require.Error(t, err)
 	})
 }

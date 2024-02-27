@@ -1,4 +1,4 @@
-package manager
+package orchestrator
 
 import (
 	"go.uber.org/zap"
@@ -8,22 +8,22 @@ import (
 )
 
 // Option is a functional option for the market map state.
-type Option func(*ProviderManager)
+type Option func(*ProviderOrchestrator)
 
-// WithLogger sets the logger for the provider manager.
+// WithLogger sets the logger for the provider orchestrator.
 func WithLogger(logger *zap.Logger) Option {
-	return func(m *ProviderManager) {
+	return func(m *ProviderOrchestrator) {
 		if logger == nil {
 			panic("logger cannot be nil")
 		}
 
-		m.logger = logger.With(zap.String("process", "provider manager"))
+		m.logger = logger.With(zap.String("process", "provider orchestrator"))
 	}
 }
 
-// WithMarketMap sets the market map for the provider manager.
+// WithMarketMap sets the market map for the provider orchestrator.
 func WithMarketMap(marketMap mmtypes.MarketMap) Option {
-	return func(m *ProviderManager) {
+	return func(m *ProviderOrchestrator) {
 		if err := marketMap.ValidateBasic(); err != nil {
 			panic(err)
 		}
@@ -32,9 +32,9 @@ func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 	}
 }
 
-// WithAPIQueryHandlerFactory sets the API query handler factory for the provider manager.
+// WithAPIQueryHandlerFactory sets the API query handler factory for the provider orchestrator.
 func WithAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
-	return func(m *ProviderManager) {
+	return func(m *ProviderOrchestrator) {
 		if factory == nil {
 			panic("api query handler factory cannot be nil")
 		}
@@ -43,9 +43,9 @@ func WithAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Optio
 	}
 }
 
-// WithWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider manager.
+// WithWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
 func WithWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
-	return func(m *ProviderManager) {
+	return func(m *ProviderOrchestrator) {
 		if factory == nil {
 			panic("websocket query handler factory cannot be nil")
 		}

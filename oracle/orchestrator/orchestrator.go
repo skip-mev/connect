@@ -1,4 +1,4 @@
-package manager
+package orchestrator
 
 import (
 	"fmt"
@@ -17,11 +17,11 @@ import (
 )
 
 type (
-	// ProviderManager is a stateful manager that is responsible for maintaining all of the
+	// ProviderOrchestrator is a stateful orchestrator that is responsible for maintaining all of the
 	// providers that the oracle is using. This includes initializing the providers, creating
 	// the provider specific market map, and enabling/disabling the providers based on the
 	// oracle configuration and market map.
-	ProviderManager struct {
+	ProviderOrchestrator struct {
 		mut    sync.Mutex
 		logger *zap.Logger
 
@@ -63,16 +63,16 @@ type (
 	}
 )
 
-// NewProviderManager returns a new provider manager.
+// NewProviderManager returns a new provider orchestrator.
 func NewProviderManager(
 	cfg config.OracleConfig,
 	opts ...Option,
-) (*ProviderManager, error) {
+) (*ProviderOrchestrator, error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
 	}
 
-	manager := &ProviderManager{
+	orchestrator := &ProviderOrchestrator{
 		cfg:             cfg,
 		providers:       make(map[string]ProviderState),
 		logger:          zap.NewNop(),
@@ -82,10 +82,10 @@ func NewProviderManager(
 	}
 
 	for _, opt := range opts {
-		opt(manager)
+		opt(orchestrator)
 	}
 
-	return manager, nil
+	return orchestrator, nil
 }
 
 // Init initializes the all of the providers that are configured via the oracle config. Specifically,
@@ -94,7 +94,7 @@ func NewProviderManager(
 // 1. This will initialize the provider.
 // 2. Create the provider specific market map, if configured with a marketmap.
 // 3. Enable the provider if the provider is included in the oracle config and marketmap.
-func (m *ProviderManager) Init() error {
+func (m *ProviderOrchestrator) Init() error {
 	m.mut.Lock()
 	defer m.mut.Unlock()
 
@@ -106,7 +106,7 @@ func (m *ProviderManager) Init() error {
 			return err
 		}
 
-		// Add the provider to the manager.
+		// Add the provider to the orchestrator.
 		m.providers[providerCfg.Name] = state
 		m.logger.Info(
 			"created provider state",
@@ -122,7 +122,7 @@ func (m *ProviderManager) Init() error {
 // CreateProviderState creates a provider state for the given provider. This constructs the
 // query handler, based on the provider's type and configuration. The provider state is then
 // enabled/disabled based on whether the provider is configured to support any of the tickers.
-func (m *ProviderManager) CreateProviderState(
+func (m *ProviderOrchestrator) CreateProviderState(
 	cfg config.ProviderConfig,
 ) (ProviderState, error) {
 	// Create the provider market map. This creates the tickers the provider is configured to
@@ -189,7 +189,7 @@ func (m *ProviderManager) CreateProviderState(
 }
 
 // GetProviderState returns all of the providers and their state.
-func (m *ProviderManager) GetProviderState() map[string]ProviderState {
+func (m *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	m.mut.Lock()
 	defer m.mut.Unlock()
 
