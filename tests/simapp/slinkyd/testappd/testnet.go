@@ -48,6 +48,7 @@ var (
 	flagRPCAddress        = "rpc.address"
 	flagAPIAddress        = "api.address"
 	flagPrintMnemonic     = "print-mnemonic"
+	flagCrisisDummy       = "x-crisis-skip-assert-invariants" // dummy flag so that the crisis module does not need to be imported for security reasons
 )
 
 type initArgs struct {
