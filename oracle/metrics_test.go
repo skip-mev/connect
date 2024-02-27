@@ -55,7 +55,7 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	s.o, err = oracle.New(
 		oracle.WithUpdateInterval(oracleTicker),
 		oracle.WithProviders(
-			[]types.PriceProvider{
+			[]types.PriceProviderI{
 				s.mockProvider1,
 				s.mockProvider2,
 			},
