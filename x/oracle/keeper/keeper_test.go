@@ -4,8 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/x/oracle/types/mocks"
-
 	sdkmath "cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -18,6 +16,7 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/skip-mev/slinky/x/oracle/types/mocks"
 )
 
 const (

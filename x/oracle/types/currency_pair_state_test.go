@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -55,7 +55,7 @@ func TestCurrencyPairState(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.cps.ValidateBasic() == nil, tc.valid)
+			require.Equal(t, tc.cps.ValidateBasic() == nil, tc.valid)
 		})
 	}
 }

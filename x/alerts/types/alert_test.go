@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -32,14 +32,14 @@ func TestAlertUnmarshal(t *testing.T) {
 
 	// marshal the alert
 	bz, err := cdc.Marshal(&alert)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// unmarshal the alert
 	alert2 := types.Alert{}
-	assert.NoError(t, alert2.Unmarshal(bz))
+	require.NoError(t, alert2.Unmarshal(bz))
 
 	// assert that the two alerts are equal
-	assert.Equal(t, alert, alert2)
+	require.Equal(t, alert, alert2)
 }
 
 func TestAlertValidateBasic(t *testing.T) {
@@ -92,9 +92,9 @@ func TestAlertValidateBasic(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.alert.ValidateBasic()
 			if tc.valid {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			} else {
-				assert.Error(t, err)
+				require.Error(t, err)
 			}
 		})
 	}
@@ -121,20 +121,20 @@ func TestAlertUID(t *testing.T) {
 	}
 	t.Run("test Alert UID uniqueness", func(t *testing.T) {
 		// check that the alerts have different UIDs
-		assert.NotEqual(t, alert1.UID(), alert2.UID())
+		require.NotEqual(t, alert1.UID(), alert2.UID())
 	})
 }
 
 func TestAlertStatus(t *testing.T) {
 	t.Run("test String", func(t *testing.T) {
 		cs := types.ConclusionStatus(0)
-		assert.Equal(t, "Unconcluded", cs.String())
+		require.Equal(t, "Unconcluded", cs.String())
 
 		cs = types.ConclusionStatus(1)
-		assert.Equal(t, "Concluded", cs.String())
+		require.Equal(t, "Concluded", cs.String())
 
 		cs = types.ConclusionStatus(2)
-		assert.Equal(t, "unknown", cs.String())
+		require.Equal(t, "unknown", cs.String())
 	})
 
 	t.Run("test validate basic", func(t *testing.T) {
@@ -175,9 +175,9 @@ func TestAlertStatus(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				err := tc.alertStatus.ValidateBasic()
 				if tc.valid {
-					assert.NoError(t, err)
+					require.NoError(t, err)
 				} else {
-					assert.Error(t, err)
+					require.Error(t, err)
 				}
 			})
 		}
@@ -230,9 +230,9 @@ func TestAlertWithStatus(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.alert.ValidateBasic()
 			if tc.valid {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			} else {
-				assert.Error(t, err)
+				require.Error(t, err)
 			}
 		})
 	}

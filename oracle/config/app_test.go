@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alecthomas/assert/v2"
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -139,12 +138,12 @@ func TestReadConfigFromFile(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Create temp file
 			f, err := os.CreateTemp("", "oracle_config")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			defer os.Remove(f.Name())
 
 			// Write the config as a toml file
 			_, err = f.WriteString(tc.config)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			// Read config from file
 			_, err = config.ReadConfigFromFile(f.Name())
