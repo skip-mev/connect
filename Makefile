@@ -278,7 +278,7 @@ deploy-dev:
 	touch ${LEVANT_VAR_FILE}
 	yq e -i '.sidecar_image |= "${SIDECAR_IMAGE}"' ${LEVANT_VAR_FILE}
 	yq e -i '.chain_image |= "${CHAIN_IMAGE}"' ${LEVANT_VAR_FILE}
-	levant deploy -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_SLINKY}
+	levant deploy -force -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_SLINKY}
 
 .PHONY: deploy-dev
 
