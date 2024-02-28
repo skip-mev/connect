@@ -146,7 +146,8 @@ MainLoop:
 			retErr = <-errCh
 			break MainLoop
 		case <-p.stopCh:
-			// If the provider is manually stopped, we stop the fetch loop and return.
+			// If the provider is manuall
+			y stopped, we stop the fetch loop and return.
 			p.logger.Debug("stopping provider")
 			cancel()
 			retErr = <-errCh
@@ -154,9 +155,9 @@ MainLoop:
 		}
 	}
 
-	// Wait for the config updater to stop.
 	wg.Wait()
 	p.logger.Info("wait group done")
+
 	return retErr
 }
 
@@ -197,9 +198,9 @@ func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
 // Type returns the type of data handler the provider uses.
 func (p *Provider[K, V]) Type() providertypes.ProviderType {
 	switch {
-	case p.apiCfg.Enabled && p.api != nil:
+	case p.apiCfg.Enabled:
 		return providertypes.API
-	case p.wsCfg.Enabled && p.ws != nil:
+	case p.wsCfg.Enabled:
 		return providertypes.WebSockets
 	default:
 		return "unknown"
