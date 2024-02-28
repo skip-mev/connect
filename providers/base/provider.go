@@ -53,9 +53,6 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	// metrics is the metrics implementation for the provider.
 	metrics providermetrics.ProviderMetrics
 
-	// updater is the config updater that is used to fetch the configuration for the provider.
-	updater ConfigUpdater[K, V]
-
 	// restartCh is the channel that is used to signal the provider to restart.
 	restartCh chan struct{}
 
@@ -99,17 +96,14 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 // and continuously update the data. This blocks until the provider is stopped.
 func (p *Provider[K, V]) Start(ctx context.Context) error {
 	p.logger.Info("starting provider")
-	if len(p.ids) == 0 {
-		p.logger.Warn("no ids to fetch")
-	}
 
-	p.running.Store(true)
-	defer p.running.Store(false)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	// If the config updater is set, the provider may update it's internal configurations
 	// on the fly. As such, we need to listen for updates to the config updater and restart
 	// the provider's main loop when the configuration changes.
-	go p.listenOnConfigUpdater(ctx)
+	wg := sync.WaitGroup{}
 
 	// Start the main loop. At a high level, the main loop will continuously fetch data from
 	// the handler and update the provider's data. It allows for the provider to be restarted
@@ -120,13 +114,15 @@ MainLoop:
 	for {
 		// Create a new context for the fetch loop. This allows us to cancel the fetch loop
 		// when the provider needs to be restarted.
-		fetchCtx, cancel := context.WithCancel(ctx)
-		defer cancel()
+		fetchCtx, cancelFetch := context.WithCancel(ctx)
+		defer cancelFetch()
 
 		// Start the fetch loop.
 		errCh := make(chan error)
+		wg.Add(1)
 		go func() {
 			errCh <- p.fetch(fetchCtx)
+			wg.Done()
 		}()
 
 		select {
@@ -134,7 +130,7 @@ MainLoop:
 			// If any of the provider's configurations have changed, the provider will
 			// be signalled to restart.
 			p.logger.Info("restarting provider")
-			cancel()
+			cancelFetch()
 
 			// Wait for the fetch loop to stop.
 			err := <-errCh
@@ -158,6 +154,9 @@ MainLoop:
 		}
 	}
 
+	// Wait for the config updater to stop.
+	wg.Wait()
+	p.logger.Info("wait group done")
 	return retErr
 }
 

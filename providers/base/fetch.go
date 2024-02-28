@@ -18,13 +18,16 @@ import (
 // fetch is the main blocker for the provider. It is responsible for fetching data from the
 // data provider and updating the data.
 func (p *Provider[K, V]) fetch(ctx context.Context) error {
+	p.running.Store(true)
+	defer p.running.Store(false)
+
 	// responseCh is used to receive the response(s) from the query handler.
 	var responseCh chan providertypes.GetResponse[K, V]
 	switch {
-	case p.api != nil:
+	case p.Type() == providertypes.API:
 		// If the provider is an API provider, then the buffer size is set to the number of IDs.
 		responseCh = make(chan providertypes.GetResponse[K, V], len(p.GetIDs()))
-	case p.ws != nil:
+	case p.Type() == providertypes.WebSockets:
 		// Otherwise, the buffer size is set to the max buffer size configured for the websocket.
 		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
 	default:
@@ -36,9 +39,9 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 
 	// Determine which loop to use based on whether the provider is an API or webSocket provider.
 	switch {
-	case p.api != nil:
+	case p.Type() == providertypes.API:
 		return p.startAPI(ctx, responseCh)
-	case p.ws != nil:
+	case p.Type() == providertypes.WebSockets:
 		return p.startMultiplexWebsocket(ctx, responseCh)
 	default:
 		return fmt.Errorf("no api or websocket configured")
@@ -58,7 +61,7 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 	for {
 		select {
 		case <-ctx.Done():
-			p.logger.Info("provider stopped via context")
+			p.logger.Info("api fetch stopped via context")
 			return ctx.Err()
 
 		case <-ticker.C:
@@ -101,15 +104,10 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 		wg             = errgroup.Group{}
 	)
 
-	ids := p.GetIDs()
-	if len(ids) == 0 {
-		p.logger.Debug("no ids to fetch")
-		return nil
-	}
-
 	// create sub handlers
 	// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
 	// 30 / 45 = 0 -> need one sub handler
+	ids := p.GetIDs()
 	if maxSubsPerConn > 0 {
 		// case where we will split ID's across sub handlers
 		numSubHandlers := (len(ids) / maxSubsPerConn) + 1
@@ -147,21 +145,27 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 	return func() error {
 		// Start the websocket query handler. If the connection fails to start, then the query handler
 		// will be restarted after a timeout.
+		restarts := 0
 		for {
 			select {
 			case <-ctx.Done():
-				p.logger.Info("provider stopped via context")
+				p.logger.Info("web socket stopped via context")
 				return ctx.Err()
 			default:
+				if restarts > 0 {
+					p.logger.Debug("restarting websocket query handler", zap.Int("num_restarts", restarts))
+
+					// If the websocket query handler returns, then the connection was closed. Wait for
+					// a bit before trying to reconnect.
+					time.Sleep(p.wsCfg.ReconnectionTimeout)
+				}
+
 				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
 				handler := p.GetWebSocketHandler()
 				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
-
-				// If the websocket query handler returns, then the connection was closed. Wait for
-				// a bit before trying to reconnect.
-				time.Sleep(p.wsCfg.ReconnectionTimeout)
+				restarts++
 			}
 		}
 	}

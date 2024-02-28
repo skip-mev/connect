@@ -134,9 +134,6 @@ func (o *ProviderOrchestrator) CreateProviderState(
 		return ProviderState{}, fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
 
-	// By default, all providers are configured with a config updater.
-	updater := types.NewPriceProviderUpdater()
-
 	// Select the query handler based on the provider's configuration.
 	var provider *types.PriceProvider
 	switch {
@@ -153,7 +150,6 @@ func (o *ProviderOrchestrator) CreateProviderState(
 			base.WithAPIConfig[mmtypes.Ticker, *big.Int](cfg.API),
 			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
 			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
-			base.WithConfigUpdater[mmtypes.Ticker, *big.Int](updater),
 		)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
@@ -171,7 +167,6 @@ func (o *ProviderOrchestrator) CreateProviderState(
 			base.WithWebSocketConfig[mmtypes.Ticker, *big.Int](cfg.WebSocket),
 			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
 			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
-			base.WithConfigUpdater[mmtypes.Ticker, *big.Int](updater),
 		)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)

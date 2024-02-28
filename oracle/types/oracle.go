@@ -32,10 +32,6 @@ type (
 	// additional base provider methods.
 	PriceProvider = base.Provider[mmtypes.Ticker, *big.Int]
 
-	// PriceProviderUpdater is a type alias for the price provider updater. This
-	// specifically implements the provider updater interface for the price provider.
-	PriceProviderUpdater = base.ConfigUpdater[mmtypes.Ticker, *big.Int]
-
 	// PriceProviderI is a type alias for the price provider. This specifically
 	// implements the provider interface for the price provider.
 	PriceProviderI = providertypes.Provider[mmtypes.Ticker, *big.Int]
@@ -119,9 +115,6 @@ var (
 
 	// NewPriceProvider is a function alias for the new price provider.
 	NewPriceProvider = base.NewProvider[mmtypes.Ticker, *big.Int]
-
-	// NewPriceProviderUpdater is a function alias for the new price provider updater.
-	NewPriceProviderUpdater = base.NewConfigUpdater[mmtypes.Ticker, *big.Int]
 
 	// NewPriceAPIQueryHandler is a function alias for the new API query handler meant to be
 	// used by the price providers.
