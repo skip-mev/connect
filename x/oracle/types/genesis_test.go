@@ -3,9 +3,9 @@ package types_test
 import (
 	"testing"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -122,9 +122,9 @@ func TestGenesisValidation(t *testing.T) {
 			err := gs.Validate()
 
 			if tc.expectPass {
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			} else {
-				assert.NotNil(t, err)
+				require.NotNil(t, err)
 			}
 		})
 	}

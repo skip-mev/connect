@@ -8,7 +8,7 @@ import (
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -57,12 +57,12 @@ func TestMsgAlertGetSigners(t *testing.T) {
 	// create a message with signer
 	msg := types.NewMsgAlert(types.NewAlert(0, signer, slinkytypes.NewCurrencyPair("BTC", "USD")))
 	signers := msg.GetSigners()
-	assert.Equal(t, []sdk.AccAddress{signer}, signers)
+	require.Equal(t, []sdk.AccAddress{signer}, signers)
 }
 
 func TestMsgConclusion(t *testing.T) {
 	invalidConclusionAny, err := codectypes.NewAnyWithValue(&types.MultiSigConclusion{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	validConclusionAny, err := codectypes.NewAnyWithValue(&types.MultiSigConclusion{
 		ExtendedCommitInfo: cmtabci.ExtendedCommitInfo{},
@@ -83,7 +83,7 @@ func TestMsgConclusion(t *testing.T) {
 		},
 		Status: false,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	t.Run("test validate basic", func(t *testing.T) {
 		cases := []struct {
@@ -146,7 +146,7 @@ func TestMsgConclusion(t *testing.T) {
 		}
 
 		signers := msg.GetSigners()
-		assert.Equal(t, []sdk.AccAddress{signer}, signers)
+		require.Equal(t, []sdk.AccAddress{signer}, signers)
 	})
 }
 

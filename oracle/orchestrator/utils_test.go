@@ -6,6 +6,8 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
@@ -14,7 +16,6 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 var (

@@ -180,7 +180,7 @@ type Inputs struct {
 type Outputs struct {
 	depinject.Out
 
-	OracleKeeper keeper.Keeper
+	OracleKeeper *keeper.Keeper
 	Module       appmodule.AppModule
 	Hooks        marketmaptypes.MarketMapHooksWrapper
 }
@@ -202,7 +202,7 @@ func ProvideModule(in Inputs) Outputs {
 	m := NewAppModule(in.Cdc, oracleKeeper)
 
 	return Outputs{
-		OracleKeeper: oracleKeeper,
+		OracleKeeper: &oracleKeeper,
 		Module:       m,
 		Hooks:        marketmaptypes.MarketMapHooksWrapper{MarketMapHooks: oracleKeeper.Hooks()},
 	}
