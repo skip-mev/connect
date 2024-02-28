@@ -59,7 +59,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
-      - uses: cloudposse/github-action-matrix-outputs-write@0.3.1
+      - uses: cloudposse/github-action-matrix-outputs-write@0.5.0
         id: out
         with:
           matrix-step-name: github-action-matrix-outputs-read
