@@ -7,14 +7,17 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/sync/errgroup"
-
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+)
+
+const (
+	rateLimitMultiplier = 10
 )
 
 // APIQueryHandler is an interface that encapsulates querying a data provider for info.
@@ -142,6 +145,9 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	// Block each task until the wait group has capacity to accept a new response.
 	for _, task := range tasks {
 		wg.Go(task)
+
+		// fixed sleep to split across the interval
+		time.Sleep(h.config.Interval / (time.Duration(len(tasks)) * rateLimitMultiplier))
 	}
 
 	// Wait for all tasks to complete.
