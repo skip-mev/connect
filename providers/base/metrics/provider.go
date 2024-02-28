@@ -19,6 +19,8 @@ const (
 	ProviderTypeLabel = "type"
 	// StatusLabel is a label for the status of a provider response.
 	StatusLabel = "status"
+	// ErrorLabel is a label for and error of a failed provider response.
+	ErrorLabel = "error"
 )
 
 type (
@@ -38,10 +40,10 @@ const (
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
 	// for a given provider and ID (i.e. currency pair).
-	AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType)
+	AddProviderResponseByID(providerName, id, errMsg string, status Status, providerType providertypes.ProviderType)
 
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
-	AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType)
+	AddProviderResponse(providerName, errMsg string, status Status, providerType providertypes.ProviderType)
 
 	// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
 	LastUpdated(providerName, id string, providerType providertypes.ProviderType)
@@ -74,12 +76,12 @@ func NewProviderMetrics() ProviderMetrics {
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses_per_id",
 			Help:      "Number of provider successes with a given ID.",
-		}, []string{ProviderLabel, IDLabel, StatusLabel, ProviderTypeLabel}),
+		}, []string{ProviderLabel, IDLabel, StatusLabel, ErrorLabel, ProviderTypeLabel}),
 		responseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses",
 			Help:      "Number of provider successes.",
-		}, []string{ProviderLabel, StatusLabel, ProviderTypeLabel}),
+		}, []string{ProviderLabel, StatusLabel, ErrorLabel, ProviderTypeLabel}),
 		lastUpdatedPerProvider: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_last_updated_id",
@@ -111,21 +113,23 @@ func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.Provi
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
-func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, providerType providertypes.ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id, errMsg string, status Status, providerType providertypes.ProviderType) {
 	m.responseStatusPerProviderByID.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		IDLabel:           id,
 		StatusLabel:       string(status),
+		ErrorLabel:        errMsg,
 		ProviderTypeLabel: string(providerType),
 	},
 	).Add(1)
 }
 
 // AddProviderResponse increments the number of ticks with a fully successful provider update.
-func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, providerType providertypes.ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponse(providerName, errMsg string, status Status, providerType providertypes.ProviderType) {
 	m.responseStatusPerProvider.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		StatusLabel:       string(status),
+		ErrorLabel:        errMsg,
 		ProviderTypeLabel: string(providerType),
 	},
 	).Add(1)
