@@ -40,10 +40,10 @@ const (
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
 	// for a given provider and ID (i.e. currency pair).
-	AddProviderResponseByID(providerName, id, errMsg string, status Status, providerType providertypes.ProviderType)
+	AddProviderResponseByID(providerName, id string, status Status, err error, providerType providertypes.ProviderType)
 
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
-	AddProviderResponse(providerName, errMsg string, status Status, providerType providertypes.ProviderType)
+	AddProviderResponse(providerName string, status Status, err error, providerType providertypes.ProviderType)
 
 	// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
 	LastUpdated(providerName, id string, providerType providertypes.ProviderType)
@@ -104,16 +104,21 @@ func NewNopProviderMetrics() ProviderMetrics {
 	return &noOpProviderMetricsImpl{}
 }
 
-func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ providertypes.ProviderType) {
+func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ error, _ providertypes.ProviderType) {
 }
 
-func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ providertypes.ProviderType) {
+func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ error, _ providertypes.ProviderType) {
 }
 func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.ProviderType) {}
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
-func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id, errMsg string, status Status, providerType providertypes.ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, err error, providerType providertypes.ProviderType) {
+	errMsg := ""
+	if err != nil {
+		errMsg = err.Error()
+	}
+
 	m.responseStatusPerProviderByID.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		IDLabel:           id,
@@ -125,7 +130,12 @@ func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id, errMsg s
 }
 
 // AddProviderResponse increments the number of ticks with a fully successful provider update.
-func (m *ProviderMetricsImpl) AddProviderResponse(providerName, errMsg string, status Status, providerType providertypes.ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, err error, providerType providertypes.ProviderType) {
+	errMsg := ""
+	if err != nil {
+		errMsg = err.Error()
+	}
+
 	m.responseStatusPerProvider.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		StatusLabel:       string(status),
