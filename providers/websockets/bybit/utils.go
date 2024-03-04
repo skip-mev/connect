@@ -47,6 +47,30 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for ByBit.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
 		constants.APTOS_USDT: {
 			Name:           Name,
 			OffChainTicker: "APTUSDT",
@@ -110,6 +134,14 @@ var (
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOTUSDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPEUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

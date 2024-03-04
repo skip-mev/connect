@@ -51,6 +51,26 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOTUSDT",
@@ -154,6 +174,26 @@ var (
 		constants.LITECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "LTCUSDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKRUSDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEARUSDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OPUSDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPEUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

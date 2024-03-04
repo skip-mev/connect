@@ -128,6 +128,22 @@ var (
 			Name:           Name,
 			OffChainTicker: "LDO/USD",
 		},
+		constants.TRON_USD: {
+			Name:           Name,
+			OffChainTicker: "TRX/USD",
+		},
+		constants.UNISWAP_USD: {
+			Name:           Name,
+			OffChainTicker: "UNI/USD",
+		},
+		constants.STELLAR_USD: {
+			Name:           Name,
+			OffChainTicker: "XXLMZ/USD",
+		},
+		constants.RIPPLE_USD: {
+			Name:           Name,
+			OffChainTicker: "XXRPZ/USD",
+		},
 		constants.LITECOIN_USD: {
 			Name:           Name,
 			OffChainTicker: "XLTCZ/USD",
@@ -135,6 +151,18 @@ var (
 		constants.POLKADOT_USD: {
 			Name:           Name,
 			OffChainTicker: "DOT/USD",
+		},
+		constants.POLYGON_USD: {
+			Name:           Name,
+			OffChainTicker: "MATIC/USD",
+		},
+		constants.MAKER_USD: {
+			Name:           Name,
+			OffChainTicker: "MKR/USD",
+		},
+		constants.PEPE_USD: {
+			Name:           Name,
+			OffChainTicker: "PEPE/USD",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,

@@ -60,6 +60,30 @@ var (
 
 	// DefaultMarketConfig defines the default market config for Kucoin.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUI-USDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRX-USDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNI-USDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLD-USDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLM-USDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRP-USDT",
+		},
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",
@@ -167,6 +191,26 @@ var (
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOT-USDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATIC-USDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKR-USDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEAR-USDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OP-USDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPE-USDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

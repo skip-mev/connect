@@ -44,6 +44,30 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for OKX.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUI-USDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNI-USDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRX-USDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRP-USDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLD-USDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLM-USDT",
+		},
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOT-USDT",
@@ -187,6 +211,26 @@ var (
 		constants.LITECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "LTC-USDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATIC-USDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKR-USDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEAR-USDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OP-USDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPE-USDT",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,

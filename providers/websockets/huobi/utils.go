@@ -41,6 +41,22 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "suiusdt",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "trxusdt",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "wldusdt",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "xrpusdt",
+		},
 		constants.APTOS_USDT: {
 			Name:           Name,
 			OffChainTicker: "aptusdt",
@@ -108,6 +124,14 @@ var (
 		constants.LITECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "ltcusdt",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "maticusdt",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "nearusdt",
 		},
 		constants.SOLANA_USDT: {
 			Name:           Name,

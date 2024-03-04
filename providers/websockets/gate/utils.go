@@ -36,6 +36,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Gate.io.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUI_USDT",
+		},
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APE_USDT",
@@ -47,6 +51,22 @@ var (
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ARB_USDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRX_USDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRP_USDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNI_USDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLD_USDT",
 		},
 		constants.ATOM_USDT: {
 			Name:           Name,
@@ -111,6 +131,22 @@ var (
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOT_USDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATIC_USDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEAR_USDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OPT_USDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPE_USDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

@@ -60,6 +60,30 @@ var (
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
 	DefaultUSMarketConfig = types.TickerToProviderConfig{
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
@@ -144,6 +168,22 @@ var (
 			Name:           Name,
 			OffChainTicker: "DOTUSDT",
 		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKRUSDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEARUSDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OPUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -196,6 +236,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
+		constants.CHAINLINK_USDT: {
+			Name:           Name,
+			OffChainTicker: "LINKUSDT",
+		},
 		constants.COMPOUND_USDT: {
 			Name:           Name,
 			OffChainTicker: "COMPUSDT",
@@ -207,6 +251,10 @@ var (
 		constants.DOGE_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOGEUSDT",
+		},
+		constants.ETC_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETCUSDT",
 		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
@@ -220,9 +268,41 @@ var (
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
 		},
+		constants.FILECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "FILUSDT",
+		},
+		constants.LIDO_USDT: {
+			Name:           Name,
+			OffChainTicker: "LDOUSDT",
+		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "LTCUSDT",
+		},
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOTUSDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKRUSDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEARUSDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OPUSDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPEUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

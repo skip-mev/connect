@@ -66,7 +66,7 @@ var (
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//
-		binance.Name:     binance.DefaultUSMarketConfig,
+		binance.Name:     binance.DefaultNonUSMarketConfig,
 		coinbaseapi.Name: coinbaseapi.DefaultMarketConfig,
 		coingecko.Name:   coingecko.DefaultMarketConfig,
 		// // -----------------------------------------------------------	//

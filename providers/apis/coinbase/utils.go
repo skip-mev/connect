@@ -35,6 +35,22 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.SUI_USD: {
+			Name:           Name,
+			OffChainTicker: "SUI-USD",
+		},
+		constants.UNISWAP_USD: {
+			Name:           Name,
+			OffChainTicker: "UNI-USD",
+		},
+		constants.STELLAR_USD: {
+			Name:           Name,
+			OffChainTicker: "XLM-USD",
+		},
+		constants.RIPPLE_USD: {
+			Name:           Name,
+			OffChainTicker: "XRP-USD",
+		},
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",
@@ -186,6 +202,22 @@ var (
 		constants.POLKADOT_USD: {
 			Name:           Name,
 			OffChainTicker: "DOT-USD",
+		},
+		constants.POLYGON_USD: {
+			Name:           Name,
+			OffChainTicker: "MATIC-USD",
+		},
+		constants.MAKER_USD: {
+			Name:           Name,
+			OffChainTicker: "MKR-USD",
+		},
+		constants.NEAR_USD: {
+			Name:           Name,
+			OffChainTicker: "NEAR-USD",
+		},
+		constants.OPTIMISM_USD: {
+			Name:           Name,
+			OffChainTicker: "OP-USD",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,
