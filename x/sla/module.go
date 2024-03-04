@@ -3,11 +3,11 @@ package sla
 import (
 	"context"
 	"encoding/json"
+	"google.golang.org/grpc"
 
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -28,11 +28,12 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ module.AppModuleBasic = AppModule{}
-	_ module.HasGenesis     = AppModule{}
-	_ module.HasServices    = AppModule{}
+	_ module.HasName    = AppModule{}
+	_ module.HasGenesis = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasServices     = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/sla module exposes to the application.
@@ -93,7 +94,8 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 }
 
 // BeginBlock returns a beginblocker for the x/sla module.
-func (am AppModule) BeginBlock(ctx sdk.Context) ([]cometabci.ValidatorUpdate, error) {
+func (am AppModule) BeginBlock(goCtx context.Context) error {
+	ctx := sdk.UnwrapSDKContext(goCtx)
 	return am.k.BeginBlocker(ctx)
 }
 
@@ -106,10 +108,12 @@ func (am AppModule) IsOnePerModuleType() {}
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
-// RegisterServices registers the module's services with the app's module configurator.
-func (am AppModule) RegisterServices(cfc module.Configurator) {
-	types.RegisterMsgServer(cfc.MsgServer(), keeper.NewMsgServer(am.k))
-	types.RegisterQueryServer(cfc.QueryServer(), keeper.NewQueryServer(am.k))
+// RegisterServices registers the module's services.
+func (am AppModule) RegisterServices(registrar grpc.ServiceRegistrar) error {
+	types.RegisterMsgServer(registrar, keeper.NewMsgServer(am.k))
+	types.RegisterQueryServer(registrar, keeper.NewQueryServer(am.k))
+
+	return nil
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the sla
