@@ -47,6 +47,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for ByBit.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "APTUSDT",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSDT",

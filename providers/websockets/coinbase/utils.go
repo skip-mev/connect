@@ -64,6 +64,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "APE-USDT",
 		},
+		constants.APTOS_USD: {
+			Name:           Name,
+			OffChainTicker: "APT-USD",
+		},
 		constants.ATOM_USD: {
 			Name:           Name,
 			OffChainTicker: "ATOM-USD",
