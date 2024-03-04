@@ -24,7 +24,8 @@ message Ticker {
   // the ticker valid.
   uint64 min_provider_count = 4;
 
-  // Enabled is the flag that indicates that a ticker is enabled for fetching prices.
+  // Enabled is the flag that indicates that a ticker is enabled for fetching
+  // prices.
   bool enabled = 14;
 
   // MetadataJSON is a string of JSON that encodes any extra configuration
