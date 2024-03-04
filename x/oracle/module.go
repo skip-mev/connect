@@ -31,10 +31,13 @@ import (
 const ConsensusVersion = 1
 
 var (
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
 	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/oracle module exposes to the application.

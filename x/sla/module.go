@@ -2,12 +2,10 @@ package sla
 
 import (
 	"context"
-	"encoding/json"
-	"google.golang.org/grpc"
-
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
+	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -28,12 +26,13 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ module.HasName    = AppModule{}
-	_ module.HasGenesis = AppModule{}
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
+	_ module.AppModuleBasic = AppModule{}
+	_ module.HasServices    = AppModule{}
 
 	_ appmodule.AppModule       = AppModule{}
 	_ appmodule.HasBeginBlocker = AppModule{}
-	_ appmodule.HasServices     = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/sla module exposes to the application.
@@ -109,11 +108,9 @@ func (am AppModule) IsOnePerModuleType() {}
 func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // RegisterServices registers the module's services.
-func (am AppModule) RegisterServices(registrar grpc.ServiceRegistrar) error {
-	types.RegisterMsgServer(registrar, keeper.NewMsgServer(am.k))
-	types.RegisterQueryServer(registrar, keeper.NewQueryServer(am.k))
-
-	return nil
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServer(am.k))
+	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServer(am.k))
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the sla
