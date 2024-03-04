@@ -8,7 +8,6 @@ import (
 	"cosmossdk.io/depinject"
 
 	"cosmossdk.io/core/store"
-	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -31,10 +30,14 @@ import (
 const ConsensusVersion = 1
 
 var (
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
 	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/alerts module exposes to the
@@ -109,6 +112,11 @@ type AppModule struct {
 	k keeper.Keeper
 }
 
+// BeginBlock is a no-op for x/alerts.
+func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
 // NewAppModule returns an application module for the x/alerts module.
 func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	return AppModule{
@@ -121,7 +129,7 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 
 // EndBlock returns the end blocker for the staking module. It returns no validator
 // updates.
-func (am AppModule) EndBlock(ctx context.Context) ([]cmtabci.ValidatorUpdate, error) {
+func (am AppModule) EndBlock(ctx context.Context) error {
 	return am.k.EndBlocker(ctx)
 }
 
@@ -151,14 +159,11 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 // InitGenesis performs the genesis initialization for the x/alerts module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cmtabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cmtabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the alerts module's exported genesis state as raw
