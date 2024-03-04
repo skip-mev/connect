@@ -36,6 +36,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Gate.io.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APE_USDT",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOM_USDT",

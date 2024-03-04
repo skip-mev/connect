@@ -44,6 +44,14 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for OKX.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USDC: {
+			Name:           Name,
+			OffChainTicker: "APE-USDC",
+		},
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APE-USDT",
+		},
 		constants.ATOM_USD: {
 			Name:           Name,
 			OffChainTicker: "ATOM-USD",

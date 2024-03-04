@@ -51,6 +51,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APEUSDT",
+		},
 		constants.ATOM_USDC: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSDC",

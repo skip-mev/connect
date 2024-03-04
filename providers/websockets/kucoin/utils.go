@@ -60,6 +60,14 @@ var (
 
 	// DefaultMarketConfig defines the default market config for Kucoin.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USDC: {
+			Name:           Name,
+			OffChainTicker: "APE-USDC",
+		},
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APE-USDT",
+		},
 		constants.ATOM_USDC: {
 			Name:           Name,
 			OffChainTicker: "ATOM-USDC",
