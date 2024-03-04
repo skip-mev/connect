@@ -3,9 +3,6 @@ package keeper_test
 import (
 	"testing"
 
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -16,6 +13,8 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/marketmap/types"
+	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 type KeeperTestSuite struct {

@@ -129,7 +129,7 @@ func (s *PreBlockTestSuite) SetupSubTest() {
 	s.handler = preblock.NewOraclePreBlockHandler(
 		log.NewTestLogger(s.T()),
 		aggregationFn,
-		s.oracleKeeper,
+		&s.oracleKeeper,
 		s.mockMetrics,
 		s.cpID,
 		s.veCodec,

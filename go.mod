@@ -19,7 +19,7 @@ require (
 	cosmossdk.io/x/tx v0.13.0
 	cosmossdk.io/x/upgrade v0.1.1
 	github.com/BurntSushi/toml v1.3.2 // indirect
-	github.com/alecthomas/assert/v2 v2.6.0
+	github.com/alecthomas/assert/v2 v2.6.0 // indirect
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.5
@@ -45,7 +45,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/vektra/mockery/v2 v2.42.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
@@ -81,7 +81,6 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.0 // indirect
 	github.com/alecthomas/go-check-sumtype v0.1.4 // indirect
-	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.2 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect
@@ -292,7 +291,7 @@ require (
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
-	github.com/stretchr/objx v0.5.1 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/t-yuki/gocover-cobertura v0.0.0-20180217150009-aaee18c8195c // indirect

@@ -146,7 +146,7 @@ type SimApp struct {
 	GroupKeeper           groupkeeper.Keeper
 	ConsensusParamsKeeper consensuskeeper.Keeper
 	CircuitBreakerKeeper  circuitkeeper.Keeper
-	OracleKeeper          oraclekeeper.Keeper
+	OracleKeeper          *oraclekeeper.Keeper
 	IncentivesKeeper      incentiveskeeper.Keeper
 	AlertsKeeper          alertskeeper.Keeper
 	MarketMapKeeper       *marketmapkeeper.Keeper
@@ -427,7 +427,7 @@ func NewSimApp(
 	// By default, when using app wiring enabled module, this is not required.
 	// For instance, the upgrade module will set automatically the module version map in its init genesis thanks to app wiring.
 	// However, when registering a module manually (i.e. that does not support app wiring), the module version map
-	// must be set manually as follow. The upgrade module will de-duplicate the module version map.
+	// must be set manually as follows. The upgrade module will de-duplicate the module version map.
 	//
 	// app.SetInitChainer(func(ctx sdk.Context, req *cometabci.RequestInitChain) (*cometabci.ResponseInitChain, error) {
 	// 	req.ConsensusParams.Abci.VoteExtensionsEnableHeight = 2

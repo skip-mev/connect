@@ -7,7 +7,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/x/alerts/types"
 )
@@ -23,7 +23,7 @@ func TestParamsValidation(t *testing.T) {
 
 	pk := secp256k1.GenPrivKey()
 	pkany, err := codectypes.NewAnyWithValue(pk.PubKey())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	cases := []testCase{
 		{
@@ -102,5 +102,5 @@ func TestParamsValidation(t *testing.T) {
 func TestDefaultParamsValidate(t *testing.T) {
 	// test that the default params are valid
 	params := types.DefaultParams("test", nil)
-	assert.NoError(t, params.Validate())
+	require.NoError(t, params.Validate())
 }
