@@ -96,6 +96,14 @@ var (
 			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
+		constants.COMPOUND_USDT: {
+			Name:           Name,
+			OffChainTicker: "COMPUSDT",
+		},
+		constants.CURVE_USDT: {
+			Name:           Name,
+			OffChainTicker: "CRVUSDT",
+		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
 			OffChainTicker: "ETHBTC",

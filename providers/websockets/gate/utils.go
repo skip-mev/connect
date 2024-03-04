@@ -64,6 +64,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "BTC_USDT",
 		},
+		constants.BLUR_USDT: {
+			Name:           Name,
+			OffChainTicker: "BLUR_USDT",
+		},
 		constants.CARDANO_USDT: {
 			Name:           Name,
 			OffChainTicker: "ADA_USDT",
@@ -71,6 +75,14 @@ var (
 		constants.CELESTIA_USDT: {
 			Name:           Name,
 			OffChainTicker: "TIA_USDT",
+		},
+		constants.COMPOUND_USDT: {
+			Name:           Name,
+			OffChainTicker: "COMP_USDT",
+		},
+		constants.CURVE_USDT: {
+			Name:           Name,
+			OffChainTicker: "CRV_USDT",
 		},
 		constants.DYDX_USDT: {
 			Name:           Name,
