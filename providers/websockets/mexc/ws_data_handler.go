@@ -99,7 +99,7 @@ func (h *WebSocketHandler) HandleMessage(
 		h.logger.Debug("received pong message")
 		return resp, nil, nil
 	default:
-		return resp, nil, fmt.Errorf("invalid message type %s", msg.Message)
+		return resp, nil, fmt.Errorf("invalid message type: %s", msg.Message)
 	}
 }
 
