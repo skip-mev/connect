@@ -146,8 +146,7 @@ MainLoop:
 			retErr = <-errCh
 			break MainLoop
 		case <-p.stopCh:
-			// If the provider is manuall
-			y stopped, we stop the fetch loop and return.
+			// If the provider is manually stopped, we stop the fetch loop and return.
 			p.logger.Debug("stopping provider")
 			cancel()
 			retErr = <-errCh
