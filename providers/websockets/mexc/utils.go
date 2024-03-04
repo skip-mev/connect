@@ -111,6 +111,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "COMPUSDT",
 		},
+		constants.CHAINLINK_USDT: {
+			Name:           Name,
+			OffChainTicker: "LINKUSDT",
+		},
 		constants.CURVE_USDT: {
 			Name:           Name,
 			OffChainTicker: "CRVUSDT",
@@ -142,6 +146,14 @@ var (
 		constants.FILECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "FILUSDT",
+		},
+		constants.LIDO_USDT: {
+			Name:           Name,
+			OffChainTicker: "LDOUSDT",
+		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "LTCUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

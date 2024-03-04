@@ -83,6 +83,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
+		constants.CHAINLINK_USDT: {
+			Name:           Name,
+			OffChainTicker: "LINKUSDT",
+		},
 		constants.DOGE_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOGEUSDT",
@@ -98,6 +102,10 @@ var (
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
+		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "LTCUSDT",
 		},
 		constants.POLKADOT_USDT: {
 			Name:           Name,

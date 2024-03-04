@@ -111,6 +111,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "TIA-USDT",
 		},
+		constants.CHAINLINK_USD: {
+			Name:           Name,
+			OffChainTicker: "LINK-USD",
+		},
 		constants.COMPOUND_USD: {
 			Name:           Name,
 			OffChainTicker: "COMP-USD",
@@ -170,6 +174,14 @@ var (
 		constants.OSMOSIS_USDT: {
 			Name:           Name,
 			OffChainTicker: "OSMO-USDT",
+		},
+		constants.LIDO_USD: {
+			Name:           Name,
+			OffChainTicker: "LDO-USD",
+		},
+		constants.LITECOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "LTC-USD",
 		},
 		constants.POLKADOT_USD: {
 			Name:           Name,

@@ -105,6 +105,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "filusdt",
 		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "ltcusdt",
+		},
 		constants.SOLANA_USDT: {
 			Name:           Name,
 			OffChainTicker: "solusdt",
