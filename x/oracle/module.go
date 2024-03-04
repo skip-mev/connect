@@ -7,7 +7,6 @@ import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -84,6 +83,11 @@ type AppModule struct {
 	k keeper.Keeper
 }
 
+// BeginBlock is a no-op for x/oracle.
+func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
 // NewAppModule returns an application module for the x/oracle module.
 func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	return AppModule{
@@ -142,16 +146,13 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 // InitGenesis performs the genesis initialization for the x/oracle module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	// unmarshal genesis-state (panic on errors)
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	// initialize genesis
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cometabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the oracle module's exported genesis state as raw

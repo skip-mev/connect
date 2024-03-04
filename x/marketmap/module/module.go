@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"cosmossdk.io/core/appmodule"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -25,9 +24,13 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ appmodule.AppModule   = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
+	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
+
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
 )
 
 // AppModuleBasic is the base struct for the x/marketmap module. It implements the module.AppModuleBasic interface.
@@ -100,19 +103,21 @@ type AppModule struct {
 	k *keeper.Keeper
 }
 
+// BeginBlock is a no-op for x/marketmap.
+func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
 // InitGenesis performs the genesis initialization for the x/marketmap module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	// unmarshal genesis-state (panic on errors)
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	// initialize genesis
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cometabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the oracle module's exported genesis state as raw
