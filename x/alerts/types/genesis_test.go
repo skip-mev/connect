@@ -6,7 +6,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/alerts/types"
@@ -81,12 +81,12 @@ func TestGenesisValidation(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.genesis.ValidateBasic()
-			if tc.valid && err != nil {
-				t.Errorf("expected genesis to be valid, got error: %v", err)
+			if tc.valid {
+				require.Nil(t, err)
+				return
 			}
-			if !tc.valid && err == nil {
-				t.Errorf("expected genesis to be invalid, got nil error")
-			}
+
+			require.NotNil(t, err)
 		})
 	}
 }
@@ -94,5 +94,5 @@ func TestGenesisValidation(t *testing.T) {
 func TestDefaultGenesisValidation(t *testing.T) {
 	// test that the default genesis is valid
 	genesis := types.DefaultGenesisState()
-	assert.NoError(t, genesis.ValidateBasic())
+	require.NoError(t, genesis.ValidateBasic())
 }

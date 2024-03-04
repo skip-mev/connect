@@ -3,6 +3,7 @@
 ## Contents
 
 * [Concepts](#concepts)
+* [Integration](#integtration)
 * [State](#state)
     * [MarketMap](#marketmap)
     * [Params](#params)
@@ -25,6 +26,25 @@ The core goal of the system is to collect off-chain market updates and to post t
 providers to fetch prices for new markets.
 
 The data is stored in a `MarketMap` data structure which can be queried and consumed by oracle services.
+
+## Integration
+
+When integrating `x/marketmap` into your Cosmos SDK application, some considerations must be made:
+
+### Module Hooks
+
+Integrating modules can use the [hooks](#hooks) exposed by `x/marketmap` to update their state whenever
+changes are made to the marketmap.
+
+An example of this can be seen in `x/oracle`'s implementation of the `AfterMarketCreated` hook.  This hook
+triggers the creation of a `CurrencyPairState` that corresponds to the new `Ticker` that was created in the marketmap.
+This allows for a unified flow where updates to the market map prepare the `x/oracle` module for new price feeds.
+
+### Genesis Order
+
+Any modules that integrate with `x/marketmap` must set their `InitGenesis` to occur _before_ the `x/marketmap` module's
+`InitGenesis`.  This is so that logic any consuming modules may want to implement in `AfterMarketGenesis` will be
+run properly.
 
 ## State
 
@@ -167,6 +187,11 @@ The following hooks can be registered:
 
 * `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
     * Called after a new market is updated in `UpdateMarket` message server.
+
+### AfterMarketGenesis
+
+* `AfterMarketGenesis(ctx sdk.Context, tickers map[string]marketmaptypes.Ticker) error`
+    * Called at the end of `InitGenesis` for the `x/marketmap` keeper.
 
 ## Client
 

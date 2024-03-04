@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-// NewCurrencyPairState returns a new CurrencyPairState given an Id, nonce, and QuotePrice.
-func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) CurrencyPairState {
+// NewCurrencyPairState returns a new CurrencyPairState given an ID, nonce, and QuotePrice.
+func NewCurrencyPairState(id, nonce uint64, quotePrice *QuotePrice) CurrencyPairState {
 	return CurrencyPairState{
 		Id:    id,
 		Nonce: nonce,
@@ -13,7 +13,7 @@ func NewCurrencyPairState(id uint64, nonce uint64, quotePrice *QuotePrice) Curre
 	}
 }
 
-// ValidateBasic checks that the CurrencyPairState is valid, i.e the nonce is zero if the QuotePrice is nil, and non-zero
+// ValidateBasic checks that the CurrencyPairState is valid, i.e. the nonce is zero if the QuotePrice is nil, and non-zero
 // otherwise.
 func (cps *CurrencyPairState) ValidateBasic() error {
 	// check that the nonce is zero if the QuotePrice is nil

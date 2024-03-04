@@ -22,7 +22,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           aws-region: us-east-2
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -59,7 +59,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
-      - uses: cloudposse/github-action-matrix-outputs-write@0.3.1
+      - uses: cloudposse/github-action-matrix-outputs-write@1.0.0
         id: out
         with:
           matrix-step-name: github-action-matrix-outputs-read
