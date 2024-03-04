@@ -31,6 +31,7 @@ var (
 
 	_ appmodule.AppModule       = AppModule{}
 	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic is the base struct for the x/marketmap module. It implements the module.AppModuleBasic interface.
@@ -105,6 +106,11 @@ type AppModule struct {
 
 // BeginBlock is a no-op for x/marketmap.
 func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
+// EndBlock is a no-op for x/marketmap.
+func (am AppModule) EndBlock(_ context.Context) error {
 	return nil
 }
 

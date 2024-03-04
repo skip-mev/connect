@@ -34,6 +34,7 @@ var (
 
 	_ appmodule.AppModule       = AppModule{}
 	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/incentives module exposes to the
@@ -111,6 +112,11 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 // BeginBlock returns the begin blocker for the incentives module.
 func (am AppModule) BeginBlock(ctx context.Context) error {
 	return am.k.ExecuteStrategies(sdk.UnwrapSDKContext(ctx))
+}
+
+// EndBlock is a no-op for x/incentives.
+func (am AppModule) EndBlock(_ context.Context) error {
+	return nil
 }
 
 // IsAppModule implements the appmodule.AppModule interface.

@@ -2,10 +2,12 @@ package sla
 
 import (
 	"context"
+	"encoding/json"
+
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-	"encoding/json"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -33,6 +35,7 @@ var (
 
 	_ appmodule.AppModule       = AppModule{}
 	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/sla module exposes to the application.
@@ -96,6 +99,11 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 func (am AppModule) BeginBlock(goCtx context.Context) error {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	return am.k.BeginBlocker(ctx)
+}
+
+// EndBlock is a no-op for x/sla.
+func (am AppModule) EndBlock(ctx context.Context) error {
+	return nil
 }
 
 // IsAppModule implements the appmodule.AppModule interface.

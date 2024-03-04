@@ -37,6 +37,7 @@ var (
 
 	_ appmodule.AppModule       = AppModule{}
 	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/oracle module exposes to the application.
@@ -85,6 +86,11 @@ type AppModule struct {
 
 // BeginBlock is a no-op for x/oracle.
 func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
+// EndBlock is a no-op for x/oracle.
+func (am AppModule) EndBlock(ctx context.Context) error {
 	return nil
 }
 
