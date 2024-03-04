@@ -89,5 +89,7 @@ message MarketMap {
   // configs associated with it.
   map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
 
-  repeated string EnabledTickers = 4 [ (gogoproto.nullable) = false ];
+  // EnabledTickers is a list of the Ticker IDs that are enabled.  This
+  // can be used for fast access of what Tickers are enabled.
+  repeated string EnabledTickers = 4;
 }
