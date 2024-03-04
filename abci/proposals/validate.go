@@ -16,7 +16,7 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 	height int64,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) error {
-	if err := h.validateVoteExtensionsFn(ctx, height, extendedCommitInfo); err != nil {
+	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo); err != nil {
 		h.logger.Error(
 			"failed to validate vote extensions; vote extensions may not comprise a supermajority",
 			"height", height,
