@@ -10,6 +10,7 @@ var (
 	// USD denominated tickers.
 	APE_USD      = mmtypes.NewTicker("APE", "USD", 8, 1)
 	APTOS_USD    = mmtypes.NewTicker("APT", "USD", 8, 1)
+	ARBITRUM_USD = mmtypes.NewTicker("ARB", "USD", 8, 1)
 	ATOM_USD     = mmtypes.NewTicker("ATOM", "USD", 8, 1)
 	AVAX_USD     = mmtypes.NewTicker("AVAX", "USD", 8, 1)
 	BITCOIN_USD  = mmtypes.NewTicker("BTC", "USD", 8, 1)
@@ -25,6 +26,7 @@ var (
 	// USDC denominated tickers.
 	APE_USDC      = mmtypes.NewTicker("APE", "USDC", 8, 1)
 	APTOS_USDC    = mmtypes.NewTicker("APT", "USDC", 8, 1)
+	ARBITRUM_USDC = mmtypes.NewTicker("ARB", "USDC", 8, 1)
 	ATOM_USDC     = mmtypes.NewTicker("ATOM", "USDC", 8, 1)
 	AVAX_USDC     = mmtypes.NewTicker("AVAX", "USDC", 8, 1)
 	BITCOIN_USDC  = mmtypes.NewTicker("BTC", "USDC", 8, 1)
@@ -38,6 +40,7 @@ var (
 	// USDT denominated tickers.
 	APE_USDT      = mmtypes.NewTicker("APE", "USDT", 8, 1)
 	APTOS_USDT    = mmtypes.NewTicker("APT", "USDT", 8, 1)
+	ARBITRUM_USDT = mmtypes.NewTicker("ARB", "USDT", 8, 1)
 	ATOM_USDT     = mmtypes.NewTicker("ATOM", "USDT", 8, 1)
 	AVAX_USDT     = mmtypes.NewTicker("AVAX", "USDT", 8, 1)
 	BITCOIN_USDT  = mmtypes.NewTicker("BTC", "USDT", 8, 1)

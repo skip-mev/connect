@@ -51,6 +51,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "APTUSDT",
 		},
+		constants.ARBITRUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ARBUSDT",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSDT",
