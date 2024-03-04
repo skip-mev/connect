@@ -102,7 +102,7 @@ func (am AppModule) BeginBlock(goCtx context.Context) error {
 }
 
 // EndBlock is a no-op for x/sla.
-func (am AppModule) EndBlock(ctx context.Context) error {
+func (am AppModule) EndBlock(_ context.Context) error {
 	return nil
 }
 

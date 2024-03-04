@@ -10,7 +10,6 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -89,9 +88,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 
 	return gs.ValidateBasic()
 }
-
-// RegisterRESTRoutes does nothing as no RESTful routes exist for the marketmap module (outside of those served via the grpc-gateway).
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // RegisterInvariants registers the invariants of the marketmap module. If an invariant
 // deviates from its predicted value, the InvariantRegistry triggers appropriate

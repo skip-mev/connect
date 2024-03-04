@@ -12,7 +12,6 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -79,7 +78,7 @@ func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.NewDefaultGenesisState())
 }
 
-// ValidateGenesis performs genesis state validation for the incentives module.
+// ValidateGenesis performs genesis state validation for the x/incentives module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var gs types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
@@ -88,9 +87,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 
 	return gs.ValidateBasic()
 }
-
-// No RESTful routes exist for the incentives module (outside of those served via the grpc-gateway).
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // AppModule represents an application module for the x/incentives module.
 type AppModule struct {
@@ -109,7 +105,7 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	}
 }
 
-// BeginBlock returns the begin blocker for the incentives module.
+// BeginBlock returns the beginblocker for the x/incentives module.
 func (am AppModule) BeginBlock(ctx context.Context) error {
 	return am.k.ExecuteStrategies(sdk.UnwrapSDKContext(ctx))
 }

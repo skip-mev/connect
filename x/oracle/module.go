@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -90,7 +89,7 @@ func (am AppModule) BeginBlock(_ context.Context) error {
 }
 
 // EndBlock is a no-op for x/oracle.
-func (am AppModule) EndBlock(ctx context.Context) error {
+func (am AppModule) EndBlock(_ context.Context) error {
 	return nil
 }
 
@@ -139,10 +138,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	// validate
 	return gs.Validate()
 }
-
-// RegisterRESTRoutes returns nothing as no REST-ful routes exist for the oracle module
-// (outside of those served via the grpc-gateway).
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // RegisterInvariants registers the invariants of the oracle module. If an invariant
 // deviates from its predicted value, the InvariantRegistry triggers appropriate
