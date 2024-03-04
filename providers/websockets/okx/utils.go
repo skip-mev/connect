@@ -80,6 +80,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "BTC-USDT",
 		},
+		constants.CARDANO_USD: {
+			Name:           Name,
+			OffChainTicker: "ADA-USD",
+		},
+		constants.CARDANO_USDC: {
+			Name:           Name,
+			OffChainTicker: "ADA-USDC",
+		},
+		constants.CARDANO_USDT: {
+			Name:           Name,
+			OffChainTicker: "ADA-USDT",
+		},
 		constants.CELESTIA_USD: {
 			Name:           Name,
 			OffChainTicker: "TIA-USD",

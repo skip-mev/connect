@@ -67,6 +67,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "BTCUSDT",
 		},
+		constants.CARDANO_USDT: {
+			Name:           Name,
+			OffChainTicker: "ADAUSDT",
+		},
 		constants.DYDX_USDT: {
 			Name:           Name,
 			OffChainTicker: "DYDXUSDT",
