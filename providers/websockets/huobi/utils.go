@@ -41,26 +41,6 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "suiusdt",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "trxusdt",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "wldusdt",
-		},
-		constants.RIPPLE_USDT: {
-			Name:           Name,
-			OffChainTicker: "xrpusdt",
-		},
-		constants.APTOS_USDT: {
-			Name:           Name,
-			OffChainTicker: "aptusdt",
-		},
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "arbusdt",
@@ -72,6 +52,10 @@ var (
 		constants.AVAX_USDT: {
 			Name:           Name,
 			OffChainTicker: "avaxusdt",
+		},
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "aptusdt",
 		},
 		constants.BCH_USDT: {
 			Name:           Name,
@@ -125,21 +109,37 @@ var (
 			Name:           Name,
 			OffChainTicker: "ltcusdt",
 		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "nearusdt",
+		},
 		constants.POLYGON_USDT: {
 			Name:           Name,
 			OffChainTicker: "maticusdt",
 		},
-		constants.NEAR_USDT: {
+		constants.RIPPLE_USDT: {
 			Name:           Name,
-			OffChainTicker: "nearusdt",
+			OffChainTicker: "xrpusdt",
 		},
 		constants.SOLANA_USDT: {
 			Name:           Name,
 			OffChainTicker: "solusdt",
 		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "suiusdt",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "trxusdt",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "usdcusdt",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "wldusdt",
 		},
 	}
 )

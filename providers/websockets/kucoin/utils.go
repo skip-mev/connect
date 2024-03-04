@@ -60,30 +60,6 @@ var (
 
 	// DefaultMarketConfig defines the default market config for Kucoin.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "SUI-USDT",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "TRX-USDT",
-		},
-		constants.UNISWAP_USDT: {
-			Name:           Name,
-			OffChainTicker: "UNI-USDT",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "WLD-USDT",
-		},
-		constants.STELLAR_USDT: {
-			Name:           Name,
-			OffChainTicker: "XLM-USDT",
-		},
-		constants.RIPPLE_USDT: {
-			Name:           Name,
-			OffChainTicker: "XRP-USDT",
-		},
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",
@@ -176,10 +152,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "ETH-USDT",
 		},
-		constants.OSMOSIS_USDT: {
-			Name:           Name,
-			OffChainTicker: "OSMO-USDT",
-		},
 		constants.LIDO_USDT: {
 			Name:           Name,
 			OffChainTicker: "LDO-USDT",
@@ -187,14 +159,6 @@ var (
 		constants.LITECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "LTC-USDT",
-		},
-		constants.POLKADOT_USDT: {
-			Name:           Name,
-			OffChainTicker: "DOT-USDT",
-		},
-		constants.POLYGON_USDT: {
-			Name:           Name,
-			OffChainTicker: "MATIC-USDT",
 		},
 		constants.MAKER_USDT: {
 			Name:           Name,
@@ -208,9 +172,25 @@ var (
 			Name:           Name,
 			OffChainTicker: "OP-USDT",
 		},
+		constants.OSMOSIS_USDT: {
+			Name:           Name,
+			OffChainTicker: "OSMO-USDT",
+		},
 		constants.PEPE_USDT: {
 			Name:           Name,
 			OffChainTicker: "PEPE-USDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOT-USDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATIC-USDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRP-USDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
@@ -220,9 +200,29 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOL-USDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLM-USDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUI-USDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRX-USDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNI-USDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDC-USDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLD-USDT",
 		},
 	}
 )

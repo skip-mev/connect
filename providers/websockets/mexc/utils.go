@@ -51,30 +51,6 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "SUIUSDT",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "TRXUSDT",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "WLDUSDT",
-		},
-		constants.STELLAR_USDT: {
-			Name:           Name,
-			OffChainTicker: "XLMUSDT",
-		},
-		constants.STELLAR_USDT: {
-			Name:           Name,
-			OffChainTicker: "XRPUSDT",
-		},
-		constants.POLKADOT_USDT: {
-			Name:           Name,
-			OffChainTicker: "DOTUSDT",
-		},
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
@@ -127,13 +103,13 @@ var (
 			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
-		constants.COMPOUND_USDT: {
-			Name:           Name,
-			OffChainTicker: "COMPUSDT",
-		},
 		constants.CHAINLINK_USDT: {
 			Name:           Name,
 			OffChainTicker: "LINKUSDT",
+		},
+		constants.COMPOUND_USDT: {
+			Name:           Name,
+			OffChainTicker: "COMPUSDT",
 		},
 		constants.CURVE_USDT: {
 			Name:           Name,
@@ -175,13 +151,13 @@ var (
 			Name:           Name,
 			OffChainTicker: "LTCUSDT",
 		},
-		constants.POLYGON_USDT: {
-			Name:           Name,
-			OffChainTicker: "MATICUSDT",
-		},
 		constants.MAKER_USDT: {
 			Name:           Name,
 			OffChainTicker: "MKRUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
 		},
 		constants.NEAR_USDT: {
 			Name:           Name,
@@ -195,6 +171,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "PEPEUSDT",
 		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -203,9 +183,25 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
 		},
 	}
 )

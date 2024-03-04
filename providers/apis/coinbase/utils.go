@@ -35,22 +35,6 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USD: {
-			Name:           Name,
-			OffChainTicker: "SUI-USD",
-		},
-		constants.UNISWAP_USD: {
-			Name:           Name,
-			OffChainTicker: "UNI-USD",
-		},
-		constants.STELLAR_USD: {
-			Name:           Name,
-			OffChainTicker: "XLM-USD",
-		},
-		constants.RIPPLE_USD: {
-			Name:           Name,
-			OffChainTicker: "XRP-USD",
-		},
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",
@@ -179,18 +163,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "FIL-USD",
 		},
-		constants.OSMOSIS_USD: {
-			Name:           Name,
-			OffChainTicker: "OSMO-USD",
-		},
-		constants.OSMOSIS_USDC: {
-			Name:           Name,
-			OffChainTicker: "OSMO-USDC",
-		},
-		constants.OSMOSIS_USDT: {
-			Name:           Name,
-			OffChainTicker: "OSMO-USDT",
-		},
 		constants.LIDO_USD: {
 			Name:           Name,
 			OffChainTicker: "LDO-USD",
@@ -198,14 +170,6 @@ var (
 		constants.LITECOIN_USD: {
 			Name:           Name,
 			OffChainTicker: "LTC-USD",
-		},
-		constants.POLKADOT_USD: {
-			Name:           Name,
-			OffChainTicker: "DOT-USD",
-		},
-		constants.POLYGON_USD: {
-			Name:           Name,
-			OffChainTicker: "MATIC-USD",
 		},
 		constants.MAKER_USD: {
 			Name:           Name,
@@ -219,6 +183,30 @@ var (
 			Name:           Name,
 			OffChainTicker: "OP-USD",
 		},
+		constants.OSMOSIS_USD: {
+			Name:           Name,
+			OffChainTicker: "OSMO-USD",
+		},
+		constants.OSMOSIS_USDC: {
+			Name:           Name,
+			OffChainTicker: "OSMO-USDC",
+		},
+		constants.OSMOSIS_USDT: {
+			Name:           Name,
+			OffChainTicker: "OSMO-USDT",
+		},
+		constants.POLKADOT_USD: {
+			Name:           Name,
+			OffChainTicker: "DOT-USD",
+		},
+		constants.POLYGON_USD: {
+			Name:           Name,
+			OffChainTicker: "MATIC-USD",
+		},
+		constants.RIPPLE_USD: {
+			Name:           Name,
+			OffChainTicker: "XRP-USD",
+		},
 		constants.SOLANA_USD: {
 			Name:           Name,
 			OffChainTicker: "SOL-USD",
@@ -231,6 +219,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOL-USDT",
 		},
+		constants.STELLAR_USD: {
+			Name:           Name,
+			OffChainTicker: "XLM-USD",
+		},
+		constants.SUI_USD: {
+			Name:           Name,
+			OffChainTicker: "SUI-USD",
+		},
+		constants.UNISWAP_USD: {
+			Name:           Name,
+			OffChainTicker: "UNI-USD",
+		},
 		constants.USDC_USD: {
 			Name:           Name,
 			OffChainTicker: "USDC-USD",
@@ -242,6 +242,10 @@ var (
 		constants.USDT_USD: {
 			Name:           Name,
 			OffChainTicker: "USDT-USD",
+		},
+		constants.WORLD_USD: {
+			Name:           Name,
+			OffChainTicker: "WLD-USD",
 		},
 	}
 )

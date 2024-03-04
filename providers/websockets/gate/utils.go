@@ -36,37 +36,9 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Gate.io.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "SUI_USDT",
-		},
-		constants.APE_USDT: {
-			Name:           Name,
-			OffChainTicker: "APE_USDT",
-		},
-		constants.APTOS_USDT: {
-			Name:           Name,
-			OffChainTicker: "APT_USDT",
-		},
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ARB_USDT",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "TRX_USDT",
-		},
-		constants.RIPPLE_USDT: {
-			Name:           Name,
-			OffChainTicker: "XRP_USDT",
-		},
-		constants.UNISWAP_USDT: {
-			Name:           Name,
-			OffChainTicker: "UNI_USDT",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "WLD_USDT",
 		},
 		constants.ATOM_USDT: {
 			Name:           Name,
@@ -75,6 +47,14 @@ var (
 		constants.AVAX_USDT: {
 			Name:           Name,
 			OffChainTicker: "AVAX_USDT",
+		},
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APE_USDT",
+		},
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "APT_USDT",
 		},
 		constants.BCH_USDT: {
 			Name:           Name,
@@ -128,14 +108,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "FIL_USDT",
 		},
-		constants.POLKADOT_USDT: {
-			Name:           Name,
-			OffChainTicker: "DOT_USDT",
-		},
-		constants.POLYGON_USDT: {
-			Name:           Name,
-			OffChainTicker: "MATIC_USDT",
-		},
 		constants.NEAR_USDT: {
 			Name:           Name,
 			OffChainTicker: "NEAR_USDT",
@@ -148,6 +120,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "PEPE_USDT",
 		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOT_USDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATIC_USDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRP_USDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOL_USDC",
@@ -156,9 +140,25 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOL_USDT",
 		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUI_USDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRX_USDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNI_USDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDC_USDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLD_USDT",
 		},
 	}
 )

@@ -60,30 +60,6 @@ var (
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
 	DefaultUSMarketConfig = types.TickerToProviderConfig{
-		constants.RIPPLE_USDT: {
-			Name:           Name,
-			OffChainTicker: "XRPUSDT",
-		},
-		constants.STELLAR_USDT: {
-			Name:           Name,
-			OffChainTicker: "XLMUSDT",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "TRXUSDT",
-		},
-		constants.UNISWAP_USDT: {
-			Name:           Name,
-			OffChainTicker: "UNIUSDT",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "WLDUSDT",
-		},
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "SUIUSDT",
-		},
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
@@ -163,14 +139,6 @@ var (
 		constants.LITECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "LTCUSDT",
-		},
-		constants.POLKADOT_USDT: {
-			Name:           Name,
-			OffChainTicker: "DOTUSDT",
-		},
-		constants.POLYGON_USDT: {
-			Name:           Name,
-			OffChainTicker: "MATICUSDT",
 		},
 		constants.MAKER_USDT: {
 			Name:           Name,
@@ -184,6 +152,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "OPUSDT",
 		},
+		constants.POLKADOT_USD: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -192,14 +172,38 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
 		},
 	}
 
 	// DefaultNonUSMarketConfig is the default market configuration for Binance.
 	DefaultNonUSMarketConfig = types.TickerToProviderConfig{
+		constants.ARBITRUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ARBUSDT",
+		},
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
@@ -207,10 +211,6 @@ var (
 		constants.APTOS_USDT: {
 			Name:           Name,
 			OffChainTicker: "APTUSDT",
-		},
-		constants.ARBITRUM_USDT: {
-			Name:           Name,
-			OffChainTicker: "ARBUSDT",
 		},
 		constants.ATOM_USDT: {
 			Name:           Name,
@@ -279,14 +279,6 @@ var (
 		constants.LITECOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "LTCUSDT",
-		},
-		constants.POLKADOT_USDT: {
-			Name:           Name,
-			OffChainTicker: "DOTUSDT",
-		},
-		constants.POLYGON_USDT: {
-			Name:           Name,
-			OffChainTicker: "MATICUSDT",
 		},
 		constants.MAKER_USDT: {
 			Name:           Name,
@@ -303,6 +295,14 @@ var (
 		constants.PEPE_USDT: {
 			Name:           Name,
 			OffChainTicker: "PEPEUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

@@ -47,30 +47,6 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for ByBit.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "SUIUSDT",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "TRXUSDT",
-		},
-		constants.UNISWAP_USDT: {
-			Name:           Name,
-			OffChainTicker: "UNIUSDT",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "WLDUSDT",
-		},
-		constants.STELLAR_USDT: {
-			Name:           Name,
-			OffChainTicker: "XLMUSDT",
-		},
-		constants.RIPPLE_USDT: {
-			Name:           Name,
-			OffChainTicker: "XRPUSDT",
-		},
 		constants.APTOS_USDT: {
 			Name:           Name,
 			OffChainTicker: "APTUSDT",
@@ -131,6 +107,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "LTCUSDT",
 		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPEUSDT",
+		},
 		constants.POLKADOT_USDT: {
 			Name:           Name,
 			OffChainTicker: "DOTUSDT",
@@ -139,10 +119,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "MATICUSDT",
 		},
-		constants.PEPE_USDT: {
-			Name:           Name,
-			OffChainTicker: "PEPEUSDT",
-		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -150,6 +126,30 @@ var (
 		constants.SOLANA_USDT: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
+		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
 		},
 		constants.USDC_USDT: {
 			Name:           Name,

@@ -44,34 +44,6 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for OKX.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.SUI_USDT: {
-			Name:           Name,
-			OffChainTicker: "SUI-USDT",
-		},
-		constants.UNISWAP_USDT: {
-			Name:           Name,
-			OffChainTicker: "UNI-USDT",
-		},
-		constants.TRON_USDT: {
-			Name:           Name,
-			OffChainTicker: "TRX-USDT",
-		},
-		constants.RIPPLE_USDT: {
-			Name:           Name,
-			OffChainTicker: "XRP-USDT",
-		},
-		constants.WORLD_USDT: {
-			Name:           Name,
-			OffChainTicker: "WLD-USDT",
-		},
-		constants.STELLAR_USDT: {
-			Name:           Name,
-			OffChainTicker: "XLM-USDT",
-		},
-		constants.POLKADOT_USDT: {
-			Name:           Name,
-			OffChainTicker: "DOT-USDT",
-		},
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",
@@ -212,14 +184,19 @@ var (
 			Name:           Name,
 			OffChainTicker: "LTC-USDT",
 		},
-		constants.POLYGON_USDT: {
-			Name:           Name,
-			OffChainTicker: "MATIC-USDT",
-		},
 		constants.MAKER_USDT: {
 			Name:           Name,
 			OffChainTicker: "MKR-USDT",
 		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOT-USDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATIC-USDT",
+		},
+
 		constants.NEAR_USDT: {
 			Name:           Name,
 			OffChainTicker: "NEAR-USDT",
@@ -231,6 +208,10 @@ var (
 		constants.PEPE_USDT: {
 			Name:           Name,
 			OffChainTicker: "PEPE-USDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRP-USDT",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,
@@ -244,6 +225,22 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOL-USDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLM-USDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUI-USDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRX-USDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNI-USDT",
+		},
 		constants.USDC_USD: {
 			Name:           Name,
 			OffChainTicker: "USDC-USD",
@@ -255,6 +252,10 @@ var (
 		constants.USDT_USD: {
 			Name:           Name,
 			OffChainTicker: "USDT-USD",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLD-USDT",
 		},
 	}
 )
