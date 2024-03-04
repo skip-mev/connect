@@ -79,6 +79,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "AVAXUSDT",
 		},
+		constants.BCH_USDT: {
+			Name:           Name,
+			OffChainTicker: "BCHUSDT",
+		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
 			OffChainTicker: "BTCUSDC",
