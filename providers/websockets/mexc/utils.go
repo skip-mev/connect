@@ -175,6 +175,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "MATICUSDT",
 		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SEIUSDT",
+		},
+		constants.SHIBA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SHIBUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",

@@ -44,6 +44,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Kraken.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USD: {
+			Name:           Name,
+			OffChainTicker: "APE/USD",
+		},
 		constants.ATOM_USD: {
 			Name:           Name,
 			OffChainTicker: "ATOM/USD",
@@ -151,6 +155,10 @@ var (
 		constants.RIPPLE_USD: {
 			Name:           Name,
 			OffChainTicker: "XXRPZ/USD",
+		},
+		constants.SHIBA_USD: {
+			Name:           Name,
+			OffChainTicker: "SHIB/USD",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,

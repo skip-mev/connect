@@ -114,7 +114,7 @@ var (
 		},
 		constants.OPTIMISM_USDT: {
 			Name:           Name,
-			OffChainTicker: "OPT_USDT",
+			OffChainTicker: "OP_USDT",
 		},
 		constants.PEPE_USDT: {
 			Name:           Name,
@@ -131,6 +131,14 @@ var (
 		constants.RIPPLE_USDT: {
 			Name:           Name,
 			OffChainTicker: "XRP_USDT",
+		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SEI_USDT",
+		},
+		constants.SHIBA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SHIB_USDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

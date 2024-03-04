@@ -213,6 +213,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "XRP-USDT",
 		},
+		constants.SHIBA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SHIB-USDT",
+		},
 		constants.SOLANA_USD: {
 			Name:           Name,
 			OffChainTicker: "SOL-USD",

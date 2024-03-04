@@ -121,6 +121,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "xrpusdt",
 		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "seiusdt",
+		},
 		constants.SOLANA_USDT: {
 			Name:           Name,
 			OffChainTicker: "solusdt",

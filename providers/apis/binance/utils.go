@@ -252,6 +252,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "DOGEUSDT",
 		},
+		constants.DYDX_USDT: {
+			Name:           Name,
+			OffChainTicker: "DYDXUSDT",
+		},
 		constants.ETC_USDT: {
 			Name:           Name,
 			OffChainTicker: "ETCUSDT",
@@ -304,6 +308,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "MATICUSDT",
 		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SEIUSDT",
+		},
+		constants.SHIBA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SHIBUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -312,9 +328,29 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
 		},
 	}
 )

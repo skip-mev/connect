@@ -56,9 +56,9 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.
 	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.APE_USDC: {
+		constants.APE_USD: {
 			Name:           Name,
-			OffChainTicker: "APE-USDC",
+			OffChainTicker: "APE-USD",
 		},
 		constants.APE_USDT: {
 			Name:           Name,
@@ -76,10 +76,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "ATOM-USD",
 		},
-		constants.ATOM_USDC: {
-			Name:           Name,
-			OffChainTicker: "ATOM-USDC",
-		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOM-USDT",
@@ -87,10 +83,6 @@ var (
 		constants.AVAX_USD: {
 			Name:           Name,
 			OffChainTicker: "AVAX-USD",
-		},
-		constants.AVAX_USDC: {
-			Name:           Name,
-			OffChainTicker: "AVAX-USDC",
 		},
 		constants.AVAX_USDT: {
 			Name:           Name,
@@ -103,10 +95,6 @@ var (
 		constants.BITCOIN_USD: {
 			Name:           Name,
 			OffChainTicker: "BTC-USD",
-		},
-		constants.BITCOIN_USDC: {
-			Name:           Name,
-			OffChainTicker: "BTC-USDC",
 		},
 		constants.BITCOIN_USDT: {
 			Name:           Name,
@@ -148,18 +136,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "DOGE-USD",
 		},
-		constants.DYDX_USD: {
-			Name:           Name,
-			OffChainTicker: "DYDX-USD",
-		},
-		constants.DYDX_USDC: {
-			Name:           Name,
-			OffChainTicker: "DYDX-USDC",
-		},
-		constants.DYDX_USDT: {
-			Name:           Name,
-			OffChainTicker: "DYDX-USDT",
-		},
 		constants.ETC_USD: {
 			Name:           Name,
 			OffChainTicker: "ETC-USD",
@@ -171,10 +147,6 @@ var (
 		constants.ETHEREUM_USD: {
 			Name:           Name,
 			OffChainTicker: "ETH-USD",
-		},
-		constants.ETHEREUM_USDC: {
-			Name:           Name,
-			OffChainTicker: "ETH-USDC",
 		},
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
@@ -228,6 +200,14 @@ var (
 			Name:           Name,
 			OffChainTicker: "XRP-USD",
 		},
+		constants.SEI_USD: {
+			Name:           Name,
+			OffChainTicker: "SEI-USD",
+		},
+		constants.SHIBA_USD: {
+			Name:           Name,
+			OffChainTicker: "SHIB-USD",
+		},
 		constants.SOLANA_USD: {
 			Name:           Name,
 			OffChainTicker: "SOL-USD",
@@ -252,10 +232,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "UNI-USD",
 		},
-		constants.USDC_USD: {
-			Name:           Name,
-			OffChainTicker: "USDC-USD",
-		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDC-USDT",
@@ -263,10 +239,6 @@ var (
 		constants.USDT_USD: {
 			Name:           Name,
 			OffChainTicker: "USDT-USD",
-		},
-		constants.WORLD_USD: {
-			Name:           Name,
-			OffChainTicker: "WLD-USD",
 		},
 	}
 )
