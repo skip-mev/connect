@@ -88,4 +88,6 @@ message MarketMap {
   // Providers is a map from CurrencyPair to each of to provider-specific
   // configs associated with it.
   map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
+
+  repeated string EnabledTickers = 4 [ (gogoproto.nullable) = false ];
 }
