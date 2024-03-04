@@ -124,6 +124,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "BTCUSDT",
 		},
+		constants.CARDANO_USDT: {
+			Name:           Name,
+			OffChainTicker: "ADAUSDT",
+		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
 			OffChainTicker: "ETHBTC",
