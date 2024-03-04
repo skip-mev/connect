@@ -196,7 +196,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "MATIC-USDT",
 		},
-
 		constants.NEAR_USDT: {
 			Name:           Name,
 			OffChainTicker: "NEAR-USDT",

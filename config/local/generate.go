@@ -64,6 +64,15 @@ var (
 		"optional list of tickers to include in the local market config file",
 	)
 
+	// usePathsOpt defines an optional flag to include the conversion paths in the
+	// local market config file. If this is not provided, the conversion paths will
+	// not be included.
+	usePathsOpt = flag.Bool(
+		"use-paths",
+		false,
+		"optional flag to include the conversion paths in the local market config file",
+	)
+
 	// TickerPaths defines a map of tickers to the corresponding conversion markets
 	// that should be utilized to determine a final price.
 	TickerPaths = map[mmtypes.Ticker]mmtypes.Paths{
@@ -345,11 +354,11 @@ func createMarketMap() (mmtypes.MarketMap, error) {
 			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
 		}
 	}
-
-	// Iterate through all of the ticker paths and update the optional ticker paths map.
-	// for ticker, paths := range TickerPaths {
-	// 	optionalTickerPaths[ticker.String()] = paths
-	// }
+	if *usePathsOpt {
+		for ticker, paths := range TickerPaths {
+			optionalTickerPaths[ticker.String()] = paths
+		}
+	}
 
 	// Create a new market map from the provider to market map.
 	marketMap := mmtypes.MarketMap{
