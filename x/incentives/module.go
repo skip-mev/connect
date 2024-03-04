@@ -8,7 +8,6 @@ import (
 	"cosmossdk.io/depinject"
 
 	storetypes "cosmossdk.io/store/types"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -29,10 +28,13 @@ import (
 const ConsensusVersion = 1
 
 var (
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
 	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/incentives module exposes to the
@@ -135,14 +137,11 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 // InitGenesis performs the genesis initialization for the x/incentives module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cometabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the incentives module's exported genesis state as raw
