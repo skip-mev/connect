@@ -124,6 +124,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "CRV-USDT",
 		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGE-USDT",
+		},
 		constants.DYDX_USDT: {
 			Name:           Name,
 			OffChainTicker: "DYDX-USDT",
@@ -143,6 +147,10 @@ var (
 		constants.OSMOSIS_USDT: {
 			Name:           Name,
 			OffChainTicker: "OSMO-USDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOT-USDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

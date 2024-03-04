@@ -83,6 +83,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGEUSDT",
+		},
 		constants.DYDX_USDT: {
 			Name:           Name,
 			OffChainTicker: "DYDXUSDT",
@@ -94,6 +98,10 @@ var (
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

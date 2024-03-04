@@ -104,6 +104,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "CRVUSDT",
 		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGEUSDT",
+		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
 			OffChainTicker: "ETHBTC",
@@ -115,6 +119,10 @@ var (
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
@@ -136,6 +144,14 @@ var (
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
 		},
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "APTUSDT",
+		},
+		constants.ARBITRUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ARBUSDT",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSDT",
@@ -143,6 +159,10 @@ var (
 		constants.AVAX_USDT: {
 			Name:           Name,
 			OffChainTicker: "AVAXUSDT",
+		},
+		constants.BCH_USDT: {
+			Name:           Name,
+			OffChainTicker: "BCHUSDT",
 		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
@@ -156,6 +176,18 @@ var (
 			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
+		constants.COMPOUND_USDT: {
+			Name:           Name,
+			OffChainTicker: "COMPUSDT",
+		},
+		constants.CURVE_USDT: {
+			Name:           Name,
+			OffChainTicker: "CRVUSDT",
+		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGEUSDT",
+		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
 			OffChainTicker: "ETHBTC",
@@ -167,6 +199,10 @@ var (
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
 		},
 		constants.SOLANA_USDC: {
 			Name:           Name,

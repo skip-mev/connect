@@ -44,6 +44,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for OKX.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOT-USDT",
+		},
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",
@@ -135,6 +139,10 @@ var (
 		constants.CURVE_USDT: {
 			Name:           Name,
 			OffChainTicker: "CRV-USDT",
+		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGE-USDT",
 		},
 		constants.DYDX_USD: {
 			Name:           Name,

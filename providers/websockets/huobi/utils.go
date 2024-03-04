@@ -77,6 +77,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "tiausdt",
 		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "dogeusdt",
+		},
 		constants.DYDX_USDT: {
 			Name:           Name,
 			OffChainTicker: "dydxusdt",

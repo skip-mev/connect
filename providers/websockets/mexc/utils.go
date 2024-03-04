@@ -27,7 +27,7 @@ const (
 	// per connection.
 	//
 	// ref: https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams
-	MaxSubscriptionsPerConnection = 30
+	MaxSubscriptionsPerConnection = 25
 )
 
 var (
@@ -51,6 +51,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
+		},
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
@@ -110,6 +114,14 @@ var (
 		constants.CURVE_USDT: {
 			Name:           Name,
 			OffChainTicker: "CRVUSDT",
+		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGEUSDT",
+		},
+		constants.DYDX_USDT: {
+			Name:           Name,
+			OffChainTicker: "DYDXUSDT",
 		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
