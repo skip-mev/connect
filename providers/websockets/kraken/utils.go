@@ -116,6 +116,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "ETH/USDT",
 		},
+		constants.FILECOIN_USD: {
+			Name:           Name,
+			OffChainTicker: "FIL/USD",
+		},
 		constants.POLKADOT_USD: {
 			Name:           Name,
 			OffChainTicker: "DOT/USD",

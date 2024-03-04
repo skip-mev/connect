@@ -152,6 +152,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "DYDX-USDT",
 		},
+		constants.ETC_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETC-USDT",
+		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
 			OffChainTicker: "ETH-BTC",
@@ -167,6 +171,10 @@ var (
 		constants.ETHEREUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ETH-USDT",
+		},
+		constants.FILECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "FIL-USDT",
 		},
 		constants.SOLANA_USD: {
 			Name:           Name,
