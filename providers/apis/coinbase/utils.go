@@ -28,8 +28,8 @@ var (
 		Atomic:     false,
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
-		Interval:   1 * time.Second,
-		MaxQueries: 5,
+		Interval:   20 * time.Millisecond,
+		MaxQueries: 10,
 		URL:        URL,
 	}
 

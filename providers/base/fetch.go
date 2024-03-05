@@ -10,7 +10,6 @@ import (
 
 	"go.uber.org/zap"
 
-	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -53,44 +52,24 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
 	p.logger.Info("starting api query handler")
 
-	ticker := time.NewTicker(p.apiCfg.Interval)
-	defer ticker.Stop()
-
 	// Start the data update loop.
-	handler := p.GetAPIHandler()
 	for {
 		select {
 		case <-ctx.Done():
 			p.logger.Info("api fetch stopped via context")
 			return ctx.Err()
 
-		case <-ticker.C:
+		default:
 			p.logger.Debug(
 				"attempting to fetch new data",
 				zap.Int("buffer_size", len(responseCh)),
 			)
 
-			p.attemptAPIDataUpdate(ctx, handler, responseCh)
+			handler := p.GetAPIHandler()
+			ids := p.GetIDs()
+			handler.Query(ctx, ids, responseCh)
 		}
 	}
-}
-
-// attemptAPIDataUpdate tries to update data by fetching and parsing API data.
-// It logs any errors encountered during the process.
-func (p *Provider[K, V]) attemptAPIDataUpdate(
-	ctx context.Context,
-	handler apihandlers.APIQueryHandler[K, V],
-	responseCh chan<- providertypes.GetResponse[K, V],
-) {
-	ids := p.GetIDs()
-	if len(ids) == 0 {
-		p.logger.Debug("no ids to fetch")
-		return
-	}
-
-	ctx, cancel := context.WithTimeout(ctx, p.apiCfg.Timeout)
-	defer cancel()
-	handler.Query(ctx, ids, responseCh)
 }
 
 // startMultiplexWebsocket is the main loop for web socket providers. It is responsible for
