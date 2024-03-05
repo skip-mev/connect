@@ -3,7 +3,6 @@ package orchestrator
 import (
 	"fmt"
 	"math/big"
-	"sync"
 
 	"go.uber.org/zap"
 
@@ -22,7 +21,6 @@ type (
 	// the provider specific market map, and enabling/disabling the providers based on the
 	// oracle configuration and market map.
 	ProviderOrchestrator struct {
-		mut    sync.Mutex
 		logger *zap.Logger
 
 		// providers is a map of all of the providers that the oracle is using.
@@ -97,9 +95,6 @@ func NewProviderOrchestrator(
 // 2. Create the provider specific market map, if configured with a marketmap.
 // 3. Enable the provider if the provider is included in the oracle config and marketmap.
 func (o *ProviderOrchestrator) Init() error {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
 	for _, providerCfg := range o.cfg.Providers {
 		// Initialize the provider.
 		state, err := o.CreateProviderState(providerCfg)
@@ -185,9 +180,6 @@ func (o *ProviderOrchestrator) CreateProviderState(
 
 // GetProviderState returns all of the providers and their state.
 func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
 	return o.providers
 }
 

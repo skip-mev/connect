@@ -7,13 +7,10 @@ import (
 	"go.uber.org/zap"
 )
 
-// UpdateMarketMap updates the orchestrator's market map and updates the providers'
+// UpdateWithMarketMap updates the orchestrator's market map and updates the providers'
 // market maps. Specifically, it determines if the provider's market map has a diff,
 // and if so, updates the provider's state.
-func (o *ProviderOrchestrator) UpdateMarketMap(marketMap mmtypes.MarketMap) error {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
+func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) error {
 	if err := marketMap.ValidateBasic(); err != nil {
 		o.logger.Error("failed to validate market map", zap.Error(err))
 		return err
