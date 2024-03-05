@@ -86,7 +86,7 @@ func NewProposalHandler(
 		voteExtensionCodec:       voteExtensionCodec,
 		extendedCommitCodec:      extendedCommitInfoCodec,
 		currencyPairStrategy:     currencyPairStrategy,
-		appState: 			   appState,
+		appState:                 appState,
 		metrics:                  metrics,
 	}
 

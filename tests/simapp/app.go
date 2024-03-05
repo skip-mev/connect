@@ -269,7 +269,6 @@ func NewSimApp(
 	// 	app.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
 	// }
 	// baseAppOptions = append(baseAppOptions, prepareOpt)
-	
 
 	app.App = appBuilder.Build(db, traceStore, append(baseAppOptions, state.SetSlinkyAppStatePruningParams())...)
 

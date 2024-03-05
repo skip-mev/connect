@@ -1,20 +1,22 @@
 package state_test
 
 import (
+	"fmt"
 	"testing"
 
-	"fmt"
 	"cosmossdk.io/log"
-	"github.com/skip-mev/slinky/tests/simapp"
+	pruningtypes "cosmossdk.io/store/pruning/types"
+	storetypes "cosmossdk.io/store/types"
+
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	pruningtypes "cosmossdk.io/store/pruning/types"
-	"github.com/skip-mev/slinky/abci/strategies/state"
-	"github.com/stretchr/testify/require"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	statemocks "github.com/skip-mev/slinky/abci/strategies/state/mocks"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	storetypes "cosmossdk.io/store/types"
+	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/abci/strategies/state"
+	statemocks "github.com/skip-mev/slinky/abci/strategies/state/mocks"
+	"github.com/skip-mev/slinky/tests/simapp"
 )
 
 // test SetSlinkyAppStatePruningParams
@@ -28,8 +30,8 @@ func TestSetSlinkyAppStatePruningParams(t *testing.T) {
 			simtestutil.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.PruningOptions{
 				KeepRecent: 1,
-				Interval: 10,
-				Strategy: pruningtypes.PruningNothing,
+				Interval:   10,
+				Strategy:   pruningtypes.PruningNothing,
 			}),
 			state.SetSlinkyAppStatePruningParams(),
 		)
@@ -46,13 +48,13 @@ func TestSetSlinkyAppStatePruningParams(t *testing.T) {
 			simtestutil.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.PruningOptions{
 				KeepRecent: 10,
-				Interval: 10,
-				Strategy: pruningtypes.PruningNothing,
+				Interval:   10,
+				Strategy:   pruningtypes.PruningNothing,
 			}),
 			state.SetSlinkyAppStatePruningParams(),
 		)
 
-		require.Equal(t, app.CommitMultiStore().GetPruning().KeepRecent, uint64(10))	
+		require.Equal(t, app.CommitMultiStore().GetPruning().KeepRecent, uint64(10))
 	})
 }
 
@@ -72,7 +74,7 @@ func TestAppStates(t *testing.T) {
 		require.Equal(t, ctx, ctx)
 	})
 
-	t.Run("if cache multi-store with version fails - fail", func (t *testing.T)  {
+	t.Run("if cache multi-store with version fails - fail", func(t *testing.T) {
 		ctx := sdk.Context{}.WithBlockHeight(10)
 		app.On("GetBlockRetentionHeight", int64(10)).Return(int64(8)).Once()
 		app.On("CommitMultiStore").Return(mockCommitMultiStore{expError: true}).Once()

@@ -19,8 +19,8 @@ import (
 	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
-	statemock "github.com/skip-mev/slinky/abci/strategies/state/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/state"
+	statemock "github.com/skip-mev/slinky/abci/strategies/state/mocks"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
@@ -1581,7 +1581,6 @@ func (s *ProposalsTestSuite) TestVerifyVEState() {
 		// enable ves
 		ctx := testutils.UpdateContextWithVEHeight(s.ctx, 2)
 		ctx = ctx.WithBlockHeight(3)
-
 
 		// mocks
 		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Once()
