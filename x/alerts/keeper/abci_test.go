@@ -52,9 +52,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 		s.Require().NoError(err)
 
 		// run endblocker
-		updates, err := s.alertKeeper.EndBlocker(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Nil(updates)
+		s.Require().NoError(s.alertKeeper.EndBlocker(s.ctx))
 
 		// assert that all alerts are still in the store
 		alerts, err := s.alertKeeper.GetAllAlerts(s.ctx)
@@ -80,9 +78,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 	s.Require().NoError(err)
 
 	s.Run("expect first alert is pruned at the end of endblock", func() {
-		updates, err := s.alertKeeper.EndBlocker(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Nil(updates)
+		s.Require().NoError(s.alertKeeper.EndBlocker(s.ctx))
 
 		// assert that the first alert is pruned
 		alerts, err := s.alertKeeper.GetAllAlerts(s.ctx)
@@ -106,9 +102,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 	// increment block height
 	s.ctx = s.ctx.WithBlockHeight(11)
 	s.Run("expect second alert is pruned at the end of endblock", func() {
-		updates, err := s.alertKeeper.EndBlocker(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Nil(updates)
+		s.Require().NoError(s.alertKeeper.EndBlocker(s.ctx))
 
 		// assert that the second alert is pruned
 		_, ok := s.alertKeeper.GetAlert(s.ctx, alert2.Alert)
@@ -129,9 +123,7 @@ func (s *KeeperTestSuite) TestEndBlocker() {
 			sdk.NewCoins(s.alertKeeper.GetParams(s.ctx).AlertParams.BondAmount),
 		).Return(nil)
 
-		updates, err := s.alertKeeper.EndBlocker(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Nil(updates)
+		s.Require().NoError(s.alertKeeper.EndBlocker(s.ctx))
 
 		// assert that the third alert is pruned
 		_, ok := s.alertKeeper.GetAlert(s.ctx, alert3.Alert)
