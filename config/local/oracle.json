@@ -35,7 +35,7 @@
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 25000000,
+        "interval": 20000000,
         "maxQueries": 10,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",

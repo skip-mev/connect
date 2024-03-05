@@ -149,7 +149,7 @@ MainLoop:
 			break MainLoop
 		default:
 			wg.Go(tasks[index])
-			index += 1
+			index++
 			index %= len(tasks)
 
 			// Sleep for a bit to prevent the loop from spinning too fast.
