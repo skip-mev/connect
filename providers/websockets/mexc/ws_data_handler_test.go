@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -99,7 +100,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("invalid channel"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("invalid channel"),
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -115,7 +119,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("invalid price"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("invalid price"),
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {

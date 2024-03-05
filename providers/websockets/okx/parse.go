@@ -3,9 +3,10 @@ package okx
 import (
 	"encoding/json"
 	"fmt"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"strings"
 	"time"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"go.uber.org/zap"
 

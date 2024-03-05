@@ -80,7 +80,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			atomic: false,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved:   map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]error{},
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -129,7 +129,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(100),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{},
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -178,7 +178,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(100),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{},
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -209,8 +209,11 @@ func TestAPIQueryHandler(t *testing.T) {
 			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: errors.ErrRateLimit,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						Err:  errors.ErrRateLimit,
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			},
 		},
@@ -242,8 +245,11 @@ func TestAPIQueryHandler(t *testing.T) {
 			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError),
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						Err:  errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError),
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			},
 		},
@@ -275,8 +281,11 @@ func TestAPIQueryHandler(t *testing.T) {
 			atomic: true,
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")),
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						Err:  errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")),
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			},
 		},
@@ -340,7 +349,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{},
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -419,7 +428,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{},
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 		{
@@ -485,8 +494,11 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					ethusd: errors.ErrRateLimit,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					ethusd: {
+						Err:  errors.ErrRateLimit,
+						Code: providertypes.ErrorRateLimitExceeded,
+					},
 				},
 			},
 		},
@@ -567,7 +579,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{},
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{},
 			},
 		},
 	}

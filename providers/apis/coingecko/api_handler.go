@@ -3,9 +3,10 @@ package coingecko
 import (
 	"encoding/json"
 	"fmt"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"net/http"
 	"time"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"

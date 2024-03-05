@@ -28,6 +28,9 @@ const (
 	ErrorFailedToParsePrice    ErrorCode = 16
 	ErrorInvalidWebSocketTopic ErrorCode = 17
 	ErrorFailedToDecode        ErrorCode = 18
+	ErrorFailedWrite           ErrorCode = 19
+	ErrorAPIGeneral            ErrorCode = 20
+	ErrorWebSocketGeneral      ErrorCode = 21
 )
 
 // Error returns the error representation of the ErrorCode.
@@ -53,6 +56,10 @@ func (e ErrorCode) Error() error {
 		return errors.New("invalid argument in request")
 	case ErrorFailedToDecode:
 		return errors.New("failed to decode message")
+	case ErrorAPIGeneral:
+		return errors.New("general api error")
+	case ErrorWebSocketGeneral:
+		return errors.New("general websocket error")
 	case ErrorInvalidWebSocketTopic:
 		return errors.New("invalid websocket topic received")
 	case ErrorFailedToParsePrice:
@@ -61,6 +68,8 @@ func (e ErrorCode) Error() error {
 		return errors.New("invalid chain ID in response")
 	case ErrorInvalidResponse:
 		return errors.New("invalid response")
+	case ErrorFailedWrite:
+		return errors.New("failed to write message")
 	case ErrorNoResponse:
 		return errors.New("got no response")
 	case ErrorInvalidAPIChains:

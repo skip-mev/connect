@@ -2,9 +2,10 @@ package mexc
 
 import (
 	"fmt"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"strings"
 	"time"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"

@@ -117,7 +117,6 @@ func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.Provi
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
 func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, ec providertypes.ErrorCode, providerType providertypes.ProviderType) {
-
 	m.responseStatusPerProviderByID.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		IDLabel:           id,

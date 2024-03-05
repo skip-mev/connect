@@ -759,8 +759,11 @@ func TestMetrics(t *testing.T) {
 		{
 			name: "updates correctly with bad responses",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				unResolved := map[slinkytypes.CurrencyPair]error{
-					pairs[0]: apierrors.ErrRateLimit,
+				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					pairs[0]: {
+						Err:  apierrors.ErrRateLimit,
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				}
 
 				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
@@ -777,9 +780,9 @@ func TestMetrics(t *testing.T) {
 				m := metricmocks.NewProviderMetrics(t)
 				p1 := strings.ToLower(fmt.Sprint(pairs[0]))
 
-				err := fmt.Errorf("api query handler encountered a rate limit")
-				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Failure, err, providertypes.API).Maybe()
-				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Failure, err, providertypes.API).Maybe()
+				code := providertypes.ErrorAPIGeneral
+				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Failure, code, providertypes.API).Maybe()
+				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Failure, code, providertypes.API).Maybe()
 				m.On("LastUpdated", apiCfg.Name, p1, providertypes.API).Maybe()
 
 				return m

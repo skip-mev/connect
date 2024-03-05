@@ -99,8 +99,11 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: wserrors.ErrDial,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						Err:  wserrors.ErrDial,
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			},
 		},
@@ -132,8 +135,11 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: wserrors.ErrCreateMessages,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						Err:  wserrors.ErrCreateMessages,
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			},
 		},
@@ -167,8 +173,11 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: wserrors.ErrWrite,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						Err:  wserrors.ErrWrite,
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			},
 		},
@@ -545,8 +554,11 @@ func TestWebSocketQueryHandler(t *testing.T) {
 						Value: big.NewInt(200),
 					},
 				}
-				unresolved := map[slinkytypes.CurrencyPair]error{
-					atomusd: wserrors.ErrHandleMessage,
+				unresolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					atomusd: {
+						Err:  wserrors.ErrHandleMessage,
+						Code: providertypes.ErrorInvalidResponse,
+					},
 				}
 
 				response1 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
@@ -599,8 +611,11 @@ func TestWebSocketQueryHandler(t *testing.T) {
 						Value: big.NewInt(200),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					atomusd: wserrors.ErrHandleMessage,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					atomusd: {
+						Err:  wserrors.ErrHandleMessage,
+						Code: providertypes.ErrorInvalidResponse,
+					},
 				},
 			},
 		},

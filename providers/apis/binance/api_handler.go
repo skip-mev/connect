@@ -2,10 +2,11 @@ package binance
 
 import (
 	"fmt"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"net/http"
 	"strings"
 	"time"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/skip-mev/slinky/pkg/math"
 

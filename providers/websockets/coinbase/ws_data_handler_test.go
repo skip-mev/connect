@@ -6,6 +6,8 @@ import (
 	"math/big"
 	"testing"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/require"
@@ -104,7 +106,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("failed to convert price to big int"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("failed to convert price to big int"),
+						Code: providertypes.ErrorUnknown,
+					},
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {
@@ -129,7 +134,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("received out of order ticker response message"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("received out of order ticker response message"),
+						Code: providertypes.ErrorUnknown,
+					},
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {

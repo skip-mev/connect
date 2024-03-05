@@ -2,10 +2,11 @@ package static
 
 import (
 	"fmt"
-	providertypes "github.com/skip-mev/slinky/providers/types"
 	"math/big"
 	"net/http"
 	"time"
+
+	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/skip-mev/slinky/oracle/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
