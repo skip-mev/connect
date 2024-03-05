@@ -10,7 +10,7 @@
         "interval": 1000000000,
         "maxQueries": 1,
         "atomic": true,
-        "url": "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s",
+        "url": "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s",
         "name": "binance"
       },
       "webSocket": {
@@ -395,7 +395,7 @@
       }
     }
   ],
-  "production": true,
+  "production": false,
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true
