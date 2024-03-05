@@ -332,7 +332,7 @@ func TestWebSocketProvider(t *testing.T) {
 		{
 			name: "can fetch a single price",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -361,7 +361,7 @@ func TestWebSocketProvider(t *testing.T) {
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				fn := func(responseCh chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]) {
-					resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+					resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(100),
 							Timestamp: respTime,
@@ -373,7 +373,7 @@ func TestWebSocketProvider(t *testing.T) {
 					time.Sleep(time.Second)
 					responseCh <- resp
 
-					resolved = map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+					resolved = map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(200),
 							Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -402,7 +402,7 @@ func TestWebSocketProvider(t *testing.T) {
 		{
 			name: "can fetch multiple prices",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -437,7 +437,7 @@ func TestWebSocketProvider(t *testing.T) {
 		{
 			name: "can fetch multiple prices multiplexed",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -575,7 +575,7 @@ func TestAPIProviderLoop(t *testing.T) {
 		{
 			name: "can fetch a single price",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -601,7 +601,7 @@ func TestAPIProviderLoop(t *testing.T) {
 		{
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -609,7 +609,7 @@ func TestAPIProviderLoop(t *testing.T) {
 				}
 				resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
-				resolved2 := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved2 := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(200),
 						Timestamp: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -633,7 +633,7 @@ func TestAPIProviderLoop(t *testing.T) {
 		{
 			name: "can fetch multiple prices",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,
@@ -726,7 +726,7 @@ func TestMetrics(t *testing.T) {
 		{
 			name: "can fetch a single price",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					pairs[0]: {
 						Value:     big.NewInt(100),
 						Timestamp: respTime,

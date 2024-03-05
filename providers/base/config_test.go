@@ -153,7 +153,7 @@ func TestConfigUpdater(t *testing.T) {
 		// Wait for a few seconds and update the API handler with a handler that returns some data.
 		time.Sleep(2 * time.Second)
 
-		resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+		resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 			pairs[0]: {
 				Value:     big.NewInt(100),
 				Timestamp: respTime,
@@ -212,7 +212,7 @@ func TestConfigUpdater(t *testing.T) {
 		// Wait for a few seconds and update the WebSocket handler with a handler that returns some data.
 		time.Sleep(2 * time.Second)
 
-		resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+		resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 			pairs[0]: {
 				Value:     big.NewInt(100),
 				Timestamp: respTime,

@@ -81,7 +81,7 @@ type (
 	PriceResponse = providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 
 	// ResolvedPrices is a type alias for the resolved prices.
-	ResolvedPrices = map[mmtypes.Ticker]providertypes.Result[*big.Int]
+	ResolvedPrices = map[mmtypes.Ticker]providertypes.ResolvedResult[*big.Int]
 
 	// UnResolvedPrices is a type alias for the unresolved prices.
 	UnResolvedPrices = map[mmtypes.Ticker]error

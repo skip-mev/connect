@@ -40,7 +40,7 @@ func (h *WebSocketHandler) parseTickerStream(
 			fmt.Errorf("invalid channel %s", stream.Channel)
 	}
 
-	// Get the the ticker from the off-chain representation.
+	// Get the ticker from the off-chain representation.
 	ticker, ok := h.market.OffChainMap[stream.Result.CurrencyPair]
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved),

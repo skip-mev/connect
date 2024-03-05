@@ -18,26 +18,41 @@ type ResponseValue interface {
 
 // GetResponse is the GET response from the API data handler.
 type GetResponse[K ResponseKey, V ResponseValue] struct {
-	Resolved   map[K]Result[V]
-	UnResolved map[K]error
+	Resolved   map[K]ResolvedResult[V]
+	UnResolved map[K]UnresolvedResult
 }
 
-// Result is the result of a single requested ID.
-type Result[V ResponseValue] struct {
+// ResolvedResult is the result of a single requested ID.
+type ResolvedResult[V ResponseValue] struct {
 	// Value is the value of the requested ID.
 	Value V
 	// Timestamp is the timestamp of the value.
 	Timestamp time.Time
+	// Code is the result code from the request.
+	Code ErrorCode
+}
+
+// UnresolvedResult is an unresolved (failed) result of a single requested ID.
+type UnresolvedResult struct {
+	// Err is the error detailing the failed request.
+	Err error
+	// Code is the result code from the request.
+	Code ErrorCode
+}
+
+// Error returns the string representation of an UnresolvedResult.
+func (ur UnresolvedResult) Error() string {
+	return fmt.Sprintf("%s: code: %d: code error: %s", ur.Err.Error(), ur.Code, ur.Code.Error())
 }
 
 // NewGetResponse creates a new GetResponse.
-func NewGetResponse[K ResponseKey, V ResponseValue](resolved map[K]Result[V], unresolved map[K]error) GetResponse[K, V] {
+func NewGetResponse[K ResponseKey, V ResponseValue](resolved map[K]ResolvedResult[V], unresolved map[K]UnresolvedResult) GetResponse[K, V] {
 	if resolved == nil {
-		resolved = make(map[K]Result[V])
+		resolved = make(map[K]ResolvedResult[V])
 	}
 
 	if unresolved == nil {
-		unresolved = make(map[K]error)
+		unresolved = make(map[K]UnresolvedResult)
 	}
 
 	return GetResponse[K, V]{
@@ -48,14 +63,17 @@ func NewGetResponse[K ResponseKey, V ResponseValue](resolved map[K]Result[V], un
 
 // NewGetResponseWithErr creates a new GetResponse with the given error. This populates
 // the unresolved map with the given IDs and error.
-func NewGetResponseWithErr[K ResponseKey, V ResponseValue](ids []K, err error) GetResponse[K, V] {
-	unresolved := make(map[K]error, len(ids))
+func NewGetResponseWithErr[K ResponseKey, V ResponseValue](ids []K, err ErrorWithCode) GetResponse[K, V] {
+	unresolved := make(map[K]UnresolvedResult, len(ids))
 	for _, id := range ids {
-		unresolved[id] = err
+		unresolved[id] = UnresolvedResult{
+			Err:  err,
+			Code: err.Code(),
+		}
 	}
 
 	return GetResponse[K, V]{
-		Resolved:   make(map[K]Result[V]),
+		Resolved:   make(map[K]ResolvedResult[V]),
 		UnResolved: unresolved,
 	}
 }
@@ -70,17 +88,17 @@ func (r GetResponse[K, V]) String() string {
 	)
 }
 
-// NewResult creates a new Result.
-func NewResult[V ResponseValue](value V, timestamp time.Time) Result[V] {
-	return Result[V]{
+// NewResult creates a new ResolvedResult.
+func NewResult[V ResponseValue](value V, timestamp time.Time) ResolvedResult[V] {
+	return ResolvedResult[V]{
 		Value:     value,
 		Timestamp: timestamp,
 	}
 }
 
-// String returns a string representation of the Result. This is mostly used for logging
+// String returns a string representation of the ResolvedResult. This is mostly used for logging
 // and testing purposes.
-func (r Result[V]) String() string {
+func (r ResolvedResult[V]) String() string {
 	return fmt.Sprintf(
 		"(value: %s, timestamp: %s)",
 		r.Value.String(),

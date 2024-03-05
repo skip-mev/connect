@@ -45,7 +45,7 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 
 	// data is the latest set of key -> value pairs for the provider i.e. the latest prices
 	// for a given set of currency pairs.
-	data map[K]providertypes.Result[V]
+	data map[K]providertypes.ResolvedResult[V]
 
 	// ids is the set of IDs that the provider will fetch data for.
 	ids []K
@@ -68,7 +68,7 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 	p := &Provider[K, V]{
 		logger:    zap.NewNop(),
 		ids:       make([]K, 0),
-		data:      make(map[K]providertypes.Result[V]),
+		data:      make(map[K]providertypes.ResolvedResult[V]),
 		restartCh: make(chan struct{}, 1),
 		stopCh:    make(chan struct{}, 1),
 	}
@@ -184,12 +184,12 @@ func (p *Provider[K, V]) Name() string {
 // GetData returns the latest data recorded by the provider. The data is constantly
 // updated by the provider's main loop and provides access to the latest data - prices
 // in constant time.
-func (p *Provider[K, V]) GetData() map[K]providertypes.Result[V] {
+func (p *Provider[K, V]) GetData() map[K]providertypes.ResolvedResult[V] {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
 	// Deep copy the prices into a new map.
-	cpy := make(map[K]providertypes.Result[V])
+	cpy := make(map[K]providertypes.ResolvedResult[V])
 	maps.Copy(cpy, p.data)
 
 	return cpy

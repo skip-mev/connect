@@ -214,7 +214,7 @@ func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertyp
 
 // updateData sets the latest data for the provider. This will only update the data if the timestamp
 // of the data is greater than the current data.
-func (p *Provider[K, V]) updateData(id K, result providertypes.Result[V]) {
+func (p *Provider[K, V]) updateData(id K, result providertypes.ResolvedResult[V]) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
