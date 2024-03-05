@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -47,6 +48,31 @@ var (
 		"path to write the market config file to",
 	)
 
+	// providersOpt defines an optional list of providers to include in the local
+	// market config file. If this is not provided, all providers will be included.
+	providersOpt = flag.String(
+		"providers",
+		"",
+		"optional list of providers to include in the local market config file",
+	)
+
+	// tickersOpt defines an optional list of tickers to include in the local market
+	// config file. If this is not provided, all tickers will be included.
+	tickersOpt = flag.String(
+		"tickers",
+		"",
+		"optional list of tickers to include in the local market config file",
+	)
+
+	// usePathsOpt defines an optional flag to include the conversion paths in the
+	// local market config file. If this is not provided, the conversion paths will
+	// not be included.
+	usePathsOpt = flag.Bool(
+		"use-paths",
+		false,
+		"optional flag to include the conversion paths in the local market config file",
+	)
+
 	// TickerPaths defines a map of tickers to the corresponding conversion markets
 	// that should be utilized to determine a final price.
 	TickerPaths = map[mmtypes.Ticker]mmtypes.Paths{
@@ -66,7 +92,7 @@ var (
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//
-		binance.Name:     binance.DefaultUSMarketConfig,
+		binance.Name:     binance.DefaultNonUSMarketConfig,
 		coinbaseapi.Name: coinbaseapi.DefaultMarketConfig,
 		coingecko.Name:   coingecko.DefaultMarketConfig,
 		// // -----------------------------------------------------------	//
@@ -90,7 +116,7 @@ var (
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
 	LocalOracleConfig = config.OracleConfig{
-		Production: true,
+		Production: false,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
@@ -110,7 +136,7 @@ var (
 			// the provider supports fetching data for the currency pair.
 			{
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 			},
 			{
 				Name: coinbaseapi.Name,
@@ -189,6 +215,20 @@ func main() {
 	}
 	defer f.Close()
 
+	// If the providers is not empty, filter the providers to include only the
+	// providers that are specified.
+	providersFlag := *providersOpt
+	if providersFlag != "" {
+		ps := make([]config.ProviderConfig, 0)
+		for _, provider := range LocalOracleConfig.Providers {
+			if strings.Contains(providersFlag, provider.Name) {
+				ps = append(ps, provider)
+			}
+		}
+
+		LocalOracleConfig.Providers = ps
+	}
+
 	if err := LocalOracleConfig.ValidateBasic(); err != nil {
 		fmt.Fprintf(os.Stderr, "error validating local config: %v\n", err)
 		return
@@ -213,6 +253,49 @@ func main() {
 	marketMap, err := createMarketMap()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error generating the local market map")
+		return
+	}
+
+	// If the tickers is not empty, filter the tickers to include only the tickers
+	// that are specified.
+	tickersFlag := *tickersOpt
+	if tickersFlag != "" {
+		for _, ticker := range marketMap.Tickers {
+			if !strings.Contains(tickersFlag, ticker.String()) {
+				delete(marketMap.Providers, ticker.String())
+				delete(marketMap.Paths, ticker.String())
+				delete(marketMap.Tickers, ticker.String())
+			}
+		}
+
+		if len(providersFlag) > 0 {
+			for ticker, providers := range marketMap.Providers {
+				ps := make([]mmtypes.ProviderConfig, 0)
+
+				// Filter the providers to include only the providers that are specified.
+				for _, provider := range providers.Providers {
+					if strings.Contains(providersFlag, provider.Name) {
+						ps = append(ps, provider)
+					}
+				}
+
+				providers.Providers = ps
+				marketMap.Providers[ticker] = providers
+
+				// If there are no providers for a given ticker, remove the ticker from the
+				// market map.
+				if len(providers.Providers) == 0 {
+					delete(marketMap.Providers, ticker)
+					delete(marketMap.Paths, ticker)
+					delete(marketMap.Tickers, ticker)
+				}
+			}
+		}
+	}
+
+	// Validate the market map.
+	if err := marketMap.ValidateBasic(); err != nil {
+		fmt.Fprintf(os.Stderr, "error validating the market map: %v\n", err)
 		return
 	}
 
@@ -271,10 +354,10 @@ func createMarketMap() (mmtypes.MarketMap, error) {
 			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
 		}
 	}
-
-	// Iterate through all of the ticker paths and update the optional ticker paths map.
-	for ticker, paths := range TickerPaths {
-		optionalTickerPaths[ticker.String()] = paths
+	if *usePathsOpt {
+		for ticker, paths := range TickerPaths {
+			optionalTickerPaths[ticker.String()] = paths
+		}
 	}
 
 	// Create a new market map from the provider to market map.

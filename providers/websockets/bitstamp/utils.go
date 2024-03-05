@@ -68,10 +68,6 @@ var (
 			Name:           Name,
 			OffChainTicker: "solusd",
 		},
-		constants.USDC_USD: {
-			Name:           Name,
-			OffChainTicker: "usdcusd",
-		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "usdcusdt",

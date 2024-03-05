@@ -41,6 +41,10 @@ var (
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
 	DefaultMarketConfig = types.TickerToProviderConfig{
+		constants.ARBITRUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "arbusdt",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "atomusdt",
@@ -48,6 +52,14 @@ var (
 		constants.AVAX_USDT: {
 			Name:           Name,
 			OffChainTicker: "avaxusdt",
+		},
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "aptusdt",
+		},
+		constants.BCH_USDT: {
+			Name:           Name,
+			OffChainTicker: "bchusdt",
 		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
@@ -57,13 +69,25 @@ var (
 			Name:           Name,
 			OffChainTicker: "btcusdt",
 		},
+		constants.CARDANO_USDT: {
+			Name:           Name,
+			OffChainTicker: "adausdt",
+		},
 		constants.CELESTIA_USDT: {
 			Name:           Name,
 			OffChainTicker: "tiausdt",
 		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "dogeusdt",
+		},
 		constants.DYDX_USDT: {
 			Name:           Name,
 			OffChainTicker: "dydxusdt",
+		},
+		constants.ETC_USDT: {
+			Name:           Name,
+			OffChainTicker: "etcusdt",
 		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
@@ -77,13 +101,49 @@ var (
 			Name:           Name,
 			OffChainTicker: "ethusdt",
 		},
+		constants.FILECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "filusdt",
+		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "ltcusdt",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "nearusdt",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "maticusdt",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "xrpusdt",
+		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "seiusdt",
+		},
 		constants.SOLANA_USDT: {
 			Name:           Name,
 			OffChainTicker: "solusdt",
 		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "suiusdt",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "trxusdt",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "usdcusdt",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "wldusdt",
 		},
 	}
 )
