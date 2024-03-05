@@ -1537,15 +1537,15 @@ func (s *ProposalsTestSuite) TestVerifyVEState() {
 
 	ph := proposals.NewProposalHandler(
 		log.NewNopLogger(),
-		func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+		func(sdk.Context, *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
 			return &cometabci.ResponsePrepareProposal{
 				Txs: [][]byte{{1, 2, 3}},
 			}, nil
 		},
-		func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+		func(sdk.Context, *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 			return nil, nil
 		},
-		func(ctx sdk.Context, extInfo cometabci.ExtendedCommitInfo) error {
+		func(sdk.Context, cometabci.ExtendedCommitInfo) error {
 			return nil
 		},
 		codec.NewDefaultVoteExtensionCodec(),

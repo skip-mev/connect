@@ -19,7 +19,7 @@ import (
 	"github.com/skip-mev/slinky/tests/simapp"
 )
 
-// test SetSlinkyAppStatePruningParams
+// test SetSlinkyAppStatePruningParams.
 func TestSetSlinkyAppStatePruningParams(t *testing.T) {
 	t.Run("test that KeepRecent is updated if it is too low", func(t *testing.T) {
 		app := simapp.NewSimApp(
@@ -59,7 +59,7 @@ func TestSetSlinkyAppStatePruningParams(t *testing.T) {
 }
 
 // test verify VoteExtensionState
-// test with a mock + test with a non-mocked application
+// test with a mock + test with a non-mocked application.
 func TestAppStates(t *testing.T) {
 	// mock
 	app := statemocks.NewApplication(t)
@@ -89,18 +89,18 @@ func TestAppStates(t *testing.T) {
 		app.On("GetBlockRetentionHeight", int64(10)).Return(int64(8)).Once()
 		app.On("CommitMultiStore").Return(mockCommitMultiStore{expError: false}).Once()
 
-		ctx, err := appState.VerifyVoteExtensionState(ctx)
+		_, err := appState.VerifyVoteExtensionState(ctx)
 		require.NoError(t, err)
 	})
 }
 
-// commitMultiStore mock
+// commitMultiStore mock.
 type mockCommitMultiStore struct {
 	storetypes.CommitMultiStore
 	expError bool
 }
 
-func (m mockCommitMultiStore) CacheMultiStoreWithVersion(version int64) (storetypes.CacheMultiStore, error) {
+func (m mockCommitMultiStore) CacheMultiStoreWithVersion(int64) (storetypes.CacheMultiStore, error) {
 	var err error
 	if m.expError {
 		err = fmt.Errorf("error")

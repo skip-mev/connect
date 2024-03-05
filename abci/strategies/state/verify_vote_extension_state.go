@@ -42,14 +42,14 @@ type AppState interface {
 	VerifyVoteExtensionState(ctx sdk.Context) (sdk.Context, error)
 }
 
-// NewBaseAppState returns a new instance of the baseAppState. That returns a cached state for verifying vote-extensions
+// NewBaseAppState returns a new instance of the baseAppState. That returns a cached state for verifying vote-extensions.
 func NewBaseAppState(app Application) AppState {
 	return baseAppState{
 		app: app,
 	}
 }
 
-// NewNoopAppState returns a new instance of the noopAppState. That returns the same context for verifying vote-extensions
+// NewNoopAppState returns a new instance of the noopAppState. That returns the same context for verifying vote-extensions.
 func NewNoopAppState() AppState {
 	return noopAppState{}
 }
