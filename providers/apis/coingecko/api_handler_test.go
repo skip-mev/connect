@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
@@ -148,7 +150,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			),
 		},
@@ -165,7 +170,10 @@ shout out my label thats me
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btcmog: fmt.Errorf("json error"),
+					btcmog: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("json error"),
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			),
 		},
@@ -186,7 +194,10 @@ shout out my label thats me
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("invalid syntax"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("invalid syntax"),
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			),
 		},

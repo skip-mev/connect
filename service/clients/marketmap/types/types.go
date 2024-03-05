@@ -46,7 +46,7 @@ type (
 	ResolvedMarketMap = map[Chain]MarketMapResult
 
 	// UnResolvedMarketMap is a type alias for the unresolved market map.
-	UnResolvedMarketMap = map[Chain]error
+	UnResolvedMarketMap = map[Chain]providertypes.UnresolvedResult
 )
 
 var (

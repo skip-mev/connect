@@ -5,6 +5,8 @@ import (
 	"math/big"
 	"testing"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
@@ -127,7 +129,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("error"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("error"),
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				},
 			},
 			updateMessage: func() []handlers.WebsocketEncodedMessage {

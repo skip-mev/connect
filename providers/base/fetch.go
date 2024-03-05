@@ -190,23 +190,23 @@ func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertyp
 
 				// Update the metrics.
 				strID := strings.ToLower(id.String())
-				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Success, nil, p.Type())
-				p.metrics.AddProviderResponse(p.name, providermetrics.Success, nil, p.Type())
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Success, providertypes.OK, p.Type())
+				p.metrics.AddProviderResponse(p.name, providermetrics.Success, providertypes.OK, p.Type())
 				p.metrics.LastUpdated(p.name, strID, p.Type())
 			}
 
 			// Log and record all the unresolved data.
-			for id, err := range unResolved {
+			for id, result := range unResolved {
 				p.logger.Debug(
 					"failed to fetch data",
 					zap.Any("id", id),
-					zap.Error(err),
+					zap.Error(result.ErrorObj()),
 				)
 
 				// Update the metrics.
 				strID := strings.ToLower(id.String())
-				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, err, p.Type())
-				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, err, p.Type())
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, result.Code, p.Type())
+				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, result.Code, p.Type())
 			}
 		}
 	}

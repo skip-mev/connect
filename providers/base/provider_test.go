@@ -472,8 +472,11 @@ func TestWebSocketProvider(t *testing.T) {
 		{
 			name: "does not update if the response included an error",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				unResolved := map[slinkytypes.CurrencyPair]error{
-					pairs[0]: wserrors.ErrHandleMessage,
+				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					pairs[0]: {
+						Err:  wserrors.ErrHandleMessage,
+						Code: providertypes.ErrorWebSocketGeneral,
+					},
 				}
 
 				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
@@ -666,8 +669,11 @@ func TestAPIProviderLoop(t *testing.T) {
 		{
 			name: "does not update if the response included an error",
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				unResolved := map[slinkytypes.CurrencyPair]error{
-					pairs[0]: apierrors.ErrRateLimit,
+				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					pairs[0]: {
+						Err:  apierrors.ErrRateLimit,
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				}
 
 				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{

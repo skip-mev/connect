@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
@@ -118,7 +120,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("bad format"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("bad format"),
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			),
 		},
@@ -138,7 +143,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("bad format"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("bad format"),
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			),
 		},
@@ -153,7 +161,10 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("bad format"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("bad format"),
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			),
 		},
@@ -176,8 +187,14 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD:  fmt.Errorf("multiple cps"),
-					constants.ETHEREUM_USD: fmt.Errorf("multiple cps"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("multiple cps"),
+						Code: providertypes.ErrorAPIGeneral,
+					},
+					constants.ETHEREUM_USD: providertypes.UnresolvedResult{
+						Err:  fmt.Errorf("multiple cps"),
+						Code: providertypes.ErrorAPIGeneral,
+					},
 				},
 			),
 		},

@@ -45,6 +45,10 @@ func (ur UnresolvedResult) Error() string {
 	return fmt.Sprintf("%s: code: %d: code error: %s", ur.Err.Error(), ur.Code, ur.Code.Error())
 }
 
+func (ur UnresolvedResult) ErrorObj() error {
+	return fmt.Errorf("%w: %w", ur.Code.Error(), ur.Err)
+}
+
 // NewGetResponse creates a new GetResponse.
 func NewGetResponse[K ResponseKey, V ResponseValue](resolved map[K]ResolvedResult[V], unresolved map[K]UnresolvedResult) GetResponse[K, V] {
 	if resolved == nil {
