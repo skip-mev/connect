@@ -28,6 +28,9 @@ var (
 	// ParamsPrefix is the key prefix of the module Params.
 	ParamsPrefix = collections.NewPrefix(4)
 
+	// EnabledTickersPrefix is the key prefix of the module EnabledTickers.
+	EnabledTickersPrefix = collections.NewPrefix(5)
+
 	// TickersCodec is the collections.KeyCodec value used for the markets map.
 	TickersCodec = codec.NewStringKeyCodec[TickerString]()
 

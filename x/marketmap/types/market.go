@@ -20,13 +20,13 @@ func (mm *MarketMap) ValidateBasic() error {
 		return fmt.Errorf("each ticker must have a corresponding provider list supporting it")
 	}
 
-	if len(mm.EnabledTickers) > len(mm.Tickers) {
+	if len(mm.EnabledTickers.Tickers) > len(mm.Tickers) {
 		return fmt.Errorf("enabled tickers cannot be longer than tickers")
 	}
 
 	// verify all enabled tickers are in the Tickers Map
 	seenEnabledTickers := make(map[string]struct{})
-	for _, tickerStr := range mm.EnabledTickers {
+	for _, tickerStr := range mm.EnabledTickers.Tickers {
 		if _, found := mm.Tickers[tickerStr]; !found {
 			return fmt.Errorf("ticker ID %s in enabled tickers not found in tickers map", tickerStr)
 		}
