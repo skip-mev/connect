@@ -39,13 +39,7 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 }
 
 // UpdateProviderState updates the provider's state based on the market map. Specifically,
-// this will update the provider's query handler and the provider's market map. There are two
-// scenarios that can occur:
-//
-//  1. The provider is running and the market map has changed. In this case, the provider's
-//     query handler is updated with the new market map and restarted.
-//  2. The provider is not running and the market map has changed. In this case, the provider's
-//     query handler is updated with the new market map.
+// this will update the provider's query handler and the provider's market map.
 func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarketMap, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
 

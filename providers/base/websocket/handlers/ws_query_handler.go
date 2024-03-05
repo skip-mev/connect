@@ -287,7 +287,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			case <-ctx.Done():
 				h.logger.Debug("context finished; stopping recv")
 				return ctx.Err()
-			case responseCh <- response:
+			default:
+				responseCh <- response
 				h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
 			}
 

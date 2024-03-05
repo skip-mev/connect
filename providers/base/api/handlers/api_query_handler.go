@@ -150,22 +150,22 @@ MainLoop:
 			h.logger.Info("context cancelled, stopping queries")
 			break MainLoop
 		default:
-			// Sleep for a bit to prevent the loop from spinning too fast.
-			h.logger.Debug("sleeping", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
-			time.Sleep(h.config.Interval)
-
 			wg.Go(tasks[index])
 			index++
 			index %= len(tasks)
+
+			// Sleep for a bit to prevent the loop from spinning too fast.
+			h.logger.Debug("sleeping", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
+			time.Sleep(h.config.Interval)
 		}
 	}
 
 	// Wait for all tasks to complete.
-	h.logger.Info("waiting for tasks to complete")
+	h.logger.Info("waiting for api sub-tasks to complete")
 	if err := wg.Wait(); err != nil {
 		h.logger.Error("error querying ids", zap.Error(err))
 	}
-	h.logger.Info("all tasks completed")
+	h.logger.Info("all api sub-tasks completed")
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
