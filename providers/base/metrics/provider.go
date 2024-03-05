@@ -43,10 +43,10 @@ const (
 type ProviderMetrics interface {
 	// AddProviderResponseByID increments the number of ticks with a fully successful provider update
 	// for a given provider and ID (i.e. currency pair).
-	AddProviderResponseByID(providerName, id string, status Status, ec providertypes.ErrorWithCode, providerType providertypes.ProviderType)
+	AddProviderResponseByID(providerName, id string, status Status, ec providertypes.ErrorCode, providerType providertypes.ProviderType)
 
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
-	AddProviderResponse(providerName string, status Status, ec providertypes.ErrorWithCode, providerType providertypes.ProviderType)
+	AddProviderResponse(providerName string, status Status, ec providertypes.ErrorCode, providerType providertypes.ProviderType)
 
 	// LastUpdated updates the last time a given ID (i.e. currency pair) was updated.
 	LastUpdated(providerName, id string, providerType providertypes.ProviderType)
@@ -79,12 +79,12 @@ func NewProviderMetrics() ProviderMetrics {
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses_per_id",
 			Help:      "Number of provider successes with a given ID.",
-		}, []string{ProviderLabel, IDLabel, StatusLabel, ErrorCodeLabel, ErrorLabel, ProviderTypeLabel}),
+		}, []string{ProviderLabel, IDLabel, StatusLabel, ErrorCodeLabel, ProviderTypeLabel}),
 		responseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_status_responses",
 			Help:      "Number of provider successes.",
-		}, []string{ProviderLabel, StatusLabel, ErrorCodeLabel, ErrorLabel, ProviderTypeLabel}),
+		}, []string{ProviderLabel, StatusLabel, ErrorCodeLabel, ProviderTypeLabel}),
 		lastUpdatedPerProvider: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "provider_last_updated_id",
@@ -107,35 +107,33 @@ func NewNopProviderMetrics() ProviderMetrics {
 	return &noOpProviderMetricsImpl{}
 }
 
-func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ providertypes.ErrorWithCode, _ providertypes.ProviderType) {
+func (m *noOpProviderMetricsImpl) AddProviderResponseByID(_, _ string, _ Status, _ providertypes.ErrorCode, _ providertypes.ProviderType) {
 }
 
-func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ providertypes.ErrorWithCode, _ providertypes.ProviderType) {
+func (m *noOpProviderMetricsImpl) AddProviderResponse(_ string, _ Status, _ providertypes.ErrorCode, _ providertypes.ProviderType) {
 }
 func (m *noOpProviderMetricsImpl) LastUpdated(_, _ string, _ providertypes.ProviderType) {}
 
 // AddProviderResponseByID increments the number of ticks with a fully successful provider update
 // for a given provider and ID (i.e. currency pair).
-func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, ec providertypes.ErrorWithCode, providerType providertypes.ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponseByID(providerName, id string, status Status, ec providertypes.ErrorCode, providerType providertypes.ProviderType) {
 
 	m.responseStatusPerProviderByID.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		IDLabel:           id,
 		StatusLabel:       string(status),
-		ErrorLabel:        ec.Error(),
-		ErrorCodeLabel:    fmt.Sprintf("%d", ec.Code()),
+		ErrorCodeLabel:    fmt.Sprintf("%d", ec),
 		ProviderTypeLabel: string(providerType),
 	},
 	).Add(1)
 }
 
 // AddProviderResponse increments the number of ticks with a fully successful provider update.
-func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, ec providertypes.ErrorWithCode, providerType providertypes.ProviderType) {
+func (m *ProviderMetricsImpl) AddProviderResponse(providerName string, status Status, ec providertypes.ErrorCode, providerType providertypes.ProviderType) {
 	m.responseStatusPerProvider.With(prometheus.Labels{
 		ProviderLabel:     providerName,
 		StatusLabel:       string(status),
-		ErrorLabel:        ec.Error(),
-		ErrorCodeLabel:    fmt.Sprintf("%d", ec.Code()),
+		ErrorCodeLabel:    fmt.Sprintf("%d", ec),
 		ProviderTypeLabel: string(providerType),
 	},
 	).Add(1)
