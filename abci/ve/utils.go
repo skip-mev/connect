@@ -68,21 +68,19 @@ func VoteExtensionsEnabled(ctx sdk.Context) bool {
 // expected to be used in PrepareProposal and ProcessProposal.
 type ValidateVoteExtensionsFn func(
 	ctx sdk.Context,
-	height int64,
 	extInfo cometabci.ExtendedCommitInfo,
 ) error
 
 // NewDefaultValidateVoteExtensionsFn returns a new DefaultValidateVoteExtensionsFn.
-func NewDefaultValidateVoteExtensionsFn(chainID string, validatorStore baseapp.ValidatorStore) ValidateVoteExtensionsFn {
-	return func(ctx sdk.Context, height int64, info cometabci.ExtendedCommitInfo) error {
-		return baseapp.ValidateVoteExtensions(ctx, validatorStore, height, chainID, info)
+func NewDefaultValidateVoteExtensionsFn(validatorStore baseapp.ValidatorStore) ValidateVoteExtensionsFn {
+	return func(ctx sdk.Context, info cometabci.ExtendedCommitInfo) error {
+		return baseapp.ValidateVoteExtensions(ctx, validatorStore, info)
 	}
 }
 
 // NoOpValidateVoteExtensions is a no-op validation method (purely used for testing).
 func NoOpValidateVoteExtensions(
 	_ sdk.Context,
-	_ int64,
 	_ cometabci.ExtendedCommitInfo,
 ) error {
 	return nil

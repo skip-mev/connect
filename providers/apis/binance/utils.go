@@ -60,6 +60,18 @@ var (
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
 	DefaultUSMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APEUSDT",
+		},
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "APTUSDT",
+		},
+		constants.ARBITRUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ARBUSDT",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSDT",
@@ -68,6 +80,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "AVAXUSDT",
 		},
+		constants.BCH_USDT: {
+			Name:           Name,
+			OffChainTicker: "BCHUSDT",
+		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
 			OffChainTicker: "BTCUSDC",
@@ -75,6 +91,30 @@ var (
 		constants.BITCOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "BTCUSDT",
+		},
+		constants.CARDANO_USDT: {
+			Name:           Name,
+			OffChainTicker: "ADAUSDT",
+		},
+		constants.CHAINLINK_USDT: {
+			Name:           Name,
+			OffChainTicker: "LINKUSDT",
+		},
+		constants.COMPOUND_USDT: {
+			Name:           Name,
+			OffChainTicker: "COMPUSDT",
+		},
+		constants.CURVE_USDT: {
+			Name:           Name,
+			OffChainTicker: "CRVUSDT",
+		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGEUSDT",
+		},
+		constants.ETC_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETCUSDT",
 		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
@@ -88,6 +128,46 @@ var (
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
 		},
+		constants.FILECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "FILUSDT",
+		},
+		constants.LIDO_USDT: {
+			Name:           Name,
+			OffChainTicker: "LDOUSDT",
+		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "LTCUSDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKRUSDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEARUSDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OPUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SEIUSDT",
+		},
+		constants.SHIBA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SHIBUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -96,14 +176,46 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
 		},
 	}
 
 	// DefaultNonUSMarketConfig is the default market configuration for Binance.
 	DefaultNonUSMarketConfig = types.TickerToProviderConfig{
+		constants.APE_USDT: {
+			Name:           Name,
+			OffChainTicker: "APEUSDT",
+		},
+		constants.APTOS_USDT: {
+			Name:           Name,
+			OffChainTicker: "APTUSDT",
+		},
+		constants.ARBITRUM_USDT: {
+			Name:           Name,
+			OffChainTicker: "ARBUSDT",
+		},
 		constants.ATOM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSDT",
@@ -112,6 +224,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "AVAXUSDT",
 		},
+		constants.BCH_USDT: {
+			Name:           Name,
+			OffChainTicker: "BCHUSDT",
+		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
 			OffChainTicker: "BTCUSDC",
@@ -119,6 +235,34 @@ var (
 		constants.BITCOIN_USDT: {
 			Name:           Name,
 			OffChainTicker: "BTCUSDT",
+		},
+		constants.CARDANO_USDT: {
+			Name:           Name,
+			OffChainTicker: "ADAUSDT",
+		},
+		constants.CHAINLINK_USDT: {
+			Name:           Name,
+			OffChainTicker: "LINKUSDT",
+		},
+		constants.COMPOUND_USDT: {
+			Name:           Name,
+			OffChainTicker: "COMPUSDT",
+		},
+		constants.CURVE_USDT: {
+			Name:           Name,
+			OffChainTicker: "CRVUSDT",
+		},
+		constants.DOGE_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOGEUSDT",
+		},
+		constants.DYDX_USDT: {
+			Name:           Name,
+			OffChainTicker: "DYDXUSDT",
+		},
+		constants.ETC_USDT: {
+			Name:           Name,
+			OffChainTicker: "ETCUSDT",
 		},
 		constants.ETHEREUM_BITCOIN: {
 			Name:           Name,
@@ -132,6 +276,54 @@ var (
 			Name:           Name,
 			OffChainTicker: "ETHUSDT",
 		},
+		constants.FILECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "FILUSDT",
+		},
+		constants.LIDO_USDT: {
+			Name:           Name,
+			OffChainTicker: "LDOUSDT",
+		},
+		constants.LITECOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "LTCUSDT",
+		},
+		constants.MAKER_USDT: {
+			Name:           Name,
+			OffChainTicker: "MKRUSDT",
+		},
+		constants.NEAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "NEARUSDT",
+		},
+		constants.OPTIMISM_USDT: {
+			Name:           Name,
+			OffChainTicker: "OPUSDT",
+		},
+		constants.PEPE_USDT: {
+			Name:           Name,
+			OffChainTicker: "PEPEUSDT",
+		},
+		constants.POLKADOT_USDT: {
+			Name:           Name,
+			OffChainTicker: "DOTUSDT",
+		},
+		constants.POLYGON_USDT: {
+			Name:           Name,
+			OffChainTicker: "MATICUSDT",
+		},
+		constants.RIPPLE_USDT: {
+			Name:           Name,
+			OffChainTicker: "XRPUSDT",
+		},
+		constants.SEI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SEIUSDT",
+		},
+		constants.SHIBA_USDT: {
+			Name:           Name,
+			OffChainTicker: "SHIBUSDT",
+		},
 		constants.SOLANA_USDC: {
 			Name:           Name,
 			OffChainTicker: "SOLUSDC",
@@ -140,9 +332,29 @@ var (
 			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
+		constants.STELLAR_USDT: {
+			Name:           Name,
+			OffChainTicker: "XLMUSDT",
+		},
+		constants.SUI_USDT: {
+			Name:           Name,
+			OffChainTicker: "SUIUSDT",
+		},
+		constants.TRON_USDT: {
+			Name:           Name,
+			OffChainTicker: "TRXUSDT",
+		},
+		constants.UNISWAP_USDT: {
+			Name:           Name,
+			OffChainTicker: "UNIUSDT",
+		},
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
+		},
+		constants.WORLD_USDT: {
+			Name:           Name,
+			OffChainTicker: "WLDUSDT",
 		},
 	}
 )
