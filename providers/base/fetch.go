@@ -27,12 +27,8 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 		// Otherwise, the buffer size is set to the max buffer size configured for the websocket.
 		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
 	default:
-		p.wg.Done()
 		return fmt.Errorf("no api or websocket configured")
 	}
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	// Start the receive loop.
 	p.wg.Add(1)
@@ -58,20 +54,21 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 	p.logger.Info("starting api query handler")
 
 	// Start the data update loop.
+	handler := p.GetAPIHandler()
+	ids := p.GetIDs()
 	for {
 		select {
 		case <-ctx.Done():
-			p.logger.Info("api fetch stopped via context")
+			p.logger.Info("api stopped via context")
 			return ctx.Err()
 
 		default:
 			p.logger.Debug(
 				"attempting to fetch new data",
 				zap.Int("buffer_size", len(responseCh)),
+				zap.Int("num_ids", len(ids)),
 			)
 
-			handler := p.GetAPIHandler()
-			ids := p.GetIDs()
 			handler.Query(ctx, ids, responseCh)
 		}
 	}
@@ -130,6 +127,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 		// Start the websocket query handler. If the connection fails to start, then the query handler
 		// will be restarted after a timeout.
 		restarts := 0
+		handler := p.GetWebSocketHandler()
 		for {
 			select {
 			case <-ctx.Done():
@@ -145,7 +143,6 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 				}
 
 				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
-				handler := p.GetWebSocketHandler()
 				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
