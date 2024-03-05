@@ -140,8 +140,22 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	}
 
 	// Block each task until the wait group has capacity to accept a new response.
-	for _, task := range tasks {
-		wg.Go(task)
+	index := 0
+MainLoop:
+	for {
+		select {
+		case <-ctx.Done():
+			h.logger.Info("context cancelled, stopping queries")
+			break MainLoop
+		default:
+			wg.Go(tasks[index])
+			index++
+			index %= len(tasks)
+
+			// Sleep for a bit to prevent the loop from spinning too fast.
+			h.logger.Debug("sleeping", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
+			time.Sleep(h.config.Interval)
+		}
 	}
 
 	// Wait for all tasks to complete.
@@ -179,6 +193,9 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		h.logger.Debug("created url", zap.String("url", url))
 
 		// Make the request.
+		ctx, cancel := context.WithTimeout(ctx, h.config.Timeout)
+		defer cancel()
+
 		resp, err := h.requestHandler.Do(ctx, url)
 		if err != nil {
 			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))

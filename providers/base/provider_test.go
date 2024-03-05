@@ -91,6 +91,8 @@ func TestStart(t *testing.T) {
 
 		handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
+		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Maybe().After(200 * time.Millisecond)
+
 		provider, err := base.NewProvider(
 			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
 			base.WithAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](handler),
@@ -111,7 +113,7 @@ func TestStart(t *testing.T) {
 		t.Parallel()
 
 		handler := apihandlermocks.NewQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
-		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return()
+		handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Maybe().After(200 * time.Millisecond)
 
 		provider, err := base.NewProvider(
 			base.WithName[slinkytypes.CurrencyPair, *big.Int](apiCfg.Name),
@@ -242,6 +244,7 @@ func TestStop(t *testing.T) {
 			t,
 			logger,
 			nil,
+			200*time.Millisecond,
 		)
 
 		provider, err := base.NewProvider(
@@ -567,6 +570,7 @@ func TestAPIProviderLoop(t *testing.T) {
 					t,
 					logger,
 					nil,
+					200*time.Millisecond,
 				)
 			},
 			pairs:          []slinkytypes.CurrencyPair{},
@@ -589,6 +593,7 @@ func TestAPIProviderLoop(t *testing.T) {
 					t,
 					logger,
 					responses,
+					200*time.Millisecond,
 				)
 			},
 			pairs: []slinkytypes.CurrencyPair{
@@ -621,6 +626,7 @@ func TestAPIProviderLoop(t *testing.T) {
 					t,
 					logger,
 					[]providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{resp, resp2},
+					200*time.Millisecond,
 				)
 			},
 			pairs: []slinkytypes.CurrencyPair{
@@ -652,6 +658,7 @@ func TestAPIProviderLoop(t *testing.T) {
 					t,
 					logger,
 					responses,
+					200*time.Millisecond,
 				)
 			},
 			pairs: []slinkytypes.CurrencyPair{
@@ -678,6 +685,7 @@ func TestAPIProviderLoop(t *testing.T) {
 					t,
 					logger,
 					responses,
+					200*time.Millisecond,
 				)
 			},
 			pairs: []slinkytypes.CurrencyPair{
@@ -740,6 +748,7 @@ func TestMetrics(t *testing.T) {
 					t,
 					logger,
 					responses,
+					200*time.Millisecond,
 				)
 			},
 			metrics: func() providermetrics.ProviderMetrics {
@@ -771,6 +780,7 @@ func TestMetrics(t *testing.T) {
 					t,
 					logger,
 					responses,
+					200*time.Millisecond,
 				)
 			},
 			metrics: func() providermetrics.ProviderMetrics {

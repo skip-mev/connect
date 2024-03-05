@@ -68,18 +68,6 @@ func TestAPIConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with timeout greater than interval",
-			config: config.APIConfig{
-				Enabled:    true,
-				Timeout:    2 * time.Second,
-				Interval:   time.Second,
-				MaxQueries: 1,
-				Name:       "test",
-				URL:        "http://test.com",
-			},
-			expectedErr: true,
-		},
-		{
 			name: "bad config with no name",
 			config: config.APIConfig{
 				Enabled:    true,
