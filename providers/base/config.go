@@ -9,7 +9,6 @@ import (
 
 // SetIDs sets the set of IDs that the provider is responsible for fetching data for.
 func (p *Provider[K, V]) SetIDs(ids []K) {
-	// if the provider is running, we need to send a restart signal.
 	if p.IsRunning() {
 		p.restartCh <- struct{}{}
 	}

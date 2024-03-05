@@ -285,7 +285,11 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// sending a response to a closed channel.
 			select {
 			case <-ctx.Done():
-				h.logger.Debug("context finished; stopping recv")
+				h.logger.Debug("context finished")
+				if err := h.close(); err != nil {
+					return err
+				}
+
 				return ctx.Err()
 			default:
 				responseCh <- response

@@ -162,7 +162,7 @@ MainLoop:
 			break MainLoop
 		case <-p.stopCh:
 			// If the provider is manually stopped, we stop the fetch loop and return.
-			p.logger.Info("stopping provider from manual interupt")
+			p.logger.Info("stopping provider from manual interrupt")
 			cancel()
 			retErr = <-errCh
 			break MainLoop

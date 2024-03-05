@@ -52,7 +52,6 @@ func (p *Provider[K, V]) startAPI(ctx context.Context) error {
 			)
 
 			handler.Query(ctx, ids, p.responseCh)
-			time.Sleep(1 * time.Second)
 		}
 	}
 }
