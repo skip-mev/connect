@@ -62,6 +62,7 @@ import (
 	"github.com/skip-mev/slinky/abci/proposals"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	"github.com/skip-mev/slinky/abci/strategies/state"
 	"github.com/skip-mev/slinky/abci/ve"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
@@ -268,8 +269,9 @@ func NewSimApp(
 	// 	app.SetPrepareProposal(abciPropHandler.PrepareProposalHandler())
 	// }
 	// baseAppOptions = append(baseAppOptions, prepareOpt)
+	
 
-	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+	app.App = appBuilder.Build(db, traceStore, append(baseAppOptions, state.SetSlinkyAppStatePruningParams())...)
 
 	// set hooks
 	app.MarketMapKeeper.SetHooks(app.OracleKeeper.Hooks())
@@ -354,7 +356,9 @@ func NewSimApp(
 			compression.NewZStdCompressor(),
 		),
 		currencypair.NewDeltaCurrencyPairStrategy(app.OracleKeeper),
+		state.NewBaseAppState(app),
 		oracleMetrics,
+		proposals.RetainOracleDataInWrappedProposalHandler(),
 	)
 	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
 	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())

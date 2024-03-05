@@ -14,6 +14,7 @@ import (
 
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	"github.com/skip-mev/slinky/abci/strategies/state"
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -54,6 +55,10 @@ type ProposalHandler struct {
 	// metrics for this validator.
 	metrics servicemetrics.Metrics
 
+	// appState is responsible for managing the application states necessary for the
+	// correct verification of vote extensions.
+	appState state.AppState
+
 	// retainOracleDataInWrappedHandler is a flag that determines whether the
 	// proposal handler should pass the injected extended commit info to the
 	// wrapped proposal handler.
@@ -69,6 +74,7 @@ func NewProposalHandler(
 	voteExtensionCodec codec.VoteExtensionCodec,
 	extendedCommitInfoCodec codec.ExtendedCommitCodec,
 	currencyPairStrategy currencypair.CurrencyPairStrategy,
+	appState state.AppState,
 	metrics servicemetrics.Metrics,
 	opts ...Option,
 ) *ProposalHandler {
@@ -80,6 +86,7 @@ func NewProposalHandler(
 		voteExtensionCodec:       voteExtensionCodec,
 		extendedCommitCodec:      extendedCommitInfoCodec,
 		currencyPairStrategy:     currencyPairStrategy,
+		appState: 			   appState,
 		metrics:                  metrics,
 	}
 

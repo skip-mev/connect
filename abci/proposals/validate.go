@@ -26,6 +26,18 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 		return err
 	}
 
+	// branch the context for verifying vote-extensions on verify-vote extension state
+	verifyVECtx, err := h.appState.VerifyVoteExtensionState(ctx)
+	if err != nil {
+		h.logger.Error(
+			"failed to retrieve verify vote extension state",
+			"height", height,
+			"err", err,
+		)
+
+		return err
+	}
+
 	// Validate all oracle vote extensions.
 	for _, vote := range extendedCommitInfo.Votes {
 		address := sdk.ConsAddress{}
@@ -43,8 +55,8 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 			return err
 		}
 
-		// The vote extension are from the previous block.
-		if err := ve.ValidateOracleVoteExtension(ctx, voteExt, h.currencyPairStrategy); err != nil {
+		// The vote extensions are from the previous block.
+		if err := ve.ValidateOracleVoteExtension(verifyVECtx, voteExt, h.currencyPairStrategy); err != nil {
 			h.logger.Error(
 				"failed to validate oracle vote extension",
 				"height", height,

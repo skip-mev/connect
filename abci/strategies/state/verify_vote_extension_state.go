@@ -9,7 +9,8 @@ import (
 )
 
 // SetSlinkyAppStatePruningParams sets the minimum block retention height for the application, and the
-// underlying multi-store. This is used to ensure that the application can retrieve the state
+// underlying multi-store. This is used to ensure that the application can retrieve the state necessary
+// to verify vote-extensions.
 func SetSlinkyAppStatePruningParams() func(*baseapp.BaseApp) {
 	return func(ba *baseapp.BaseApp) {
 		// check what the app's CommitMultiStore's KeepRecent is
@@ -31,6 +32,7 @@ type Application interface {
 
 // AppStates is an interface used to retrieve application states for the purposes of 
 // Slinky ABCI methods
+//go:generate mockery --name AppState --filename app_state.go
 type AppState interface {
 	// VerifyVoteExtensionState is used to get the state against which the vote-extensions 
 	// of height h - 1 are verified (h - 2 state). This is used to ensure parity between Process + PrepareProposal

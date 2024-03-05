@@ -19,6 +19,8 @@ import (
 	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	currencypairmocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
+	statemock "github.com/skip-mev/slinky/abci/strategies/state/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/state"
 	"github.com/skip-mev/slinky/abci/testutils"
 	"github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
@@ -497,6 +499,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				s.codec,
 				s.extCommitCodec,
 				tc.currencyPairStrategy(),
+				state.NewNoopAppState(),
 				servicemetrics.NewNopMetrics(),
 			)
 
@@ -553,6 +556,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 			nil,
 			codec,
 			nil,
+			state.NewNoopAppState(),
 			servicemetrics.NewNopMetrics(),
 			proposals.RetainOracleDataInWrappedProposalHandler(),
 		)
@@ -605,6 +609,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 			nil,
 			codec,
 			nil,
+			state.NewNoopAppState(),
 			servicemetrics.NewNopMetrics(),
 		)
 
@@ -940,6 +945,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 				s.codec,
 				s.extCommitCodec,
 				tc.currencyPairStrategy(),
+				state.NewNoopAppState(),
 				servicemetrics.NewNopMetrics(),
 			)
 
@@ -983,6 +989,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsmocks,
 		)
 
@@ -1020,6 +1027,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsmocks,
 		)
 
@@ -1063,6 +1071,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsmocks,
 		)
 
@@ -1098,6 +1107,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsmocks,
 		)
 
@@ -1141,6 +1151,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 
@@ -1171,6 +1182,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := types.WrappedHandlerError{
@@ -1205,6 +1217,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			codec.NewDefaultVoteExtensionCodec(),
 			codec.NewDefaultExtendedCommitCodec(),
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := proposals.InvalidExtendedCommitInfoError{
@@ -1238,6 +1251,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			codec.NewDefaultVoteExtensionCodec(),
 			c,
 			currencypairmocks.NewCurrencyPairStrategy(s.T()),
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := types.CodecError{
@@ -1270,6 +1284,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 			nil,
 			nil,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 
@@ -1298,6 +1313,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			nil,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 
@@ -1327,6 +1343,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			nil,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := types.WrappedHandlerError{
@@ -1358,6 +1375,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			nil,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 
@@ -1385,6 +1403,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			nil,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := types.MissingCommitInfoError{}
@@ -1413,6 +1432,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			c,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := types.CodecError{
@@ -1449,6 +1469,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			nil,
 			c,
 			nil,
+			state.NewNoopAppState(),
 			metricsMocks,
 		)
 		expErr := proposals.InvalidExtendedCommitInfoError{
@@ -1485,6 +1506,7 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 		nil,
 		codec,
 		nil,
+		state.NewNoopAppState(),
 		metricsMocks,
 	)
 
@@ -1507,6 +1529,90 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 		Txs: [][]byte{extendedCommit},
 	})
 	s.Require().NoError(err)
+}
+
+func (s *ProposalsTestSuite) TestVerifyVEState() {
+	cps := currencypairmocks.NewCurrencyPairStrategy(s.T())
+	sm := statemock.NewAppState(s.T())
+
+	ph := proposals.NewProposalHandler(
+		log.NewNopLogger(),
+		func(ctx sdk.Context, rpp *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
+			return &cometabci.ResponsePrepareProposal{
+				Txs: [][]byte{{1, 2, 3}},
+			}, nil
+		},
+		func(ctx sdk.Context, rpp *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
+			return nil, nil
+		},
+		func(ctx sdk.Context, extInfo cometabci.ExtendedCommitInfo) error {
+			return nil
+		},
+		codec.NewDefaultVoteExtensionCodec(),
+		codec.NewDefaultExtendedCommitCodec(),
+		cps,
+		sm,
+		servicemetrics.NewNopMetrics(),
+	)
+
+	var proposal [][]byte
+	s.Run("test PrepareProposal", func() {
+		extendedVote, err := testutils.CreateExtendedVoteInfo(
+			val1,
+			map[uint64][]byte{
+				1: twoHundred.Bytes(),
+			},
+			codec.NewDefaultVoteExtensionCodec(),
+		)
+		s.Require().NoError(err)
+
+		extCommit, _, err := testutils.CreateExtendedCommitInfo(
+			[]cometabci.ExtendedVoteInfo{extendedVote},
+			codec.NewDefaultExtendedCommitCodec(),
+		)
+		s.Require().NoError(err)
+
+		req := s.createRequestPrepareProposal(
+			extCommit,
+			[][]byte{},
+			0,
+		)
+
+		// enable ves
+		ctx := testutils.UpdateContextWithVEHeight(s.ctx, 2)
+		ctx = ctx.WithBlockHeight(3)
+
+
+		// mocks
+		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Once()
+		cps.On("FromID", sdk.Context{}, uint64(1)).Return(btcUSD, nil).Once()
+		cps.On("GetDecodedPrice", sdk.Context{}, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
+
+		res, err := ph.PrepareProposalHandler()(ctx, req)
+		s.Require().NoError(err)
+		s.Require().NotNil(res)
+
+		proposal = res.Txs
+	})
+
+	s.Run("test ProcessProposal", func() {
+		req := s.createRequestProcessProposal(
+			proposal,
+			0,
+		)
+
+		// enable ves
+		ctx := testutils.UpdateContextWithVEHeight(s.ctx, 2)
+		ctx = ctx.WithBlockHeight(3)
+
+		// mocks
+		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Once()
+		cps.On("FromID", sdk.Context{}, uint64(1)).Return(btcUSD, nil).Once()
+		cps.On("GetDecodedPrice", sdk.Context{}, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
+
+		_, err := ph.ProcessProposalHandler()(ctx, req)
+		s.Require().NoError(err)
+	})
 }
 
 func (s *ProposalsTestSuite) createRequestPrepareProposal(
