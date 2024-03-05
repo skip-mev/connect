@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -30,6 +31,7 @@ func CreateAPIQueryHandlerWithGetResponses[K providertypes.ResponseKey, V provid
 	t *testing.T,
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
+	timeout time.Duration,
 ) handlers.APIQueryHandler[K, V] {
 	t.Helper()
 
@@ -38,6 +40,8 @@ func CreateAPIQueryHandlerWithGetResponses[K providertypes.ResponseKey, V provid
 	handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
 		ctx := args.Get(0).(context.Context)
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
+
+		time.Sleep(timeout)
 
 		for _, resp := range responses {
 			select {
@@ -77,6 +81,7 @@ func CreateAPIProviderWithGetResponses[K providertypes.ResponseKey, V providerty
 	cfg config.ProviderConfig,
 	ids []K,
 	responses []providertypes.GetResponse[K, V],
+	timeout time.Duration,
 ) providertypes.Provider[K, V] {
 	t.Helper()
 
@@ -84,6 +89,7 @@ func CreateAPIProviderWithGetResponses[K providertypes.ResponseKey, V providerty
 		t,
 		logger,
 		responses,
+		timeout,
 	)
 
 	provider, err := base.NewProvider[K, V](

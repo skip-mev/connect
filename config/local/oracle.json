@@ -7,7 +7,7 @@
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 1000000000,
+        "interval": 150000000,
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s",
@@ -35,8 +35,8 @@
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 1000000000,
-        "maxQueries": 5,
+        "interval": 25000000,
+        "maxQueries": 10,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
         "name": "coinbase"
