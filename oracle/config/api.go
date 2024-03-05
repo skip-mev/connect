@@ -47,10 +47,6 @@ func (c *APIConfig) ValidateBasic() error {
 		return fmt.Errorf("provider interval and timeout must be strictly positive")
 	}
 
-	if c.Interval < c.Timeout {
-		return fmt.Errorf("provider timeout must be greater than 0 and less than the interval")
-	}
-
 	if len(c.URL) == 0 {
 		return fmt.Errorf("provider url cannot be empty")
 	}

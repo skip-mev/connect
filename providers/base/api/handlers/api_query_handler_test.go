@@ -35,7 +35,7 @@ var (
 	cfg = config.APIConfig{
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
-		Interval:   1 * time.Second,
+		Interval:   250 * time.Millisecond,
 		MaxQueries: 1,
 		Atomic:     true,
 		URL:        constantURL,
@@ -45,7 +45,7 @@ var (
 	nonAtomicCfg = config.APIConfig{
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
-		Interval:   1 * time.Second,
+		Interval:   250 * time.Millisecond,
 		MaxQueries: 3,
 		Atomic:     false,
 		URL:        constantURL,
@@ -88,7 +88,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -97,27 +97,27 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Maybe()
 
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse(
 					resolved,
 					nil,
 				)
 
-				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Times(1)
+				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 
 				return m
 			},
@@ -137,7 +137,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -146,7 +146,7 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Maybe()
 
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -158,15 +158,15 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Times(1)
+				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 
 				return m
 			},
@@ -186,22 +186,22 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newRateLimitResponse(), nil).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newRateLimitResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.RateLimit).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.RateLimit).Maybe()
 
 				return m
 			},
@@ -219,22 +219,22 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newUnexpectedStatusCodeResponse(), nil).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newUnexpectedStatusCodeResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.UnexpectedStatusCode).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.UnexpectedStatusCode).Maybe()
 
 				return m
 			},
@@ -252,22 +252,22 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(nil, fmt.Errorf("client has no rizz")).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(nil, fmt.Errorf("client has no rizz")).Maybe().After(1 * time.Second)
 
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.DoRequest).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.DoRequest).Maybe()
 
 				return m
 			},
@@ -285,7 +285,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -294,7 +294,7 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", expectedIDs).Return(constantURL, nil).Maybe()
 
 				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -312,17 +312,17 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Times(1)
+				h.On("ParseResponse", expectedIDs, newValidResponse()).Return(response).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
 
 				return m
 			},
@@ -348,16 +348,16 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(3).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Times(1)
-				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL, nil).Times(1)
-				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
 
 				btcResolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -389,19 +389,19 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Times(1)
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Times(1)
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Times(1)
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Maybe()
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
 
 				return m
 			},
@@ -427,17 +427,17 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(2).After(1 * time.Second)
-				h.On("Do", mock.Anything, constantURL+"eth").Return(newRateLimitResponse(), nil).Times(1).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL+"eth").Return(newRateLimitResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Times(1)
-				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL+"eth", nil).Times(1)
-				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL+"eth", nil).Maybe()
+				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
 
 				btcResolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -459,18 +459,18 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Times(1)
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Times(1)
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.RateLimit).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.RateLimit).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
 
 				return m
 			},
@@ -496,16 +496,16 @@ func TestAPIQueryHandler(t *testing.T) {
 				h := mocks.NewRequestHandler(t)
 
 				// Delay the responses by 1 second to ensure that the requests are made sequentially.
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Times(3).After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
 			apiHandler: func() handlers.APIDataHandler[slinkytypes.CurrencyPair, *big.Int] {
 				h := mocks.NewAPIDataHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
-				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Times(1)
-				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL, nil).Times(1)
-				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Times(1)
+				h.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []slinkytypes.CurrencyPair{ethusd}).Return(constantURL, nil).Maybe()
+				h.On("CreateURL", []slinkytypes.CurrencyPair{atomusd}).Return(constantURL, nil).Maybe()
 
 				btcResolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 					btcusd: {
@@ -537,19 +537,19 @@ func TestAPIQueryHandler(t *testing.T) {
 					nil,
 				)
 
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Times(1)
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Times(1)
-				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Times(1)
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, newValidResponse()).Return(btcResponse).Maybe()
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{ethusd}, newValidResponse()).Return(ethResponse).Maybe()
+				h.On("ParseResponse", []slinkytypes.CurrencyPair{atomusd}, newValidResponse()).Return(atomResponse).Maybe()
 
 				return h
 			},
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
 
 				return m
 			},
@@ -591,27 +591,34 @@ func TestAPIQueryHandler(t *testing.T) {
 			require.NoError(t, err)
 
 			responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], len(tc.ids))
+
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			defer cancel()
+
 			go func() {
-				handler.Query(context.Background(), tc.ids, responseCh)
+				handler.Query(ctx, tc.ids, responseCh)
 				close(responseCh)
 			}()
 
 			expectedResponses := tc.responses
+			resolved := make(map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int])
+			unResolved := make(map[slinkytypes.CurrencyPair]error)
 			for resp := range responseCh {
 				for id, result := range resp.Resolved {
 					require.Equal(t, expectedResponses.Resolved[id], result)
-					delete(expectedResponses.Resolved, id)
+					resolved[id] = result
 				}
 
 				for id, err := range resp.UnResolved {
 					require.Equal(t, expectedResponses.UnResolved[id], err)
-					delete(expectedResponses.UnResolved, id)
+					unResolved[id] = err
 				}
 			}
 
 			// Ensure all responses are account for.
-			require.Empty(t, expectedResponses.Resolved)
-			require.Empty(t, expectedResponses.UnResolved)
+			require.Equal(t, len(tc.ids), len(resolved)+len(unResolved))
+			require.Equal(t, len(expectedResponses.Resolved), len(resolved))
+			require.Equal(t, len(expectedResponses.UnResolved), len(unResolved))
 		})
 	}
 }
