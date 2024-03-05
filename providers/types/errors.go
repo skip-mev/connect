@@ -9,22 +9,25 @@ import (
 type ErrorCode int
 
 const (
-	OK                      ErrorCode = 0
-	ErrorRateLimitExceeded  ErrorCode = 1
-	ErrorUnknown            ErrorCode = 2
-	ErrorUnknownPair        ErrorCode = 3
-	ErrorSubscriptionFailed ErrorCode = 4
-	ErrorNotSubscribed      ErrorCode = 5
-	ErrorPingFailed         ErrorCode = 6
-	ErrorPongFailed         ErrorCode = 7
-	ErrorInvalidRequest     ErrorCode = 8
-	ErrorInvalidArgument    ErrorCode = 9
-	ErrorUnableToCreateURL  ErrorCode = 10
-	ErrorWebsocketStartFail ErrorCode = 11
-	ErrorInvalidAPIChains   ErrorCode = 12
-	ErrorNoResponse         ErrorCode = 13
-	ErrorInvalidResponse    ErrorCode = 14
-	ErrorInvalidChainID     ErrorCode = 15
+	OK                         ErrorCode = 0
+	ErrorRateLimitExceeded     ErrorCode = 1
+	ErrorUnknown               ErrorCode = 2
+	ErrorUnknownPair           ErrorCode = 3
+	ErrorSubscriptionFailed    ErrorCode = 4
+	ErrorNotSubscribed         ErrorCode = 5
+	ErrorPingFailed            ErrorCode = 6
+	ErrorPongFailed            ErrorCode = 7
+	ErrorInvalidRequest        ErrorCode = 8
+	ErrorInvalidArgument       ErrorCode = 9
+	ErrorUnableToCreateURL     ErrorCode = 10
+	ErrorWebsocketStartFail    ErrorCode = 11
+	ErrorInvalidAPIChains      ErrorCode = 12
+	ErrorNoResponse            ErrorCode = 13
+	ErrorInvalidResponse       ErrorCode = 14
+	ErrorInvalidChainID        ErrorCode = 15
+	ErrorFailedToParsePrice    ErrorCode = 16
+	ErrorInvalidWebSocketTopic ErrorCode = 17
+	ErrorFailedToDecode        ErrorCode = 18
 )
 
 // Error returns the error representation of the ErrorCode.
@@ -48,6 +51,12 @@ func (e ErrorCode) Error() error {
 		return errors.New("invalid body in request")
 	case ErrorInvalidArgument:
 		return errors.New("invalid argument in request")
+	case ErrorFailedToDecode:
+		return errors.New("failed to decode message")
+	case ErrorInvalidWebSocketTopic:
+		return errors.New("invalid websocket topic received")
+	case ErrorFailedToParsePrice:
+		return errors.New("failed to parse price")
 	case ErrorInvalidChainID:
 		return errors.New("invalid chain ID in response")
 	case ErrorInvalidResponse:

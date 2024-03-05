@@ -2,6 +2,7 @@ package static
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"math/big"
 	"net/http"
 	"time"
@@ -71,7 +72,10 @@ func (s *MockAPIHandler) ParseResponse(
 		if price, ok := s.exchangeRates[ticker]; ok {
 			resolved[ticker] = types.NewPriceResult(price, time.Now())
 		} else {
-			unresolved[ticker] = fmt.Errorf("failed to resolve ticker %s", ticker)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				Err:  fmt.Errorf("failed to resolve ticker %s", ticker),
+				Code: providertypes.ErrorUnknown,
+			}
 		}
 	}
 

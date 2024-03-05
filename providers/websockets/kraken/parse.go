@@ -3,6 +3,7 @@ package kraken
 import (
 	"encoding/json"
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"time"
 
 	"go.uber.org/zap"
@@ -107,7 +108,10 @@ func (h *WebSocketHandler) parseTickerMessage(
 	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
 	price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
 	if err != nil {
-		unResolved[ticker] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  fmt.Errorf("failed to parse price %s: %w", priceStr, err),
+			Code: providertypes.ErrorFailedToParsePrice,
+		}
 		return types.NewPriceResponse(resolved, unResolved), unResolved[ticker]
 	}
 

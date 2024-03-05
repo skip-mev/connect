@@ -2,6 +2,7 @@ package binance
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"net/http"
 	"strings"
 	"time"
@@ -92,7 +93,9 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return types.NewPriceResponseWithErr(tickers, err)
+		return types.NewPriceResponseWithErr(tickers,
+			providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode),
+		)
 	}
 
 	var (
@@ -109,7 +112,10 @@ func (h *APIHandler) ParseResponse(
 
 		price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
 		if err != nil {
-			unresolved[ticker] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				Err:  fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err),
+				Code: providertypes.ErrorFailedToParsePrice,
+			}
 			continue
 		}
 
@@ -122,7 +128,10 @@ func (h *APIHandler) ParseResponse(
 		_, unresolvedOk := unresolved[ticker]
 
 		if !resolvedOk && !unresolvedOk {
-			unresolved[ticker] = fmt.Errorf("no response")
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				Err:  fmt.Errorf("no response"),
+				Code: providertypes.ErrorNoResponse,
+			}
 		}
 	}
 

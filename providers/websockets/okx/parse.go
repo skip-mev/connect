@@ -3,6 +3,7 @@ package okx
 import (
 	"encoding/json"
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"strings"
 	"time"
 
@@ -91,7 +92,10 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		// Convert the price to a big.Int.
 		price, err := math.Float64StringToBigInt(instrument.IndexPrice, ticker.Decimals)
 		if err != nil {
-			unresolved[ticker] = fmt.Errorf("failed to convert price to big.Int: %w", err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				Err:  fmt.Errorf("failed to convert price to big.Int: %w", err),
+				Code: providertypes.ErrorFailedToParsePrice,
+			}
 			continue
 		}
 

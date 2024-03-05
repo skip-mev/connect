@@ -2,6 +2,7 @@ package kucoin
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"strconv"
 	"strings"
 	"time"
@@ -43,7 +44,10 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	// Check if the sequence number is valid.
 	sequence, err := strconv.ParseInt(msg.Data.Sequence, 10, 64)
 	if err != nil {
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorInvalidResponse,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
@@ -60,7 +64,10 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		// If the sequence number is greater than the sequence number received,
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorInvalidResponse,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
@@ -68,7 +75,10 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
 	if err != nil {
 		err = fmt.Errorf("failed to parse price %w", err)
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorFailedToParsePrice,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 

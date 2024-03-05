@@ -3,6 +3,7 @@ package bitfinex
 import (
 	"encoding/json"
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"time"
 
 	"go.uber.org/zap"
@@ -110,7 +111,10 @@ func (h *WebSocketHandler) handleStream(
 	dataArr, ok := baseStream[indexPayload].([]interface{})
 	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorInvalidResponse,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 

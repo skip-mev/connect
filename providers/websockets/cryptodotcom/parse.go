@@ -2,6 +2,7 @@ package cryptodotcom
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"time"
 
 	"go.uber.org/zap"
@@ -39,7 +40,10 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 
 		// Attempt to parse the price.
 		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, ticker.Decimals); err != nil {
-			unresolved[ticker] = fmt.Errorf("failed to parse price %s: %w", instrument.LatestTradePrice, err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				Err:  fmt.Errorf("failed to parse price %s: %w", instrument.LatestTradePrice, err),
+				Code: providertypes.ErrorFailedToParsePrice,
+			}
 		} else {
 			resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 		}

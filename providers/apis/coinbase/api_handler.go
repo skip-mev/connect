@@ -3,6 +3,7 @@ package coinbase
 import (
 	"encoding/json"
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"net/http"
 	"time"
 
@@ -84,26 +85,34 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) types.PriceResponse {
 	if len(tickers) != 1 {
-		return types.NewPriceResponseWithErr(tickers, fmt.Errorf("expected 1 ticker, got %d", len(tickers)))
+		return types.NewPriceResponseWithErr(tickers,
+			providertypes.NewErrorWithCode(fmt.Errorf("expected 1 ticker, got %d", len(tickers)), providertypes.ErrorInvalidResponse),
+		)
 	}
 
 	// Check if this ticker is supported by the Coinbase market config.
 	ticker := tickers[0]
 	_, ok := h.market.TickerConfigs[ticker]
 	if !ok {
-		return types.NewPriceResponseWithErr(tickers, fmt.Errorf("unknown ticker %s", ticker.String()))
+		return types.NewPriceResponseWithErr(tickers,
+			providertypes.NewErrorWithCode(fmt.Errorf("unknown ticker %s", ticker.String()), providertypes.ErrorUnknownPair),
+		)
 	}
 
 	// Parse the response into a CoinBaseResponse.
 	var result CoinBaseResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return types.NewPriceResponseWithErr(tickers, err)
+		return types.NewPriceResponseWithErr(tickers,
+			providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+		)
 	}
 
 	// Convert the float64 price into a big.Int.
 	price, err := math.Float64StringToBigInt(result.Data.Amount, ticker.Decimals)
 	if err != nil {
-		return types.NewPriceResponseWithErr(tickers, err)
+		return types.NewPriceResponseWithErr(tickers,
+			providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
+		)
 	}
 
 	return types.NewPriceResponse(

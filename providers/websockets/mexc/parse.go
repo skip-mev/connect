@@ -2,6 +2,7 @@ package mexc
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"strings"
 	"time"
 
@@ -28,14 +29,20 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	// Ensure that the channel received is the ticker channel.
 	if !strings.HasPrefix(msg.Channel, string(MiniTickerChannel)) {
 		err := fmt.Errorf("invalid channel %s", msg.Channel)
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorInvalidWebSocketTopic,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price.
 	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorFailedToParsePrice,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 

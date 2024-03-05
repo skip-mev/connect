@@ -2,6 +2,7 @@ package bitstamp
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"strings"
 	"time"
 
@@ -42,7 +43,10 @@ func (h *WebSocketHandler) parseTickerMessage(
 	// Get the price from the message.
 	price, err := math.Float64StringToBigInt(msg.Data.PriceStr, ticker.Decimals)
 	if err != nil {
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorFailedToParsePrice,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 

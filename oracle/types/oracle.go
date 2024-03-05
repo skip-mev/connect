@@ -84,7 +84,7 @@ type (
 	ResolvedPrices = map[mmtypes.Ticker]providertypes.ResolvedResult[*big.Int]
 
 	// UnResolvedPrices is a type alias for the unresolved prices.
-	UnResolvedPrices = map[mmtypes.Ticker]error
+	UnResolvedPrices = map[mmtypes.Ticker]providertypes.UnresolvedResult
 
 	// TickerPrices is a type alias for the map of prices. This is a map of tickers i.e.
 	// BTC/USD, ETH/USD, etc. to their respective prices.

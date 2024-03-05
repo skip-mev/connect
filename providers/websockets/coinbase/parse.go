@@ -2,6 +2,7 @@ package coinbase
 
 import (
 	"fmt"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/types"
@@ -42,14 +43,20 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		// If the sequence number is greater than the sequence number received,
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorInvalidResponse,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price to a big int.
 	price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			Err:  err,
+			Code: providertypes.ErrorFailedToParsePrice,
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
