@@ -17,9 +17,6 @@ import (
 // fetch is the main blocker for the provider. It is responsible for fetching data from the
 // data provider and updating the data.
 func (p *Provider[K, V]) fetch(ctx context.Context) error {
-	p.running.Store(true)
-	defer p.running.Store(false)
-
 	// responseCh is used to receive the response(s) from the query handler.
 	var responseCh chan providertypes.GetResponse[K, V]
 	switch {
@@ -30,11 +27,19 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 		// Otherwise, the buffer size is set to the max buffer size configured for the websocket.
 		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
 	default:
+		p.wg.Done()
 		return fmt.Errorf("no api or websocket configured")
 	}
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	// Start the receive loop.
-	go p.recv(ctx, responseCh)
+	p.wg.Add(1)
+	go func() {
+		defer p.wg.Done()
+		p.recv(ctx, responseCh)
+	}()
 
 	// Determine which loop to use based on whether the provider is an API or webSocket provider.
 	switch {
