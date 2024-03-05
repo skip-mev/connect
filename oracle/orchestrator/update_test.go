@@ -46,6 +46,16 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, coinbase.Name, true, providertypes.API, false, updatedState)
+
+		updatedState.Provider.Stop()
+		require.Eventually(
+			t,
+			func() bool {
+				return !updatedState.Provider.IsRunning()
+			},
+			5*time.Second,
+			500*time.Millisecond,
+		)
 	})
 
 	t.Run("can update a single api provider state with no configuration and running", func(t *testing.T) {
@@ -67,7 +77,7 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[coinbase.Name]
 		require.True(t, ok)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		// Start the provider.
@@ -83,17 +93,18 @@ func TestUpdateProviderState(t *testing.T) {
 		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
 		require.NoError(t, err)
 
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(2000 * time.Millisecond)
 
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, coinbase.Name, true, providertypes.API, true, updatedState)
 
+		updatedState.Provider.Stop()
 		require.Eventually(
 			t,
 			func() bool {
 				return !updatedState.Provider.IsRunning()
 			},
-			3*time.Second,
+			5*time.Second,
 			500*time.Millisecond,
 		)
 	})
@@ -124,8 +135,20 @@ func TestUpdateProviderState(t *testing.T) {
 		updatedState, err := o.UpdateProviderState(pMarketMap, providerState)
 		require.NoError(t, err)
 
+		time.Sleep(2000 * time.Millisecond)
+
 		// Check the state after the update.
 		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, false, updatedState)
+
+		updatedState.Provider.Stop()
+		require.Eventually(
+			t,
+			func() bool {
+				return !updatedState.Provider.IsRunning()
+			},
+			90*time.Second,
+			500*time.Millisecond,
+		)
 	})
 
 	t.Run("can update a single api provider state removing all tickers on a running provider", func(t *testing.T) {
@@ -169,12 +192,13 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, true, updatedState)
 
+		updatedState.Provider.Stop()
 		require.Eventually(
 			t,
 			func() bool {
 				return !updatedState.Provider.IsRunning()
 			},
-			3*time.Second,
+			5*time.Second,
 			500*time.Millisecond,
 		)
 	})
@@ -206,6 +230,16 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, okx.Name, true, providertypes.WebSockets, false, updatedState)
+
+		updatedState.Provider.Stop()
+		require.Eventually(
+			t,
+			func() bool {
+				return !updatedState.Provider.IsRunning()
+			},
+			5*time.Second,
+			500*time.Millisecond,
+		)
 	})
 
 	t.Run("can update a single websocket provider state with no configuration and running", func(t *testing.T) {
@@ -248,12 +282,13 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, okx.Name, true, providertypes.WebSockets, true, updatedState)
 
+		updatedState.Provider.Stop()
 		require.Eventually(
 			t,
 			func() bool {
 				return !updatedState.Provider.IsRunning()
 			},
-			20*time.Second,
+			15*time.Second,
 			500*time.Millisecond,
 		)
 	})

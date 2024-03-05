@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -115,14 +116,15 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		}
 
 		h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
-		h.logger.Debug("finished api query handler")
+		h.logger.Info("finished api query handler")
 	}()
 
 	// Set the concurrency limit based on the maximum number of queries allowed for a single
 	// interval.
 	wg := errgroup.Group{}
-	wg.SetLimit(h.config.MaxQueries)
-	h.logger.Debug("setting concurrency limit", zap.Int("limit", h.config.MaxQueries))
+	limit := math.Min(h.config.MaxQueries, len(ids))
+	wg.SetLimit(limit)
+	h.logger.Info("setting concurrency limit", zap.Int("limit", limit))
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -148,20 +150,22 @@ MainLoop:
 			h.logger.Info("context cancelled, stopping queries")
 			break MainLoop
 		default:
-			wg.Go(tasks[index])
-			index++
-			index %= len(tasks)
-
 			// Sleep for a bit to prevent the loop from spinning too fast.
 			h.logger.Debug("sleeping", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
 			time.Sleep(h.config.Interval)
+
+			wg.Go(tasks[index])
+			index++
+			index %= len(tasks)
 		}
 	}
 
 	// Wait for all tasks to complete.
+	h.logger.Info("waiting for tasks to complete")
 	if err := wg.Wait(); err != nil {
 		h.logger.Error("error querying ids", zap.Error(err))
 	}
+	h.logger.Info("all tasks completed")
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
@@ -186,19 +190,19 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		// Create the URL for the request.
 		url, err := h.apiHandler.CreateURL(ids)
 		if err != nil {
-			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrCreateURLWithErr(err)))
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrCreateURLWithErr(err)))
 			return nil
 		}
 
 		h.logger.Debug("created url", zap.String("url", url))
 
 		// Make the request.
-		ctx, cancel := context.WithTimeout(ctx, h.config.Timeout)
+		fetchCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
 		defer cancel()
 
-		resp, err := h.requestHandler.Do(ctx, url)
+		resp, err := h.requestHandler.Do(fetchCtx, url)
 		if err != nil {
-			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))
 			return nil
 		}
 
@@ -213,18 +217,28 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 			response = h.apiHandler.ParseResponse(ids, resp)
 		}
 
-		h.writeResponse(responseCh, response)
+		h.writeResponse(ctx, responseCh, response)
 		return nil
 	}
 }
 
 // writeResponse is used to write the response to the response channel.
 func (h *APIQueryHandlerImpl[K, V]) writeResponse(
+	ctx context.Context,
 	responseCh chan<- providertypes.GetResponse[K, V],
 	response providertypes.GetResponse[K, V],
 ) {
-	responseCh <- response
-	h.logger.Debug("wrote response", zap.String("response", response.String()))
+	// Write the response to the response channel. We only do so if the
+	// context has not been cancelled. Otherwise, we risk writing to a
+	// channel that is not being read from.
+	select {
+	case <-ctx.Done():
+		h.logger.Info("context cancelled, stopping write response")
+		return
+	default:
+		responseCh <- response
+		h.logger.Debug("wrote response", zap.String("response", response.String()))
+	}
 
 	// Update the metrics.
 	for id := range response.Resolved {

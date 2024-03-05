@@ -14,35 +14,17 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// fetch is the main blocker for the provider. It is responsible for fetching data from the
-// data provider and updating the data.
+// fetch is the main blocker for the provider. It is responsible for fetching data from
+// the data provider and updating the data. Note that the context passed here is valid
+// until either the parent context (provider's main context) is cancelled, the fetch routine
+// encounters an error, or the provider is manually stopped.
 func (p *Provider[K, V]) fetch(ctx context.Context) error {
-	// responseCh is used to receive the response(s) from the query handler.
-	var responseCh chan providertypes.GetResponse[K, V]
-	switch {
-	case p.Type() == providertypes.API:
-		// If the provider is an API provider, then the buffer size is set to the number of IDs.
-		responseCh = make(chan providertypes.GetResponse[K, V], len(p.GetIDs()))
-	case p.Type() == providertypes.WebSockets:
-		// Otherwise, the buffer size is set to the max buffer size configured for the websocket.
-		responseCh = make(chan providertypes.GetResponse[K, V], p.wsCfg.MaxBufferSize)
-	default:
-		return fmt.Errorf("no api or websocket configured")
-	}
-
-	// Start the receive loop.
-	p.wg.Add(1)
-	go func() {
-		defer p.wg.Done()
-		p.recv(ctx, responseCh)
-	}()
-
 	// Determine which loop to use based on whether the provider is an API or webSocket provider.
 	switch {
 	case p.Type() == providertypes.API:
-		return p.startAPI(ctx, responseCh)
+		return p.startAPI(ctx)
 	case p.Type() == providertypes.WebSockets:
-		return p.startMultiplexWebsocket(ctx, responseCh)
+		return p.startMultiplexWebsocket(ctx)
 	default:
 		return fmt.Errorf("no api or websocket configured")
 	}
@@ -50,7 +32,7 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 
 // startAPI is the main loop for the provider. It is responsible for fetching data from the API
 // and updating the data.
-func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
+func (p *Provider[K, V]) startAPI(ctx context.Context) error {
 	p.logger.Info("starting api query handler")
 
 	// Start the data update loop.
@@ -65,11 +47,12 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 		default:
 			p.logger.Debug(
 				"attempting to fetch new data",
-				zap.Int("buffer_size", len(responseCh)),
+				zap.Int("buffer_size", len(p.responseCh)),
 				zap.Int("num_ids", len(ids)),
 			)
 
-			handler.Query(ctx, ids, responseCh)
+			handler.Query(ctx, ids, p.responseCh)
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
@@ -78,7 +61,7 @@ func (p *Provider[K, V]) startAPI(ctx context.Context, responseCh chan<- provide
 // creating a connection to the websocket and handling the incoming messages. In the case
 // where multiple connections (multiplexing) are used, this function will start multiple
 // connections.
-func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh chan<- providertypes.GetResponse[K, V]) error {
+func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 	var (
 		maxSubsPerConn = p.wsCfg.MaxSubscriptionsPerConnection
 		subTasks       = make([][]K, 0)
@@ -114,7 +97,7 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 	}
 
 	for _, subIDs := range subTasks {
-		wg.Go(p.startWebSocket(ctx, subIDs, responseCh))
+		wg.Go(p.startWebSocket(ctx, subIDs))
 	}
 
 	// Wait for all the sub handlers to finish.
@@ -122,7 +105,7 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 }
 
 // startWebSocket starts a connection to the websocket and handles the incoming messages.
-func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, responseCh chan<- providertypes.GetResponse[K, V]) func() error {
+func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() error {
 	return func() error {
 		// Start the websocket query handler. If the connection fails to start, then the query handler
 		// will be restarted after a timeout.
@@ -135,7 +118,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 				return ctx.Err()
 			default:
 				if restarts > 0 {
-					p.logger.Debug("restarting websocket query handler", zap.Int("num_restarts", restarts))
+					p.logger.Info("restarting websocket query handler", zap.Int("num_restarts", restarts))
 
 					// If the websocket query handler returns, then the connection was closed. Wait for
 					// a bit before trying to reconnect.
@@ -143,7 +126,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 				}
 
 				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
-				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
+				if err := handler.Start(ctx, subIDs, p.responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
 				restarts++
@@ -153,14 +136,14 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 }
 
 // recv receives responses from the response channel and updates the data.
-func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertypes.GetResponse[K, V]) {
+func (p *Provider[K, V]) recv(ctx context.Context) {
 	// Wait for the data to be retrieved until the context is cancelled.
 	for {
 		select {
 		case <-ctx.Done():
 			p.logger.Debug("finishing recv and closing with request context err", zap.Error(ctx.Err()))
 			return
-		case r := <-responseCh:
+		case r := <-p.responseCh:
 			resolved, unResolved := r.Resolved, r.UnResolved
 
 			// Update all the resolved data.

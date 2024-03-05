@@ -59,8 +59,8 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	// stopCh is the channel that is used to signal the provider to stop.
 	stopCh chan struct{}
 
-	// wg is the wait group for the provider.
-	wg sync.WaitGroup
+	// responseCh is the channel that is used to receive the response(s) from the query handler.
+	responseCh chan providertypes.GetResponse[K, V]
 }
 
 // NewProvider returns a new Base provider.
@@ -71,7 +71,6 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 		data:      make(map[K]providertypes.Result[V]),
 		restartCh: make(chan struct{}, 1),
 		stopCh:    make(chan struct{}, 1),
-		wg:        sync.WaitGroup{},
 	}
 
 	for _, opt := range opts {
@@ -104,6 +103,8 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 	p.running.Store(true)
 	defer p.running.Store(false)
 
+	wg := sync.WaitGroup{}
+
 	// Start the main loop. At a high level, the main loop will continuously fetch data from
 	// the handler and update the provider's data. It allows for the provider to be restarted
 	// when the configuration changes. The main loop will exit either when the context is
@@ -111,6 +112,19 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 	var retErr error
 MainLoop:
 	for {
+		// Create the response channel for the provider. This channel is used to receive the
+		// response(s) from the query handler.
+		if err := p.createResponseCh(); err != nil {
+			return err
+		}
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			p.recv(ctx)
+			close(p.responseCh)
+		}()
+
 		// Create a new context for the fetch loop. This allows us to cancel the fetch loop
 		// when the provider needs to be restarted.
 		fetchCtx, cancel := context.WithCancel(ctx)
@@ -118,9 +132,9 @@ MainLoop:
 
 		// Start the fetch loop.
 		errCh := make(chan error)
-		p.wg.Add(1)
+		wg.Add(1)
 		go func() {
-			defer p.wg.Done()
+			defer wg.Done()
 			errCh <- p.fetch(fetchCtx)
 		}()
 
@@ -133,36 +147,38 @@ MainLoop:
 
 			// Wait for the fetch loop to stop.
 			err := <-errCh
-			p.logger.Debug("provider fetch loop stopped", zap.Error(err))
-			p.wait()
+			p.logger.Info("waiting for provider routines to stop", zap.Error(err))
+			wg.Wait()
+			p.logger.Info("provider routines stopped")
 			continue MainLoop
 		case retErr = <-errCh:
 			// If the fetch loop stops unexpectedly, we should return.
 			cancel()
-			p.wait()
 			break MainLoop
 		case <-ctx.Done():
 			// If the context is cancelled, we should return. We expect the fetch go routine
 			// to exit when the context is cancelled.
 			retErr = <-errCh
-			p.wait()
 			break MainLoop
 		case <-p.stopCh:
 			// If the provider is manually stopped, we stop the fetch loop and return.
-			p.logger.Debug("stopping provider from manual interupt")
+			p.logger.Info("stopping provider from manual interupt")
 			cancel()
 			retErr = <-errCh
-			p.wait()
 			break MainLoop
 		}
 	}
+
+	p.logger.Info("waiting for provider routines to stop", zap.Error(retErr))
+	wg.Wait()
+	p.logger.Info("provider routines stopped")
 
 	return retErr
 }
 
 // Stop stops the provider's main loop.
 func (p *Provider[K, V]) Stop() {
-	if !p.running.Load() {
+	if !p.IsRunning() {
 		return
 	}
 
@@ -204,11 +220,4 @@ func (p *Provider[K, V]) Type() providertypes.ProviderType {
 	default:
 		return "unknown"
 	}
-}
-
-// wait waits for all of the provider go routines to stop.
-func (p *Provider[K, V]) wait() {
-	p.logger.Debug("waiting for provider go routines to stop")
-	p.wg.Wait()
-	p.logger.Info("provider routines finished")
 }

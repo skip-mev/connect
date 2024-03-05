@@ -20,14 +20,14 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 	for name, state := range o.providers {
 		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(name, marketMap)
 		if err != nil {
-			o.logger.Error("failed to create provider market map", zap.Error(err))
+			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
 			return err
 		}
 
 		// Update the provider's state.
 		updatedState, err := o.UpdateProviderState(providerMarketMap, state)
 		if err != nil {
-			o.logger.Error("failed to update provider state", zap.Error(err))
+			o.logger.Error("failed to update provider state", zap.String("provider", name), zap.Error(err))
 			return err
 		}
 
@@ -58,7 +58,6 @@ func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarke
 		}
 
 		provider.SetAPIHandler(handler)
-		o.logger.Debug("updated api query handler")
 	case providertypes.WebSockets:
 		// Create and update the WebSocket query handler.
 		handler, err := o.createWebSocketQueryHandler(state.Cfg, marketMap)
@@ -67,11 +66,9 @@ func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarke
 		}
 
 		provider.SetWebSocketHandler(handler)
-		o.logger.Debug("updated websocket query handler")
 	}
 
 	provider.SetIDs(marketMap.GetTickers())
-	o.logger.Debug("updated provider state")
 
 	// Update the provider's state.
 	state.Market = marketMap

@@ -280,9 +280,17 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			}
 
 			// Immediately send the response to the response channel. Even if this is
-			// empty, it will be handled by the provider.
-			responseCh <- response
-			h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+			// empty, it will be handled by the provider. Note that if the context has been
+			// cancelled, we should not send the response to the channel. Otherwise, we risk
+			// sending a response to a closed channel.
+			select {
+			case <-ctx.Done():
+				h.logger.Debug("context finished; stopping recv")
+				return ctx.Err()
+			case responseCh <- response:
+				h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+			}
+
 			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
 
 			// If the update messages are not nil, send it to the data provider.
