@@ -14,12 +14,31 @@ import (
 // 3. Each provider is valid.
 // 4. Each path is valid.
 // 5. Each operation (ticker) in each path is supported by the market map.
+// 6. The enabled list is valid.
 func (mm *MarketMap) ValidateBasic() error {
 	if len(mm.Tickers) != len(mm.Providers) {
 		return fmt.Errorf("each ticker must have a corresponding provider list supporting it")
 	}
 
-	cps := make(map[types.CurrencyPair]struct{})
+	if len(mm.EnabledTickers) > len(mm.Tickers) {
+		return fmt.Errorf("enabled tickers cannot be longer than tickers")
+	}
+
+	// verify all enabled tickers are in the Tickers Map
+	seenEnabledTickers := make(map[string]struct{})
+	for _, tickerStr := range mm.EnabledTickers {
+		if _, found := mm.Tickers[tickerStr]; !found {
+			return fmt.Errorf("ticker ID %s in enabled tickers not found in tickers map", tickerStr)
+		}
+
+		if _, seen := seenEnabledTickers[tickerStr]; seen {
+			return fmt.Errorf("duplicate ticker ID %s found in enabled list", tickerStr)
+		}
+
+		seenEnabledTickers[tickerStr] = struct{}{}
+	}
+
+	seenCPs := make(map[string]struct{})
 	for tickerStr, ticker := range mm.Tickers {
 		if err := ticker.ValidateBasic(); err != nil {
 			return err
@@ -38,11 +57,11 @@ func (mm *MarketMap) ValidateBasic() error {
 			return err
 		}
 
-		cps[ticker.CurrencyPair] = struct{}{}
+		seenCPs[ticker.String()] = struct{}{}
 	}
 
-	for ticker, paths := range mm.Paths {
-		cp, err := types.CurrencyPairFromString(ticker)
+	for tickerStr, paths := range mm.Paths {
+		cp, err := types.CurrencyPairFromString(tickerStr)
 		if err != nil {
 			return err
 		}
@@ -53,10 +72,17 @@ func (mm *MarketMap) ValidateBasic() error {
 
 		for _, path := range paths.Paths {
 			for _, operation := range path.Operations {
-				if _, ok := cps[operation.CurrencyPair]; !ok {
+				if _, ok := seenCPs[operation.CurrencyPair.String()]; !ok {
 					return fmt.Errorf("currency pair %s not found in market map", operation.CurrencyPair)
 				}
 			}
+		}
+	}
+
+	// check if all providers refer to tickers
+	for tickerStr := range mm.Providers {
+		if _, ok := seenCPs[tickerStr]; !ok {
+			return fmt.Errorf("currency pair %s not found in market map", tickerStr)
 		}
 	}
 
@@ -65,5 +91,11 @@ func (mm *MarketMap) ValidateBasic() error {
 
 // String returns the string representation of the market map.
 func (mm *MarketMap) String() string {
-	return fmt.Sprintf("MarketMap: {Tickers: %v, Providers: %v, Paths: %v}", mm.Tickers, mm.Providers, mm.Paths)
+	return fmt.Sprintf(
+		"MarketMap: {Tickers: %v, Providers: %v, Paths: %v, EnabledTickers: %v}",
+		mm.Tickers,
+		mm.Providers,
+		mm.Paths,
+		mm.EnabledTickers,
+	)
 }
