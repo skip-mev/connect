@@ -25,8 +25,9 @@ const (
 func NewTicker(base, quote string, decimals, minProviderCount uint64) Ticker {
 	return Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  strings.ToUpper(base),
-			Quote: strings.ToUpper(quote),
+			Base:      strings.ToUpper(base),
+			Quote:     strings.ToUpper(quote),
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		Decimals:         decimals,
 		MinProviderCount: minProviderCount,

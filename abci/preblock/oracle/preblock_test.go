@@ -60,16 +60,19 @@ func (s *PreBlockTestSuite) SetupTest() {
 
 	s.currencyPairs = []slinkytypes.CurrencyPair{
 		{
-			Base:  "BTC",
-			Quote: "ETH",
+			Base:      "BTC",
+			Quote:     "ETH",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		{
-			Base:  "BTC",
-			Quote: "USD",
+			Base:      "BTC",
+			Quote:     "USD",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		{
-			Base:  "ETH",
-			Quote: "USD",
+			Base:      "ETH",
+			Quote:     "USD",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 	}
 	genesisCPs := []oracletypes.CurrencyPairGenesis{
@@ -192,8 +195,9 @@ func (s *PreBlockTestSuite) TestWritePrices() {
 
 	s.Run("attempting to set price for unsupported currency pair", func() {
 		unsupportedCP := slinkytypes.CurrencyPair{
-			Base:  "cap",
-			Quote: "on-god",
+			Base:      "cap",
+			Quote:     "on-god",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		}
 		prices := map[slinkytypes.CurrencyPair]*big.Int{
 			unsupportedCP: big.NewInt(1),

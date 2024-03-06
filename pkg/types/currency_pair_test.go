@@ -17,40 +17,45 @@ func TestValidateBasic(t *testing.T) {
 		{
 			"if the Base is not upper-case - fail",
 			slinkytypes.CurrencyPair{
-				Base:  "aB",
-				Quote: "BB",
+				Base:      "aB",
+				Quote:     "BB",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 			false,
 		},
 		{
 			"if the Quote is not upper-case - fail",
 			slinkytypes.CurrencyPair{
-				Base:  "BB",
-				Quote: "aB",
+				Base:      "BB",
+				Quote:     "aB",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 			false,
 		},
 		{
 			"if the base string is empty - fail",
 			slinkytypes.CurrencyPair{
-				Base:  "",
-				Quote: "BB",
+				Base:      "",
+				Quote:     "BB",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 			false,
 		},
 		{
 			"if the quote string is empty - fail",
 			slinkytypes.CurrencyPair{
-				Base:  "AA",
-				Quote: "",
+				Base:      "AA",
+				Quote:     "",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 			false,
 		},
 		{
 			"if both Quote + Base are formatted correctly - pass",
 			slinkytypes.CurrencyPair{
-				Base:  "BB",
-				Quote: "AA",
+				Base:      "BB",
+				Quote:     "AA",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 			true,
 		},
@@ -86,13 +91,13 @@ func TestToFromString(t *testing.T) {
 		{
 			"if the string is correctly formatted, return the original CurrencyPair",
 			slinkytypes.CurrencyPairString("A", "B"),
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B", Delimiter: slinkytypes.DefaultDelimiter},
 			true,
 		},
 		{
 			"if the string is not formatted upper-case, return the original CurrencyPair",
 			"a/B",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B", Delimiter: slinkytypes.DefaultDelimiter},
 			true,
 		},
 	}
@@ -118,12 +123,12 @@ func TestDecimals(t *testing.T) {
 	}{
 		{
 			"if the quote is ethereum, return 18",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "ETHEREUM"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "ETHEREUM", Delimiter: slinkytypes.DefaultDelimiter},
 			18,
 		},
 		{
 			"if the quote is not ethereum or eth, return 8",
-			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B", Delimiter: slinkytypes.DefaultDelimiter},
 			8,
 		},
 	}

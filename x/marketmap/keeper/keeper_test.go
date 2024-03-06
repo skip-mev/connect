@@ -76,8 +76,9 @@ func TestKeeperTestSuite(t *testing.T) {
 var (
 	btcusdt = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "BITCOIN",
-			Quote: "USDT",
+			Base:      "BITCOIN",
+			Quote:     "USDT",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
@@ -89,8 +90,9 @@ var (
 				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "BITCOIN",
-							Quote: "USDT",
+							Base:      "BITCOIN",
+							Quote:     "USDT",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 					},
 				},
@@ -109,8 +111,9 @@ var (
 
 	usdtusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "USDT",
-			Quote: "USD",
+			Base:      "USDT",
+			Quote:     "USD",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
@@ -122,8 +125,9 @@ var (
 				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDT",
-							Quote: "USD",
+							Base:      "USDT",
+							Quote:     "USD",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 					},
 				},
@@ -142,8 +146,9 @@ var (
 
 	usdcusd = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "USDC",
-			Quote: "USD",
+			Base:      "USDC",
+			Quote:     "USD",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
@@ -155,8 +160,9 @@ var (
 				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDC",
-							Quote: "USD",
+							Base:      "USDC",
+							Quote:     "USD",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 					},
 				},
@@ -175,8 +181,9 @@ var (
 
 	ethusdt = types.Ticker{
 		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "ETHEREUM",
-			Quote: "USDT",
+			Base:      "ETHEREUM",
+			Quote:     "USDT",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		},
 		Decimals:         8,
 		MinProviderCount: 1,
@@ -188,8 +195,9 @@ var (
 				Operations: []types.Operation{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "ETHEREUM",
-							Quote: "USDT",
+							Base:      "ETHEREUM",
+							Quote:     "USDT",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 					},
 				},

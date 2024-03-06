@@ -97,14 +97,16 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 								Operations: []types.Operation{
 									{
 										CurrencyPair: slinkytypes.CurrencyPair{
-											Base:  "ETHEREUM",
-											Quote: "MOG",
+											Base:      "ETHEREUM",
+											Quote:     "MOG",
+											Delimiter: slinkytypes.DefaultDelimiter,
 										},
 									},
 									{
 										CurrencyPair: slinkytypes.CurrencyPair{
-											Base:  "MOG",
-											Quote: "USDT",
+											Base:      "MOG",
+											Quote:     "USDT",
+											Delimiter: slinkytypes.DefaultDelimiter,
 										},
 									},
 								},
