@@ -24,19 +24,19 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 
 	tcs := []struct {
 		name       string
-		msg        types.MsgUpdateMarketMap
+		msg        types.MsgCreateMarkets
 		expectPass bool
 	}{
 		{
 			"if the signer is not an acc-address - fail",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: "invalid",
 			},
 			false,
 		},
 		{
 			"invalid ticker - fail",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
 				CreateMarkets: []types.CreateMarket{
 					{
@@ -76,7 +76,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid num providers - fail",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
 				CreateMarkets: []types.CreateMarket{
 					{
@@ -108,7 +108,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid empty offchain ticker - fail",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
 				CreateMarkets: []types.CreateMarket{
 					{
@@ -144,7 +144,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid no paths - fail",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
 				CreateMarkets: []types.CreateMarket{
 					{
@@ -169,7 +169,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid path - fail",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
 				CreateMarkets: []types.CreateMarket{
 					{
@@ -196,7 +196,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"valid message",
-			types.MsgUpdateMarketMap{
+			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
 				CreateMarkets: []types.CreateMarket{
 					{

@@ -22,9 +22,9 @@ func NewMsgServer(k *Keeper) types.MsgServer {
 
 var _ types.MsgServer = (*msgServer)(nil)
 
-// UpdateMarketMap updates the marketmap from the given message.  All updates are made to the market map and then
-// the resulting final state is checked to verify that the end state is valid.
-func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateMarketMap) (*types.MsgUpdateMarketMapResponse, error) {
+// CreateMarkets updates the marketmap by creating marketsfrom the given message.  All updates are made to the market
+// map and then the resulting final state is checked to verify that the end state is valid.
+func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMarkets) (*types.MsgCreateMarketsResponse, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
 	}
@@ -64,16 +64,29 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 		ctx.EventManager().EmitEvent(event)
 	}
 
-	// update markets
-	// TODO
-
 	// validate that the new state of the marketmap is valid
-	err = ms.k.ValidateState(ctx, msg.CreateMarkets)
+	err = ms.k.ValidateState(ctx, msg.CreateMarkets, nil)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgUpdateMarketMapResponse{}, nil
+	return &types.MsgCreateMarketsResponse{}, nil
+}
+
+func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMarkets) (*types.MsgUpdateMarketsResponse, error) {
+	if msg == nil {
+		return nil, fmt.Errorf("unable to process nil msg")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// validate that the new state of the marketmap is valid
+	err := ms.k.ValidateState(ctx, nil, msg.UpdateMarkets)
+	if err != nil {
+		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
+	}
+
+	return &types.MsgUpdateMarketsResponse{}, nil
 }
 
 // Params updates the x/marketmap module's Params.

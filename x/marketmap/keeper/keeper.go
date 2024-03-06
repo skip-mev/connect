@@ -227,7 +227,7 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 
 // ValidateState is called after keeper modifications have been made to the market map to verify that
 // the aggregate of all updates has led to a valid state.
-func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) error {
+func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket, updates []types.UpdateMarket) error {
 	for _, create := range creates {
 		// check that all paths already exist in the keeper store:
 		for _, path := range create.Paths.Paths {
@@ -251,5 +251,30 @@ func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) er
 			}
 		}
 	}
+
+	for _, update := range updates {
+		// check that all paths already exist in the keeper store:
+		for _, path := range update.Paths.Paths {
+			for _, op := range path.Operations {
+				cp := op.CurrencyPair
+				if op.Invert {
+					cp = slinkytypes.CurrencyPair{
+						Base:  cp.Quote,
+						Quote: cp.Base,
+					}
+				}
+
+				has, err := k.tickers.Has(ctx, types.TickerString(cp.String()))
+				if err != nil {
+					return err
+				}
+
+				if !has {
+					return fmt.Errorf("currency pair %s in path %s does not exist", cp.String(), path.ShowRoute())
+				}
+			}
+		}
+	}
+
 	return nil
 }

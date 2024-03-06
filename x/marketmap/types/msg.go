@@ -6,10 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var _ sdk.Msg = &MsgUpdateMarketMap{}
+var _ sdk.Msg = &MsgCreateMarkets{}
 
 // GetSigners gets the address that must sign this message.
-func (m *MsgUpdateMarketMap) GetSigners() []sdk.AccAddress {
+func (m *MsgCreateMarkets) GetSigners() []sdk.AccAddress {
 	// convert from string to acc address
 	addr, _ := sdk.AccAddressFromBech32(m.Signer)
 	return []sdk.AccAddress{addr}
@@ -17,7 +17,7 @@ func (m *MsgUpdateMarketMap) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the signer is a valid acc-address.
-func (m *MsgUpdateMarketMap) ValidateBasic() error {
+func (m *MsgCreateMarkets) ValidateBasic() error {
 	// validate signer address
 	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
 		return err

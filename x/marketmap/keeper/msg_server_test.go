@@ -6,12 +6,12 @@ import (
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
+func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	msgServer := keeper.NewMsgServer(s.keeper)
 	qs := keeper.NewQueryServer(s.keeper)
 
 	// create initial markets
-	msg := &types.MsgUpdateMarketMap{
+	msg := &types.MsgCreateMarkets{
 		Signer: s.authority.String(),
 		CreateMarkets: []types.CreateMarket{
 			{
@@ -26,7 +26,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 			},
 		},
 	}
-	resp, err := msgServer.UpdateMarketMap(s.ctx, msg)
+	resp, err := msgServer.CreateMarkets(s.ctx, msg)
 	s.Require().NoError(err)
 	s.Require().NotNil(resp)
 
@@ -53,23 +53,23 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.CurrencyPair, usdtusd.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
-		msg = &types.MsgUpdateMarketMap{
+		msg = &types.MsgCreateMarkets{
 			Signer: "invalid",
 		}
-		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
+		resp, err = msgServer.CreateMarkets(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
 
 	// set a market in the map
 	s.Run("unable to process nil request", func() {
-		resp, err = msgServer.UpdateMarketMap(s.ctx, nil)
+		resp, err = msgServer.CreateMarkets(s.ctx, nil)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
 
 	s.Run("unable to create market that already exists", func() {
-		msg = &types.MsgUpdateMarketMap{
+		msg = &types.MsgCreateMarkets{
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
@@ -79,13 +79,13 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 				},
 			},
 		}
-		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
+		resp, err = msgServer.CreateMarkets(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
 
 	s.Run("unable to create market with paths that are not on chain tickers", func() {
-		msg = &types.MsgUpdateMarketMap{
+		msg = &types.MsgCreateMarkets{
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
@@ -114,7 +114,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 				},
 			},
 		}
-		resp, err = msgServer.UpdateMarketMap(s.ctx, msg)
+		resp, err = msgServer.CreateMarkets(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
