@@ -128,17 +128,6 @@ func TestMsgConclusion(t *testing.T) {
 			})
 		}
 	})
-
-	t.Run("test get signers", func(t *testing.T) {
-		signer := sdk.AccAddress("cosmos1")
-		msg := types.MsgConclusion{
-			Signer:     signer.String(),
-			Conclusion: validConclusionAny,
-		}
-
-		signers := msg.GetSigners()
-		require.Equal(t, []sdk.AccAddress{signer}, signers)
-	})
 }
 
 func TestMsgUpdateParams(t *testing.T) {
