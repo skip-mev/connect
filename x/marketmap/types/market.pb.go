@@ -353,6 +353,7 @@ func (m *Providers) GetProviders() []ProviderConfig {
 	return nil
 }
 
+// EnabledTickers is the list of tickers that are enabled for price fetching.
 type EnabledTickers struct {
 	Tickers []string `protobuf:"bytes,1,rep,name=Tickers,proto3" json:"Tickers,omitempty"`
 }

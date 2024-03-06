@@ -5247,6 +5247,7 @@ func (x *Providers) GetProviders() []*ProviderConfig {
 	return nil
 }
 
+// EnabledTickers is the list of tickers that are enabled for price fetching.
 type EnabledTickers struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -70,6 +70,7 @@ message Providers {
   repeated ProviderConfig providers = 1 [ (gogoproto.nullable) = false ];
 }
 
+// EnabledTickers is the list of tickers that are enabled for price fetching.
 message EnabledTickers { repeated string Tickers = 1; }
 
 message MarketMap {
