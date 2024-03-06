@@ -19,10 +19,10 @@ message Ticker {
 
   // Decimals is the number of decimal places for the ticker. The number of
   // decimal places is used to convert the price to a human-readable format.
-  uint64 decimals = 3;
+  uint64 decimals = 2;
   // MinProviderCount is the minimum number of providers required to consider
   // the ticker valid.
-  uint64 min_provider_count = 4;
+  uint64 min_provider_count = 3;
 
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
