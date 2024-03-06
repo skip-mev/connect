@@ -25,4 +25,8 @@ type WebSocketDataHandler[K providertypes.ResponseKey, V providertypes.ResponseV
 	// the handler must maintain the necessary state information to construct the heartbeat messages. This
 	// can be done on the fly as messages as handled by the handler.
 	HeartBeatMessages() ([]WebsocketEncodedMessage, error)
+
+	// Copy is used to create a copy of the data handler. This is useful for creating multiple connections
+	// to the same data provider. Stateful information can be managed independently for each connection.
+	Copy() WebSocketDataHandler[K, V]
 }
