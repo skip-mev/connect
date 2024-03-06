@@ -235,7 +235,7 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			// check that all currency-pairs were removed
 			for _, cps := range tc.req.CurrencyPairIds {
 				// get currency pair from request
-				cp, err := slinkytypes.CurrencyPairFromString(cps)
+				cp, err := slinkytypes.CurrencyPairFromString(cps, slinkytypes.DefaultDelimiter)
 				require.Nil(s.T(), err)
 
 				// assert that currency-pair was removed

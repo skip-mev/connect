@@ -281,7 +281,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 
 	// Iterate over the prices and transform them into the correct format.
 	for currencyPairID, priceString := range prices {
-		cp, err := slinkytypes.CurrencyPairFromString(currencyPairID)
+		cp, err := slinkytypes.CurrencyPairFromString(currencyPairID, slinkytypes.DefaultDelimiter)
 		if err != nil {
 			return types.OracleVoteExtension{}, err
 		}

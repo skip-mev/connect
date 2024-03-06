@@ -53,7 +53,7 @@ Create a new alert with the specified height, sender, and currency-pair.
 			}
 
 			// get the currency-pair
-			cp, err := slinkytypes.CurrencyPairFromString(args[2])
+			cp, err := slinkytypes.CurrencyPairFromString(args[2], slinkytypes.DefaultDelimiter)
 			if err != nil {
 				return err
 			}

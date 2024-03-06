@@ -13,4 +13,5 @@ message CurrencyPair {
 
   string Base = 1;
   string Quote = 2;
+  string Delimiter = 3;
 }

@@ -74,7 +74,7 @@ func (m *MsgRemoveCurrencyPairs) ValidateBasic() error {
 
 	// check that each CurrencyPairID is correctly formatted
 	for _, id := range m.CurrencyPairIds {
-		if _, err := slinkytypes.CurrencyPairFromString(id); err != nil {
+		if _, err := slinkytypes.CurrencyPairFromString(id, slinkytypes.DefaultDelimiter); err != nil {
 			return err
 		}
 	}

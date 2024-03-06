@@ -79,7 +79,7 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 
 	for _, id := range req.CurrencyPairIds {
 		// get cp from identifier string
-		cp, err := slinkytypes.CurrencyPairFromString(id)
+		cp, err := slinkytypes.CurrencyPairFromString(id, slinkytypes.DefaultDelimiter)
 		if err != nil {
 			return nil, fmt.Errorf("error retrieving CurrencyPair from request: %w", err)
 		}

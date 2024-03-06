@@ -6,15 +6,22 @@ import (
 )
 
 const (
-	ethereum = "ETHEREUM"
+	ethereum         = "ETHEREUM"
+	DefaultDelimiter = "/"
 )
 
 // NewCurrencyPair returns a new CurrencyPair with the given base and quote strings.
 func NewCurrencyPair(base, quote string) CurrencyPair {
 	return CurrencyPair{
-		Base:  base,
-		Quote: quote,
+		Base:      base,
+		Quote:     quote,
+		Delimiter: DefaultDelimiter,
 	}
+}
+
+func (cp CurrencyPair) WithDelimiter(delimiter string) CurrencyPair {
+	cp.Delimiter = delimiter
+	return cp
 }
 
 // ValidateBasic checks that the Base / Quote strings in the CurrencyPair are formatted correctly, i.e.
@@ -36,7 +43,7 @@ func (cp *CurrencyPair) ValidateBasic() error {
 
 // String returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
 func (cp CurrencyPair) String() string {
-	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)
+	return fmt.Sprintf("%s%s%s", cp.Base, cp.Delimiter, cp.Quote)
 }
 
 // CurrencyPairString constructs and returns the string representation of a currency pair.
@@ -45,14 +52,16 @@ func CurrencyPairString(base, quote string) string {
 	return cp.String()
 }
 
-func CurrencyPairFromString(s string) (CurrencyPair, error) {
-	split := strings.Split(s, "/")
+func CurrencyPairFromString(s, delim string) (CurrencyPair, error) {
+	split := strings.Split(s, delim)
+
 	if len(split) != 2 {
 		return CurrencyPair{}, fmt.Errorf("incorrectly formatted CurrencyPair: %s", s)
 	}
 	cp := CurrencyPair{
-		Base:  strings.ToUpper(split[0]),
-		Quote: strings.ToUpper(split[1]),
+		Base:      strings.ToUpper(split[0]),
+		Quote:     strings.ToUpper(split[1]),
+		Delimiter: delim,
 	}
 
 	return cp, cp.ValidateBasic()

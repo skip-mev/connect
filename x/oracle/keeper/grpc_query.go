@@ -93,7 +93,7 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 
 	prices := make([]types.GetPriceResponse, 0, len(req.CurrencyPairIds))
 	for _, cid := range req.CurrencyPairIds {
-		cp, err = slinkytypes.CurrencyPairFromString(cid)
+		cp, err = slinkytypes.CurrencyPairFromString(cid, slinkytypes.DefaultDelimiter)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling CurrencyPairID: %w", err)
 		}

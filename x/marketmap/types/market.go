@@ -42,7 +42,7 @@ func (mm *MarketMap) ValidateBasic() error {
 	}
 
 	for ticker, paths := range mm.Paths {
-		cp, err := types.CurrencyPairFromString(ticker)
+		cp, err := types.CurrencyPairFromString(ticker, types.DefaultDelimiter)
 		if err != nil {
 			return err
 		}

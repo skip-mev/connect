@@ -99,7 +99,7 @@ func TestToFromString(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			cp, err := slinkytypes.CurrencyPairFromString(tc.cps)
+			cp, err := slinkytypes.CurrencyPairFromString(tc.cps, slinkytypes.DefaultDelimiter)
 			if tc.expectPass {
 				require.Nil(t, err)
 				require.Equal(t, cp, tc.cp)
