@@ -6,15 +6,12 @@ import (
 
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/depinject"
-
 	storetypes "cosmossdk.io/store/types"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -29,10 +26,14 @@ import (
 const ConsensusVersion = 1
 
 var (
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
 	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/incentives module exposes to the
@@ -77,7 +78,7 @@ func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.NewDefaultGenesisState())
 }
 
-// ValidateGenesis performs genesis state validation for the incentives module.
+// ValidateGenesis performs genesis state validation for the x/incentives module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var gs types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
@@ -86,9 +87,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 
 	return gs.ValidateBasic()
 }
-
-// No RESTful routes exist for the incentives module (outside of those served via the grpc-gateway).
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 // AppModule represents an application module for the x/incentives module.
 type AppModule struct {
@@ -107,9 +105,14 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	}
 }
 
-// BeginBlock returns the begin blocker for the incentives module.
+// BeginBlock returns the beginblocker for the x/incentives module.
 func (am AppModule) BeginBlock(ctx context.Context) error {
 	return am.k.ExecuteStrategies(sdk.UnwrapSDKContext(ctx))
+}
+
+// EndBlock is a no-op for x/incentives.
+func (am AppModule) EndBlock(_ context.Context) error {
+	return nil
 }
 
 // IsAppModule implements the appmodule.AppModule interface.
@@ -135,14 +138,11 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 // InitGenesis performs the genesis initialization for the x/incentives module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cometabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the incentives module's exported genesis state as raw

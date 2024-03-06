@@ -28,6 +28,7 @@ func TestConfigUpdater(t *testing.T) {
 			t,
 			logger,
 			nil,
+			200*time.Millisecond,
 		)
 
 		provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
@@ -125,6 +126,7 @@ func TestConfigUpdater(t *testing.T) {
 			t,
 			logger,
 			nil,
+			200*time.Millisecond,
 		)
 
 		provider, err := base.NewProvider[slinkytypes.CurrencyPair, *big.Int](
@@ -162,7 +164,12 @@ func TestConfigUpdater(t *testing.T) {
 		responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 			providertypes.NewGetResponse(resolved, nil),
 		}
-		updatedAPIHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](t, logger, responses)
+		updatedAPIHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+			t,
+			logger,
+			responses,
+			200*time.Millisecond,
+		)
 		updater.UpdateAPIHandler(updatedAPIHandler)
 
 		// Wait for the provider to restart.
