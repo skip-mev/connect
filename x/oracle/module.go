@@ -7,7 +7,6 @@ import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -15,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -31,10 +29,14 @@ import (
 const ConsensusVersion = 1
 
 var (
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
 	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic defines the base interface that the x/oracle module exposes to the application.
@@ -79,6 +81,16 @@ type AppModule struct {
 	AppModuleBasic
 
 	k keeper.Keeper
+}
+
+// BeginBlock is a no-op for x/oracle.
+func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
+// EndBlock is a no-op for x/oracle.
+func (am AppModule) EndBlock(_ context.Context) error {
+	return nil
 }
 
 // NewAppModule returns an application module for the x/oracle module.
@@ -127,10 +139,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	return gs.Validate()
 }
 
-// RegisterRESTRoutes returns nothing as no REST-ful routes exist for the oracle module
-// (outside of those served via the grpc-gateway).
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
-
 // RegisterInvariants registers the invariants of the oracle module. If an invariant
 // deviates from its predicted value, the InvariantRegistry triggers appropriate
 // logic (most often the chain will be halted). No invariants exist for the oracle module.
@@ -139,16 +147,13 @@ func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 // InitGenesis performs the genesis initialization for the x/oracle module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	// unmarshal genesis-state (panic on errors)
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	// initialize genesis
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cometabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the oracle module's exported genesis state as raw

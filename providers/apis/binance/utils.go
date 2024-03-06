@@ -42,7 +42,7 @@ var (
 		Atomic:     true,
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
-		Interval:   1 * time.Second,
+		Interval:   150 * time.Millisecond,
 		MaxQueries: 1,
 		URL:        US_URL,
 	}
@@ -53,7 +53,7 @@ var (
 		Atomic:     true,
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
-		Interval:   1 * time.Second,
+		Interval:   150 * time.Millisecond,
 		MaxQueries: 1,
 		URL:        URL,
 	}

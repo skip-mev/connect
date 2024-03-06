@@ -5,13 +5,11 @@ import (
 	"encoding/json"
 
 	"cosmossdk.io/core/appmodule"
-	cometabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -25,9 +23,14 @@ import (
 const ConsensusVersion = 1
 
 var (
-	_ appmodule.AppModule   = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.HasName        = AppModule{}
+	_ module.HasGenesis     = AppModule{}
+	_ module.AppModuleBasic = AppModule{}
 	_ module.HasServices    = AppModule{}
+
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // AppModuleBasic is the base struct for the x/marketmap module. It implements the module.AppModuleBasic interface.
@@ -86,9 +89,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 	return gs.ValidateBasic()
 }
 
-// RegisterRESTRoutes does nothing as no RESTful routes exist for the marketmap module (outside of those served via the grpc-gateway).
-func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
-
 // RegisterInvariants registers the invariants of the marketmap module. If an invariant
 // deviates from its predicted value, the InvariantRegistry triggers appropriate
 // logic (most often the chain will be halted). No invariants exist for the marketmap module.
@@ -100,19 +100,26 @@ type AppModule struct {
 	k *keeper.Keeper
 }
 
+// BeginBlock is a no-op for x/marketmap.
+func (am AppModule) BeginBlock(_ context.Context) error {
+	return nil
+}
+
+// EndBlock is a no-op for x/marketmap.
+func (am AppModule) EndBlock(_ context.Context) error {
+	return nil
+}
+
 // InitGenesis performs the genesis initialization for the x/marketmap module. It determines the
 // genesis state to initialize from via a json-encoded genesis-state. This method returns no validator set updates.
 // This method panics on any errors.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) []cometabci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, bz json.RawMessage) {
 	// unmarshal genesis-state (panic on errors)
 	var gs types.GenesisState
 	cdc.MustUnmarshalJSON(bz, &gs)
 
 	// initialize genesis
 	am.k.InitGenesis(ctx, gs)
-
-	// return no validator-set updates
-	return []cometabci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the oracle module's exported genesis state as raw

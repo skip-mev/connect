@@ -37,6 +37,7 @@ func (s *OracleTestSuite) TestProviders() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				providers := []types.PriceProviderI{provider}
@@ -63,6 +64,7 @@ func (s *OracleTestSuite) TestProviders() {
 					providerCfg1,
 					s.currencyPairs,
 					responses,
+					200*time.Millisecond,
 				)
 
 				providers := []types.PriceProviderI{provider}
@@ -91,6 +93,7 @@ func (s *OracleTestSuite) TestProviders() {
 					providerCfg1,
 					s.currencyPairs,
 					responses,
+					200*time.Millisecond,
 				)
 
 				resolved2 := types.ResolvedPrices{
@@ -136,6 +139,7 @@ func (s *OracleTestSuite) TestProviders() {
 					providerCfg1,
 					s.currencyPairs,
 					responses,
+					200*time.Millisecond,
 				)
 
 				providers := []types.PriceProviderI{provider, s.noStartProvider("provider2")}
@@ -164,6 +168,7 @@ func (s *OracleTestSuite) TestProviders() {
 					providerCfg1,
 					s.currencyPairs,
 					responses,
+					200*time.Millisecond,
 				)
 
 				providers := []types.PriceProviderI{provider}

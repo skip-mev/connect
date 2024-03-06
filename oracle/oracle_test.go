@@ -99,6 +99,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				// Create the provider factory.
@@ -117,6 +118,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
@@ -195,6 +197,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				// Create the provider factory.
@@ -214,6 +217,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
@@ -281,6 +285,7 @@ func (s *OracleTestSuite) TestStop() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				// Create the provider factory.
@@ -300,6 +305,7 @@ func (s *OracleTestSuite) TestStop() {
 					providerCfg1,
 					s.currencyPairs,
 					nil,
+					200*time.Millisecond,
 				)
 
 				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](

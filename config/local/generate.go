@@ -267,28 +267,28 @@ func main() {
 				delete(marketMap.Tickers, ticker.String())
 			}
 		}
+	}
 
-		if len(providersFlag) > 0 {
-			for ticker, providers := range marketMap.Providers {
-				ps := make([]mmtypes.ProviderConfig, 0)
+	if len(providersFlag) > 0 {
+		for ticker, providers := range marketMap.Providers {
+			ps := make([]mmtypes.ProviderConfig, 0)
 
-				// Filter the providers to include only the providers that are specified.
-				for _, provider := range providers.Providers {
-					if strings.Contains(providersFlag, provider.Name) {
-						ps = append(ps, provider)
-					}
+			// Filter the providers to include only the providers that are specified.
+			for _, provider := range providers.Providers {
+				if strings.Contains(providersFlag, provider.Name) {
+					ps = append(ps, provider)
 				}
+			}
 
-				providers.Providers = ps
-				marketMap.Providers[ticker] = providers
+			providers.Providers = ps
+			marketMap.Providers[ticker] = providers
 
-				// If there are no providers for a given ticker, remove the ticker from the
-				// market map.
-				if len(providers.Providers) == 0 {
-					delete(marketMap.Providers, ticker)
-					delete(marketMap.Paths, ticker)
-					delete(marketMap.Tickers, ticker)
-				}
+			// If there are no providers for a given ticker, remove the ticker from the
+			// market map.
+			if len(providers.Providers) == 0 {
+				delete(marketMap.Providers, ticker)
+				delete(marketMap.Paths, ticker)
+				delete(marketMap.Tickers, ticker)
 			}
 		}
 	}
