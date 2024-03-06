@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/ve"
@@ -40,7 +41,7 @@ func (h *ProposalHandler) PruneExtendedCommitInfo(
 		if vote.BlockIdFlag != cometproto.BlockIDFlagCommit {
 			continue
 		}
-		
+
 		// validate the vote-extension
 		if err := validateVoteExtension(verifyVECtx, vote, h.voteExtensionCodec, h.currencyPairStrategy); err != nil {
 			h.logger.Error(
@@ -61,7 +62,7 @@ func (h *ProposalHandler) PruneExtendedCommitInfo(
 	}
 
 	// ensure that the valid vote-extensions compose a super-majority of voting-power
-	if requiredVP := (totalVotingPower * 2/3) + 1; votingPowerInCommit < requiredVP {
+	if requiredVP := (totalVotingPower * 2 / 3) + 1; votingPowerInCommit < requiredVP {
 		h.logger.Error(
 			"vote extensions do not compose a supermajority",
 			"voting-power-in-commit", votingPowerInCommit,
@@ -109,7 +110,6 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 
 	// Validate all oracle vote extensions.
 	for _, vote := range extendedCommitInfo.Votes {
-
 		// validate the vote-extension with the verify-vote extension state
 		if err := validateVoteExtension(verifyVECtx, vote, h.voteExtensionCodec, h.currencyPairStrategy); err != nil {
 			h.logger.Error(

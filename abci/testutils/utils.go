@@ -5,18 +5,18 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/ve/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/skip-mev/slinky/x/oracle/types/mocks"
-	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
 // CreateTestOracleKeeperWithGenesis creates a test oracle keeper with the given genesis state.
@@ -60,7 +60,6 @@ func CreateExtendedVoteInfo(
 	return CreateExtendedVoteInfoWithPower(consAddr, 0, prices, codec)
 }
 
-
 // CreateExtendedVoteInfo creates an extended vote info with the given prices, timestamp and height.
 func CreateExtendedVoteInfoWithPower(
 	consAddr sdk.ConsAddress,
@@ -76,22 +75,20 @@ func CreateExtendedVoteInfoWithPower(
 	voteInfo := cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
 			Address: consAddr,
-			Power:  power,
+			Power:   power,
 		},
 		VoteExtension: ve,
-		BlockIdFlag: cometproto.BlockIDFlagCommit,
+		BlockIdFlag:   cometproto.BlockIDFlagCommit,
 	}
 
 	return voteInfo, nil
 }
 
-
-
 // UpdateContextWithVEHeight updates the context with the given height and enables vote extensions
 // for the given height.
 func UpdateContextWithVEHeight(ctx sdk.Context, height int64) sdk.Context {
-	params := cmtproto.ConsensusParams{
-		Abci: &cmtproto.ABCIParams{
+	params := cometproto.ConsensusParams{
+		Abci: &cometproto.ABCIParams{
 			VoteExtensionsEnableHeight: height,
 		},
 	}

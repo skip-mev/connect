@@ -330,8 +330,6 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 					err
 			}
 
-
-
 			if err := h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
 				h.logger.Error(
 					"failed to validate vote extensions",

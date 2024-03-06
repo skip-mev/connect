@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/skip-mev/slinky/abci/proposals"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
@@ -27,7 +29,6 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 	servicemetricsmocks "github.com/skip-mev/slinky/service/metrics/mocks"
-	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
 var (
@@ -1610,7 +1611,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 		cps,
 		state.NewNoopAppState(),
 		servicemetrics.NewNopMetrics(),
-	)	
+	)
 
 	s.Run("no invalid votes to be pruned", func() {
 		ve1, err := testutils.CreateExtendedVoteInfoWithPower(
@@ -1631,6 +1632,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		ve3 := cometabci.ExtendedVoteInfo{
 			BlockIdFlag: cometproto.BlockIDFlagNil,
@@ -1678,6 +1680,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		ve3, err := testutils.CreateExtendedVoteInfoWithPower(
 			val3,
@@ -1687,6 +1690,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		// mocks
 		ctx := testutils.UpdateContextWithVEHeight(s.ctx, 2)
@@ -1730,6 +1734,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		ve3, err := testutils.CreateExtendedVoteInfoWithPower(
 			val3,
@@ -1739,6 +1744,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		// mocks
 		ctx := testutils.UpdateContextWithVEHeight(s.ctx, 2)
@@ -1774,6 +1780,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		ve3, err := testutils.CreateExtendedVoteInfoWithPower(
 			val3,
@@ -1783,6 +1790,7 @@ func (s *ProposalsTestSuite) TestPruning() {
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
+		s.Require().NoError(err)
 
 		// mocks
 		ctx := testutils.UpdateContextWithVEHeight(s.ctx, 2)
