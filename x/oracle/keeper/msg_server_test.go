@@ -38,8 +38,9 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				Authority: sdk.AccAddress("not-authority").String(),
 				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{
-						Base:  "A",
-						Quote: "B",
+						Base:      "A",
+						Quote:     "B",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 				},
 			},
@@ -51,12 +52,14 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{
-						Base:  "A",
-						Quote: "B",
+						Base:      "A",
+						Quote:     "B",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 					{
-						Base:  "C",
-						Quote: "D",
+						Base:      "C",
+						Quote:     "D",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 				},
 			},
@@ -68,16 +71,19 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 				Authority: sdk.AccAddress(moduleAuth).String(),
 				CurrencyPairs: []slinkytypes.CurrencyPair{
 					{
-						Base:  "A",
-						Quote: "B",
+						Base:      "A",
+						Quote:     "B",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 					{
-						Base:  "C",
-						Quote: "D",
+						Base:      "C",
+						Quote:     "D",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 					{
-						Base:  "E",
-						Quote: "F",
+						Base:      "E",
+						Quote:     "F",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 				},
 			},
@@ -86,8 +92,9 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 	}
 
 	initCP := slinkytypes.CurrencyPair{
-		Base:  "E",
-		Quote: "F",
+		Base:      "E",
+		Quote:     "F",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 
 	// set genesis quote price for E/F
@@ -144,12 +151,14 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 
 	// insert CurrencyPairs that will be deleted in the test-cases
 	cp1 := slinkytypes.CurrencyPair{
-		Base:  "AA",
-		Quote: "BB",
+		Base:      "AA",
+		Quote:     "BB",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 	cp2 := slinkytypes.CurrencyPair{
-		Base:  "CC",
-		Quote: "DD",
+		Base:      "CC",
+		Quote:     "DD",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 	gs := types.GenesisState{
 		CurrencyPairGenesis: []types.CurrencyPairGenesis{

@@ -24,8 +24,9 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 				CurrencyPairGenesis: []types.CurrencyPairGenesis{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "AA",
-							Quote: "BB",
+							Base:      "AA",
+							Quote:     "BB",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 					},
 					{
@@ -44,15 +45,17 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 				CurrencyPairGenesis: []types.CurrencyPairGenesis{
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "AA",
-							Quote: "BB",
+							Base:      "AA",
+							Quote:     "BB",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 						Id: 0,
 					},
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "BB",
-							Quote: "CC",
+							Base:      "BB",
+							Quote:     "CC",
+							Delimiter: slinkytypes.DefaultDelimiter,
 						},
 						CurrencyPairPrice: &types.QuotePrice{
 							Price: sdkmath.NewInt(100),
@@ -124,15 +127,17 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 	s.Run("ExportGenesis with all valid QuotePrices", func() {
 		// insert multiple currency pairs
 		cp1 := slinkytypes.CurrencyPair{
-			Base:  "AA",
-			Quote: "BB",
+			Base:      "AA",
+			Quote:     "BB",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		}
 		qp1 := types.QuotePrice{
 			Price: sdkmath.NewInt(100),
 		}
 		cp2 := slinkytypes.CurrencyPair{
-			Base:  "CC",
-			Quote: "DD",
+			Base:      "CC",
+			Quote:     "DD",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		}
 		qp2 := types.QuotePrice{
 			Price: sdkmath.NewInt(120),
@@ -172,8 +177,9 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 			CurrencyPairGenesis: []types.CurrencyPairGenesis{
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "AA",
-						Quote: "BB",
+						Base:      "AA",
+						Quote:     "BB",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 					CurrencyPairPrice: &types.QuotePrice{
 						Price: sdkmath.NewInt(100),
@@ -183,8 +189,9 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 				},
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "CC",
-						Quote: "DD",
+						Base:      "CC",
+						Quote:     "DD",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 					CurrencyPairPrice: &types.QuotePrice{
 						Price: sdkmath.NewInt(101),
@@ -200,13 +207,15 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 
 		// add currency pairs
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
-			Base:  "EE",
-			Quote: "FF",
+			Base:      "EE",
+			Quote:     "FF",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		}))
 
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{
-			Base:  "GG",
-			Quote: "HH",
+			Base:      "GG",
+			Quote:     "HH",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		}))
 
 		// setup expected values

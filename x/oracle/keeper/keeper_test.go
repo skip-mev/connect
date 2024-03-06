@@ -64,8 +64,9 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 		{
 			"if the currency pair is correctly formatted - pass",
 			slinkytypes.CurrencyPair{
-				Base:  "AA",
-				Quote: "BB",
+				Base:      "AA",
+				Quote:     "BB",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 			types.QuotePrice{
 				BlockTimestamp: time.Now(),
@@ -101,8 +102,9 @@ func (s *KeeperTestSuite) TestSetPriceForCurrencyPair() {
 func (s *KeeperTestSuite) TestSetPriceIncrementNonce() {
 	// insert a cp + qp pair, and check that the nonce is zero
 	cp := slinkytypes.CurrencyPair{
-		Base:  "AA",
-		Quote: "BB",
+		Base:      "AA",
+		Quote:     "BB",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 	qp := types.QuotePrice{
 		Price: sdkmath.NewInt(100),
@@ -146,15 +148,17 @@ func checkQuotePriceEqual(t *testing.T, qp1, qp2 types.QuotePrice) {
 func (s *KeeperTestSuite) TestGetAllCPs() {
 	// insert multiple currency pairs
 	cp1 := slinkytypes.CurrencyPair{
-		Base:  "AA",
-		Quote: "BB",
+		Base:      "AA",
+		Quote:     "BB",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 	qp1 := types.QuotePrice{
 		Price: sdkmath.NewInt(100),
 	}
 	cp2 := slinkytypes.CurrencyPair{
-		Base:  "CC",
-		Quote: "DD",
+		Base:      "CC",
+		Quote:     "DD",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 	qp2 := types.QuotePrice{
 		Price: sdkmath.NewInt(120),
@@ -180,8 +184,9 @@ func (s *KeeperTestSuite) TestGetAllCPs() {
 
 func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 	cp := slinkytypes.CurrencyPair{
-		Base:  "NEW",
-		Quote: "PAIR",
+		Base:      "NEW",
+		Quote:     "PAIR",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 	s.Run("creating a new currency-pair initializes correctly", func() {
 		// create the currency pair
@@ -214,13 +219,15 @@ func (s *KeeperTestSuite) TestCreateCurrencyPair() {
 
 func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	cp1 := slinkytypes.CurrencyPair{
-		Base:  "PAIR",
-		Quote: "1",
+		Base:      "PAIR",
+		Quote:     "1",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 
 	cp2 := slinkytypes.CurrencyPair{
-		Base:  "PAIR",
-		Quote: "2",
+		Base:      "PAIR",
+		Quote:     "2",
+		Delimiter: slinkytypes.DefaultDelimiter,
 	}
 
 	s.Run("test setting ids for currency pairs", func() {
@@ -281,8 +288,9 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 
 	s.Run("insert another currency-pair, and expect that unusedID + 1 is used", func() {
 		cp3 := slinkytypes.CurrencyPair{
-			Base:  "PAIR",
-			Quote: "3",
+			Base:      "PAIR",
+			Quote:     "3",
+			Delimiter: slinkytypes.DefaultDelimiter,
 		}
 
 		s.Require().Nil(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp3))
