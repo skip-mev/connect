@@ -364,7 +364,7 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 		}
 	}
 
-	msg := &mmtypes.MsgUpdateMarketMap{
+	msg := &mmtypes.MsgCreateMarkets{
 		Signer:        s.user.FormattedAddress(),
 		CreateMarkets: creates,
 	}
