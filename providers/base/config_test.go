@@ -23,7 +23,6 @@ var (
 func TestConfigUpdater(t *testing.T) {
 	t.Run("restart on IDs update with an API provider", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
@@ -37,7 +36,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -57,7 +55,8 @@ func TestConfigUpdater(t *testing.T) {
 		// Wait for a few seconds and update the IDs.
 		time.Sleep(2 * time.Second)
 		updated := []slinkytypes.CurrencyPair{ethusd, solusd, btcusd}
-		updater.UpdateIDs(updated)
+		logger.Debug("test case updating ids")
+		provider.SetIDs(updated)
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -72,7 +71,6 @@ func TestConfigUpdater(t *testing.T) {
 
 	t.Run("restart on IDs update with a websocket provider", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
@@ -86,7 +84,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -106,7 +103,8 @@ func TestConfigUpdater(t *testing.T) {
 		// Wait for a few seconds and update the IDs.
 		time.Sleep(2 * time.Second)
 		updated := []slinkytypes.CurrencyPair{ethusd, solusd, btcusd}
-		updater.UpdateIDs(updated)
+		logger.Debug("test case updating ids")
+		provider.SetIDs(updated)
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -121,7 +119,6 @@ func TestConfigUpdater(t *testing.T) {
 
 	t.Run("restart on API handler update", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
@@ -135,7 +132,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -170,7 +166,8 @@ func TestConfigUpdater(t *testing.T) {
 			responses,
 			200*time.Millisecond,
 		)
-		updater.UpdateAPIHandler(updatedAPIHandler)
+		logger.Debug("test case updating api handler")
+		provider.SetAPIHandler(updatedAPIHandler)
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -185,7 +182,6 @@ func TestConfigUpdater(t *testing.T) {
 
 	t.Run("restart on WebSocket handler update", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
@@ -199,7 +195,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -229,7 +224,8 @@ func TestConfigUpdater(t *testing.T) {
 			providertypes.NewGetResponse(resolved, nil),
 		}
 		updatedWsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](t, time.Second, logger, responses)
-		updater.UpdateWebSocketHandler(updatedWsHandler)
+		logger.Debug("test case updating websocket handler")
+		provider.SetWebSocketHandler(updatedWsHandler)
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
