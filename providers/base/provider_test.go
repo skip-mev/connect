@@ -138,6 +138,7 @@ func TestStart(t *testing.T) {
 		cancel()
 
 		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler.On("Copy").Return(handler).Maybe()
 
 		provider, err := base.NewProvider(
 			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfg.Name),
@@ -159,6 +160,7 @@ func TestStart(t *testing.T) {
 		cancel()
 
 		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler.On("Copy").Return(handler).Maybe()
 
 		provider, err := base.NewProvider(
 			base.WithName[slinkytypes.CurrencyPair, *big.Int](wsCfgMultiplex.Name),
@@ -180,6 +182,7 @@ func TestStart(t *testing.T) {
 		defer cancel()
 
 		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler.On("Copy").Return(handler).Maybe()
 		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
 			<-ctx.Done()
 			return ctx.Err()
@@ -205,6 +208,7 @@ func TestStart(t *testing.T) {
 		defer cancel()
 
 		handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+		handler.On("Copy").Return(handler).Maybe()
 		handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(func() error {
 			<-ctx.Done()
 			return ctx.Err()
@@ -503,6 +507,7 @@ func TestWebSocketProvider(t *testing.T) {
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
 
+				handler.On("Copy").Return(handler).Maybe()
 				handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("no gib price updates")).Maybe()
 
 				return handler
@@ -517,6 +522,8 @@ func TestWebSocketProvider(t *testing.T) {
 			name: "continues restarting if the query handler returns multiplexed",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				handler := wshandlermocks.NewWebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int](t)
+
+				handler.On("Copy").Return(handler).Maybe()
 
 				handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("no gib price updates")).Maybe()
 

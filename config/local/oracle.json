@@ -35,8 +35,8 @@
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 20000000,
-        "maxQueries": 10,
+        "interval": 100000000,
+        "maxQueries": 5,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
         "name": "coinbase"
@@ -363,7 +363,7 @@
         "writeTimeout": 45000000000,
         "pingInterval": 20000000000,
         "maxReadErrorCount": 100,
-        "maxSubscriptionsPerConnection": 0
+        "maxSubscriptionsPerConnection": 20
       }
     },
     {
@@ -395,7 +395,7 @@
       }
     }
   ],
-  "production": false,
+  "production": true,
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true

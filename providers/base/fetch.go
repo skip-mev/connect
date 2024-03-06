@@ -3,6 +3,7 @@ package base
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -91,18 +92,20 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context, responseCh
 	// 30 / 45 = 0 -> need one sub handler
 	if maxSubsPerConn > 0 {
 		// case where we will split ID's across sub handlers
-		numSubHandlers := (len(ids) / maxSubsPerConn) + 1
+		numSubHandlers := int(math.Ceil(float64(len(ids)) / float64(maxSubsPerConn)))
+		p.logger.Info("setting number of web socket handlers for provider", zap.Int("sub_handlers", numSubHandlers))
 		wg.SetLimit(numSubHandlers)
 
 		// split ids
-		var subIDs []K
 		for i := 0; i < numSubHandlers; i++ {
-			start := i
-			end := maxSubsPerConn * (i + 1)
-			if i+1 == numSubHandlers {
-				subIDs = ids[start:]
+			start := i * maxSubsPerConn
+
+			// Copy the IDs over.
+			subIDs := make([]K, 0)
+			if end := start + maxSubsPerConn; end >= len(ids) {
+				subIDs = append(subIDs, ids[start:]...)
 			} else {
-				subIDs = ids[start:end]
+				subIDs = append(subIDs, ids[start:end]...)
 			}
 
 			subTasks = append(subTasks, subIDs)
@@ -126,14 +129,16 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K, respons
 	return func() error {
 		// Start the websocket query handler. If the connection fails to start, then the query handler
 		// will be restarted after a timeout.
+		handler := p.GetWebSocketHandler()
+		handler = handler.Copy()
+
 		for {
 			select {
 			case <-ctx.Done():
 				p.logger.Info("provider stopped via context")
 				return ctx.Err()
 			default:
-				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
-				handler := p.GetWebSocketHandler()
+				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)), zap.Any("ids", subIDs))
 				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
