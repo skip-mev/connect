@@ -130,3 +130,12 @@ func (h *WebSocketHandler) CreateMessages(
 func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return nil, nil
 }
+
+// Copy is used to create a copy of the WebSocketHandler.
+func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
+	return &WebSocketHandler{
+		logger: h.logger,
+		market: h.market,
+		ws:     h.ws,
+	}
+}

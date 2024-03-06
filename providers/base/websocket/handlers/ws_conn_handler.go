@@ -42,6 +42,10 @@ type WebSocketConnHandler interface {
 
 	// Dial is used to create the connection to the data provider.
 	Dial() error
+
+	// Copy is used to create a copy of the connection handler. This is useful for creating
+	// multiple connections to the same data provider.
+	Copy() WebSocketConnHandler
 }
 
 // WebSocketConnHandlerImpl is a struct that implements the WebSocketConnHandler interface.
@@ -156,6 +160,18 @@ func (h *WebSocketConnHandlerImpl) Close() error {
 	}
 
 	return h.conn.Close()
+}
+
+// Copy is used to create a copy of the connection handler. This is useful for creating multiple
+// connections to the same data provider.
+func (h *WebSocketConnHandlerImpl) Copy() WebSocketConnHandler {
+	h.Lock()
+	defer h.Unlock()
+
+	return &WebSocketConnHandlerImpl{
+		cfg:         h.cfg,
+		preDialHook: h.preDialHook,
+	}
 }
 
 // GetConfig is used to get the configuration for the connection handler.

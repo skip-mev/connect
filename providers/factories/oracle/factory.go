@@ -66,6 +66,12 @@ func (f *DefaultOracleProviderFactory) Factory() factory.ProviderFactory[mmtypes
 				return nil, fmt.Errorf("failed to create %s's provider market map: %w", p.Name, err)
 			}
 
+			f.logger.Info(
+				"market for provider has been created",
+				zap.Int("num_tickers", len(providerMarketMap.GetTickers())),
+				zap.String("provider", p.Name),
+			)
+
 			switch {
 			case p.API.Enabled:
 				queryHandler, err := APIQueryHandlerFactory(f.logger, p, apiMetrics, providerMarketMap)

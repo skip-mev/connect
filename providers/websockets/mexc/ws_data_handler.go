@@ -133,3 +133,12 @@ func (h *WebSocketHandler) CreateMessages(
 func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessage, error) {
 	return NewPingRequestMessage()
 }
+
+// Copy is used to create a copy of the data handler.
+func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
+	return &WebSocketHandler{
+		logger: h.logger,
+		market: h.market,
+		ws:     h.ws,
+	}
+}
