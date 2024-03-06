@@ -41,9 +41,10 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 
 		// Attempt to parse the price.
 		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, ticker.Decimals); err != nil {
+			wErr := fmt.Errorf("failed to parse price %s:"+
+				" %w", instrument.LatestTradePrice, err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				Err:  fmt.Errorf("failed to parse price %s: %w", instrument.LatestTradePrice, err),
-				Code: providertypes.ErrorFailedToParsePrice,
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 			}
 		} else {
 			resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())

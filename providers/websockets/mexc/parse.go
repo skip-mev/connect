@@ -31,8 +31,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	if !strings.HasPrefix(msg.Channel, string(MiniTickerChannel)) {
 		err := fmt.Errorf("invalid channel %s", msg.Channel)
 		unResolved[ticker] = providertypes.UnresolvedResult{
-			Err:  err,
-			Code: providertypes.ErrorInvalidWebSocketTopic,
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidWebSocketTopic),
 		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
@@ -41,8 +40,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
 	if err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
-			Err:  err,
-			Code: providertypes.ErrorFailedToParsePrice,
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
 		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}

@@ -180,8 +180,7 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					mogusd: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("no response"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -198,8 +197,7 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("no response"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -216,8 +214,7 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("invalid syntax"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -235,12 +232,10 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("no response"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 					constants.ETHEREUM_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("no response"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),

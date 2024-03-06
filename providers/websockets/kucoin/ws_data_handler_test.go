@@ -146,8 +146,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("error"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("error"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},
@@ -173,8 +172,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("received out of order ticker response message"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("received out of order ticker response message"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},
@@ -216,8 +214,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},

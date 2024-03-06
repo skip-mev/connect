@@ -121,8 +121,7 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("bad format"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -144,8 +143,7 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("bad format"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -162,8 +160,7 @@ toms obvious but not minimal language
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("bad format"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -188,12 +185,10 @@ toms obvious but not minimal language
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("multiple cps"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("multiple cps"), providertypes.ErrorAPIGeneral),
 					},
 					constants.ETHEREUM_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("multiple cps"),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("multiple cps"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),

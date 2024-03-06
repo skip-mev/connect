@@ -113,8 +113,7 @@ func (h *WebSocketHandler) handleStream(
 	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
 		unResolved[ticker] = providertypes.UnresolvedResult{
-			Err:  err,
-			Code: providertypes.ErrorInvalidResponse,
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
 		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}

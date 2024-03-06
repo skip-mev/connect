@@ -130,8 +130,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("error"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("error"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},

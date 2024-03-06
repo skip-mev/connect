@@ -113,9 +113,9 @@ func (h *APIHandler) ParseResponse(
 
 		price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
 		if err != nil {
+			wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				Err:  fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err),
-				Code: providertypes.ErrorFailedToParsePrice,
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 			}
 			continue
 		}
@@ -130,8 +130,7 @@ func (h *APIHandler) ParseResponse(
 
 		if !resolvedOk && !unresolvedOk {
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				Err:  fmt.Errorf("no response"),
-				Code: providertypes.ErrorNoResponse,
+				ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorNoResponse),
 			}
 		}
 	}

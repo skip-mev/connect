@@ -107,8 +107,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("failed to convert price to big int"),
-						Code: providertypes.ErrorUnknown,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to convert price to big int"), providertypes.ErrorUnknown),
 					},
 				},
 			},
@@ -135,8 +134,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("received out of order ticker response message"),
-						Code: providertypes.ErrorUnknown,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("received out of order ticker response message"), providertypes.ErrorUnknown),
 					},
 				},
 			},

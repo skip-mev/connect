@@ -117,9 +117,9 @@ func (h *APIHandler) ParseResponse(
 	// map.
 	for _, ticker := range tickers {
 		if _, resolvedOk := resolved[ticker]; !resolvedOk {
+			err := fmt.Errorf("no response")
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				Err:  fmt.Errorf("no response"),
-				Code: providertypes.ErrorInvalidResponse,
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorNoResponse),
 			}
 		}
 	}

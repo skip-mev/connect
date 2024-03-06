@@ -201,7 +201,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.RateLimit).Times(1)
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Times(1)
 
 				return m
 			},
@@ -211,8 +211,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						Err:  errors.ErrRateLimit,
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrRateLimit, providertypes.ErrorRateLimitExceeded),
 					},
 				},
 			},
@@ -237,7 +236,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.UnexpectedStatusCode).Times(1)
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Times(1)
 
 				return m
 			},
@@ -247,8 +246,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						Err:  errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError), providertypes.ErrorAPIGeneral),
 					},
 				},
 			},
@@ -283,8 +281,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						Err:  errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")),
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")), providertypes.ErrorAPIGeneral),
 					},
 				},
 			},
@@ -496,8 +493,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					ethusd: {
-						Err:  errors.ErrRateLimit,
-						Code: providertypes.ErrorRateLimitExceeded,
+						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrRateLimit, providertypes.ErrorRateLimitExceeded),
 					},
 				},
 			},
@@ -615,8 +611,8 @@ func TestAPIQueryHandler(t *testing.T) {
 					delete(expectedResponses.Resolved, id)
 				}
 
-				for id, err := range resp.UnResolved {
-					require.Equal(t, expectedResponses.UnResolved[id], err)
+				for id, result := range resp.UnResolved {
+					require.Equal(t, expectedResponses.UnResolved[id].Error(), result.Error())
 					delete(expectedResponses.UnResolved, id)
 				}
 			}

@@ -101,8 +101,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("invalid channel"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid channel"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},
@@ -120,8 +119,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
 					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("invalid price"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid price"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},

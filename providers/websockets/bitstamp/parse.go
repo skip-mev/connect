@@ -45,8 +45,7 @@ func (h *WebSocketHandler) parseTickerMessage(
 	price, err := math.Float64StringToBigInt(msg.Data.PriceStr, ticker.Decimals)
 	if err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
-			Err:  err,
-			Code: providertypes.ErrorFailedToParsePrice,
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
 		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}

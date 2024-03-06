@@ -243,8 +243,7 @@ func TestHandleMessage(t *testing.T) {
 				},
 				UnResolved: types.UnResolvedPrices{
 					constants.SOLANA_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("failed to parse price $42,069.00: invalid syntax"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price $42,069.00: invalid syntax"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},

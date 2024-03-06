@@ -151,8 +151,7 @@ func TestParseResponse(t *testing.T) {
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("currency pair BITCOIN-USD did not get a response"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("currency pair BITCOIN-USD did not get a response"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			),
@@ -171,8 +170,7 @@ shout out my label thats me
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					btcmog: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("json error"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("json error"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			),
@@ -195,8 +193,7 @@ shout out my label thats me
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
 					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						Err:  fmt.Errorf("invalid syntax"),
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			),

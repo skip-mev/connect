@@ -474,8 +474,7 @@ func TestWebSocketProvider(t *testing.T) {
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					pairs[0]: {
-						Err:  wserrors.ErrHandleMessage,
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorWebSocketGeneral),
 					},
 				}
 
@@ -671,8 +670,7 @@ func TestAPIProviderLoop(t *testing.T) {
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					pairs[0]: {
-						Err:  apierrors.ErrRateLimit,
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(apierrors.ErrRateLimit, providertypes.ErrorAPIGeneral),
 					},
 				}
 
@@ -752,8 +750,8 @@ func TestMetrics(t *testing.T) {
 				m := metricmocks.NewProviderMetrics(t)
 				p1 := strings.ToLower(fmt.Sprint(pairs[0]))
 
-				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Success, nil, providertypes.API).Maybe()
-				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Success, nil, providertypes.API).Maybe()
+				m.On("AddProviderResponseByID", apiCfg.Name, p1, providermetrics.Success, providertypes.OK, providertypes.API).Maybe()
+				m.On("AddProviderResponse", apiCfg.Name, providermetrics.Success, providertypes.OK, providertypes.API).Maybe()
 				m.On("LastUpdated", apiCfg.Name, p1, providertypes.API).Maybe()
 
 				return m
@@ -767,8 +765,7 @@ func TestMetrics(t *testing.T) {
 			handler: func() apihandlers.APIQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
 				unResolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					pairs[0]: {
-						Err:  apierrors.ErrRateLimit,
-						Code: providertypes.ErrorAPIGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(apierrors.ErrRateLimit, providertypes.ErrorAPIGeneral),
 					},
 				}
 

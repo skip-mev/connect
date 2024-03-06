@@ -101,8 +101,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						Err:  wserrors.ErrDial,
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrDial, providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},
@@ -137,8 +136,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						Err:  wserrors.ErrCreateMessages,
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrCreateMessages, providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},
@@ -175,8 +173,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						Err:  wserrors.ErrWrite,
-						Code: providertypes.ErrorWebSocketGeneral,
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrWrite, providertypes.ErrorWebSocketGeneral),
 					},
 				},
 			},
@@ -556,8 +553,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				}
 				unresolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					atomusd: {
-						Err:  wserrors.ErrHandleMessage,
-						Code: providertypes.ErrorInvalidResponse,
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorInvalidResponse),
 					},
 				}
 
@@ -613,8 +609,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 				},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					atomusd: {
-						Err:  wserrors.ErrHandleMessage,
-						Code: providertypes.ErrorInvalidResponse,
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorInvalidResponse),
 					},
 				},
 			},

@@ -34,19 +34,7 @@ type ResolvedResult[V ResponseValue] struct {
 
 // UnresolvedResult is an unresolved (failed) result of a single requested ID.
 type UnresolvedResult struct {
-	// Err is the error detailing the failed request.
-	Err error
-	// Code is the result code from the request.
-	Code ErrorCode
-}
-
-// Error returns the string representation of an UnresolvedResult.
-func (ur UnresolvedResult) Error() string {
-	return fmt.Sprintf("%s: code: %d: code error: %s", ur.Err.Error(), ur.Code, ur.Code.Error())
-}
-
-func (ur UnresolvedResult) ErrorObj() error {
-	return fmt.Errorf("%w: %w", ur.Code.Error(), ur.Err)
+	ErrorWithCode
 }
 
 // NewGetResponse creates a new GetResponse.
@@ -71,8 +59,7 @@ func NewGetResponseWithErr[K ResponseKey, V ResponseValue](ids []K, err ErrorWit
 	unresolved := make(map[K]UnresolvedResult, len(ids))
 	for _, id := range ids {
 		unresolved[id] = UnresolvedResult{
-			Err:  err,
-			Code: err.Code(),
+			err,
 		}
 	}
 

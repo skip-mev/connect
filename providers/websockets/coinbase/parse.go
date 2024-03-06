@@ -45,8 +45,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
 		unResolved[ticker] = providertypes.UnresolvedResult{
-			Err:  err,
-			Code: providertypes.ErrorInvalidResponse,
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
 		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
@@ -55,8 +54,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
 	if err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
-			Err:  err,
-			Code: providertypes.ErrorFailedToParsePrice,
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
 		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}

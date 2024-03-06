@@ -200,13 +200,13 @@ func (p *Provider[K, V]) recv(ctx context.Context, responseCh <-chan providertyp
 				p.logger.Debug(
 					"failed to fetch data",
 					zap.Any("id", id),
-					zap.Error(result.ErrorObj()),
+					zap.Error(fmt.Errorf("%s", result.Error())),
 				)
 
 				// Update the metrics.
 				strID := strings.ToLower(id.String())
-				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, result.Code, p.Type())
-				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, result.Code, p.Type())
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, result.Code(), p.Type())
+				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, result.Code(), p.Type())
 			}
 		}
 	}
