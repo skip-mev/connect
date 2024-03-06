@@ -27,6 +27,7 @@ func CreateWebSocketQueryHandlerWithGetResponses[K providertypes.ResponseKey, V 
 
 	handler := handlermocks.NewWebSocketQueryHandler[K, V](t)
 
+	handler.On("Copy").Return(handler).Maybe()
 	handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
 
@@ -50,6 +51,7 @@ func CreateWebSocketQueryHandlerWithResponseFn[K providertypes.ResponseKey, V pr
 
 	handler := handlermocks.NewWebSocketQueryHandler[K, V](t)
 
+	handler.On("Copy").Return(handler).Maybe()
 	handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
 		fn(responseCh)
