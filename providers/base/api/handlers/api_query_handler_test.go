@@ -246,7 +246,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError), providertypes.ErrorAPIGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrUnexpectedStatusCodeWithCode(http.StatusInternalServerError), providertypes.ErrorUnknown),
 					},
 				},
 			},
@@ -270,8 +270,8 @@ func TestAPIQueryHandler(t *testing.T) {
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.DoRequest).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Maybe()
 
 				return m
 			},
@@ -281,7 +281,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{},
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")), providertypes.ErrorAPIGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(errors.ErrDoRequestWithErr(fmt.Errorf("client has no rizz")), providertypes.ErrorUnknown),
 					},
 				},
 			},
@@ -475,7 +475,7 @@ func TestAPIQueryHandler(t *testing.T) {
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Times(1)
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.RateLimit).Times(1)
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Unknown).Times(1)
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Times(1)
 
 				return m

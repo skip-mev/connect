@@ -187,10 +187,15 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		// Make the request.
 		resp, err := h.requestHandler.Do(ctx, url)
 		if err != nil {
+			status := providertypes.ErrorUnknown
+			if resp != nil {
+				status = providertypes.ErrorCode(resp.StatusCode)
+			}
+
 			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
 				providertypes.NewErrorWithCode(
 					errors.ErrDoRequestWithErr(err),
-					providertypes.ErrorCode(resp.StatusCode),
+					status,
 				)),
 			)
 			return nil

@@ -2,9 +2,9 @@ package handlers_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 	"testing"
 	"time"
 
@@ -101,7 +101,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrDial, providertypes.ErrorWebSocketGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrDial, providertypes.ErrorWebsocketStartFail),
 					},
 				},
 			},
@@ -136,7 +136,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrCreateMessages, providertypes.ErrorWebSocketGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrCreateMessages, providertypes.ErrorWebsocketStartFail),
 					},
 				},
 			},
@@ -173,7 +173,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
 				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
 					btcusd: {
-						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrWrite, providertypes.ErrorWebSocketGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrWrite, providertypes.ErrorWebsocketStartFail),
 					},
 				},
 			},
@@ -820,7 +820,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 						continue
 					}
 
-					require.True(t, errors.Is(err, expectedResponses.UnResolved[id]))
+					require.Equal(t, expectedResponses.UnResolved[id].Code(), err.Code())
+					require.True(t, strings.Contains(err.Error(), expectedResponses.UnResolved[id].Error()))
 					delete(expectedResponses.UnResolved, id)
 					seenResponses[id] = true
 				}
