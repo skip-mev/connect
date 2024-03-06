@@ -114,7 +114,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 		restarts := 0
 		handler := p.GetWebSocketHandler()
 		handler = handler.Copy()
-		restarts := 0
+    
 		for {
 			select {
 			case <-ctx.Done():
@@ -129,8 +129,8 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 					time.Sleep(p.wsCfg.ReconnectionTimeout)
 				}
 
-				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)))
-				if err := handler.Start(ctx, subIDs, p.responseCh); err != nil {
+				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)), zap.Any("ids", subIDs))
+				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
 				restarts++
