@@ -13,24 +13,17 @@ const (
 	ErrorRateLimitExceeded     ErrorCode = 1
 	ErrorUnknown               ErrorCode = 2
 	ErrorUnknownPair           ErrorCode = 3
-	ErrorSubscriptionFailed    ErrorCode = 4
-	ErrorNotSubscribed         ErrorCode = 5
-	ErrorPingFailed            ErrorCode = 6
-	ErrorPongFailed            ErrorCode = 7
-	ErrorInvalidRequest        ErrorCode = 8
-	ErrorInvalidArgument       ErrorCode = 9
-	ErrorUnableToCreateURL     ErrorCode = 10
-	ErrorWebsocketStartFail    ErrorCode = 11
-	ErrorInvalidAPIChains      ErrorCode = 12
-	ErrorNoResponse            ErrorCode = 13
-	ErrorInvalidResponse       ErrorCode = 14
-	ErrorInvalidChainID        ErrorCode = 15
-	ErrorFailedToParsePrice    ErrorCode = 16
-	ErrorInvalidWebSocketTopic ErrorCode = 17
-	ErrorFailedToDecode        ErrorCode = 18
-	ErrorFailedWrite           ErrorCode = 19
-	ErrorAPIGeneral            ErrorCode = 20
-	ErrorWebSocketGeneral      ErrorCode = 21
+	ErrorUnableToCreateURL     ErrorCode = 4
+	ErrorWebsocketStartFail    ErrorCode = 5
+	ErrorInvalidAPIChains      ErrorCode = 6
+	ErrorNoResponse            ErrorCode = 7
+	ErrorInvalidResponse       ErrorCode = 8
+	ErrorInvalidChainID        ErrorCode = 9
+	ErrorFailedToParsePrice    ErrorCode = 10
+	ErrorInvalidWebSocketTopic ErrorCode = 11
+	ErrorFailedToDecode        ErrorCode = 12
+	ErrorAPIGeneral            ErrorCode = 13
+	ErrorWebSocketGeneral      ErrorCode = 14
 )
 
 // Error returns the error representation of the ErrorCode.
@@ -42,18 +35,6 @@ func (e ErrorCode) Error() error {
 		return errors.New("rate limit exceeded")
 	case ErrorUnknownPair:
 		return errors.New("unknown market pair")
-	case ErrorSubscriptionFailed:
-		return errors.New("failed to make subscription")
-	case ErrorNotSubscribed:
-		return errors.New("not subscribed to object")
-	case ErrorPingFailed:
-		return errors.New("ping failed")
-	case ErrorPongFailed:
-		return errors.New("pong failed")
-	case ErrorInvalidRequest:
-		return errors.New("invalid body in request")
-	case ErrorInvalidArgument:
-		return errors.New("invalid argument in request")
 	case ErrorFailedToDecode:
 		return errors.New("failed to decode message")
 	case ErrorAPIGeneral:
@@ -68,8 +49,6 @@ func (e ErrorCode) Error() error {
 		return errors.New("invalid chain ID in response")
 	case ErrorInvalidResponse:
 		return errors.New("invalid response")
-	case ErrorFailedWrite:
-		return errors.New("failed to write message")
 	case ErrorNoResponse:
 		return errors.New("got no response")
 	case ErrorInvalidAPIChains:
