@@ -235,9 +235,9 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		oraclesClient := oracletypes.NewQueryClient(cc)
 		_, err = oraclesClient.GetPrice(context.Background(), &oracletypes.GetPriceRequest{
 			CurrencyPair: slinkytypes.CurrencyPair{
-				Base:  "BTC",
-				Quote: "USD",
-				Delimiter: slinkytypes.DefaultDelimiter
+				Base:      "BTC",
+				Quote:     "USD",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 		})
 		s.Require().NoError(err)
@@ -256,8 +256,8 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 				height-1,
 				alertSubmitter,
 				slinkytypes.CurrencyPair{
-					Base:  "MOG",
-					Quote: "GOM",
+					Base:      "MOG",
+					Quote:     "GOM",
 					Delimiter: slinkytypes.DefaultDelimiter,
 				},
 			),
