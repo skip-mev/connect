@@ -16,6 +16,7 @@ import (
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 	"github.com/skip-mev/slinky/x/oracle/types/mocks"
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
 // CreateTestOracleKeeperWithGenesis creates a test oracle keeper with the given genesis state.
@@ -51,9 +52,19 @@ func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo, codec com
 	return extendedCommitInfo, bz, nil
 }
 
-// CreateExtendedVoteInfo creates an extended vote info with the given prices, timestamp and height.
 func CreateExtendedVoteInfo(
 	consAddr sdk.ConsAddress,
+	prices map[uint64][]byte,
+	codec compression.VoteExtensionCodec,
+) (cometabci.ExtendedVoteInfo, error) {
+	return CreateExtendedVoteInfoWithPower(consAddr, 0, prices, codec)
+}
+
+
+// CreateExtendedVoteInfo creates an extended vote info with the given prices, timestamp and height.
+func CreateExtendedVoteInfoWithPower(
+	consAddr sdk.ConsAddress,
+	power int64,
 	prices map[uint64][]byte,
 	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
@@ -65,12 +76,16 @@ func CreateExtendedVoteInfo(
 	voteInfo := cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
 			Address: consAddr,
+			Power:  power,
 		},
 		VoteExtension: ve,
+		BlockIdFlag: cometproto.BlockIDFlagCommit,
 	}
 
 	return voteInfo, nil
 }
+
+
 
 // UpdateContextWithVEHeight updates the context with the given height and enables vote extensions
 // for the given height.

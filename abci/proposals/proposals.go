@@ -142,7 +142,23 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				"vote_extensions_enabled", voteExtensionsEnabled,
 			)
 
-			extInfo := req.LocalLastCommit
+			// first get LocalLastCommit from the context
+			extInfo, err := h.PruneExtendedCommitInfo(ctx, req.LocalLastCommit)
+			if err != nil {
+				h.logger.Error(
+					"failed to prune extended commit info",
+					"height", req.Height,
+					"local_last_commit", req.LocalLastCommit,
+					"err", err,
+				)
+
+				err = InvalidExtendedCommitInfoError{
+					Err: err,
+				}
+
+				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
+			}
+
 			if err = h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
 				h.logger.Error(
 					"failed to validate vote extensions",
@@ -313,6 +329,8 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 				return &cometabci.ResponseProcessProposal{Status: cometabci.ResponseProcessProposal_REJECT},
 					err
 			}
+
+
 
 			if err := h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
 				h.logger.Error(
