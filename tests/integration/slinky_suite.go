@@ -206,8 +206,9 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add a currency-pair and check Prices", func() {
 		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
 			{
-				Base:  "BTC",
-				Quote: "USD",
+				Base:      "BTC",
+				Quote:     "USD",
+				Delimiter: slinkytypes.DefaultDelimiter,
 			},
 		}...))
 

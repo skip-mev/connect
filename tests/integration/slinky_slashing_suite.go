@@ -237,6 +237,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "BTC",
 				Quote: "USD",
+				Delimiter: slinkytypes.DefaultDelimiter
 			},
 		})
 		s.Require().NoError(err)
@@ -257,6 +258,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 				slinkytypes.CurrencyPair{
 					Base:  "MOG",
 					Quote: "GOM",
+					Delimiter: slinkytypes.DefaultDelimiter,
 				},
 			),
 		)

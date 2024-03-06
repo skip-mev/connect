@@ -131,8 +131,9 @@ func GetGenesisModifier() types.GenesisModifier {
 			Value: []oracletypes.CurrencyPairGenesis{
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "BITCOIN",
-						Quote: "USD",
+						Base:      "BITCOIN",
+						Quote:     "USD",
+						Delimiter: slinkytypes.DefaultDelimiter,
 					},
 					Id: 0,
 				},
