@@ -184,7 +184,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				return cpStrategy
 			},
@@ -216,7 +215,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				return cpStrategy
 			},
@@ -254,16 +252,12 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(1)).Return(ethUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, ethUSD, mock.Anything).Return(big.NewInt(20), nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(1)).Return(ethUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, ethUSD, mock.Anything).Return(big.NewInt(20), nil)
 
 				return cpStrategy
 			},
@@ -357,7 +351,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			request: func() *cometabci.RequestPrepareProposal {
 				proposal := [][]byte{}
 
-				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
+				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices, s.codec)
 				s.Require().NoError(err)
 
 				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
@@ -371,12 +365,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			},
 			veEnabled: true,
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), fmt.Errorf(">:("))
-
-				return cpStrategy
+				return currencypairmocks.NewCurrencyPairStrategy(s.T())
 			},
 			expectedProposalTxns: 1,
 			expectedError:        true,
@@ -409,7 +398,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				return cpStrategy
 			},
@@ -440,7 +428,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				return cpStrategy
 			},
@@ -475,7 +462,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				return cpStrategy
 			},
@@ -736,7 +722,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				return cpStrategy
 			},
@@ -778,16 +763,12 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(1)).Return(ethUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, ethUSD, mock.Anything).Return(big.NewInt(20), nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(1)).Return(ethUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, ethUSD, mock.Anything).Return(big.NewInt(20), nil)
 
 				return cpStrategy
 			},
@@ -898,7 +879,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 		{
 			name: "rejects a request with ve that contains invalid price bytes",
 			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
+				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices, s.codec)
 				s.Require().NoError(err)
 
 				_, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
@@ -919,12 +900,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 			},
 			veEnabled: true,
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), fmt.Errorf(">:("))
-
-				return cpStrategy
+				return currencypairmocks.NewCurrencyPairStrategy(s.T())
 			},
 			expectedError: true,
 			expectedResp: &cometabci.ResponseProcessProposal{
@@ -1585,7 +1561,6 @@ func (s *ProposalsTestSuite) TestVerifyVEState() {
 		// mocks
 		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Once()
 		cps.On("FromID", sdk.Context{}, uint64(1)).Return(btcUSD, nil).Once()
-		cps.On("GetDecodedPrice", sdk.Context{}, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
 
 		res, err := ph.PrepareProposalHandler()(ctx, req)
 		s.Require().NoError(err)
@@ -1607,7 +1582,6 @@ func (s *ProposalsTestSuite) TestVerifyVEState() {
 		// mocks
 		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Once()
 		cps.On("FromID", sdk.Context{}, uint64(1)).Return(btcUSD, nil).Once()
-		cps.On("GetDecodedPrice", sdk.Context{}, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Once()
 
 		_, err := ph.ProcessProposalHandler()(ctx, req)
 		s.Require().NoError(err)

@@ -43,8 +43,6 @@ func NewSlinkySlashingIntegrationSuite(ss *SlinkyIntegrationSuite) *SlinkySlashi
 }
 
 func (s *SlinkySlashingIntegrationSuite) SetupSuite() {
-	s.SlinkyIntegrationSuite.TearDownSuite()
-
 	s.SlinkyIntegrationSuite.SetupSuite()
 
 	// initialize multiSigUsers

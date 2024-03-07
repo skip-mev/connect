@@ -26,14 +26,8 @@ func ValidateOracleVoteExtension(
 		}
 
 		// Ensure that the currency pair ID is valid.
-		cp, err := strategy.FromID(ctx, id)
-		if err != nil {
+		if _, err := strategy.FromID(ctx, id); err != nil {
 			return fmt.Errorf("invalid currency pair ID: %d", id)
-		}
-
-		// Ensure that the price bytes are valid.
-		if _, err := strategy.GetDecodedPrice(ctx, cp, bz); err != nil {
-			return fmt.Errorf("invalid price bytes: %w", err)
 		}
 	}
 

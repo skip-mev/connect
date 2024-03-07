@@ -387,10 +387,8 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
 
 				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, oneHundred.Bytes()).Return(oneHundred, nil)
 
 				cpStrategy.On("FromID", mock.Anything, uint64(1)).Return(ethUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, ethUSD, twoHundred.Bytes()).Return(twoHundred, nil)
 
 				return cpStrategy
 			},
@@ -433,7 +431,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 			name: "invalid vote extension with bad price",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
 				prices := map[uint64][]byte{
-					0: oneHundred.Bytes(),
+					0: make([]byte, 34),
 				}
 
 				ve, err := testutils.CreateVoteExtensionBytes(
@@ -448,12 +446,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 				}
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
-				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, oneHundred.Bytes()).Return(nil, fmt.Errorf("error"))
-
-				return cpStrategy
+				return mockstrategies.NewCurrencyPairStrategy(s.T())
 			},
 			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
 				Status: cometabci.ResponseVerifyVoteExtension_REJECT,

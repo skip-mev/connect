@@ -170,7 +170,6 @@ func (s *SlinkyIntegrationSuite) TearDownSuite() {
 }
 
 func (s *SlinkyIntegrationSuite) SetupTest() {
-	s.TearDownSuite()
 	s.SetupSuite()
 
 	// reset the oracle services
