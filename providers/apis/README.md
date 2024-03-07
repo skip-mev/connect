@@ -27,3 +27,4 @@ The current set of supported providers are:
         * `curl https://api.coingecko.com/api/v3/coins/list | jq`
     * Check if a given market is supported: 
         * `curl https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd | jq`
+* [GeckoTerminal](./geckoterminal/README.md) - GeckoTerminal is price provider that aggregates prices of tokens on a variety of blockchains, pools,  and decentralized exchanges. To fetch the price of a token, you need to provide the token's address. 
