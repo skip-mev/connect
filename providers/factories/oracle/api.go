@@ -12,6 +12,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/static"
@@ -54,6 +55,8 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(marketMap, cfg.API)
 	case coingecko.Name:
 		apiDataHandler, err = coingecko.NewAPIHandler(marketMap, cfg.API)
+	case geckoterminal.Name:
+		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {
