@@ -19,14 +19,6 @@ func NewMsgAddCurrencyPairs(authority string, cps []slinkytypes.CurrencyPair) Ms
 	}
 }
 
-// GetSigners get the addresses that must sign this message. In this case, the signer
-// must be the module authority.
-func (m *MsgAddCurrencyPairs) GetSigners() []sdk.AccAddress {
-	// convert from string to acc address
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
-}
-
 // ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the authority is a valid acc-address, and that each CurrencyPair in the message is formatted correctly.
 
@@ -53,14 +45,6 @@ func NewMsgRemoveCurrencyPairs(authority string, currencyPairIDs []string) MsgRe
 		Authority:       authority,
 		CurrencyPairIds: currencyPairIDs,
 	}
-}
-
-// GetSigners gets the addresses that must sign this message. In this case, the signer
-// must be the module authority.
-func (m *MsgRemoveCurrencyPairs) GetSigners() []sdk.AccAddress {
-	// convert from string to acc address
-	addr, _ := sdk.AccAddressFromBech32(m.Authority)
-	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic determines whether the information in the message is valid, specifically
