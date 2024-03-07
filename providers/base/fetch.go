@@ -141,6 +141,8 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 
 // recv receives responses from the response channel and updates the data.
 func (p *Provider[K, V]) recv(ctx context.Context) {
+	p.logger.Debug("starting recv")
+
 	// Wait for the data to be retrieved until the context is cancelled.
 	for {
 		select {

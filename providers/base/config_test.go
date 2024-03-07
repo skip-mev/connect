@@ -43,9 +43,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial IDs should be the same as the provider's IDs.
@@ -66,7 +65,8 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updated, ids)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, 2*time.Second, 100*time.Millisecond)
 	})
 
 	t.Run("restart on IDs update with a websocket provider", func(t *testing.T) {
@@ -91,9 +91,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial IDs should be the same as the provider's IDs.
@@ -114,7 +113,10 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updated, ids)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool {
+			return !provider.IsRunning()
+		}, 2*time.Second, 100*time.Millisecond)
 	})
 
 	t.Run("restart on API handler update", func(t *testing.T) {
@@ -139,9 +141,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial API handler should be the same as the provider's API handler.
@@ -149,7 +150,7 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, apiHandler, handler)
 
 		// Wait for a few seconds and update the API handler with a handler that returns some data.
-		time.Sleep(2 * time.Second)
+		time.Sleep(4 * time.Second)
 
 		resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 			pairs[0]: {
@@ -177,7 +178,8 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updatedAPIHandler, handler)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, 2*time.Second, 100*time.Millisecond)
 	})
 
 	t.Run("restart on WebSocket handler update", func(t *testing.T) {
@@ -202,9 +204,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial WebSocket handler should be the same as the provider's WebSocket handler.
@@ -212,7 +213,7 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, wsHandler, handler)
 
 		// Wait for a few seconds and update the WebSocket handler with a handler that returns some data.
-		time.Sleep(2 * time.Second)
+		time.Sleep(4 * time.Second)
 
 		resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
 			pairs[0]: {
@@ -235,6 +236,7 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updatedWsHandler, handler)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, 2*time.Second, 100*time.Millisecond)
 	})
 }

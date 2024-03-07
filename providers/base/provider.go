@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"maps"
 	"sync"
-	"sync/atomic"
 
 	"go.uber.org/zap"
 
@@ -18,9 +17,8 @@ import (
 
 // Provider implements a base provider that can be used to build other providers.
 type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
-	mu      sync.Mutex
-	logger  *zap.Logger
-	running atomic.Bool
+	mu     sync.Mutex
+	logger *zap.Logger
 
 	// name is the name of the provider.
 	name string
@@ -53,11 +51,17 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	// metrics is the metrics implementation for the provider.
 	metrics providermetrics.ProviderMetrics
 
-	// restartCh is the channel that is used to signal the provider to restart.
-	restartCh chan struct{}
+	// fetchCtx is the context the context for the fetch function.
+	fetchCtx context.Context
 
-	// stopCh is the channel that is used to signal the provider to stop.
-	stopCh chan struct{}
+	// cancelFetchFn is the function that is used to cancel the fetch loop.
+	cancelFetchFn context.CancelFunc
+
+	// mainCtx is the context for the main loop.
+	mainCtx context.Context
+
+	// cancelMainFn is the function that is used to cancel the main loop.
+	cancelMainFn context.CancelFunc
 
 	// responseCh is the channel that is used to receive the response(s) from the query handler.
 	responseCh chan providertypes.GetResponse[K, V]
@@ -66,11 +70,9 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 // NewProvider returns a new Base provider.
 func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opts ...ProviderOption[K, V]) (*Provider[K, V], error) {
 	p := &Provider[K, V]{
-		logger:    zap.NewNop(),
-		ids:       make([]K, 0),
-		data:      make(map[K]providertypes.Result[V]),
-		restartCh: make(chan struct{}, 1),
-		stopCh:    make(chan struct{}, 1),
+		logger: zap.NewNop(),
+		ids:    make([]K, 0),
+		data:   make(map[K]providertypes.Result[V]),
 	}
 
 	for _, opt := range opts {
@@ -100,8 +102,10 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 func (p *Provider[K, V]) Start(ctx context.Context) error {
 	p.logger.Info("starting provider")
 
-	p.running.Store(true)
-	defer p.running.Store(false)
+	mainCtx, mainCancel := p.setMainCtx(ctx)
+	defer func() {
+		mainCancel()
+	}()
 
 	wg := sync.WaitGroup{}
 
@@ -109,8 +113,9 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 	// the handler and update the provider's data. It allows for the provider to be restarted
 	// when the configuration changes. The main loop will exit either when the context is
 	// cancelled or the provider gets an unexpected error.
-	var retErr error
-MainLoop:
+	var (
+		retErr error
+	)
 	for {
 		// Create the response channel for the provider. This channel is used to receive the
 		// response(s) from the query handler.
@@ -118,78 +123,82 @@ MainLoop:
 			return err
 		}
 
+		// Create a new context for the fetch loop. This allows us to cancel the fetch loop
+		// when the provider needs to be restarted.
+		fetchCtx, fetchCancel := p.setFetchCtx(mainCtx)
+
 		// Start the receive loop.
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			p.recv(ctx)
-			close(p.responseCh)
+			p.recv(fetchCtx)
 		}()
 
-		// Create a new context for the fetch loop. This allows us to cancel the fetch loop
-		// when the provider needs to be restarted.
-		fetchCtx, cancel := context.WithCancel(ctx)
-		defer cancel()
-
 		// Start the fetch loop.
-		errCh := make(chan error)
+		errCh := make(chan error, 1)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			errCh <- p.fetch(fetchCtx)
+			fetchCancel()
+			close(p.responseCh)
 		}()
 
-		select {
-		case <-p.restartCh:
-			// If any of the provider's configurations have changed, the provider will
-			// be signalled to restart.
-			p.logger.Info("restarting provider")
-			cancel()
+		// Wait for the fetch loop to return or the context to be cancelled.
+		p.logger.Info("started provider fetch and recv routines")
+		wg.Wait()
+		retErr = <-errCh
+		p.logger.Info("provider routines stopped", zap.Error(retErr))
 
-			// Wait for the fetch loop to stop.
-			err := <-errCh
-			p.logger.Info("waiting for provider routines to stop", zap.Error(err))
-			wg.Wait()
-			p.logger.Info("provider routines stopped")
-			continue MainLoop
-		case retErr = <-errCh:
-			// If the fetch loop stops unexpectedly, we should return.
-			cancel()
-			break MainLoop
-		case <-ctx.Done():
-			// If the context is cancelled, we should return. We expect the fetch go routine
-			// to exit when the context is cancelled.
-			retErr = <-errCh
-			break MainLoop
-		case <-p.stopCh:
-			// If the provider is manually stopped, we stop the fetch loop and return.
-			p.logger.Info("stopping provider from manual interrupt")
-			cancel()
-			retErr = <-errCh
-			break MainLoop
+		// If the provider was stopped due to a context cancellation, then we should
+		// not restart the provider.
+		mainCtx, _ := p.getMainCtx()
+		if mainCtx.Err() != nil {
+			p.logger.Info(
+				"main provider context has been cancelled; provider is exiting",
+				zap.Error(mainCtx.Err()),
+			)
+
+			break
 		}
 	}
-
-	p.logger.Info("waiting for provider routines to stop", zap.Error(retErr))
-	wg.Wait()
-	p.logger.Info("provider routines stopped")
 
 	return retErr
 }
 
 // Stop stops the provider's main loop.
 func (p *Provider[K, V]) Stop() {
-	if !p.IsRunning() {
+	mainCtx, cancelMain := p.getMainCtx()
+	if mainCtx == nil {
+		p.logger.Info("provider was never started")
 		return
 	}
 
-	p.logger.Info("received manual stop signal")
-	p.stopCh <- struct{}{}
+	select {
+	case <-mainCtx.Done():
+		// The provider is already stopped.
+		p.logger.Info("provider is not running")
+		return
+	default:
+		// Cancel the main context to stop the provider.
+		p.logger.Info("manually stopping provider")
+		cancelMain()
+	}
 }
 
 // IsRunning returns true if the provider is running.
 func (p *Provider[K, V]) IsRunning() bool {
-	return p.running.Load()
+	mainCtx, _ := p.getMainCtx()
+	if mainCtx == nil {
+		return false
+	}
+
+	select {
+	case <-mainCtx.Done():
+		return false
+	default:
+		return true
+	}
 }
 
 // Name returns the name of the provider.

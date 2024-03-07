@@ -1,6 +1,7 @@
 package base
 
 import (
+	"context"
 	"fmt"
 
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -21,4 +22,38 @@ func (p *Provider[K, V]) createResponseCh() error {
 	}
 
 	return nil
+}
+
+// setMainCtx sets the main context for the provider.
+func (p *Provider[K, V]) setMainCtx(ctx context.Context) (context.Context, context.CancelFunc) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.mainCtx, p.cancelMainFn = context.WithCancel(ctx)
+	return p.mainCtx, p.cancelMainFn
+}
+
+// getMainCtx returns the main context for the provider.
+func (p *Provider[K, V]) getMainCtx() (context.Context, context.CancelFunc) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	return p.mainCtx, p.cancelMainFn
+}
+
+// setFetchCtx sets the fetch context for the provider.
+func (p *Provider[K, V]) setFetchCtx(ctx context.Context) (context.Context, context.CancelFunc) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.fetchCtx, p.cancelFetchFn = context.WithCancel(ctx)
+	return p.fetchCtx, p.cancelFetchFn
+}
+
+// getFetchCtx returns the fetch context for the provider.
+func (p *Provider[K, V]) getFetchCtx() (context.Context, context.CancelFunc) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	return p.fetchCtx, p.cancelFetchFn
 }

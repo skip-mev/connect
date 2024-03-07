@@ -9,8 +9,9 @@ import (
 
 // SetIDs sets the set of IDs that the provider is responsible for fetching data for.
 func (p *Provider[K, V]) SetIDs(ids []K) {
-	if p.IsRunning() {
-		p.restartCh <- struct{}{}
+	if _, cancel := p.getFetchCtx(); cancel != nil {
+		p.logger.Info("canceling fetch context; restarting provider")
+		cancel()
 	}
 
 	p.mu.Lock()
@@ -33,8 +34,9 @@ func (p *Provider[K, V]) GetIDs() []K {
 
 // SetAPIHandler sets the API handler that the provider will use to fetch data.
 func (p *Provider[K, V]) SetAPIHandler(apiHandler apihandler.APIQueryHandler[K, V]) {
-	if p.IsRunning() {
-		p.restartCh <- struct{}{}
+	if _, cancel := p.getFetchCtx(); cancel != nil {
+		p.logger.Info("canceling fetch context; restarting provider")
+		cancel()
 	}
 
 	if p.Type() != providertypes.API {
@@ -62,8 +64,9 @@ func (p *Provider[K, V]) GetAPIHandler() apihandler.APIQueryHandler[K, V] {
 
 // SetWebSocketHandler sets the WebSocket handler that the provider will use to fetch data.
 func (p *Provider[K, V]) SetWebSocketHandler(wsHandler wshandlers.WebSocketQueryHandler[K, V]) {
-	if p.IsRunning() {
-		p.restartCh <- struct{}{}
+	if _, cancel := p.getFetchCtx(); cancel != nil {
+		p.logger.Info("canceling fetch context; restarting provider")
+		cancel()
 	}
 
 	if p.Type() != providertypes.WebSockets {

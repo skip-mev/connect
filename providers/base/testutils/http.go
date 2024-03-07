@@ -60,15 +60,16 @@ func CreateAPIQueryHandlerWithGetResponses[K providertypes.ResponseKey, V provid
 // invoked. The function should utilize the response channel to send responses to the provider.
 func CreateAPIQueryHandlerWithResponseFn[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
-	fn func(chan<- providertypes.GetResponse[K, V]),
+	fn func(context.Context, chan<- providertypes.GetResponse[K, V]),
 ) handlers.APIQueryHandler[K, V] {
 	t.Helper()
 
 	handler := handlermocks.NewQueryHandler[K, V](t)
 
 	handler.On("Query", mock.Anything, mock.Anything, mock.Anything).Return().Run(func(args mock.Arguments) {
+		ctx := args.Get(0).(context.Context)
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
-		fn(responseCh)
+		fn(ctx, responseCh)
 	}).Maybe()
 
 	return handler
@@ -110,7 +111,7 @@ func CreateAPIProviderWithResponseFn[K providertypes.ResponseKey, V providertype
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	ids []K,
-	fn func(chan<- providertypes.GetResponse[K, V]),
+	fn func(context.Context, chan<- providertypes.GetResponse[K, V]),
 ) providertypes.Provider[K, V] {
 	t.Helper()
 
