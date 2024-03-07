@@ -27,7 +27,7 @@ const (
 	// per connection.
 	//
 	// ref: https://mexcdevelop.github.io/apidocs/spot_v3_en/#websocket-market-streams
-	MaxSubscriptionsPerConnection = 25
+	MaxSubscriptionsPerConnection = 20
 )
 
 var (
@@ -46,7 +46,7 @@ var (
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		MaxSubscriptionsPerConnection: MaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
