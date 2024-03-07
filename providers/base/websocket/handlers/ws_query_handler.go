@@ -24,6 +24,10 @@ type WebSocketQueryHandler[K providertypes.ResponseKey, V providertypes.Response
 	// the data (i.e. ids). All websocket responses should be sent to the response
 	// channel.
 	Start(ctx context.Context, ids []K, responseCh chan<- providertypes.GetResponse[K, V]) error
+
+	// Copy is used to create a copy of the query handler. This is useful for creating
+	// multiple connections to the same data provider.
+	Copy() WebSocketQueryHandler[K, V]
 }
 
 // WebSocketQueryHandlerImpl is the default websocket implementation of the
@@ -319,4 +323,16 @@ func (h *WebSocketQueryHandlerImpl[K, V]) close() error {
 	h.logger.Debug("connection closed")
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseSuccess)
 	return nil
+}
+
+// Copy is used to create a copy of the query handler. This is useful for creating
+// multiple connections to the same data provider.
+func (h *WebSocketQueryHandlerImpl[K, V]) Copy() WebSocketQueryHandler[K, V] {
+	return &WebSocketQueryHandlerImpl[K, V]{
+		logger:      h.logger,
+		config:      h.config,
+		dataHandler: h.dataHandler.Copy(),
+		connHandler: h.connHandler.Copy(),
+		metrics:     h.metrics,
+	}
 }
