@@ -2,8 +2,6 @@
 
 ## Overview
 
-> **NOTE:** This specific provider should not be used in any production setting as it is not sufficiently tested.
-
 The CoinGecko provider is used to fetch the spot price for cryptocurrencies from the [CoinGecko API](https://www.coingecko.com/en/api). This provider can be configured to fetch with or without an API key. Note that without an API key, it is very likely that the CoinGecko API will rate limit your requests. The CoinGecko API fetches an aggregated TWAP price any given currency pair.
 
 ## Supported Bases

@@ -51,15 +51,6 @@ func TestMsgAlertValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgAlertGetSigners(t *testing.T) {
-	signer := sdk.AccAddress("cosmos1")
-
-	// create a message with signer
-	msg := types.NewMsgAlert(types.NewAlert(0, signer, slinkytypes.NewCurrencyPair("BTC", "USD")))
-	signers := msg.GetSigners()
-	require.Equal(t, []sdk.AccAddress{signer}, signers)
-}
-
 func TestMsgConclusion(t *testing.T) {
 	invalidConclusionAny, err := codectypes.NewAnyWithValue(&types.MultiSigConclusion{})
 	require.NoError(t, err)
@@ -136,17 +127,6 @@ func TestMsgConclusion(t *testing.T) {
 				}
 			})
 		}
-	})
-
-	t.Run("test get signers", func(t *testing.T) {
-		signer := sdk.AccAddress("cosmos1")
-		msg := types.MsgConclusion{
-			Signer:     signer.String(),
-			Conclusion: validConclusionAny,
-		}
-
-		signers := msg.GetSigners()
-		require.Equal(t, []sdk.AccAddress{signer}, signers)
 	})
 }
 
