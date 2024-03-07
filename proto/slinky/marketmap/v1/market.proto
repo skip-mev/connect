@@ -19,10 +19,15 @@ message Ticker {
 
   // Decimals is the number of decimal places for the ticker. The number of
   // decimal places is used to convert the price to a human-readable format.
-  uint64 decimals = 3;
+  uint64 decimals = 2;
+
   // MinProviderCount is the minimum number of providers required to consider
   // the ticker valid.
-  uint64 min_provider_count = 4;
+  uint64 min_provider_count = 3;
+
+  // Enabled is the flag that denotes if the Ticker is enabled for price
+  // fetching by an oracle.
+  bool enabled = 14;
 
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
@@ -70,9 +75,6 @@ message Providers {
   repeated ProviderConfig providers = 1 [ (gogoproto.nullable) = false ];
 }
 
-// EnabledTickers is the list of tickers that are enabled for price fetching.
-message EnabledTickers { repeated string Tickers = 1; }
-
 message MarketMap {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
@@ -87,8 +89,4 @@ message MarketMap {
   // Providers is a map from CurrencyPair to each of to provider-specific
   // configs associated with it.
   map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
-
-  // EnabledTickers is a list of the Ticker IDs that are enabled.  This
-  // can be used for fast access of what Tickers are enabled.
-  EnabledTickers enabled_tickers = 4 [ (gogoproto.nullable) = false ];
 }

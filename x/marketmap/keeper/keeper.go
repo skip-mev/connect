@@ -34,9 +34,6 @@ type Keeper struct {
 	// the list of all Providers.
 	providers collections.Map[types.TickerString, types.Providers]
 
-	// enabledTickers is the list of ticker that are enabled in the market map.
-	enabledTickers collections.Item[types.EnabledTickers]
-
 	// lastUpdated is the last block height the marketmap was updated.
 	lastUpdated collections.Item[uint64]
 
@@ -56,22 +53,14 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 		codec.CollValue[types.Params](cdc),
 	)
 
-	enabledTickers := collections.NewItem[types.EnabledTickers](
-		sb,
-		types.EnabledTickersPrefix,
-		"enabled_tickers",
-		codec.CollValue[types.EnabledTickers](cdc),
-	)
-
 	return &Keeper{
-		cdc:            cdc,
-		authority:      authority,
-		tickers:        collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
-		paths:          collections.NewMap(sb, types.PathsPrefix, "paths", types.TickersCodec, codec.CollValue[types.Paths](cdc)),
-		providers:      collections.NewMap(sb, types.ProvidersPrefix, "providers", types.TickersCodec, codec.CollValue[types.Providers](cdc)),
-		lastUpdated:    collections.NewItem[uint64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
-		params:         params,
-		enabledTickers: enabledTickers,
+		cdc:         cdc,
+		authority:   authority,
+		tickers:     collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
+		paths:       collections.NewMap(sb, types.PathsPrefix, "paths", types.TickersCodec, codec.CollValue[types.Paths](cdc)),
+		providers:   collections.NewMap(sb, types.ProvidersPrefix, "providers", types.TickersCodec, codec.CollValue[types.Providers](cdc)),
+		lastUpdated: collections.NewItem[uint64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
+		params:      params,
 	}
 }
 
@@ -234,16 +223,6 @@ func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 // GetParams returns the x/marketmap module's parameters.
 func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	return k.params.Get(ctx)
-}
-
-// SetEnabledTickers sets the x/marketmap module's enabled tickers.
-func (k *Keeper) SetEnabledTickers(ctx sdk.Context, enabled types.EnabledTickers) error {
-	return k.enabledTickers.Set(ctx, enabled)
-}
-
-// GetEnabledTickers returns the x/marketmap module's enabled tickers.
-func (k *Keeper) GetEnabledTickers(ctx sdk.Context) (types.EnabledTickers, error) {
-	return k.enabledTickers.Get(ctx)
 }
 
 // ValidateState is called after keeper modifications have been made to the market map to verify that

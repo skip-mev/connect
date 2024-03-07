@@ -3,10 +3,9 @@ package types_test
 import (
 	"testing"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-
 	"github.com/stretchr/testify/require"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -22,7 +21,7 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "valid map no enabled tickers",
+			name: "valid map",
 			marketMap: types.MarketMap{
 				Tickers: map[string]types.Ticker{
 					ethusdt.String(): ethusdt,
@@ -38,108 +37,9 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					ethusdt.String(): ethusdtProviders,
 					btcusdt.String(): btcusdtProviders,
 					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: nil,
 				},
 			},
 			expectErr: false,
-		},
-		{
-			name: "valid map all enabled tickers",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), btcusdt.String(), usdcusd.String()},
-				},
-			},
-			expectErr: false,
-		},
-		{
-			name: "invalid too many invalid tickers",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), usdtusd.String(), btcusdt.String(), btcusdt.String()},
-				},
-			},
-			expectErr: true,
-		},
-		{
-			name: "invalid duplicate enabled tickers",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{btcusdt.String(), btcusdt.String()},
-				},
-			},
-			expectErr: true,
-		},
-		{
-			name: "invalid enabled ticker",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), usdtusd.String(), usdcusd.String()},
-				},
-			},
-			expectErr: true,
 		},
 		{
 			name: "invalid mismatch ticker",
@@ -158,9 +58,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					usdtusd.String(): usdtusdProviders,
 					btcusdt.String(): btcusdtProviders,
 					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), btcusdt.String(), usdcusd.String()},
 				},
 			},
 			expectErr: true,
@@ -181,9 +78,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					btcusdt.String(): btcusdtProviders,
 					usdcusd.String(): usdcusdProviders,
 				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{btcusdt.String(), usdcusd.String()},
-				},
 			},
 			expectErr: true,
 		},
@@ -202,9 +96,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					ethusdt.String(): ethusdtProviders,
 					btcusdt.String(): btcusdtProviders,
 					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{btcusdt.String(), usdcusd.String()},
 				},
 			},
 			expectErr: true,
@@ -226,9 +117,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					ethusdt.String(): ethusdtProviders,
 					usdcusd.String(): usdcusdProviders,
 				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), btcusdt.String(), usdcusd.String()},
-				},
 			},
 			expectErr: true,
 		},
@@ -249,9 +137,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					ethusdt.String(): ethusdtProviders,
 					btcusdt.String(): btcusdtProviders,
 					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), btcusdt.String(), usdcusd.String()},
 				},
 			},
 			expectErr: true,
@@ -292,9 +177,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 					ethusdt.String(): ethusdtProviders,
 					btcusdt.String(): btcusdtProviders,
 					usdcusd.String(): usdcusdProviders,
-				},
-				EnabledTickers: types.EnabledTickers{
-					Tickers: []string{ethusdt.String(), btcusdt.String(), usdcusd.String()},
 				},
 			},
 			expectErr: true,
