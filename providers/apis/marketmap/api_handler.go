@@ -84,7 +84,7 @@ func (h *APIHandler) ParseResponse(
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("failed to parse market map response: %w", err),
-				providertypes.ErrorInvalidResponse,
+				providertypes.ErrorFailedToDecode,
 			),
 		)
 	}

@@ -75,7 +75,7 @@ func (s *MockAPIHandler) ParseResponse(
 		} else {
 			err := fmt.Errorf("failed to resolve ticker %s", ticker)
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorUnknown),
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorUnknownPair),
 			}
 		}
 	}

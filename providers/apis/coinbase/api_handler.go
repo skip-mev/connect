@@ -104,7 +104,7 @@ func (h *APIHandler) ParseResponse(
 	var result CoinBaseResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return types.NewPriceResponseWithErr(tickers,
-			providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+			providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode),
 		)
 	}
 
