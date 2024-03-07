@@ -1647,7 +1647,6 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ctx = ctx.WithBlockHeight(3)
 
 		cps.On("FromID", ctx, uint64(1)).Return(btcUSD, nil).Twice()
-		cps.On("GetDecodedPrice", ctx, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Twice()
 
 		extInfo, err := ph.PruneExtendedCommitInfo(ctx, cometabci.ExtendedCommitInfo{
 			Votes: []cometabci.ExtendedVoteInfo{ve1, ve2, ve3},
@@ -1698,7 +1697,6 @@ func (s *ProposalsTestSuite) TestPruning() {
 
 		cps.On("FromID", ctx, uint64(1)).Return(btcUSD, nil).Twice()
 		cps.On("FromID", ctx, uint64(2)).Return(slinkytypes.CurrencyPair{}, fmt.Errorf("error")).Once()
-		cps.On("GetDecodedPrice", ctx, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Twice()
 
 		extInfo, err := ph.PruneExtendedCommitInfo(ctx, cometabci.ExtendedCommitInfo{
 			Votes: []cometabci.ExtendedVoteInfo{ve1, ve2, ve3},
@@ -1752,7 +1750,6 @@ func (s *ProposalsTestSuite) TestPruning() {
 
 		cps.On("FromID", ctx, uint64(1)).Return(btcUSD, nil).Twice()
 		cps.On("FromID", ctx, uint64(2)).Return(slinkytypes.CurrencyPair{}, fmt.Errorf("error")).Once()
-		cps.On("GetDecodedPrice", ctx, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil).Twice()
 
 		extInfo, err := ph.PruneExtendedCommitInfo(ctx, cometabci.ExtendedCommitInfo{
 			Votes: []cometabci.ExtendedVoteInfo{ve1, ve2, ve3},
@@ -1798,7 +1795,6 @@ func (s *ProposalsTestSuite) TestPruning() {
 
 		cps.On("FromID", ctx, uint64(1)).Return(btcUSD, nil)
 		cps.On("FromID", ctx, uint64(2)).Return(slinkytypes.CurrencyPair{}, fmt.Errorf("error"))
-		cps.On("GetDecodedPrice", ctx, btcUSD, twoHundred.Bytes()).Return(twoHundred, nil)
 
 		res, err := ph.PrepareProposalHandler()(ctx, s.createRequestPrepareProposal(cometabci.ExtendedCommitInfo{
 			Votes: []cometabci.ExtendedVoteInfo{ve1, ve2, ve3},
