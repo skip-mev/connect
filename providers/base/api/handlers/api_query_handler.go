@@ -235,8 +235,7 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 	case <-ctx.Done():
 		h.logger.Info("context cancelled, stopping write response")
 		return
-	default:
-		responseCh <- response
+	case responseCh <- response:
 		h.logger.Debug("wrote response", zap.String("response", response.String()))
 	}
 

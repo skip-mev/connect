@@ -291,16 +291,14 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			case <-ctx.Done():
 				h.logger.Debug("context finished")
 				if err := h.close(); err != nil {
-					return err
+					return errors.ErrCloseWithErr(err)
 				}
 
 				return ctx.Err()
-			default:
-				responseCh <- response
+			case responseCh <- response:
 				h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
 			}
-
-			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
 
 			// If the update messages are not nil, send it to the data provider.
 			if len(updateMessage) != 0 {

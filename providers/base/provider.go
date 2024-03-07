@@ -118,6 +118,7 @@ MainLoop:
 			return err
 		}
 
+		// Start the receive loop.
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

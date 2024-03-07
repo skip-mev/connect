@@ -114,7 +114,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 		restarts := 0
 		handler := p.GetWebSocketHandler()
 		handler = handler.Copy()
-    
+
 		for {
 			select {
 			case <-ctx.Done():
@@ -122,7 +122,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 				return ctx.Err()
 			default:
 				if restarts > 0 {
-					p.logger.Info("rgestarting websocket query handler", zap.Int("num_restarts", restarts))
+					p.logger.Info("restarting websocket query handler", zap.Int("num_restarts", restarts))
 
 					// If the websocket query handler returns, then the connection was closed. Wait for
 					// a bit before trying to reconnect.
@@ -130,7 +130,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 				}
 
 				p.logger.Debug("starting websocket query handler", zap.Int("num_ids", len(subIDs)), zap.Any("ids", subIDs))
-				if err := handler.Start(ctx, subIDs, responseCh); err != nil {
+				if err := handler.Start(ctx, subIDs, p.responseCh); err != nil {
 					p.logger.Error("websocket query handler returned error", zap.Error(err))
 				}
 				restarts++
