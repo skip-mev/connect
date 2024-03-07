@@ -72,7 +72,7 @@ type (
 	// 		}
 	// 	  }
 	// 	}
-	// }
+	// }.
 	GeckoTerminalResponse struct { //nolint
 		Data GeckoTerminalData `json:"data"`
 	}
