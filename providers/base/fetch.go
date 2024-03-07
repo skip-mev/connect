@@ -39,6 +39,7 @@ func (p *Provider[K, V]) startAPI(ctx context.Context) error {
 	// Start the data update loop.
 	handler := p.GetAPIHandler()
 	ids := p.GetIDs()
+	restarts := 0
 	for {
 		select {
 		case <-ctx.Done():
@@ -46,6 +47,14 @@ func (p *Provider[K, V]) startAPI(ctx context.Context) error {
 			return ctx.Err()
 
 		default:
+			if restarts > 0 {
+				p.logger.Info("restarting api query handler", zap.Int("num_restarts", restarts))
+
+				// If the API query handler returns, then the connection was closed. Wait for
+				// a bit before trying to reconnect.
+				time.Sleep(p.apiCfg.ReconnectTimeout)
+			}
+
 			p.logger.Debug(
 				"attempting to fetch new data",
 				zap.Int("buffer_size", len(p.responseCh)),
@@ -53,6 +62,7 @@ func (p *Provider[K, V]) startAPI(ctx context.Context) error {
 			)
 
 			handler.Query(ctx, ids, p.responseCh)
+			restarts++
 		}
 	}
 }

@@ -132,6 +132,9 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		go func() {
 			defer wg.Done()
 			p.recv(fetchCtx)
+
+			p.logger.Info("provider recv routine stopped; closing channel")
+			close(p.responseCh)
 		}()
 
 		// Start the fetch loop.
@@ -141,7 +144,6 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 			defer wg.Done()
 			errCh <- p.fetch(fetchCtx)
 			fetchCancel()
-			close(p.responseCh)
 		}()
 
 		// Wait for the fetch loop to return or the context to be cancelled.
@@ -170,7 +172,8 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 func (p *Provider[K, V]) Stop() {
 	mainCtx, cancelMain := p.getMainCtx()
 	if mainCtx == nil {
-		p.logger.Info("provider was never started")
+		p.logger.Info("provider is not running")
+
 		return
 	}
 
