@@ -57,7 +57,7 @@ func CreateExtendedVoteInfo(
 	prices map[uint64][]byte,
 	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
-	return CreateExtendedVoteInfoWithPower(consAddr, 0, prices, codec)
+	return CreateExtendedVoteInfoWithPower(consAddr, 1, prices, codec)
 }
 
 // CreateExtendedVoteInfo creates an extended vote info with the given prices, timestamp and height.

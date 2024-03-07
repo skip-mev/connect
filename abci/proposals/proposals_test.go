@@ -520,12 +520,19 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 	// If retain option is given we feed oracle-data into prepare / process
 	s.Run("test RetainOracleDataInWrappedProposalHandler", func() {
-		codec := codec.NewDefaultExtendedCommitCodec()
+		excodec := codec.NewDefaultExtendedCommitCodec()
+		veCodec := codec.NewDefaultVoteExtensionCodec()
+
+		emptyVote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, veCodec)
+		s.Require().NoError(err)
 
 		extendedCommit := cometabci.ExtendedCommitInfo{
 			Round: 1,
+			Votes: []cometabci.ExtendedVoteInfo{
+				emptyVote,
+			},
 		}
-		bz, err := codec.Encode(extendedCommit)
+		bz, err := excodec.Encode(extendedCommit)
 		s.Require().NoError(err)
 
 		handler := proposals.NewProposalHandler(
@@ -541,8 +548,8 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 				return &cometabci.ResponseProcessProposal{}, nil
 			},
 			ve.NoOpValidateVoteExtensions,
-			nil,
-			codec,
+			veCodec,
+			excodec,
 			nil,
 			state.NewNoopAppState(),
 			servicemetrics.NewNopMetrics(),
@@ -573,12 +580,19 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 
 	// Otherwise, we don't
 	s.Run("test that oracle-data is not passed if not RetainOracleDataInWrappedProposalHandler", func() {
-		codec := codec.NewDefaultExtendedCommitCodec()
+		excodec := codec.NewDefaultExtendedCommitCodec()
+		veCodec := codec.NewDefaultVoteExtensionCodec()
+
+		emptyVote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, veCodec)
+		s.Require().NoError(err)
 
 		extendedCommit := cometabci.ExtendedCommitInfo{
 			Round: 1,
+			Votes: []cometabci.ExtendedVoteInfo{
+				emptyVote,
+			},
 		}
-		bz, err := codec.Encode(extendedCommit)
+		bz, err := excodec.Encode(extendedCommit)
 		s.Require().NoError(err)
 
 		handler := proposals.NewProposalHandler(
@@ -594,8 +608,8 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 				return &cometabci.ResponseProcessProposal{}, nil
 			},
 			ve.NoOpValidateVoteExtensions,
-			nil,
-			codec,
+			veCodec,
+			excodec,
 			nil,
 			state.NewNoopAppState(),
 			servicemetrics.NewNopMetrics(),
@@ -971,10 +985,13 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			metricsmocks,
 		)
 
+		vote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, codec.NewDefaultVoteExtensionCodec())
+		s.Require().NoError(err)
+
 		req := s.createRequestPrepareProposal( // the votes here are invalid, but that's fine
 			cometabci.ExtendedCommitInfo{
 				Round: 1,
-				Votes: nil,
+				Votes: []cometabci.ExtendedVoteInfo{vote},
 			},
 			nil,
 			4, // vote extensions will be enabled
@@ -989,7 +1006,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		}).Once()
 		metricsmocks.On("AddABCIRequest", servicemetrics.PrepareProposal, servicemetrics.Success{}).Once()
 
-		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
+		_, err = propHandler.PrepareProposalHandler()(s.ctx, req)
 		s.Require().NoError(err)
 	})
 
@@ -1009,10 +1026,13 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			metricsmocks,
 		)
 
+		vote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, codec.NewDefaultVoteExtensionCodec())
+		s.Require().NoError(err)
+
 		req := s.createRequestPrepareProposal( // the votes here are invalid, but that's fine
 			cometabci.ExtendedCommitInfo{
 				Round: 1,
-				Votes: nil,
+				Votes: []cometabci.ExtendedVoteInfo{vote},
 			},
 			nil,
 			4, // vote extensions will be enabled
@@ -1028,7 +1048,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			Err: fmt.Errorf("error in validate vote extensions"),
 		}
 		metricsmocks.On("AddABCIRequest", servicemetrics.PrepareProposal, experr).Once()
-		_, err := propHandler.PrepareProposalHandler()(s.ctx, req)
+		_, err = propHandler.PrepareProposalHandler()(s.ctx, req)
 		s.Require().Error(err, experr)
 	})
 
@@ -1182,7 +1202,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 	s.Run("test invalid extended commit", func() {
 		metricsMocks := servicemetricsmocks.NewMetrics(s.T())
 
-		extCommitError := fmt.Errorf("error in validating extended commit")
+		extCommitError := fmt.Errorf("vote extensions do not compose a supermajority, expected: 1, got: 0")
 		propHandler := proposals.NewProposalHandler(
 			log.NewTestLogger(s.T()),
 			func(_ sdk.Context, _ *cometabci.RequestPrepareProposal) (*cometabci.ResponsePrepareProposal, error) {
@@ -1244,7 +1264,18 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 		s.ctx = testutils.UpdateContextWithVEHeight(s.ctx, 1)
 		s.ctx = s.ctx.WithBlockHeight(4)
 
-		_, err := propHandler.PrepareProposalHandler()(s.ctx, &cometabci.RequestPrepareProposal{})
+		vote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, codec.NewDefaultVoteExtensionCodec())
+		s.Require().NoError(err)
+
+		extCommit := cometabci.ExtendedCommitInfo{
+			Votes: []cometabci.ExtendedVoteInfo{
+				vote,
+			},
+		}
+
+		_, err = propHandler.PrepareProposalHandler()(s.ctx, &cometabci.RequestPrepareProposal{
+			LocalLastCommit: extCommit,
+		})
 		s.Require().Error(err, expErr)
 	})
 
@@ -1561,8 +1592,8 @@ func (s *ProposalsTestSuite) TestVerifyVEState() {
 		ctx = ctx.WithBlockHeight(3)
 
 		// mocks
-		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Once()
-		cps.On("FromID", sdk.Context{}, uint64(1)).Return(btcUSD, nil).Once()
+		sm.On("VerifyVoteExtensionState", ctx).Return(sdk.Context{}, nil).Twice()
+		cps.On("FromID", sdk.Context{}, uint64(1)).Return(btcUSD, nil).Twice()
 
 		res, err := ph.PrepareProposalHandler()(ctx, req)
 		s.Require().NoError(err)
