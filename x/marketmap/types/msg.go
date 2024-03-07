@@ -6,14 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var _ sdk.Msg = &MsgUpdateMarketMap{}
-
-// GetSigners gets the address that must sign this message.
-func (m *MsgUpdateMarketMap) GetSigners() []sdk.AccAddress {
-	// convert from string to acc address
-	addr, _ := sdk.AccAddressFromBech32(m.Signer)
-	return []sdk.AccAddress{addr}
-}
+var (
+	_ sdk.Msg = &MsgUpdateMarketMap{}
+	_ sdk.Msg = &MsgParams{}
+)
 
 // ValidateBasic determines whether the information in the message is formatted correctly, specifically
 // whether the signer is a valid acc-address.

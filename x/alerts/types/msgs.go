@@ -39,13 +39,6 @@ func NewMsgAlert(a Alert) *MsgAlert {
 	}
 }
 
-// GetSigners gets the expected signers for the MsgAlert, i.e. the signer of the
-// underlying alert.
-func (msg *MsgAlert) GetSigners() []sdk.AccAddress {
-	signer := sdk.MustAccAddressFromBech32(msg.Alert.Signer)
-	return []sdk.AccAddress{signer}
-}
-
 // ValidateBasic performs basic validation of the MsgAlert fields, i.e. on the underlying Alert.
 func (msg *MsgAlert) ValidateBasic() error {
 	return msg.Alert.ValidateBasic()
@@ -68,12 +61,6 @@ func NewMsgConclusion(c Conclusion, signer sdk.AccAddress) *MsgConclusion {
 	}
 
 	return msg
-}
-
-// GetSigners gets the expected signers for the MsgConclusion.
-func (msg *MsgConclusion) GetSigners() []sdk.AccAddress {
-	signer := sdk.MustAccAddressFromBech32(msg.Signer)
-	return []sdk.AccAddress{signer}
 }
 
 // ValidateBasic performs basic validation of the MsgConclusion fields, i.e. that the signer address
