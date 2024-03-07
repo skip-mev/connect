@@ -122,7 +122,7 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 				return ctx.Err()
 			default:
 				if restarts > 0 {
-					p.logger.Info("rgestarting websocket query handler", zap.Int("num_restarts", restarts))
+					p.logger.Info("restarting websocket query handler", zap.Int("num_restarts", restarts))
 
 					// If the websocket query handler returns, then the connection was closed. Wait for
 					// a bit before trying to reconnect.
