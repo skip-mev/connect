@@ -10,24 +10,6 @@ import (
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
-func TestGetSignersMsgAddCurrencyPairs(t *testing.T) {
-	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress("abc").String()
-	msg := types.NewMsgAddCurrencyPairs(auth, nil)
-	// get signers
-	signer := msg.GetSigners()
-	require.Equal(t, signer[0].String(), auth)
-}
-
-func TestGetSignersMsgRemoveCurrencyPairs(t *testing.T) {
-	// create a msgAddCurrencyPairs
-	auth := sdk.AccAddress("abc").String()
-	msg := types.NewMsgRemoveCurrencyPairs(auth, nil)
-	// get signers
-	signer := msg.GetSigners()
-	require.Equal(t, signer[0].String(), auth)
-}
-
 func TestValidateBasicMsgAddCurrencyPairs(t *testing.T) {
 	tcs := []struct {
 		name       string
