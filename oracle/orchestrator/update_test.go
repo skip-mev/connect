@@ -30,7 +30,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 		err = o.UpdateWithMarketMap(mmtypes.MarketMap{
 			Tickers: map[string]mmtypes.Ticker{
-				"bad": mmtypes.Ticker{},
+				"bad": {},
 			},
 		})
 		require.Error(t, err)
