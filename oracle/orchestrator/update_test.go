@@ -8,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -15,6 +16,204 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/require"
 )
+
+func TestUpdateWithMarketMap(t *testing.T) {
+	t.Run("can update the orchestrator's market map and update the providers' market maps with no running providers", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfg,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		)
+		require.NoError(t, err)
+		require.NoError(t, o.Init())
+
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		// Update the orchestrator's market map.
+		require.NoError(t, o.UpdateWithMarketMap(marketMap))
+
+		providers = o.GetProviderState()
+
+		// Check the state after the update.
+		coinbaseState, ok := providers[coinbase.Name]
+		require.True(t, ok)
+		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, coinbase.Name, true, providertypes.API, false, coinbaseState)
+
+		okxState, ok := providers[okx.Name]
+		require.True(t, ok)
+		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, okx.Name, true, providertypes.WebSockets, false, okxState)
+
+		binanceState, ok := providers[binance.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
+	})
+
+	t.Run("can update the orchestrator's market map and update the providers' market maps with running providers", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfg,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		)
+		require.NoError(t, err)
+		require.NoError(t, o.Init())
+
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		// Start the providers.
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		for _, state := range providers {
+			go func(s orchestrator.ProviderState) {
+				s.Provider.Start(ctx)
+			}(state)
+		}
+
+		time.Sleep(1000 * time.Millisecond)
+
+		// Update the orchestrator's market map.
+		require.NoError(t, o.UpdateWithMarketMap(marketMap))
+
+		time.Sleep(2000 * time.Millisecond)
+
+		providers = o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		// Check the state after the update.
+		coinbaseState, ok := providers[coinbase.Name]
+		require.True(t, ok)
+		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, coinbase.Name, true, providertypes.API, true, coinbaseState)
+
+		okxState, ok := providers[okx.Name]
+		require.True(t, ok)
+		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, okx.Name, true, providertypes.WebSockets, true, okxState)
+
+		binanceState, ok := providers[binance.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, binance.Name, false, providertypes.API, true, binanceState)
+
+		// Stop the providers.
+		for _, state := range providers {
+			state.Provider.Stop()
+		}
+
+		time.Sleep(2000 * time.Millisecond)
+
+		// Ensure all providers are stopped.
+		for _, state := range providers {
+			require.Eventually(
+				t,
+				func() bool {
+					return !state.Provider.IsRunning()
+				},
+				5*time.Second,
+				500*time.Millisecond,
+			)
+		}
+	})
+
+	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfg,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		)
+		require.NoError(t, err)
+		require.NoError(t, o.Init())
+
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		// Update the orchestrator's market map.
+		require.NoError(t, o.UpdateWithMarketMap(mmtypes.MarketMap{}))
+
+		providers = o.GetProviderState()
+
+		// Check the state after the update.
+		coinbaseState, ok := providers[coinbase.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, false, coinbaseState)
+
+		okxState, ok := providers[okx.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, okx.Name, false, providertypes.WebSockets, false, okxState)
+
+		binanceState, ok := providers[binance.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
+	})
+
+	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers and running providers", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfg,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithMarketMap(marketMap),
+		)
+		require.NoError(t, err)
+		require.NoError(t, o.Init())
+
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		// Start the providers.
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		for _, state := range providers {
+			go func(s orchestrator.ProviderState) {
+				s.Provider.Start(ctx)
+			}(state)
+		}
+
+		time.Sleep(1000 * time.Millisecond)
+
+		// Update the orchestrator's market map.
+		require.NoError(t, o.UpdateWithMarketMap(mmtypes.MarketMap{}))
+
+		time.Sleep(2000 * time.Millisecond)
+
+		providers = o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		// Check the state after the update.
+		coinbaseState, ok := providers[coinbase.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, true, coinbaseState)
+
+		okxState, ok := providers[okx.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, okx.Name, false, providertypes.WebSockets, true, okxState)
+
+		binanceState, ok := providers[binance.Name]
+		require.True(t, ok)
+		checkProviderState(t, nil, binance.Name, false, providertypes.API, true, binanceState)
+
+		// Stop the providers.
+		for _, state := range providers {
+			state.Provider.Stop()
+		}
+
+		time.Sleep(2000 * time.Millisecond)
+
+		// Ensure all providers are stopped.
+		for _, state := range providers {
+			require.Eventually(
+				t,
+				func() bool {
+					return !state.Provider.IsRunning()
+				},
+				5*time.Second,
+				500*time.Millisecond,
+			)
+		}
+	})
+
+}
 
 func TestUpdateProviderState(t *testing.T) {
 	expectedTickers := []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}

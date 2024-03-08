@@ -124,7 +124,6 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 		restarts := 0
 		handler := p.GetWebSocketHandler()
 		handler = handler.Copy()
-		restarts := 0
 		for {
 			select {
 			case <-ctx.Done():

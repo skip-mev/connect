@@ -23,8 +23,8 @@ type (
 	// the provider specific market map, and enabling/disabling the providers based on the
 	// oracle configuration and market map.
 	ProviderOrchestrator struct {
-		logger *zap.Logger
 		mut    sync.Mutex
+		logger *zap.Logger
 
 		// providers is a map of all of the providers that the oracle is using.
 		providers map[string]ProviderState

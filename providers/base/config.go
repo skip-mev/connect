@@ -46,7 +46,6 @@ func (p *Provider[K, V]) Update(opts ...UpdateOption[K, V]) {
 	for _, opt := range opts {
 		opt(p)
 	}
-
 	p.logger.Info("provider updated")
 }
 
