@@ -197,10 +197,10 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		h.logger.Debug("created url", zap.String("url", url))
 
 		// Make the request.
-		fetchCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
+		apiCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
 		defer cancel()
 
-		resp, err := h.requestHandler.Do(fetchCtx, url)
+		resp, err := h.requestHandler.Do(apiCtx, url)
 		if err != nil {
 			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))
 			return nil

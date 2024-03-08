@@ -51,7 +51,7 @@ type Provider[K providertypes.ResponseKey, V providertypes.ResponseValue] struct
 	// metrics is the metrics implementation for the provider.
 	metrics providermetrics.ProviderMetrics
 
-	// fetchCtx is the context the context for the fetch function.
+	// fetchCtx is the context for the fetch function.
 	fetchCtx context.Context
 
 	// cancelFetchFn is the function that is used to cancel the fetch loop.
