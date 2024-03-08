@@ -33,23 +33,25 @@ var (
 	constantURL = "http://fetchdata.org:8080"
 
 	cfg = config.APIConfig{
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   250 * time.Millisecond,
-		MaxQueries: 1,
-		Atomic:     true,
-		URL:        constantURL,
-		Name:       "handler1",
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         250 * time.Millisecond,
+		ReconnectTimeout: 250 * time.Millisecond,
+		MaxQueries:       1,
+		Atomic:           true,
+		URL:              constantURL,
+		Name:             "handler1",
 	}
 
 	nonAtomicCfg = config.APIConfig{
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   250 * time.Millisecond,
-		MaxQueries: 3,
-		Atomic:     false,
-		URL:        constantURL,
-		Name:       "handler1",
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         250 * time.Millisecond,
+		ReconnectTimeout: 250 * time.Millisecond,
+		MaxQueries:       3,
+		Atomic:           false,
+		URL:              constantURL,
+		Name:             "handler1",
 	}
 )
 

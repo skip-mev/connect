@@ -212,7 +212,6 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			)
 		}
 	})
-
 }
 
 func TestUpdateProviderState(t *testing.T) {
