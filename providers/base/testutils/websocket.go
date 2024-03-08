@@ -1,6 +1,7 @@
 package testutils
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -29,12 +30,17 @@ func CreateWebSocketQueryHandlerWithGetResponses[K providertypes.ResponseKey, V 
 
 	handler.On("Copy").Return(handler).Maybe()
 	handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		ctx := args.Get(0).(context.Context)
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
 
 		for _, resp := range responses {
 			logger.Debug("sending response", zap.String("response", resp.String()))
-			responseCh <- resp
-			time.Sleep(timeout)
+			select {
+			case <-ctx.Done():
+				return
+			case responseCh <- resp:
+				time.Sleep(timeout)
+			}
 		}
 	}).Maybe()
 
@@ -45,7 +51,7 @@ func CreateWebSocketQueryHandlerWithGetResponses[K providertypes.ResponseKey, V 
 // invoked. The function should utilize the response channel to send responses to the provider.
 func CreateWebSocketQueryHandlerWithResponseFn[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	t *testing.T,
-	fn func(chan<- providertypes.GetResponse[K, V]),
+	fn func(context.Context, chan<- providertypes.GetResponse[K, V]),
 ) handlers.WebSocketQueryHandler[K, V] {
 	t.Helper()
 
@@ -53,8 +59,9 @@ func CreateWebSocketQueryHandlerWithResponseFn[K providertypes.ResponseKey, V pr
 
 	handler.On("Copy").Return(handler).Maybe()
 	handler.On("Start", mock.Anything, mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		ctx := args.Get(0).(context.Context)
 		responseCh := args.Get(2).(chan<- providertypes.GetResponse[K, V])
-		fn(responseCh)
+		fn(ctx, responseCh)
 	}).Maybe()
 
 	return handler
@@ -95,7 +102,7 @@ func CreateWebSocketProviderWithResponseFn[K providertypes.ResponseKey, V provid
 	t *testing.T,
 	cfg config.ProviderConfig,
 	logger *zap.Logger,
-	fn func(chan<- providertypes.GetResponse[K, V]),
+	fn func(context.Context, chan<- providertypes.GetResponse[K, V]),
 ) providertypes.Provider[K, V] {
 	t.Helper()
 
