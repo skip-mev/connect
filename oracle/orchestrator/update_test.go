@@ -18,6 +18,24 @@ import (
 )
 
 func TestUpdateWithMarketMap(t *testing.T) {
+	t.Run("bad market map is reject", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfg,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		)
+		require.NoError(t, err)
+		require.NoError(t, o.Init())
+
+		err = o.UpdateWithMarketMap(mmtypes.MarketMap{
+			Tickers: map[string]mmtypes.Ticker{
+				"bad": mmtypes.Ticker{},
+			},
+		})
+		require.Error(t, err)
+	})
+
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no running providers", func(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
