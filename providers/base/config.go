@@ -37,16 +37,16 @@ func WithNewWebSocketHandler[K providertypes.ResponseKey, V providertypes.Respon
 
 // Update updates the provider with the given options.
 func (p *Provider[K, V]) Update(opts ...UpdateOption[K, V]) {
-	if _, cancel := p.getFetchCtx(); cancel != nil {
-		p.logger.Info("canceling fetch context; restarting provider")
-		cancel()
-	}
-
 	p.logger.Info("updating provider")
 	for _, opt := range opts {
 		opt(p)
 	}
 	p.logger.Info("provider updated")
+
+	if _, cancel := p.getFetchCtx(); cancel != nil {
+		p.logger.Info("canceling fetch context; restarting provider")
+		cancel()
+	}
 }
 
 // SetIDs sets the set of IDs that the provider is responsible for fetching data for.
