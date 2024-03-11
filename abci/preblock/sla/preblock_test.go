@@ -120,8 +120,15 @@ func (s *SLAPreBlockerHandlerTestSuite) SetupSubTest() {
 }
 
 func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
-	s.Run("returns if vote extensions have not been enabled", func() {
+	s.Run("returns error if req is nil", func() {
 		_, err := s.handler.PreBlocker()(s.ctx, nil)
+		s.Require().Error(err)
+	})
+
+	s.Run("returns if vote extensions have not been enabled", func() {
+		req := &cometabci.RequestFinalizeBlock{}
+
+		_, err := s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
 	})
 
