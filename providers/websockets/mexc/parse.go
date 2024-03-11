@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 )
@@ -28,14 +30,18 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	// Ensure that the channel received is the ticker channel.
 	if !strings.HasPrefix(msg.Channel, string(MiniTickerChannel)) {
 		err := fmt.Errorf("invalid channel %s", msg.Channel)
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidWebSocketTopic),
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price.
 	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 

@@ -24,13 +24,14 @@ const (
 var (
 	// DefaultAPIConfig is the default configuration for the Coinbase API.
 	DefaultAPIConfig = config.APIConfig{
-		Name:       Name,
-		Atomic:     false,
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   100 * time.Millisecond,
-		MaxQueries: 5,
-		URL:        URL,
+		Name:             Name,
+		Atomic:           false,
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         100 * time.Millisecond,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       5,
+		URL:              URL,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.

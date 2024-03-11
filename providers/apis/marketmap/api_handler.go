@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -59,28 +61,53 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) types.MarketMapResponse {
 	if len(chains) != 1 {
-		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("expected one chain, got %d", len(chains)))
+		return types.NewMarketMapResponseWithErr(chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("expected one chain, got %d", len(chains)),
+				providertypes.ErrorInvalidAPIChains,
+			),
+		)
 	}
 
 	if resp == nil {
-		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("nil response"))
+		return types.NewMarketMapResponseWithErr(chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("nil response"),
+				providertypes.ErrorNoResponse,
+			),
+		)
 	}
 
 	// Parse the response body into a market map object.
 	var market mmtypes.GetMarketMapResponse
 	if err := json.NewDecoder(resp.Body).Decode(&market); err != nil {
-		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("failed to parse market map response: %w", err))
+		return types.NewMarketMapResponseWithErr(chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("failed to parse market map response: %w", err),
+				providertypes.ErrorFailedToDecode,
+			),
+		)
 	}
 
 	// Validate the market map response.
 	if err := market.MarketMap.ValidateBasic(); err != nil {
-		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("invalid market map response: %w", err))
+		return types.NewMarketMapResponseWithErr(chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("invalid market map response: %w", err),
+				providertypes.ErrorInvalidResponse,
+			),
+		)
 	}
 
 	// Ensure the chain id in the response matches the chain id in the request.
 	chain := chains[0]
 	if market.ChainId != chain.ChainID {
-		return types.NewMarketMapResponseWithErr(chains, fmt.Errorf("expected chain id %s, got %s", chain.ChainID, market.ChainId))
+		return types.NewMarketMapResponseWithErr(chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("expected chain id %s, got %s", chain.ChainID, market.ChainId),
+				providertypes.ErrorInvalidChainID,
+			),
+		)
 	}
 
 	resolved := make(types.ResolvedMarketMap)

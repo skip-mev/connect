@@ -10,6 +10,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -87,7 +88,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response.
 	var result GeckoTerminalResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return types.NewPriceResponseWithErr(tickers, err)
+		return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode))
 	}
 
 	var (
@@ -97,32 +98,40 @@ func (h *APIHandler) ParseResponse(
 
 	data := result.Data
 	if data.Type != ExpectedResponseType {
-		return types.NewPriceResponseWithErr(tickers, fmt.Errorf("expected type %s, got %s", ExpectedResponseType, data.Type))
+		err := fmt.Errorf("expected type %s, got %s", ExpectedResponseType, data.Type)
+		return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse))
 	}
 
 	// Filter out the responses that are not expected.
 	attributes := data.Attributes
 	for address, price := range attributes.TokenPrices {
 		ticker, ok := h.market.OffChainMap[address]
+		err := fmt.Errorf("no ticker for address %s", address)
 		if !ok {
-			return types.NewPriceResponseWithErr(tickers, fmt.Errorf("no ticker for address %s", address))
+			return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorUnknownPair))
 		}
 
 		// Convert the price to a big.Int.
 		price, err := math.Float64StringToBigInt(price, ticker.Decimals)
 		if err != nil {
-			unresolved[ticker] = fmt.Errorf("failed to convert price to big.Int: %w", err)
+			wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+			}
 			continue
 		}
 
 		resolved[ticker] = types.NewPriceResult(price, time.Now())
 	}
 
-	// Add all of the expected tickers that did not return a response to the unresolved
+	// Add all expected tickers that did not return a response to the unresolved
 	// map.
 	for _, ticker := range tickers {
 		if _, resolvedOk := resolved[ticker]; !resolvedOk {
-			unresolved[ticker] = fmt.Errorf("received no price response")
+			err := fmt.Errorf("received no price response")
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorNoResponse),
+			}
 		}
 	}
 

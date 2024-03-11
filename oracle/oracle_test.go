@@ -22,12 +22,13 @@ var (
 	providerCfg1 = config.ProviderConfig{
 		Name: "api1",
 		API: config.APIConfig{
-			Interval:   500 * time.Millisecond,
-			Timeout:    250 * time.Millisecond,
-			MaxQueries: 10,
-			Enabled:    true,
-			Name:       "api1",
-			URL:        "http://test.com",
+			Interval:         500 * time.Millisecond,
+			Timeout:          250 * time.Millisecond,
+			ReconnectTimeout: 250 * time.Millisecond,
+			MaxQueries:       10,
+			Enabled:          true,
+			Name:             "api1",
+			URL:              "http://test.com",
 		},
 	}
 	providerCfg2 = config.ProviderConfig{
