@@ -30,12 +30,13 @@ import (
 var (
 	logger = zap.NewExample()
 	apiCfg = config.APIConfig{
-		Enabled:    true,
-		Timeout:    time.Millisecond * 250,
-		Interval:   time.Millisecond * 500,
-		MaxQueries: 100,
-		URL:        "localhost:8080",
-		Name:       "api",
+		Enabled:          true,
+		Timeout:          time.Millisecond * 250,
+		Interval:         time.Millisecond * 500,
+		ReconnectTimeout: time.Millisecond * 500,
+		MaxQueries:       100,
+		URL:              "localhost:8080",
+		Name:             "api",
 	}
 	wsCfg = config.WebSocketConfig{
 		Enabled:                       true,
