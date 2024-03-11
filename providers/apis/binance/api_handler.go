@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/pkg/math"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -92,7 +94,9 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return types.NewPriceResponseWithErr(tickers, err)
+		return types.NewPriceResponseWithErr(tickers,
+			providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode),
+		)
 	}
 
 	var (
@@ -109,7 +113,10 @@ func (h *APIHandler) ParseResponse(
 
 		price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
 		if err != nil {
-			unresolved[ticker] = fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+			}
 			continue
 		}
 
@@ -122,7 +129,9 @@ func (h *APIHandler) ParseResponse(
 		_, unresolvedOk := unresolved[ticker]
 
 		if !resolvedOk && !unresolvedOk {
-			unresolved[ticker] = fmt.Errorf("no response")
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorNoResponse),
+			}
 		}
 	}
 

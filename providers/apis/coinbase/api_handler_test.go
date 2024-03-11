@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
@@ -118,7 +120,9 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("bad format"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -138,7 +142,9 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("bad format"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -153,7 +159,9 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: fmt.Errorf("bad format"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -176,8 +184,12 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD:  fmt.Errorf("multiple cps"),
-					constants.ETHEREUM_USD: fmt.Errorf("multiple cps"),
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("multiple cps"), providertypes.ErrorAPIGeneral),
+					},
+					constants.ETHEREUM_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("multiple cps"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},

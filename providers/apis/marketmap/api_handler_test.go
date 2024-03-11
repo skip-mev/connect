@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	"github.com/skip-mev/slinky/providers/base/testutils"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -79,8 +80,12 @@ func TestParseResponse(t *testing.T) {
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: fmt.Errorf("expected one chain, got 2"),
-					chains[1]: fmt.Errorf("expected one chain, got 2"),
+					chains[0]: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected one chain, got 2"), providertypes.ErrorAPIGeneral),
+					},
+					chains[1]: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected one chain, got 2"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			},
 		},
@@ -92,7 +97,9 @@ func TestParseResponse(t *testing.T) {
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: fmt.Errorf("nil response"),
+					chains[0]: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("nil response"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			},
 		},
@@ -104,7 +111,9 @@ func TestParseResponse(t *testing.T) {
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: fmt.Errorf("failed to parse market map response"),
+					chains[0]: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse market map response"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			},
 		},
@@ -123,7 +132,9 @@ func TestParseResponse(t *testing.T) {
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: fmt.Errorf("invalid market map response"),
+					chains[0]: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid market map response"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			},
 		},
@@ -143,7 +154,9 @@ func TestParseResponse(t *testing.T) {
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: fmt.Errorf("expected chain id dYdX, got invalid"),
+					chains[0]: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected chain id dYdX, got invalid"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			},
 		},

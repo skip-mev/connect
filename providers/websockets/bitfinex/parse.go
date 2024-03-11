@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
@@ -110,7 +112,9 @@ func (h *WebSocketHandler) handleStream(
 	dataArr, ok := baseStream[indexPayload].([]interface{})
 	if !ok || len(dataArr) != ExpectedStreamPayloadLength {
 		err := fmt.Errorf("unknown data: %v, len: %d", baseStream[1], len(dataArr))
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
