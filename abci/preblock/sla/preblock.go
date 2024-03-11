@@ -2,6 +2,7 @@ package sla
 
 import (
 	"fmt"
+
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
