@@ -26,7 +26,7 @@ NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
 ###                               build                                     ###
 ###############################################################################
 
-build:
+build: tidy
 	go build -o ./build/ ./...
 
 run-oracle-server: build update-local-config
@@ -53,7 +53,7 @@ stop-oracle:
 	@echo "Stopping network..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
-install:
+install: tidy
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
 
 .PHONY: build run-oracle-server install
@@ -191,7 +191,7 @@ protoVer=0.14.0
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
-proto-all: proto-format proto-gen proto-pulsar-gen format
+proto-all: tidy proto-format proto-gen proto-pulsar-gen format
 
 proto-gen:
 	@echo "Generating Protobuf files"
