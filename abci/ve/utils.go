@@ -43,7 +43,7 @@ func ValidateOracleVoteExtension(
 // VoteExtensionsEnabled determines if vote extensions are enabled for the current block. If
 // vote extensions are enabled at height h, then a proposer will receive vote extensions
 // in height h+1. This is primarily utilized by any module that needs to make state changes
-// based on whether or not they were included in a proposal.
+// based on whether they were included in a proposal.
 func VoteExtensionsEnabled(ctx sdk.Context) bool {
 	cp := ctx.ConsensusParams()
 	if cp.Abci == nil || cp.Abci.VoteExtensionsEnableHeight == 0 {
