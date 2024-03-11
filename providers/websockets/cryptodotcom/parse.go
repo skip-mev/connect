@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
@@ -39,7 +41,11 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 
 		// Attempt to parse the price.
 		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, ticker.Decimals); err != nil {
-			unresolved[ticker] = fmt.Errorf("failed to parse price %s: %w", instrument.LatestTradePrice, err)
+			wErr := fmt.Errorf("failed to parse price %s:"+
+				" %w", instrument.LatestTradePrice, err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+			}
 		} else {
 			resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 		}

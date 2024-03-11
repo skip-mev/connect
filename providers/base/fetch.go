@@ -173,23 +173,23 @@ func (p *Provider[K, V]) recv(ctx context.Context) {
 
 				// Update the metrics.
 				strID := strings.ToLower(id.String())
-				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Success, p.Type())
-				p.metrics.AddProviderResponse(p.name, providermetrics.Success, p.Type())
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Success, providertypes.OK, p.Type())
+				p.metrics.AddProviderResponse(p.name, providermetrics.Success, providertypes.OK, p.Type())
 				p.metrics.LastUpdated(p.name, strID, p.Type())
 			}
 
 			// Log and record all the unresolved data.
-			for id, err := range unResolved {
+			for id, result := range unResolved {
 				p.logger.Debug(
 					"failed to fetch data",
 					zap.Any("id", id),
-					zap.Error(err),
+					zap.Error(fmt.Errorf("%s", result.Error())),
 				)
 
 				// Update the metrics.
 				strID := strings.ToLower(id.String())
-				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, p.Type())
-				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, p.Type())
+				p.metrics.AddProviderResponseByID(p.name, strID, providermetrics.Failure, result.Code(), p.Type())
+				p.metrics.AddProviderResponse(p.name, providermetrics.Failure, result.Code(), p.Type())
 			}
 		}
 	}
@@ -197,7 +197,7 @@ func (p *Provider[K, V]) recv(ctx context.Context) {
 
 // updateData sets the latest data for the provider. This will only update the data if the timestamp
 // of the data is greater than the current data.
-func (p *Provider[K, V]) updateData(id K, result providertypes.Result[V]) {
+func (p *Provider[K, V]) updateData(id K, result providertypes.ResolvedResult[V]) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
