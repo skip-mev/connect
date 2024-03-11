@@ -130,7 +130,12 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
 	if err := h.start(); err != nil {
-		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids, err)
+		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids,
+			providertypes.NewErrorWithCode(
+				err,
+				providertypes.ErrorWebsocketStartFail,
+			),
+		)
 		return fmt.Errorf("failed to start connection: %w", err)
 	}
 
@@ -284,10 +289,21 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			}
 
 			// Immediately send the response to the response channel. Even if this is
-			// empty, it will be handled by the provider.
-			responseCh <- response
-			h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
-			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
+			// empty, it will be handled by the provider. Note that if the context has been
+			// cancelled, we should not send the response to the channel. Otherwise, we risk
+			// sending a response to a closed channel.
+			select {
+			case <-ctx.Done():
+				h.logger.Debug("context finished")
+				if err := h.close(); err != nil {
+					return errors.ErrCloseWithErr(err)
+				}
+
+				return ctx.Err()
+			case responseCh <- response:
+				h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
+			}
 
 			// If the update messages are not nil, send it to the data provider.
 			if len(updateMessage) != 0 {

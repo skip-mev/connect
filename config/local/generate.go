@@ -17,6 +17,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -92,9 +93,10 @@ var (
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//
-		binance.Name:     binance.DefaultNonUSMarketConfig,
-		coinbaseapi.Name: coinbaseapi.DefaultMarketConfig,
-		coingecko.Name:   coingecko.DefaultMarketConfig,
+		binance.Name:       binance.DefaultNonUSMarketConfig,
+		coinbaseapi.Name:   coinbaseapi.DefaultMarketConfig,
+		coingecko.Name:     coingecko.DefaultMarketConfig,
+		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
@@ -124,6 +126,7 @@ var (
 			Enabled:                 true,
 			PrometheusServerAddress: "0.0.0.0:8002",
 		},
+
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
@@ -145,6 +148,10 @@ var (
 			{
 				Name: coingecko.Name,
 				API:  coingecko.DefaultAPIConfig,
+			},
+			{
+				Name: geckoterminal.Name,
+				API:  geckoterminal.DefaultETHAPIConfig,
 			},
 			// -----------------------------------------------------------	//
 			// ---------------------Start WebSocket Providers--------------	//

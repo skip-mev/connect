@@ -2,9 +2,9 @@ package handlers_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 	"testing"
 	"time"
 
@@ -99,8 +99,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: wserrors.ErrDial,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrDial, providertypes.ErrorWebsocketStartFail),
+					},
 				},
 			},
 		},
@@ -132,8 +134,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: wserrors.ErrCreateMessages,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrCreateMessages, providertypes.ErrorWebsocketStartFail),
+					},
 				},
 			},
 		},
@@ -167,8 +171,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					btcusd: wserrors.ErrWrite,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					btcusd: {
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrWrite, providertypes.ErrorWebsocketStartFail),
+					},
 				},
 			},
 		},
@@ -417,7 +423,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -450,7 +456,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -475,7 +481,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -510,7 +516,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -535,18 +541,20 @@ func TestWebSocketQueryHandler(t *testing.T) {
 
 				dataHandler.On("CreateMessages", mock.Anything).Return([]handlers.WebsocketEncodedMessage{testMessage}, nil).Once()
 
-				resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
 				}
-				resolved2 := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				resolved2 := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					ethusd: {
 						Value: big.NewInt(200),
 					},
 				}
-				unresolved := map[slinkytypes.CurrencyPair]error{
-					atomusd: wserrors.ErrHandleMessage,
+				unresolved := map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					atomusd: {
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorInvalidResponse),
+					},
 				}
 
 				response1 := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
@@ -591,7 +599,7 @@ func TestWebSocketQueryHandler(t *testing.T) {
 			},
 			ids: []slinkytypes.CurrencyPair{btcusd, ethusd},
 			responses: providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
-				Resolved: map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+				Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 					btcusd: {
 						Value: big.NewInt(100),
 					},
@@ -599,8 +607,10 @@ func TestWebSocketQueryHandler(t *testing.T) {
 						Value: big.NewInt(200),
 					},
 				},
-				UnResolved: map[slinkytypes.CurrencyPair]error{
-					atomusd: wserrors.ErrHandleMessage,
+				UnResolved: map[slinkytypes.CurrencyPair]providertypes.UnresolvedResult{
+					atomusd: {
+						ErrorWithCode: providertypes.NewErrorWithCode(wserrors.ErrHandleMessage, providertypes.ErrorInvalidResponse),
+					},
 				},
 			},
 		},
@@ -810,7 +820,8 @@ func TestWebSocketQueryHandler(t *testing.T) {
 						continue
 					}
 
-					require.True(t, errors.Is(err, expectedResponses.UnResolved[id]))
+					require.Equal(t, expectedResponses.UnResolved[id].Code(), err.Code())
+					require.True(t, strings.Contains(err.Error(), expectedResponses.UnResolved[id].Error()))
 					delete(expectedResponses.UnResolved, id)
 					seenResponses[id] = true
 				}

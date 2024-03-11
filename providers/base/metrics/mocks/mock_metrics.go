@@ -14,14 +14,14 @@ type ProviderMetrics struct {
 	mock.Mock
 }
 
-// AddProviderResponse provides a mock function with given fields: providerName, status, providerType
-func (_m *ProviderMetrics) AddProviderResponse(providerName string, status metrics.Status, providerType types.ProviderType) {
-	_m.Called(providerName, status, providerType)
+// AddProviderResponse provides a mock function with given fields: providerName, status, ec, providerType
+func (_m *ProviderMetrics) AddProviderResponse(providerName string, status metrics.Status, ec types.ErrorCode, providerType types.ProviderType) {
+	_m.Called(providerName, status, ec, providerType)
 }
 
-// AddProviderResponseByID provides a mock function with given fields: providerName, id, status, providerType
-func (_m *ProviderMetrics) AddProviderResponseByID(providerName string, id string, status metrics.Status, providerType types.ProviderType) {
-	_m.Called(providerName, id, status, providerType)
+// AddProviderResponseByID provides a mock function with given fields: providerName, id, status, ec, providerType
+func (_m *ProviderMetrics) AddProviderResponseByID(providerName string, id string, status metrics.Status, ec types.ErrorCode, providerType types.ProviderType) {
+	_m.Called(providerName, id, status, ec, providerType)
 }
 
 // LastUpdated provides a mock function with given fields: providerName, id, providerType

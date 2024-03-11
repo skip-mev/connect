@@ -258,13 +258,14 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 				Name: static.Name,
 				API: oracleconfig.APIConfig{
-					Enabled:    true,
-					Timeout:    250 * time.Millisecond,
-					Interval:   250 * time.Millisecond,
-					MaxQueries: 1,
-					URL:        "http://un-used-url.com",
-					Atomic:     true,
-					Name:       static.Name,
+					Enabled:          true,
+					Timeout:          250 * time.Millisecond,
+					Interval:         250 * time.Millisecond,
+					ReconnectTimeout: 250 * time.Millisecond,
+					MaxQueries:       1,
+					URL:              "http://un-used-url.com",
+					Atomic:           true,
+					Name:             static.Name,
 				},
 			})
 
@@ -480,13 +481,14 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
-				Enabled:    true,
-				Timeout:    250 * time.Millisecond,
-				Interval:   250 * time.Millisecond,
-				MaxQueries: 1,
-				URL:        "http://un-used-url.com",
-				Atomic:     true,
-				Name:       static.Name,
+				Enabled:          true,
+				Timeout:          250 * time.Millisecond,
+				Interval:         250 * time.Millisecond,
+				ReconnectTimeout: 250 * time.Millisecond,
+				MaxQueries:       1,
+				URL:              "http://un-used-url.com",
+				Atomic:           true,
+				Name:             static.Name,
 			},
 		})
 
@@ -579,13 +581,14 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: "static-mock-provider",
 			API: oracleconfig.APIConfig{
-				Enabled:    true,
-				Timeout:    250 * time.Millisecond,
-				Interval:   250 * time.Millisecond,
-				MaxQueries: 1,
-				URL:        "http://un-used-url.com",
-				Atomic:     true,
-				Name:       "static-mock-provider",
+				Enabled:          true,
+				Timeout:          250 * time.Millisecond,
+				Interval:         250 * time.Millisecond,
+				ReconnectTimeout: 250 * time.Millisecond,
+				MaxQueries:       1,
+				URL:              "http://un-used-url.com",
+				Atomic:           true,
+				Name:             "static-mock-provider",
 			},
 		})
 
