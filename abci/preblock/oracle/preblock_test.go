@@ -248,6 +248,27 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 }
 
 func (s *PreBlockTestSuite) TestPreBlockStatus() {
+	s.Run("failure - nil request", func() {
+		metrics := metricmock.NewMetrics(s.T())
+		handler := preblock.NewOraclePreBlockHandler(
+			log.NewTestLogger(s.T()),
+			func(_ sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+				return func(_ aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+					return nil
+				}
+			},
+			nil,
+			metrics,
+			nil,
+			nil,
+			nil,
+		)
+
+		// run preblocker
+		_, err := handler.PreBlocker()(s.ctx, nil)
+		s.Require().Error(err)
+	})
+
 	s.Run("success", func() {
 		metrics := metricmock.NewMetrics(s.T())
 		handler := preblock.NewOraclePreBlockHandler(
