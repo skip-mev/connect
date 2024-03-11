@@ -241,6 +241,8 @@ func TestStop(t *testing.T) {
 		)
 		require.NoError(t, err)
 		provider.Stop()
+
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, time.Second*3, time.Millisecond*100)
 	})
 
 	t.Run("no error when running an API provider", func(t *testing.T) {
@@ -367,7 +369,7 @@ func TestWebSocketProvider(t *testing.T) {
 		{
 			name: "can fetch prices and only updates if the timestamp is greater than the current data",
 			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
-				fn := func(responseCh chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]) {
+				fn := func(ctx context.Context, responseCh chan<- providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]) {
 					resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 						pairs[0]: {
 							Value:     big.NewInt(100),
@@ -376,9 +378,13 @@ func TestWebSocketProvider(t *testing.T) {
 					}
 					resp := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
-					logger.Debug("sending response", zap.String("response", resp.String()))
-					time.Sleep(time.Second)
-					responseCh <- resp
+					select {
+					case <-ctx.Done():
+						return
+					case responseCh <- resp:
+						logger.Debug("sending response", zap.String("response", resp.String()))
+						time.Sleep(time.Second)
+					}
 
 					resolved = map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 						pairs[0]: {
@@ -388,9 +394,13 @@ func TestWebSocketProvider(t *testing.T) {
 					}
 					resp = providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](resolved, nil)
 
-					logger.Debug("sending response", zap.String("response", resp.String()))
-					time.Sleep(time.Second)
-					responseCh <- resp
+					select {
+					case <-ctx.Done():
+						return
+					case responseCh <- resp:
+						logger.Debug("sending response", zap.String("response", resp.String()))
+						time.Sleep(time.Second)
+					}
 				}
 
 				return testutils.CreateWebSocketQueryHandlerWithResponseFn[slinkytypes.CurrencyPair, *big.Int](

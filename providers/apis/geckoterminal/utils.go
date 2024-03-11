@@ -38,7 +38,7 @@ var (
 		Atomic:     false,
 		Enabled:    true,
 		Timeout:    500 * time.Millisecond,
-		Interval:   3000 * time.Millisecond,
+		Interval:   5 * time.Second,
 		MaxQueries: 1,
 		URL:        ETH_URL,
 	}
