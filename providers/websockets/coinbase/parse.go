@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 )
@@ -42,14 +44,18 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		// If the sequence number is greater than the sequence number received,
 		// then this message was received out of order. Ignore the message.
 		err := fmt.Errorf("received out of order ticker response message")
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
 	// Convert the price to a big int.
 	price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
 	if err != nil {
-		unResolved[ticker] = err
+		unResolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
+		}
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 

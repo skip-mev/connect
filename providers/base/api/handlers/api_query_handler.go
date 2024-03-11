@@ -190,7 +190,13 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		// Create the URL for the request.
 		url, err := h.apiHandler.CreateURL(ids)
 		if err != nil {
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrCreateURLWithErr(err)))
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrCreateURLWithErr(err),
+					providertypes.ErrorUnableToCreateURL,
+				),
+			),
+			)
 			return nil
 		}
 
@@ -202,7 +208,17 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 
 		resp, err := h.requestHandler.Do(apiCtx, url)
 		if err != nil {
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))
+			status := providertypes.ErrorUnknown
+			if resp != nil {
+				status = providertypes.ErrorCode(resp.StatusCode)
+			}
+
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrDoRequestWithErr(err),
+					status,
+				)),
+			)
 			return nil
 		}
 
@@ -210,9 +226,19 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		var response providertypes.GetResponse[K, V]
 		switch {
 		case resp.StatusCode == http.StatusTooManyRequests:
-			response = providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrRateLimit)
+			response = providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrRateLimit,
+					providertypes.ErrorRateLimitExceeded,
+				),
+			)
 		case resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices:
-			response = providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode))
+			response = providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode),
+					providertypes.ErrorCode(resp.StatusCode),
+				),
+			)
 		default:
 			response = h.apiHandler.ParseResponse(ids, resp)
 		}
