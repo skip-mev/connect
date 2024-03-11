@@ -1,10 +1,11 @@
 package base
 
 import (
+	"go.uber.org/zap"
+
 	apihandler "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"go.uber.org/zap"
 )
 
 // SetIDs sets the set of IDs that the provider is responsible for fetching data for.
