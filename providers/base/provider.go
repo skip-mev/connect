@@ -170,7 +170,8 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 func (p *Provider[K, V]) Stop() {
 	mainCtx, cancelMain := p.getMainCtx()
 	if mainCtx == nil {
-		p.logger.Info("provider was never started")
+		p.logger.Info("provider is not running")
+
 		return
 	}
 

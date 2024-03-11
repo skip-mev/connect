@@ -2,6 +2,7 @@ package orchestrator_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -107,12 +108,13 @@ func TestInit(t *testing.T) {
 		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
 			Name: "unsupported",
 			API: config.APIConfig{
-				Enabled:    true,
-				Timeout:    5,
-				Interval:   5,
-				MaxQueries: 5,
-				URL:        "https://example.com",
-				Name:       "unsupported",
+				Enabled:          true,
+				Timeout:          5,
+				Interval:         5,
+				MaxQueries:       5,
+				ReconnectTimeout: 5 * time.Second,
+				URL:              "https://example.com",
+				Name:             "unsupported",
 			},
 		})
 
