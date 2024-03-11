@@ -159,13 +159,13 @@ build-and-start-app: build-configs start-app
 ###                               Testing                                   ###
 ###############################################################################
 
-test-integration: docker-build
+test-integration: tidy docker-build
 	@echo "Running integration tests..."
-	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race -timeout 30m
+	@cd ./tests/integration &&  go test -p 1 -v -race -timeout 30m
 
-test-petri-integ: docker-build
+test-petri-integ: tidy docker-build
 	@echo "Running petri integration tests..."
-	@cd ./tests/petri && go mod tidy &&  go test -p 1 -v -race -timeout 30m
+	@cd ./tests/petri &&  go test -p 1 -v -race -timeout 30m
 
 test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
@@ -223,6 +223,7 @@ proto-update-deps:
 
 tidy:
 	@go mod tidy
+	@cd ./tests/integration && go mod tidy
 
 .PHONY: tidy
 
