@@ -91,7 +91,7 @@
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 3000000000,
+        "interval": 5000000000,
         "maxQueries": 1,
         "atomic": false,
         "url": "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/%s",

@@ -655,6 +655,7 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 			request: func() *cometabci.RequestProcessProposal {
 				return s.createRequestProcessProposal(
 					[][]byte{},
+					cometabci.CommitInfo{},
 					1,
 				)
 			},
@@ -674,8 +675,14 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					1,
 				)
 			},
@@ -691,10 +698,16 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 		{
 			name: "rejects a block with missing vote extensions",
 			request: func() *cometabci.RequestProcessProposal {
-				proposal := [][]byte{}
+				var proposal [][]byte
+
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{},
+				}
 
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					3,
 				)
 			},
@@ -721,8 +734,19 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{
+						{
+							Validator:   valVoteInfo.Validator,
+							BlockIdFlag: valVoteInfo.BlockIdFlag,
+						},
+					},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					3,
 				)
 			},
@@ -763,8 +787,28 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{
+						{
+							Validator:   valVoteInfo1.Validator,
+							BlockIdFlag: valVoteInfo1.BlockIdFlag,
+						},
+						{
+							Validator:   valVoteInfo2.Validator,
+							BlockIdFlag: valVoteInfo2.BlockIdFlag,
+						},
+						{
+							Validator:   valVoteInfo3.Validator,
+							BlockIdFlag: valVoteInfo3.BlockIdFlag,
+						},
+					},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
+
 					3,
 				)
 			},
@@ -794,13 +838,13 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 		{
 			name: "rejects a block with an invalid vote extension",
 			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
+				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				valVoteInfo1.VoteExtension = []byte("bad vote extension")
+				valVoteInfo.VoteExtension = []byte("bad vote extension")
 
 				_, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
-					[]cometabci.ExtendedVoteInfo{valVoteInfo1},
+					[]cometabci.ExtendedVoteInfo{valVoteInfo},
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -810,8 +854,19 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{
+						{
+							Validator:   valVoteInfo.Validator,
+							BlockIdFlag: valVoteInfo.BlockIdFlag,
+						},
+					},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					3,
 				)
 			},
@@ -841,8 +896,19 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{
+						{
+							Validator:   valVoteInfo.Validator,
+							BlockIdFlag: valVoteInfo.BlockIdFlag,
+						},
+					},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					3,
 				)
 			},
@@ -872,8 +938,19 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{
+						{
+							Validator:   valVoteInfo.Validator,
+							BlockIdFlag: valVoteInfo.BlockIdFlag,
+						},
+					},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					3,
 				)
 			},
@@ -907,8 +984,19 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 					[]byte("tx1"),
 				}
 
+				lastCommit := cometabci.CommitInfo{
+					Round: 3,
+					Votes: []cometabci.VoteInfo{
+						{
+							Validator:   valVoteInfo.Validator,
+							BlockIdFlag: valVoteInfo.BlockIdFlag,
+						},
+					},
+				}
+
 				return s.createRequestProcessProposal(
 					proposal,
+					lastCommit,
 					3,
 				)
 			},
@@ -1072,7 +1160,12 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		)
 		s.Require().NoError(err)
 
-		req := s.createRequestProcessProposal([][]byte{extInfoBz}, 4)
+		lastCommit := cometabci.CommitInfo{
+			Round: 3,
+			Votes: []cometabci.VoteInfo{},
+		}
+
+		req := s.createRequestProcessProposal([][]byte{extInfoBz}, lastCommit, 4)
 		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
 			// the second arg shld be a duration
 			latency := args.Get(1).(time.Duration)
@@ -1111,7 +1204,12 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			Err: fmt.Errorf("error in validate vote extensions"),
 		}
 
-		req := s.createRequestProcessProposal([][]byte{extInfoBz}, 4)
+		lastCommit := cometabci.CommitInfo{
+			Round: 3,
+			Votes: []cometabci.VoteInfo{},
+		}
+
+		req := s.createRequestProcessProposal([][]byte{extInfoBz}, lastCommit, 4)
 		metricsmocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
 			// the second arg shld be a duration
 			latency := args.Get(1).(time.Duration)
@@ -1525,10 +1623,12 @@ func (s *ProposalsTestSuite) createRequestPrepareProposal(
 
 func (s *ProposalsTestSuite) createRequestProcessProposal(
 	proposal [][]byte,
+	lastCommit cometabci.CommitInfo,
 	height int64,
 ) *cometabci.RequestProcessProposal {
 	return &cometabci.RequestProcessProposal{
-		Txs:    proposal,
-		Height: height,
+		Txs:                proposal,
+		ProposedLastCommit: lastCommit,
+		Height:             height,
 	}
 }
