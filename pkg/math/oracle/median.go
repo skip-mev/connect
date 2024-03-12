@@ -58,7 +58,7 @@ func (m *MedianAggregator) AggregatedData() {
 		target, ok := m.cfg.Tickers[ticker]
 		if !ok {
 			m.logger.Error(
-				"failed to get ticker",
+				"failed to get ticker; skipping aggregation",
 				zap.String("ticker", ticker),
 			)
 
@@ -79,6 +79,7 @@ func (m *MedianAggregator) AggregatedData() {
 				"insufficient amount of converted prices",
 				zap.String("ticker", ticker),
 				zap.Int("num_converted_prices", len(convertedPrices)),
+				zap.Any("converted_prices", convertedPrices),
 				zap.Int("min_provider_count", int(target.MinProviderCount)),
 			)
 
@@ -107,6 +108,16 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 	target mmtypes.Ticker,
 	paths mmtypes.Paths,
 ) []*big.Int {
+	m.logger.Debug("calculating converted prices", zap.String("ticker", target.String()))
+	if len(paths.Paths) == 0 {
+		m.logger.Error(
+			"no conversion paths",
+			zap.String("ticker", target.String()),
+		)
+
+		return nil
+	}
+
 	convertedPrices := make([]*big.Int, 0)
 	for _, path := range paths.Paths {
 		// Ensure that the number of operations is valid.
@@ -123,7 +134,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 		// Calculate the converted price.
 		adjustedPrice, err := m.CalculateAdjustedPrice(target, path.Operations)
 		if err != nil {
-			m.logger.Error(
+			m.logger.Debug(
 				"failed to calculate converted price",
 				zap.Error(err),
 				zap.String("ticker", target.String()),
@@ -134,6 +145,12 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 		}
 
 		convertedPrices = append(convertedPrices, adjustedPrice)
+		m.logger.Debug(
+			"calculated converted price",
+			zap.String("ticker", target.String()),
+			zap.String("price", adjustedPrice.String()),
+			zap.Any("conversions", path.Operations),
+		)
 	}
 
 	return convertedPrices
