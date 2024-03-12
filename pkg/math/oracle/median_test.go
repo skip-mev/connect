@@ -8,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +21,7 @@ func TestAggregateData(t *testing.T) {
 	}{
 		{
 			name:           "no data",
-			malleate:       func(aggregator *types.PriceAggregator) {},
+			malleate:       func(*types.PriceAggregator) {},
 			expectedPrices: types.TickerPrices{},
 		},
 		{
@@ -107,6 +108,28 @@ func TestAggregateData(t *testing.T) {
 				USDT_USD: createPrice(1.15, USDT_USD.Decimals), // average of 1.1, 1.2
 			},
 		},
+		{
+			name: "coinbase USDT direct, kucoin BTC/USDT inverted, index BTC/USD direct feeds for USDT/USD - success",
+			malleate: func(aggregator *types.PriceAggregator) {
+				prices := types.TickerPrices{
+					USDT_USD: createPrice(1.0, USDT_USD.Decimals),
+				}
+				aggregator.SetProviderData(coinbase.Name, prices)
+
+				prices = types.TickerPrices{
+					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+				}
+				aggregator.SetProviderData(kucoin.Name, prices)
+
+				indexPrices := types.TickerPrices{
+					BTC_USD: createPrice(77_000, BTC_USD.Decimals),
+				}
+				aggregator.SetAggregatedData(indexPrices)
+			},
+			expectedPrices: types.TickerPrices{
+				USDT_USD: createPrice(1.05, USDT_USD.Decimals), // average of 1.1, 1.0
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -164,14 +187,14 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate:       func(aggregator *types.PriceAggregator) {},
+			malleate:       func(*types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
 			name:           "no conversion paths",
 			target:         BTC_USD,
 			paths:          mmtypes.Paths{},
-			malleate:       func(aggregator *types.PriceAggregator) {},
+			malleate:       func(*types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
@@ -184,7 +207,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate:       func(aggregator *types.PriceAggregator) {},
+			malleate:       func(*types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
@@ -445,7 +468,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate:      func(aggregator *types.PriceAggregator) {},
+			malleate:      func(*types.PriceAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
