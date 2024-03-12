@@ -38,7 +38,7 @@ func DefaultGenesisState() *GenesisState {
 }
 
 // Validate validates the currency-pair geneses that the Genesis-State is composed of
-// valid CurrencyPairGeneses, and that no ID for a currency-pair is repeated.
+// valid CurrencyPairGenesis, and that no ID for a currency-pair is repeated.
 func (gs *GenesisState) Validate() error {
 	ids := make(map[uint64]struct{})
 	cps := make(map[string]struct{})
