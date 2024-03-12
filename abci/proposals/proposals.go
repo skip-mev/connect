@@ -17,7 +17,7 @@ import (
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
-// The proposalhandler is responsible primarily for:
+// ProposalHandler is responsible primarily for:
 //  1. Filling a proposal with transactions.
 //  2. Injecting vote extensions into the proposal (if vote extensions are enabled).
 //  3. Verifying that the vote extensions injected are valid.

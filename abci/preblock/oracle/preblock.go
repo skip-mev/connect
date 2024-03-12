@@ -130,7 +130,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, err
 		}
 
-		// Aggregate all of the oracle vote extensions into a single set of prices.
+		// Aggregate all oracle vote extensions into a single set of prices.
 		prices, err = h.voteAggregator.AggregateOracleVotes(ctx, votes)
 		if err != nil {
 			h.logger.Error(

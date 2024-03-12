@@ -1314,10 +1314,10 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		s.ctx = s.ctx.WithBlockHeight(4)
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
-			// the second arg shld be a duration
+			// the second arg should be a duration
 			latency := args.Get(1).(time.Duration)
-			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
-			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored wrapped prepare-proposal latency
+			s.Require().True(latency >= 100*time.Millisecond) // should have included latency from validate vote extensions
+			s.Require().True(latency < 300*time.Millisecond)  // should have ignored wrapped prepare-proposal latency
 		}).Once()
 		metricsMocks.On("AddABCIRequest", servicemetrics.PrepareProposal, servicemetrics.Success{}).Once()
 
@@ -1350,9 +1350,9 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 		)
 
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.PrepareProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
-			// the second arg shld be a duration
+			// the second arg should be a duration
 			latency := args.Get(1).(time.Duration)
-			s.Require().True(latency >= 100*time.Millisecond) // shld have included latency from validate vote extensions
+			s.Require().True(latency >= 100*time.Millisecond) // should have included latency from validate vote extensions
 		}).Once()
 
 		expErr := proposals.InvalidExtendedCommitInfoError{
@@ -1397,10 +1397,10 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		req := s.createRequestProcessProposal([][]byte{extInfoBz}, lastCommit, 4)
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
-			// the second arg shld be a duration
+			// the second arg should be a duration
 			latency := args.Get(1).(time.Duration)
-			s.Require().True(latency >= 100*time.Millisecond) // shld have included validate vote extensions latency
-			s.Require().True(latency < 300*time.Millisecond)  // shld have ignored the wrapped processProposal latency
+			s.Require().True(latency >= 100*time.Millisecond) // should have included validate vote extensions latency
+			s.Require().True(latency < 300*time.Millisecond)  // should have ignored the wrapped processProposal latency
 		}).Once()
 		metricsMocks.On("AddABCIRequest", servicemetrics.ProcessProposal, servicemetrics.Success{}).Once()
 		metricsMocks.On("ObserveMessageSize", servicemetrics.ExtendedCommit, mock.Anything)
@@ -1442,7 +1442,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		req := s.createRequestProcessProposal([][]byte{extInfoBz}, lastCommit, 4)
 		metricsMocks.On("ObserveABCIMethodLatency", servicemetrics.ProcessProposal, mock.Anything).Return().Run(func(args mock.Arguments) {
-			// the second arg shld be a duration
+			// the second arg should be a duration
 			latency := args.Get(1).(time.Duration)
 			s.Require().True(latency >= 100*time.Millisecond) // should have included validate vote extensions latency
 		}).Once()

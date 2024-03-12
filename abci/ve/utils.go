@@ -111,8 +111,6 @@ func ValidateVoteExtensions(
 	valStore ValidatorStore,
 	extCommit cometabci.ExtendedCommitInfo,
 ) error {
-	// Get values from context
-	cp := ctx.ConsensusParams()
 	currentHeight := ctx.HeaderInfo().Height
 	chainID := ctx.HeaderInfo().ChainID
 	commitInfo := ctx.CometInfo().GetLastCommit()
@@ -125,7 +123,7 @@ func ValidateVoteExtensions(
 	// Start checking vote extensions only **after** the vote extensions enable
 	// height, because when `currentHeight == VoteExtensionsEnableHeight`
 	// PrepareProposal doesn't get any vote extensions in its request.
-	extsEnabled := cp.Abci != nil && currentHeight > cp.Abci.VoteExtensionsEnableHeight && cp.Abci.VoteExtensionsEnableHeight != 0
+	extensionsEnabled := VoteExtensionsEnabled(ctx)
 	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
 		var buf bytes.Buffer
 		if err := protoio.NewDelimitedWriter(&buf).WriteMsg(msg); err != nil {
@@ -145,7 +143,7 @@ func ValidateVoteExtensions(
 	for _, vote := range extCommit.Votes {
 		totalVP += vote.Validator.Power
 
-		if extsEnabled {
+		if extensionsEnabled {
 			if vote.BlockIdFlag == cmtproto.BlockIDFlagCommit && len(vote.ExtensionSignature) == 0 {
 				return fmt.Errorf("vote extension signature is missing; validator addr %s",
 					vote.Validator.String(),
@@ -180,7 +178,7 @@ func ValidateVoteExtensions(
 			continue
 		}
 
-		if !extsEnabled {
+		if !extensionsEnabled {
 			continue
 		}
 
