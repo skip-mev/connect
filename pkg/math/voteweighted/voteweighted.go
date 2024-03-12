@@ -30,6 +30,10 @@ type (
 		VoteWeight math.Int
 		Price      *big.Int
 	}
+
+	// ThresholdDetermination calculates (and potentially alters) the weights of individual votes.
+	// It returns the sum of weights considered for a given currency pair.
+	ThresholdDetermination func(currentPrice *big.Int, proposedPrice *big.Int, priceInfo PriceInfo) *big.Int
 )
 
 // MedianFromContext returns a new Median aggregate function that is parametrized by the
@@ -63,67 +67,8 @@ func Median(
 	threshold math.LegacyDec,
 ) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
 	return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
-		priceInfo := make(map[slinkytypes.CurrencyPair]PriceInfo)
-
-		// Iterate through all providers and store stake weight + price for each currency pair.
-		for valAddress, validatorPrices := range providers {
-			// Retrieve the validator from the validator store and get its vote weight.
-			address, err := sdk.ConsAddressFromBech32(valAddress)
-			if err != nil {
-				logger.Info(
-					"failed to parse validator address; skipping validator prices",
-					"validator_address", valAddress,
-					"err", err,
-				)
-
-				continue
-			}
-
-			validator, err := validatorStore.ValidatorByConsAddr(ctx, address)
-			if err != nil {
-				logger.Info(
-					"failed to retrieve validator from store; skipping validator prices",
-					"validator_address", valAddress,
-					"err", err,
-				)
-
-				continue
-			}
-
-			voteWeight := validator.GetBondedTokens()
-
-			// Iterate through all prices and store the price + vote weight for each currency pair.
-			for currencyPair, price := range validatorPrices {
-				// Only include prices that are not nil.
-				if price == nil {
-					logger.Info(
-						"price is nil",
-						"currency_pair", currencyPair.String(),
-						"validator_address", valAddress,
-					)
-
-					continue
-				}
-
-				// Initialize the price info if it does not exist for the given currency pair.
-				if _, ok := priceInfo[currencyPair]; !ok {
-					priceInfo[currencyPair] = PriceInfo{
-						Prices:      make([]PricePerValidator, 0),
-						TotalWeight: math.ZeroInt(),
-					}
-				}
-
-				// Update the price info.
-				cpInfo := priceInfo[currencyPair]
-				priceInfo[currencyPair] = PriceInfo{
-					Prices: append(cpInfo.Prices, PricePerValidator{
-						VoteWeight: voteWeight,
-						Price:      price,
-					}),
-					TotalWeight: cpInfo.TotalWeight.Add(voteWeight),
-				}
-			}
-		}
+		// Calculate map of CurrencyPair to PriceInfo
+		priceInfo := PriceInfoFromProviders(ctx, logger, validatorStore, providers)
 
 		// Iterate through all prices and compute the median price for each asset.
 		prices := make(map[slinkytypes.CurrencyPair]*big.Int)
@@ -160,6 +105,76 @@ func Median(
 	}
 }
 
+func PriceInfoFromProviders(
+	ctx sdk.Context,
+	logger log.Logger,
+	validatorStore ValidatorStore,
+	providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int],
+) map[slinkytypes.CurrencyPair]PriceInfo {
+	priceInfo := make(map[slinkytypes.CurrencyPair]PriceInfo)
+
+	// Iterate through all providers and store stake weight + price for each currency pair.
+	for valAddress, validatorPrices := range providers {
+		// Retrieve the validator from the validator store and get its vote weight.
+		address, err := sdk.ConsAddressFromBech32(valAddress)
+		if err != nil {
+			logger.Info(
+				"failed to parse validator address; skipping validator prices",
+				"validator_address", valAddress,
+				"err", err,
+			)
+
+			continue
+		}
+
+		validator, err := validatorStore.ValidatorByConsAddr(ctx, address)
+		if err != nil {
+			logger.Info(
+				"failed to retrieve validator from store; skipping validator prices",
+				"validator_address", valAddress,
+				"err", err,
+			)
+
+			continue
+		}
+
+		voteWeight := validator.GetBondedTokens()
+
+		// Iterate through all prices and store the price + vote weight for each currency pair.
+		for currencyPair, price := range validatorPrices {
+			// Only include prices that are not nil.
+			if price == nil {
+				logger.Info(
+					"price is nil",
+					"currency_pair", currencyPair.String(),
+					"validator_address", valAddress,
+				)
+
+				continue
+			}
+
+			// Initialize the price info if it does not exist for the given currency pair.
+			if _, ok := priceInfo[currencyPair]; !ok {
+				priceInfo[currencyPair] = PriceInfo{
+					Prices:      make([]PricePerValidator, 0),
+					TotalWeight: math.ZeroInt(),
+				}
+			}
+
+			// Update the price info.
+			cpInfo := priceInfo[currencyPair]
+			priceInfo[currencyPair] = PriceInfo{
+				Prices: append(cpInfo.Prices, PricePerValidator{
+					VoteWeight: voteWeight,
+					Price:      price,
+				}),
+				TotalWeight: cpInfo.TotalWeight.Add(voteWeight),
+			}
+		}
+	}
+	return priceInfo
+}
+
 // ComputeMedian computes the stake-weighted median price for a given asset.
 func ComputeMedian(priceInfo PriceInfo) *big.Int {
 	// Sort the prices by price.
@@ -193,4 +208,64 @@ func ComputeMedian(priceInfo PriceInfo) *big.Int {
 	}
 
 	return nil
+}
+
+func ConstrainedSWMedian(
+	logger log.Logger,
+	validatorStore ValidatorStore,
+	threshold math.LegacyDec,
+	oracleKeeper OracleKeeper,
+	thresholdDetermination ThresholdDetermination,
+) aggregator.AggregateFnFromContext[string, map[slinkytypes.CurrencyPair]*big.Int] {
+	return func(ctx sdk.Context) aggregator.AggregateFn[string, map[slinkytypes.CurrencyPair]*big.Int] {
+		// providers is a map of consensus-address to map of CurrencyPair to Price
+		// it contains the mappings of price points for each validator
+		return func(providers aggregator.AggregatedProviderData[string, map[slinkytypes.CurrencyPair]*big.Int]) map[slinkytypes.CurrencyPair]*big.Int {
+			// Calculate map of CurrencyPair to PriceInfo
+			priceInfo := PriceInfoFromProviders(ctx, logger, validatorStore, providers)
+			// Iterate through all prices and compute the median price for each asset.
+			prices := make(map[slinkytypes.CurrencyPair]*big.Int)
+			totalBondedTokens, err := validatorStore.TotalBondedTokens(ctx)
+			if err != nil {
+				// This should never error.
+				panic(err)
+			}
+			for currencyPair, info := range priceInfo {
+				// The total voting power % that submitted a price update for the given currency pair must be
+				// greater than the threshold to be included in the final oracle price.
+				// The thresholdDetermination function is used to alter the considered weight of votes.
+				quote, err := oracleKeeper.GetPriceForCurrencyPair(ctx, currencyPair)
+				if err != nil {
+					logger.Error(
+						"found currency pair in votes which doesn't exist in module state",
+						"currency pair", currencyPair.String(),
+						"error", err,
+					)
+					continue
+				}
+				currentPrice := quote.Price.BigInt()
+				// newPrice is the calculated stake-weighted median
+				newPrice := ComputeMedian(info)
+				vpConsidered := thresholdDetermination(currentPrice, newPrice, info)
+				if percentConsidered := math.LegacyNewDecFromBigInt(vpConsidered).Quo(math.LegacyNewDecFromInt(totalBondedTokens)); percentConsidered.GTE(threshold) {
+					prices[currencyPair] = newPrice
+					logger.Info(
+						"computed stake-weighted median price for currency pair",
+						"currency_pair", currencyPair.String(),
+						"percent_considered", percentConsidered.String(),
+						"threshold", threshold.String(),
+						"final_price", prices[currencyPair].String(),
+					)
+				} else {
+					logger.Info(
+						"price update rejected by threshold determination for currency pair",
+						"currency_pair", currencyPair.String(),
+						"threshold", threshold.String(),
+						"percent_considered", percentConsidered.String(),
+					)
+				}
+			}
+			return prices
+		}
+	}
 }
