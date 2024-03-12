@@ -99,7 +99,10 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 			"proposed last commit round", req.ProposedLastCommit.Round,
 		)
 
-		return fmt.Errorf("mismatched round in encoded extended commit info and proposed last commit")
+		return fmt.Errorf("mismatched round in encoded extended commit info and proposed last commit: %d != %d",
+			extendedCommitInfo.Round,
+			req.ProposedLastCommit.Round,
+		)
 	}
 
 	if len(extendedCommitInfo.Votes) != len(req.ProposedLastCommit.Votes) {
