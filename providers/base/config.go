@@ -1,10 +1,11 @@
 package base
 
 import (
+	"go.uber.org/zap"
+
 	apihandler "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"go.uber.org/zap"
 )
 
 // UpdateOption are the options that can be used to update the provider.
