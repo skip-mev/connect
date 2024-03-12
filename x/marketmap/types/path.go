@@ -172,7 +172,7 @@ func (p *Paths) ValidateBasic(cp slinkytypes.CurrencyPair) error {
 
 		route := path.ShowRoute()
 		if _, ok := routes[route]; ok {
-			return fmt.Errorf("duplicate path found: %s", route)
+			return fmt.Errorf("duplicate route found: %s", route)
 		}
 		routes[route] = struct{}{}
 
