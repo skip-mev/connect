@@ -2,6 +2,7 @@ package ve
 
 import (
 	"fmt"
+
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	cometabci "github.com/cometbft/cometbft/abci/types"
@@ -81,15 +82,11 @@ func NewDefaultValidateVoteExtensionsFn(validatorStore baseapp.ValidatorStore) V
 
 		// include extra validation found here:
 		// https://github.com/cometbft/cometbft/blob/2cd0d1a33cdb6a2c76e6e162d892624492c26290/types/block.go#L765-L800
-
-		// Get values from context
-		cp := ctx.ConsensusParams()
-		currentHeight := ctx.BlockHeight()
-		extsEnabled := cp.Abci != nil && currentHeight > cp.Abci.VoteExtensionsEnableHeight && cp.Abci.VoteExtensionsEnableHeight != 0
-		if extsEnabled {
-			for _, vote := range info.Votes {
+		extensionsEnabled := VoteExtensionsEnabled(ctx)
+		for _, vote := range info.Votes {
+			if extensionsEnabled {
 				if vote.BlockIdFlag == cmtproto.BlockIDFlagCommit && len(vote.ExtensionSignature) == 0 {
-					return fmt.Errorf("vote extension signature is missing; validator addr %s, timestamp %v",
+					return fmt.Errorf("vote extension signature is missing; validator addr %s",
 						vote.Validator.String(),
 					)
 				}
@@ -103,8 +100,18 @@ func NewDefaultValidateVoteExtensionsFn(validatorStore baseapp.ValidatorStore) V
 						vote.Validator.String(),
 					)
 				}
+			} else {
+				if len(vote.VoteExtension) != 0 {
+					return fmt.Errorf("vote extension present but extensions disabled; validator addr %s",
+						vote.Validator.String(),
+					)
+				}
+				if len(vote.ExtensionSignature) != 0 {
+					return fmt.Errorf("vote extension signature present but extensions disabled; validator addr %s",
+						vote.Validator.String(),
+					)
+				}
 			}
-
 		}
 
 		return nil
