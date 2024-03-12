@@ -108,7 +108,7 @@ func (sla *PriceFeedSLA) ValidateBasic() error {
 	}
 
 	if sla.MinimumBlockUpdates >= sla.MaximumViableWindow {
-		return fmt.Errorf("sla %s must have a minimum block updates less than or equal to the maximum viable window", sla.ID)
+		return fmt.Errorf("sla %s must have a minimum block updates less than the maximum viable window", sla.ID)
 	}
 
 	if sla.Frequency == 0 {
