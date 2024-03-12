@@ -6,10 +6,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/types"
 )
 
-const (
-	MaxMetadataJSONFieldLength = 2048
-)
-
 // ValidateBasic performs aggregate validation for all fields in the MarketMap. We consider
 // the market map to be valid iff:
 //
