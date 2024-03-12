@@ -3,11 +3,12 @@ package orchestrator
 import (
 	"math/big"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 // UpdateWithMarketMap updates the orchestrator's market map and updates the providers'
