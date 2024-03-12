@@ -2,6 +2,7 @@ package orchestrator
 
 import (
 	"fmt"
+	"maps"
 	"math/big"
 	"sync"
 
@@ -60,6 +61,8 @@ type (
 		// Enabled is a flag that indicates whether the provider is enabled. A provider
 		// is enabled iff it is configured with a market map and the market map has tickers.
 		Enabled bool
+		// Cfg is the provider configuration.
+		Cfg config.ProviderConfig
 	}
 )
 
@@ -136,13 +139,9 @@ func (o *ProviderOrchestrator) CreateProviderState(
 	var provider *types.PriceProvider
 	switch {
 	case cfg.API.Enabled:
-		if o.apiQueryHandlerFactory == nil {
-			return ProviderState{}, fmt.Errorf("cannot create provider; api query handler factory is not set")
-		}
-
-		queryHandler, err := o.apiQueryHandlerFactory(o.logger, cfg, o.apiMetrics, market)
+		queryHandler, err := o.createAPIQueryHandler(cfg, market)
 		if err != nil {
-			return ProviderState{}, fmt.Errorf("failed to create %s's API query handler: %w", cfg.Name, err)
+			return ProviderState{}, fmt.Errorf("failed to create %s's api query handler: %w", cfg.Name, err)
 		}
 
 		provider, err = types.NewPriceProvider(
@@ -157,11 +156,7 @@ func (o *ProviderOrchestrator) CreateProviderState(
 			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
 		}
 	case cfg.WebSocket.Enabled:
-		if o.webSocketQueryHandlerFactory == nil {
-			return ProviderState{}, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
-		}
-
-		queryHandler, err := o.webSocketQueryHandlerFactory(o.logger, cfg, o.wsMetrics, market)
+		queryHandler, err := o.createWebSocketQueryHandler(cfg, market)
 		if err != nil {
 			return ProviderState{}, fmt.Errorf("failed to create %s's web socket query handler: %w", cfg.Name, err)
 		}
@@ -185,6 +180,7 @@ func (o *ProviderOrchestrator) CreateProviderState(
 		Provider: provider,
 		Market:   market,
 		Enabled:  len(market.GetTickers()) > 0,
+		Cfg:      cfg,
 	}, nil
 }
 
@@ -193,5 +189,33 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	return o.providers
+	// Copy the providers
+	providers := make(map[string]ProviderState, len(o.providers))
+	maps.Copy(providers, o.providers)
+
+	return providers
+}
+
+// createAPIQueryHandler creates a new API query handler for the given provider configuration.
+func (o *ProviderOrchestrator) createAPIQueryHandler(
+	cfg config.ProviderConfig,
+	market types.ProviderMarketMap,
+) (types.PriceAPIQueryHandler, error) {
+	if o.apiQueryHandlerFactory == nil {
+		return nil, fmt.Errorf("cannot create provider; api query handler factory is not set")
+	}
+
+	return o.apiQueryHandlerFactory(o.logger, cfg, o.apiMetrics, market)
+}
+
+// createWebSocketQueryHandler creates a new web socket query handler for the given provider configuration.
+func (o *ProviderOrchestrator) createWebSocketQueryHandler(
+	cfg config.ProviderConfig,
+	market types.ProviderMarketMap,
+) (types.PriceWebSocketQueryHandler, error) {
+	if o.webSocketQueryHandlerFactory == nil {
+		return nil, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
+	}
+
+	return o.webSocketQueryHandlerFactory(o.logger, cfg, o.wsMetrics, market)
 }

@@ -43,13 +43,14 @@ const (
 var (
 	// DefaultAPIConfig is the default configuration for the CoinGecko API.
 	DefaultAPIConfig = config.APIConfig{
-		Name:       Name,
-		Atomic:     true,
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   15 * time.Second, // Coingecko has a very low rate limit.
-		MaxQueries: 1,
-		URL:        URL,
+		Name:             Name,
+		Atomic:           true,
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         15 * time.Second, // Coingecko has a very low rate limit.
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		URL:              URL,
 	}
 
 	// DefaultMarketConfig is the default market configuration for CoinGecko.
