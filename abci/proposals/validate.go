@@ -101,6 +101,11 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 		return fmt.Errorf("mismatched length in encoded extended commit info and proposed last commit")
 	}
 
+	requestCommits := make(map[string]cometabci.VoteInfo, len(extendedCommitInfo.Votes))
+	for _, vote := range req.ProposedLastCommit.Votes {
+		requestCommits[string(vote.Validator.Address)] = vote
+	}
+
 	// Validate all oracle vote extensions.  And cross-reference them with the ProposedLastCommit
 	for _, vote := range extendedCommitInfo.Votes {
 		address := sdk.ConsAddress{}
@@ -111,6 +116,41 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 			)
 
 			return err
+		}
+
+		reqVote, found := requestCommits[string(address)]
+		if !found {
+			h.logger.Error(
+				"no vote for validator in extended commit vote found in proposed last commit",
+				"height", req.Height,
+				"validator", string(address),
+			)
+
+			return fmt.Errorf("no vote for validator in extended commit vote found in proposed last commit")
+		}
+
+		if reqVote.Validator.Power != vote.Validator.Power {
+			h.logger.Error(
+				"mismatched validator power between extended commit vote and last proposed commit",
+				"height", req.Height,
+				"validator", string(address),
+				"extended vote power", vote.Validator.Power,
+				"last proposed vote power", reqVote.Validator.Power,
+			)
+
+			return fmt.Errorf("mismatched validator power between extended commit vote and last proposed commit")
+		}
+
+		if reqVote.BlockIdFlag != vote.BlockIdFlag {
+			h.logger.Error(
+				"mismatched block ID flag between extended commit vote and last proposed commit",
+				"height", req.Height,
+				"validator", string(address),
+				"extended vote flag", vote.BlockIdFlag,
+				"last proposed vote flag", reqVote.BlockIdFlag,
+			)
+
+			return fmt.Errorf("mismatched block ID flag between extended commit vote and last proposed commit")
 		}
 
 		voteExt, err := h.voteExtensionCodec.Decode(vote.VoteExtension)
