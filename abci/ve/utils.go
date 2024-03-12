@@ -159,7 +159,7 @@ func ValidateVoteExtensions(
 					vote.Validator.String(),
 				)
 			}
-		} else {
+		} else { // vote extensions disabled
 			if len(vote.VoteExtension) != 0 {
 				return fmt.Errorf("vote extension present but extensions disabled; validator addr %s",
 					vote.Validator.String(),
@@ -170,15 +170,13 @@ func ValidateVoteExtensions(
 					vote.Validator.String(),
 				)
 			}
+
+			continue
 		}
 
 		// Only check + include power if the vote is a commit vote. There must be super-majority, otherwise the
 		// previous block (the block vote is for) could not have been committed.
 		if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit {
-			continue
-		}
-
-		if !extensionsEnabled {
 			continue
 		}
 
@@ -217,13 +215,16 @@ func ValidateVoteExtensions(
 		return fmt.Errorf("total voting power must be positive, got: %d", totalVP)
 	}
 
-	// If the sum of the voting power has not reached (2/3 + 1) we need to error.
-	if requiredVP := ((totalVP * 2) / 3) + 1; sumVP < requiredVP {
-		return fmt.Errorf(
-			"insufficient cumulative voting power received to verify vote extensions; got: %d, expected: >=%d",
-			sumVP, requiredVP,
-		)
+	if extensionsEnabled {
+		// If the sum of the voting power has not reached (2/3 + 1) we need to error.
+		if requiredVP := ((totalVP * 2) / 3) + 1; sumVP < requiredVP {
+			return fmt.Errorf(
+				"insufficient cumulative voting power received to verify vote extensions; got: %d, expected: >=%d",
+				sumVP, requiredVP,
+			)
+		}
 	}
+
 	return nil
 }
 
