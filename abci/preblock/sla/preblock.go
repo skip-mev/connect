@@ -1,6 +1,8 @@
 package sla
 
 import (
+	"fmt"
+
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -12,7 +14,7 @@ import (
 	slatypes "github.com/skip-mev/slinky/x/sla/types"
 )
 
-// PreBlockerHandler is responsible for aggregating information about
+// PreBlockHandler is responsible for aggregating information about
 // oracle price feeds that each validator is including via their vote extensions.
 // This handler is run before any transactions are executed/finalized for
 // a given block. The handler check's the vote extensions included in each
@@ -37,7 +39,7 @@ type PreBlockHandler struct {
 	extendedCommitCodec compression.ExtendedCommitCodec
 }
 
-// NewSLAPreBlockerHandler returns a new PreBlockHandler.
+// NewSLAPreBlockHandler returns a new PreBlockHandler.
 func NewSLAPreBlockHandler(
 	oracleKeeper OracleKeeper,
 	stakingKeeper StakingKeeper,
@@ -64,7 +66,16 @@ func NewSLAPreBlockHandler(
 // is done in the SLA BeginBlocker.
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-		if !ve.VoteExtensionsEnabled(ctx) || req == nil {
+		if req == nil {
+			ctx.Logger().Error(
+				"received nil RequestFinalizeBlock in SLA preblocker",
+				"height", ctx.BlockHeight(),
+			)
+
+			return &sdk.ResponsePreBlock{}, fmt.Errorf("received nil RequestFinalizeBlock in SLA preblocker: height %d", ctx.BlockHeight())
+		}
+
+		if !ve.VoteExtensionsEnabled(ctx) {
 			ctx.Logger().Info(
 				"skipping sla price feed preblocker because vote extensions are not enabled",
 				"height", ctx.BlockHeight(),
@@ -78,7 +89,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			"height", ctx.BlockHeight(),
 		)
 
-		// Retrieve all of the vote extensions that were included in the block. This
+		// Retrieve all vote extensions that were included in the block. This
 		// returns a list of validators and the price updates that they made.
 		votes, err := voteaggregator.GetOracleVotes(req.Txs, h.voteExtensionCodec, h.extendedCommitCodec)
 		if err != nil {
