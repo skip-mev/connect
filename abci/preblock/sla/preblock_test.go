@@ -136,7 +136,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 	s.Run("returns with no vote extensions in the block", func() {
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo(nil, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo(nil, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -159,7 +159,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 	s.Run("returns with no vote extensions in the block with a single sla set", func() {
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo(nil, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo(nil, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -195,7 +195,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		s.Require().NoError(err)
 
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -237,7 +237,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 	s.Run("correctly updates with single validator, single cp, and validator with no vote extension", func() {
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{}, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{}, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -284,7 +284,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		s.Require().NoError(err)
 
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -348,7 +348,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		s.Require().NoError(err)
 
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -413,7 +413,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		s.Require().NoError(err)
 
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{}, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{}, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -483,7 +483,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 		s.Require().NoError(err)
 
 		// create the vote extensions
-		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, s.extCommitCodec)
+		_, bz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{ve1}, 3, s.extCommitCodec)
 		s.Require().NoError(err)
 
 		// create the request
@@ -992,12 +992,12 @@ func (s *SLAPreBlockerHandlerTestSuite) initHandler(veEnabled, setSLA bool) {
 	s.slaKeeper = slakeeper.NewKeeper(
 		storeService,
 		encodingConfig.Codec,
-		sdk.AccAddress([]byte("authority")),
+		sdk.AccAddress("authority"),
 		slamocks.NewStakingKeeper(s.T()),
 		slamocks.NewSlashingKeeper(s.T()),
 	)
 
-	s.slaKeeper.SetParams(s.ctx, slatypes.DefaultParams())
+	s.Require().NoError(s.slaKeeper.SetParams(s.ctx, slatypes.DefaultParams()))
 
 	if setSLA {
 		id := "slaID1"

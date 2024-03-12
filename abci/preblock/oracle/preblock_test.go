@@ -56,7 +56,7 @@ func TestPreBlockTestSuite(t *testing.T) {
 }
 
 func (s *PreBlockTestSuite) SetupTest() {
-	s.myVal = sdk.ConsAddress([]byte("myVal"))
+	s.myVal = sdk.ConsAddress("myVal")
 
 	s.currencyPairs = []slinkytypes.CurrencyPair{
 		{
@@ -222,7 +222,8 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 		)
 
 		// run preblocker
-		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
+		_, err := s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{})
+		s.Require().NoError(err)
 	})
 
 	s.Run("expect metric invocation in Finalize Exec mode", func() {
@@ -239,9 +240,11 @@ func (s *PreBlockTestSuite) TestPreblockLatency() {
 		s.mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.PreBlock, mock.Anything).Return()
 		s.mockMetrics.On("AddABCIRequest", servicemetrics.PreBlock, mock.Anything)
 		// run preblocker
-		s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{
+		_, err := s.handler.PreBlocker()(s.ctx, &cmtabci.RequestFinalizeBlock{
 			Height: 1,
 		})
+
+		s.Require().NoError(err)
 	})
 }
 
@@ -317,7 +320,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 			extCodec,
 		)
 
-		ca := sdk.ConsAddress([]byte("val"))
+		ca := sdk.ConsAddress("val")
 		extCodec.On("Decode", mock.Anything).Return(cmtabci.ExtendedCommitInfo{
 			Votes: []cmtabci.ExtendedVoteInfo{
 				{
@@ -470,7 +473,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		}, compression.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
-		_, extCommitBz, err := testutils.CreateExtendedCommitInfo([]cmtabci.ExtendedVoteInfo{val1Vote, val2Vote}, compression.NewDefaultExtendedCommitCodec())
+		_, extCommitBz, err := testutils.CreateExtendedCommitInfo([]cmtabci.ExtendedVoteInfo{val1Vote, val2Vote}, 3, compression.NewDefaultExtendedCommitCodec())
 		s.Require().NoError(err)
 
 		// expect metrics calls
