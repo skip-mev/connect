@@ -6,9 +6,6 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/types"
-	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-
 	"github.com/skip-mev/slinky/abci/ve"
 )
 
@@ -69,17 +66,13 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoPrepare(
 // voting power for the block. Then, it ensures that oracle vote extensions are correctly
 // marshalled and contain valid prices. This function contains extra validation to be run in
 // ProcessProposal.
+// CONTACT: this function assumes that the RequestProcessProposal is not nil and has already been
+// checked by the caller.
 func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 	ctx sdk.Context,
 	req *cometabci.RequestProcessProposal,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) error {
-	if req == nil {
-		return slinkyabci.NilRequestError{
-			Handler: servicemetrics.ProcessProposal,
-		}
-	}
-
 	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo); err != nil {
 		h.logger.Error(
 			"failed to validate vote extensions; vote extensions may not comprise a supermajority",

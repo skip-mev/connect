@@ -1624,6 +1624,12 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 	s.Require().NoError(err)
 }
 
+func (s *ProposalsTestSuite) TestValidateExtendedCommitInfoProcess() {
+	s.Run("should fail for nil request", func() {
+
+	})
+}
+
 func (s *ProposalsTestSuite) createRequestPrepareProposal(
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 	txs [][]byte,
