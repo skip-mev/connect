@@ -12,7 +12,7 @@ import (
 // 1. Each ticker has a corresponding provider supporting it.
 // 2. Each ticker is valid.
 // 3. Each provider is valid.
-// 4. Each path is valid.
+// 4. Each path is valid. NOTE: the Paths object may be empty.
 // 5. Each operation (ticker) in each path is supported by the market map.
 // 6. The enabled list is valid.
 func (mm *MarketMap) ValidateBasic() error {
