@@ -2,13 +2,13 @@ package proposals_test
 
 import (
 	"fmt"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"math/big"
 	"testing"
 	"time"
 
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cmttypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -1840,7 +1840,6 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 
 func (s *ProposalsTestSuite) TestValidateExtendedCommitInfoProcess() {
 	s.Run("should fail for nil request", func() {
-
 	})
 }
 
