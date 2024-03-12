@@ -36,6 +36,19 @@ func TestSLAValidateBasic(t *testing.T) {
 		require.Error(t, err)
 	})
 
+	t.Run("equal viable windows should be rejected", func(t *testing.T) {
+		sla := slatypes.NewPriceFeedSLA(
+			"test",
+			1,
+			math.LegacyMustNewDecFromStr("0.5"),
+			math.LegacyMustNewDecFromStr("0.5"),
+			1,
+			1,
+		)
+		err := sla.ValidateBasic()
+		require.Error(t, err)
+	})
+
 	t.Run("expected uptime of 0 or less should be rejected", func(t *testing.T) {
 		sla := slatypes.NewPriceFeedSLA(
 			"test",
