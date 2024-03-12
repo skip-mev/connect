@@ -126,7 +126,7 @@ func TestSLAValidateBasic(t *testing.T) {
 	t.Run("frequency of 0 should be rejected", func(t *testing.T) {
 		sla := slatypes.NewPriceFeedSLA(
 			"test",
-			1,
+			2,
 			math.LegacyMustNewDecFromStr("0.5"),
 			math.LegacyMustNewDecFromStr("0.5"),
 			1,
@@ -139,11 +139,11 @@ func TestSLAValidateBasic(t *testing.T) {
 	t.Run("frequency that is greater than the maximum viable window must be rejected", func(t *testing.T) {
 		sla := slatypes.NewPriceFeedSLA(
 			"test",
-			1,
-			math.LegacyMustNewDecFromStr("0.5"),
-			math.LegacyMustNewDecFromStr("0.5"),
-			1,
 			2,
+			math.LegacyMustNewDecFromStr("0.5"),
+			math.LegacyMustNewDecFromStr("0.5"),
+			1,
+			3,
 		)
 		err := sla.ValidateBasic()
 		require.Error(t, err)
