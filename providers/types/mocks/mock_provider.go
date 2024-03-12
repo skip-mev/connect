@@ -15,19 +15,19 @@ type Provider[K types.ResponseKey, V types.ResponseValue] struct {
 }
 
 // GetData provides a mock function with given fields:
-func (_m *Provider[K, V]) GetData() map[K]types.Result[V] {
+func (_m *Provider[K, V]) GetData() map[K]types.ResolvedResult[V] {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetData")
 	}
 
-	var r0 map[K]types.Result[V]
-	if rf, ok := ret.Get(0).(func() map[K]types.Result[V]); ok {
+	var r0 map[K]types.ResolvedResult[V]
+	if rf, ok := ret.Get(0).(func() map[K]types.ResolvedResult[V]); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[K]types.Result[V])
+			r0 = ret.Get(0).(map[K]types.ResolvedResult[V])
 		}
 	}
 

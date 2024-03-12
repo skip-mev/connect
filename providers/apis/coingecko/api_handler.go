@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
@@ -85,7 +87,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response.
 	var result CoinGeckoResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return types.NewPriceResponseWithErr(tickers, err)
+		return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode))
 	}
 
 	var (
@@ -111,11 +113,14 @@ func (h *APIHandler) ParseResponse(
 		}
 	}
 
-	// Add all of the expected tickers that did not return a response to the unresolved
+	// Add all expected tickers that did not return a response to the unresolved
 	// map.
 	for _, ticker := range tickers {
 		if _, resolvedOk := resolved[ticker]; !resolvedOk {
-			unresolved[ticker] = fmt.Errorf("no response")
+			err := fmt.Errorf("no response")
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorNoResponse),
+			}
 		}
 	}
 

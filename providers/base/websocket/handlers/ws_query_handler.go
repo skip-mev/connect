@@ -130,7 +130,12 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
 	if err := h.start(); err != nil {
-		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids, err)
+		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids,
+			providertypes.NewErrorWithCode(
+				err,
+				providertypes.ErrorWebsocketStartFail,
+			),
+		)
 		return fmt.Errorf("failed to start connection: %w", err)
 	}
 

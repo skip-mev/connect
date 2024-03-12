@@ -6,6 +6,8 @@ import (
 	"math/big"
 	"testing"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/require"
@@ -143,7 +145,9 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("err"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("error"), providertypes.ErrorWebSocketGeneral),
+					},
 				},
 			},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
@@ -167,7 +171,9 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("received out of order ticker response message"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("received out of order ticker response message"), providertypes.ErrorWebSocketGeneral),
+					},
 				},
 			},
 			updateMsg: func() []handlers.WebsocketEncodedMessage {
@@ -207,7 +213,9 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"), providertypes.ErrorWebSocketGeneral),
+					},
 				},
 			},
 			updateMsg:   func() []handlers.WebsocketEncodedMessage { return nil },
