@@ -99,8 +99,8 @@ func (m *MedianAggregator) AggregateFn() types.PriceAggregationFn {
 // GetConvertedPrices returns the converted prices for each ticker using the provided median
 // prices and the conversion markets.
 func (m *MedianAggregator) GetConvertedPrices(feedMedians types.TickerPrices) types.TickerPrices {
-	// Scale all of the medians to a common number of decimals. This does not lose precision.
-	scaledMedians := make(types.TickerPrices)
+	// Scale all medians to a common number of decimals. This does not lose precision.
+	scaledMedians := make(types.TickerPrices, len(feedMedians))
 	for ticker, price := range feedMedians {
 		scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
 		if err != nil {
