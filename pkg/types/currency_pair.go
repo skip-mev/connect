@@ -40,6 +40,14 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	return nil
 }
 
+// Invert returns an inverted version of cp (where the Base and Quote are swapped).
+func (cp *CurrencyPair) Invert() CurrencyPair {
+	return CurrencyPair{
+		Base:  cp.Quote,
+		Quote: cp.Base,
+	}
+}
+
 // String returns a string representation of the CurrencyPair, in the following form "ETH/BTC".
 func (cp CurrencyPair) String() string {
 	return fmt.Sprintf("%s/%s", cp.Base, cp.Quote)

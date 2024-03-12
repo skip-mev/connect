@@ -109,6 +109,12 @@ func (p *Path) ValidateBasic() error {
 			return err
 		}
 
+		if op.Invert {
+			if _, ok := seen[op.CurrencyPair.Invert()]; ok {
+				return fmt.Errorf("duplicated pair found")
+			}
+		}
+
 		if _, ok := seen[op.CurrencyPair]; ok {
 			return fmt.Errorf("path is not a directed acyclic graph")
 		}
