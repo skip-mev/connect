@@ -90,7 +90,7 @@ var (
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
 								Invert:       false,
-								Provider:     oracle.IndexProviderPrice,
+								Provider:     oracle.IndexPrice,
 							},
 						},
 					},
@@ -105,7 +105,7 @@ var (
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
 								Invert:       false,
-								Provider:     oracle.IndexProviderPrice,
+								Provider:     oracle.IndexPrice,
 							},
 						},
 					},
@@ -134,7 +134,7 @@ var (
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
 								Invert:       false,
-								Provider:     oracle.IndexProviderPrice,
+								Provider:     oracle.IndexPrice,
 							},
 						},
 					},
@@ -149,7 +149,7 @@ var (
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
 								Invert:       false,
-								Provider:     oracle.IndexProviderPrice,
+								Provider:     oracle.IndexPrice,
 							},
 						},
 					},
@@ -199,7 +199,7 @@ var (
 							{
 								CurrencyPair: BTC_USD.CurrencyPair,
 								Invert:       false,
-								Provider:     oracle.IndexProviderPrice,
+								Provider:     oracle.IndexPrice,
 							},
 						},
 					},
@@ -218,7 +218,7 @@ var (
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
 								Invert:       false,
-								Provider:     oracle.IndexProviderPrice,
+								Provider:     oracle.IndexPrice,
 							},
 						},
 					},

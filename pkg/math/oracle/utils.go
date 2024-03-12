@@ -20,7 +20,10 @@ func (m *MedianAggregator) GetTickerFromOperation(
 	return ticker, nil
 }
 
-// GetProviderPrice returns the relevant provider price.
+// GetProviderPrice returns the relevant provider price. Note that if the operation
+// is for the index provider, then the price is retrieved from the previously calculated
+// median prices. Otherwise, the price is retrieved from the provider cache. Additionally,
+// this function normalizes (scales, inverts) the price to maintain the maximum precision.
 func (m *MedianAggregator) GetProviderPrice(
 	operation mmtypes.Operation,
 ) (*big.Int, error) {
@@ -29,11 +32,8 @@ func (m *MedianAggregator) GetProviderPrice(
 		return nil, err
 	}
 
-	// If the provider is not the index provider, then we can get the price
-	// from the provider cache. Otherwise we want to retrieve the previously
-	// calculated median price (index price).
 	var cache types.TickerPrices
-	if operation.Provider != IndexProviderPrice {
+	if operation.Provider != IndexPrice {
 		cache = m.PriceAggregator.GetDataByProvider(operation.Provider)
 	} else {
 		cache = m.PriceAggregator.GetAggregatedData()
@@ -44,9 +44,6 @@ func (m *MedianAggregator) GetProviderPrice(
 		return nil, fmt.Errorf("missing %s price for ticker: %s", operation.Provider, ticker.String())
 	}
 
-	// We scale the price up to the maximum precision to ensure that we can
-	// perform the necessary calculations. If the price is inverted, then we
-	// we can higher conversion precision.
 	scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
 	if err != nil {
 		return nil, err

@@ -64,7 +64,7 @@ func TestGetProviderPrice(t *testing.T) {
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
 			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     oracle.IndexProviderPrice,
+			Provider:     oracle.IndexPrice,
 		}
 		_, err = m.GetProviderPrice(operation)
 		require.Error(t, err)
@@ -92,7 +92,7 @@ func TestGetProviderPrice(t *testing.T) {
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
 			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     oracle.IndexProviderPrice,
+			Provider:     oracle.IndexPrice,
 		}
 		_, err = m.GetProviderPrice(operation)
 		require.Error(t, err)
@@ -123,7 +123,7 @@ func TestGetProviderPrice(t *testing.T) {
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
 			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     oracle.IndexProviderPrice,
+			Provider:     oracle.IndexPrice,
 		}
 		price, err = m.GetProviderPrice(operation)
 		require.NoError(t, err)

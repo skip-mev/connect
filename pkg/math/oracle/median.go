@@ -13,16 +13,18 @@ import (
 
 const (
 	// MaxConversionOperations is the maximum number of conversion operations that can be used
-	// to convert a price from one ticker to another.
+	// to convert a set of prices to a common ticker. This implementation only supports a maximum
+	// of 2 conversion operations - either a direct conversion or a conversion using the index price.
 	MaxConversionOperations = 2
 
-	// IndexProviderPrice is the provider name for the index price.
-	IndexProviderPrice = "index"
+	// IndexPrice is the provider name for the index price.
+	IndexPrice = "index"
 )
 
 // MedianAggregator is an aggregator that calculates the median price for each ticker,
-// resolved from a predefined set of conversion markets. In particular, these conversion
-// markets are defined in the marketmap configuration that is provided to the aggregator.
+// resolved from a predefined set of conversion markets. A conversion market is a set of
+// markets that can be used to convert the prices of a set of tickers to a common ticker.
+// These are defined in the market map configuration.
 type MedianAggregator struct {
 	*types.PriceAggregator
 	logger *zap.Logger
@@ -48,10 +50,15 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 	return m, nil
 }
 
-// AggregateFn returns the aggregate function for the median price calculation. Specifically, this
-// aggregation function utilizes the previously cached prices to determine the current median prices
-// by converting the prices using the predefined conversion markets. These conversion markets define
-// the set of markets that can be used to convert the prices of a set of tickers to a common ticker.
+// AggregatedData implements the aggregate function for the median price calculation. Specifically, this
+// aggregation function aggregates the prices seen by each provider by first converting each price to a
+// common ticker and then calculating the median of the converted prices. Prices are converted either
+//
+//  1. Directly from the base ticker to the target ticker. i.e. I have BTC/USD and I want BTC/USD.
+//  2. Using the index price of an asset. i.e. I have BTC/USDT and I want BTC/USD. I can convert
+//     BTC/USDT to BTC/USD using the index price of USDT/USD.
+//
+// The index price cache contains the previously calculated median prices.
 func (m *MedianAggregator) AggregatedData() {
 	updatedPrices := make(types.TickerPrices)
 	for ticker, paths := range m.cfg.Paths {
@@ -86,7 +93,8 @@ func (m *MedianAggregator) AggregatedData() {
 			continue
 		}
 
-		// Take the median of the converted prices.
+		// Take the median of the converted prices. This takes the average of the middle two
+		// prices if the number of prices is even.
 		price := median.CalculateMedian(convertedPrices)
 		updatedPrices[target] = price
 		m.logger.Info(
@@ -98,12 +106,15 @@ func (m *MedianAggregator) AggregatedData() {
 
 	}
 
-	m.logger.Info("calculated median prices for price feeds", zap.Int("num_prices", len(updatedPrices)))
+	// Update the aggregated data. These prices are going to be used as the index prices the
+	// next time we calculate prices.
 	m.PriceAggregator.SetAggregatedData(updatedPrices)
+	m.logger.Info("calculated median prices for price feeds", zap.Int("num_prices", len(updatedPrices)))
 }
 
-// CalculateConvertedPrices calculates the converted prices for each ticker using the
-// provided median prices and the conversion markets.
+// CalculateConvertedPrices calculates the converted prices for a given set of paths and target ticker.
+// The prices utilized are the prices most recently seen by the providers. Each price is within a
+// MaxPriceAge window so is safe to use.
 func (m *MedianAggregator) CalculateConvertedPrices(
 	target mmtypes.Ticker,
 	paths mmtypes.Paths,
@@ -121,7 +132,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 	convertedPrices := make([]*big.Int, 0)
 	for _, path := range paths.Paths {
 		// Ensure that the number of operations is valid.
-		if len(path.Operations) > MaxConversionOperations || len(path.Operations) == 0 {
+		if len(path.Operations) == 0 || len(path.Operations) > MaxConversionOperations {
 			m.logger.Error(
 				"invalid number of operations",
 				zap.String("ticker", target.String()),
@@ -161,7 +172,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 //
 //  1. A direct conversion from the base ticker to the target ticker i.e. we want BTC/USD and
 //     we have BTC/USD from a provider (e.g. Coinbase).
-//  2. We need to convert the price of a given asset against the index price of the asset.
+//  2. We need to convert the price of a given asset against the index price of an asset.
 //
 // In the first case, we can simply return the price of the provider. In the second case, we need
 // to adjust the price by the index price of the asset. If the index price is not available, we
@@ -179,6 +190,11 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// we have a direct conversion from the base ticker to the target ticker.
 	if len(operations) == 1 {
 		return ScaleDownCurrencyPairPrice(target.Decimals, price)
+	}
+
+	// If we have more than one operation, then can only adjust the price using the index.
+	if operations[1].Provider != IndexPrice {
+		return nil, fmt.Errorf("invalid provider: %s", operations[1].Provider)
 	}
 
 	adjustableByMarketPrice, err := m.GetProviderPrice(operations[1])
