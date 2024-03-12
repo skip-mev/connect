@@ -3,72 +3,58 @@ package oracle
 import (
 	"fmt"
 	"math/big"
+
+	"github.com/skip-mev/slinky/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// ScaledDecimals is the standard number of decimal places each price will be converted to
-// during the conversion process.
-const ScaledDecimals = 36
-
-// ScaleUpCurrencyPairPrice scales a price up to the standard number of decimals by performing the
-// following operation:
-// 1. price * 10^(ScaledDecimals - decimals)
-// 2. Convert the result to a big.Int
-//
-// NOTE: This function should only be used on prices that have not already been scaled to the
-// standard number of decimals. We scale the price to the standard number of decimals for ease
-// of comparison.
-func ScaleUpCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error) {
-	if decimals > ScaledDecimals {
-		return nil, fmt.Errorf("cannot scale up price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
+// GetTickerFromOperation returns the ticker for the given operation.
+func (m *MedianAggregator) GetTickerFromOperation(
+	operation mmtypes.Operation,
+) (mmtypes.Ticker, error) {
+	ticker, ok := m.cfg.Tickers[operation.CurrencyPair.String()]
+	if !ok {
+		return mmtypes.Ticker{}, fmt.Errorf("missing ticker: %s", operation.CurrencyPair.String())
 	}
 
-	diff := ScaledDecimals - decimals
-	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(int64(diff)), nil)
-	return new(big.Int).Mul(price, exp), nil
+	return ticker, nil
 }
 
-// ScaleDownCurrencyPairPrice scales a price down to the standard number of decimals by performing the
-// following operation:
-// 1. price / 10^(ScaledDecimals - decimals)
-// 2. Convert the result to a big.Int
-//
-// NOTE: This function should only be used on prices that have already been scaled to the standard
-// number of decimals. The output of this returns the price to its expected number of decimals.
-func ScaleDownCurrencyPairPrice(decimals uint64, price *big.Int) (*big.Int, error) {
-	if decimals > ScaledDecimals {
-		return nil, fmt.Errorf("cannot scale down price with more decimals than the standard: max=%d, current=%d", ScaledDecimals, decimals)
+// GetProviderPrice returns the relevant provider price.
+func (m *MedianAggregator) GetProviderPrice(
+	operation mmtypes.Operation,
+) (*big.Int, error) {
+	ticker, err := m.GetTickerFromOperation(operation)
+	if err != nil {
+		return nil, err
 	}
 
-	diff := ScaledDecimals - decimals
-	exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(int64(diff)), nil)
-	return new(big.Int).Div(price, exp), nil
-}
+	// If the provider is not the index provider, then we can get the price
+	// from the provider cache. Otherwise we want to retrieve the previously
+	// calculated median price (index price).
+	var cache types.TickerPrices
+	if operation.Provider != IndexProviderPrice {
+		cache = m.PriceAggregator.GetDataByProvider(operation.Provider)
+	} else {
+		cache = m.PriceAggregator.GetAggregatedData()
+	}
 
-// InvertCurrencyPairPrice inverts a price by performing the following operation:
-// 1. 1 / price
-// 2. Scale the result by the number of decimals
-// 3. Convert the result to a big.Int
-//
-// NOTE: This function should only be used on prices that have already been scaled
-// to the standard number of decimals.
-func InvertCurrencyPairPrice(price *big.Int, decimals uint64) *big.Int {
-	one := ScaledOne(decimals)
+	price, ok := cache[ticker]
+	if !ok {
+		return nil, fmt.Errorf("missing %s price for ticker: %s", operation.Provider, ticker.String())
+	}
 
-	// Convert the price to a big.Float so we can perform the division
-	// and then convert the result back to a big.Int This operation is
-	// the equivalent of 1 / price.
-	ratio := new(big.Float).Quo(new(big.Float).SetInt(one), new(big.Float).SetInt(price))
+	// We scale the price up to the maximum precision to ensure that we can
+	// perform the necessary calculations. If the price is inverted, then we
+	// we can higher conversion precision.
+	scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
+	if err != nil {
+		return nil, err
+	}
 
-	// Scale the ratio by the number of decimals.
-	scaledRatio := new(big.Float).Mul(ratio, new(big.Float).SetInt(one))
+	if operation.Invert {
+		scaledPrice = InvertCurrencyPairPrice(scaledPrice, ScaledDecimals)
+	}
 
-	// Convert the scaled ratio back to a big.Int
-	inverted, _ := scaledRatio.Int(nil)
-	return inverted
-}
-
-// ScaledOne returns a big.Int that represents the number 1 scaled to the standard
-// number of decimals.
-func ScaledOne(decimals uint64) *big.Int {
-	return big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	return scaledPrice, nil
 }
