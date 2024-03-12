@@ -90,6 +90,18 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 		return err
 	}
 
+	// checks for consistency between extendedCommitInfo and proposedLastCommit
+	if extendedCommitInfo.Round != req.ProposedLastCommit.Round {
+		h.logger.Error(
+			"mismatched round in encoded extended commit info and proposed last commit",
+			"height", req.Height,
+			"extended commit round", extendedCommitInfo.Round,
+			"proposed last commit round", req.ProposedLastCommit.Round,
+		)
+
+		return fmt.Errorf("mismatched round in encoded extended commit info and proposed last commit")
+	}
+
 	if len(extendedCommitInfo.Votes) != len(req.ProposedLastCommit.Votes) {
 		h.logger.Error(
 			"mismatched length in encoded extended commit info and proposed last commit",
