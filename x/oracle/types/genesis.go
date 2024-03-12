@@ -48,7 +48,7 @@ func (gs *GenesisState) Validate() error {
 			return err
 		}
 
-		// check if the ID > that gs.NextID
+		// check if the ID > gs.NextID
 		if cpg.Id >= gs.NextId {
 			return fmt.Errorf("invalid id: %v, must be less than next id: %v", cpg.Id, gs.NextId)
 		}
