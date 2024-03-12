@@ -66,8 +66,10 @@ func CreateExtendedVoteInfo(
 	voteInfo := cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
 			Address: consAddr,
+			Power:   1000,
 		},
 		VoteExtension: ve,
+		BlockIdFlag:   cmtproto.BlockIDFlagCommit,
 	}
 
 	return voteInfo, nil

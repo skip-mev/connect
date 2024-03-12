@@ -116,16 +116,7 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 
 	// Validate all oracle vote extensions.  And cross-reference them with the ProposedLastCommit
 	for _, vote := range extendedCommitInfo.Votes {
-		address := sdk.ConsAddress{}
-		if err := address.Unmarshal(vote.Validator.Address); err != nil {
-			h.logger.Error(
-				"failed to unmarshal validator address",
-				"height", req.Height,
-			)
-
-			return err
-		}
-
+		var address sdk.ConsAddress = vote.Validator.Address
 		reqVote, found := requestCommits[string(address)]
 		if !found {
 			h.logger.Error(
