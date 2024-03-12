@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	ethereum = "ETHEREUM"
+	ethereum         = "ETHEREUM"
+	MaxCPFieldLength = 128
 )
 
 // NewCurrencyPair returns a new CurrencyPair with the given base and quote strings.
@@ -31,6 +32,11 @@ func (cp *CurrencyPair) ValidateBasic() error {
 	if strings.ToUpper(cp.Quote) != cp.Quote {
 		return fmt.Errorf("incorrectly formatted quote string, expected: %s got: %s", strings.ToUpper(cp.Quote), cp.Quote)
 	}
+
+	if len(cp.Base) > MaxCPFieldLength || len(cp.Quote) > MaxCPFieldLength {
+		return fmt.Errorf("string field exceeds maximum length of %d", MaxCPFieldLength)
+	}
+
 	return nil
 }
 
