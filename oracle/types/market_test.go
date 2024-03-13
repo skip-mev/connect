@@ -180,17 +180,6 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 			expErr: false,
 		},
 		{
-			name: "invalid market map",
-			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-			},
-			providerName: "coinbase",
-			expectedMap:  types.ProviderMarketMap{},
-			expErr:       true,
-		},
-		{
 			name: "multiple providers for the same ticker",
 			marketMap: mmtypes.MarketMap{
 				Tickers: map[string]mmtypes.Ticker{

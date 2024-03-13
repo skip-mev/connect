@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -63,25 +62,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name: "invalid ticker does not exist for a given path",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-			},
-			expectErr: true,
-		},
-		{
 			name: "invalid ticker does not exist for a given provider",
 			marketMap: types.MarketMap{
 				Tickers: map[string]types.Ticker{
@@ -101,26 +81,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name: "invalid no providers for ticker",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-			},
-			expectErr: true,
-		},
-		{
 			name: "invalid ticker string does not match ticker ID",
 			marketMap: types.MarketMap{
 				Tickers: map[string]types.Ticker{
@@ -130,46 +90,6 @@ func TestMarketMapValidateBasic(t *testing.T) {
 				},
 				Paths: map[string]types.Paths{
 					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-			},
-			expectErr: true,
-		},
-		{
-			name: "invalid path ticker not found in tickers map",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: slinkytypes.CurrencyPair{
-											Base:  "ETHEREUM",
-											Quote: "MOG",
-										},
-									},
-									{
-										CurrencyPair: slinkytypes.CurrencyPair{
-											Base:  "MOG",
-											Quote: "USDT",
-										},
-									},
-								},
-							},
-						},
-					},
 					btcusdt.String(): btcusdtPaths,
 					usdcusd.String(): usdcusdPaths,
 				},

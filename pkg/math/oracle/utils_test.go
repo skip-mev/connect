@@ -1,128 +1,174 @@
 package oracle_test
 
 import (
-	"math/big"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
+	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/stretchr/testify/require"
 )
 
-func TestInvertCurrencyPairPrice(t *testing.T) {
-	t.Run("can invert a price of 1", func(t *testing.T) {
-		one := oracle.ScaledOne(oracle.ScaledDecimals)
-		inverted := oracle.InvertCurrencyPairPrice(one, oracle.ScaledDecimals)
-		require.Equal(t, one, inverted)
+func TestGetTickerFromOperation(t *testing.T) {
+	t.Run("has ticker included in the market config", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		require.NoError(t, err)
+
+		operation := mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+		}
+		ticker, err := m.GetTickerFromOperation(operation)
+		require.NoError(t, err)
+		require.Equal(t, BTC_USD, ticker)
 	})
 
-	t.Run("can invert a price of 2000", func(t *testing.T) {
-		price := big.NewInt(2000)
-		scaledPrice := new(big.Int).Mul(price, oracle.ScaledOne(oracle.ScaledDecimals))
-		inverted := oracle.InvertCurrencyPairPrice(scaledPrice, oracle.ScaledDecimals)
+	t.Run("has ticker not included in the market config", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		require.NoError(t, err)
 
-		expectedExp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals-4), nil)
-		expectedPrice := big.NewInt(5)
-		expectedScaledPrice := new(big.Int).Mul(expectedPrice, expectedExp)
-		require.Equal(t, expectedScaledPrice, inverted)
-	})
-
-	t.Run("can invert a price of 2", func(t *testing.T) {
-		price := big.NewInt(2)
-		scaledPrice := new(big.Int).Mul(price, oracle.ScaledOne(oracle.ScaledDecimals))
-		inverted := oracle.InvertCurrencyPairPrice(scaledPrice, oracle.ScaledDecimals)
-
-		expectedExp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals-1), nil)
-		expectedPrice := big.NewInt(5)
-		expectedScaledPrice := new(big.Int).Mul(expectedPrice, expectedExp)
-		require.Equal(t, expectedScaledPrice, inverted)
-	})
-
-	t.Run("can invert a price of 0.5", func(t *testing.T) {
-		price := big.NewInt(5)
-		exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals-1), nil)
-		scaledPrice := new(big.Int).Mul(price, exp)
-		inverted := oracle.InvertCurrencyPairPrice(scaledPrice, oracle.ScaledDecimals)
-
-		expectedExp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals), nil)
-		expectedPrice := big.NewInt(2)
-		expectedScaledPrice := new(big.Int).Mul(expectedPrice, expectedExp)
-		require.Equal(t, expectedScaledPrice, inverted)
+		operation := mmtypes.Operation{
+			CurrencyPair: constants.MOG_USD.CurrencyPair,
+		}
+		ticker, err := m.GetTickerFromOperation(operation)
+		require.Error(t, err)
+		require.Empty(t, ticker)
 	})
 }
 
-func TestScaleUpCurrencyPairPrice(t *testing.T) {
-	t.Run("can scale up a price of 1", func(t *testing.T) {
-		price := big.NewInt(1)
-		scaledPrice, err := oracle.ScaleUpCurrencyPairPrice(0, price)
+func TestGetProviderPrice(t *testing.T) {
+	t.Run("does not have a ticker in the config", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
 		require.NoError(t, err)
 
-		one := oracle.ScaledOne(oracle.ScaledDecimals)
-		require.Equal(t, one, scaledPrice)
-	})
-
-	t.Run("can scale up a price of 2000", func(t *testing.T) {
-		price := big.NewInt(2000)
-		exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals-8), nil)
-		expectedPrice := new(big.Int).Mul(price, exp)
-
-		scaledPrice, err := oracle.ScaleUpCurrencyPairPrice(8, price)
-		require.NoError(t, err)
-		require.Equal(t, expectedPrice, scaledPrice)
-	})
-
-	t.Run("errors when scaling up a price with more decimals than the standard", func(t *testing.T) {
-		price := big.NewInt(2000)
-		_, err := oracle.ScaleUpCurrencyPairPrice(oracle.ScaledDecimals+1, price)
+		operation := mmtypes.Operation{
+			CurrencyPair: constants.MOG_USD.CurrencyPair,
+		}
+		_, err = m.GetProviderPrice(operation)
 		require.Error(t, err)
 	})
 
-	t.Run("equal number of decimal points", func(t *testing.T) {
-		price := big.NewInt(2000)
-		exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals), nil)
-		expectedPrice := new(big.Int).Mul(price, exp)
-
-		scaledPrice, err := oracle.ScaleUpCurrencyPairPrice(oracle.ScaledDecimals, expectedPrice)
-		require.NoError(t, err)
-		require.Equal(t, expectedPrice, scaledPrice)
-	})
-}
-
-func TestScaleDownCurrencyPairPrice(t *testing.T) {
-	t.Run("can scale down a price of 1", func(t *testing.T) {
-		one := oracle.ScaledOne(oracle.ScaledDecimals)
-		scaledPrice, err := oracle.ScaleDownCurrencyPairPrice(0, one)
+	t.Run("has no provider prices or index prices", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
 		require.NoError(t, err)
 
-		require.Equal(t, big.NewInt(1), scaledPrice)
-	})
+		// Attempt to retrieve the provider.
+		operation := mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     coinbase.Name,
+		}
+		_, err = m.GetProviderPrice(operation)
+		require.Error(t, err)
 
-	t.Run("can scale down a price of 2000", func(t *testing.T) {
-		price := big.NewInt(2000)
-		exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(8), nil)
-		price = new(big.Int).Mul(price, exp)
-
-		scaledPrice, err := oracle.ScaleUpCurrencyPairPrice(8, price)
-		require.NoError(t, err)
-
-		unscaledPrice, err := oracle.ScaleDownCurrencyPairPrice(8, scaledPrice)
-		require.NoError(t, err)
-		require.Equal(t, price, unscaledPrice)
-	})
-
-	t.Run("errors when scaling down a price with more decimals than the standard", func(t *testing.T) {
-		price := big.NewInt(2000)
-		_, err := oracle.ScaleDownCurrencyPairPrice(oracle.ScaledDecimals+1, price)
+		// Attempt to retrieve the index price.
+		operation = mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     oracle.IndexPrice,
+		}
+		_, err = m.GetProviderPrice(operation)
 		require.Error(t, err)
 	})
 
-	t.Run("equal number of decimal points", func(t *testing.T) {
-		price := big.NewInt(2000)
-		exp := big.NewInt(10).Exp(big.NewInt(10), big.NewInt(oracle.ScaledDecimals), nil)
-		price = new(big.Int).Mul(price, exp)
-
-		scaledPrice, err := oracle.ScaleDownCurrencyPairPrice(oracle.ScaledDecimals, price)
+	t.Run("has provider prices but no index prices", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
 		require.NoError(t, err)
-		require.Equal(t, price, scaledPrice)
+
+		// Set the provider price.
+		prices := types.TickerPrices{
+			BTC_USD: createPrice(100, BTC_USD.Decimals),
+		}
+		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+
+		// Attempt to retrieve the provider.
+		operation := mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     coinbase.Name,
+		}
+		price, err := m.GetProviderPrice(operation)
+		require.NoError(t, err)
+		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
+
+		// Attempt to retrieve the index price.
+		operation = mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     oracle.IndexPrice,
+		}
+		_, err = m.GetProviderPrice(operation)
+		require.Error(t, err)
+	})
+
+	t.Run("has provider prices and index prices", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		require.NoError(t, err)
+
+		// Set the provider price.
+		prices := types.TickerPrices{
+			BTC_USD: createPrice(100, BTC_USD.Decimals),
+		}
+		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+
+		// Set the index price.
+		m.PriceAggregator.SetAggregatedData(prices)
+
+		// Attempt to retrieve the provider.
+		operation := mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     coinbase.Name,
+		}
+		price, err := m.GetProviderPrice(operation)
+		require.NoError(t, err)
+		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
+
+		// Attempt to retrieve the index price.
+		operation = mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     oracle.IndexPrice,
+		}
+		price, err = m.GetProviderPrice(operation)
+		require.NoError(t, err)
+		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
+	})
+
+	t.Run("has provider prices and can correctly scale up", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		require.NoError(t, err)
+
+		// Set the provider price.
+		prices := types.TickerPrices{
+			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
+		}
+		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+
+		// Attempt to retrieve the provider.
+		operation := mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     coinbase.Name,
+		}
+		price, err := m.GetProviderPrice(operation)
+		require.NoError(t, err)
+		require.Equal(t, createPrice(40_000, oracle.ScaledDecimals), price)
+	})
+
+	t.Run("has provider prices and can correctly invert", func(t *testing.T) {
+		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		require.NoError(t, err)
+
+		// Set the provider price.
+		prices := types.TickerPrices{
+			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
+		}
+		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+
+		// Attempt to retrieve the provider.
+		operation := mmtypes.Operation{
+			CurrencyPair: BTC_USD.CurrencyPair,
+			Provider:     coinbase.Name,
+			Invert:       true,
+		}
+		price, err := m.GetProviderPrice(operation)
+		require.NoError(t, err)
+		expectedPrice := createPrice(0.000025, oracle.ScaledDecimals)
+		verifyPrice(t, expectedPrice, price)
 	})
 }

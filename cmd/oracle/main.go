@@ -16,7 +16,7 @@ import (
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
@@ -89,17 +89,11 @@ func main() {
 		return
 	}
 
-	priceAggregator, err := oraclemath.NewMedianAggregator(logger, marketCfg)
-	if err != nil {
-		logger.Error("failed to create price aggregator", zap.Error(err))
-		return
-	}
-
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                             // Replace with custom providers.
-		oracle.WithAggregateFunction(priceAggregator.AggregateFn()), // Replace with custom aggregation function.
+		oracle.WithProviders(providers),                      // Replace with custom providers.
+		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
 		oracle.WithLogger(logger),
