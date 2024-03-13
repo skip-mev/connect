@@ -23,8 +23,8 @@ type Vote struct {
 	OracleVoteExtension vetypes.OracleVoteExtension
 }
 
-// GetOracleVotes returns all of the oracle vote extensions that were injected into
-// the block. Note that all of the vote extensions included are necessarily valid at this point
+// GetOracleVotes returns all oracle vote extensions that were injected into
+// the block. Note that all vote extensions included are necessarily valid at this point
 // because the vote extensions were validated by the vote extension and proposal handlers.
 func GetOracleVotes(
 	proposal [][]byte,
