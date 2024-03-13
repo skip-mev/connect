@@ -82,7 +82,7 @@ func (h *ProposalHandler) ValidateExtendedCommitInfoProcess(
 	// Validate all oracle vote extensions.  And cross-reference them with the ProposedLastCommit
 	for _, vote := range extendedCommitInfo.Votes {
 		var address sdk.ConsAddress = vote.Validator.Address
-		reqVote, found := requestCommits[string(address)]
+		_, found := requestCommits[string(address)]
 		if !found {
 			h.logger.Error(
 				"no vote for validator in extended commit vote found in proposed last commit",

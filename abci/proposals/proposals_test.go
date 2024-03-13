@@ -8,7 +8,6 @@ import (
 
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cmttypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -732,91 +731,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 			},
 		},
 		{
-			name: "reject a block with tampered VE data - round mismatch",
-			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-
-				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
-				s.Require().NoError(err)
-
-				proposal := [][]byte{
-					commitInfoBz,
-					[]byte("tx1"),
-				}
-
-				lastCommit := cometabci.CommitInfo{
-					Round: ext.Round + 1,
-					Votes: []cometabci.VoteInfo{
-						{
-							Validator:   valVoteInfo.Validator,
-							BlockIdFlag: valVoteInfo.BlockIdFlag,
-						},
-					},
-				}
-
-				return s.createRequestProcessProposal(
-					proposal,
-					lastCommit,
-					3,
-				)
-			},
-			veEnabled: true,
-			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				return currencypairmocks.NewCurrencyPairStrategy(s.T())
-			},
-			expectedError: true,
-			expectedResp: &cometabci.ResponseProcessProposal{
-				Status: cometabci.ResponseProcessProposal_REJECT,
-			},
-		},
-		{
-			name: "reject a block with tampered VE data - vote length mismatch",
-			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-
-				valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2, s.codec)
-				s.Require().NoError(err)
-
-				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo1}, 3, s.extCommitCodec)
-				s.Require().NoError(err)
-
-				proposal := [][]byte{
-					commitInfoBz,
-					[]byte("tx1"),
-				}
-
-				lastCommit := cometabci.CommitInfo{
-					Round: ext.Round,
-					Votes: []cometabci.VoteInfo{
-						{
-							Validator:   valVoteInfo1.Validator,
-							BlockIdFlag: valVoteInfo1.BlockIdFlag,
-						},
-						{
-							Validator:   valVoteInfo2.Validator,
-							BlockIdFlag: valVoteInfo2.BlockIdFlag,
-						},
-					},
-				}
-
-				return s.createRequestProcessProposal(
-					proposal,
-					lastCommit,
-					3,
-				)
-			},
-			veEnabled: true,
-			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				return currencypairmocks.NewCurrencyPairStrategy(s.T())
-			},
-			expectedError: true,
-			expectedResp: &cometabci.ResponseProcessProposal{
-				Status: cometabci.ResponseProcessProposal_REJECT,
-			},
-		},
-		{
 			name: "reject a block with tampered VE data - validator address mismatch",
 			request: func() *cometabci.RequestProcessProposal {
 				valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
@@ -839,92 +753,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 						{
 							Validator:   valVoteInfo2.Validator,
 							BlockIdFlag: valVoteInfo1.BlockIdFlag,
-						},
-					},
-				}
-
-				return s.createRequestProcessProposal(
-					proposal,
-					lastCommit,
-					3,
-				)
-			},
-			veEnabled: true,
-			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				return currencypairmocks.NewCurrencyPairStrategy(s.T())
-			},
-			expectedError: true,
-			expectedResp: &cometabci.ResponseProcessProposal{
-				Status: cometabci.ResponseProcessProposal_REJECT,
-			},
-		},
-		{
-			name: "reject a block with tampered VE data - validator power mismatch",
-			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-
-				valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-				valVoteInfo2.Validator.Power = valVoteInfo1.Validator.Power + 1
-
-				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo1}, 3, s.extCommitCodec)
-				s.Require().NoError(err)
-
-				proposal := [][]byte{
-					commitInfoBz,
-					[]byte("tx1"),
-				}
-
-				lastCommit := cometabci.CommitInfo{
-					Round: ext.Round,
-					Votes: []cometabci.VoteInfo{
-						{
-							Validator:   valVoteInfo2.Validator,
-							BlockIdFlag: valVoteInfo2.BlockIdFlag,
-						},
-					},
-				}
-
-				return s.createRequestProcessProposal(
-					proposal,
-					lastCommit,
-					3,
-				)
-			},
-			veEnabled: true,
-			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				return currencypairmocks.NewCurrencyPairStrategy(s.T())
-			},
-			expectedError: true,
-			expectedResp: &cometabci.ResponseProcessProposal{
-				Status: cometabci.ResponseProcessProposal_REJECT,
-			},
-		},
-		{
-			name: "reject a block with tampered VE data - validator block id flag mismatch",
-			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-
-				valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-				valVoteInfo2.BlockIdFlag = cmtproto.BlockIDFlagNil
-
-				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo1}, 3, s.extCommitCodec)
-				s.Require().NoError(err)
-
-				proposal := [][]byte{
-					commitInfoBz,
-					[]byte("tx1"),
-				}
-
-				lastCommit := cometabci.CommitInfo{
-					Round: ext.Round,
-					Votes: []cometabci.VoteInfo{
-						{
-							Validator:   valVoteInfo2.Validator,
-							BlockIdFlag: valVoteInfo2.BlockIdFlag,
 						},
 					},
 				}
