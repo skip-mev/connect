@@ -33,7 +33,7 @@ type (
 
 	// ThresholdDetermination calculates (and potentially alters) the weights of individual votes.
 	// It returns the sum of weights considered for a given currency pair.
-	ThresholdDetermination func(currentPrice *big.Int, proposedPrice *big.Int, priceInfo PriceInfo) *big.Int
+	ThresholdDetermination func(currentPrice *big.Int, proposedPrice *big.Int, priceInfo PriceInfo) math.Int
 )
 
 // MedianFromContext returns a new Median aggregate function that is parametrized by the
@@ -247,7 +247,7 @@ func ConstrainedSWMedian(
 				// newPrice is the calculated stake-weighted median
 				newPrice := ComputeMedian(info)
 				vpConsidered := thresholdDetermination(currentPrice, newPrice, info)
-				if percentConsidered := math.LegacyNewDecFromBigInt(vpConsidered).Quo(math.LegacyNewDecFromInt(totalBondedTokens)); percentConsidered.GTE(threshold) {
+				if percentConsidered := math.LegacyNewDecFromInt(vpConsidered).Quo(math.LegacyNewDecFromInt(totalBondedTokens)); percentConsidered.GTE(threshold) {
 					prices[currencyPair] = newPrice
 					logger.Info(
 						"computed stake-weighted median price for currency pair",

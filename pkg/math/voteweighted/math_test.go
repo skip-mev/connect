@@ -35,6 +35,7 @@ var (
 	validator1 = sdk.ConsAddress("validator1")
 	validator2 = sdk.ConsAddress("validator2")
 	validator3 = sdk.ConsAddress("validator3")
+	validator4 = sdk.ConsAddress("validator4")
 )
 
 func (s *MathTestSuite) SetupTest() {

@@ -2,13 +2,13 @@ package voteweighted
 
 import (
 	"context"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"math/big"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // ValidatorStore defines the interface contract required for calculating stake-weighted median
@@ -21,11 +21,10 @@ type ValidatorStore interface {
 	TotalBondedTokens(ctx context.Context) (math.Int, error)
 }
 
-// PriceStore
-type PriceStore interface {
-	PriceForCurrencyPair(cp slinkytypes.CurrencyPair) *big.Int
-}
-
+// OracleKeeper defines the interface required for fetching existing prices for a given currencyPair.
+// This is used during ConstrainedSWMedian calculation.
+//
+//go:generate mockery --name OracleKeeper --filename mock_oracle_keeper.go
 type OracleKeeper interface {
 	GetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (oracletypes.QuotePrice, error)
 }
