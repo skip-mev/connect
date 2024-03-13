@@ -27,7 +27,7 @@ type (
 // it is assumed to be called concurrently in data fetching goroutines. The DataAggregator
 // requires one of either an aggregateFn or aggregateFnFromContext to be set.
 type DataAggregator[K comparable, V any] struct {
-	mtx sync.RWMutex
+	mtx sync.Mutex
 
 	// aggregateFn is the function used to aggregate data from each provider.
 	aggregateFn AggregateFn[K, V]
@@ -58,21 +58,13 @@ func NewDataAggregator[K comparable, V any](opts ...DataAggregatorOption[K, V]) 
 		opt(agg)
 	}
 
-	if agg.aggregateFn == nil && agg.aggregateFnFromContext == nil {
-		panic("aggregateFn and aggregateFnFromContext cannot both be nil")
-	}
-
-	if agg.aggregateFn != nil && agg.aggregateFnFromContext != nil {
-		panic("aggregateFn and aggregateFnFromContext cannot both be set")
-	}
-
 	return agg
 }
 
 // GetProviderData returns a copy of the aggregated provider data.
 func (p *DataAggregator[K, V]) GetProviderData() AggregatedProviderData[K, V] {
-	p.mtx.RLock()
-	defer p.mtx.RUnlock()
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
 
 	cpy := make(AggregatedProviderData[K, V])
 	maps.Copy(cpy, p.providerData)
@@ -82,8 +74,8 @@ func (p *DataAggregator[K, V]) GetProviderData() AggregatedProviderData[K, V] {
 
 // GetDataByProvider returns the data currently stored for a given provider.
 func (p *DataAggregator[K, V]) GetDataByProvider(provider K) V {
-	p.mtx.RLock()
-	defer p.mtx.RUnlock()
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
 
 	cpy := make(AggregatedProviderData[K, V])
 	maps.Copy(cpy, p.providerData)
@@ -132,8 +124,8 @@ func (p *DataAggregator[K, V]) AggregateDataFromContext(ctx sdk.Context) {
 
 // GetAggregatedData returns the aggregated data based on the provided data.
 func (p *DataAggregator[K, V]) GetAggregatedData() V {
-	p.mtx.RLock()
-	defer p.mtx.RUnlock()
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
 
 	return p.aggregatedData
 }
