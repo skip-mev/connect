@@ -66,6 +66,47 @@ var (
 			PEPE_USDT.String(): PEPE_USDT,
 			PEPE_USD.String():  PEPE_USD,
 		},
+		Providers: map[string]mmtypes.Providers{
+			BTC_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
+				},
+			},
+			BTC_USDT.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.BITCOIN_USDT],
+					binance.DefaultNonUSMarketConfig[constants.BITCOIN_USDT],
+					kucoin.DefaultMarketConfig[constants.BITCOIN_USDT],
+				},
+			},
+			ETH_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
+				},
+			},
+			ETH_USDT.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.ETHEREUM_USDT],
+					binance.DefaultNonUSMarketConfig[constants.ETHEREUM_USDT],
+				},
+			},
+			USDT_USD.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.USDT_USD],
+					binance.DefaultNonUSMarketConfig[constants.USDT_USD],
+				},
+			},
+			USDC_USDT.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig[constants.USDC_USDT],
+				},
+			},
+			PEPE_USDT.String(): {
+				Providers: []mmtypes.ProviderConfig{
+					binance.DefaultNonUSMarketConfig[constants.PEPE_USDT],
+				},
+			},
+		},
 		Paths: map[string]mmtypes.Paths{
 			BTC_USD.String(): {
 				Paths: []mmtypes.Path{

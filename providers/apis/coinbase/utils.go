@@ -88,6 +88,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "BTC-USD",
 		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTC-USDT",
+		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,
 			OffChainTicker: "BTC-USDC",

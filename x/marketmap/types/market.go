@@ -36,7 +36,7 @@ func (mm *MarketMap) ValidateBasic() error {
 		}
 
 		if err := providers.ValidateBasic(); err != nil {
-			return err
+			return fmt.Errorf("ticker %s has invalid providers: %w", tickerStr, err)
 		}
 	}
 
