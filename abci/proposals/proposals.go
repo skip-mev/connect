@@ -136,7 +136,7 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 			)
 
 			extInfo := req.LocalLastCommit
-			if err = h.ValidateExtendedCommitInfoPrepare(ctx, req.Height, extInfo); err != nil {
+			if err = h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
 				h.logger.Error(
 					"failed to validate vote extensions",
 					"height", req.Height,
@@ -307,7 +307,7 @@ func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 					err
 			}
 
-			if err := h.ValidateExtendedCommitInfoProcess(ctx, req, extInfo); err != nil {
+			if err := h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
 				h.logger.Error(
 					"failed to validate vote extensions",
 					"height", req.Height,
