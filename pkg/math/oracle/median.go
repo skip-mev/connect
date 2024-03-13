@@ -129,19 +129,8 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 		return nil
 	}
 
-	convertedPrices := make([]*big.Int, 0)
+	convertedPrices := make([]*big.Int, 0, len(paths.Paths))
 	for _, path := range paths.Paths {
-		// Ensure that the number of operations is valid.
-		if len(path.Operations) == 0 || len(path.Operations) > MaxConversionOperations {
-			m.logger.Error(
-				"invalid number of operations",
-				zap.String("ticker", target.String()),
-				zap.Any("path", path),
-			)
-
-			continue
-		}
-
 		// Calculate the converted price.
 		adjustedPrice, err := m.CalculateAdjustedPrice(target, path.Operations)
 		if err != nil {
@@ -181,6 +170,13 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	target mmtypes.Ticker,
 	operations []mmtypes.Operation,
 ) (*big.Int, error) {
+	// Sanity check the number of operations. This should be [1, 2] operations.
+	if len(operations) == 0 {
+		return nil, fmt.Errorf("no operations")
+	} else if len(operations) > MaxConversionOperations {
+		return nil, fmt.Errorf("too many operations: %d", len(operations))
+	}
+
 	price, err := m.GetProviderPrice(operations[0])
 	if err != nil {
 		return nil, err
@@ -194,7 +190,7 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 
 	// If we have more than one operation, then can only adjust the price using the index.
 	if operations[1].Provider != IndexPrice {
-		return nil, fmt.Errorf("invalid provider: %s", operations[1].Provider)
+		return nil, fmt.Errorf("expected index price but got %s", operations[1].Provider)
 	}
 
 	adjustableByMarketPrice, err := m.GetProviderPrice(operations[1])

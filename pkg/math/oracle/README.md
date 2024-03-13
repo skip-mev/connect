@@ -208,7 +208,7 @@ From the above market map, we can see that the following paths are used to calcu
 A few important considerations:
 
 1. Each ticker (BTC/USD, ETH/USD, USDT/USD) can have a configured `MinimumProviderCount` which is the minimum number of providers that are required to calculate the price of the ticker.
-2. Each path must that is not a direct conversion (e.g. BTC/USD) must configure the second operation to utilize the `index` price i.e. [`IndexPrice`](./median.go).
+2. Each path that is not a direct conversion (e.g. BTC/USD) must configure the second operation to utilize the `index` price i.e. [`IndexPrice`](./median.go).
 
 ## Aggregation
 

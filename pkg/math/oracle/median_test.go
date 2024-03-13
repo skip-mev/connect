@@ -459,6 +459,46 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		expectedErr   bool
 	}{
 		{
+			name:          "nil operations",
+			target:        BTC_USD,
+			operations:    nil,
+			malleate:      func(*types.PriceAggregator) {},
+			expectedPrice: nil,
+			expectedErr:   true,
+		},
+		{
+			name:          "empty operations",
+			target:        BTC_USD,
+			operations:    []mmtypes.Operation{},
+			malleate:      func(*types.PriceAggregator) {},
+			expectedPrice: nil,
+			expectedErr:   true,
+		},
+		{
+			name:   "too many operations",
+			target: BTC_USD,
+			operations: []mmtypes.Operation{
+				{
+					CurrencyPair: BTC_USDT.CurrencyPair,
+					Provider:     coinbase.Name,
+					Invert:       false,
+				},
+				{
+					CurrencyPair: USDT_USD.CurrencyPair,
+					Provider:     oracle.IndexPrice,
+					Invert:       false,
+				},
+				{
+					CurrencyPair: USDT_USD.CurrencyPair,
+					Provider:     oracle.IndexPrice,
+					Invert:       false,
+				},
+			},
+			malleate:      func(*types.PriceAggregator) {},
+			expectedPrice: nil,
+			expectedErr:   true,
+		},
+		{
 			name:   "price does not exist for the provider with an operation that is exactly the target (BTC/USD)",
 			target: BTC_USD,
 			operations: []mmtypes.Operation{
