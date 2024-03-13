@@ -112,7 +112,7 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 		}()
 
 		// If vote extensions are not enabled, then we don't need to do anything.
-		if !ve.VoteExtensionsEnabled(ctx) || req == nil {
+		if !ve.VoteExtensionsEnabled(ctx) {
 			h.logger.Info(
 				"vote extensions are not enabled",
 				"height", ctx.BlockHeight(),

@@ -2,30 +2,25 @@ package ve_test
 
 import (
 	"bytes"
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/skip-mev/slinky/abci/ve"
 	"sort"
 	"testing"
-
-	abci "github.com/cometbft/cometbft/abci/types"
-	cmtsecp256k1 "github.com/cometbft/cometbft/crypto/secp256k1"
-	cmtprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	protoio "github.com/cosmos/gogoproto/io"
-	"github.com/cosmos/gogoproto/proto"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
 
 	"cosmossdk.io/core/comet"
 	"cosmossdk.io/core/header"
 	"cosmossdk.io/log"
-	baseapptestutil "github.com/cosmos/cosmos-sdk/baseapp/testutil"
+	abci "github.com/cometbft/cometbft/abci/types"
+	cmtsecp256k1 "github.com/cometbft/cometbft/crypto/secp256k1"
+	cmtprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/baseapp/testutil/mock"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	signingtypes "github.com/cosmos/cosmos-sdk/types/tx/signing"
+	protoio "github.com/cosmos/gogoproto/io"
+	"github.com/cosmos/gogoproto/proto"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
+
+	"github.com/skip-mev/slinky/abci/ve"
 )
 
 const (
@@ -105,7 +100,7 @@ func TestABCIUtilsTestSuite(t *testing.T) {
 	suite.Run(t, NewABCIUtilsTestSuite(t))
 }
 
-// check ValidateVoteExtensions works when all nodes have CommitBlockID votes
+// check ValidateVoteExtensions works when all nodes have CommitBlockID votes.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsHappyPath() {
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
@@ -161,7 +156,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsHappyPath() {
 	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
-// check ValidateVoteExtensions works when a single node has submitted a BlockID_Absent
+// check ValidateVoteExtensions works when a single node has submitted a BlockID_Absent.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteAbsent() {
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
@@ -212,7 +207,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteAbsent() {
 	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
-// check ValidateVoteExtensions works with duplicate votes
+// check ValidateVoteExtensions works with duplicate votes.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsDuplicateVotes() {
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
@@ -258,7 +253,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsDuplicateVotes() {
 	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
-// check ValidateVoteExtensions works when a single node has submitted a BlockID_Nil
+// check ValidateVoteExtensions works when a single node has submitted a BlockID_Nil.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteNil() {
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
@@ -310,7 +305,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteNil() {
 	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
-// check ValidateVoteExtensions works when two nodes have submitted a BlockID_Nil / BlockID_Absent
+// check ValidateVoteExtensions works when two nodes have submitted a BlockID_Nil / BlockID_Absent.
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsTwoVotesNilAbsent() {
 	ext := []byte("vote-extension")
 	cve := cmtproto.CanonicalVoteExtension{
@@ -466,42 +461,6 @@ func marshalDelimitedFn(msg proto.Message) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
-}
-
-func buildMsg(t *testing.T, txConfig client.TxConfig, value []byte, secrets [][]byte, nonces []uint64) sdk.Tx {
-	t.Helper()
-	builder := txConfig.NewTxBuilder()
-
-	require.Equal(t, len(secrets), len(nonces))
-	signatures := make([]signingtypes.SignatureV2, 0)
-	for index, secret := range secrets {
-		nonce := nonces[index]
-		privKey := secp256k1.GenPrivKeyFromSecret(secret)
-		pubKey := privKey.PubKey()
-		signatures = append(signatures, signingtypes.SignatureV2{
-			PubKey:   pubKey,
-			Sequence: nonce,
-			Data:     &signingtypes.SingleSignatureData{},
-		})
-	}
-
-	_ = builder.SetMsgs(
-		&baseapptestutil.MsgKeyValue{
-			Signer: sdk.AccAddress(signatures[0].PubKey.Bytes()).String(),
-			Value:  value,
-		},
-	)
-
-	setTxSignatureWithSecret(t, builder, signatures...)
-	return builder.GetTx()
-}
-
-func setTxSignatureWithSecret(t *testing.T, builder client.TxBuilder, signatures ...signingtypes.SignatureV2) {
-	t.Helper()
-	err := builder.SetSignatures(
-		signatures...,
-	)
-	require.NoError(t, err)
 }
 
 func extendedCommitToLastCommit(ec abci.ExtendedCommitInfo) (abci.ExtendedCommitInfo, comet.BlockInfo) {
