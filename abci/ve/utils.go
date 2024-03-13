@@ -268,6 +268,10 @@ func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 		if vote.Validator.Power != lc.Votes().Get(i).Validator().Power() {
 			return fmt.Errorf("extended commit vote power %d does not match last commit vote power %d", vote.Validator.Power, lc.Votes().Get(i).Validator().Power())
 		}
+
+		if int32(lc.Votes().Get(i).GetBlockIDFlag()) != int32(vote.BlockIdFlag) {
+			return fmt.Errorf("mismatched block ID flag between extended commit vote and last proposed commit")
+		}
 	}
 
 	return nil
