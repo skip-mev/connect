@@ -252,4 +252,4 @@ The final price of BTC/USD is the median of the above prices, which is 73_500. I
 
 It is possible to have cycles in the market map. If the price of a ticker is dependent on a different ticker, which in turn is dependent on the first ticker, then we have a cycle. This can affect price liveness and can cause the oracle to be stuck in a loop. To prevent this, we recommend that markets that are dependent on each other have a sufficient amount of providers, have considerable `MinProviderCount`, and have sufficent amounts of direct conversions (i.e. not dependent on other tickers).
 
-If a cycle does exist, it will ~likely~ be resolved after a few iterations of the oracle.
+If a cycle does exist, it will likely be resolved after a few iterations of the oracle.
