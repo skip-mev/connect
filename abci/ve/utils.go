@@ -82,7 +82,11 @@ type ValidateVoteExtensionsFn func(
 // NewDefaultValidateVoteExtensionsFn returns a new DefaultValidateVoteExtensionsFn.
 func NewDefaultValidateVoteExtensionsFn(validatorStore ValidatorStore) ValidateVoteExtensionsFn {
 	return func(ctx sdk.Context, info cometabci.ExtendedCommitInfo) error {
-		return ValidateVoteExtensions(ctx, validatorStore, info)
+		if VoteExtensionsEnabled(ctx) {
+			return ValidateVoteExtensions(ctx, validatorStore, info)
+		}
+
+		return nil
 	}
 }
 
