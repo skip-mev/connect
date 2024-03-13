@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	"fmt"
 	"math/big"
 	"time"
 
@@ -77,6 +78,15 @@ func NewOraclePreBlockHandler(
 // the oracle data to the store.
 func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 	return func(ctx sdk.Context, req *cometabci.RequestFinalizeBlock) (_ *sdk.ResponsePreBlock, err error) {
+		if req == nil {
+			ctx.Logger().Error(
+				"received nil RequestFinalizeBlock in oracle preblocker",
+				"height", ctx.BlockHeight(),
+			)
+
+			return &sdk.ResponsePreBlock{}, fmt.Errorf("received nil RequestFinalizeBlock in oracle preblocker: height %d", ctx.BlockHeight())
+		}
+
 		start := time.Now()
 		var prices map[slinkytypes.CurrencyPair]*big.Int
 		defer func() {
