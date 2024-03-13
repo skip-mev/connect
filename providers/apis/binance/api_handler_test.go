@@ -13,6 +13,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -178,7 +179,9 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					mogusd: fmt.Errorf("no response"),
+					mogusd: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -193,7 +196,9 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("no response"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -208,7 +213,9 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT: fmt.Errorf("invalid syntax"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -224,8 +231,12 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT:  fmt.Errorf("no response"),
-					constants.ETHEREUM_USDT: fmt.Errorf("no response"),
+					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
+					},
+					constants.ETHEREUM_USDT: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},

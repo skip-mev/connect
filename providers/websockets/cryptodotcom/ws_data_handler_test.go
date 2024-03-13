@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
@@ -240,7 +242,9 @@ func TestHandleMessage(t *testing.T) {
 					constants.BITCOIN_USD: types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{
-					constants.SOLANA_USD: fmt.Errorf("failed to parse price $42,069.00: invalid syntax"),
+					constants.SOLANA_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price $42,069.00: invalid syntax"), providertypes.ErrorWebSocketGeneral),
+					},
 				},
 			},
 			expUpdateMsg: func() []handlers.WebsocketEncodedMessage {

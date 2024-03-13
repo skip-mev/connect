@@ -118,7 +118,7 @@ var (
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
 	LocalOracleConfig = config.OracleConfig{
-		Production: false,
+		Production: true,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//

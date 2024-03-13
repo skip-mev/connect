@@ -170,13 +170,14 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 	oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 		Name: static.Name,
 		API: oracleconfig.APIConfig{
-			Enabled:    true,
-			Timeout:    250 * time.Millisecond,
-			Interval:   250 * time.Millisecond,
-			MaxQueries: 1,
-			URL:        "http://un-used-url.com",
-			Atomic:     true,
-			Name:       static.Name,
+			Enabled:          true,
+			Timeout:          250 * time.Millisecond,
+			Interval:         250 * time.Millisecond,
+			ReconnectTimeout: 250 * time.Millisecond,
+			MaxQueries:       1,
+			URL:              "http://un-used-url.com",
+			Atomic:           true,
+			Name:             static.Name,
 		},
 	})
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -40,7 +42,7 @@ func (h *WebSocketHandler) parseTickerStream(
 			fmt.Errorf("invalid channel %s", stream.Channel)
 	}
 
-	// Get the the ticker from the off-chain representation.
+	// Get the ticker from the off-chain representation.
 	ticker, ok := h.market.OffChainMap[stream.Result.CurrencyPair]
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved),
@@ -51,7 +53,10 @@ func (h *WebSocketHandler) parseTickerStream(
 	priceStr := stream.Result.Last
 	price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
 	if err != nil {
-		unresolved[ticker] = fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+		wErr := fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+		unresolved[ticker] = providertypes.UnresolvedResult{
+			ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+		}
 		return types.NewPriceResponse(resolved, unresolved), unresolved[ticker]
 	}
 

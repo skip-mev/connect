@@ -176,10 +176,11 @@ test-bench: tidy
 test-cover: tidy
 	@echo Running unit tests and creating coverage report...
 	@go test -mod=readonly -v -timeout 30m -coverprofile=$(COVER_FILE) -covermode=atomic $(shell go list ./... | grep -v tests/)
-	@sed -i '/.pb.go/d' $(COVER_FILE)
-	@sed -i '/.pulsar.go/d' $(COVER_FILE)
-	@sed -i '/.proto/d' $(COVER_FILE)
-	@sed -i '/.pb.gw.go/d' $(COVER_FILE)
+	@sed -i'.bak' -e '/.pb.go/d' $(COVER_FILE)
+	@sed -i'.bak' -e '/.pulsar.go/d' $(COVER_FILE)
+	@sed -i'.bak' -e '/.proto/d' $(COVER_FILE)
+	@sed -i'.bak' -e '/.pb.gw.go/d' $(COVER_FILE)
+	@sed -i'.bak' -e '/mocks/d' $(COVER_FILE)
 
 .PHONY: test test-e2e test-petri-integ
 
