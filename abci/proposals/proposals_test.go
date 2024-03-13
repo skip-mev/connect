@@ -168,7 +168,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				return s.createRequestPrepareProposal(
@@ -200,7 +200,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				return s.createRequestPrepareProposal(
@@ -237,7 +237,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				commitInfo, _, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo1, valVoteInfo2, valVoteInfo3},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -282,7 +281,6 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 
 				commitInfo, _, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo1},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -308,7 +306,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, malformedPrices, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				return s.createRequestPrepareProposal(
@@ -332,7 +330,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				return s.createRequestPrepareProposal(
@@ -360,7 +358,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				return s.createRequestPrepareProposal(
@@ -393,7 +391,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				prop := s.createRequestPrepareProposal(
@@ -424,7 +422,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				prop := s.createRequestPrepareProposal(
@@ -459,7 +457,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				commitInfo, _, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				prop := s.createRequestPrepareProposal(
@@ -731,54 +729,12 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 			},
 		},
 		{
-			name: "reject a block with tampered VE data - validator address mismatch",
-			request: func() *cometabci.RequestProcessProposal {
-				valVoteInfo1, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
-				s.Require().NoError(err)
-
-				valVoteInfo2, err := testutils.CreateExtendedVoteInfo(val2, prices2, s.codec)
-				s.Require().NoError(err)
-
-				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo1}, 3, s.extCommitCodec)
-				s.Require().NoError(err)
-
-				proposal := [][]byte{
-					commitInfoBz,
-					[]byte("tx1"),
-				}
-
-				lastCommit := cometabci.CommitInfo{
-					Round: ext.Round,
-					Votes: []cometabci.VoteInfo{
-						{
-							Validator:   valVoteInfo2.Validator,
-							BlockIdFlag: valVoteInfo1.BlockIdFlag,
-						},
-					},
-				}
-
-				return s.createRequestProcessProposal(
-					proposal,
-					lastCommit,
-					3,
-				)
-			},
-			veEnabled: true,
-			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
-				return currencypairmocks.NewCurrencyPairStrategy(s.T())
-			},
-			expectedError: true,
-			expectedResp: &cometabci.ResponseProcessProposal{
-				Status: cometabci.ResponseProcessProposal_REJECT,
-			},
-		},
-		{
 			name: "can process a block with a single vote extension",
 			request: func() *cometabci.RequestProcessProposal {
 				valVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, prices1, s.codec)
 				s.Require().NoError(err)
 
-				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 3, s.extCommitCodec)
+				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.extCommitCodec)
 				s.Require().NoError(err)
 
 				proposal := [][]byte{
@@ -830,7 +786,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 
 				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo1, valVoteInfo2, valVoteInfo3},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -898,7 +853,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 
 				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -941,7 +895,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 
 				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -984,7 +937,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 
 				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -1031,7 +983,6 @@ func (s *ProposalsTestSuite) TestProcessProposal() {
 
 				ext, commitInfoBz, err := testutils.CreateExtendedCommitInfo(
 					[]cometabci.ExtendedVoteInfo{valVoteInfo},
-					3,
 					s.extCommitCodec,
 				)
 				s.Require().NoError(err)
@@ -1213,7 +1164,6 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		ext, extInfoBz, err := testutils.CreateExtendedCommitInfo(
 			[]cometabci.ExtendedVoteInfo{},
-			3,
 			codec.NewDefaultExtendedCommitCodec(),
 		)
 		s.Require().NoError(err)
@@ -1254,7 +1204,6 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 
 		ext, extInfoBz, err := testutils.CreateExtendedCommitInfo(
 			[]cometabci.ExtendedVoteInfo{},
-			3,
 			codec.NewDefaultExtendedCommitCodec(),
 		)
 		s.Require().NoError(err)

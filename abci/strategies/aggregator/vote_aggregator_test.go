@@ -99,7 +99,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 	)
 
 	s.Run("no oracle data", func() {
-		_, commitBz, err := testutils.CreateExtendedCommitInfo(nil, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo(nil, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -121,7 +121,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -159,7 +159,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -207,7 +207,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -259,7 +259,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -310,7 +310,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, otherValVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -377,7 +377,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, val1VoteInfo, val2VoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo, val1VoteInfo, val2VoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}
@@ -441,7 +441,7 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 		s.Require().NoError(err)
 
 		// Create the extended commit info
-		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, 2, s.commitCodec)
+		_, commitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{valVoteInfo}, s.commitCodec)
 		s.Require().NoError(err)
 
 		proposal := [][]byte{commitBz}

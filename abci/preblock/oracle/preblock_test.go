@@ -494,7 +494,7 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		}, compression.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
-		_, extCommitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{val1Vote, val2Vote}, 3, compression.NewDefaultExtendedCommitCodec())
+		_, extCommitBz, err := testutils.CreateExtendedCommitInfo([]cometabci.ExtendedVoteInfo{val1Vote, val2Vote}, compression.NewDefaultExtendedCommitCodec())
 		s.Require().NoError(err)
 
 		// expect metrics calls
