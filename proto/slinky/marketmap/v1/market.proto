@@ -62,6 +62,10 @@ message Operation {
   // Invert is a boolean that indicates whether the price of the ticker should
   // be inverted.
   bool invert = 2;
+
+  // Provider is the name of the provider that will be used to fetch the price of
+  // the ticker.
+  string provider = 3;
 }
 
 message Paths {
