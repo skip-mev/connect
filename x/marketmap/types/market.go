@@ -7,15 +7,12 @@ import (
 // ValidateBasic performs aggregate validation for all fields in the MarketMap. We consider
 // the market map to be valid iff:
 //
-// 1. Each ticker has a corresponding provider supporting it.
+// 1. Each ticker a provider supports is included in the main set of tickers.
 // 2. Each ticker is valid.
 // 3. Each provider is valid.
-// 4. Each path is valid.
-// 5. Each operation (ticker) in each path is supported by the market map.
-// 6. The enabled list is valid.
 func (mm *MarketMap) ValidateBasic() error {
 	if len(mm.Tickers) < len(mm.Providers) {
-		return fmt.Errorf("each ticker must have a corresponding provider list supporting it")
+		return fmt.Errorf("each ticker a provider includes must have a corresponding ticker in the main set of tickers")
 	}
 
 	seenCPs := make(map[string]struct{})

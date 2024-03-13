@@ -37,17 +37,15 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
 
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %w", err)
+	if err := ValidateMarketMap(cfg); err != nil {
+		return nil, err
 	}
 
-	m := &MedianAggregator{
+	return &MedianAggregator{
 		logger:          logger,
 		cfg:             cfg,
 		PriceAggregator: types.NewPriceAggregator(),
-	}
-
-	return m, nil
+	}, nil
 }
 
 // AggregatedData implements the aggregate function for the median price calculation. Specifically, this
