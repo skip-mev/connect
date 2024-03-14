@@ -5,7 +5,7 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -75,8 +75,8 @@ func CreateExtendedVoteInfo(
 // UpdateContextWithVEHeight updates the context with the given height and enables vote extensions
 // for the given height.
 func UpdateContextWithVEHeight(ctx sdk.Context, height int64) sdk.Context {
-	params := cmtproto.ConsensusParams{
-		Abci: &cmtproto.ABCIParams{
+	params := cometproto.ConsensusParams{
+		Abci: &cometproto.ABCIParams{
 			VoteExtensionsEnableHeight: height,
 		},
 	}
@@ -86,13 +86,13 @@ func UpdateContextWithVEHeight(ctx sdk.Context, height int64) sdk.Context {
 }
 
 // CreateBaseSDKContextWithKeys creates a base sdk context with the given store key and transient key.
-func CreateBaseSDKContextWithKeys(t *testing.T, storekey storetypes.StoreKey, transientkey *storetypes.TransientStoreKey) sdk.Context {
+func CreateBaseSDKContextWithKeys(t *testing.T, storeKey storetypes.StoreKey, transientKey *storetypes.TransientStoreKey) sdk.Context {
 	t.Helper()
 
 	testCtx := testutil.DefaultContextWithDB(
 		t,
-		storekey,
-		transientkey,
+		storeKey,
+		transientKey,
 	)
 
 	return testCtx.Ctx

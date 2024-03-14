@@ -8,7 +8,7 @@ import (
 )
 
 // ValidateExtendedCommitInfo validates the extended commit info for a block. It first
-// ensures that the vote extensions compose a supermajority of the signatures and
+// ensures that the vote extensions compose a super-majority of the signatures and
 // voting power for the block. Then, it ensures that oracle vote extensions are correctly
 // marshalled and contain valid prices.
 func (h *ProposalHandler) ValidateExtendedCommitInfo(
