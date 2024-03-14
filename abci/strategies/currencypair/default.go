@@ -9,6 +9,12 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
+const (
+	// DefaultCacheInitialCapacity is the initial capacity to initialize the cache map for the
+	// DefaultCurrencyPairStrategy.  This will prevent reallocation when under this size of CPs.
+	DefaultCacheInitialCapacity = 50
+)
+
 // DefaultCurrencyPairStrategy is a strategy that uses the currency pair ID stored in the x/oracle state as
 // the unique ID for a given currency pair and utilizes raw prices stored in the x/oracle state as the price
 // representation for a given currency pair.
@@ -32,7 +38,7 @@ func WithCache() Option {
 func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper, opts ...Option) *DefaultCurrencyPairStrategy {
 	strategy := &DefaultCurrencyPairStrategy{
 		oracleKeeper:     oracleKeeper,
-		idToCurrencyPair: make(map[uint64]slinkytypes.CurrencyPair),
+		idToCurrencyPair: make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity),
 		useCache:         false,
 	}
 
