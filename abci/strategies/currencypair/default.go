@@ -29,11 +29,16 @@ func WithCache() Option {
 }
 
 // NewDefaultCurrencyPairStrategy returns a new DefaultCurrencyPairStrategy instance.
-func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyPairStrategy {
+func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper, opts ...Option) *DefaultCurrencyPairStrategy {
 	strategy := &DefaultCurrencyPairStrategy{
 		oracleKeeper:     oracleKeeper,
 		idToCurrencyPair: make(map[uint64]slinkytypes.CurrencyPair),
 		useCache:         false,
+	}
+
+	// run options
+	for _, opt := range opts {
+		opt(strategy)
 	}
 
 	return strategy
