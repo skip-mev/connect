@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -24,16 +23,19 @@ const (
 	Delimeter = "-"
 )
 
+// USDT_USD is the USDT/USD currency pair. This is treated uniquely in the market map.
+var USDT_USD = slinkytypes.NewCurrencyPair("USDT", "USD")
+
 // DefaultAPIConfig returns the default configuration for the dYdX market map API.
 var DefaultAPIConfig = config.APIConfig{
 	Name:             Name,
 	Atomic:           true,
 	Enabled:          true,
-	Timeout:          500 * time.Millisecond,
-	Interval:         5 * time.Second,
+	Timeout:          1000 * time.Millisecond,
+	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	URL:              "https://dydx-api.polkachu.com", // TEMP PLACEHOLDER
+	URL:              "replace-me",
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
@@ -51,25 +53,24 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 			return mmtypes.GetMarketMapResponse{}, err
 		}
 
-		var exchangeConfigJson dydxtypes.ExchangeConfigJson
-		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJson); err != nil {
+		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
+		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
 			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config for %s: %w", ticker.String(), err)
 		}
 
-		paths, err := CreatePathsFromMarket(ticker, exchangeConfigJson)
-		if err != nil {
-			return mmtypes.GetMarketMapResponse{}, err
-		}
-
-		providers, err := CreateProvidersFromMarket(exchangeConfigJson)
+		paths, providers, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
 		if err != nil {
 			return mmtypes.GetMarketMapResponse{}, err
 		}
 
 		// Add the ticker, provider, and paths to the market map.
 		marketMap.Tickers[ticker.String()] = ticker
-		marketMap.Providers[ticker.String()] = providers
 		marketMap.Paths[ticker.String()] = paths
+		marketMap.Providers[ticker.String()] = providers
+	}
+
+	if err := marketMap.ValidateBasic(); err != nil {
+		return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to validate market map: %w", err)
 	}
 
 	return mmtypes.GetMarketMapResponse{
@@ -78,90 +79,141 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 }
 
 // CreateCurrencyPairFromMarket creates a currency pair from a dYdX market.
-func CreateCurrencyPairFromMarket(pair string) (pkgtypes.CurrencyPair, error) {
+func CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
 	split := strings.Split(pair, Delimeter)
 	if len(split) != 2 {
-		return pkgtypes.CurrencyPair{}, fmt.Errorf("expected pair (%s) to have 2 elements, got %d", pair, len(split))
+		return slinkytypes.CurrencyPair{}, fmt.Errorf("expected pair (%s) to have 2 elements, got %d", pair, len(split))
 	}
 
-	base := split[0]
-	quote := split[1]
-	return pkgtypes.NewCurrencyPair(base, quote), nil
+	cp := slinkytypes.NewCurrencyPair(
+		strings.ToUpper(split[0]), // Base
+		strings.ToUpper(split[1]), // Quote
+	)
+
+	return cp, cp.ValidateBasic()
 }
 
 // CreateTickerFromMarket creates a ticker from a dYdX market.
 func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error) {
-	cp, err := CreateCurrencyPairFromMarket(market.Pair)
+	cp, err := CreateCurrencyPairFromPair(market.Pair)
 	if err != nil {
 		return mmtypes.Ticker{}, err
 	}
 
-	return mmtypes.Ticker{
+	t := mmtypes.Ticker{
 		CurrencyPair:     cp,
 		Decimals:         uint64(market.Exponent * -1),
 		MinProviderCount: uint64(market.MinExchanges),
-	}, nil
+	}
+
+	return t, t.ValidateBasic()
 }
 
-// CreatePathsFromMarket creates a set of paths for a given ticker from a dYdX market.
-func CreatePathsFromMarket(
+// ConvertExchangeConfigJSON creates a set of paths and providers for a given ticker
+// from a dYdX market. These paths represent the different ways to convert a currency
+// pair using the dYdX market. This involves either a direct or indirect conversion
+// (via an index price).
+func ConvertExchangeConfigJSON(
 	ticker mmtypes.Ticker,
 	config dydxtypes.ExchangeConfigJson,
-) (mmtypes.Paths, error) {
+) (mmtypes.Paths, mmtypes.Providers, error) {
 	paths := make([]mmtypes.Path, 0)
+	providers := make([]mmtypes.ProviderConfig, 0)
 
 	for _, cfg := range config.Exchanges {
-		path := mmtypes.Path{
-			Operations: make([]mmtypes.Operation, 0),
-		}
+		var operations []mmtypes.Operation
+		switch {
+		case len(cfg.AdjustByMarket) == 0 && !cfg.Invert:
+			// Direct conversion.
+			operation := mmtypes.Operation{
+				CurrencyPair: ticker.CurrencyPair,
+				Provider:     cfg.ExchangeName,
+				Invert:       false,
+			}
+			providerCfg := mmtypes.ProviderConfig{
+				Name:           cfg.ExchangeName,
+				OffChainTicker: cfg.Ticker,
+			}
 
-		// Add the first operation which is going to be the ticker.
-		first := mmtypes.Operation{
-			Provider:     cfg.ExchangeName,
-			CurrencyPair: ticker.CurrencyPair,
-			Invert:       cfg.Invert,
-		}
-		path.Operations = append(path.Operations, first)
+			operations = append(operations, operation)
+			providers = append(providers, providerCfg)
+		case len(cfg.AdjustByMarket) == 0 && cfg.Invert:
+			// Direct conversion with inverted price.
+			operation := mmtypes.Operation{
+				CurrencyPair: ticker.CurrencyPair,
+				Provider:     cfg.ExchangeName,
+				Invert:       true,
+			}
 
-		// Check if we need to convert via a index price.
-		if len(cfg.AdjustByMarket) > 0 {
-			cp, err := CreateCurrencyPairFromMarket(cfg.AdjustByMarket)
+			providerCfg := mmtypes.ProviderConfig{
+				Name:           cfg.ExchangeName,
+				OffChainTicker: cfg.Ticker,
+			}
+
+			operations = append(operations, operation)
+			providers = append(providers, providerCfg)
+		case len(cfg.AdjustByMarket) > 0 && !cfg.Invert:
+			// Indirect conversion with index price. This is effectively a conversion
+			// from the base currency to the quote currency via the index currency.
+			// Ex. BTC/USD via BTC/USDT and USDT/USD.
+			first := mmtypes.Operation{
+				CurrencyPair: ticker.CurrencyPair,
+				Provider:     cfg.ExchangeName,
+				Invert:       false,
+			}
+
+			cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
 			if err != nil {
-				return mmtypes.Paths{}, err
+				return mmtypes.Paths{}, mmtypes.Providers{}, err
+			}
+			second := mmtypes.Operation{
+				CurrencyPair: cp,
+				Provider:     mmtypes.IndexPrice,
+				Invert:       false,
+			}
+
+			providerCfg := mmtypes.ProviderConfig{
+				Name:           cfg.ExchangeName,
+				OffChainTicker: cfg.Ticker,
+			}
+
+			operations = append(operations, first, second)
+			providers = append(providers, providerCfg)
+		case len(cfg.AdjustByMarket) > 0 && cfg.Invert:
+			// Indirect conversion with inverted index price. This is effectively a conversion
+			// from the base currency to the quote currency via the index currency with an inverted
+			// price. Ex. USDT/USD via BTC/USDT and BTC/USD. In this case, we are not defining
+			// a new market but are instead using an existing one. The existing market must match
+			// to the market used in the index price.
+			cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
+			if err != nil {
+				return mmtypes.Paths{}, mmtypes.Providers{}, err
+			}
+			first := mmtypes.Operation{
+				CurrencyPair: cp,
+				Provider:     cfg.ExchangeName,
+				Invert:       true,
 			}
 
 			second := mmtypes.Operation{
-				Provider:     oracle.IndexPrice,
 				CurrencyPair: cp,
+				Provider:     mmtypes.IndexPrice,
 				Invert:       false,
 			}
-			path.Operations = append(path.Operations, second)
+
+			operations = append(operations, first, second)
 		}
+
+		// Add the provider config and operations to the paths and providers.
+		paths = append(paths, mmtypes.Path{Operations: operations})
 	}
 
-	return mmtypes.Paths{
+	allPaths := mmtypes.Paths{
 		Paths: paths,
-	}, nil
-}
-
-// CreateProvidersFromMarket creates a set of providers for a given ticker from a dYdX market.
-func CreateProvidersFromMarket(config dydxtypes.ExchangeConfigJson) (mmtypes.Providers, error) {
-	providerConfigs := make([]mmtypes.ProviderConfig, 0)
-
-	for _, cfg := range config.Exchanges {
-		// TODO: Is there any additional validation we need to do on the raw exchange config?
-		name := cfg.ExchangeName
-		offChainTicker := cfg.Ticker
-
-		// Add the provider to the list of provider configs.
-		providerConfig := mmtypes.ProviderConfig{
-			Name:           name,
-			OffChainTicker: offChainTicker,
-		}
-		providerConfigs = append(providerConfigs, providerConfig)
+	}
+	allProviders := mmtypes.Providers{
+		Providers: providers,
 	}
 
-	return mmtypes.Providers{
-		Providers: providerConfigs,
-	}, nil
+	return allPaths, allProviders, nil
 }

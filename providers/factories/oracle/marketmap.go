@@ -85,7 +85,7 @@ func DefaultDYDXMarketMapProvider(
 		cfg.API,
 		requestHandler,
 		apiDataHandler,
-		apimetrics.NewNopAPIMetrics(),
+		apiMetrics,
 	)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func DefaultDYDXMarketMapProvider(
 		base.WithLogger[types.Chain, *mmtypes.GetMarketMapResponse](logger),
 		base.WithAPIQueryHandler(queryHandler),
 		base.WithAPIConfig[types.Chain, *mmtypes.GetMarketMapResponse](cfg.API),
-		base.WithMetrics[types.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
+		base.WithMetrics[types.Chain, *mmtypes.GetMarketMapResponse](providerMetrics),
 		base.WithIDs[types.Chain, *mmtypes.GetMarketMapResponse](ids),
 	)
 }

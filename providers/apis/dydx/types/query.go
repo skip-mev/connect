@@ -12,7 +12,7 @@ type QueryAllMarketParamsResponse struct {
 // currency.
 type MarketParam struct {
 	// Unique, sequentially-generated value.
-	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id uint32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` //nolint
 	// The human-readable name of the market pair (e.g. `BTC-USD`).
 	Pair string `protobuf:"bytes,2,opt,name=pair,proto3" json:"pair,omitempty"`
 	// Static value. The exponent of the price.
@@ -28,5 +28,5 @@ type MarketParam struct {
 	MinPriceChangePpm uint32 `protobuf:"varint,5,opt,name=min_price_change_ppm,json=minPriceChangePpm,proto3" json:"min_price_change_ppm,omitempty"`
 	// A string of json that encodes the configuration for resolving the price
 	// of this market on various exchanges.
-	ExchangeConfigJson string `protobuf:"bytes,6,opt,name=exchange_config_json,json=exchangeConfigJson,proto3" json:"exchange_config_json,omitempty"`
+	ExchangeConfigJson string `protobuf:"bytes,6,opt,name=exchange_config_json,json=exchangeConfigJson,proto3" json:"exchange_config_json,omitempty"` //nolint
 }

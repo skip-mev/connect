@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
@@ -62,7 +61,8 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) types.MarketMapResponse {
 	if len(chains) != 1 {
-		return types.NewMarketMapResponseWithErr(chains,
+		return types.NewMarketMapResponseWithErr(
+			chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("expected one chain, got %d", len(chains)),
 				providertypes.ErrorInvalidAPIChains,
@@ -71,7 +71,8 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	if resp == nil {
-		return types.NewMarketMapResponseWithErr(chains,
+		return types.NewMarketMapResponseWithErr(
+			chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("nil response"),
 				providertypes.ErrorNoResponse,
@@ -82,7 +83,8 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response body into a dydx market params response object.
 	var params dydxtypes.QueryAllMarketParamsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&params); err != nil {
-		return types.NewMarketMapResponseWithErr(chains,
+		return types.NewMarketMapResponseWithErr(
+			chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("failed to parse dydx market params response: %w", err),
 				providertypes.ErrorFailedToDecode,
@@ -93,20 +95,11 @@ func (h *APIHandler) ParseResponse(
 	// Convert the dydx market params to a market map.
 	marketResp, err := ConvertMarketParamsToMarketMap(params)
 	if err != nil {
-		return types.NewMarketMapResponseWithErr(chains,
+		return types.NewMarketMapResponseWithErr(
+			chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("failed to convert dydx market params to market map: %w", err),
 				providertypes.ErrorUnknown,
-			),
-		)
-	}
-
-	// Validate the market map response.
-	if err := oracle.ValidateMarketMap(marketResp.MarketMap); err != nil {
-		return types.NewMarketMapResponseWithErr(chains,
-			providertypes.NewErrorWithCode(
-				fmt.Errorf("invalid market map response: %w", err),
-				providertypes.ErrorInvalidResponse,
 			),
 		)
 	}
