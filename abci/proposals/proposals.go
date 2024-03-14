@@ -25,7 +25,7 @@ import (
 // To verify the validity of the vote extensions, the proposal handler will
 // call the validateVoteExtensionsFn. This function is responsible for verifying
 // that the vote extensions included in the proposal are valid and compose a
-// supermajority of signatures and vote extensions for the current block.
+// super-majority of signatures and vote extensions for the current block.
 // The given VoteExtensionCodec must be the same used by the VoteExtensionHandler,
 // the extended commit is decoded in accordance with the given ExtendedCommitCodec.
 type ProposalHandler struct {
@@ -135,14 +135,16 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				"vote_extensions_enabled", voteExtensionsEnabled,
 			)
 
-			extInfo := req.LocalLastCommit
-			if err = h.ValidateExtendedCommitInfo(ctx, req.Height, extInfo); err != nil {
+			// get pruned ExtendedCommitInfo from LocalLastCommit
+			extInfo, err := h.PruneAndValidateExtendedCommitInfo(ctx, req.LocalLastCommit)
+			if err != nil {
 				h.logger.Error(
-					"failed to validate vote extensions",
+					"failed to prune extended commit info",
 					"height", req.Height,
-					"commit_info", extInfo,
+					"local_last_commit", req.LocalLastCommit,
 					"err", err,
 				)
+
 				err = InvalidExtendedCommitInfoError{
 					Err: err,
 				}
@@ -247,7 +249,7 @@ func (h *ProposalHandler) injectAndResize(appTxs [][]byte, injectTx []byte, maxS
 // ProcessProposalHandler returns a ProcessProposalHandler that will be called
 // by base app when a new block proposal needs to be verified. The ProcessProposalHandler
 // will verify that the vote extensions included in the proposal are valid and compose
-// a supermajority of signatures and vote extensions for the current block.
+// a super-majority of signatures and vote extensions for the current block.
 func (h *ProposalHandler) ProcessProposalHandler() sdk.ProcessProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestProcessProposal) (resp *cometabci.ResponseProcessProposal, err error) {
 		start := time.Now()

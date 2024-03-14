@@ -4,6 +4,7 @@ import (
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 
@@ -48,23 +49,18 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 	return nil
 }
 
-// PruneInvalidVotes validates each vote-extension in the extended commit, and removes
+// PruneAndValidateExtendedCommitInfo validates each vote-extension in the extended commit, and removes
 // any vote-extensions that are invalid. Removal will effectively treat the validator's
-// vote as absent.
-func (h *ProposalHandler) PruneInvalidVotes(
+// vote as absent.  This function performs all validation that ValidateExtendedCommitInfo performs.
+func (h *ProposalHandler) PruneAndValidateExtendedCommitInfo(
 	ctx sdk.Context, extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) (cometabci.ExtendedCommitInfo, error) {
 	// Validate all oracle vote extensions.
 	for i, vote := range extendedCommitInfo.Votes {
-		// vote is not voted for if VE is nil
-		if vote.VoteExtension == nil && vote.ExtensionSignature == nil {
-			continue
-		}
-
 		// validate the vote-extension
 		if err := validateVoteExtension(ctx, vote, h.voteExtensionCodec, h.currencyPairStrategy); err != nil {
-			h.logger.Error(
-				"failed to validate vote extension",
+			h.logger.Info(
+				"failed to validate vote extension - pruning vote",
 				"err", err,
 				"validator", vote.Validator.Address,
 			)
@@ -77,6 +73,16 @@ func (h *ProposalHandler) PruneInvalidVotes(
 		}
 	}
 
+	// validate after pruning
+	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo); err != nil {
+		h.logger.Error(
+			"failed to validate vote extensions; vote extensions may not comprise a super-majority",
+			"err", err,
+		)
+
+		return cometabci.ExtendedCommitInfo{}, err
+	}
+
 	return extendedCommitInfo, nil
 }
 
@@ -86,6 +92,11 @@ func validateVoteExtension(
 	voteExtensionCodec codec.VoteExtensionCodec,
 	currencyPairStrategy currencypair.CurrencyPairStrategy,
 ) error {
+	// vote is not voted for if VE is nil
+	if vote.VoteExtension == nil && vote.ExtensionSignature == nil {
+		return nil
+	}
+
 	voteExt, err := voteExtensionCodec.Decode(vote.VoteExtension)
 	if err != nil {
 		return err

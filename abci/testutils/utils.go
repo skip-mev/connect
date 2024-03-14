@@ -57,18 +57,28 @@ func CreateExtendedVoteInfo(
 	prices map[uint64][]byte,
 	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
+	return CreateExtendedVoteInfoWithPower(consAddr, 1, prices, codec)
+}
+
+// CreateExtendedVoteInfoWithPower CreateExtendedVoteInfo creates an extended vote info
+// with the given power, prices, timestamp and height.
+func CreateExtendedVoteInfoWithPower(
+	consAddr sdk.ConsAddress,
+	power int64,
+	prices map[uint64][]byte,
+	codec compression.VoteExtensionCodec,
+) (cometabci.ExtendedVoteInfo, error) {
 	ve, err := CreateVoteExtensionBytes(prices, codec)
 	if err != nil {
 		return cometabci.ExtendedVoteInfo{}, err
 	}
-
 	voteInfo := cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
 			Address: consAddr,
-			Power:   1000,
+			Power:   power,
 		},
 		VoteExtension: ve,
-		BlockIdFlag:   cmtproto.BlockIDFlagCommit,
+		BlockIdFlag:   cometproto.BlockIDFlagCommit,
 	}
 
 	return voteInfo, nil
