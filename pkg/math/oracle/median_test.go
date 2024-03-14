@@ -176,12 +176,12 @@ func TestCalculateConvertedPrices(t *testing.T) {
 							},
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
-								Provider:     oracle.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
-								Provider:     oracle.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 						},
@@ -249,7 +249,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 							},
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
-								Provider:     oracle.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 						},
@@ -283,7 +283,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 							},
 							{
 								CurrencyPair: BTC_USD.CurrencyPair,
-								Provider:     oracle.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 						},
@@ -382,7 +382,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 							},
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
-								Provider:     oracle.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 						},
@@ -396,7 +396,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 							},
 							{
 								CurrencyPair: USDT_USD.CurrencyPair,
-								Provider:     oracle.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 						},
@@ -486,12 +486,12 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -543,7 +543,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -567,7 +567,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -596,7 +596,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: BTC_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -644,7 +644,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -673,7 +673,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: ETH_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -702,7 +702,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -750,7 +750,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -779,7 +779,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: BTC_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -827,7 +827,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: USDT_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
@@ -856,7 +856,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				},
 				{
 					CurrencyPair: BTC_USD.CurrencyPair,
-					Provider:     oracle.IndexPrice,
+					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
