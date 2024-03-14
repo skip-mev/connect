@@ -129,8 +129,7 @@ func ValidateIndexPriceAggregation(
 // checkIfProviderSupportsTicker checks if the provider supports the given ticker.
 func checkIfProviderSupportsTicker(
 	provider string,
-	cp slinkytypes
-	.CurrencyPair,
+	cp slinkytypes.CurrencyPair,
 	marketMap MarketMap,
 ) error {
 	providers, ok := marketMap.Providers[cp.String()]
