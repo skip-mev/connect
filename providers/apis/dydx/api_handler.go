@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/pkg/math/oracle"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
@@ -18,7 +19,7 @@ var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
 // by a base provider. This is specifically for fetching market data from the dYdX prices module, which is
 // then translated to a market map.
 type APIHandler struct {
-	// api is the api config for the dYdX market params API.
+	// api is the config for the MarketMap API.
 	api config.APIConfig
 }
 
@@ -44,7 +45,7 @@ func NewAPIHandler(
 }
 
 // CreateURL returns the URL that is used to fetch the latest market map data from the
-// dYdX prices module.
+// MarketMap API. Effectively, this will likely be querying the x/marketmap module.
 func (h *APIHandler) CreateURL(chains []types.Chain) (string, error) {
 	if len(chains) != 1 {
 		return "", fmt.Errorf("expected one chain, got %d", len(chains))
@@ -53,16 +54,15 @@ func (h *APIHandler) CreateURL(chains []types.Chain) (string, error) {
 	return fmt.Sprintf(Endpoint, h.api.URL), nil
 }
 
-// ParseResponse parses the response from the x/prices API and returns the resolved and
+// ParseResponse parses the response from the MarketMap API and returns the resolved and
 // unresolved market map data. The response from the MarketMap API is expected to be a
-// a single market map object that was converted from the dYdX market params response.
+// a single market map object.
 func (h *APIHandler) ParseResponse(
 	chains []types.Chain,
 	resp *http.Response,
 ) types.MarketMapResponse {
 	if len(chains) != 1 {
-		return types.NewMarketMapResponseWithErr(
-			chains,
+		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("expected one chain, got %d", len(chains)),
 				providertypes.ErrorInvalidAPIChains,
@@ -71,8 +71,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	if resp == nil {
-		return types.NewMarketMapResponseWithErr(
-			chains,
+		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("nil response"),
 				providertypes.ErrorNoResponse,
@@ -83,8 +82,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response body into a dydx market params response object.
 	var params dydxtypes.QueryAllMarketParamsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&params); err != nil {
-		return types.NewMarketMapResponseWithErr(
-			chains,
+		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("failed to parse dydx market params response: %w", err),
 				providertypes.ErrorFailedToDecode,
@@ -95,11 +93,20 @@ func (h *APIHandler) ParseResponse(
 	// Convert the dydx market params to a market map.
 	marketResp, err := ConvertMarketParamsToMarketMap(params)
 	if err != nil {
-		return types.NewMarketMapResponseWithErr(
-			chains,
+		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
 				fmt.Errorf("failed to convert dydx market params to market map: %w", err),
 				providertypes.ErrorUnknown,
+			),
+		)
+	}
+
+	// Validate the market map response.
+	if err := oracle.ValidateMarketMap(marketResp.MarketMap); err != nil {
+		return types.NewMarketMapResponseWithErr(chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("invalid market map response: %w", err),
+				providertypes.ErrorInvalidResponse,
 			),
 		)
 	}
