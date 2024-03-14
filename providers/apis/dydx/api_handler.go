@@ -44,7 +44,7 @@ func NewAPIHandler(
 }
 
 // CreateURL returns the URL that is used to fetch the latest market map data from the
-// MarketMap API. Effectively, this will likely be querying the x/marketmap module.
+// dYdX prices module.
 func (h *APIHandler) CreateURL(chains []types.Chain) (string, error) {
 	if len(chains) != 1 {
 		return "", fmt.Errorf("expected one chain, got %d", len(chains))
@@ -53,9 +53,9 @@ func (h *APIHandler) CreateURL(chains []types.Chain) (string, error) {
 	return fmt.Sprintf(Endpoint, h.api.URL), nil
 }
 
-// ParseResponse parses the response from the MarketMap API and returns the resolved and
+// ParseResponse parses the response from the x/prices API and returns the resolved and
 // unresolved market map data. The response from the MarketMap API is expected to be a
-// a single market map object.
+// a single market map object that was converted from the dYdX market params response.
 func (h *APIHandler) ParseResponse(
 	chains []types.Chain,
 	resp *http.Response,
