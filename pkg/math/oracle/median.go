@@ -27,7 +27,7 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
 
-	if err := ValidateMarketMap(cfg); err != nil {
+	if err := cfg.ValidateBasic(); err != nil {
 		return nil, err
 	}
 
