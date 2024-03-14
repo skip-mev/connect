@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 const (
@@ -129,7 +129,8 @@ func ValidateIndexPriceAggregation(
 // checkIfProviderSupportsTicker checks if the provider supports the given ticker.
 func checkIfProviderSupportsTicker(
 	provider string,
-	cp pkgtypes.CurrencyPair,
+	cp slinkytypes
+	.CurrencyPair,
 	marketMap MarketMap,
 ) error {
 	providers, ok := marketMap.Providers[cp.String()]
