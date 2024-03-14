@@ -23,9 +23,6 @@ const (
 	Delimeter = "-"
 )
 
-// USDT_USD is the USDT/USD currency pair. This is treated uniquely in the market map.
-var USDT_USD = slinkytypes.NewCurrencyPair("USDT", "USD")
-
 // DefaultAPIConfig returns the default configuration for the dYdX market map API.
 var DefaultAPIConfig = config.APIConfig{
 	Name:             Name,
