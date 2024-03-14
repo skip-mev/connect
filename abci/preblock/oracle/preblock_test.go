@@ -340,7 +340,7 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 			extCodec,
 		)
 
-		ca := sdk.ConsAddress([]byte("val"))
+		ca := sdk.ConsAddress("val")
 		extCodec.On("Decode", mock.Anything).Return(cometabci.ExtendedCommitInfo{
 			Votes: []cometabci.ExtendedVoteInfo{
 				{
