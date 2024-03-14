@@ -19,7 +19,7 @@ var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
 // by a base provider. This is specifically for fetching market data from the dYdX prices module, which is
 // then translated to a market map.
 type APIHandler struct {
-	// api is the config for the MarketMap API.
+	// api is the api config for the dYdX market params API.
 	api config.APIConfig
 }
 
