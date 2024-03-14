@@ -28,16 +28,7 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 
 	// Validate all oracle vote extensions.
 	for _, vote := range extendedCommitInfo.Votes {
-		address := sdk.ConsAddress{}
-		if err := address.Unmarshal(vote.Validator.Address); err != nil {
-			h.logger.Error(
-				"failed to unmarshal validator address",
-				"height", height,
-			)
-
-			return err
-		}
-
+		address := sdk.ConsAddress(vote.Validator.Address)
 		voteExt, err := h.voteExtensionCodec.Decode(vote.VoteExtension)
 		if err != nil {
 			return err

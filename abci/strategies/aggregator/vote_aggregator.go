@@ -51,15 +51,8 @@ func GetOracleVotes(
 			}
 		}
 
-		address := sdk.ConsAddress{}
-		if err := address.Unmarshal(voteInfo.Validator.Address); err != nil {
-			return nil, slinkyabci.CodecError{
-				Err: fmt.Errorf("error decoding validator address: %w", err),
-			}
-		}
-
 		votes[i] = Vote{
-			ConsAddress:         address,
+			ConsAddress:         voteInfo.Validator.Address,
 			OracleVoteExtension: voteExtension,
 		}
 	}
