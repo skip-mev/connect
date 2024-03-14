@@ -354,6 +354,10 @@ var (
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
 		},
+		constants.USDT_USD: {
+			Name:           Name,
+			OffChainTicker: "USDTUSD",
+		},
 		constants.WORLD_USDT: {
 			Name:           Name,
 			OffChainTicker: "WLDUSDT",

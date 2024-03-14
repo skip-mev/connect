@@ -3,12 +3,13 @@ package oracle_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetTickerFromOperation(t *testing.T) {
@@ -64,7 +65,7 @@ func TestGetProviderPrice(t *testing.T) {
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
 			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     oracle.IndexPrice,
+			Provider:     mmtypes.IndexPrice,
 		}
 		_, err = m.GetProviderPrice(operation)
 		require.Error(t, err)
@@ -92,7 +93,7 @@ func TestGetProviderPrice(t *testing.T) {
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
 			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     oracle.IndexPrice,
+			Provider:     mmtypes.IndexPrice,
 		}
 		_, err = m.GetProviderPrice(operation)
 		require.Error(t, err)
@@ -123,7 +124,7 @@ func TestGetProviderPrice(t *testing.T) {
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
 			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     oracle.IndexPrice,
+			Provider:     mmtypes.IndexPrice,
 		}
 		price, err = m.GetProviderPrice(operation)
 		require.NoError(t, err)
