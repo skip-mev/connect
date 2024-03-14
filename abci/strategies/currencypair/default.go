@@ -15,14 +15,28 @@ import (
 type DefaultCurrencyPairStrategy struct {
 	oracleKeeper     OracleKeeper
 	idToCurrencyPair map[uint64]slinkytypes.CurrencyPair
+	useCache         bool
+}
+
+// Option is a function that enables optional configuration of the DefaultCurrencyPairStrategy.
+type Option func(*DefaultCurrencyPairStrategy)
+
+// WithCache enables the cache for DefaultCurrencyPairStrategy.
+func WithCache() Option {
+	return func(s *DefaultCurrencyPairStrategy) {
+		s.useCache = true
+	}
 }
 
 // NewDefaultCurrencyPairStrategy returns a new DefaultCurrencyPairStrategy instance.
 func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyPairStrategy {
-	return &DefaultCurrencyPairStrategy{
+	strategy := &DefaultCurrencyPairStrategy{
 		oracleKeeper:     oracleKeeper,
 		idToCurrencyPair: make(map[uint64]slinkytypes.CurrencyPair),
+		useCache:         false,
 	}
+
+	return strategy
 }
 
 // ID returns the ID of the given currency pair, by querying the x/oracle state for the ID of the given
