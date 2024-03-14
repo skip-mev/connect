@@ -266,15 +266,17 @@ func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 		}
 		addressCache[string(vote.Validator.Address)] = struct{}{}
 
-		if !bytes.Equal(vote.Validator.Address, lc.Votes().Get(i).Validator().Address()) {
-			return fmt.Errorf("extended commit vote address %X does not match last commit vote address %X", vote.Validator.Address, lc.Votes().Get(i).Validator().Address())
+		lcVote := lc.Votes().Get(i)
+
+		if !bytes.Equal(vote.Validator.Address, lcVote.Validator().Address()) {
+			return fmt.Errorf("extended commit vote address %X does not match last commit vote address %X", vote.Validator.Address, lcVote.Validator().Address())
 		}
-		if vote.Validator.Power != lc.Votes().Get(i).Validator().Power() {
-			return fmt.Errorf("extended commit vote power %d does not match last commit vote power %d", vote.Validator.Power, lc.Votes().Get(i).Validator().Power())
+		if vote.Validator.Power != lcVote.Validator().Power() {
+			return fmt.Errorf("extended commit vote power %d does not match last commit vote power %d", vote.Validator.Power, lcVote.Validator().Power())
 		}
 
-		if int32(lc.Votes().Get(i).GetBlockIDFlag()) != int32(vote.BlockIdFlag) {
-			return fmt.Errorf("mismatched block ID flag between extended commit vote %d and last proposed commit %d", int32(vote.BlockIdFlag), int32(lc.Votes().Get(i).GetBlockIDFlag()))
+		if int32(vote.BlockIdFlag) != int32(lcVote.GetBlockIDFlag()) {
+			return fmt.Errorf("mismatched block ID flag between extended commit vote %d and last proposed commit %d", int32(vote.BlockIdFlag), int32(lcVote.GetBlockIDFlag()))
 		}
 	}
 
