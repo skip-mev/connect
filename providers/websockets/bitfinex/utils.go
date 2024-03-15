@@ -8,7 +8,7 @@ import (
 
 const (
 	// Name is the name of the BitFinex provider.
-	Name = "bitfinex"
+	Name = "Bitfinex"
 
 	// URLProd is the public BitFinex Websocket URL.
 	URLProd = "wss://api-pub.bitfinex.com/ws/2"
