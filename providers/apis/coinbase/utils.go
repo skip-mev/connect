@@ -32,7 +32,6 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       5,
 		URL:              URL,
-		Type:             types.ConfigType,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.

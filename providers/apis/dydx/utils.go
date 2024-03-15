@@ -9,13 +9,15 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
-	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
 	// Name is the name of the MarketMap provider.
 	Name = "dYdX"
+
+	// ChainID is the chain ID for the dYdX market map provider.
+	ChainID = "dydx-mainnet-1"
 
 	// Endpoint is the endpoint for the dYdX market map API.
 	Endpoint = "%s/dydxprotocol/prices/params/market"
@@ -34,7 +36,6 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	URL:              "replace-me",
-	Type:             mmclienttypes.ConfigType,
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.

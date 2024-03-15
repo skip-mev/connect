@@ -116,9 +116,6 @@ type WebSocketConfig struct {
 	// can be assigned to a single connection for this provider.  The null value (0),
 	// indicates that there is no limit per connection.
 	MaxSubscriptionsPerConnection int `json:"maxSubscriptionsPerConnection"`
-
-	// Type is the type of the provider that corresponds to this config.
-	Type string `json:"type"`
 }
 
 // ValidateBasic performs basic validation of the websocket config.
@@ -173,10 +170,6 @@ func (c *WebSocketConfig) ValidateBasic() error {
 
 	if c.MaxSubscriptionsPerConnection < 0 {
 		return fmt.Errorf("websocket max subscriptions per connection cannot be negative")
-	}
-
-	if len(c.Type) == 0 {
-		return fmt.Errorf("websocket type cannot be empty")
 	}
 
 	return nil

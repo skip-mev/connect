@@ -92,7 +92,7 @@ func DefaultDYDXMarketMapProvider(
 	}
 
 	// By default the dYdX market map provider only supports the dYdX chain.
-	ids := []types.Chain{{ChainID: "dydx"}}
+	ids := []types.Chain{{ChainID: dydx.ChainID}}
 
 	return types.NewMarketMapProvider(
 		base.WithName[types.Chain, *mmtypes.GetMarketMapResponse](cfg.Name),

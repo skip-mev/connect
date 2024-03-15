@@ -46,7 +46,6 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              US_URL,
-		Type:             types.ConfigType,
 	}
 
 	// DefaultNonUSAPIConfig is the default configuration for the Binance API.
@@ -59,7 +58,6 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
-		Type:             types.ConfigType,
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.

@@ -23,8 +23,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -41,8 +41,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -73,8 +73,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -138,8 +138,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -170,8 +170,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
@@ -240,8 +240,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -280,8 +280,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -332,8 +332,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
@@ -375,8 +375,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
@@ -428,8 +428,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -468,8 +468,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
@@ -520,8 +520,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
@@ -563,8 +563,8 @@ func TestUpdateProviderState(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)

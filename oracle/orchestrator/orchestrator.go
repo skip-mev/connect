@@ -2,9 +2,7 @@ package orchestrator
 
 import (
 	"context"
-	"fmt"
 	"maps"
-	"math/big"
 	"sync"
 
 	"go.uber.org/zap"
@@ -12,10 +10,10 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/base"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -51,16 +49,14 @@ type ProviderOrchestrator struct {
 	// marketMap is the market map that the oracle is using.
 	marketMap mmtypes.MarketMap
 
-	// -------------------Price Provider Constructor Fields-------------------//
+	// -------------------Provider Constructor Fields-------------------//
 	//
-	// apiQueryHandler factory is a factory function that creates API query handlers.
-	apiQueryHandlerFactory types.PriceAPIQueryHandlerFactory
-	// webSocketQueryHandlerFactory is a factory function that creates websocket query
-	// handlers.
-	webSocketQueryHandlerFactory types.PriceWebSocketQueryHandlerFactory
-
-	// -------------------Market Mapper Provider Constructor Fields-------------------//
-	//
+	// priceAPIFactory factory is a factory function that creates price API query handlers.
+	priceAPIFactory types.PriceAPIQueryHandlerFactory
+	// priceWSFactory is a factory function that creates price websocket query handlers.
+	priceWSFactory types.PriceWebSocketQueryHandlerFactory
+	// marketMapperFactory is a factory function that creates market map providers.
+	marketMapperFactory mmclienttypes.MarketMapFactory
 
 	// -------------------Metrics Fields-------------------//
 	// wsMetrics is the web socket metrics.
@@ -96,99 +92,6 @@ func NewProviderOrchestrator(
 	return orchestrator, nil
 }
 
-// Init initializes the all of the providers that are configured via the oracle config.
-// Specifically, this will:
-//
-// 1. This will initialize the provider.
-// 2. Create the provider specific market map, if configured with a marketmap.
-// 3. Enable the provider if the provider is included in the oracle config and marketmap.
-func (o *ProviderOrchestrator) Init() error {
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
-	for _, providerCfg := range o.cfg.Providers {
-		// Initialize the provider.
-		state, err := o.CreateProviderState(providerCfg)
-		if err != nil {
-			o.logger.Error("failed to create provider state", zap.Error(err))
-			return err
-		}
-
-		// Add the provider to the orchestrator.
-		o.providers[providerCfg.Name] = state
-		o.logger.Info(
-			"created provider state",
-			zap.String("provider", providerCfg.Name),
-			zap.Bool("enabled", state.Enabled),
-			zap.Int("num_tickers", len(state.Market.GetTickers())),
-		)
-	}
-
-	return nil
-}
-
-// CreateProviderState creates a provider state for the given provider. This constructs the
-// query handler, based on the provider's type and configuration. The provider state is then
-// enabled/disabled based on whether the provider is configured to support any of the tickers.
-func (o *ProviderOrchestrator) CreateProviderState(
-	cfg config.ProviderConfig,
-) (ProviderState, error) {
-	// Create the provider market map. This creates the tickers the provider is configured to
-	// support.
-	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, o.marketMap)
-	if err != nil {
-		return ProviderState{}, fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
-	}
-
-	// Select the query handler based on the provider's configuration.
-	var provider *types.PriceProvider
-	switch {
-	case cfg.API.Enabled:
-		queryHandler, err := o.createAPIQueryHandler(cfg, market)
-		if err != nil {
-			return ProviderState{}, fmt.Errorf("failed to create %s's api query handler: %w", cfg.Name, err)
-		}
-
-		provider, err = types.NewPriceProvider(
-			base.WithName[mmtypes.Ticker, *big.Int](cfg.Name),
-			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
-			base.WithAPIQueryHandler(queryHandler),
-			base.WithAPIConfig[mmtypes.Ticker, *big.Int](cfg.API),
-			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
-			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
-		)
-		if err != nil {
-			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
-		}
-	case cfg.WebSocket.Enabled:
-		queryHandler, err := o.createWebSocketQueryHandler(cfg, market)
-		if err != nil {
-			return ProviderState{}, fmt.Errorf("failed to create %s's web socket query handler: %w", cfg.Name, err)
-		}
-
-		provider, err = types.NewPriceProvider(
-			base.WithName[mmtypes.Ticker, *big.Int](cfg.Name),
-			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
-			base.WithWebSocketQueryHandler(queryHandler),
-			base.WithWebSocketConfig[mmtypes.Ticker, *big.Int](cfg.WebSocket),
-			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
-			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
-		)
-		if err != nil {
-			return ProviderState{}, fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
-		}
-	default:
-		return ProviderState{}, fmt.Errorf("provider %s has no enabled query handlers", cfg.Name)
-	}
-
-	return ProviderState{
-		Provider: provider,
-		Market:   market,
-		Enabled:  len(market.GetTickers()) > 0,
-		Cfg:      cfg,
-	}, nil
-}
-
 // GetProviderState returns all of the providers and their state.
 func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
@@ -201,15 +104,10 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	return providers
 }
 
-// GetProviders returns all of the providers.
-func (o *ProviderOrchestrator) GetProviders() []*types.PriceProvider {
+// GetMarketMapperState returns the market map provider and its state.
+func (o *ProviderOrchestrator) GetMarketMapperState() MapperState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	providers := make([]*types.PriceProvider, 0)
-	for _, state := range o.providers {
-		providers = append(providers, state.Provider)
-	}
-
-	return providers
+	return o.mapper
 }

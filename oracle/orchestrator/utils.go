@@ -2,7 +2,6 @@ package orchestrator
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -59,28 +58,4 @@ func (o *ProviderOrchestrator) getMainCtx() (context.Context, context.CancelFunc
 	defer o.mut.Unlock()
 
 	return o.mainCtx, o.mainCancel
-}
-
-// createAPIQueryHandler creates a new API query handler for the given provider configuration.
-func (o *ProviderOrchestrator) createAPIQueryHandler(
-	cfg config.ProviderConfig,
-	market types.ProviderMarketMap,
-) (types.PriceAPIQueryHandler, error) {
-	if o.apiQueryHandlerFactory == nil {
-		return nil, fmt.Errorf("cannot create provider; api query handler factory is not set")
-	}
-
-	return o.apiQueryHandlerFactory(o.logger, cfg, o.apiMetrics, market)
-}
-
-// createWebSocketQueryHandler creates a new web socket query handler for the given provider configuration.
-func (o *ProviderOrchestrator) createWebSocketQueryHandler(
-	cfg config.ProviderConfig,
-	market types.ProviderMarketMap,
-) (types.PriceWebSocketQueryHandler, error) {
-	if o.webSocketQueryHandlerFactory == nil {
-		return nil, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
-	}
-
-	return o.webSocketQueryHandlerFactory(o.logger, cfg, o.wsMetrics, market)
 }

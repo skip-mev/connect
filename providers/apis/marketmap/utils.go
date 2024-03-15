@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 )
 
 const (
@@ -22,5 +21,4 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	URL:              "http://localhost:1317/slinky/marketmap/v1/marketmap",
-	Type:             mmclienttypes.ConfigType,
 }

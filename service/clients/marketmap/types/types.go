@@ -3,10 +3,14 @@ package types
 import (
 	"fmt"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
+	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"go.uber.org/zap"
 )
 
 const (
@@ -29,6 +33,14 @@ func (mms Chain) String() string {
 type (
 	// MarketMapProvider is a type alias for the market map provider.
 	MarketMapProvider = *base.Provider[Chain, *mmtypes.GetMarketMapResponse]
+
+	// MarketMapFactory is a type alias for the market map factory.
+	MarketMapFactory = func(
+		logger *zap.Logger,
+		providerMetrics providermetrics.ProviderMetrics,
+		apiMetrics apimetrics.APIMetrics,
+		cfg config.ProviderConfig,
+	) (MarketMapProvider, error)
 
 	// MarketMapAPIQueryHandler is a type alias for the market map API query handler. This
 	// is responsible for querying the market map API and returning the resolved and unresolved

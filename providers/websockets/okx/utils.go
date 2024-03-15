@@ -40,7 +40,6 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
-		Type:                types.ConfigType,
 	}
 
 	// DefaultMarketConfig is the default market configuration for OKX.
