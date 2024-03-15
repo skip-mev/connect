@@ -39,18 +39,13 @@ func ProviderMarketMapFromMarketMap(name string, marketMap mmtypes.MarketMap) (P
 
 	// Iterate over the providers and their respective tickers.
 	tickers := make(TickerToProviderConfig)
-	for tickerStr, config := range marketMap.Providers {
-		ticker, ok := marketMap.Tickers[tickerStr]
-		if !ok {
-			return ProviderMarketMap{}, fmt.Errorf("ticker %s not found in market map", tickerStr)
-		}
-
-		for _, provider := range config.Providers {
+	for _, market := range marketMap.Markets {
+		for _, provider := range market.Providers.Providers {
 			if provider.Name != name {
 				continue
 			}
 
-			tickers[ticker] = provider
+			tickers[market.Ticker] = provider
 			break
 		}
 	}

@@ -26,6 +26,10 @@ type Keeper struct {
 	// the list of all Tickers.
 	tickers collections.Map[types.TickerString, types.Ticker]
 
+	// markets is keyed by CurrencyPair string (BASE/QUOTE) and contains
+	// the list of all Markets.
+	markets collections.Map[types.TickerString, types.Market]
+
 	// paths is keyed by CurrencyPair string (BASE/QUOTE) and contains
 	// the list of all Paths.
 	paths collections.Map[types.TickerString, types.Paths]
@@ -57,6 +61,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 		cdc:         cdc,
 		authority:   authority,
 		tickers:     collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
+		markets:     collections.NewMap(sb, types.MarketsPrefix, "markets", types.TickersCodec, codec.CollValue[types.Market](cdc)),
 		paths:       collections.NewMap(sb, types.PathsPrefix, "paths", types.TickersCodec, codec.CollValue[types.Paths](cdc)),
 		providers:   collections.NewMap(sb, types.ProvidersPrefix, "providers", types.TickersCodec, codec.CollValue[types.Providers](cdc)),
 		lastUpdated: collections.NewItem[uint64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
@@ -74,28 +79,28 @@ func (k *Keeper) GetLastUpdated(ctx sdk.Context) (uint64, error) {
 	return k.lastUpdated.Get(ctx)
 }
 
-// GetTicker returns a ticker from the store by its currency pair string ID.
-func (k *Keeper) GetTicker(ctx sdk.Context, tickerStr string) (types.Ticker, error) {
-	return k.tickers.Get(ctx, types.TickerString(tickerStr))
+// GetMarket returns a market from the store by its currency pair string ID.
+func (k *Keeper) GetMarket(ctx sdk.Context, tickerStr string) (types.Market, error) {
+	return k.markets.Get(ctx, types.TickerString(tickerStr))
 }
 
-// GetAllTickers returns the set of Ticker objects currently stored in state.
-func (k *Keeper) GetAllTickers(ctx sdk.Context) ([]types.Ticker, error) {
-	iter, err := k.tickers.Iterate(ctx, nil)
+// GetAllMarkets returns the set of Market objects currently stored in state.
+func (k *Keeper) GetAllMarkets(ctx sdk.Context) ([]types.Market, error) {
+	iter, err := k.markets.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	tickers, err := iter.Values()
+	markets, err := iter.Values()
 	if err != nil {
 		return nil, err
 	}
-	return tickers, err
+	return markets, err
 }
 
-// GetAllTickersMap returns the set of Ticker objects currently stored in state
-// as a map[TickerString] -> Tickers.
-func (k *Keeper) GetAllTickersMap(ctx sdk.Context) (map[string]types.Ticker, error) {
-	iter, err := k.tickers.Iterate(ctx, nil)
+// GetAllMarketsMap returns the set of Market objects currently stored in state
+// as a map[TickerString] -> Markets.
+func (k *Keeper) GetAllMarketsMap(ctx sdk.Context) (map[string]types.Market, error) {
+	iter, err := k.markets.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +109,7 @@ func (k *Keeper) GetAllTickersMap(ctx sdk.Context) (map[string]types.Ticker, err
 		return nil, err
 	}
 
-	m := make(map[string]types.Ticker, len(keyValues))
+	m := make(map[string]types.Market, len(keyValues))
 	for _, keyValue := range keyValues {
 		m[string(keyValue.Key)] = keyValue.Value
 	}
@@ -112,19 +117,19 @@ func (k *Keeper) GetAllTickersMap(ctx sdk.Context) (map[string]types.Ticker, err
 	return m, nil
 }
 
-// CreateTicker initializes a new Ticker.
+// createMarket initializes a new Market.
 // The Ticker.String corresponds to a market, and must be unique.
-func (k *Keeper) CreateTicker(ctx sdk.Context, ticker types.Ticker) error {
+func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
-	alreadyExists, err := k.tickers.Has(ctx, types.TickerString(ticker.String()))
+	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
 		return err
 	}
 	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(ticker.String()))
+		return types.NewTickerAlreadyExistsError(types.TickerString(market.Ticker.String()))
 	}
 	// Create the config
-	return k.tickers.Set(ctx, types.TickerString(ticker.String()), ticker)
+	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
 // GetAllProvidersMap returns the set of Providers objects currently stored in state
@@ -199,16 +204,8 @@ func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ti
 
 // CreateMarket sets the ticker, paths, and providers for a given market.  It also
 // sets the LastUpdated field to the current block height.
-func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.Paths, providers types.Providers) error {
-	if err := k.CreateTicker(ctx, ticker); err != nil {
-		return err
-	}
-
-	if err := k.CreatePaths(ctx, paths, ticker); err != nil {
-		return err
-	}
-
-	if err := k.CreateProviders(ctx, providers, ticker); err != nil {
+func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
+	if err := k.createMarket(ctx, market); err != nil {
 		return err
 	}
 

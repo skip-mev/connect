@@ -11,170 +11,144 @@ import (
 )
 
 var (
-	btcusdt = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "BITCOIN",
-			Quote: "USDT",
+	btcusdt = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
 		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	btcusdtPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "BITCOIN",
-							Quote: "USDT",
+		Paths: types.Paths{
+			Paths: []types.Path{
+				{
+					Operations: []types.Operation{
+						{
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "BITCOIN",
+								Quote: "USDT",
+							},
 						},
 					},
 				},
 			},
 		},
-	}
-
-	btcusdtProviders = types.Providers{
-		Providers: []types.ProviderConfig{
-			{
-				Name:           "kucoin",
-				OffChainTicker: "btc-usdt",
-			},
-		},
-	}
-
-	usdtusd = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "USDT",
-			Quote: "USD",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	usdtusdPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDT",
-							Quote: "USD",
-						},
-					},
+		Providers: types.Providers{
+			Providers: []types.ProviderConfig{
+				{
+					Name:           "kucoin",
+					OffChainTicker: "btc-usdt",
 				},
 			},
 		},
 	}
 
-	usdtusdProviders = types.Providers{
-		Providers: []types.ProviderConfig{
-			{
-				Name:           "kucoin",
-				OffChainTicker: "usdt-usd",
+	usdtusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDT",
+				Quote: "USD",
 			},
+			Decimals:         8,
+			MinProviderCount: 1,
 		},
-	}
-
-	usdcusd = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "USDC",
-			Quote: "USD",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	usdcusdPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDC",
-							Quote: "USD",
+		Paths: types.Paths{
+			Paths: []types.Path{
+				{
+					Operations: []types.Operation{
+						{
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "USDT",
+								Quote: "USD",
+							},
 						},
 					},
 				},
 			},
 		},
-	}
-
-	usdcusdProviders = types.Providers{
-		Providers: []types.ProviderConfig{
-			{
-				Name:           "kucoin",
-				OffChainTicker: "usdc-usd",
-			},
-		},
-	}
-
-	ethusdt = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "ETHEREUM",
-			Quote: "USDT",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	ethusdtPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "ETHEREUM",
-							Quote: "USDT",
-						},
-					},
+		Providers: types.Providers{
+			Providers: []types.ProviderConfig{
+				{
+					Name:           "kucoin",
+					OffChainTicker: "usdt-usd",
 				},
 			},
 		},
 	}
 
-	ethusdtProviders = types.Providers{
-		Providers: []types.ProviderConfig{
-			{
-				Name:           "kucoin",
-				OffChainTicker: "eth-usdt",
+	usdcusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDC",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		Paths: types.Paths{
+			Paths: []types.Path{
+				{
+					Operations: []types.Operation{
+						{
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "USDC",
+								Quote: "USD",
+							},
+						},
+					},
+				},
+			},
+		},
+		Providers: types.Providers{
+			Providers: []types.ProviderConfig{
+				{
+					Name:           "kucoin",
+					OffChainTicker: "usdc-usd",
+				},
 			},
 		},
 	}
 
-	tickers = map[string]types.Ticker{
-		btcusdt.String(): btcusdt,
-		usdcusd.String(): usdcusd,
-		usdtusd.String(): usdtusd,
-		ethusdt.String(): ethusdt,
+	ethusdt = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "ETHEREUM",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		Paths: types.Paths{
+			Paths: []types.Path{
+				{
+					Operations: []types.Operation{
+						{
+							CurrencyPair: slinkytypes.CurrencyPair{
+								Base:  "ETHEREUM",
+								Quote: "USDT",
+							},
+						},
+					},
+				},
+			},
+		},
+		Providers: types.Providers{
+			Providers: []types.ProviderConfig{
+				{
+					Name:           "kucoin",
+					OffChainTicker: "eth-usdt",
+				},
+			},
+		},
 	}
 
-	paths = map[string]types.Paths{
-		btcusdt.String(): btcusdtPaths,
-		usdcusd.String(): usdcusdPaths,
-		usdtusd.String(): usdtusdPaths,
-		ethusdt.String(): ethusdtPaths,
+	markets = map[string]types.Market{
+		btcusdt.Ticker.String(): btcusdt,
+		usdtusd.Ticker.String(): usdtusd,
+		usdcusd.Ticker.String(): usdcusd,
+		ethusdt.Ticker.String(): ethusdt,
 	}
-
-	providers = map[string]types.Providers{
-		btcusdt.String(): btcusdtProviders,
-		usdcusd.String(): usdcusdProviders,
-		usdtusd.String(): usdtusdProviders,
-		ethusdt.String(): ethusdtProviders,
-	}
-
-	markets = struct {
-		tickers   map[string]types.Ticker
-		paths     map[string]types.Paths
-		providers map[string]types.Providers
-	}{
-		tickers:   tickers,
-		paths:     paths,
-		providers: providers,
-	}
-
-	_ = markets
 )
 
 func TestPaths(t *testing.T) {
@@ -186,14 +160,14 @@ func TestPaths(t *testing.T) {
 	}{
 		{
 			name:         "valid",
-			paths:        btcusdtPaths,
-			currencyPair: btcusdt.CurrencyPair,
+			paths:        btcusdt.Paths,
+			currencyPair: btcusdt.Ticker.CurrencyPair,
 			expErr:       false,
 		},
 		{
 			name:         "invalid",
 			paths:        types.Paths{},
-			currencyPair: btcusdt.CurrencyPair,
+			currencyPair: btcusdt.Ticker.CurrencyPair,
 			expErr:       true,
 		},
 	}
@@ -241,7 +215,7 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						CurrencyPair: btcusdt.CurrencyPair,
+						CurrencyPair: btcusdt.Ticker.CurrencyPair,
 					},
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{},
@@ -256,10 +230,10 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						CurrencyPair: btcusdt.CurrencyPair,
+						CurrencyPair: btcusdt.Ticker.CurrencyPair,
 					},
 					{
-						CurrencyPair: ethusdt.CurrencyPair,
+						CurrencyPair: ethusdt.Ticker.CurrencyPair,
 					},
 				},
 			},
@@ -271,13 +245,13 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						CurrencyPair: btcusdt.CurrencyPair,
+						CurrencyPair: btcusdt.Ticker.CurrencyPair,
 					},
 					{
-						CurrencyPair: usdtusd.CurrencyPair,
+						CurrencyPair: usdtusd.Ticker.CurrencyPair,
 					},
 					{
-						CurrencyPair: usdtusd.CurrencyPair,
+						CurrencyPair: usdtusd.Ticker.CurrencyPair,
 						Invert:       true,
 					},
 				},
@@ -290,7 +264,7 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						CurrencyPair: btcusdt.CurrencyPair,
+						CurrencyPair: btcusdt.Ticker.CurrencyPair,
 					},
 				},
 			},
@@ -302,10 +276,10 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						CurrencyPair: btcusdt.CurrencyPair,
+						CurrencyPair: btcusdt.Ticker.CurrencyPair,
 					},
 					{
-						CurrencyPair: usdtusd.CurrencyPair,
+						CurrencyPair: usdtusd.Ticker.CurrencyPair,
 					},
 				},
 			},
@@ -317,11 +291,11 @@ func TestPath(t *testing.T) {
 			path: types.Path{
 				Operations: []types.Operation{
 					{
-						CurrencyPair: usdtusd.CurrencyPair,
+						CurrencyPair: usdtusd.Ticker.CurrencyPair,
 						Invert:       true,
 					},
 					{
-						CurrencyPair: btcusdt.CurrencyPair,
+						CurrencyPair: btcusdt.Ticker.CurrencyPair,
 						Invert:       true,
 					},
 				},

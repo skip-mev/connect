@@ -299,10 +299,10 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 		return uint64(cp.LegacyDecimals()), nil
 	}
 
-	ticker, err := k.mmKeeper.GetTicker(ctx, cp.String())
+	market, err := k.mmKeeper.GetMarket(ctx, cp.String())
 	if err != nil {
 		return 0, fmt.Errorf("no ticker for CurrencyPair: %w", err)
 	}
 
-	return ticker.Decimals, nil
+	return market.Ticker.Decimals, nil
 }

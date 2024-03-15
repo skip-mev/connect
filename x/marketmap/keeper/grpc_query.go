@@ -27,17 +27,7 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.GetMarketMa
 	// unwrap the context
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	tickers, err := q.k.GetAllTickersMap(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	paths, err := q.k.GetAllPathsMap(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	providers, err := q.k.GetAllProvidersMap(ctx)
+	markets, err := q.k.GetAllMarketsMap(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +40,9 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.GetMarketMa
 	lastUpdated, err := q.k.GetLastUpdated(ctx)
 	return &types.GetMarketMapResponse{
 			MarketMap: types.MarketMap{
-				Tickers:   tickers,
-				Paths:     paths,
-				Providers: providers,
+				Markets: markets,
 			},
+
 			LastUpdated: lastUpdated,
 			Version:     params.Version,
 			ChainId:     ctx.ChainID(),

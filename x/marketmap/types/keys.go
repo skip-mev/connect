@@ -25,6 +25,9 @@ var (
 	// LastUpdatedPrefix is the key prefix for the lastUpdated height.
 	LastUpdatedPrefix = collections.NewPrefix(3)
 
+	// MarketsPrefix is the key prefix for Markets.
+	MarketsPrefix = collections.NewPrefix(5)
+
 	// ParamsPrefix is the key prefix of the module Params.
 	ParamsPrefix = collections.NewPrefix(4)
 

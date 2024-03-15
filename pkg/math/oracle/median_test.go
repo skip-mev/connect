@@ -29,7 +29,7 @@ func TestAggregateData(t *testing.T) {
 			name: "coinbase direct feed for BTC/USD - fail since it does not have enough providers",
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(70_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
@@ -39,13 +39,13 @@ func TestAggregateData(t *testing.T) {
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD - fail since index price does not exist",
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USD.Ticker:  createPrice(70_000, BTC_USD.Ticker.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(69_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(69_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},
@@ -55,80 +55,80 @@ func TestAggregateData(t *testing.T) {
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USD.Ticker:  createPrice(70_000, BTC_USD.Ticker.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(69_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(69_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				BTC_USD: createPrice(75_900, BTC_USD.Decimals), // median of 70_000, 75_900, 77_000
+				BTC_USD.Ticker: createPrice(75_900, BTC_USD.Ticker.Decimals), // median of 70_000, 75_900, 77_000
 			},
 		},
 		{
 			name: "coinbase USDT direct, coinbase USDC/USDT inverted, binance direct feeds for USDT/USD - success",
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					USDT_USD:  createPrice(1.1, USDT_USD.Decimals),
-					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
+					USDT_USD.Ticker:  createPrice(1.1, USDT_USD.Ticker.Decimals),
+					USDC_USDT.Ticker: createPrice(1.1, USDC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					USDT_USD: createPrice(1.2, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.2, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},
 			expectedPrices: types.TickerPrices{
-				USDT_USD: createPrice(1.1, USDT_USD.Decimals), // median of 0.90909, 1, 1.2
+				USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals), // median of 0.90909, 1, 1.2
 			},
 		},
 		{
 			name: "coinbase USDT direct, binance USDT/USD direct feeds for USDT/USD - success (average of two prices)",
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					USDT_USD: createPrice(1.2, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.2, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},
 			expectedPrices: types.TickerPrices{
-				USDT_USD: createPrice(1.15, USDT_USD.Decimals), // average of 1.1, 1.2
+				USDT_USD.Ticker: createPrice(1.15, USDT_USD.Ticker.Decimals), // average of 1.1, 1.2
 			},
 		},
 		{
 			name: "coinbase USDT direct, kucoin BTC/USDT inverted, index BTC/USD direct feeds for USDT/USD - success",
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					USDT_USD: createPrice(1.0, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.0, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(kucoin.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					BTC_USD: createPrice(77_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(77_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				USDT_USD: createPrice(1.05, USDT_USD.Decimals), // average of 1.1, 1.0
+				USDT_USD.Ticker: createPrice(1.05, USDT_USD.Ticker.Decimals), // average of 1.1, 1.0
 			},
 		},
 	}
@@ -164,23 +164,23 @@ func TestCalculateConvertedPrices(t *testing.T) {
 	}{
 		{
 			name:   "too many conversion operations",
-			target: BTC_USD,
+			target: BTC_USD.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
+								CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       false,
 							},
 							{
-								CurrencyPair: USDT_USD.CurrencyPair,
+								CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
 							{
-								CurrencyPair: USDT_USD.CurrencyPair,
+								CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
@@ -193,14 +193,14 @@ func TestCalculateConvertedPrices(t *testing.T) {
 		},
 		{
 			name:           "no conversion paths",
-			target:         BTC_USD,
+			target:         BTC_USD.Ticker,
 			paths:          mmtypes.Paths{},
 			malleate:       func(*types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
 			name:   "no conversion operations in a path",
-			target: BTC_USD,
+			target: BTC_USD.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
@@ -213,13 +213,13 @@ func TestCalculateConvertedPrices(t *testing.T) {
 		},
 		{
 			name:   "single conversion path with a single direct conversion (BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USD.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USD.CurrencyPair,
+								CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       false,
 							},
@@ -229,26 +229,26 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(70_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
-			expectedPrices: []*big.Int{createPrice(70_000, BTC_USD.Decimals)},
+			expectedPrices: []*big.Int{createPrice(70_000, BTC_USD.Ticker.Decimals)},
 		},
 		{
 			name:   "single conversion path with a single adjusted conversion (BTC/USDT * USDT/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
+								CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       false,
 							},
 							{
-								CurrencyPair: USDT_USD.CurrencyPair,
+								CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
@@ -258,31 +258,31 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrices: []*big.Int{createPrice(77_000, BTC_USD.Decimals)},
+			expectedPrices: []*big.Int{createPrice(77_000, BTC_USD.Ticker.Decimals)},
 		},
 		{
 			name:   "single conversion path with a single adjusted conversion (USDT/BTC * BTC/USD = USDT/USD)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
+								CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       true,
 							},
 							{
-								CurrencyPair: BTC_USD.CurrencyPair,
+								CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
@@ -292,26 +292,26 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					BTC_USD: createPrice(77_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(77_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrices: []*big.Int{createPrice(1.1, USDT_USD.Decimals)},
+			expectedPrices: []*big.Int{createPrice(1.1, USDT_USD.Ticker.Decimals)},
 		},
 		{
 			name:   "single conversion path with a single adjusted conversion (USDC/USDT ^ -1 = USDT/USDC)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: USDC_USDT.CurrencyPair,
+								CurrencyPair: USDC_USDT.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       true,
 							},
@@ -321,21 +321,21 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
+					USDC_USDT.Ticker: createPrice(1.1, USDC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
-			expectedPrices: []*big.Int{createPrice(0.9090909090909090909090909091, USDT_USD.Decimals)},
+			expectedPrices: []*big.Int{createPrice(0.9090909090909090909090909091, USDT_USD.Ticker.Decimals)},
 		},
 		{
 			name:   "two conversion paths both with a single direct conversion (BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USD.CurrencyPair,
+								CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       false,
 							},
@@ -344,7 +344,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USD.CurrencyPair,
+								CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 								Provider:     binance.Name,
 								Invert:       false,
 							},
@@ -354,34 +354,34 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(70_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USD: createPrice(69_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(69_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},
 			expectedPrices: []*big.Int{
-				createPrice(70_000, BTC_USD.Decimals),
-				createPrice(69_000, BTC_USD.Decimals),
+				createPrice(70_000, BTC_USD.Ticker.Decimals),
+				createPrice(69_000, BTC_USD.Ticker.Decimals),
 			},
 		},
 		{
 			name:   "two conversion paths both with a single adjusted conversion (BTC/USDT * USDT/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			paths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
+								CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 								Provider:     coinbase.Name,
 								Invert:       false,
 							},
 							{
-								CurrencyPair: USDT_USD.CurrencyPair,
+								CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
@@ -390,12 +390,12 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					{
 						Operations: []mmtypes.Operation{
 							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
+								CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 								Provider:     binance.Name,
 								Invert:       false,
 							},
 							{
-								CurrencyPair: USDT_USD.CurrencyPair,
+								CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 								Provider:     mmtypes.IndexPrice,
 								Invert:       false,
 							},
@@ -405,23 +405,23 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(69_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(69_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: []*big.Int{
-				createPrice(77_000, BTC_USD.Decimals),
-				createPrice(75_900, BTC_USD.Decimals),
+				createPrice(77_000, BTC_USD.Ticker.Decimals),
+				createPrice(75_900, BTC_USD.Ticker.Decimals),
 			},
 		},
 	}
@@ -461,7 +461,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 	}{
 		{
 			name:          "nil operations",
-			target:        BTC_USD,
+			target:        BTC_USDT.Ticker,
 			operations:    nil,
 			malleate:      func(*types.PriceAggregator) {},
 			expectedPrice: nil,
@@ -469,7 +469,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		},
 		{
 			name:          "empty operations",
-			target:        BTC_USD,
+			target:        BTC_USDT.Ticker,
 			operations:    []mmtypes.Operation{},
 			malleate:      func(*types.PriceAggregator) {},
 			expectedPrice: nil,
@@ -477,20 +477,20 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		},
 		{
 			name:   "too many operations",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
@@ -501,10 +501,10 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		},
 		{
 			name:   "price does not exist for the provider with an operation that is exactly the target (BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
@@ -515,41 +515,41 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		},
 		{
 			name:   "price exists for the provider with an operation that is exactly the target (BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(70_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
-			expectedPrice: createPrice(70_000, BTC_USD.Decimals),
+			expectedPrice: createPrice(70_000, BTC_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "price needs to be adjusted but the index price does not exist (BTC/USDT * USDT/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
@@ -558,345 +558,345 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		},
 		{
 			name:   "price needs to be adjusted and the index price exists (BTC/USDT * USDT/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(70_000, BTC_USD.Decimals),
+			expectedPrice: createPrice(70_000, BTC_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "price needs to be inverted to determine the adjusted price (USDT/BTC * BTC/USD = USDT/USD)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       true,
 				},
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(70_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(1, USDT_USD.Decimals),
+			expectedPrice: createPrice(1, USDT_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "price is adjusted using USDT/USDC pairings (USDC/USDT ^ -1 = USDT/USDC)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: USDC_USDT.CurrencyPair,
+					CurrencyPair: USDC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       true,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
+					USDC_USDT.Ticker: createPrice(1.1, USDC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
-			expectedPrice: createPrice(0.9090909090909090909090909091, USDT_USD.Decimals),
+			expectedPrice: createPrice(0.9090909090909090909090909091, USDT_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "price is adjust using eth pairings (ETH/USDT * USDT/USD = ETH/USD)",
-			target: ETH_USD,
+			target: ETH_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: ETH_USDT.CurrencyPair,
+					CurrencyPair: ETH_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					ETH_USDT: createPrice(4_000, ETH_USDT.Decimals),
+					ETH_USDT.Ticker: createPrice(4_000, ETH_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(4_400, ETH_USD.Decimals),
+			expectedPrice: createPrice(4_400, ETH_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "price for USDT/USD needs to be adjust by eth prices (USDT/ETH * ETH/USD = USDT/USD)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: ETH_USDT.CurrencyPair,
+					CurrencyPair: ETH_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       true,
 				},
 				{
-					CurrencyPair: ETH_USD.CurrencyPair,
+					CurrencyPair: ETH_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					ETH_USDT: createPrice(4_100, ETH_USDT.Decimals),
+					ETH_USDT.Ticker: createPrice(4_100, ETH_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					ETH_USD: createPrice(4_000, ETH_USD.Decimals),
+					ETH_USD.Ticker: createPrice(4_000, ETH_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(0.97560975, USDT_USD.Decimals),
+			expectedPrice: createPrice(0.97560975, USDT_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "price for PEPE/USDT needs to be adjusted by USDT/USD (different decimals) (PEPE/USDT * USDT/USD = PEPE/USD)",
-			target: PEPE_USD,
+			target: PEPE_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: PEPE_USDT.CurrencyPair,
+					CurrencyPair: PEPE_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					PEPE_USDT: createPrice(0.00000831846, PEPE_USDT.Decimals),
+					PEPE_USDT.Ticker: createPrice(0.00000831846, PEPE_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(0.000009150306, PEPE_USDT.Decimals),
+			expectedPrice: createPrice(0.000009150306, PEPE_USDT.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "can make a direct conversion with a sufficiently small number (BTC/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD: createPrice(0.0000001, BTC_USD.Decimals), // 0.0000001 BTC
+					BTC_USD.Ticker: createPrice(0.0000001, BTC_USD.Ticker.Decimals), // 0.0000001 BTC
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
-			expectedPrice: createPrice(0.0000001, BTC_USD.Decimals),
+			expectedPrice: createPrice(0.0000001, BTC_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "can make a adjusted conversion with a sufficiently small number (BTC/USDT * USDT/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(0.0000001, BTC_USDT.Decimals), // 0.0000001 BTC
+					BTC_USDT.Ticker: createPrice(0.0000001, BTC_USDT.Ticker.Decimals), // 0.0000001 BTC
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(0.0000001, BTC_USD.Decimals),
+			expectedPrice: createPrice(0.0000001, BTC_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "can make a adjusted conversion with inverting with a sufficiently small number (USDT/BTC * BTC/USD = USDT/USD)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       true,
 				},
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(0.00001, BTC_USDT.Decimals), // 0.00001 BTC
+					BTC_USDT.Ticker: createPrice(0.00001, BTC_USDT.Ticker.Decimals), // 0.00001 BTC
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					BTC_USD: createPrice(0.00002, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(0.00002, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(2, USDT_USD.Decimals),
+			expectedPrice: createPrice(2, USDT_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "can make a direct conversion with a sufficiently large number (BTC/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD: createPrice(1_000_000_000, BTC_USD.Decimals), // 1,000,000,000 BTC
+					BTC_USD.Ticker: createPrice(1_000_000_000, BTC_USD.Ticker.Decimals), // 1,000,000,000 BTC
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
-			expectedPrice: createPrice(1_000_000_000, BTC_USD.Decimals),
+			expectedPrice: createPrice(1_000_000_000, BTC_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "can make a adjusted conversion with a sufficiently large number (BTC/USDT * USDT/USD = BTC/USD)",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(1_000_000_000, BTC_USDT.Decimals), // 1,000,000,000 BTC
+					BTC_USDT.Ticker: createPrice(1_000_000_000, BTC_USDT.Ticker.Decimals), // 1,000,000,000 BTC
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(1_100_000_000, BTC_USD.Decimals),
+			expectedPrice: createPrice(1_100_000_000, BTC_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "can make a adjusted conversion with inverting with a sufficiently large number (USDT/BTC * BTC/USD = USDT/USD)",
-			target: USDT_USD,
+			target: USDT_USD.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       true,
 				},
 				{
-					CurrencyPair: BTC_USD.CurrencyPair,
+					CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 					Provider:     mmtypes.IndexPrice,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(1_000_000_000, BTC_USDT.Decimals), // 1,000,000,000 BTC
+					BTC_USDT.Ticker: createPrice(1_000_000_000, BTC_USDT.Ticker.Decimals), // 1,000,000,000 BTC
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
-					BTC_USD: createPrice(1_100_000_000, BTC_USD.Decimals),
+					BTC_USD.Ticker: createPrice(1_100_000_000, BTC_USD.Ticker.Decimals),
 				}
 				aggregator.SetAggregatedData(indexPrices)
 			},
-			expectedPrice: createPrice(1.1, USDT_USD.Decimals),
+			expectedPrice: createPrice(1.1, USDT_USD.Ticker.Decimals),
 			expectedErr:   false,
 		},
 		{
 			name:   "second provider is not the index price",
-			target: BTC_USD,
+			target: BTC_USDT.Ticker,
 			operations: []mmtypes.Operation{
 				{
-					CurrencyPair: BTC_USDT.CurrencyPair,
+					CurrencyPair: BTC_USDT.Ticker.CurrencyPair,
 					Provider:     coinbase.Name,
 					Invert:       false,
 				},
 				{
-					CurrencyPair: USDT_USD.CurrencyPair,
+					CurrencyPair: USDT_USD.Ticker.CurrencyPair,
 					Provider:     binance.Name,
 					Invert:       false,
 				},
 			},
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
+					USDT_USD.Ticker: createPrice(1.1, USDT_USD.Ticker.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},

@@ -12,12 +12,12 @@ import (
 func (m *MedianAggregator) GetTickerFromOperation(
 	operation mmtypes.Operation,
 ) (mmtypes.Ticker, error) {
-	ticker, ok := m.cfg.Tickers[operation.CurrencyPair.String()]
+	market, ok := m.cfg.Markets[operation.CurrencyPair.String()]
 	if !ok {
 		return mmtypes.Ticker{}, fmt.Errorf("missing ticker: %s", operation.CurrencyPair.String())
 	}
 
-	return ticker, nil
+	return market.Ticker, nil
 }
 
 // GetProviderPrice returns the relevant provider price. Note that if the operation

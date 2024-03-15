@@ -24,81 +24,19 @@ func TestMarketMapValidateBasic(t *testing.T) {
 		{
 			name: "valid map",
 			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
+				Markets: markets,
 			},
 			expectErr: false,
 		},
 		{
-			name: "invalid mismatch ticker",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					ethusdt.String(): ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					usdtusd.String(): usdtusdProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-			},
-			expectErr: true,
-		},
-		{
-			name: "invalid ticker does not exist for a given provider",
-			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
-				},
-			},
-			expectErr: true,
-		},
-		{
 			name: "invalid ticker string does not match ticker ID",
 			marketMap: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					"invalid":        ethusdt,
-					btcusdt.String(): btcusdt,
-					usdcusd.String(): usdcusd,
-				},
-				Paths: map[string]types.Paths{
-					ethusdt.String(): ethusdtPaths,
-					btcusdt.String(): btcusdtPaths,
-					usdcusd.String(): usdcusdPaths,
-				},
-				Providers: map[string]types.Providers{
-					ethusdt.String(): ethusdtProviders,
-					btcusdt.String(): btcusdtProviders,
-					usdcusd.String(): usdcusdProviders,
+				Markets: map[string]types.Market{
+					"invalid": {
+						Ticker:    ethusdt.Ticker,
+						Paths:     ethusdt.Paths,
+						Providers: ethusdt.Providers,
+					},
 				},
 			},
 			expectErr: true,
@@ -134,12 +72,14 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "provider includes a ticker that is not supported by the main set",
 			cfg: types.MarketMap{
-				Providers: map[string]types.Providers{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []types.ProviderConfig{
-							{
-								Name:           coinbase.Name,
-								OffChainTicker: "BTC-USD",
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           coinbase.Name,
+									OffChainTicker: "BTC-USD",
+								},
 							},
 						},
 					},
@@ -151,15 +91,15 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "provider includes a ticker that is supported by the main set - no paths",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]types.Providers{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []types.ProviderConfig{
-							{
-								Name:           coinbase.Name,
-								OffChainTicker: "BTC-USD",
+						Ticker: constants.BITCOIN_USD,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           coinbase.Name,
+									OffChainTicker: "BTC-USD",
+								},
 							},
 						},
 					},
@@ -169,9 +109,9 @@ func TestValidateMarketMap(t *testing.T) {
 			err: false,
 		},
 		{
-			name: "path includes a ticker that is not supported",
+			name: "includes a ticker that is not supported",
 			cfg: types.MarketMap{
-				Paths: map[string]types.Paths{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {},
 				},
 				AggregationType: types.AggregationType_INDEX_PRICE_AGGREGATION,
@@ -181,14 +121,14 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "paths includes a path that has no operations",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Paths: map[string]types.Paths{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{},
+						Ticker: constants.BITCOIN_USD,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{},
+								},
 							},
 						},
 					},
@@ -200,25 +140,25 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "paths includes a path that has too many operations",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Paths: map[string]types.Paths{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-										Provider:     coinbase.Name,
-									},
-									{
-										CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-										Provider:     coinbase.Name,
-									},
-									{
-										CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-										Provider:     coinbase.Name,
+						Ticker: constants.BITCOIN_USD,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
+										{
+											CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
+										{
+											CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
 									},
 								},
 							},
@@ -232,23 +172,25 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "operation includes a ticker that is not supported",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Paths: map[string]types.Paths{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
-										Provider:     coinbase.Name,
+						Ticker: constants.BITCOIN_USD,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
 									},
 								},
 							},
 						},
+						Providers: types.Providers{},
 					},
 				},
+
 				AggregationType: types.AggregationType_INDEX_PRICE_AGGREGATION,
 			},
 			err: true,
@@ -256,17 +198,17 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "operation includes a provider that does not support the ticker",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Paths: map[string]types.Paths{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-										Provider:     coinbase.Name,
+						Ticker: constants.BITCOIN_USD,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
 									},
 								},
 							},
@@ -280,22 +222,20 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "provider does not support a ticker included in an operation",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]types.Providers{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []types.ProviderConfig{},
-					},
-				},
-				Paths: map[string]types.Paths{
-					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-										Provider:     coinbase.Name,
+						Ticker: constants.BITCOIN_USD,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{},
+						},
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
 									},
 								},
 							},
@@ -309,27 +249,25 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "valid single path",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]types.Providers{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []types.ProviderConfig{
-							{
-								Name:           coinbase.Name,
-								OffChainTicker: "BTC-USD",
+						Ticker: constants.BITCOIN_USD,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           coinbase.Name,
+									OffChainTicker: "BTC-USD",
+								},
 							},
 						},
-					},
-				},
-				Paths: map[string]types.Paths{
-					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-										Provider:     coinbase.Name,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
 									},
 								},
 							},
@@ -343,32 +281,33 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "path includes a index ticker that is not supported",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USDT.String(): constants.BITCOIN_USDT,
-					constants.BITCOIN_USD.String():  constants.BITCOIN_USD,
-				},
-				Providers: map[string]types.Providers{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USDT.String(): {
-						Providers: []types.ProviderConfig{
-							{
-								Name:           coinbase.Name,
-								OffChainTicker: "BTC-USDT",
+						Ticker: constants.BITCOIN_USDT,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           coinbase.Name,
+									OffChainTicker: "BTC-USDT",
+								},
 							},
 						},
 					},
-				},
-				Paths: map[string]types.Paths{
+
 					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
-										Provider:     coinbase.Name,
-									},
-									{
-										CurrencyPair: constants.USDT_USD.CurrencyPair,
-										Provider:     types.IndexPrice,
+						Ticker: constants.BITCOIN_USD,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
+										{
+											CurrencyPair: constants.USDT_USD.CurrencyPair,
+											Provider:     types.IndexPrice,
+										},
 									},
 								},
 							},
@@ -382,39 +321,38 @@ func TestValidateMarketMap(t *testing.T) {
 		{
 			name: "second operation is not an index price provider",
 			cfg: types.MarketMap{
-				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USDT.String(): constants.BITCOIN_USDT,
-					constants.BITCOIN_USD.String():  constants.BITCOIN_USD,
-					constants.USDT_USD.String():     constants.USDT_USD,
-				},
-				Providers: map[string]types.Providers{
+				Markets: map[string]types.Market{
 					constants.BITCOIN_USDT.String(): {
-						Providers: []types.ProviderConfig{
-							{
-								Name:           coinbase.Name,
-								OffChainTicker: "BTC-USDT",
+						Ticker: constants.BITCOIN_USD,
+						Providers: types.Providers{
+							Providers: []types.ProviderConfig{
+								{
+									Name:           coinbase.Name,
+									OffChainTicker: "BTC-USDT",
+								},
 							},
 						},
-					},
-				},
-				Paths: map[string]types.Paths{
-					constants.BITCOIN_USD.String(): {
-						Paths: []types.Path{
-							{
-								Operations: []types.Operation{
-									{
-										CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
-										Provider:     coinbase.Name,
-									},
-									{
-										CurrencyPair: constants.USDT_USD.CurrencyPair,
-										Provider:     coinbase.Name,
+						Paths: types.Paths{
+							Paths: []types.Path{
+								{
+									Operations: []types.Operation{
+										{
+											CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
+										{
+											CurrencyPair: constants.USDT_USD.CurrencyPair,
+											Provider:     coinbase.Name,
+										},
 									},
 								},
 							},
 						},
 					},
+					constants.BITCOIN_USD.String(): {},
+					constants.USDT_USD.String():    {},
 				},
+
 				AggregationType: types.AggregationType_INDEX_PRICE_AGGREGATION,
 			},
 			err: true,

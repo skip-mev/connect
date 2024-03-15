@@ -27,15 +27,15 @@ var (
 	}
 
 	goodMarketMap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			constants.BITCOIN_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           "coinbase",
-						OffChainTicker: "BTC/USD",
+				Ticker: constants.BITCOIN_USD,
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						{
+							Name:           "coinbase",
+							OffChainTicker: "BTC/USD",
+						},
 					},
 				},
 			},
@@ -43,8 +43,10 @@ var (
 	}
 
 	badMarketMap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+		Markets: map[string]mmtypes.Market{
+			constants.BITCOIN_USD.String(): {
+				Ticker: constants.BITCOIN_USD,
+			},
 		},
 	}
 )

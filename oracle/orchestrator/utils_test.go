@@ -46,21 +46,25 @@ var (
 
 	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			constants.BITCOIN_USD.String():  constants.BITCOIN_USD,
-			constants.ETHEREUM_USD.String(): constants.ETHEREUM_USD,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			constants.BITCOIN_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
-					okx.DefaultMarketConfig[constants.BITCOIN_USD],
+				Ticker: constants.BITCOIN_USD,
+				Paths:  mmtypes.Paths{},
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
+						okx.DefaultMarketConfig[constants.BITCOIN_USD],
+					},
 				},
 			},
 			constants.ETHEREUM_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
-					okx.DefaultMarketConfig[constants.ETHEREUM_USD],
+				Ticker: constants.ETHEREUM_USD,
+				Paths:  mmtypes.Paths{},
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
+						okx.DefaultMarketConfig[constants.ETHEREUM_USD],
+					},
 				},
 			},
 		},

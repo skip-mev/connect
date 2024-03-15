@@ -41,13 +41,19 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 	}
 
 	// create markets
-	for _, market := range msg.CreateMarkets {
-		err = ms.k.CreateMarket(ctx, market.Ticker, market.Paths, market.Providers)
+	for _, createMarket := range msg.CreateMarkets {
+		market := types.Market{
+			Ticker:    createMarket.Ticker,
+			Paths:     createMarket.Paths,
+			Providers: createMarket.Providers,
+		}
+
+		err = ms.k.CreateMarket(ctx, market)
 		if err != nil {
 			return nil, err
 		}
 
-		err = ms.k.hooks.AfterMarketCreated(ctx, market.Ticker)
+		err = ms.k.hooks.AfterMarketCreated(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
 		}
@@ -63,9 +69,6 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 		)
 		ctx.EventManager().EmitEvent(event)
 	}
-
-	// update markets
-	// TODO
 
 	// validate that the new state of the marketmap is valid
 	err = ms.k.ValidateState(ctx, msg.CreateMarkets)

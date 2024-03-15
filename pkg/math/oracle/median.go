@@ -49,23 +49,15 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 // The index price cache contains the previously calculated median prices.
 func (m *MedianAggregator) AggregatedData() {
 	updatedPrices := make(types.TickerPrices)
-	for ticker, paths := range m.cfg.Paths {
-		target, ok := m.cfg.Tickers[ticker]
-		if !ok {
-			m.logger.Error(
-				"failed to get ticker; skipping aggregation",
-				zap.String("ticker", ticker),
-			)
-
-			continue
-		}
+	for ticker, market := range m.cfg.Markets {
+		target := market.Ticker
 
 		// Get the converted prices for set of convertable markets.
 		// ex. BTC/USDT * Index USDT/USD = BTC/USD
 		//     BTC/USDC * Index USDC/USD = BTC/USD
 		convertedPrices := m.CalculateConvertedPrices(
 			target,
-			paths,
+			market.Paths,
 		)
 
 		// We need to have at least the minimum number of providers to calculate the median.

@@ -125,15 +125,15 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 		{
 			name: "valid market map with no entries for the given provider",
 			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
-							{
-								Name:           "test",
-								OffChainTicker: "BTC-USD",
+						Ticker: constants.BITCOIN_USD,
+						Providers: mmtypes.Providers{
+							Providers: []mmtypes.ProviderConfig{
+								{
+									Name:           "test",
+									OffChainTicker: "BTC-USD",
+								},
 							},
 						},
 					},
@@ -150,15 +150,15 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 		{
 			name: "valid market map with entries for the given provider",
 			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
-							{
-								Name:           "coinbase",
-								OffChainTicker: "BTC-USD",
+						Ticker: constants.BITCOIN_USD,
+						Providers: mmtypes.Providers{
+							Providers: []mmtypes.ProviderConfig{
+								{
+									Name:           "coinbase",
+									OffChainTicker: "BTC-USD",
+								},
 							},
 						},
 					},
@@ -182,19 +182,19 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 		{
 			name: "multiple providers for the same ticker",
 			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
-							{
-								Name:           "coinbase",
-								OffChainTicker: "BTC-USD",
-							},
-							{
-								Name:           "test",
-								OffChainTicker: "BTCs-USD",
+						Ticker: constants.BITCOIN_USD,
+						Providers: mmtypes.Providers{
+							Providers: []mmtypes.ProviderConfig{
+								{
+									Name:           "coinbase",
+									OffChainTicker: "BTC-USD",
+								},
+								{
+									Name:           "test",
+									OffChainTicker: "BTCs-USD",
+								},
 							},
 						},
 					},
@@ -219,14 +219,14 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			pmap, err := types.ProviderMarketMapFromMarketMap(tc.providerName, tc.marketMap)
+			pMap, err := types.ProviderMarketMapFromMarketMap(tc.providerName, tc.marketMap)
 			if tc.expErr {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tc.expectedMap.Name, pmap.Name)
-				require.Equal(t, tc.expectedMap.TickerConfigs, pmap.TickerConfigs)
-				require.Equal(t, tc.expectedMap.OffChainMap, pmap.OffChainMap)
+				require.Equal(t, tc.expectedMap.Name, pMap.Name)
+				require.Equal(t, tc.expectedMap.TickerConfigs, pMap.TickerConfigs)
+				require.Equal(t, tc.expectedMap.OffChainMap, pMap.OffChainMap)
 			}
 		})
 	}

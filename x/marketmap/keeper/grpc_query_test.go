@@ -20,9 +20,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 
 		expected := &types.GetMarketMapResponse{
 			MarketMap: types.MarketMap{
-				Tickers:   make(map[string]types.Ticker),
-				Paths:     make(map[string]types.Paths),
-				Providers: make(map[string]types.Providers),
+				Markets: make(map[string]types.Market),
 			},
 			LastUpdated: uint64(s.ctx.BlockHeight()),
 			Version:     10,
@@ -34,19 +32,11 @@ func (s *KeeperTestSuite) TestMarketMap() {
 
 	s.Run("run query with state", func() {
 		expectedMarketMap := types.MarketMap{
-			Tickers:   make(map[string]types.Ticker),
-			Paths:     make(map[string]types.Paths),
-			Providers: make(map[string]types.Providers),
+			Markets: make(map[string]types.Market),
 		}
-		for _, ticker := range markets.tickers {
-			marketPaths, ok := markets.paths[ticker.String()]
-			s.Require().True(ok)
-			marketProviders, ok := markets.providers[ticker.String()]
-			s.Require().True(ok)
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
-			expectedMarketMap.Tickers[ticker.String()] = ticker
-			expectedMarketMap.Paths[ticker.String()] = marketPaths
-			expectedMarketMap.Providers[ticker.String()] = marketProviders
+		for _, market := range markets {
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
+			expectedMarketMap.Markets[market.Ticker.String()] = market
 		}
 
 		resp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
@@ -85,12 +75,8 @@ func (s *KeeperTestSuite) TestParams() {
 func (s *KeeperTestSuite) TestLastUpdated() {
 	qs := keeper.NewQueryServer(s.keeper)
 	// set initial states
-	for _, ticker := range markets.tickers {
-		marketPaths, ok := markets.paths[ticker.String()]
-		s.Require().True(ok)
-		marketProviders, ok := markets.providers[ticker.String()]
-		s.Require().True(ok)
-		s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
+	for _, market := range markets {
+		s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
 	}
 
 	s.Run("run valid request", func() {

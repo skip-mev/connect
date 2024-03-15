@@ -15,14 +15,14 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 		Signer: s.authority.String(),
 		CreateMarkets: []types.CreateMarket{
 			{
-				Ticker:    btcusdt,
-				Providers: btcusdtProviders,
-				Paths:     btcusdtPaths,
+				Ticker:    btcusdt.Ticker,
+				Providers: btcusdt.Providers,
+				Paths:     btcusdt.Paths,
 			},
 			{
-				Ticker:    usdtusd,
-				Providers: usdtusdProviders,
-				Paths:     usdtusdPaths,
+				Ticker:    usdtusd.Ticker,
+				Providers: usdtusd.Providers,
+				Paths:     usdtusd.Paths,
 			},
 		},
 	}
@@ -34,23 +34,15 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 	queryResp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(queryResp.MarketMap, types.MarketMap{
-		Tickers: map[string]types.Ticker{
+		Markets: map[string]types.Market{
 			btcusdt.String(): btcusdt,
 			usdtusd.String(): usdtusd,
-		},
-		Paths: map[string]types.Paths{
-			btcusdt.String(): btcusdtPaths,
-			usdtusd.String(): usdtusdPaths,
-		},
-		Providers: map[string]types.Providers{
-			btcusdt.String(): btcusdtProviders,
-			usdtusd.String(): usdtusdProviders,
 		},
 	})
 
 	// query the oracle module to see if they were created via hooks
 	cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
-	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.CurrencyPair, usdtusd.CurrencyPair}, cps)
+	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.Ticker.CurrencyPair, usdtusd.Ticker.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
 		msg = &types.MsgUpdateMarketMap{
@@ -73,9 +65,9 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
-					Ticker:    btcusdt,
-					Providers: btcusdtProviders,
-					Paths:     btcusdtPaths,
+					Ticker:    btcusdt.Ticker,
+					Providers: btcusdt.Providers,
+					Paths:     btcusdt.Paths,
 				},
 			},
 		}
@@ -89,8 +81,8 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 			Signer: s.authority.String(),
 			CreateMarkets: []types.CreateMarket{
 				{
-					Ticker:    ethusdt,
-					Providers: ethusdtProviders,
+					Ticker:    ethusdt.Ticker,
+					Providers: ethusdt.Providers,
 					Paths: types.Paths{
 						Paths: []types.Path{
 							{

@@ -4,12 +4,12 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // MarketMapHooks is the interface that defines the hooks that can be integrated by other modules.
 type MarketMapHooks interface {
-	AfterMarketCreated(ctx sdk.Context, ticker Ticker) error
+	AfterMarketCreated(ctx sdk.Context, market Market) error
 
-	AfterMarketUpdated(ctx sdk.Context, ticker Ticker) error
+	AfterMarketUpdated(ctx sdk.Context, market Market) error
 
 	// AfterMarketGenesis is called after x/marketmap init genesis.
-	AfterMarketGenesis(ctx sdk.Context, tickers map[string]Ticker) error
+	AfterMarketGenesis(ctx sdk.Context, tickers map[string]Market) error
 }
 
 var _ MarketMapHooks = &MultiMarketMapHooks{}
@@ -18,9 +18,9 @@ var _ MarketMapHooks = &MultiMarketMapHooks{}
 type MultiMarketMapHooks []MarketMapHooks
 
 // AfterMarketCreated calls all AfterMarketCreated hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketCreated(ctx sdk.Context, ticker Ticker) error {
+func (mh MultiMarketMapHooks) AfterMarketCreated(ctx sdk.Context, market Market) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketCreated(ctx, ticker); err != nil {
+		if err := mh[i].AfterMarketCreated(ctx, market); err != nil {
 			return err
 		}
 	}
@@ -29,9 +29,9 @@ func (mh MultiMarketMapHooks) AfterMarketCreated(ctx sdk.Context, ticker Ticker)
 }
 
 // AfterMarketUpdated calls all AfterMarketUpdated hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context, ticker Ticker) error {
+func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context, market Market) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketUpdated(ctx, ticker); err != nil {
+		if err := mh[i].AfterMarketUpdated(ctx, market); err != nil {
 			return err
 		}
 	}
@@ -40,9 +40,9 @@ func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context, ticker Ticker)
 }
 
 // AfterMarketGenesis calls all AfterMarketGenesis hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, tickers map[string]Ticker) error {
+func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, markets map[string]Market) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketGenesis(ctx, tickers); err != nil {
+		if err := mh[i].AfterMarketGenesis(ctx, markets); err != nil {
 			return err
 		}
 	}
