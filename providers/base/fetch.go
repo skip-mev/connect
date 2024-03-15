@@ -82,10 +82,15 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 	// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
 	// 30 / 45 = 0 -> need one sub handler
 	ids := p.GetIDs()
+	if len(ids) == 0 {
+		p.logger.Info("no ids to subscribe to")
+		return nil
+	}
+
 	if maxSubsPerConn > 0 {
 		// case where we will split ID's across sub handlers
 		numSubHandlers := int(math.Ceil(float64(len(ids)) / float64(maxSubsPerConn)))
-		p.logger.Info("setting number of web socket handlers for provider", zap.Int("sub_handlers", numSubHandlers))
+		p.logger.Debug("setting number of web socket handlers for provider", zap.Int("sub_handlers", numSubHandlers))
 		wg.SetLimit(numSubHandlers)
 
 		// split ids

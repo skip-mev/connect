@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -32,24 +33,38 @@ func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 	}
 }
 
-// WithAPIQueryHandlerFactory sets the API query handler factory for the provider orchestrator.
-func WithAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
+// WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the provider orchestrator.
+// Specifically this is what is utilized to construct price providers that are API based.
+func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
 			panic("api query handler factory cannot be nil")
 		}
 
-		m.apiQueryHandlerFactory = factory
+		m.priceAPIFactory = factory
 	}
 }
 
 // WithWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
-func WithWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
+// Specifically this is what is utilized to construct price providers that are websocket based.
+func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
 			panic("websocket query handler factory cannot be nil")
 		}
 
-		m.webSocketQueryHandlerFactory = factory
+		m.priceWSFactory = factory
+	}
+}
+
+// WithMarketMapperFactory sets the market map factory for the provider orchestrator.
+// Specifically this is what is utilized to construct market map providers.
+func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
+	return func(m *ProviderOrchestrator) {
+		if factory == nil {
+			panic("market map factory cannot be nil")
+		}
+
+		m.marketMapperFactory = factory
 	}
 }
