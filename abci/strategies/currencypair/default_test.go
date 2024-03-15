@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	strategies "github.com/skip-mev/slinky/abci/strategies/currencypair"
-	mocks "github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
+	"github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
@@ -20,9 +20,7 @@ var (
 
 func TestDefaultCurrencyPairStrategyID(t *testing.T) {
 	ok := mocks.NewOracleKeeper(t)
-
 	ctx := sdk.Context{}
-
 	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
 
 	// test that the strategy returns IDs from the oracle module
@@ -51,9 +49,7 @@ func TestDefaultCurrencyPairStrategyID(t *testing.T) {
 
 func TestDefaultCurrencyPairStrategyFromID(t *testing.T) {
 	ok := mocks.NewOracleKeeper(t)
-
 	ctx := sdk.Context{}
-
 	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
 
 	// test that the strategy returns IDs from the oracle module and then will come from the cache
@@ -105,9 +101,7 @@ func TestDefaultCurrencyPairStrategyFromID(t *testing.T) {
 
 func TestDefaultCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 	ok := mocks.NewOracleKeeper(t)
-
 	ctx := sdk.Context{}
-
 	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
 
 	cp := btcusd
