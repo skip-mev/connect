@@ -19,34 +19,17 @@ const (
 // the unique ID for a given currency pair and utilizes raw prices stored in the x/oracle state as the price
 // representation for a given currency pair.
 type DefaultCurrencyPairStrategy struct {
-	oracleKeeper     OracleKeeper
-	idToCurrencyPair map[uint64]slinkytypes.CurrencyPair
-	useCache         bool
-}
-
-// Option is a function that enables optional configuration of the DefaultCurrencyPairStrategy.
-type Option func(*DefaultCurrencyPairStrategy)
-
-// WithCache enables the cache for DefaultCurrencyPairStrategy.
-func WithCache() Option {
-	return func(s *DefaultCurrencyPairStrategy) {
-		s.useCache = true
-	}
+	oracleKeeper   OracleKeeper
+	cache          map[uint64]slinkytypes.CurrencyPair
+	previousHeight int64
 }
 
 // NewDefaultCurrencyPairStrategy returns a new DefaultCurrencyPairStrategy instance.
-func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper, opts ...Option) *DefaultCurrencyPairStrategy {
+func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyPairStrategy {
 	strategy := &DefaultCurrencyPairStrategy{
-		oracleKeeper:     oracleKeeper,
-		idToCurrencyPair: make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity),
-		useCache:         false,
+		oracleKeeper: oracleKeeper,
+		cache:        make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity),
 	}
-
-	// run options
-	for _, opt := range opts {
-		opt(strategy)
-	}
-
 	return strategy
 }
 
@@ -58,10 +41,8 @@ func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.Currenc
 		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.String())
 	}
 
-	if s.useCache {
-		// cache the currency pair for future lookups
-		s.idToCurrencyPair[id] = cp
-	}
+	// cache the currency pair for future lookups
+	s.cache[id] = cp
 
 	return id, nil
 }
@@ -69,25 +50,25 @@ func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.Currenc
 // FromID returns the currency pair with the given ID, by querying the x/oracle state for the currency pair
 // with the given ID. this method returns an error if the given ID is not currently present for an existing currency-pair.
 func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinkytypes.CurrencyPair, error) {
-	var (
-		cp    slinkytypes.CurrencyPair
-		found bool
-	)
-
-	if s.useCache {
-		// check the cache first
-		if cp, found = s.idToCurrencyPair[id]; found {
-			return cp, nil
-		}
+	// reset cache if the block height has changed
+	height := ctx.BlockHeight()
+	if height != s.previousHeight {
+		s.cache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.previousHeight = height
 	}
 
-	cp, found = s.oracleKeeper.GetCurrencyPairFromID(ctx, id)
+	// check the cache first
+	if cp, found := s.cache[id]; found {
+		return cp, nil
+	}
+
+	cp, found := s.oracleKeeper.GetCurrencyPairFromID(ctx, id)
 	if !found {
 		return slinkytypes.CurrencyPair{}, fmt.Errorf("id %d not found", id)
 	}
 
 	// cache the currency pair for future lookups
-	s.idToCurrencyPair[id] = cp
+	s.cache[id] = cp
 
 	return cp, nil
 }
