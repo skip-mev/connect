@@ -17,31 +17,24 @@ func (o *ProviderOrchestrator) Init() error {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	for _, providerCfg := range o.cfg.Providers {
+	for _, cfg := range o.cfg.Providers {
 		// Initialize the provider.
-		if err := o.createProvider(providerCfg); err != nil {
-			o.logger.Error("failed to create provider state", zap.Error(err))
-			return err
+		var err error
+		switch cfg.Type {
+		case types.ConfigType:
+			err = o.createPriceProvider(cfg)
+		case mmclienttypes.ConfigType:
+			err = o.createMarketMapProvider(cfg)
+		default:
+			return fmt.Errorf("unknown provider type: %s", cfg.Type)
+		}
+
+		if err != nil {
+			return fmt.Errorf("failed to initialize %s provider: %w", cfg.Name, err)
 		}
 	}
 
 	return nil
-}
-
-// createProvider instantiates a provider for the given configuration. This constructs the
-// query handler, based on the provider's type and configuration. Notably this constructs
-// either a price or market map provider.
-func (o *ProviderOrchestrator) createProvider(
-	cfg config.ProviderConfig,
-) error {
-	switch cfg.Type {
-	case types.ConfigType:
-		return o.createPriceProvider(cfg)
-	case mmclienttypes.ConfigType:
-		return o.createMarketMapProvider(cfg)
-	default:
-		return fmt.Errorf("unknown provider type: %s", cfg.Type)
-	}
 }
 
 // createPriceProvider creates a new price provider for the given provider configuration.
@@ -100,11 +93,11 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 	}
 
 	// Add the provider to the orchestrator.
-	o.providers[cfg.Name] = state
+	o.providers[provider.Name()] = state
 
 	o.logger.Info(
 		"created price provider state",
-		zap.String("provider", cfg.Name),
+		zap.String("provider", provider.Name()),
 		zap.Int("num_tickers", len(provider.GetIDs())),
 	)
 	return nil
@@ -134,7 +127,7 @@ func (o *ProviderOrchestrator) createWebSocketQueryHandler(
 	return o.priceWSFactory(o.logger, cfg, o.wsMetrics, market)
 }
 
-// CreateMarketMapProvider creates a new market map provider for the given provider configuration.
+// createMarketMapProvider creates a new market map provider for the given provider configuration.
 func (o *ProviderOrchestrator) createMarketMapProvider(cfg config.ProviderConfig) error {
 	if o.marketMapperFactory == nil {
 		return fmt.Errorf("cannot create market map provider; market map factory is not set")
@@ -153,7 +146,7 @@ func (o *ProviderOrchestrator) createMarketMapProvider(cfg config.ProviderConfig
 	o.mapper = mapper
 	o.logger.Info(
 		"created market map provider",
-		zap.String("provider", cfg.Name),
+		zap.String("provider", mapper.Name()),
 	)
 	return nil
 }
