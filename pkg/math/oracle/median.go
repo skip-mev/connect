@@ -11,16 +11,6 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-const (
-	// MaxConversionOperations is the maximum number of conversion operations that can be used
-	// to convert a set of prices to a common ticker. This implementation only supports a maximum
-	// of 2 conversion operations - either a direct conversion or a conversion using the index price.
-	MaxConversionOperations = 2
-
-	// IndexPrice is the provider name for the index price.
-	IndexPrice = "index"
-)
-
 // MedianAggregator is an aggregator that calculates the median price for each ticker,
 // resolved from a predefined set of conversion markets. A conversion market is a set of
 // markets that can be used to convert the prices of a set of tickers to a common ticker.
@@ -38,16 +28,14 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 	}
 
 	if err := cfg.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid config: %w", err)
+		return nil, err
 	}
 
-	m := &MedianAggregator{
+	return &MedianAggregator{
 		logger:          logger,
 		cfg:             cfg,
 		PriceAggregator: types.NewPriceAggregator(),
-	}
-
-	return m, nil
+	}, nil
 }
 
 // AggregatedData implements the aggregate function for the median price calculation. Specifically, this
@@ -173,7 +161,7 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// Sanity check the number of operations. This should be [1, 2] operations.
 	if len(operations) == 0 {
 		return nil, fmt.Errorf("no operations")
-	} else if len(operations) > MaxConversionOperations {
+	} else if len(operations) > mmtypes.MaxConversionOperations {
 		return nil, fmt.Errorf("too many operations: %d", len(operations))
 	}
 
@@ -189,7 +177,7 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	}
 
 	// If we have more than one operation, then can only adjust the price using the index.
-	if operations[1].Provider != IndexPrice {
+	if operations[1].Provider != mmtypes.IndexPrice {
 		return nil, fmt.Errorf("expected index price but got %s", operations[1].Provider)
 	}
 

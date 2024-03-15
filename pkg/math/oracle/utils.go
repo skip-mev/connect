@@ -33,7 +33,7 @@ func (m *MedianAggregator) GetProviderPrice(
 	}
 
 	var cache types.TickerPrices
-	if operation.Provider != IndexPrice {
+	if operation.Provider != mmtypes.IndexPrice {
 		cache = m.PriceAggregator.GetDataByProvider(operation.Provider)
 	} else {
 		cache = m.PriceAggregator.GetAggregatedData()
