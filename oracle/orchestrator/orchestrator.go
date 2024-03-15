@@ -26,7 +26,7 @@ type ProviderOrchestrator struct {
 	//
 	// providers is a map of all of the providers that the oracle is using.
 	providers map[string]ProviderState
-	// marketmapper is the market map provider. Specifically this provider is responsible
+	// mapper is the market map provider. Specifically this provider is responsible
 	// for making requests for the latest market map data.
 	mapper *mmclienttypes.MarketMapProvider
 
