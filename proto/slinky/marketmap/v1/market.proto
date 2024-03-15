@@ -97,20 +97,26 @@ enum AggregationType {
   STANDARD_MEDIAN_AGGREGATION = 2;
 }
 
+message Market {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  // Ticker is the associated configurations to be stored on-chain.
+  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
+
+  // Paths is all paths that resolve to this pair.
+  Paths paths = 2 [ (gogoproto.nullable) = false ];
+
+  // Providers is all provider-specific configs associated with this pair.
+  Providers providers = 3 [ (gogoproto.nullable) = false ];
+}
+
 message MarketMap {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
 
-  // Tickers is the full list of tickers and their associated configurations
-  // to be stored on-chain.
-  map<string, Ticker> tickers = 1 [ (gogoproto.nullable) = false ];
-
-  // Paths is a map from CurrencyPair to all paths that resolve to that pair
-  map<string, Paths> paths = 2 [ (gogoproto.nullable) = false ];
-
-  // Providers is a map from CurrencyPair to each of to provider-specific
-  // configs associated with it.
-  map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
+  // Markets maps ticker strings to their associated market data.
+  map<string, Market> markets = 1 [ (gogoproto.nullable) = false ];
 
   // AggregationType is the type of aggregation that will be used to aggregate
   // the prices of the tickers.
