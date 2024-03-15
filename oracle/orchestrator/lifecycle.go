@@ -29,6 +29,7 @@ type GeneralProvider interface {
 func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	o.logger.Info("starting provider orchestrator")
 	if err := o.Init(); err != nil {
+		o.logger.Error("failed to initialize provider orchestrator", zap.Error(err))
 		return err
 	}
 
