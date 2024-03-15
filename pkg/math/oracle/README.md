@@ -2,7 +2,7 @@
 
 ## Overview
 
-The aggregator defined in this package is used to convert a set of price feeds into a common set of prices. The prices used in aggregation contain 
+The aggregator defined in this package is used to convert a set of price markets into a common set of prices. The prices used in aggregation contain 
 
 * the most recent prices fetched by each provider.
 * `index` prices which are the previous aggregated prices.
@@ -19,7 +19,7 @@ The MarketMap contains:
 * `Providers` - each ticker maps to a list of providers that fetch prices for that ticker.
 * `Paths` - each ticker maps to a set of paths that are used to calculate the price of that ticker. Each path is a set of operations that define how to convert a given provider price to the desired ticker price. These are either direct conversions or indirect conversions that use the `index` price.
 
-> Say that the oracle is configured to fetch prices for the following feeds:
+> Say that the oracle is configured to fetch prices for the following markets:
 >
 > * BITCOIN/USD (8 decimal precision)
 > * BITCOIN/USDT (8 decimal precision)

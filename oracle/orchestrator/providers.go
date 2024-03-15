@@ -26,8 +26,7 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	o.errGroup, ctx = errgroup.WithContext(ctx)
 
 	// Set tthe main context for the provider orchestrator.
-	ctx, cancel := o.setMainCtx(ctx)
-	defer cancel()
+	ctx, _ = o.setMainCtx(ctx)
 
 	// Start all of the price providers.
 	for _, state := range o.providers {
@@ -37,24 +36,32 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	// Start the market map provider.
 	if mapper := o.mapper.Mapper; mapper != nil {
 		o.errGroup.Go(o.execProviderFn(ctx, mapper))
+		o.errGroup.Go(o.listenForMarketMapUpdates(ctx))
 	}
 
-	// Wait for all of the price providers to exit.
-	if err := o.errGroup.Wait(); err != nil {
-		o.logger.Error("provider orchestrator exited with error", zap.Error(err))
-		return err
-	}
-
-	o.logger.Info("provider orchestrator exited successfully")
 	return nil
 }
 
 // Stop stops the provider orchestrator.
-func (o *ProviderOrchestrator) Stop() {
+func (o *ProviderOrchestrator) Stop() error {
 	o.logger.Info("stopping provider orchestrator")
 	if _, cancel := o.getMainCtx(); cancel != nil {
 		cancel()
+
+		if o.errGroup != nil {
+			return nil
+		}
+
+		// Wait for all of the price providers to exit.
+		if err := o.errGroup.Wait(); err != nil {
+			o.logger.Error("provider orchestrator exited with error", zap.Error(err))
+			return err
+		}
+
+		o.logger.Info("provider orchestrator exited successfully")
 	}
+
+	return nil
 }
 
 // execProviderFn returns a function that starts the provider. This function is used
@@ -70,13 +77,10 @@ func (o *ProviderOrchestrator) execProviderFn(
 			}
 		}()
 
-		o.logger.Info("starting provider routine", zap.String("name", p.Name()))
-		err := p.Start(ctx)
-		o.logger.Info("provider exiting", zap.String("name", p.Name()), zap.Error(err))
-
 		// If the context is canceled, or the deadline is exceeded,
 		// we want to exit the provider and trigger the error group
 		// to exit for all providers.
+		err := p.Start(ctx)
 		if _, ok := CtxErrors[err]; ok {
 			return err
 		}

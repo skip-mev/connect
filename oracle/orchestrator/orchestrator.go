@@ -2,7 +2,6 @@ package orchestrator
 
 import (
 	"context"
-	"maps"
 	"sync"
 
 	"go.uber.org/zap"
@@ -97,9 +96,18 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	// Copy the providers
-	providers := make(map[string]ProviderState, len(o.providers))
-	maps.Copy(providers, o.providers)
+	return o.providers
+}
+
+// GetProviders returns all of the providers.
+func (o *ProviderOrchestrator) GetPriceProviders() []types.PriceProviderI {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	providers := make([]types.PriceProviderI, 0, len(o.providers))
+	for _, state := range o.providers {
+		providers = append(providers, state.Provider)
+	}
 
 	return providers
 }

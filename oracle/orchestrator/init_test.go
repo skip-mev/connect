@@ -37,15 +37,15 @@ func TestInit(t *testing.T) {
 
 		coinbaseState, ok := state[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, false, coinbaseState)
+		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, coinbaseState)
 
 		okxState, ok := state[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, okx.Name, false, providertypes.WebSockets, false, okxState)
+		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, okxState)
 
 		binanceState, ok := state[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
+		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
 	})
 
 	t.Run("creates some providers with a marketmap", func(t *testing.T) {
@@ -68,16 +68,16 @@ func TestInit(t *testing.T) {
 
 		coinbaseState, ok := state[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, expectedTickers, coinbase.Name, true, providertypes.API, false, coinbaseState)
+		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, false, coinbaseState)
 
 		okxState, ok := state[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, expectedTickers, okx.Name, true, providertypes.WebSockets, false, okxState)
+		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, false, okxState)
 
 		// Ensure that the provider that is not supported by the marketmap is not enabled.
 		binanceState, ok := state[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
+		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
 	})
 
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {

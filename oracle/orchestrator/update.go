@@ -78,7 +78,6 @@ func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarke
 
 	// Update the provider's state.
 	state.Market = marketMap
-	state.Enabled = len(marketMap.GetTickers()) > 0
 	o.logger.Info("updated provider state", zap.String("provider_state", provider.Name()))
 	return state, nil
 }

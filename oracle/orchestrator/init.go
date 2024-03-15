@@ -102,7 +102,6 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 	state := ProviderState{
 		Provider: provider,
 		Market:   market,
-		Enabled:  len(market.GetTickers()) > 0,
 		Cfg:      cfg,
 	}
 
@@ -112,7 +111,6 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 	o.logger.Info(
 		"created price provider state",
 		zap.String("provider", cfg.Name),
-		zap.Bool("enabled", state.Enabled),
 		zap.Int("num_tickers", len(state.Market.GetTickers())),
 	)
 	return nil

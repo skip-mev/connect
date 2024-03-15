@@ -17,10 +17,6 @@ type (
 		Provider *types.PriceProvider
 		// Market is the market map view for the provider.
 		Market types.ProviderMarketMap
-		// Enabled is a flag that indicates whether the provider is enabled. A provider
-		// is enabled iff it is configured with a market map and the market map has
-		// tickers.
-		Enabled bool
 		// Cfg is the provider configuration.
 		Cfg config.ProviderConfig
 	}

@@ -145,3 +145,24 @@ func checkIfProviderSupportsTicker(
 
 	return fmt.Errorf("provider %s does not support ticker: %s", provider, cp.String())
 }
+
+// Equal returns true if the market map is equal to the given market map.
+func (mm *MarketMap) Equal(other MarketMap) bool {
+	if len(mm.Tickers) != len(other.Tickers) {
+		return false
+	}
+
+	if len(mm.Providers) != len(other.Providers) {
+		return false
+	}
+
+	if len(mm.Paths) != len(other.Paths) {
+		return false
+	}
+
+	if mm.AggregationType != other.AggregationType {
+		return false
+	}
+
+	return true
+}

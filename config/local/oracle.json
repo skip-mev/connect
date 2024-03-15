@@ -29,7 +29,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 0,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "CoinbasePro",
@@ -58,7 +59,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 0,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Coingecko",
@@ -87,7 +89,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 0,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "GeckoTerminal",
@@ -116,7 +119,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 0,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Bitfinex",
@@ -145,7 +149,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Bitstamp",
@@ -174,7 +179,8 @@
         "pingInterval": 10000000000,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Bybit",
@@ -203,7 +209,8 @@
         "pingInterval": 15000000000,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "CoinbaseProWebSocket",
@@ -232,7 +239,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "CryptoCom",
@@ -261,7 +269,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Gate",
@@ -290,7 +299,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Huobi",
@@ -319,7 +329,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Kraken",
@@ -348,7 +359,8 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Kucoin",
@@ -377,7 +389,8 @@
         "pingInterval": 10000000000,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Mexc",
@@ -406,7 +419,8 @@
         "pingInterval": 20000000000,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 20
-      }
+      },
+      "type": "price_provider"
     },
     {
       "name": "Okx",
@@ -435,7 +449,38 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 0
-      }
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "dYdX",
+      "api": {
+        "enabled": true,
+        "timeout": 1000000000,
+        "interval": 10000000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "https://dydx-api.polkachu.com",
+        "name": "dYdX"
+      },
+      "webSocket": {
+        "enabled": false,
+        "maxBufferSize": 0,
+        "reconnectionTimeout": 0,
+        "wss": "",
+        "name": "",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 0,
+        "enableCompression": false,
+        "readTimeout": 0,
+        "writeTimeout": 0,
+        "pingInterval": 0,
+        "maxReadErrorCount": 0,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "market_map_provider"
     }
   ],
   "production": true,

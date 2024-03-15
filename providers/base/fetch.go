@@ -88,19 +88,26 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 		p.logger.Info("setting number of web socket handlers for provider", zap.Int("sub_handlers", numSubHandlers))
 		wg.SetLimit(numSubHandlers)
 
-		// split ids
-		for i := 0; i < numSubHandlers; i++ {
-			start := i * maxSubsPerConn
+		if numSubHandlers > 1 {
+			// split ids
+			for i := 0; i < numSubHandlers; i++ {
+				start := i * maxSubsPerConn
 
-			// Copy the IDs over.
-			subIDs := make([]K, 0)
-			if end := start + maxSubsPerConn; end >= len(ids) {
-				subIDs = append(subIDs, ids[start:]...)
-			} else {
-				subIDs = append(subIDs, ids[start:end]...)
+				// Copy the IDs over.
+				subIDs := make([]K, 0)
+				if end := start + maxSubsPerConn; end >= len(ids) {
+					subIDs = append(subIDs, ids[start:]...)
+				} else {
+					subIDs = append(subIDs, ids[start:end]...)
+				}
+
+				subTasks = append(subTasks, subIDs)
 			}
+		} else {
+			// case where there is 1 sub handler
+			subTasks = append(subTasks, ids)
+			wg.SetLimit(1)
 
-			subTasks = append(subTasks, subIDs)
 		}
 	} else {
 		// case where there is 1 sub handler

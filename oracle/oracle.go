@@ -114,9 +114,6 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	o.providerCh = make(chan error)
-	go o.StartProviders(ctx)
-
 	o.running.Store(true)
 	defer o.running.Store(false)
 
@@ -146,10 +143,6 @@ func (o *OracleImpl) Stop() {
 
 	o.closer.Close()
 	<-o.closer.Done()
-
-	// Wait for the providers to exit.
-	err := <-o.providerCh
-	o.logger.Info("providers exited", zap.Error(err))
 }
 
 // tick executes a single oracle tick. It fetches prices from each provider's

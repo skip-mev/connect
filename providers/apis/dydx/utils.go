@@ -35,7 +35,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	URL:              "replace-me",
+	URL:              "https://dydx-api.polkachu.com",
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.

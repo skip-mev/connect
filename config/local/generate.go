@@ -17,6 +17,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
@@ -29,6 +30,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -140,18 +142,22 @@ var (
 			{
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
+				Type: types.ConfigType,
 			},
 			{
 				Name: coinbaseapi.Name,
 				API:  coinbaseapi.DefaultAPIConfig,
+				Type: types.ConfigType,
 			},
 			{
 				Name: coingecko.Name,
 				API:  coingecko.DefaultAPIConfig,
+				Type: types.ConfigType,
 			},
 			{
 				Name: geckoterminal.Name,
 				API:  geckoterminal.DefaultETHAPIConfig,
+				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//
 			// ---------------------Start WebSocket Providers--------------	//
@@ -163,47 +169,66 @@ var (
 			{
 				Name:      bitfinex.Name,
 				WebSocket: bitfinex.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      bitstamp.Name,
 				WebSocket: bitstamp.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      bybit.Name,
 				WebSocket: bybit.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      coinbasews.Name,
 				WebSocket: coinbasews.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      cryptodotcom.Name,
 				WebSocket: cryptodotcom.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      gate.Name,
 				WebSocket: gate.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      huobi.Name,
 				WebSocket: huobi.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      kraken.Name,
 				WebSocket: kraken.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      kucoin.Name,
 				WebSocket: kucoin.DefaultWebSocketConfig,
 				API:       kucoin.DefaultAPIConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      mexc.Name,
 				WebSocket: mexc.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
+			},
+			// -----------------------------------------------------------	//
+			// ---------------------Start MarketMap Providers-------------  //
+			// -----------------------------------------------------------	//
+			{
+				Name: dydx.Name,
+				API:  dydx.DefaultAPIConfig,
+				Type: mmclienttypes.ConfigType,
 			},
 		},
 	}

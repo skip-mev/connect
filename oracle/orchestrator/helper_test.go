@@ -108,7 +108,6 @@ func checkProviderState(
 	t *testing.T,
 	expectedTickers []mmtypes.Ticker,
 	expectedName string,
-	enabled bool,
 	expectedType providertypes.ProviderType,
 	isRunning bool,
 	state orchestrator.ProviderState,
@@ -136,9 +135,6 @@ func checkProviderState(
 	for _, ticker := range market.GetTickers() {
 		require.True(t, seenTickers[ticker])
 	}
-
-	// Ensure that the provider is enabled/disabled.
-	require.Equal(t, enabled, state.Enabled)
 
 	// Ensure that the provider is running/no-running.
 	require.Equal(t, isRunning, provider.IsRunning())

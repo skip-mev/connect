@@ -15,6 +15,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
@@ -73,26 +74,30 @@ func main() {
 		}
 	}
 
-	// Create the providers using the default provider factory.
-	generator, err := oraclefactory.NewDefaultProviderFactory(
-		logger,
-		marketCfg,
+	// Initialize the orchestrator which is responsible for managing the lifecycle of the providers.
+	orch, err := orchestrator.NewProviderOrchestrator(
+		cfg,
+		orchestrator.WithLogger(logger),
+		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
+		orchestrator.WithMarketMap(marketCfg),
 	)
 	if err != nil {
-		logger.Error("failed to create provider factory", zap.Error(err))
+		logger.Error("failed to create provider orchestrator", zap.Error(err))
 		return
 	}
 
-	providers, err := generator.Factory()(cfg)
-	if err != nil {
-		logger.Error("failed to create providers", zap.Error(err))
+	// Start the provider orchestrator.
+	if err := orch.Start(ctx); err != nil {
+		logger.Error("failed to start provider orchestrator", zap.Error(err))
 		return
 	}
 
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                      // Replace with custom providers.
+		oracle.WithProviders(orch.GetPriceProviders()),       // Replace with custom providers.
 		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
@@ -147,5 +152,10 @@ func main() {
 	// start oracle + server, and wait for either to finish
 	if err := srv.StartServer(ctx, *host, *port); err != nil {
 		logger.Error("stopping server", zap.Error(err))
+	}
+
+	// Wait for the providers to gracefully shutdown.
+	if err := orch.Stop(); err != nil {
+		logger.Error("stopping provider orchestrator", zap.Error(err))
 	}
 }
