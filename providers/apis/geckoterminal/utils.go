@@ -42,6 +42,7 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              ETH_URL,
+		Type:             types.ConfigType,
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for tokens on

@@ -47,6 +47,7 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: MaxSubscriptionsPerConnection,
+		Type:                          types.ConfigType,
 	}
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.

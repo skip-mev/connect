@@ -43,6 +43,7 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		Type:                          types.ConfigType,
 	}
 
 	// DefaultMarketConfig is the default market configuration for ByBit.

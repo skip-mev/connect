@@ -9,6 +9,11 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+const (
+	// ConfigType is the type of the API/WebSocket configuration.
+	ConfigType = "market_map_provider"
+)
+
 // Chain is a type alias for the market map key. This is used to uniquely
 // identify a market map.
 type Chain struct {
@@ -23,7 +28,7 @@ func (mms Chain) String() string {
 
 type (
 	// MarketMapProvider is a type alias for the market map provider.
-	MarketMapProvider = providertypes.Provider[Chain, *mmtypes.GetMarketMapResponse]
+	MarketMapProvider = *base.Provider[Chain, *mmtypes.GetMarketMapResponse]
 
 	// MarketMapAPIQueryHandler is a type alias for the market map API query handler. This
 	// is responsible for querying the market map API and returning the resolved and unresolved

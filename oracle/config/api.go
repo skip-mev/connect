@@ -35,6 +35,9 @@ type APIConfig struct {
 
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`
+
+	// Type is the type of the provider that corresponds to this config.
+	Type string `json:"type"`
 }
 
 // ValidateBasic performs basic validation of the API config.
@@ -57,6 +60,10 @@ func (c *APIConfig) ValidateBasic() error {
 
 	if len(c.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
+	}
+
+	if len(c.Type) == 0 {
+		return fmt.Errorf("provider type cannot be empty")
 	}
 
 	return nil

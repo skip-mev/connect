@@ -51,6 +51,7 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
+		Type:             types.ConfigType,
 	}
 
 	// DefaultMarketConfig is the default market configuration for CoinGecko.

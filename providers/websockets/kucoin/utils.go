@@ -45,6 +45,7 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		Type:                          types.ConfigType,
 	}
 
 	// DefaultAPIConfig defines the default API config for KuCoin. This is

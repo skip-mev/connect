@@ -1,12 +1,14 @@
 package orchestrator
 
 import (
+	"context"
 	"fmt"
 	"maps"
 	"math/big"
 	"sync"
 
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -17,54 +19,57 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-type (
-	// ProviderOrchestrator is a stateful orchestrator that is responsible for maintaining all of the
-	// providers that the oracle is using. This includes initializing the providers, creating
-	// the provider specific market map, and enabling/disabling the providers based on the
-	// oracle configuration and market map.
-	ProviderOrchestrator struct {
-		mut    sync.Mutex
-		logger *zap.Logger
+// ProviderOrchestrator is a stateful orchestrator that is responsible for maintaining
+// all of the providers that the oracle is using. This includes initializing the providers,
+// creating the provider specific market map, and enabling/disabling the providers based
+// on the oracle configuration and market map.
+type ProviderOrchestrator struct {
+	mut    sync.Mutex
+	logger *zap.Logger
 
-		// providers is a map of all of the providers that the oracle is using.
-		providers map[string]ProviderState
+	// -------------------Lifecycle Fields-------------------//
+	//
+	// mainCtx is the main context for the provider orchestrator.
+	mainCtx context.Context
+	// mainCancel is the main context cancel function.
+	mainCancel context.CancelFunc
+	// errGroup is the error group for the provider orchestrator.
+	errGroup *errgroup.Group
 
-		// -------------------Oracle Configuration Fields-------------------//
-		//
-		// cfg is the oracle configuration.
-		cfg config.OracleConfig
-		// marketMap is the market map that the oracle is using.
-		marketMap mmtypes.MarketMap
+	// -------------------State Fields-------------------//
+	//
+	// providers is a map of all of the providers that the oracle is using.
+	providers map[string]ProviderState
+	// marketmapper is the market map provider. Specifically this provider is responsible
+	// for making requests for the latest market map data.
+	mapper MapperState
 
-		// -------------------Provider Constructor Fields-------------------//
-		//
-		// apiQueryHandler factory is a factory function that creates API query handlers.
-		apiQueryHandlerFactory types.PriceAPIQueryHandlerFactory
-		// webSocketQueryHandlerFactory is a factory function that creates websocket query
-		// handlers.
-		webSocketQueryHandlerFactory types.PriceWebSocketQueryHandlerFactory
-		// wsMetrics is the web socket metrics.
-		wsMetrics wsmetrics.WebSocketMetrics
-		// apiMetrics is the API metrics.
-		apiMetrics apimetrics.APIMetrics
-		// providerMetrics is the provider metrics.
-		providerMetrics providermetrics.ProviderMetrics
-	}
+	// -------------------Oracle Configuration Fields-------------------//
+	//
+	// cfg is the oracle configuration.
+	cfg config.OracleConfig
+	// marketMap is the market map that the oracle is using.
+	marketMap mmtypes.MarketMap
 
-	// ProviderState is the state of a provider. This includes the provider implementation,
-	// the provider specific market map, and whether the provider is enabled.
-	ProviderState struct {
-		// Provider is the price provider implementation.
-		Provider *types.PriceProvider
-		// Market is the market map view for the provider.
-		Market types.ProviderMarketMap
-		// Enabled is a flag that indicates whether the provider is enabled. A provider
-		// is enabled iff it is configured with a market map and the market map has tickers.
-		Enabled bool
-		// Cfg is the provider configuration.
-		Cfg config.ProviderConfig
-	}
-)
+	// -------------------Price Provider Constructor Fields-------------------//
+	//
+	// apiQueryHandler factory is a factory function that creates API query handlers.
+	apiQueryHandlerFactory types.PriceAPIQueryHandlerFactory
+	// webSocketQueryHandlerFactory is a factory function that creates websocket query
+	// handlers.
+	webSocketQueryHandlerFactory types.PriceWebSocketQueryHandlerFactory
+
+	// -------------------Market Mapper Provider Constructor Fields-------------------//
+	//
+
+	// -------------------Metrics Fields-------------------//
+	// wsMetrics is the web socket metrics.
+	wsMetrics wsmetrics.WebSocketMetrics
+	// apiMetrics is the API metrics.
+	apiMetrics apimetrics.APIMetrics
+	// providerMetrics is the provider metrics.
+	providerMetrics providermetrics.ProviderMetrics
+}
 
 // NewProviderOrchestrator returns a new provider orchestrator.
 func NewProviderOrchestrator(
@@ -91,8 +96,8 @@ func NewProviderOrchestrator(
 	return orchestrator, nil
 }
 
-// Init initializes the all of the providers that are configured via the oracle config. Specifically,
-// this will:
+// Init initializes the all of the providers that are configured via the oracle config.
+// Specifically, this will:
 //
 // 1. This will initialize the provider.
 // 2. Create the provider specific market map, if configured with a marketmap.
@@ -196,26 +201,15 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	return providers
 }
 
-// createAPIQueryHandler creates a new API query handler for the given provider configuration.
-func (o *ProviderOrchestrator) createAPIQueryHandler(
-	cfg config.ProviderConfig,
-	market types.ProviderMarketMap,
-) (types.PriceAPIQueryHandler, error) {
-	if o.apiQueryHandlerFactory == nil {
-		return nil, fmt.Errorf("cannot create provider; api query handler factory is not set")
+// GetProviders returns all of the providers.
+func (o *ProviderOrchestrator) GetProviders() []*types.PriceProvider {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	providers := make([]*types.PriceProvider, 0)
+	for _, state := range o.providers {
+		providers = append(providers, state.Provider)
 	}
 
-	return o.apiQueryHandlerFactory(o.logger, cfg, o.apiMetrics, market)
-}
-
-// createWebSocketQueryHandler creates a new web socket query handler for the given provider configuration.
-func (o *ProviderOrchestrator) createWebSocketQueryHandler(
-	cfg config.ProviderConfig,
-	market types.ProviderMarketMap,
-) (types.PriceWebSocketQueryHandler, error) {
-	if o.webSocketQueryHandlerFactory == nil {
-		return nil, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
-	}
-
-	return o.webSocketQueryHandlerFactory(o.logger, cfg, o.wsMetrics, market)
+	return providers
 }
