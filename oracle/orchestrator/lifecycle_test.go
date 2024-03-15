@@ -11,6 +11,17 @@ import (
 )
 
 func TestStart(t *testing.T) {
+	t.Run("errors when init fails", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfg,
+			orchestrator.WithLogger(logger),
+		)
+		require.NoError(t, err)
+
+		err = o.Start(context.Background())
+		require.Error(t, err)
+	})
+
 	t.Run("price providers with no market map", func(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
