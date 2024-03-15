@@ -6,8 +6,6 @@ import (
 	"testing"
 	"time"
 
-	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cmttypes "github.com/cometbft/cometbft/types"
@@ -16,6 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/skip-mev/slinky/abci/proposals"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
