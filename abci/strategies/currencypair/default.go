@@ -20,7 +20,7 @@ const (
 // representation for a given currency pair.
 type DefaultCurrencyPairStrategy struct {
 	oracleKeeper   OracleKeeper
-	cache          map[uint64]slinkytypes.CurrencyPair
+	idCache        map[uint64]slinkytypes.CurrencyPair
 	previousHeight int64
 }
 
@@ -28,7 +28,7 @@ type DefaultCurrencyPairStrategy struct {
 func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyPairStrategy {
 	strategy := &DefaultCurrencyPairStrategy{
 		oracleKeeper: oracleKeeper,
-		cache:        make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity),
+		idCache:      make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity),
 	}
 	return strategy
 }
@@ -36,13 +36,20 @@ func NewDefaultCurrencyPairStrategy(oracleKeeper OracleKeeper) *DefaultCurrencyP
 // ID returns the ID of the given currency pair, by querying the x/oracle state for the ID of the given
 // currency pair. This method returns an error if the given currency pair is not found in the x/oracle state.
 func (s *DefaultCurrencyPairStrategy) ID(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error) {
+	// reset cache if the block height has changed
+	height := ctx.BlockHeight()
+	if height != s.previousHeight {
+		s.idCache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.previousHeight = height
+	}
+
 	id, found := s.oracleKeeper.GetIDForCurrencyPair(ctx, cp)
 	if !found {
 		return 0, fmt.Errorf("currency pair %s not found in x/oracle state", cp.String())
 	}
 
 	// cache the currency pair for future lookups
-	s.cache[id] = cp
+	s.idCache[id] = cp
 
 	return id, nil
 }
@@ -53,12 +60,12 @@ func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinky
 	// reset cache if the block height has changed
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.cache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
+		s.idCache = make(map[uint64]slinkytypes.CurrencyPair, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 
 	// check the cache first
-	if cp, found := s.cache[id]; found {
+	if cp, found := s.idCache[id]; found {
 		return cp, nil
 	}
 
@@ -68,7 +75,7 @@ func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinky
 	}
 
 	// cache the currency pair for future lookups
-	s.cache[id] = cp
+	s.idCache[id] = cp
 
 	return cp, nil
 }
