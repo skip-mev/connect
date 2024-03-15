@@ -18,8 +18,8 @@ type ProviderConfig struct {
 	// does not support websocket based fetching, this field should be omitted.
 	WebSocket WebSocketConfig `json:"webSocket"`
 
-	// Type is the type of the provider. This is used to determine the type of the provider
-	// and is used to create the provider state.
+	// Type is the type of the provider (i.e. price, market map, other). This is used
+	// to determine how to construct the provider.
 	Type string `json:"type"`
 }
 
