@@ -8,16 +8,16 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// ctxErrors is a map of context errors that we check for when starting the provider.
+// CtxErrors is a map of context errors that we check for when starting the provider.
 // We only want cancel the main error group if the context is canceled or the deadline
-// is exceeded. Otherwise, failures should be handled gracefully.
-var ctxErrors = map[error]struct{}{
+// is exceeded. Otherwise failures should be handled gracefully.
+var CtxErrors = map[error]struct{}{
 	context.Canceled:         {},
 	context.DeadlineExceeded: {},
 }
 
-// generalProvider is a interface for a provider that implements the base provider.
-type generalProvider interface {
+// GeneralProvider is a interface for a provider that implements the base provider.
+type GeneralProvider interface {
 	// Start starts the provider.
 	Start(ctx context.Context) error
 	// Stop stops the provider.
@@ -25,11 +25,10 @@ type generalProvider interface {
 }
 
 // Start starts the provider orchestrator. This will initialize the provider orchestrator
-// with the relevant price and market mapper providers, and then start all of them.
+// with the relevant price providers and market mapper, and then start all of them.
 func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	o.logger.Info("starting provider orchestrator")
 	if err := o.Init(); err != nil {
-		o.logger.Error("failed to initialize provider orchestrator", zap.Error(err))
 		return err
 	}
 
@@ -45,9 +44,8 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	}
 
 	// Start the market map provider.
-	if o.mmProvider != nil {
-		o.errGroup.Go(o.execProviderFn(ctx, o.mmProvider))
-		o.errGroup.Go(o.listenForMarketMapUpdates(ctx))
+	if o.mapper != nil {
+		o.errGroup.Go(o.execProviderFn(ctx, o.mapper))
 	}
 
 	return nil
@@ -80,7 +78,7 @@ func (o *ProviderOrchestrator) Stop() error {
 // to start the provider in a go routine.
 func (o *ProviderOrchestrator) execProviderFn(
 	ctx context.Context,
-	p generalProvider,
+	p GeneralProvider,
 ) func() error {
 	return func() error {
 		defer func() {
@@ -93,7 +91,7 @@ func (o *ProviderOrchestrator) execProviderFn(
 		// we want to exit the provider and trigger the error group
 		// to exit for all providers.
 		err := p.Start(ctx)
-		if _, ok := ctxErrors[err]; ok {
+		if _, ok := CtxErrors[err]; ok {
 			return err
 		}
 
