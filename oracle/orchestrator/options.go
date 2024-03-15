@@ -4,7 +4,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -35,7 +34,7 @@ func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 }
 
 // WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the provider orchestrator.
-// Specifically, this is what is utilized to construct price providers that are API based.
+// Specifically this is what is utilized to construct price providers that are API based.
 func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
@@ -47,7 +46,7 @@ func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) 
 }
 
 // WithWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
-// Specifically, this is what is utilized to construct price providers that are websocket based.
+// Specifically this is what is utilized to construct price providers that are websocket based.
 func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
@@ -59,7 +58,7 @@ func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHand
 }
 
 // WithMarketMapperFactory sets the market map factory for the provider orchestrator.
-// Specifically, this is what is utilized to construct market map providers.
+// Specifically this is what is utilized to construct market map providers.
 func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
@@ -67,23 +66,5 @@ func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 		}
 
 		m.marketMapperFactory = factory
-	}
-}
-
-// WithWriteTo sets the file path to which market map updates will be written to. Note that this is optional.
-func WithWriteTo(filePath string) Option {
-	return func(m *ProviderOrchestrator) {
-		m.writeTo = filePath
-	}
-}
-
-// WithAggregator sets the aggregation function for the provider orchestrator.
-func WithAggregator(fn *oracle.MedianAggregator) Option {
-	return func(m *ProviderOrchestrator) {
-		if fn == nil {
-			panic("aggregation function cannot be nil")
-		}
-
-		m.aggregator = fn
 	}
 }

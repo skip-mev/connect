@@ -168,7 +168,7 @@ func TestInit(t *testing.T) {
 		err = o.Init()
 		require.NoError(t, err)
 
-		mapper := o.GetMarketMapProvider()
+		mapper := o.GetMarketMapper()
 		require.NotNil(t, mapper)
 	})
 
