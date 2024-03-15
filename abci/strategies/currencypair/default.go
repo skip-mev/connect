@@ -83,7 +83,7 @@ func (s *DefaultCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinky
 
 	cp, found = s.oracleKeeper.GetCurrencyPairFromID(ctx, id)
 	if !found {
-		return slinkytypes.CurrencyPair{}, fmt.Errorf("id %d out of bounds", id)
+		return slinkytypes.CurrencyPair{}, fmt.Errorf("id %d not found", id)
 	}
 
 	// cache the currency pair for future lookups
