@@ -2,8 +2,7 @@ package orchestrator
 
 import (
 	"context"
-	"encoding/json"
-	"os"
+	"fmt"
 	"time"
 
 	"go.uber.org/zap"
@@ -13,11 +12,10 @@ import (
 // updates the orchestrated providers with the new market map.
 func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) func() error {
 	return func() error {
-		mapper := o.GetMarketMapProvider()
+		mapper := o.GetMarketMapper()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
-			o.logger.Error("market map provider can only be responsible for one chain", zap.Any("ids", ids))
-			return nil
+			return fmt.Errorf("expected 1 id, got %d", len(ids))
 		}
 
 		apiCfg := mapper.GetAPIConfig()
@@ -31,13 +29,13 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 				// Fetch the latest market map.
 				response := mapper.GetData()
 				if response == nil {
-					o.logger.Debug("market map provider returned nil response")
+					o.logger.Debug("market mapper returned nil response")
 					continue
 				}
 
 				result, ok := response[chain]
 				if !ok {
-					o.logger.Debug("market map provider response missing chain", zap.Any("chain", chain))
+					o.logger.Debug("market mapper response missing chain", zap.Any("chain", chain))
 					continue
 				}
 
@@ -51,39 +49,9 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 				o.logger.Info("updating orchestrator with new market map")
 				if err := o.UpdateWithMarketMap(updated); err != nil {
 					o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
-					continue
-				}
-
-				// Write the market map to the configured path.
-				if err := o.WriteMarketMap(); err != nil {
-					o.logger.Error("failed to write market map", zap.Error(err))
+					return err
 				}
 			}
 		}
 	}
-}
-
-// WriteMarketMap writes the orchestrator's market map to the configured path.
-func (o *ProviderOrchestrator) WriteMarketMap() error {
-	if len(o.writeTo) == 0 {
-		return nil
-	}
-
-	o.mut.Lock()
-	defer o.mut.Unlock()
-
-	f, err := os.Create(o.writeTo)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	encoder := json.NewEncoder(f)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(o.marketMap); err != nil {
-		return err
-	}
-
-	o.logger.Debug("wrote market map to file", zap.String("path", o.writeTo))
-	return nil
 }
