@@ -26,7 +26,7 @@ func (o *ProviderOrchestrator) Init() error {
 		case mmclienttypes.ConfigType:
 			err = o.createMarketMapProvider(cfg)
 		default:
-			return fmt.Errorf("unknown provider type: %s", cfg.Type)
+			err = fmt.Errorf("unknown provider type: %s", cfg.Type)
 		}
 
 		if err != nil {
@@ -106,25 +106,25 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 // createAPIQueryHandler creates a new API query handler for the given provider configuration.
 func (o *ProviderOrchestrator) createAPIQueryHandler(
 	cfg config.ProviderConfig,
-	market types.ProviderMarketMap,
+	providerMarkets types.ProviderMarketMap,
 ) (types.PriceAPIQueryHandler, error) {
 	if o.priceAPIFactory == nil {
 		return nil, fmt.Errorf("cannot create provider; api query handler factory is not set")
 	}
 
-	return o.priceAPIFactory(o.logger, cfg, o.apiMetrics, market)
+	return o.priceAPIFactory(o.logger, cfg, o.apiMetrics, providerMarkets)
 }
 
 // createWebSocketQueryHandler creates a new web socket query handler for the given provider configuration.
 func (o *ProviderOrchestrator) createWebSocketQueryHandler(
 	cfg config.ProviderConfig,
-	market types.ProviderMarketMap,
+	providerMarkets types.ProviderMarketMap,
 ) (types.PriceWebSocketQueryHandler, error) {
 	if o.priceWSFactory == nil {
 		return nil, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
 	}
 
-	return o.priceWSFactory(o.logger, cfg, o.wsMetrics, market)
+	return o.priceWSFactory(o.logger, cfg, o.wsMetrics, providerMarkets)
 }
 
 // createMarketMapProvider creates a new market map provider for the given provider configuration.
