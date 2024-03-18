@@ -30,6 +30,7 @@ var (
 			Name:             "api1",
 			URL:              "http://test.com",
 		},
+		Type: "price_provider",
 	}
 	providerCfg2 = config.ProviderConfig{
 		Name: "websocket1",
@@ -48,6 +49,7 @@ var (
 			PingInterval:                  config.DefaultPingInterval,
 			MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 		},
+		Type: "price_provider",
 	}
 )
 

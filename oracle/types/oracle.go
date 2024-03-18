@@ -17,6 +17,9 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+// ConfigType is the type of the API/WebSocket configuration.
+const ConfigType = "price_provider"
+
 type (
 	// PriceProviderFactory is a type alias for the price provider factory. This
 	// specifically only returns price providers that implement the provider interface

@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the GeckoTerminal provider.
-	Name = "geckoterminal"
+	Name = "GeckoTerminal"
 
 	// URL is the root URL for the GeckoTerminal API.
 	ETH_URL = "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/%s"

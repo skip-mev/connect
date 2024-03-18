@@ -36,6 +36,7 @@ func TestOracleConfig(t *testing.T) {
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
 						},
+						Type: "price_provider",
 					},
 				},
 			},
@@ -61,6 +62,7 @@ func TestOracleConfig(t *testing.T) {
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
 						},
+						Type: "price_provider",
 					},
 				},
 			},
@@ -92,6 +94,7 @@ func TestOracleConfig(t *testing.T) {
 							ReadTimeout:         config.DefaultReadTimeout,
 							WriteTimeout:        config.DefaultWriteTimeout,
 						},
+						Type: "price_provider",
 					},
 				},
 				Metrics: config.MetricsConfig{

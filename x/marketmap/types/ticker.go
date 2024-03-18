@@ -53,3 +53,12 @@ func (t *Ticker) ValidateBasic() error {
 
 	return json.IsValid([]byte(t.Metadata_JSON))
 }
+
+// Equal returns true iff the Ticker is equal to the given Ticker.
+func (t *Ticker) Equal(other Ticker) bool {
+	return t.CurrencyPair.Equal(other.CurrencyPair) &&
+		t.Decimals == other.Decimals &&
+		t.MinProviderCount == other.MinProviderCount &&
+		t.Metadata_JSON == other.Metadata_JSON &&
+		t.Enabled == other.Enabled
+}

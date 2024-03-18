@@ -999,12 +999,12 @@ func (s *SLAPreBlockerHandlerTestSuite) initHandler(veEnabled, setSLA bool) {
 	s.slaKeeper = slakeeper.NewKeeper(
 		storeService,
 		encodingConfig.Codec,
-		sdk.AccAddress([]byte("authority")),
+		sdk.AccAddress("authority"),
 		slamocks.NewStakingKeeper(s.T()),
 		slamocks.NewSlashingKeeper(s.T()),
 	)
 
-	s.slaKeeper.SetParams(s.ctx, slatypes.DefaultParams())
+	s.Require().NoError(s.slaKeeper.SetParams(s.ctx, slatypes.DefaultParams()))
 
 	if setSLA {
 		id := "slaID1"
