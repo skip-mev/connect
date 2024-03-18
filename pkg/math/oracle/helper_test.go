@@ -278,14 +278,14 @@ var (
 	// prices we actually want to resolve to.
 	marketmap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			BTC_USD.String():   BTC_USD,
-			BTC_USDT.String():  BTC_USDT,
-			USDT_USD.String():  USDT_USD,
-			USDC_USDT.String(): USDC_USDT,
-			ETH_USD.String():   ETH_USD,
-			ETH_USDT.String():  ETH_USDT,
-			PEPE_USDT.String(): PEPE_USDT,
-			PEPE_USD.String():  PEPE_USD,
+			BTC_USD.Ticker.String():   BTC_USD,
+			BTC_USDT.Ticker.String():  BTC_USDT,
+			USDT_USD.Ticker.String():  USDT_USD,
+			USDC_USDT.Ticker.String(): USDC_USDT,
+			ETH_USD.Ticker.String():   ETH_USD,
+			ETH_USDT.Ticker.String():  ETH_USDT,
+			PEPE_USDT.Ticker.String(): PEPE_USDT,
+			PEPE_USD.Ticker.String():  PEPE_USD,
 		},
 
 		AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,

@@ -30,9 +30,9 @@ func (s *KeeperTestSuite) TestInitGenesisInvalidGenesis() {
 
 		gs.MarketMap = types.MarketMap{
 			Markets: map[string]types.Market{
-				ethusdt.String(): ethusdt,
-				btcusdt.String(): btcusdt,
-				usdcusd.String(): usdcusd,
+				ethusdt.Ticker.String(): ethusdt,
+				btcusdt.Ticker.String(): btcusdt,
+				usdcusd.Ticker.String(): usdcusd,
 			},
 		}
 
@@ -56,7 +56,7 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 	s.Run("init valid genesis with fields", func() {
 		// first register x/oracle genesis
 		ogs := oracletypes.DefaultGenesisState()
-		ogs.NextId = 3
+		ogs.NextId = 4
 		ogs.CurrencyPairGenesis = []oracletypes.CurrencyPairGenesis{
 			{
 				CurrencyPair:      ethusdt.Ticker.CurrencyPair,
@@ -75,6 +75,12 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 				CurrencyPairPrice: nil,
 				Nonce:             0,
 				Id:                2,
+			},
+			{
+				CurrencyPair:      usdtusd.Ticker.CurrencyPair,
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+				Id:                3,
 			},
 		}
 

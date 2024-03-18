@@ -237,7 +237,7 @@ func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) er
 					}
 				}
 
-				has, err := k.tickers.Has(ctx, types.TickerString(cp.String()))
+				has, err := k.markets.Has(ctx, types.TickerString(cp.String()))
 				if err != nil {
 					return err
 				}

@@ -38,7 +38,7 @@ func (h Hooks) AfterMarketUpdated(_ sdk.Context, _ marketmaptypes.Market) error 
 func (h Hooks) AfterMarketGenesis(ctx sdk.Context, markets map[string]marketmaptypes.Market) error {
 	for _, market := range markets {
 		if !h.k.HasCurrencyPair(ctx, market.Ticker.CurrencyPair) {
-			return fmt.Errorf("currency pair %s is registered in x/marketmap but not in x/oracle", market.Ticker.String())
+			return fmt.Errorf("currency pair %s is registered in x/marketmap but not in x/oracle", market.Ticker.CurrencyPair)
 		}
 	}
 
