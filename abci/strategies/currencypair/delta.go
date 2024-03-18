@@ -23,7 +23,7 @@ type DeltaCurrencyPairStrategy struct {
 func NewDeltaCurrencyPairStrategy(oracleKeeper OracleKeeper) *DeltaCurrencyPairStrategy {
 	return &DeltaCurrencyPairStrategy{
 		DefaultCurrencyPairStrategy: NewDefaultCurrencyPairStrategy(oracleKeeper),
-		cache:                       make(map[slinkytypes.CurrencyPair]*big.Int),
+		cache:                       make(map[slinkytypes.CurrencyPair]*big.Int, DefaultCacheInitialCapacity),
 	}
 }
 
@@ -89,7 +89,7 @@ func (s *DeltaCurrencyPairStrategy) GetDecodedPrice(
 func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp slinkytypes.CurrencyPair) (*big.Int, error) {
 	height := ctx.BlockHeight()
 	if height != s.previousHeight {
-		s.cache = make(map[slinkytypes.CurrencyPair]*big.Int)
+		s.cache = make(map[slinkytypes.CurrencyPair]*big.Int, DefaultCacheInitialCapacity)
 		s.previousHeight = height
 	}
 
@@ -99,7 +99,7 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp slinkyty
 	}
 
 	// Fetch the current price for the currency pair.
-	var currentPrice *big.Int
+	currentPrice := big.NewInt(0)
 	quote, err := s.oracleKeeper.GetPriceForCurrencyPair(ctx, cp)
 	if err != nil {
 		var quotePriceNotExistError oracletypes.QuotePriceNotExistError
@@ -112,7 +112,6 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp slinkyty
 			)
 		}
 
-		currentPrice = big.NewInt(0)
 	} else {
 		currentPrice = quote.Price.BigInt()
 	}

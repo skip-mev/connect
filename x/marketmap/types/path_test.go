@@ -220,6 +220,40 @@ func TestPaths(t *testing.T) {
 	}
 }
 
+func TestPathsEqual(t *testing.T) {
+	cases := []struct {
+		name  string
+		paths types.Paths
+		other types.Paths
+		exp   bool
+	}{
+		{
+			name:  "equal paths",
+			paths: btcusdtPaths,
+			other: btcusdtPaths,
+			exp:   true,
+		},
+		{
+			name:  "different length",
+			paths: btcusdtPaths,
+			other: types.Paths{},
+			exp:   false,
+		},
+		{
+			name:  "different paths",
+			paths: btcusdtPaths,
+			other: ethusdtPaths,
+			exp:   false,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.paths.Equal(tc.other), tc.exp)
+		})
+	}
+}
+
 func TestPath(t *testing.T) {
 	testCases := []struct {
 		name   string
@@ -369,6 +403,85 @@ func TestPath(t *testing.T) {
 	}
 }
 
+func TestPathEqual(t *testing.T) {
+	cases := []struct {
+		name  string
+		path  types.Path
+		other types.Path
+		exp   bool
+	}{
+		{
+			name: "equal paths",
+			path: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: btcusdt.CurrencyPair,
+					},
+					{
+						CurrencyPair: usdtusd.CurrencyPair,
+					},
+				},
+			},
+			other: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: btcusdt.CurrencyPair,
+					},
+					{
+						CurrencyPair: usdtusd.CurrencyPair,
+					},
+				},
+			},
+			exp: true,
+		},
+		{
+			name: "different length",
+			path: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: btcusdt.CurrencyPair,
+					},
+				},
+			},
+			other: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: btcusdt.CurrencyPair,
+					},
+					{
+						CurrencyPair: usdtusd.CurrencyPair,
+					},
+				},
+			},
+			exp: false,
+		},
+		{
+			name: "different operations",
+			path: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: btcusdt.CurrencyPair,
+					},
+				},
+			},
+			other: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: usdtusd.CurrencyPair,
+					},
+				},
+			},
+			exp: false,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.path.Equal(tc.other), tc.exp)
+		})
+	}
+}
+
 func TestOperation(t *testing.T) {
 	t.Run("valid operation", func(t *testing.T) {
 		cp := slinkytypes.CurrencyPair{
@@ -385,4 +498,100 @@ func TestOperation(t *testing.T) {
 		_, err := types.NewOperation(cp, false)
 		require.Error(t, err)
 	})
+}
+
+func TestOperationEqual(t *testing.T) {
+	cases := []struct {
+		name  string
+		op    types.Operation
+		other types.Operation
+		exp   bool
+	}{
+		{
+			name: "equal operations",
+			op: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   false,
+			},
+			other: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   false,
+			},
+			exp: true,
+		},
+		{
+			name: "different base",
+			op: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   false,
+			},
+			other: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "ETHEREUM",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   false,
+			},
+			exp: false,
+		},
+		{
+			name: "different invert strategy",
+			op: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   false,
+			},
+			other: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   true,
+			},
+			exp: false,
+		},
+		{
+			name: "different provider",
+			op: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "kucoin",
+				Invert:   false,
+			},
+			other: types.Operation{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Provider: "binance",
+				Invert:   false,
+			},
+			exp: false,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.op.Equal(tc.other), tc.exp)
+		})
+	}
 }

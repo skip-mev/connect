@@ -9,6 +9,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
+	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
@@ -22,8 +23,8 @@ func TestInit(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -35,15 +36,15 @@ func TestInit(t *testing.T) {
 
 		coinbaseState, ok := state[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, coinbase.Name, false, providertypes.API, false, coinbaseState)
+		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, coinbaseState)
 
 		okxState, ok := state[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, okx.Name, false, providertypes.WebSockets, false, okxState)
+		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, okxState)
 
 		binanceState, ok := state[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
+		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
 	})
 
 	t.Run("creates some providers with a marketmap", func(t *testing.T) {
@@ -51,8 +52,8 @@ func TestInit(t *testing.T) {
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -66,16 +67,16 @@ func TestInit(t *testing.T) {
 
 		coinbaseState, ok := state[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, expectedTickers, coinbase.Name, true, providertypes.API, false, coinbaseState)
+		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, false, coinbaseState)
 
 		okxState, ok := state[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, expectedTickers, okx.Name, true, providertypes.WebSockets, false, okxState)
+		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, false, okxState)
 
 		// Ensure that the provider that is not supported by the marketmap is not enabled.
 		binanceState, ok := state[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, false, providertypes.API, false, binanceState)
+		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
 	})
 
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {
@@ -83,7 +84,7 @@ func TestInit(t *testing.T) {
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -96,7 +97,7 @@ func TestInit(t *testing.T) {
 			oracleCfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -116,14 +117,15 @@ func TestInit(t *testing.T) {
 				URL:              "https://example.com",
 				Name:             "unsupported",
 			},
+			Type: oracletypes.ConfigType,
 		})
 
 		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 
@@ -138,14 +140,44 @@ func TestInit(t *testing.T) {
 		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
 			Name:      "unsupported",
 			WebSocket: okx,
+			Type:      oracletypes.ConfigType,
 		})
 
 		o, err := orchestrator.NewProviderOrchestrator(
 			cfg,
 			orchestrator.WithLogger(logger),
 			orchestrator.WithMarketMap(marketMap),
-			orchestrator.WithAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
-			orchestrator.WithWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+		)
+		require.NoError(t, err)
+
+		require.Error(t, o.Init())
+	})
+
+	t.Run("creates a marketmap provider with price providers", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfgWithMapper,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
+		)
+		require.NoError(t, err)
+
+		err = o.Init()
+		require.NoError(t, err)
+
+		mapper := o.GetMarketMapProvider()
+		require.NotNil(t, mapper)
+	})
+
+	t.Run("errors when the market map factory is not set", func(t *testing.T) {
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfgWithMapper,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
 

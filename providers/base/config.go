@@ -3,6 +3,7 @@ package base
 import (
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	apihandler "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -118,4 +119,9 @@ func (p *Provider[K, V]) GetWebSocketHandler() wshandlers.WebSocketQueryHandler[
 	}
 
 	return p.ws
+}
+
+// GetAPIConfig returns the API configuration for the provider.
+func (p *Provider[K, V]) GetAPIConfig() config.APIConfig {
+	return p.apiCfg
 }

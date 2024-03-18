@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the Binance provider.
-	Name = "binance"
+	Name = "Binance"
 
 	// URL is the base URL of the Binance API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
