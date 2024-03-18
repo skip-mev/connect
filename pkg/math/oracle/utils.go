@@ -12,7 +12,8 @@ import (
 func (m *MedianAggregator) GetTickerFromOperation(
 	operation mmtypes.Operation,
 ) (mmtypes.Ticker, error) {
-	ticker, ok := m.cfg.Tickers[operation.CurrencyPair.String()]
+	cfg := m.GetMarketMap()
+	ticker, ok := cfg.Tickers[operation.CurrencyPair.String()]
 	if !ok {
 		return mmtypes.Ticker{}, fmt.Errorf("missing ticker: %s", operation.CurrencyPair.String())
 	}
@@ -34,9 +35,9 @@ func (m *MedianAggregator) GetProviderPrice(
 
 	var cache types.TickerPrices
 	if operation.Provider != mmtypes.IndexPrice {
-		cache = m.providerCache[operation.Provider]
+		cache = m.GetDataByProvider(operation.Provider)
 	} else {
-		cache = m.indexCache
+		cache = m.GetAggregatedData()
 	}
 
 	price, ok := cache[ticker]
@@ -62,4 +63,12 @@ func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
 	defer m.Unlock()
 
 	m.cfg = marketMap
+}
+
+// GetMarketMap returns the market map for the oracle.
+func (m *MedianAggregator) GetMarketMap() mmtypes.MarketMap {
+	m.Lock()
+	defer m.Unlock()
+
+	return m.cfg
 }

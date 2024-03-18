@@ -17,10 +17,8 @@ import (
 // These are defined in the market map configuration.
 type MedianAggregator struct {
 	*types.PriceAggregator
-	logger        *zap.Logger
-	cfg           mmtypes.MarketMap
-	indexCache    types.TickerPrices
-	providerCache types.AggregatedProviderPrices
+	logger *zap.Logger
+	cfg    mmtypes.MarketMap
 }
 
 // NewMedianAggregator returns a new Median aggregator.
@@ -37,8 +35,6 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 		logger:          logger,
 		cfg:             cfg,
 		PriceAggregator: types.NewPriceAggregator(),
-		indexCache:      make(types.TickerPrices),
-		providerCache:   make(types.AggregatedProviderPrices),
 	}, nil
 }
 
@@ -52,13 +48,10 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 //
 // The index price cache contains the previously calculated median prices.
 func (m *MedianAggregator) AggregatedData() {
-	m.indexCache = m.GetAggregatedData()
-	m.providerCache = m.GetProviderData()
-
-	m.Lock()
+	cfg := m.GetMarketMap()
 	updatedPrices := make(types.TickerPrices)
-	for ticker, paths := range m.cfg.Paths {
-		target, ok := m.cfg.Tickers[ticker]
+	for ticker, paths := range cfg.Paths {
+		target, ok := cfg.Tickers[ticker]
 		if !ok {
 			m.logger.Error(
 				"failed to get ticker; skipping aggregation",
@@ -101,7 +94,6 @@ func (m *MedianAggregator) AggregatedData() {
 		)
 
 	}
-	m.Unlock()
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
