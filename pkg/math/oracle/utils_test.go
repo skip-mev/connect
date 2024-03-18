@@ -22,7 +22,7 @@ func TestGetTickerFromOperation(t *testing.T) {
 		}
 		ticker, err := m.GetTickerFromOperation(operation)
 		require.NoError(t, err)
-		require.Equal(t, BTC_USD, ticker)
+		require.Equal(t, BTC_USD.Ticker, ticker)
 	})
 
 	t.Run("has ticker not included in the market config", func(t *testing.T) {

@@ -35,8 +35,8 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarket() {
 	s.Require().NoError(err)
 	s.Require().Equal(queryResp.MarketMap, types.MarketMap{
 		Markets: map[string]types.Market{
-			btcusdt.String(): btcusdt,
-			usdtusd.String(): usdtusd,
+			btcusdt.Ticker.String(): btcusdt,
+			usdtusd.Ticker.String(): usdtusd,
 		},
 	})
 
