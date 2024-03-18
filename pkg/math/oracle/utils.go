@@ -66,9 +66,9 @@ func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
 }
 
 // GetMarketMap returns the market map for the oracle.
-func (m *MedianAggregator) GetMarketMap() mmtypes.MarketMap {
+func (m *MedianAggregator) GetMarketMap() *mmtypes.MarketMap {
 	m.Lock()
 	defer m.Unlock()
 
-	return m.cfg
+	return &m.cfg
 }
