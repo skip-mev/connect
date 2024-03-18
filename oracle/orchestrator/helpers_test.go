@@ -15,6 +15,11 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
+	"github.com/skip-mev/slinky/providers/base"
+	"github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
+	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
+	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
@@ -73,12 +78,15 @@ var (
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      oracletypes.ConfigType,
 			},
-			{ // MarketMap provider.
-				Name: dydx.Name,
-				API:  dydx.DefaultAPIConfig,
-				Type: mmclienttypes.ConfigType,
-			},
+			// Market map provider.
+			mapperCfg,
 		},
+	}
+
+	mapperCfg = config.ProviderConfig{
+		Name: dydx.Name,
+		API:  dydx.DefaultAPIConfig,
+		Type: mmclienttypes.ConfigType,
 	}
 
 	// Coinbase and OKX are supported by the marketmap.
@@ -137,4 +145,38 @@ func checkProviderState(
 
 	// Ensure that the provider is running/no-running.
 	require.Equal(t, isRunning, provider.IsRunning())
+}
+
+func createTestMarketMapProvider(
+	t *testing.T,
+	responses []mmclienttypes.MarketMapResponse,
+	timeout time.Duration,
+	ids []mmclienttypes.Chain,
+) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse], *mmclienttypes.MarketMapProvider) {
+	t.Helper()
+
+	// Create a market map api handler.
+	handler := mocks.NewAPIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](
+		t,
+	)
+
+	queryHandler, err := mmclienttypes.NewMarketMapAPIQueryHandler(
+		logger,
+		mapperCfg.API,
+		static.NewStaticMockClient(),
+		handler,
+		metrics.NewNopAPIMetrics(),
+	)
+	require.NoError(t, err)
+
+	provider, err := mmclienttypes.NewMarketMapProvider(
+		base.WithName[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mapperCfg.Name),
+		base.WithLogger[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](logger),
+		base.WithAPIQueryHandler(queryHandler),
+		base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mapperCfg.API),
+		base.WithMetrics[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
+	)
+	require.NoError(t, err)
+
+	return handler, provider
 }
