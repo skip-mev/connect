@@ -184,15 +184,16 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 	})
 
 	marketConfig := mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			ticker.String(): ticker,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			ticker.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           static.Name,
-						OffChainTicker: fmt.Sprintf("%d", price),
+				Ticker: ticker,
+				Paths:  mmtypes.Paths{},
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						{
+							Name:           static.Name,
+							OffChainTicker: fmt.Sprintf("%d", price),
+						},
 					},
 				},
 			},

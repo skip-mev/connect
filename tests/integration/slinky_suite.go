@@ -273,15 +273,15 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			})
 
 			marketConfig := mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					eth_usdc.String(): eth_usdc,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					eth_usdc.String(): {
-						Providers: []mmtypes.ProviderConfig{
-							{
-								Name:           static.Name,
-								OffChainTicker: "1140",
+						Ticker: eth_usdc,
+						Providers: mmtypes.Providers{
+							Providers: []mmtypes.ProviderConfig{
+								{
+									Name:           static.Name,
+									OffChainTicker: "1140",
+								},
 							},
 						},
 					},
@@ -497,33 +497,37 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		marketConfig := mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
-				eth_usdc.String(): eth_usdc,
-				eth_usdt.String(): eth_usdt,
-				eth_usd.String():  eth_usd,
-			},
-			Providers: map[string]mmtypes.Providers{
+			Markets: map[string]mmtypes.Market{
 				eth_usdc.String(): {
-					Providers: []mmtypes.ProviderConfig{
-						{
-							Name:           static.Name,
-							OffChainTicker: "1140",
+					Ticker: eth_usdc,
+					Providers: mmtypes.Providers{
+						Providers: []mmtypes.ProviderConfig{
+							{
+								Name:           static.Name,
+								OffChainTicker: "1140",
+							},
 						},
 					},
 				},
 				eth_usdt.String(): {
-					Providers: []mmtypes.ProviderConfig{
-						{
-							Name:           static.Name,
-							OffChainTicker: "1141",
+					Ticker: eth_usdt,
+					Providers: mmtypes.Providers{
+						Providers: []mmtypes.ProviderConfig{
+							{
+								Name:           static.Name,
+								OffChainTicker: "1141",
+							},
 						},
 					},
 				},
 				eth_usd.String(): {
-					Providers: []mmtypes.ProviderConfig{
-						{
-							Name:           static.Name,
-							OffChainTicker: "1142",
+					Ticker: eth_usd,
+					Providers: mmtypes.Providers{
+						Providers: []mmtypes.ProviderConfig{
+							{
+								Name:           static.Name,
+								OffChainTicker: "1142",
+							},
 						},
 					},
 				},
@@ -598,24 +602,26 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		marketConfig := mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
-				eth_usdc.String(): eth_usdc,
-				eth_usdt.String(): eth_usdt,
-			},
-			Providers: map[string]mmtypes.Providers{
+			Markets: map[string]mmtypes.Market{
 				eth_usdc.String(): {
-					Providers: []mmtypes.ProviderConfig{
-						{
-							Name:           static.Name,
-							OffChainTicker: "1140",
+					Ticker: eth_usdc,
+					Providers: mmtypes.Providers{
+						Providers: []mmtypes.ProviderConfig{
+							{
+								Name:           static.Name,
+								OffChainTicker: "1140",
+							},
 						},
 					},
 				},
 				eth_usdt.String(): {
-					Providers: []mmtypes.ProviderConfig{
-						{
-							Name:           static.Name,
-							OffChainTicker: "1141",
+					Ticker: eth_usdt,
+					Providers: mmtypes.Providers{
+						Providers: []mmtypes.ProviderConfig{
+							{
+								Name:           static.Name,
+								OffChainTicker: "1141",
+							},
 						},
 					},
 				},
