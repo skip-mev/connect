@@ -68,3 +68,10 @@ func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 		m.marketMapperFactory = factory
 	}
 }
+
+// WithWriteTo sets the file path to which market map updates will be written to. Note that this is optional.
+func WithWriteTo(filePath string) Option {
+	return func(m *ProviderOrchestrator) {
+		m.writeTo = filePath
+	}
+}

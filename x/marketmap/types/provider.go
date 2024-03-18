@@ -27,3 +27,24 @@ func (pc *ProviderConfig) ValidateBasic() error {
 
 	return nil
 }
+
+// Equal returns true iff the Providers is equal to the given Providers.
+func (p *Providers) Equal(other Providers) bool {
+	if len(p.Providers) != len(other.Providers) {
+		return false
+	}
+
+	for i, provider := range p.Providers {
+		if !provider.Equal(other.Providers[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Equal returns true iff the ProviderConfig is equal to the given ProviderConfig.
+func (pc *ProviderConfig) Equal(other ProviderConfig) bool {
+	return pc.Name == other.Name &&
+		pc.OffChainTicker == other.OffChainTicker
+}

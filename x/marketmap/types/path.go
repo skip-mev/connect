@@ -194,3 +194,39 @@ func (p *Paths) UniqueTickers() map[slinkytypes.CurrencyPair]struct{} {
 
 	return seen
 }
+
+// Equal returns true iff the Paths is equal to the given Paths.
+func (p *Paths) Equal(other Paths) bool {
+	if len(p.Paths) != len(other.Paths) {
+		return false
+	}
+
+	for i, path := range p.Paths {
+		if !path.Equal(other.Paths[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Equal returns true iff the Path is equal to the given Path.
+func (p *Path) Equal(other Path) bool {
+	if len(p.Operations) != len(other.Operations) {
+		return false
+	}
+
+	for i, op := range p.Operations {
+		if !op.Equal(other.Operations[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Equal returns true iff the Operation is equal to the given Operation.
+func (o *Operation) Equal(other Operation) bool {
+	return o.CurrencyPair.Equal(other.CurrencyPair) &&
+		o.Invert == other.Invert && o.Provider == other.Provider
+}
