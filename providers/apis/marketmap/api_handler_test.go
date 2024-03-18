@@ -195,7 +195,6 @@ func TestParseResponse(t *testing.T) {
 			require.NoError(t, err)
 
 			resp := apiHandler.ParseResponse(tc.chains, tc.resp())
-			fmt.Println(resp.String())
 			require.Equal(t, len(resp.Resolved), len(tc.expected.Resolved))
 			require.Equal(t, len(resp.UnResolved), len(tc.expected.UnResolved))
 

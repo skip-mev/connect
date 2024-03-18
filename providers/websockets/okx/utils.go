@@ -13,7 +13,7 @@ const (
 	// DemoURL is used for testing purposes.
 
 	// Name is the name of the OKX provider.
-	Name = "okx"
+	Name = "Okx"
 
 	// URL_PROD is the public OKX Websocket URL.
 	URL_PROD = "wss://ws.okx.com:8443/ws/v5/public"
