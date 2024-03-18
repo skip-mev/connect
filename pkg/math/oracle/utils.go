@@ -35,9 +35,9 @@ func (m *MedianAggregator) GetProviderPrice(
 
 	var cache types.TickerPrices
 	if operation.Provider != mmtypes.IndexPrice {
-		cache = m.providerCache[operation.Provider]
+		cache = m.GetDataByProvider(operation.Provider)
 	} else {
-		cache = m.indexCache
+		cache = m.GetAggregatedData()
 	}
 
 	price, ok := cache[ticker]
@@ -63,4 +63,12 @@ func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
 	defer m.Unlock()
 
 	m.cfg = marketMap
+}
+
+// GetMarketMap returns the market map for the oracle.
+func (m *MedianAggregator) GetMarketMap() mmtypes.MarketMap {
+	m.Lock()
+	defer m.Unlock()
+
+	return m.cfg
 }
