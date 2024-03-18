@@ -1,9 +1,11 @@
 package orchestrator
 
 import (
+	"context"
 	"sync"
 
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -21,6 +23,15 @@ import (
 type ProviderOrchestrator struct {
 	mut    sync.Mutex
 	logger *zap.Logger
+
+	// -------------------Lifecycle Fields-------------------//
+	//
+	// mainCtx is the main context for the provider orchestrator.
+	mainCtx context.Context
+	// mainCancel is the main context cancel function.
+	mainCancel context.CancelFunc
+	// errGroup is the error group for the provider orchestrator.
+	errGroup *errgroup.Group
 
 	// -------------------Stateful Fields-------------------//
 	//
