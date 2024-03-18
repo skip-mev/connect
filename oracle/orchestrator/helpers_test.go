@@ -17,7 +17,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/base"
 	"github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
+	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	"github.com/skip-mev/slinky/providers/static"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -83,9 +83,65 @@ var (
 		},
 	}
 
+	oracleCfgWithMockMapper = config.OracleConfig{
+		Production: true,
+		Metrics: config.MetricsConfig{
+			Enabled: false,
+		},
+		UpdateInterval: 1500 * time.Millisecond,
+		MaxPriceAge:    2 * time.Minute,
+		Providers: []config.ProviderConfig{
+			{ // Price API provider.
+				Name: binance.Name,
+				API:  binance.DefaultUSAPIConfig,
+				Type: oracletypes.ConfigType,
+			},
+			{ // Price API provider.
+				Name: coinbase.Name,
+				API:  coinbase.DefaultAPIConfig,
+				Type: oracletypes.ConfigType,
+			},
+			{ // Price WebSocket provider.
+				Name:      okx.Name,
+				WebSocket: okx.DefaultWebSocketConfig,
+				Type:      oracletypes.ConfigType,
+			},
+			// Market map provider.
+			mockMapperCfg,
+		},
+	}
+
+	oracleCfgWithOnlyMockMapper = config.OracleConfig{
+		Production: true,
+		Metrics: config.MetricsConfig{
+			Enabled: false,
+		},
+		UpdateInterval: 1500 * time.Millisecond,
+		MaxPriceAge:    2 * time.Minute,
+		Providers: []config.ProviderConfig{
+			// Market map provider.
+			mockMapperCfg,
+		},
+	}
+
 	mapperCfg = config.ProviderConfig{
 		Name: dydx.Name,
 		API:  dydx.DefaultAPIConfig,
+		Type: mmclienttypes.ConfigType,
+	}
+
+	mockMapperCfg = config.ProviderConfig{
+		Name: "mock-mapper",
+		API: config.APIConfig{
+			Enabled:          true,
+			Timeout:          5 * time.Second,
+			Interval:         1000 * time.Millisecond,
+			ReconnectTimeout: 1000 * time.Millisecond,
+			MaxQueries:       1,
+			Atomic:           true,
+			URL:              "test-url",
+			Name:             "mock-mapper",
+		},
 		Type: mmclienttypes.ConfigType,
 	}
 
@@ -149,8 +205,6 @@ func checkProviderState(
 
 func createTestMarketMapProvider(
 	t *testing.T,
-	responses []mmclienttypes.MarketMapResponse,
-	timeout time.Duration,
 	ids []mmclienttypes.Chain,
 ) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse], *mmclienttypes.MarketMapProvider) {
 	t.Helper()
@@ -162,21 +216,54 @@ func createTestMarketMapProvider(
 
 	queryHandler, err := mmclienttypes.NewMarketMapAPIQueryHandler(
 		logger,
-		mapperCfg.API,
+		mockMapperCfg.API,
 		static.NewStaticMockClient(),
 		handler,
-		metrics.NewNopAPIMetrics(),
+		apimetrics.NewNopAPIMetrics(),
 	)
 	require.NoError(t, err)
 
-	provider, err := mmclienttypes.NewMarketMapProvider(
-		base.WithName[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mapperCfg.Name),
-		base.WithLogger[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](logger),
-		base.WithAPIQueryHandler(queryHandler),
-		base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mapperCfg.API),
-		base.WithMetrics[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
-	)
+	var provider *mmclienttypes.MarketMapProvider
+	if len(ids) != 0 {
+		provider, err = mmclienttypes.NewMarketMapProvider(
+			base.WithName[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.Name),
+			base.WithLogger[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](logger),
+			base.WithAPIQueryHandler(queryHandler),
+			base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.API),
+			base.WithMetrics[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
+			base.WithIDs[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](ids),
+		)
+	} else {
+		provider, err = mmclienttypes.NewMarketMapProvider(
+			base.WithName[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.Name),
+			base.WithLogger[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](logger),
+			base.WithAPIQueryHandler(queryHandler),
+			base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.API),
+			base.WithMetrics[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
+		)
+	}
 	require.NoError(t, err)
 
 	return handler, provider
+}
+
+func marketMapperFactory(
+	t *testing.T,
+	ids []mmclienttypes.Chain,
+) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse], mmclienttypes.MarketMapFactory) {
+	t.Helper()
+
+	handler, provider := createTestMarketMapProvider(
+		t,
+		ids,
+	)
+
+	return handler, func(
+		*zap.Logger,
+		providermetrics.ProviderMetrics,
+		apimetrics.APIMetrics,
+		config.ProviderConfig,
+	) (*mmclienttypes.MarketMapProvider, error) {
+		return provider, nil
+	}
 }
