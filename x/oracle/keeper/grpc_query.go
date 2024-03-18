@@ -129,21 +129,3 @@ func (q queryServer) GetPrices(goCtx context.Context, req *types.GetPricesReques
 		Prices: prices,
 	}, nil
 }
-
-// RemovedCPs returns the number of currency pairs removed in the previous block.
-func (q queryServer) RemovedCPs(goCtx context.Context, req *types.RemovedCPsRequest) (*types.RemovedCPsResponse, error) {
-	// fail on nil requests
-	if req == nil {
-		return nil, fmt.Errorf("request cannot be nil")
-	}
-
-	// unwrap ctx
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	num, err := q.k.numRemoves.Get(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get the number of removed CPs: %w", err)
-	}
-
-	return &types.RemovedCPsResponse{NumberRemovedCPs: num}, nil
-}

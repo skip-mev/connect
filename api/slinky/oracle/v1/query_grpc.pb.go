@@ -22,7 +22,6 @@ const (
 	Query_GetAllCurrencyPairs_FullMethodName = "/slinky.oracle.v1.Query/GetAllCurrencyPairs"
 	Query_GetPrice_FullMethodName            = "/slinky.oracle.v1.Query/GetPrice"
 	Query_GetPrices_FullMethodName           = "/slinky.oracle.v1.Query/GetPrices"
-	Query_RemovedCPs_FullMethodName          = "/slinky.oracle.v1.Query/RemovedCPs"
 )
 
 // QueryClient is the client API for Query service.
@@ -35,7 +34,6 @@ type QueryClient interface {
 	// that CurrencyPair.
 	GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error)
 	GetPrices(ctx context.Context, in *GetPricesRequest, opts ...grpc.CallOption) (*GetPricesResponse, error)
-	RemovedCPs(ctx context.Context, in *RemovedCPsRequest, opts ...grpc.CallOption) (*RemovedCPsResponse, error)
 }
 
 type queryClient struct {
@@ -73,15 +71,6 @@ func (c *queryClient) GetPrices(ctx context.Context, in *GetPricesRequest, opts 
 	return out, nil
 }
 
-func (c *queryClient) RemovedCPs(ctx context.Context, in *RemovedCPsRequest, opts ...grpc.CallOption) (*RemovedCPsResponse, error) {
-	out := new(RemovedCPsResponse)
-	err := c.cc.Invoke(ctx, Query_RemovedCPs_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -92,7 +81,6 @@ type QueryServer interface {
 	// that CurrencyPair.
 	GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error)
 	GetPrices(context.Context, *GetPricesRequest) (*GetPricesResponse, error)
-	RemovedCPs(context.Context, *RemovedCPsRequest) (*RemovedCPsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -108,9 +96,6 @@ func (UnimplementedQueryServer) GetPrice(context.Context, *GetPriceRequest) (*Ge
 }
 func (UnimplementedQueryServer) GetPrices(context.Context, *GetPricesRequest) (*GetPricesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrices not implemented")
-}
-func (UnimplementedQueryServer) RemovedCPs(context.Context, *RemovedCPsRequest) (*RemovedCPsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemovedCPs not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -179,24 +164,6 @@ func _Query_GetPrices_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_RemovedCPs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemovedCPsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).RemovedCPs(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_RemovedCPs_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).RemovedCPs(ctx, req.(*RemovedCPsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -215,10 +182,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPrices",
 			Handler:    _Query_GetPrices_Handler,
-		},
-		{
-			MethodName: "RemovedCPs",
-			Handler:    _Query_RemovedCPs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

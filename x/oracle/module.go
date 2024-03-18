@@ -83,14 +83,14 @@ type AppModule struct {
 	k keeper.Keeper
 }
 
-// BeginBlock is a no-op for x/oracle.
-func (am AppModule) BeginBlock(_ context.Context) error {
-	return nil
+// BeginBlock calls the x/oracle keeper's BeginBlocker function.
+func (am AppModule) BeginBlock(goCtx context.Context) error {
+	return am.k.BeginBlocker(goCtx)
 }
 
-// EndBlock is calls the x/oracle keeper's EndBlocker function.
-func (am AppModule) EndBlock(goCtx context.Context) error {
-	return am.k.EndBlocker(goCtx)
+// EndBlock  is a no-op for x/oracle.
+func (am AppModule) EndBlock(_ context.Context) error {
+	return nil
 }
 
 // NewAppModule returns an application module for the x/oracle module.

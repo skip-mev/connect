@@ -68,4 +68,3 @@ message GetPricesRequest { repeated string currency_pair_ids = 1; }
 message GetPricesResponse {
   repeated GetPriceResponse prices = 1 [ (gogoproto.nullable) = false ];
 }
-

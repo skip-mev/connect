@@ -65,10 +65,6 @@ type Keeper struct {
 	// numRemoves is the number of CPs removed in the previous block.
 	numRemoves collections.Item[uint64]
 
-	// removedCPsCounter is an in-memory counter for the number of CPs removed in the previous block.
-	// It is flushed to numRemovedCPs during the EndBlocker.
-	removedCPsCounter uint64
-
 	// module authority
 	authority sdk.AccAddress
 }
@@ -315,6 +311,13 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 	return ticker.Decimals, nil
 }
 
-func (k *Keeper) IncrementRemovedCPCounter() {
-	k.removedCPsCounter++
+// IncrementRemovedCPCounter increments the counter of removed currency pairs.
+func (k *Keeper) IncrementRemovedCPCounter(ctx sdk.Context) error {
+	val, err := k.numRemoves.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	val++
+	return k.numRemoves.Set(ctx, val)
 }
