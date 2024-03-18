@@ -24,10 +24,6 @@ service Query {
   rpc GetPrices(GetPricesRequest) returns (GetPricesResponse) {
     option (google.api.http).get = "/slinky/oracle/v1/get_prices";
   }
-
-  rpc RemovedCPs(RemovedCPsRequest) returns (RemovedCPsResponse) {
-    option (google.api.http).get = "/slinky/oracle/v1/removed_cps";
-  }
 }
 
 message GetAllCurrencyPairsRequest {}
@@ -73,13 +69,3 @@ message GetPricesResponse {
   repeated GetPriceResponse prices = 1 [ (gogoproto.nullable) = false ];
 }
 
-// RemovedCPsRequest is the query request for the RemovedCPs query.
-message RemovedCPsRequest {}
-
-// RemovedCPsResponse is the response from the RemovedCPs grpc method exposed
-// from the x/oracle query service.
-message RemovedCPsResponse {
-  // NumberRemovedCPs is the number of currency pairs removed in the previous
-  // block.
-  uint64 numberRemovedCPs = 1;
-}
