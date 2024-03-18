@@ -14,7 +14,10 @@ import (
 
 const (
 	// Name is the name of the MarketMap provider.
-	Name = "dydx"
+	Name = "dYdX"
+
+	// ChainID is the chain ID for the dYdX market map provider.
+	ChainID = "dydx-mainnet-1"
 
 	// Endpoint is the endpoint for the dYdX market map API.
 	Endpoint = "%s/dydxprotocol/prices/params/market"

@@ -17,6 +17,10 @@ type ProviderConfig struct {
 	// WebSocket is the config for the websocket based data provider. If the provider
 	// does not support websocket based fetching, this field should be omitted.
 	WebSocket WebSocketConfig `json:"webSocket"`
+
+	// Type is the type of the provider (i.e. price, market map, other). This is used
+	// to determine how to construct the provider.
+	Type string `json:"type"`
 }
 
 func (c *ProviderConfig) ValidateBasic() error {
@@ -50,6 +54,10 @@ func (c *ProviderConfig) ValidateBasic() error {
 		if c.WebSocket.Name != c.Name {
 			return fmt.Errorf("received websocket config for %s but expected %s", c.WebSocket.Name, c.Name)
 		}
+	}
+
+	if len(c.Type) == 0 {
+		return fmt.Errorf("type cannot be empty")
 	}
 
 	return nil
