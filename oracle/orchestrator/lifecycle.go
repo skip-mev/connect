@@ -8,16 +8,16 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// CtxErrors is a map of context errors that we check for when starting the provider.
+// ctxErrors is a map of context errors that we check for when starting the provider.
 // We only want cancel the main error group if the context is canceled or the deadline
-// is exceeded. Otherwise failures should be handled gracefully.
-var CtxErrors = map[error]struct{}{
+// is exceeded. Otherwise, failures should be handled gracefully.
+var ctxErrors = map[error]struct{}{
 	context.Canceled:         {},
 	context.DeadlineExceeded: {},
 }
 
-// GeneralProvider is a interface for a provider that implements the base provider.
-type GeneralProvider interface {
+// generalProvider is a interface for a provider that implements the base provider.
+type generalProvider interface {
 	// Start starts the provider.
 	Start(ctx context.Context) error
 	// Stop stops the provider.
@@ -25,7 +25,7 @@ type GeneralProvider interface {
 }
 
 // Start starts the provider orchestrator. This will initialize the provider orchestrator
-// with the relevant price providers and market mapper, and then start all of them.
+// with the relevant price and market mapper providers, and then start all of them.
 func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	o.logger.Info("starting provider orchestrator")
 	if err := o.Init(); err != nil {
@@ -79,7 +79,7 @@ func (o *ProviderOrchestrator) Stop() error {
 // to start the provider in a go routine.
 func (o *ProviderOrchestrator) execProviderFn(
 	ctx context.Context,
-	p GeneralProvider,
+	p generalProvider,
 ) func() error {
 	return func() error {
 		defer func() {
@@ -92,7 +92,7 @@ func (o *ProviderOrchestrator) execProviderFn(
 		// we want to exit the provider and trigger the error group
 		// to exit for all providers.
 		err := p.Start(ctx)
-		if _, ok := CtxErrors[err]; ok {
+		if _, ok := ctxErrors[err]; ok {
 			return err
 		}
 
