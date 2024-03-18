@@ -284,9 +284,7 @@ func main() {
 	if tickersFlag != "" {
 		for _, ticker := range marketMap.Tickers {
 			if !strings.Contains(tickersFlag, ticker.String()) {
-				delete(marketMap.Providers, ticker.String())
-				delete(marketMap.Paths, ticker.String())
-				delete(marketMap.Tickers, ticker.String())
+				delete(marketMap.Markets, ticker.String())
 			}
 		}
 	}
@@ -329,29 +327,21 @@ func main() {
 	}
 }
 
-// createMarketMap creates a market map given all of the local market configurations for
+// createMarketMap creates a market map given all local market configurations for
 // each provider as well as the custom conversion markets. We do so to ensure that the
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
 func createMarketMap() (mmtypes.MarketMap, error) {
 	var (
-		// Tickers defines a map of tickers to their respective ticker configurations. This
-		// contains all of the tickers that are supported by the oracle.
-		tickers = make(map[string]mmtypes.Ticker)
-		// TickersToProviders defines a map of tickers to their respective providers. This
-		// contains all of the providers that are supported per ticker.
-		tickersToProviders = make(map[string]mmtypes.Providers)
-		// OptionalTickerPaths defines a map of tickers to their respective conversion markets
-		// that should be utilized to determine a final price. Not that this is optional as the
-		// aggregation function utilized by the oracle may not require conversion markets to be
-		// specified.
-		optionalTickerPaths = make(map[string]mmtypes.Paths)
+		// Markets defines a map of tickers to their respective market configurations. This
+		// contains all markets that are supported by the oracle.
+		markets = make(map[string]mmtypes.Market)
 	)
 
-	// Iterate through all of the provider ticker configurations and update the
+	// Iterate through all provider ticker configurations and update the
 	// tickers and tickers to providers maps.
-	for name, providerConfig := range ProviderToMarkets {
-		for ticker, config := range providerConfig {
+	for name, market := range markets {
+		for ticker, config := range market.Providers {
 			tickerStr := ticker.String()
 
 			// Add the ticker to the tickers map iff the ticker does not already exist. If the
