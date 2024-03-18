@@ -34,7 +34,7 @@ func WithMarketMap(marketMap mmtypes.MarketMap) Option {
 }
 
 // WithPriceAPIQueryHandlerFactory sets the Price API query handler factory for the provider orchestrator.
-// Specifically this is what is utilized to construct price providers that are API based.
+// Specifically, this is what is utilized to construct price providers that are API based.
 func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
@@ -46,7 +46,7 @@ func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) 
 }
 
 // WithWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
-// Specifically this is what is utilized to construct price providers that are websocket based.
+// Specifically, this is what is utilized to construct price providers that are websocket based.
 func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
@@ -58,7 +58,7 @@ func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHand
 }
 
 // WithMarketMapperFactory sets the market map factory for the provider orchestrator.
-// Specifically this is what is utilized to construct market map providers.
+// Specifically, this is what is utilized to construct market map providers.
 func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 	return func(m *ProviderOrchestrator) {
 		if factory == nil {
