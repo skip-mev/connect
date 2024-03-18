@@ -88,9 +88,9 @@ func (am AppModule) BeginBlock(_ context.Context) error {
 	return nil
 }
 
-// EndBlock is a no-op for x/oracle.
-func (am AppModule) EndBlock(_ context.Context) error {
-	return nil
+// EndBlock is calls the x/oracle keeper's EndBlocker function.
+func (am AppModule) EndBlock(goCtx context.Context) error {
+	return am.k.EndBlocker(goCtx)
 }
 
 // NewAppModule returns an application module for the x/oracle module.
