@@ -45,9 +45,9 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	}
 
 	// Start the market map provider.
-	if o.mapper != nil {
-		o.errGroup.Go(o.execProviderFn(ctx, o.mapper))
-		o.errGroup.Go(o.listenForMarketMapUpdates(ctx))
+	if o.mmProvider != nil {
+		o.errGroup.Go(o.execProviderFn(ctx, o.mmProvider))
+    o.errGroup.Go(o.listenForMarketMapUpdates(ctx))
 	}
 
 	return nil

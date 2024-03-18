@@ -89,7 +89,7 @@ func TestStart(t *testing.T) {
 		state := o.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfgWithMapper.Providers)-1)
 
-		mapper := o.GetMarketMapper()
+		mapper := o.GetMarketMapProvider()
 		require.NotNil(t, mapper)
 
 		// Stop the provider orchestrator.
