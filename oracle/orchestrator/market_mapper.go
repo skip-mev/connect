@@ -2,7 +2,9 @@ package orchestrator
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"go.uber.org/zap"
@@ -15,7 +17,8 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 		mapper := o.GetMarketMapper()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
-			return fmt.Errorf("expected 1 id, got %d", len(ids))
+			return fmt.Errorf("expected 1
+			id, got %d", len(ids))
 		}
 
 		apiCfg := mapper.GetAPIConfig()
@@ -49,9 +52,38 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 				o.logger.Info("updating orchestrator with new market map")
 				if err := o.UpdateWithMarketMap(updated); err != nil {
 					o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
-					return err
+					continue
+				}
+
+				// Write the market map to the configured path.
+				if err := o.WriteMarketMap(); err != nil {
+					o.logger.Error("failed to write market map", zap.Error(err))
 				}
 			}
 		}
 	}
+}
+
+// WriteMarketMap writes the orchestrator's market map to the configured path.
+func (o *ProviderOrchestrator) WriteMarketMap() error {
+	if len(o.writeTo) == 0 {
+		return nil
+	}
+
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	f, err := os.Create(o.writeTo)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(o.marketMap); err != nil {
+		return err
+	}
+
+	return nil
 }
