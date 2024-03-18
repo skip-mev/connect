@@ -13,7 +13,7 @@ import (
 // updates the orchestrated providers with the new market map.
 func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) func() error {
 	return func() error {
-		mapper := o.GetMarketMapper()
+		mapper := o.GetMarketMapProvider()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
 			o.logger.Error("market mapper can only be responsible for one chain", zap.Any("ids", ids))
