@@ -47,6 +47,8 @@ type ProviderOrchestrator struct {
 	cfg config.OracleConfig
 	// marketMap is the market map that the oracle is using.
 	marketMap mmtypes.MarketMap
+	// writeTo is a path to write the market map to.
+	writeTo string
 
 	// -------------------Provider Constructor Fields-------------------//
 	//
@@ -130,4 +132,12 @@ func (o *ProviderOrchestrator) GetMarketMapProvider() *mmclienttypes.MarketMapPr
 	defer o.mut.Unlock()
 
 	return o.mmProvider
+}
+
+// GetMarketMap returns the market map.
+func (o *ProviderOrchestrator) GetMarketMap() mmtypes.MarketMap {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	return o.marketMap
 }
