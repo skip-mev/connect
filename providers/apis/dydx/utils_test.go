@@ -3,6 +3,8 @@ package dydx_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -11,7 +13,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestConvertMarketParamsToMarketMap(t *testing.T) {
@@ -26,9 +27,7 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 			params: dydxtypes.QueryAllMarketParamsResponse{},
 			expected: mmtypes.GetMarketMapResponse{
 				MarketMap: mmtypes.MarketMap{
-					Tickers:         make(map[string]mmtypes.Ticker),
-					Providers:       make(map[string]mmtypes.Providers),
-					Paths:           make(map[string]mmtypes.Paths),
+					Markets:         make(map[string]mmtypes.Market),
 					AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,
 				},
 			},
@@ -70,9 +69,7 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tc.expected.MarketMap.Tickers, resp.MarketMap.Tickers)
-				require.Equal(t, tc.expected.MarketMap.Providers, resp.MarketMap.Providers)
-				require.Equal(t, tc.expected.MarketMap.Paths, resp.MarketMap.Paths)
+				require.Equal(t, tc.expected.MarketMap.Markets, resp.MarketMap.Markets)
 			}
 		})
 	}

@@ -41,9 +41,7 @@ var DefaultAPIConfig = config.APIConfig{
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
 func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsResponse) (mmtypes.GetMarketMapResponse, error) {
 	marketMap := mmtypes.MarketMap{
-		Tickers:         make(map[string]mmtypes.Ticker),
-		Providers:       make(map[string]mmtypes.Providers),
-		Paths:           make(map[string]mmtypes.Paths),
+		Markets:         make(map[string]mmtypes.Market),
 		AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,
 	}
 
@@ -64,9 +62,11 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 		}
 
 		// Add the ticker, provider, and paths to the market map.
-		marketMap.Tickers[ticker.String()] = ticker
-		marketMap.Paths[ticker.String()] = paths
-		marketMap.Providers[ticker.String()] = providers
+		marketMap.Markets[ticker.String()] = mmtypes.Market{
+			Ticker:    ticker,
+			Paths:     paths,
+			Providers: providers,
+		}
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {
