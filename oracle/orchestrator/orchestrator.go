@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -32,7 +31,7 @@ type ProviderOrchestrator struct {
 	// mainCancel is the main context cancel function.
 	mainCancel context.CancelFunc
 	// errGroup is the error group for the provider orchestrator.
-	errGroup *errgroup.Group
+	wg sync.WaitGroup
 
 	// -------------------Stateful Fields-------------------//
 	//
@@ -99,6 +98,7 @@ func NewProviderOrchestrator(
 		wsMetrics:       wsmetrics.NewWebSocketMetricsFromConfig(cfg.Metrics),
 		apiMetrics:      apimetrics.NewAPIMetricsFromConfig(cfg.Metrics),
 		providerMetrics: providermetrics.NewProviderMetricsFromConfig(cfg.Metrics),
+		wg:              sync.WaitGroup{},
 	}
 
 	for _, opt := range opts {

@@ -5,16 +5,7 @@ import (
 	"fmt"
 
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 )
-
-// ctxErrors is a map of context errors that we check for when starting the provider.
-// We only want cancel the main error group if the context is canceled or the deadline
-// is exceeded. Otherwise, failures should be handled gracefully.
-var ctxErrors = map[error]struct{}{
-	context.Canceled:         {},
-	context.DeadlineExceeded: {},
-}
 
 // generalProvider is a interface for a provider that implements the base provider.
 type generalProvider interface {
@@ -33,21 +24,31 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 		return err
 	}
 
-	// Create a new error group for the provider orchestrator.
-	o.errGroup, ctx = errgroup.WithContext(ctx)
-
 	// Set tthe main context for the provider orchestrator.
 	ctx, _ = o.setMainCtx(ctx)
 
 	// Start all of the price providers.
 	for _, state := range o.providers {
-		o.errGroup.Go(o.execProviderFn(ctx, state.Provider))
+		o.wg.Add(1)
+		go func() {
+			defer o.wg.Done()
+			o.execProviderFn(ctx, state.Provider)
+		}()
 	}
 
 	// Start the market map provider.
 	if o.mmProvider != nil {
-		o.errGroup.Go(o.execProviderFn(ctx, o.mmProvider))
-		o.errGroup.Go(o.listenForMarketMapUpdates(ctx))
+		o.wg.Add(1)
+		go func() {
+			defer o.wg.Done()
+			o.execProviderFn(ctx, o.mmProvider)
+		}()
+
+		o.wg.Add(1)
+		go func() {
+			defer o.wg.Done()
+			o.listenForMarketMapUpdates(ctx)
+		}()
 	}
 
 	return nil
@@ -55,25 +56,15 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 
 // Stop stops the provider orchestrator. This is a synchronous operation that will
 // wait for all of the providers to exit.
-func (o *ProviderOrchestrator) Stop() error {
+func (o *ProviderOrchestrator) Stop() {
 	o.logger.Info("stopping provider orchestrator")
 	if _, cancel := o.getMainCtx(); cancel != nil {
 		cancel()
 
-		if o.errGroup == nil {
-			return nil
-		}
-
-		// Wait for all of the price providers to exit.
-		if err := o.errGroup.Wait(); err != nil {
-			o.logger.Error("provider orchestrator exited with error", zap.Error(err))
-			return err
-		}
-
-		o.logger.Info("provider orchestrator exited successfully")
 	}
 
-	return nil
+	o.wg.Wait()
+	o.logger.Info("provider orchestrator exited successfully")
 }
 
 // execProviderFn returns a function that starts the provider. This function is used
@@ -81,25 +72,15 @@ func (o *ProviderOrchestrator) Stop() error {
 func (o *ProviderOrchestrator) execProviderFn(
 	ctx context.Context,
 	p generalProvider,
-) func() error {
-	return func() error {
-		defer func() {
-			if r := recover(); r != nil {
-				o.logger.Error("recovered from panic", zap.Error(fmt.Errorf("%v", r)))
-			}
-		}()
-
-		// If the context is canceled, or the deadline is exceeded,
-		// we want to exit the provider and trigger the error group
-		// to exit for all providers.
-		err := p.Start(ctx)
-		if _, ok := ctxErrors[err]; ok {
-			return err
+) {
+	defer func() {
+		if r := recover(); r != nil {
+			o.logger.Error("recovered from panic", zap.Error(fmt.Errorf("%v", r)))
 		}
+	}()
 
-		// Otherwise, we gracefully exit the go routine.
-		return nil
-	}
+	err := p.Start(ctx)
+	o.logger.Error("provider exited with error", zap.String("provider", p.Name()), zap.Error(err))
 }
 
 // setMainCtx sets the main context for the provider orchestrator.

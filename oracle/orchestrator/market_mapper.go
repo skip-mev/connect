@@ -11,13 +11,13 @@ import (
 
 // listenForMarketMapUpdates is a goroutine that listens for market map updates and
 // updates the orchestrated providers with the new market map.
-func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) func() error {
-	return func() error {
+func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) func() {
+	return func() {
 		mapper := o.GetMarketMapProvider()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
 			o.logger.Error("market mapper can only be responsible for one chain", zap.Any("ids", ids))
-			return nil
+			return
 		}
 
 		apiCfg := mapper.GetAPIConfig()
@@ -26,7 +26,8 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 		for {
 			select {
 			case <-ctx.Done():
-				return ctx.Err()
+				o.logger.Info("stopping market map listener", zap.Error(ctx.Err()))
+				return
 			case <-ticker.C:
 				// Fetch the latest market map.
 				response := mapper.GetData()

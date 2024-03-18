@@ -101,6 +101,10 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 // and continuously update the data. This blocks until the provider is stopped.
 func (p *Provider[K, V]) Start(ctx context.Context) error {
 	p.logger.Info("starting provider")
+	if len(p.ids) == 0 {
+		p.logger.Info("no ids to fetch; provider is exiting")
+		return nil
+	}
 
 	mainCtx, mainCancel := p.setMainCtx(ctx)
 	defer func() {

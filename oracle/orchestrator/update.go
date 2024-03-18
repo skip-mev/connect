@@ -54,6 +54,7 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarketMap, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
 
+	tickers := marketMap.GetTickers()
 	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))
 	switch provider.Type() {
 	case providertypes.API:
@@ -65,7 +66,7 @@ func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarke
 
 		provider.Update(
 			base.WithNewAPIHandler(handler),
-			base.WithNewIDs[mmtypes.Ticker, *big.Int](marketMap.GetTickers()),
+			base.WithNewIDs[mmtypes.Ticker, *big.Int](tickers),
 		)
 	case providertypes.WebSockets:
 		// Create and update the WebSocket query handler.
@@ -76,8 +77,18 @@ func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarke
 
 		provider.Update(
 			base.WithNewWebSocketHandler(handler),
-			base.WithNewIDs[mmtypes.Ticker, *big.Int](marketMap.GetTickers()),
+			base.WithNewIDs[mmtypes.Ticker, *big.Int](tickers),
 		)
+	}
+
+	if len(tickers) == 0 {
+		provider.Stop()
+	} else if !provider.IsRunning() {
+		o.wg.Add(1)
+		go func() {
+			defer o.wg.Done()
+			o.execProviderFn(o.mainCtx, provider)
+		}()
 	}
 
 	// Update the provider's state.
