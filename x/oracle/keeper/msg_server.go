@@ -86,7 +86,7 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 
 		// delete the currency pair from state
 		m.k.RemoveCurrencyPair(ctx, cp)
-		m.k.removedCPsCounter++
+		m.k.IncrementRemovedCPCounter()
 	}
 
 	return nil, nil

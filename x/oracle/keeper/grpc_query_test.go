@@ -243,16 +243,26 @@ func (s *KeeperTestSuite) TestQueryServer_RemovedCPs() {
 			expectPass: false,
 		},
 		{
-			name:       "valid no queries removed",
+			name:       "valid no cp removed",
 			setup:      func() {},
 			req:        &types.RemovedCPsRequest{},
 			res:        &types.RemovedCPsResponse{NumberRemovedCPs: 0},
 			expectPass: true,
 		},
+		{
+			name: "valid 2 cp removed",
+			setup: func() {
+				s.oracleKeeper.IncrementRemovedCPCounter()
+				s.oracleKeeper.IncrementRemovedCPCounter()
+				s.Require().NoError(s.oracleKeeper.EndBlocker(s.ctx))
+			},
+			req:        &types.RemovedCPsRequest{},
+			res:        &types.RemovedCPsResponse{NumberRemovedCPs: 2},
+			expectPass: true,
+		},
 	}
 
 	qs := keeper.NewQueryServer(s.oracleKeeper)
-
 	for _, tc := range tcs {
 		s.Run(tc.name, func() {
 			tc.setup()
@@ -266,7 +276,6 @@ func (s *KeeperTestSuite) TestQueryServer_RemovedCPs() {
 
 			// otherwise, assert no error, and check response
 			s.Require().Nil(err)
-
 			s.Require().Equal(tc.res.NumberRemovedCPs, res.NumberRemovedCPs)
 		})
 	}

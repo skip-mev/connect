@@ -314,3 +314,7 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 
 	return ticker.Decimals, nil
 }
+
+func (k *Keeper) IncrementRemovedCPCounter() {
+	k.removedCPsCounter++
+}
