@@ -22,21 +22,9 @@ type Keeper struct {
 	// registered hooks
 	hooks types.MarketMapHooks
 
-	// tickers is keyed by CurrencyPair string (BASE/QUOTE) and contains
-	// the list of all Tickers.
-	tickers collections.Map[types.TickerString, types.Ticker]
-
 	// markets is keyed by CurrencyPair string (BASE/QUOTE) and contains
 	// the list of all Markets.
 	markets collections.Map[types.TickerString, types.Market]
-
-	// paths is keyed by CurrencyPair string (BASE/QUOTE) and contains
-	// the list of all Paths.
-	paths collections.Map[types.TickerString, types.Paths]
-
-	// providers is keyed by CurrencyPair string (BASE/QUOTE) and contains
-	// the list of all Providers.
-	providers collections.Map[types.TickerString, types.Providers]
 
 	// lastUpdated is the last block height the marketmap was updated.
 	lastUpdated collections.Item[uint64]
@@ -60,10 +48,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 	return &Keeper{
 		cdc:         cdc,
 		authority:   authority,
-		tickers:     collections.NewMap(sb, types.TickersPrefix, "tickers", types.TickersCodec, codec.CollValue[types.Ticker](cdc)),
 		markets:     collections.NewMap(sb, types.MarketsPrefix, "markets", types.TickersCodec, codec.CollValue[types.Market](cdc)),
-		paths:       collections.NewMap(sb, types.PathsPrefix, "paths", types.TickersCodec, codec.CollValue[types.Paths](cdc)),
-		providers:   collections.NewMap(sb, types.ProvidersPrefix, "providers", types.TickersCodec, codec.CollValue[types.Providers](cdc)),
 		lastUpdated: collections.NewItem[uint64](sb, types.LastUpdatedPrefix, "last_updated", types.LastUpdatedCodec),
 		params:      params,
 	}
@@ -130,76 +115,6 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 	}
 	// Create the config
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
-}
-
-// GetAllProvidersMap returns the set of Providers objects currently stored in state
-// as a map[TickerString] -> Providers.
-func (k *Keeper) GetAllProvidersMap(ctx sdk.Context) (map[string]types.Providers, error) {
-	iter, err := k.providers.Iterate(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	keyValues, err := iter.KeyValues()
-	if err != nil {
-		return nil, err
-	}
-
-	m := make(map[string]types.Providers, len(keyValues))
-	for _, keyValue := range keyValues {
-		m[string(keyValue.Key)] = keyValue.Value
-	}
-
-	return m, nil
-}
-
-// CreateProviders initializes a new providers.
-// The Ticker.String corresponds to a market, and must be unique.
-func (k *Keeper) CreateProviders(ctx sdk.Context, providers types.Providers, ticker types.Ticker) error {
-	// Check if MarketConfig already exists for the provider
-	alreadyExists, err := k.providers.Has(ctx, types.TickerString(ticker.String()))
-	if err != nil {
-		return err
-	}
-	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(ticker.String()))
-	}
-	// Create the config
-	return k.providers.Set(ctx, types.TickerString(ticker.String()), providers)
-}
-
-// GetAllPathsMap returns the set of Paths objects currently stored in state
-// as a map[TickerString] -> Paths.
-func (k *Keeper) GetAllPathsMap(ctx sdk.Context) (map[string]types.Paths, error) {
-	iter, err := k.paths.Iterate(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	keyValues, err := iter.KeyValues()
-	if err != nil {
-		return nil, err
-	}
-
-	m := make(map[string]types.Paths, len(keyValues))
-	for _, keyValue := range keyValues {
-		m[string(keyValue.Key)] = keyValue.Value
-	}
-
-	return m, nil
-}
-
-// CreatePaths initializes a new Paths.
-// The Ticker.String corresponds to a market, and must be unique.
-func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ticker) error {
-	// Check if MarketConfig already exists for the provider
-	alreadyExists, err := k.paths.Has(ctx, types.TickerString(ticker.String()))
-	if err != nil {
-		return err
-	}
-	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(ticker.String()))
-	}
-	// Create the config
-	return k.paths.Set(ctx, types.TickerString(ticker.String()), paths)
 }
 
 // CreateMarket sets the ticker, paths, and providers for a given market.  It also
