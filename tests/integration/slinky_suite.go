@@ -19,6 +19,7 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -268,6 +269,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 					Atomic:           true,
 					Name:             static.Name,
 				},
+				Type: types.ConfigType,
 			})
 
 			marketConfig := mmtypes.MarketMap{
@@ -491,6 +493,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Atomic:           true,
 				Name:             static.Name,
 			},
+			Type: types.ConfigType,
 		})
 
 		marketConfig := mmtypes.MarketMap{
@@ -591,6 +594,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Atomic:           true,
 				Name:             "static-mock-provider",
 			},
+			Type: types.ConfigType,
 		})
 
 		marketConfig := mmtypes.MarketMap{

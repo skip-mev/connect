@@ -10,7 +10,7 @@ import (
 
 const (
 	// Name is the name of the Gate.io provider.
-	Name = "gate.io"
+	Name = "Gate"
 	// URL is the base url of for the Gate.io websocket API.
 	URL = "wss://api.gateio.ws/ws/v4/"
 )
