@@ -124,7 +124,7 @@ func (o *ProviderOrchestrator) GetPriceProviders() []types.PriceProviderI {
 	return providers
 }
 
-// GetMarketMapperState returns the market map provider and its state.
+// GetMarketMapper returns the market map provider.
 func (o *ProviderOrchestrator) GetMarketMapper() *mmclienttypes.MarketMapProvider {
 	o.mut.Lock()
 	defer o.mut.Unlock()
