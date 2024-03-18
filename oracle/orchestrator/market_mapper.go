@@ -17,8 +17,7 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 		mapper := o.GetMarketMapper()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
-			return fmt.Errorf("expected 1
-			id, got %d", len(ids))
+			return fmt.Errorf("expected 1 id, got %d", len(ids))
 		}
 
 		apiCfg := mapper.GetAPIConfig()
