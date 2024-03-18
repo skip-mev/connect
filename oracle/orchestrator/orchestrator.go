@@ -37,9 +37,9 @@ type ProviderOrchestrator struct {
 	//
 	// providers is a map of all of the providers that the oracle is using.
 	providers map[string]ProviderState
-	// mapper is the market map provider. Specifically this provider is responsible
+	// mmProvider is the market map provider. Specifically this provider is responsible
 	// for making requests for the latest market map data.
-	mapper *mmclienttypes.MarketMapProvider
+	mmProvider *mmclienttypes.MarketMapProvider
 
 	// -------------------Oracle Configuration Fields-------------------//
 	//
@@ -124,10 +124,10 @@ func (o *ProviderOrchestrator) GetPriceProviders() []types.PriceProviderI {
 	return providers
 }
 
-// GetMarketMapper returns the market map provider.
-func (o *ProviderOrchestrator) GetMarketMapper() *mmclienttypes.MarketMapProvider {
+// GetMarketMapProvider returns the market map provider.
+func (o *ProviderOrchestrator) GetMarketMapProvider() *mmclienttypes.MarketMapProvider {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	return o.mapper
+	return o.mmProvider
 }
