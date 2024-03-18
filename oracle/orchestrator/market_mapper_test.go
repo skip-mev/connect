@@ -3,6 +3,7 @@ package orchestrator_test
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/oracle/types"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -216,5 +218,54 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		// Stop the orchestrator.
 		cancel()
 		o.Stop()
+	})
+
+	t.Run("can update providers with a new market map and write the updated market map", func(t *testing.T) {
+		chains := []mmclienttypes.Chain{{ChainID: "dYdX"}}
+		handler, factory := marketMapperFactory(t, chains)
+		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
+
+		resolved := make(mmclienttypes.ResolvedMarketMap)
+		resp := mmtypes.GetMarketMapResponse{
+			MarketMap: marketMap,
+		}
+		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
+		handler.On("ParseResponse", mock.Anything, mock.Anything).Return(mmclienttypes.NewMarketMapResponse(resolved, nil)).Maybe()
+
+		path := "test.json"
+		o, err := orchestrator.NewProviderOrchestrator(
+			oracleCfgWithMockMapper,
+			orchestrator.WithLogger(logger),
+			orchestrator.WithMarketMapperFactory(factory),
+			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
+			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
+			orchestrator.WithWriteTo(path),
+		)
+		require.NoError(t, err)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		go func() {
+			require.NoError(t, o.Start(ctx))
+		}()
+
+		// Wait for the orchestrator to start.
+		time.Sleep(5000 * time.Millisecond)
+
+		// The orchestrator should have been updated.
+		require.Equal(t, marketMap, o.GetMarketMap())
+
+		// Stop the orchestrator.
+		cancel()
+		o.Stop()
+
+		// Check that the market map was written to the path.
+		mm, err := types.ReadMarketConfigFromFile(path)
+		require.NoError(t, err)
+		require.Equal(t, o.GetMarketMap(), mm)
+
+		// Clean up the file.
+		require.NoError(t, os.Remove(path))
 	})
 }
