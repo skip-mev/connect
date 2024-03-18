@@ -34,7 +34,7 @@ func (p *Provider[K, V]) fetch(ctx context.Context) error {
 // startAPI is the main loop for the provider. It is responsible for fetching data from the API
 // and updating the data.
 func (p *Provider[K, V]) startAPI(ctx context.Context) error {
-	p.logger.Info("starting api query handler")
+	p.logger.Debug("starting api query handler")
 
 	// Start the data update loop.
 	handler := p.GetAPIHandler()
@@ -43,12 +43,12 @@ func (p *Provider[K, V]) startAPI(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
-			p.logger.Info("api stopped via context")
+			p.logger.Debug("api stopped via context")
 			return ctx.Err()
 
 		default:
 			if restarts > 0 {
-				p.logger.Info("restarting api query handler", zap.Int("num_restarts", restarts))
+				p.logger.Debug("restarting api query handler", zap.Int("num_restarts", restarts))
 
 				// If the API query handler returns, then the connection was closed. Wait for
 				// a bit before trying to reconnect.
@@ -82,10 +82,14 @@ func (p *Provider[K, V]) startMultiplexWebsocket(ctx context.Context) error {
 	// if len(ids) == 30 and MaxSubscriptionsPerConnection == 45
 	// 30 / 45 = 0 -> need one sub handler
 	ids := p.GetIDs()
+	if len(ids) == 0 {
+		return fmt.Errorf("no ids to subscribe to")
+	}
+
 	if maxSubsPerConn > 0 {
 		// case where we will split ID's across sub handlers
 		numSubHandlers := int(math.Ceil(float64(len(ids)) / float64(maxSubsPerConn)))
-		p.logger.Info("setting number of web socket handlers for provider", zap.Int("sub_handlers", numSubHandlers))
+		p.logger.Debug("setting number of web socket handlers for provider", zap.Int("sub_handlers", numSubHandlers))
 		wg.SetLimit(numSubHandlers)
 
 		// split ids
@@ -127,11 +131,11 @@ func (p *Provider[K, V]) startWebSocket(ctx context.Context, subIDs []K) func() 
 		for {
 			select {
 			case <-ctx.Done():
-				p.logger.Info("web socket stopped via context")
+				p.logger.Debug("web socket stopped via context")
 				return ctx.Err()
 			default:
 				if restarts > 0 {
-					p.logger.Info("restarting websocket query handler", zap.Int("num_restarts", restarts))
+					p.logger.Debug("restarting websocket query handler", zap.Int("num_restarts", restarts))
 
 					// If the websocket query handler returns, then the connection was closed. Wait for
 					// a bit before trying to reconnect.

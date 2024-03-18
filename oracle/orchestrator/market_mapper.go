@@ -84,5 +84,6 @@ func (o *ProviderOrchestrator) WriteMarketMap() error {
 		return err
 	}
 
+	o.logger.Debug("wrote market map to file", zap.String("path", o.writeTo))
 	return nil
 }
