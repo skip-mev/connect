@@ -321,3 +321,8 @@ func (k *Keeper) IncrementRemovedCPCounter(ctx sdk.Context) error {
 	val++
 	return k.numRemoves.Set(ctx, val)
 }
+
+// GetRemovedCPCounter gets the counter of removed currency pairs.
+func (k *Keeper) GetRemovedCPCounter(ctx sdk.Context) (uint64, error) {
+	return k.numRemoves.Get(ctx)
+}
