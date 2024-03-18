@@ -42,6 +42,10 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 	}
 
 	o.marketMap = marketMap
+	if o.aggregator != nil {
+		o.aggregator.UpdateMarketMap(o.marketMap)
+	}
+
 	return nil
 }
 

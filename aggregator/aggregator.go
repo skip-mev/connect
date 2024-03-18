@@ -27,7 +27,7 @@ type (
 // it is assumed to be called concurrently in data fetching goroutines. The DataAggregator
 // requires one of either an aggregateFn or aggregateFnFromContext to be set.
 type DataAggregator[K comparable, V any] struct {
-	mtx sync.Mutex
+	sync.Mutex
 
 	// aggregateFn is the function used to aggregate data from each provider.
 	aggregateFn AggregateFn[K, V]
@@ -63,8 +63,8 @@ func NewDataAggregator[K comparable, V any](opts ...DataAggregatorOption[K, V]) 
 
 // GetProviderData returns a copy of the aggregated provider data.
 func (p *DataAggregator[K, V]) GetProviderData() AggregatedProviderData[K, V] {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	cpy := make(AggregatedProviderData[K, V])
 	maps.Copy(cpy, p.providerData)
@@ -74,8 +74,8 @@ func (p *DataAggregator[K, V]) GetProviderData() AggregatedProviderData[K, V] {
 
 // GetDataByProvider returns the data currently stored for a given provider.
 func (p *DataAggregator[K, V]) GetDataByProvider(provider K) V {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	cpy := make(AggregatedProviderData[K, V])
 	maps.Copy(cpy, p.providerData)
@@ -86,16 +86,16 @@ func (p *DataAggregator[K, V]) GetDataByProvider(provider K) V {
 // SetProviderData updates the data aggregator with the given provider
 // and data.
 func (p *DataAggregator[K, V]) SetProviderData(provider K, data V) {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	p.providerData[provider] = data
 }
 
 // ResetProviderData resets the data aggregator for all providers.
 func (p *DataAggregator[K, V]) ResetProviderData() {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	p.providerData = make(AggregatedProviderData[K, V])
 }
@@ -124,16 +124,16 @@ func (p *DataAggregator[K, V]) AggregateDataFromContext(ctx sdk.Context) {
 
 // GetAggregatedData returns the aggregated data based on the provided data.
 func (p *DataAggregator[K, V]) GetAggregatedData() V {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	return p.aggregatedData
 }
 
 // SetAggregatedData sets the current set of aggregated data.
 func (p *DataAggregator[K, V]) SetAggregatedData(aggregatedData V) {
-	p.mtx.Lock()
-	defer p.mtx.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	p.aggregatedData = aggregatedData
 }
