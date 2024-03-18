@@ -9,14 +9,14 @@ option go_package = "github.com/skip-mev/slinky/x/oracle/types";
 
 // Query is the query service for the x/oracle module.
 service Query {
-  // Get all the currency pairs the x/oracle module is tracking price-data for
+  // Get all the currency pairs the x/oracle module is tracking price-data for.
   rpc GetAllCurrencyPairs(GetAllCurrencyPairsRequest)
       returns (GetAllCurrencyPairsResponse) {
     option (google.api.http).get = "/slinky/oracle/v1/get_all_tickers";
   };
 
   // Given a CurrencyPair (or its identifier) return the latest QuotePrice for
-  // that CurrencyPair
+  // that CurrencyPair.
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse) {
     option (google.api.http).get = "/slinky/oracle/v1/get_price";
   };
@@ -24,19 +24,23 @@ service Query {
   rpc GetPrices(GetPricesRequest) returns (GetPricesResponse) {
     option (google.api.http).get = "/slinky/oracle/v1/get_prices";
   }
+
+  rpc RemovedCPs(RemovedCPsRequest) returns (RemovedCPsResponse) {
+    option (google.api.http).get = "/slinky/oracle/v1/removed_cps";
+  }
 }
 
 message GetAllCurrencyPairsRequest {}
 
 // GetAllCurrencyPairsResponse returns all CurrencyPairs that the module is
-// currently tracking
+// currently tracking.
 message GetAllCurrencyPairsResponse {
   repeated slinky.types.v1.CurrencyPair currency_pairs = 1
       [ (gogoproto.nullable) = false ];
 }
 
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
-// CurrencyPair in the format base/quote
+// CurrencyPair in the format base/quote.
 message GetPriceRequest {
   // CurrencyPair represents the pair that the user wishes to query.
   slinky.types.v1.CurrencyPair currency_pair = 1
@@ -44,7 +48,7 @@ message GetPriceRequest {
 }
 
 // GetPriceResponse is the response from the GetPrice grpc method exposed from
-// the x/oracle query service
+// the x/oracle query service.
 message GetPriceResponse {
   // QuotePrice represents the quote-price for the CurrencyPair given in
   // GetPriceRequest (possibly nil if no update has been made)
@@ -60,11 +64,22 @@ message GetPriceResponse {
 }
 
 // GetPricesRequest takes an identifier for the CurrencyPair
-// in the format base/quote
+// in the format base/quote.
 message GetPricesRequest { repeated string currency_pair_ids = 1; }
 
 // GetPricesResponse is the response from the GetPrices grpc method exposed from
-// the x/oracle query service
+// the x/oracle query service.
 message GetPricesResponse {
   repeated GetPriceResponse prices = 1 [ (gogoproto.nullable) = false ];
+}
+
+// RemovedCPsRequest is the query request for the RemovedCPs query.
+message RemovedCPsRequest {}
+
+// RemovedCPsResponse is the response from the RemovedCPs grpc method exposed
+// from the x/oracle query service.
+message RemovedCPsResponse {
+  // NumberRemovedCPs is the number of currency pairs removed in the previous
+  // block.
+  uint64 numberRemovedCPs = 1;
 }

@@ -201,3 +201,73 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestQueryServer_RemovedCPs() {
+	// set CPs on genesis for testing
+	cpg := []types.CurrencyPairGenesis{
+		{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "AA",
+				Quote: "ETHEREUM",
+			},
+			CurrencyPairPrice: &types.QuotePrice{
+				Price: sdkmath.NewInt(100),
+			},
+			Nonce: 12,
+			Id:    2,
+		},
+		{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "CC",
+				Quote: "BB",
+			},
+			Id: 1,
+		},
+	}
+
+	// init genesis
+	s.oracleKeeper.InitGenesis(s.ctx, *types.NewGenesisState(cpg, 3))
+
+	tcs := []struct {
+		name       string
+		setup      func()
+		req        *types.RemovedCPsRequest
+		res        *types.RemovedCPsResponse
+		expectPass bool
+	}{
+		{
+			name:       "invalid nil query",
+			setup:      func() {},
+			req:        nil,
+			res:        nil,
+			expectPass: false,
+		},
+		{
+			name:       "valid no queries removed",
+			setup:      func() {},
+			req:        &types.RemovedCPsRequest{},
+			res:        &types.RemovedCPsResponse{NumberRemovedCPs: 0},
+			expectPass: true,
+		},
+	}
+
+	qs := keeper.NewQueryServer(s.oracleKeeper)
+
+	for _, tc := range tcs {
+		s.Run(tc.name, func() {
+			tc.setup()
+
+			// get the response + error from the query
+			res, err := qs.RemovedCPs(s.ctx, tc.req)
+			if !tc.expectPass {
+				s.Require().NotNil(err)
+				return
+			}
+
+			// otherwise, assert no error, and check response
+			s.Require().Nil(err)
+
+			s.Require().Equal(tc.res.NumberRemovedCPs, res.NumberRemovedCPs)
+		})
+	}
+}
