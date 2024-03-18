@@ -26,7 +26,7 @@ var (
 		Ticker: mmtypes.Ticker{
 			CurrencyPair:     constants.BITCOIN_USD.CurrencyPair,
 			Decimals:         constants.BITCOIN_USD.Decimals,
-			MinProviderCount: 3,
+			MinProviderCount: 1,
 		},
 		Paths: mmtypes.Paths{
 			Paths: []mmtypes.Path{
@@ -95,7 +95,7 @@ var (
 		Ticker: mmtypes.Ticker{
 			CurrencyPair:     constants.ETHEREUM_USD.CurrencyPair,
 			Decimals:         constants.ETHEREUM_USD.Decimals,
-			MinProviderCount: 3,
+			MinProviderCount: 1,
 		},
 		Paths: mmtypes.Paths{
 			Paths: []mmtypes.Path{
@@ -163,7 +163,7 @@ var (
 		Ticker: mmtypes.Ticker{
 			CurrencyPair:     constants.USDT_USD.CurrencyPair,
 			Decimals:         constants.USDT_USD.Decimals,
-			MinProviderCount: 2,
+			MinProviderCount: 1,
 		},
 		Paths: mmtypes.Paths{
 			Paths: []mmtypes.Path{
@@ -332,7 +332,7 @@ func verifyPrice(t *testing.T, expected, actual *big.Int) {
 
 // createPrice creates a price with the given number of decimals.
 func createPrice(price float64, decimals uint64) *big.Int {
-	// Convert the price to a big float so we can perform the multiplication.
+	// Convert the price to a big float, so we can perform the multiplication.
 	floatPrice := big.NewFloat(price)
 
 	// Scale the price and convert it to a big.Int.

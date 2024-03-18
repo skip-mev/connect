@@ -142,7 +142,7 @@ func TestAggregateData(t *testing.T) {
 			tc.malleate(m.PriceAggregator)
 
 			// Aggregate the data.
-			m.AggregatedData()
+			m.AggregateData()
 
 			// Ensure that the aggregated data is as expected.
 			result := m.PriceAggregator.GetAggregatedData()
@@ -435,7 +435,10 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			tc.malleate(m.PriceAggregator)
 
 			// Calculate the converted prices.
-			prices := m.CalculateConvertedPrices(tc.target, tc.paths)
+			prices := m.CalculateConvertedPrices(mmtypes.Market{
+				Ticker: tc.target,
+				Paths:  tc.paths,
+			})
 			require.Len(t, prices, len(tc.expectedPrices))
 			if len(tc.expectedPrices) == 0 {
 				require.Empty(t, prices)

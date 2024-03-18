@@ -38,7 +38,7 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 	}, nil
 }
 
-// AggregatedData implements the aggregate function for the median price calculation. Specifically, this
+// AggregateData implements the aggregate function for the median price calculation. Specifically, this
 // aggregation function aggregates the prices seen by each provider by first converting each price to a
 // common ticker and then calculating the median of the converted prices. Prices are converted either
 //
@@ -47,27 +47,24 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 //     BTC/USDT to BTC/USD using the index price of USDT/USD.
 //
 // The index price cache contains the previously calculated median prices.
-func (m *MedianAggregator) AggregatedData() {
+func (m *MedianAggregator) AggregateData() {
 	updatedPrices := make(types.TickerPrices)
 	for ticker, market := range m.cfg.Markets {
-		target := market.Ticker
-
 		// Get the converted prices for set of convertable markets.
 		// ex. BTC/USDT * Index USDT/USD = BTC/USD
 		//     BTC/USDC * Index USDC/USD = BTC/USD
 		convertedPrices := m.CalculateConvertedPrices(
-			target,
-			market.Paths,
+			market,
 		)
 
 		// We need to have at least the minimum number of providers to calculate the median.
-		if len(convertedPrices) < int(target.MinProviderCount) {
+		if len(convertedPrices) < int(market.Ticker.MinProviderCount) {
 			m.logger.Error(
 				"insufficient amount of converted prices",
 				zap.String("ticker", ticker),
 				zap.Int("num_converted_prices", len(convertedPrices)),
 				zap.Any("converted_prices", convertedPrices),
-				zap.Int("min_provider_count", int(target.MinProviderCount)),
+				zap.Int("min_provider_count", int(market.Ticker.MinProviderCount)),
 			)
 
 			continue
@@ -76,7 +73,7 @@ func (m *MedianAggregator) AggregatedData() {
 		// Take the median of the converted prices. This takes the average of the middle two
 		// prices if the number of prices is even.
 		price := median.CalculateMedian(convertedPrices)
-		updatedPrices[target] = price
+		updatedPrices[market.Ticker] = price
 		m.logger.Info(
 			"calculated median price",
 			zap.String("ticker", ticker),
@@ -96,28 +93,27 @@ func (m *MedianAggregator) AggregatedData() {
 // The prices utilized are the prices most recently seen by the providers. Each price is within a
 // MaxPriceAge window so is safe to use.
 func (m *MedianAggregator) CalculateConvertedPrices(
-	target mmtypes.Ticker,
-	paths mmtypes.Paths,
+	market mmtypes.Market,
 ) []*big.Int {
-	m.logger.Debug("calculating converted prices", zap.String("ticker", target.String()))
-	if len(paths.Paths) == 0 {
+	m.logger.Debug("calculating converted prices", zap.String("ticker", market.Ticker.String()))
+	if len(market.Paths.Paths) == 0 {
 		m.logger.Error(
 			"no conversion paths",
-			zap.String("ticker", target.String()),
+			zap.String("ticker", market.Ticker.String()),
 		)
 
 		return nil
 	}
 
-	convertedPrices := make([]*big.Int, 0, len(paths.Paths))
-	for _, path := range paths.Paths {
+	convertedPrices := make([]*big.Int, 0, len(market.Paths.Paths))
+	for _, path := range market.Paths.Paths {
 		// Calculate the converted price.
-		adjustedPrice, err := m.CalculateAdjustedPrice(target, path.Operations)
+		adjustedPrice, err := m.CalculateAdjustedPrice(market.Ticker, path.Operations)
 		if err != nil {
 			m.logger.Debug(
 				"failed to calculate converted price",
 				zap.Error(err),
-				zap.String("ticker", target.String()),
+				zap.String("ticker", market.Ticker.String()),
 				zap.Any("conversions", path),
 			)
 
@@ -127,7 +123,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 		convertedPrices = append(convertedPrices, adjustedPrice)
 		m.logger.Debug(
 			"calculated converted price",
-			zap.String("ticker", target.String()),
+			zap.String("ticker", market.Ticker.String()),
 			zap.String("price", adjustedPrice.String()),
 			zap.Any("conversions", path.Operations),
 		)
