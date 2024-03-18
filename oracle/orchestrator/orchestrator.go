@@ -9,6 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/oracle"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
@@ -39,7 +40,9 @@ type ProviderOrchestrator struct {
 	providers map[string]ProviderState
 	// mapper is the market map provider. Specifically this provider is responsible
 	// for making requests for the latest market map data.
-	mapper *mmclienttypes.MarketMapProvider
+	mmProvider *mmclienttypes.MarketMapProvider
+	// aggregator is the price aggregator.
+	aggregator *oracle.MedianAggregator
 
 	// -------------------Oracle Configuration Fields-------------------//
 	//

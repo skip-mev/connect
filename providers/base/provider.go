@@ -141,14 +141,13 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 			defer wg.Done()
 			errCh <- p.fetch(fetchCtx)
 			fetchCancel()
-			close(p.responseCh)
 		}()
 
 		// Wait for the fetch loop to return or the context to be cancelled.
-		p.logger.Info("started provider fetch and recv routines")
+		p.logger.Debug("started provider fetch and recv routines")
 		wg.Wait()
 		retErr = <-errCh
-		p.logger.Info("provider routines stopped", zap.Error(retErr))
+		p.logger.Debug("provider routines stopped", zap.Error(retErr))
 
 		// If the provider was stopped due to a context cancellation, then we should
 		// not restart the provider.
