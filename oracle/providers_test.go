@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"sync"
 	"time"
 
 	"github.com/stretchr/testify/mock"
@@ -18,9 +19,6 @@ import (
 )
 
 func (s *OracleTestSuite) TestProviders() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	testCases := []struct {
 		name           string
 		factory        types.PriceProviderFactoryI
@@ -183,8 +181,21 @@ func (s *OracleTestSuite) TestProviders() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
 			}
+
 			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
+
+			ctx, cancel := context.WithTimeout(context.Background(), 3*cfg.UpdateInterval)
+			defer cancel()
+
+			wg := &sync.WaitGroup{}
+			for _, provider := range providers {
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					provider.Start(ctx)
+				}()
+			}
 
 			testOracle, err := oracle.New(
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
@@ -193,8 +204,10 @@ func (s *OracleTestSuite) TestProviders() {
 			)
 			s.Require().NoError(err)
 
+			wg.Add(1)
 			go func() {
-				s.Require().NoError(testOracle.Start(ctx))
+				defer wg.Done()
+				testOracle.Start(ctx)
 			}()
 
 			// Wait for the oracle to start and update.
@@ -209,6 +222,7 @@ func (s *OracleTestSuite) TestProviders() {
 
 			// Ensure that the oracle is not running.
 			checkFn := func() bool {
+				wg.Wait()
 				return !testOracle.IsRunning()
 			}
 			s.Eventually(checkFn, 5*time.Second, 100*time.Millisecond)
