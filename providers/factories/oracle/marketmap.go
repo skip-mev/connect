@@ -23,7 +23,7 @@ func DefaultMarketMapProvider(
 	providerMetrics providermetrics.ProviderMetrics,
 	apiMetrics apimetrics.APIMetrics,
 	cfg config.ProviderConfig,
-) (types.MarketMapProvider, error) {
+) (*types.MarketMapProvider, error) {
 	apiDataHandler, err := marketmap.NewAPIHandler(cfg.API)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func DefaultDYDXMarketMapProvider(
 	providerMetrics providermetrics.ProviderMetrics,
 	apiMetrics apimetrics.APIMetrics,
 	cfg config.ProviderConfig,
-) (types.MarketMapProvider, error) {
+) (*types.MarketMapProvider, error) {
 	apiDataHandler, err := dydx.NewAPIHandler(cfg.API)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func DefaultDYDXMarketMapProvider(
 	}
 
 	// By default the dYdX market map provider only supports the dYdX chain.
-	ids := []types.Chain{{ChainID: "dydx"}}
+	ids := []types.Chain{{ChainID: dydx.ChainID}}
 
 	return types.NewMarketMapProvider(
 		base.WithName[types.Chain, *mmtypes.GetMarketMapResponse](cfg.Name),
