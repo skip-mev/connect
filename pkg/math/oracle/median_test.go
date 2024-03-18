@@ -10,7 +10,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -49,7 +48,9 @@ func TestAggregateData(t *testing.T) {
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},
-			expectedPrices: types.TickerPrices{},
+			expectedPrices: types.TickerPrices{
+				BTC_USDT.Ticker: createPrice(69_500, BTC_USD.Ticker.Decimals), // median of 69_000, 70_000
+			},
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
@@ -71,7 +72,8 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				BTC_USD.Ticker: createPrice(75_900, BTC_USD.Ticker.Decimals), // median of 70_000, 75_900, 77_000
+				BTC_USD.Ticker:  createPrice(75_900, BTC_USD.Ticker.Decimals), // median of 70_000, 75_900, 77_000
+				BTC_USDT.Ticker: createPrice(69_500, BTC_USD.Ticker.Decimals), // median of 69_000, 70_000
 			},
 		},
 		{
@@ -114,13 +116,9 @@ func TestAggregateData(t *testing.T) {
 			malleate: func(aggregator *types.PriceAggregator) {
 				prices := types.TickerPrices{
 					USDT_USD.Ticker: createPrice(1.0, USDT_USD.Ticker.Decimals),
-				}
-				aggregator.SetProviderData(coinbase.Name, prices)
-
-				prices = types.TickerPrices{
 					BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals),
 				}
-				aggregator.SetProviderData(kucoin.Name, prices)
+				aggregator.SetProviderData(coinbase.Name, prices)
 
 				indexPrices := types.TickerPrices{
 					BTC_USD.Ticker: createPrice(77_000, BTC_USD.Ticker.Decimals),
@@ -128,7 +126,8 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				USDT_USD.Ticker: createPrice(1.05, USDT_USD.Ticker.Decimals), // average of 1.1, 1.0
+				USDT_USD.Ticker: createPrice(1.05, USDT_USD.Ticker.Decimals),   // average of 1.1, 1.0
+				BTC_USDT.Ticker: createPrice(70_000, BTC_USDT.Ticker.Decimals), // median of 70_000
 			},
 		},
 	}

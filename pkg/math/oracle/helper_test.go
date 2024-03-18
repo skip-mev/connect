@@ -26,7 +26,7 @@ var (
 		Ticker: mmtypes.Ticker{
 			CurrencyPair:     constants.BITCOIN_USD.CurrencyPair,
 			Decimals:         constants.BITCOIN_USD.Decimals,
-			MinProviderCount: 1,
+			MinProviderCount: 3,
 		},
 		Paths: mmtypes.Paths{
 			Paths: []mmtypes.Path{
@@ -81,7 +81,28 @@ var (
 
 	BTC_USDT = mmtypes.Market{
 		Ticker: constants.BITCOIN_USDT,
-		Paths:  mmtypes.Paths{},
+		Paths: mmtypes.Paths{
+			Paths: []mmtypes.Path{
+				{
+					Operations: []mmtypes.Operation{
+						{
+							CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+							Invert:       false,
+							Provider:     coinbase.Name,
+						},
+					},
+				},
+				{
+					Operations: []mmtypes.Operation{
+						{
+							CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+							Invert:       false,
+							Provider:     binance.Name,
+						},
+					},
+				},
+			},
+		},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
 				coinbase.DefaultMarketConfig[constants.BITCOIN_USDT],
@@ -95,7 +116,7 @@ var (
 		Ticker: mmtypes.Ticker{
 			CurrencyPair:     constants.ETHEREUM_USD.CurrencyPair,
 			Decimals:         constants.ETHEREUM_USD.Decimals,
-			MinProviderCount: 1,
+			MinProviderCount: 3,
 		},
 		Paths: mmtypes.Paths{
 			Paths: []mmtypes.Path{
@@ -163,7 +184,7 @@ var (
 		Ticker: mmtypes.Ticker{
 			CurrencyPair:     constants.USDT_USD.CurrencyPair,
 			Decimals:         constants.USDT_USD.Decimals,
-			MinProviderCount: 1,
+			MinProviderCount: 2,
 		},
 		Paths: mmtypes.Paths{
 			Paths: []mmtypes.Path{
@@ -204,10 +225,10 @@ var (
 						{
 							CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
 							Invert:       true,
-							Provider:     kucoin.Name,
+							Provider:     coinbase.Name,
 						},
 						{
-							CurrencyPair: constants.BITCOIN_USDT.CurrencyPair,
+							CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
 							Invert:       false,
 							Provider:     mmtypes.IndexPrice,
 						},
