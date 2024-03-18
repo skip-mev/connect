@@ -2,6 +2,7 @@ package types
 
 import (
 	"cosmossdk.io/collections"
+	"cosmossdk.io/collections/codec"
 )
 
 const (
@@ -25,4 +26,10 @@ var (
 	// IDIndexCurrencyPairKeyPrefix is the key-prefix under which a currency-pair index.
 	// is stored.
 	IDIndexCurrencyPairKeyPrefix = collections.NewPrefix(3)
+
+	// NumRemovesKeyPrefix is the key-prefix under which the number of removed CPs is stored.
+	NumRemovesKeyPrefix = collections.NewPrefix(4)
+
+	// NumRemovesCodec is the collections.KeyCodec value used for the numRemoves value.
+	NumRemovesCodec = codec.KeyToValueCodec[uint64](codec.NewUint64Key[uint64]())
 )

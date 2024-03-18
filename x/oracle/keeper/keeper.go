@@ -62,6 +62,13 @@ type Keeper struct {
 	// indexes
 	idIndex *indexes.Multi[uint64, string, types.CurrencyPairState]
 
+	// numRemoves is the number of CPs removed in the previous block.
+	numRemoves collections.Item[uint64]
+
+	// removedCPsCounter is an in-memory counter for the number of CPs removed in the previous block.
+	// It is flushed to numRemovedCPs during the EndBlocker.
+	removedCPsCounter uint64
+
 	// module authority
 	authority sdk.AccAddress
 }
@@ -88,6 +95,7 @@ func NewKeeper(
 		cdc:                cdc,
 		authority:          authority,
 		mmKeeper:           mmKeeper,
+		numRemoves:         collections.NewItem[uint64](sb, types.NumRemovesKeyPrefix, "removed_cps", types.NumRemovesCodec),
 		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
 		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
 		idIndex:            idMulti,
