@@ -16,7 +16,7 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 		mapper := o.GetMarketMapProvider()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
-			o.logger.Error("market mapper can only be responsible for one chain", zap.Any("ids", ids))
+			o.logger.Error("market map provider can only be responsible for one chain", zap.Any("ids", ids))
 			return nil
 		}
 
@@ -31,13 +31,13 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 				// Fetch the latest market map.
 				response := mapper.GetData()
 				if response == nil {
-					o.logger.Debug("market mapper returned nil response")
+					o.logger.Debug("market map provider returned nil response")
 					continue
 				}
 
 				result, ok := response[chain]
 				if !ok {
-					o.logger.Debug("market mapper response missing chain", zap.Any("chain", chain))
+					o.logger.Debug("market map provider response missing chain", zap.Any("chain", chain))
 					continue
 				}
 
