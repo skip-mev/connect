@@ -3,7 +3,6 @@ package orchestrator
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"time"
 
@@ -17,7 +16,8 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) fu
 		mapper := o.GetMarketMapper()
 		ids := mapper.GetIDs()
 		if len(ids) != 1 {
-			return fmt.Errorf("expected 1 id, got %d", len(ids))
+			o.logger.Error("market mapper can only be responsible for one chain", zap.Any("ids", ids))
+			return nil
 		}
 
 		apiCfg := mapper.GetAPIConfig()

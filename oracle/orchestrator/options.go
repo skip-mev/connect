@@ -69,17 +69,6 @@ func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 	}
 }
 
-// WithMarketMapper sets the market map provider for the provider orchestrator.
-func WithMarketMapper(provider *mmclienttypes.MarketMapProvider) Option {
-	return func(m *ProviderOrchestrator) {
-		if provider == nil {
-			panic("market map provider cannot be nil")
-		}
-
-		m.mapper = provider
-	}
-}
-
 // WithWriteTo sets the file path to which market map updates will be written to. Note that this is optional.
 func WithWriteTo(filePath string) Option {
 	return func(m *ProviderOrchestrator) {
