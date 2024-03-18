@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bits-and-blooms/bitset"
+
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cmttypes "github.com/cometbft/cometbft/types"
@@ -15,6 +17,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/skip-mev/slinky/abci/proposals"
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	codecmocks "github.com/skip-mev/slinky/abci/strategies/codec/mocks"
@@ -1087,7 +1090,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				}, nil
 			},
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				time.Sleep(100 * time.Millisecond)
 				return nil
 			},
@@ -1127,7 +1130,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			log.NewTestLogger(s.T()),
 			nil,
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				time.Sleep(100 * time.Millisecond)
 				return fmt.Errorf("error in validate vote extensions")
 			},
@@ -1169,7 +1172,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 				time.Sleep(200 * time.Millisecond)
 				return &cometabci.ResponseProcessProposal{}, nil
 			},
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				// simulate a long-running validate vote extensions
 				time.Sleep(100 * time.Millisecond)
 				return nil
@@ -1210,7 +1213,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			log.NewTestLogger(s.T()),
 			nil,
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				time.Sleep(100 * time.Millisecond)
 				return fmt.Errorf("error in validate vote extensions")
 			},
@@ -1259,7 +1262,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1289,7 +1292,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, prepareErr
 			},
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1323,7 +1326,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				return extCommitError
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1356,7 +1359,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalStatus() {
 				return nil, nil
 			},
 			nil,
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				return nil
 			},
 			codec.NewDefaultVoteExtensionCodec(),
@@ -1567,7 +1570,7 @@ func (s *ProposalsTestSuite) TestProcessProposalStatus() {
 			func(_ sdk.Context, _ *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 				return nil, nil
 			},
-			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+			func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 				return validateErr
 			},
 			nil,
@@ -1603,7 +1606,7 @@ func (s *ProposalsTestSuite) TestExtendedCommitSize() {
 		func(_ sdk.Context, _ *cometabci.RequestProcessProposal) (*cometabci.ResponseProcessProposal, error) {
 			return nil, nil
 		},
-		func(_ sdk.Context, _ cometabci.ExtendedCommitInfo) error {
+		func(_ sdk.Context, _ cometabci.ExtendedCommitInfo, _ *bitset.BitSet) error {
 			return nil
 		},
 		nil,

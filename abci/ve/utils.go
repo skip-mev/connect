@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"slices"
 
+	"github.com/bits-and-blooms/bitset"
+
 	"cosmossdk.io/core/comet"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cryptoenc "github.com/cometbft/cometbft/crypto/encoding"
@@ -77,13 +79,14 @@ func VoteExtensionsEnabled(ctx sdk.Context) bool {
 type ValidateVoteExtensionsFn func(
 	ctx sdk.Context,
 	extInfo cometabci.ExtendedCommitInfo,
+	modifiedVotes *bitset.BitSet,
 ) error
 
 // NewDefaultValidateVoteExtensionsFn returns a new DefaultValidateVoteExtensionsFn.
 func NewDefaultValidateVoteExtensionsFn(validatorStore ValidatorStore) ValidateVoteExtensionsFn {
-	return func(ctx sdk.Context, info cometabci.ExtendedCommitInfo) error {
+	return func(ctx sdk.Context, info cometabci.ExtendedCommitInfo, modifiedVotes *bitset.BitSet) error {
 		if VoteExtensionsEnabled(ctx) {
-			return ValidateVoteExtensions(ctx, validatorStore, info)
+			return ValidateVoteExtensions(ctx, validatorStore, info, modifiedVotes)
 		}
 
 		return nil
@@ -94,6 +97,7 @@ func NewDefaultValidateVoteExtensionsFn(validatorStore ValidatorStore) ValidateV
 func NoOpValidateVoteExtensions(
 	_ sdk.Context,
 	_ cometabci.ExtendedCommitInfo,
+	_ *bitset.BitSet,
 ) error {
 	return nil
 }
@@ -114,13 +118,14 @@ func ValidateVoteExtensions(
 	ctx sdk.Context,
 	valStore ValidatorStore,
 	extCommit cometabci.ExtendedCommitInfo,
+	modifiedVotes *bitset.BitSet,
 ) error {
 	currentHeight := ctx.HeaderInfo().Height
 	chainID := ctx.HeaderInfo().ChainID
 	commitInfo := ctx.CometInfo().GetLastCommit()
 
 	// Check that both extCommit + commit are ordered in accordance with vp/address.
-	if err := validateExtendedCommitAgainstLastCommit(extCommit, commitInfo); err != nil {
+	if err := validateExtendedCommitAgainstLastCommit(extCommit, commitInfo, modifiedVotes); err != nil {
 		return err
 	}
 
@@ -236,7 +241,7 @@ func ValidateVoteExtensions(
 // it checks that the ExtendedCommit + LastCommit (for the same height), are consistent with each other + that
 // they are ordered correctly (by voting power) in accordance with
 // [comet](https://github.com/cometbft/cometbft/blob/4ce0277b35f31985bbf2c25d3806a184a4510010/types/validator_set.go#L784).
-func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc comet.CommitInfo) error {
+func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc comet.CommitInfo, modifiedVotes *bitset.BitSet) error {
 	// check that the rounds are the same
 	if ec.Round != lc.Round() {
 		return fmt.Errorf("extended commit round %d does not match last commit round %d", ec.Round, lc.Round())
@@ -267,7 +272,6 @@ func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 		addressCache[string(vote.Validator.Address)] = struct{}{}
 
 		lcVote := lc.Votes().Get(i)
-
 		if !bytes.Equal(vote.Validator.Address, lcVote.Validator().Address()) {
 			return fmt.Errorf("extended commit vote address %X does not match last commit vote address %X", vote.Validator.Address, lcVote.Validator().Address())
 		}
@@ -275,8 +279,11 @@ func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 			return fmt.Errorf("extended commit vote power %d does not match last commit vote power %d", vote.Validator.Power, lcVote.Validator().Power())
 		}
 
-		if int32(vote.BlockIdFlag) != int32(lcVote.GetBlockIDFlag()) {
-			return fmt.Errorf("mismatched block ID flag between extended commit vote %d and last proposed commit %d", int32(vote.BlockIdFlag), int32(lcVote.GetBlockIDFlag()))
+		// only check unmodified votes
+		if !modifiedVotes.Test(uint(i)) {
+			if int32(vote.BlockIdFlag) != int32(lcVote.GetBlockIDFlag()) {
+				return fmt.Errorf("mismatched block ID flag between extended commit vote %d and last proposed commit %d", int32(vote.BlockIdFlag), int32(lcVote.GetBlockIDFlag()))
+			}
 		}
 	}
 
