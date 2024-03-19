@@ -178,6 +178,48 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 		err               bool
 	}{
 		{
+			name: "handles duplicate configs",
+			ticker: mmtypes.Ticker{
+				CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
+				Decimals:         8,
+				MinProviderCount: 3,
+			},
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: coinbase.Name,
+						Ticker:       "BTC-USD",
+					},
+					{
+						ExchangeName: coinbase.Name,
+						Ticker:       "BTC-USD",
+					},
+				},
+			},
+			expectedPaths: mmtypes.Paths{
+				Paths: []mmtypes.Path{
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     coinbase.Name,
+								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+								Invert:       false,
+							},
+						},
+					},
+				},
+			},
+			expectedProviders: mmtypes.Providers{
+				Providers: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "BTC-USD",
+					},
+				},
+			},
+			err: false,
+		},
+		{
 			name:   "single direct path with no inversion",
 			ticker: constants.BITCOIN_USD,
 			config: dydxtypes.ExchangeConfigJson{

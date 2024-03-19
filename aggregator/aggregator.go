@@ -23,6 +23,18 @@ type (
 	AggregateFnFromContext[K comparable, V any] func(ctx sdk.Context) AggregateFn[K, V]
 )
 
+// Aggregator defines the expected interface that must be implemented by any custom data aggregator.
+type Aggregator[K comparable, V any] interface { //nolint
+	GetProviderData() AggregatedProviderData[K, V]
+	GetDataByProvider(provider K) V
+	SetProviderData(provider K, data V)
+	ResetProviderData()
+	AggregateData()
+	AggregateDataFromContext(ctx sdk.Context)
+	GetAggregatedData() V
+	SetAggregatedData(aggregatedData V)
+}
+
 // DataAggregator is a simple aggregator for provider data. It is thread-safe since
 // it is assumed to be called concurrently in data fetching goroutines. The DataAggregator
 // requires one of either an aggregateFn or aggregateFnFromContext to be set.

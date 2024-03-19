@@ -54,7 +54,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *types.PriceAggregator
+	priceAggregator types.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
