@@ -200,35 +200,23 @@ var (
 	}
 )
 
-// TickerResult is the result of a Kraken API call for a single ticker. .
+// TickerResult is the result of a Kraken API call for a single ticker.
 //
 // https://api.kraken.com/0/public/Ticker
-// https://docs.kraken.com/rest/#tag/Market-Data/operation/getTickerInformation
 type TickerResult struct {
 	pair            string
-	AskPriceStats   []string `json:"a" validate:"len=3,dive,positive-float-string"`
-	BidPriceStats   []string `json:"b" validate:"len=3,dive,positive-float-string"`
-	ClosePriceStats []string `json:"c" validate:"len=2,dive,positive-float-string"`
+	ClosePriceStats []string `json:"c"`
 }
 
-func (ktr *TickerResult) GetAskPrice() string {
-	return ktr.AskPriceStats[0]
-}
-
-func (ktr *TickerResult) GetBidPrice() string {
-	return ktr.BidPriceStats[0]
-}
-
-func (ktr *TickerResult) GetLastPrice() string {
+func (ktr *TickerResult) LastPrice() string {
 	return ktr.ClosePriceStats[0]
 }
 
+// ResponseBody returns a list of tickers for the response.  If there is an error, it will be included,
+// and all Tickers will be undefined.
 type ResponseBody struct {
-	// As of this time, the Kraken API response is all-or-nothing - either valid ticker data, or one or more errors,
-	// but not both. We enforce this expectation by defining mutual exclusivity in the validation tags of the Errors
-	// field so that any validated API result always meets our expectation in the response parsing logic.
 	Errors  []string                `json:"error" validate:"omitempty"`
-	Tickers map[string]TickerResult `validate:"required_without=Errors,excluded_with=Errors,dive" json:"result"`
+	Tickers map[string]TickerResult `json:"result"`
 }
 
 // Decode decodes the given http response into a TickerResult.
