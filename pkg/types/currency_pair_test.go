@@ -134,3 +134,31 @@ func TestDecimals(t *testing.T) {
 		})
 	}
 }
+
+func TestEqual(t *testing.T) {
+	tcs := []struct {
+		name string
+		cp1  slinkytypes.CurrencyPair
+		cp2  slinkytypes.CurrencyPair
+		eq   bool
+	}{
+		{
+			"if the CurrencyPairs are equal, return true",
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			true,
+		},
+		{
+			"if the CurrencyPairs are not equal, return false",
+			slinkytypes.CurrencyPair{Base: "A", Quote: "B"},
+			slinkytypes.CurrencyPair{Base: "B", Quote: "A"},
+			false,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.cp1.Equal(tc.cp2), tc.eq)
+		})
+	}
+}

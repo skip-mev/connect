@@ -7,7 +7,7 @@ import (
 	"cosmossdk.io/log"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	codec "github.com/skip-mev/slinky/abci/strategies/codec"
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
 	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	vetypes "github.com/skip-mev/slinky/abci/ve/types"
@@ -68,12 +68,12 @@ func GetOracleVotes(
 }
 
 // VoteAggregator is an interface that defines the methods for aggregating oracle votes into a set of prices.
-// This object holds both the aggregated price resulting from a given set of votes, as well as the prices
+// This object holds both the aggregated price resulting from a given set of votes, and the prices
 // reported by each validator.
 //
 //go:generate mockery --name VoteAggregator --filename mock_vote_aggregator.go
 type VoteAggregator interface {
-	// AggregateOracleVotes ingresses vote information which contains all of the
+	// AggregateOracleVotes ingresses vote information which contains all
 	// vote extensions each validator extended in the previous block. it is important
 	// to note that
 	//  1. The vote extension may be nil, in which case the validator is not providing
@@ -161,7 +161,7 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 		return nil
 	}
 
-	// Format all of the prices into a map of currency pair -> price.
+	// Format all prices into a map of currency pair -> price.
 	prices := make(map[slinkytypes.CurrencyPair]*big.Int, len(oracleData.Prices))
 	for cpID, priceBz := range oracleData.Prices {
 		if len(priceBz) > slinkyabci.MaximumPriceSize {
