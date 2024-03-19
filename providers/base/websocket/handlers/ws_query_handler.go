@@ -255,7 +255,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
-				h.logger.Error(
+				h.logger.Debug(
 					"failed to read message from websocket handler",
 					zap.String("message", string(message)),
 					zap.Error(err),
@@ -269,7 +269,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 					continue
 				}
 
-				h.logger.Error("max read errors reached")
+				h.logger.Error("max read errors reached", zap.Error(err))
 				if err := h.close(); err != nil {
 					return err
 				}

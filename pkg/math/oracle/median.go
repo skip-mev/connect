@@ -6,6 +6,7 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -16,7 +17,7 @@ import (
 // markets that can be used to convert the prices of a set of tickers to a common ticker.
 // These are defined in the market map configuration.
 type MedianAggregator struct {
-	*types.PriceAggregator
+	*aggregator.DataAggregator[string, types.TickerPrices]
 	logger *zap.Logger
 	cfg    mmtypes.MarketMap
 }
@@ -32,9 +33,9 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 	}
 
 	return &MedianAggregator{
-		logger:          logger,
-		cfg:             cfg,
-		PriceAggregator: types.NewPriceAggregator(),
+		logger:         logger,
+		cfg:            cfg,
+		DataAggregator: aggregator.NewDataAggregator[string, types.TickerPrices](),
 	}, nil
 }
 
@@ -47,7 +48,7 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 //     BTC/USDT to BTC/USD using the index price of USDT/USD.
 //
 // The index price cache contains the previously calculated median prices.
-func (m *MedianAggregator) AggregatedData() {
+func (m *MedianAggregator) AggregateData() {
 	cfg := m.GetMarketMap()
 	updatedPrices := make(types.TickerPrices)
 	for ticker, paths := range cfg.Paths {
@@ -97,7 +98,7 @@ func (m *MedianAggregator) AggregatedData() {
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
-	m.PriceAggregator.SetAggregatedData(updatedPrices)
+	m.DataAggregator.SetAggregatedData(updatedPrices)
 	m.logger.Info("calculated median prices for price feeds", zap.Int("num_prices", len(updatedPrices)))
 }
 
