@@ -41,10 +41,10 @@ func (t Ticker) String() string {
 // ValidateBasic performs basic validation on the Ticker.
 func (t *Ticker) ValidateBasic() error {
 	if t.Decimals > DefaultMaxDecimals || t.Decimals == 0 {
-		return fmt.Errorf("decimals must be between 1 and %d; got %d", DefaultMaxDecimals, t.Decimals)
+		return fmt.Errorf("decimals must be between 1 and %d; got %d for %s", DefaultMaxDecimals, t.Decimals, t.CurrencyPair.String())
 	}
 	if t.MinProviderCount < DefaultMinProviderCount {
-		return fmt.Errorf("min provider count must be at least %d; got %d", DefaultMinProviderCount, t.MinProviderCount)
+		return fmt.Errorf("min provider count must be at least %d; got %d for %s", DefaultMinProviderCount, t.MinProviderCount, t.CurrencyPair.String())
 	}
 
 	if err := t.CurrencyPair.ValidateBasic(); err != nil {
