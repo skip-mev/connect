@@ -9,6 +9,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -31,11 +32,11 @@ var DefaultAPIConfig = config.APIConfig{
 	Name:             Name,
 	Atomic:           true,
 	Enabled:          true,
-	Timeout:          1000 * time.Millisecond,
+	Timeout:          2000 * time.Millisecond,
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	URL:              "replace-me",
+	URL:              "localhost:1317",
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
@@ -120,8 +121,17 @@ func ConvertExchangeConfigJSON(
 	paths := make([]mmtypes.Path, 0)
 	providers := make([]mmtypes.ProviderConfig, 0)
 
+	seen := make(map[dydxtypes.ExchangeMarketConfigJson]struct{})
 	for _, cfg := range config.Exchanges {
-		var operations []mmtypes.Operation
+		if _, ok := seen[cfg]; ok {
+			continue
+		}
+
+		var (
+			operations     []mmtypes.Operation
+			offChainTicker = ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
+		)
+
 		switch {
 		case len(cfg.AdjustByMarket) == 0 && !cfg.Invert:
 			// Direct conversion.
@@ -132,7 +142,7 @@ func ConvertExchangeConfigJSON(
 			}
 			providerCfg := mmtypes.ProviderConfig{
 				Name:           cfg.ExchangeName,
-				OffChainTicker: cfg.Ticker,
+				OffChainTicker: offChainTicker,
 			}
 
 			operations = append(operations, operation)
@@ -147,7 +157,7 @@ func ConvertExchangeConfigJSON(
 
 			providerCfg := mmtypes.ProviderConfig{
 				Name:           cfg.ExchangeName,
-				OffChainTicker: cfg.Ticker,
+				OffChainTicker: offChainTicker,
 			}
 
 			operations = append(operations, operation)
@@ -174,13 +184,13 @@ func ConvertExchangeConfigJSON(
 
 			providerCfg := mmtypes.ProviderConfig{
 				Name:           cfg.ExchangeName,
-				OffChainTicker: cfg.Ticker,
+				OffChainTicker: offChainTicker,
 			}
 
 			operations = append(operations, first, second)
 			providers = append(providers, providerCfg)
 		case len(cfg.AdjustByMarket) > 0 && cfg.Invert:
-			// Indirect conversion with inverted index price. This is effectively a conversion
+			// Indirect inverted conversion with index price. This is effectively a conversion
 			// from the base currency to the quote currency via the index currency with an inverted
 			// price. Ex. USDT/USD via BTC/USDT and BTC/USD. In this case, we are not defining
 			// a new market but are instead using an existing one. The existing market must match
@@ -206,6 +216,7 @@ func ConvertExchangeConfigJSON(
 
 		// Add the provider config and operations to the paths and providers.
 		paths = append(paths, mmtypes.Path{Operations: operations})
+		seen[cfg] = struct{}{}
 	}
 
 	allPaths := mmtypes.Paths{
@@ -216,4 +227,19 @@ func ConvertExchangeConfigJSON(
 	}
 
 	return allPaths, allProviders, nil
+}
+
+// ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
+// Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
+func ConvertDenomByProvider(denom string, provider string) string {
+	switch {
+	case provider == mexc.Name:
+		if strings.Contains(denom, "_") {
+			return strings.ReplaceAll(denom, "_", "")
+		}
+
+		return denom
+	default:
+		return denom
+	}
 }

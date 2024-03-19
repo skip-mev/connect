@@ -66,20 +66,20 @@ func WithMetricsConfig(config config.MetricsConfig) Option {
 }
 
 // WithAggregateFunction sets the aggregate function on the Oracle.
-func WithAggregateFunction(fn aggregator.AggregateFn[string, types.TickerPrices]) Option {
+func WithAggregateFunction(fn types.PriceAggregationFn) Option {
 	return func(o *OracleImpl) {
 		if fn == nil {
 			panic("cannot set aggregate function on nil aggregator")
 		}
 
-		o.priceAggregator = aggregator.NewDataAggregator[string, types.TickerPrices](
+		o.priceAggregator = aggregator.NewDataAggregator(
 			aggregator.WithAggregateFn(fn),
 		)
 	}
 }
 
 // WithDataAggregator sets the data aggregator on the Oracle.
-func WithDataAggregator(agg *aggregator.DataAggregator[string, types.TickerPrices]) Option {
+func WithDataAggregator(agg types.PriceAggregator) Option {
 	return func(o *OracleImpl) {
 		if agg == nil {
 			panic("cannot set nil aggregator")
