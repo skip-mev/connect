@@ -161,7 +161,7 @@ var (
 			},
 			{
 				Name: krakenapi.Name,
-				API:  krakenapi.DefaultETHAPIConfig,
+				API:  krakenapi.DefaultAPIConfig,
 				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//
