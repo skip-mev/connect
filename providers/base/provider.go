@@ -101,7 +101,7 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 // and continuously update the data. This blocks until the provider is stopped.
 func (p *Provider[K, V]) Start(ctx context.Context) error {
 	if ctx == nil {
-		p.logger.Info("context is nil; exiting")
+		p.logger.Error("context is nil; exiting")
 		return nil
 	}
 

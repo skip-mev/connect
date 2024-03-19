@@ -66,8 +66,7 @@ func (o *ProviderOrchestrator) Stop() {
 	o.logger.Info("provider orchestrator exited successfully")
 }
 
-// execProviderFn returns a function that starts the provider. This function is used
-// to start the provider in a go routine.
+// execProviderFn starts a provider and recovers from any panics that occur.
 func (o *ProviderOrchestrator) execProviderFn(
 	ctx context.Context,
 	p generalProvider,
