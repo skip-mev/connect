@@ -2,8 +2,9 @@ package oracle
 
 import (
 	"fmt"
-	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"net/http"
+
+	"github.com/skip-mev/slinky/providers/apis/kraken"
 
 	"go.uber.org/zap"
 
