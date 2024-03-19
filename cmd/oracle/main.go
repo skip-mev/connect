@@ -15,6 +15,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
@@ -73,26 +74,29 @@ func main() {
 		}
 	}
 
-	// Create the providers using the default provider factory.
-	generator, err := oraclefactory.NewDefaultProviderFactory(
-		logger,
-		marketCfg,
+	orch, err := orchestrator.NewProviderOrchestrator(
+		cfg,
+		orchestrator.WithLogger(logger),
+		orchestrator.WithMarketMap(marketCfg),
+		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
+		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
 	)
 	if err != nil {
-		logger.Error("failed to create provider factory", zap.Error(err))
+		logger.Error("failed to create provider orchestrator", zap.Error(err))
 		return
 	}
 
-	providers, err := generator.Factory()(cfg)
-	if err != nil {
-		logger.Error("failed to create providers", zap.Error(err))
+	// start the provider orchestrator
+	if err := orch.Start(ctx); err != nil {
+		logger.Error("failed to start provider orchestrator", zap.Error(err))
 		return
 	}
+	defer orch.Stop()
 
 	// Create the oracle.
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(providers),                      // Replace with custom providers.
+		oracle.WithProviders(orch.GetPriceProviders()),
 		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),

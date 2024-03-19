@@ -25,6 +25,7 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/static"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -179,6 +180,7 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 			Atomic:           true,
 			Name:             static.Name,
 		},
+		Type: types.ConfigType,
 	})
 
 	marketConfig := mmtypes.MarketMap{

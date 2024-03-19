@@ -65,8 +65,10 @@ func CreateExtendedVoteInfo(
 	voteInfo := cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
 			Address: consAddr,
+			Power:   1000,
 		},
 		VoteExtension: ve,
+		BlockIdFlag:   cmtproto.BlockIDFlagCommit,
 	}
 
 	return voteInfo, nil
@@ -86,13 +88,13 @@ func UpdateContextWithVEHeight(ctx sdk.Context, height int64) sdk.Context {
 }
 
 // CreateBaseSDKContextWithKeys creates a base sdk context with the given store key and transient key.
-func CreateBaseSDKContextWithKeys(t *testing.T, storekey storetypes.StoreKey, transientkey *storetypes.TransientStoreKey) sdk.Context {
+func CreateBaseSDKContextWithKeys(t *testing.T, storeKey storetypes.StoreKey, transientKey *storetypes.TransientStoreKey) sdk.Context {
 	t.Helper()
 
 	testCtx := testutil.DefaultContextWithDB(
 		t,
-		storekey,
-		transientkey,
+		storeKey,
+		transientKey,
 	)
 
 	return testCtx.Ctx
