@@ -50,6 +50,10 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 			if err != nil {
 				return nil, fmt.Errorf("error creating currency pair state: %w", err)
 			}
+
+			if err := m.k.IncrementCPCounter(ctx); err != nil {
+				return nil, fmt.Errorf("error incrementing currency pairs counter: %w", err)
+			}
 		}
 	}
 

@@ -342,20 +342,6 @@ func (k *Keeper) IncrementCPCounter(ctx sdk.Context) error {
 	return k.numCPs.Set(ctx, val)
 }
 
-// DecrementCPCounterBy decrements the counter of currency pairs by the given amount.
-func (k *Keeper) DecrementCPCounterBy(ctx sdk.Context, amt uint64) error {
-	val, err := k.numCPs.Get(ctx)
-	if err != nil {
-		return err
-	}
-
-	if val < amt {
-		return fmt.Errorf("invalid decrement amount - result will be negative")
-	}
-
-	return k.numRemoves.Set(ctx, val-amt)
-}
-
 // GetCPCounter gets the counter of currency pairs.
 func (k *Keeper) GetCPCounter(ctx sdk.Context) (uint64, error) {
 	return k.numCPs.Get(ctx)
