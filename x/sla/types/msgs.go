@@ -6,6 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const (
+	MaxSLAIDLength    = 200
+	MaxSLAsPerMessage = 100
+)
+
 var (
 	_ sdk.Msg = &MsgAddSLAs{}
 	_ sdk.Msg = &MsgRemoveSLAs{}
@@ -29,6 +34,14 @@ func (m *MsgAddSLAs) ValidateBasic() error {
 		return err
 	}
 
+	if len(m.SLAs) == 0 {
+		return fmt.Errorf("message must contain at least one SLA")
+	}
+
+	if len(m.SLAs) > MaxSLAsPerMessage {
+		return fmt.Errorf("maximum number of SLAs of %d exceeded: got %d", MaxSLAsPerMessage, len(m.SLAs))
+	}
+
 	// validate SLAs
 	seen := make(map[string]struct{})
 	for _, sla := range m.SLAs {
@@ -41,6 +54,10 @@ func (m *MsgAddSLAs) ValidateBasic() error {
 		}
 
 		seen[sla.ID] = struct{}{}
+
+		if len(sla.ID) > MaxSLAIDLength {
+			return fmt.Errorf("maximum length of %d for SLA ID exceeded: got %d", MaxSLAIDLength, len(sla.ID))
+		}
 	}
 
 	return nil
@@ -61,6 +78,14 @@ func (m *MsgRemoveSLAs) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Authority)
 	if err != nil {
 		return err
+	}
+
+	if len(m.IDs) == 0 {
+		return fmt.Errorf("message must contain at least one SLA")
+	}
+
+	if len(m.IDs) > MaxSLAsPerMessage {
+		return fmt.Errorf("maximum number of SLAs of %d exceeded: got %d", MaxSLAsPerMessage, len(m.IDs))
 	}
 
 	// validate SLA IDs

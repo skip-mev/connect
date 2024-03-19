@@ -14,7 +14,7 @@ const (
 	// The two production URLs are defined in ProductionURL and TestnetURL.
 
 	// Name is the name of the ByBit provider.
-	Name = "bybit"
+	Name = "Bybit"
 
 	// URLProd is the public ByBit Websocket URL.
 	URLProd = "wss://stream.bybit.com/v5/public/spot"

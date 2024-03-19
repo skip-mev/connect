@@ -17,6 +17,9 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+// ConfigType is the type of the API/WebSocket configuration.
+const ConfigType = "price_provider"
+
 type (
 	// PriceProviderFactory is a type alias for the price provider factory. This
 	// specifically only returns price providers that implement the provider interface
@@ -92,7 +95,7 @@ type (
 
 	// PriceAggregator is a type alias for the price aggregator. This is responsible for
 	// aggregating the resolved prices from the price providers.
-	PriceAggregator = aggregator.DataAggregator[string, TickerPrices]
+	PriceAggregator = aggregator.Aggregator[string, TickerPrices]
 
 	// PriceAggregationFn is a type alias for the price aggregation function. This function
 	// is used to aggregate the resolved prices from the price providers.

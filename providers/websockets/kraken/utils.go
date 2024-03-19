@@ -14,7 +14,7 @@ const (
 	// unauthenticated websocket. The URLs defined below are all unauthenticated.
 
 	// Name is the name of the Kraken provider.
-	Name = "kraken"
+	Name = "Kraken"
 
 	// URL is the production websocket URL for Kraken.
 	URL = "wss://ws.kraken.com"

@@ -13,7 +13,7 @@ const (
 	// in the Coinbase documentation at https://docs.cloud.coinbase.com/exchange/docs/websocket-overview.
 
 	// Name is the name of the Coinbase provider.
-	Name = "coinbase_websocket"
+	Name = "CoinbasePro"
 
 	// URL is the production Coinbase Websocket URL.
 	URL = "wss://ws-feed.exchange.coinbase.com"

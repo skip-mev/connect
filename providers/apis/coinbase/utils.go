@@ -14,7 +14,7 @@ import (
 
 const (
 	// Name is the name of the Coinbase provider.
-	Name = "coinbase"
+	Name = "CoinbaseProAPI"
 
 	// URL is the base URL of the Coinbase API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
@@ -87,6 +87,10 @@ var (
 		constants.BITCOIN_USD: {
 			Name:           Name,
 			OffChainTicker: "BTC-USD",
+		},
+		constants.BITCOIN_USDT: {
+			Name:           Name,
+			OffChainTicker: "BTC-USDT",
 		},
 		constants.BITCOIN_USDC: {
 			Name:           Name,

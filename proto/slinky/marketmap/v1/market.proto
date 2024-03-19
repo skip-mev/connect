@@ -62,6 +62,10 @@ message Operation {
   // Invert is a boolean that indicates whether the price of the ticker should
   // be inverted.
   bool invert = 2;
+
+  // Provider is the name of the provider that will be used to fetch the price
+  // of the ticker.
+  string provider = 3;
 }
 
 message Paths {
@@ -73,6 +77,24 @@ message Paths {
 message Providers {
   // Providers is the list of provider configurations for the given ticker.
   repeated ProviderConfig providers = 1 [ (gogoproto.nullable) = false ];
+}
+
+// AggregationType is the type of aggregation that will be used to aggregate the
+// prices of the tickers.
+enum AggregationType {
+  // UNKOWN_AGGREGATION_TYPE is the default value for the aggregation type.
+  UNKNOWN_AGGREGATION_TYPE = 0;
+
+  // IndexPriceAggregation is the type of aggregation that will be used to
+  // aggregate the prices of the tickers. Specifically, this converts the prices
+  // either directly or using the index price to a common currency pair.
+  INDEX_PRICE_AGGREGATION = 1;
+
+  // StandardMedianAggregation is the type of aggregation that will be used to
+  // aggregate the prices of the tickers. Specifically, this converts the prices
+  // to a common currency pair and then takes the median of the prices. No
+  // conversions are done if the prices are already in the common currency pair.
+  STANDARD_MEDIAN_AGGREGATION = 2;
 }
 
 message MarketMap {
@@ -89,4 +111,8 @@ message MarketMap {
   // Providers is a map from CurrencyPair to each of to provider-specific
   // configs associated with it.
   map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
+
+  // AggregationType is the type of aggregation that will be used to aggregate
+  // the prices of the tickers.
+  AggregationType aggregation_type = 4;
 }
