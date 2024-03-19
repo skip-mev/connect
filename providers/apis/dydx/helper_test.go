@@ -115,7 +115,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					},
 					{
 						Name:           "Mexc",
-						OffChainTicker: "BTC_USDT",
+						OffChainTicker: "BTCUSDT",
 					},
 					{
 						Name:           "Okx",
@@ -151,7 +151,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					},
 					{
 						Name:           "Mexc",
-						OffChainTicker: "ETH_USDT",
+						OffChainTicker: "ETHUSDT",
 					},
 					{
 						Name:           "Okx",

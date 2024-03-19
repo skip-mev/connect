@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -31,8 +30,8 @@ type ProviderOrchestrator struct {
 	mainCtx context.Context
 	// mainCancel is the main context cancel function.
 	mainCancel context.CancelFunc
-	// errGroup is the error group for the provider orchestrator.
-	errGroup *errgroup.Group
+	// wg is the wait group for the provider orchestrator.
+	wg sync.WaitGroup
 
 	// -------------------Stateful Fields-------------------//
 	//
@@ -116,7 +115,7 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	return o.providers
 }
 
-// GetProviders returns all of the providers.
+// GetPriceProviders returns all of the price providers.
 func (o *ProviderOrchestrator) GetPriceProviders() []types.PriceProviderI {
 	o.mut.Lock()
 	defer o.mut.Unlock()
