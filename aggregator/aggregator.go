@@ -24,7 +24,7 @@ type (
 )
 
 // Aggregator defines the expected interface that must be implemented by any custom data aggregator.
-type Aggregator[K comparable, V any] interface { //nolint
+type Aggregator[K comparable, V any] interface {
 	GetProviderData() AggregatedProviderData[K, V]
 	GetDataByProvider(provider K) V
 	SetProviderData(provider K, data V)
