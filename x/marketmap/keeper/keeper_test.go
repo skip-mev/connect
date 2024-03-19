@@ -60,6 +60,9 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	s.hooks = types.MultiMarketMapHooks{
 		s.oracleKeeper.Hooks(),
 	}
+
+	oracleGenesis := oracletypes.DefaultGenesisState()
+	s.Require().NotPanics(func() { s.oracleKeeper.InitGenesis(s.ctx, *oracleGenesis) })
 	k.SetHooks(s.hooks)
 
 	return k
