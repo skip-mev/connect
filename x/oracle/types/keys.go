@@ -30,6 +30,9 @@ var (
 	// NumRemovesKeyPrefix is the key-prefix under which the number of removed CPs is stored.
 	NumRemovesKeyPrefix = collections.NewPrefix(4)
 
+	// NumCPsKeyPrefix is the key-prefix under which the number CPs is stored.
+	NumCPsKeyPrefix = collections.NewPrefix(5)
+
 	// NumRemovesCodec is the collections.KeyCodec value used for the numRemoves value.
 	NumRemovesCodec = codec.KeyToValueCodec[uint64](codec.NewUint64Key[uint64]())
 )

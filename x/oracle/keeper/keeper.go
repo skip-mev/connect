@@ -65,6 +65,9 @@ type Keeper struct {
 	// numRemoves is the number of CPs removed in the previous block.
 	numRemoves collections.Item[uint64]
 
+	// numCPs is the number of CPs.
+	numCPs collections.Item[uint64]
+
 	// module authority
 	authority sdk.AccAddress
 }
@@ -92,6 +95,7 @@ func NewKeeper(
 		authority:          authority,
 		mmKeeper:           mmKeeper,
 		numRemoves:         collections.NewItem[uint64](sb, types.NumRemovesKeyPrefix, "removed_cps", types.NumRemovesCodec),
+		numCPs:             collections.NewItem[uint64](sb, types.NumCPsKeyPrefix, "num_cps", types.NumRemovesCodec),
 		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
 		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
 		idIndex:            idMulti,
@@ -325,4 +329,29 @@ func (k *Keeper) IncrementRemovedCPCounter(ctx sdk.Context) error {
 // GetRemovedCPCounter gets the counter of removed currency pairs.
 func (k *Keeper) GetRemovedCPCounter(ctx sdk.Context) (uint64, error) {
 	return k.numRemoves.Get(ctx)
+}
+
+// IncrementCPCounter increments the counter of currency pairs.
+func (k *Keeper) IncrementCPCounter(ctx sdk.Context) error {
+	val, err := k.numCPs.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	val++
+	return k.numCPs.Set(ctx, val)
+}
+
+// DecrementCPCounterBy decrements the counter of currency pairs by the given amount.
+func (k *Keeper) DecrementCPCounterBy(ctx sdk.Context, amt uint64) error {
+	val, err := k.numCPs.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	if val < amt {
+		return fmt.Errorf("invalid decrement amount - result will be negative")
+	}
+
+	return k.numRemoves.Set(ctx, val-amt)
 }
