@@ -2,7 +2,7 @@
 
 ## Kraken
 
-The Binance provider is used to fetch the spot price for cryptocurrencies from the [Kraken API](https://docs.kraken.com/rest/#tag/Spot-Market-Data/operation/getTickerInformation).
+The Kraken provider is used to fetch the spot price for cryptocurrencies from the [Kraken API](https://docs.kraken.com/rest/#tag/Spot-Market-Data/operation/getTickerInformation).
 
 ## Supported Pairs
 
