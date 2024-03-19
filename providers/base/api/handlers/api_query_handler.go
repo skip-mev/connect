@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -121,8 +122,9 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	// Set the concurrency limit based on the maximum number of queries allowed for a single
 	// interval.
 	wg := errgroup.Group{}
-	wg.SetLimit(h.config.MaxQueries)
-	h.logger.Debug("setting concurrency limit", zap.Int("limit", h.config.MaxQueries))
+	limit := math.Min(h.config.MaxQueries, len(ids))
+	wg.SetLimit(limit)
+	h.logger.Debug("setting concurrency limit", zap.Int("limit", limit))
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -145,7 +147,7 @@ MainLoop:
 	for {
 		select {
 		case <-ctx.Done():
-			h.logger.Info("context cancelled, stopping queries")
+			h.logger.Debug("context cancelled, stopping queries")
 			break MainLoop
 		default:
 			wg.Go(tasks[index])
@@ -159,9 +161,11 @@ MainLoop:
 	}
 
 	// Wait for all tasks to complete.
+	h.logger.Debug("waiting for api sub-tasks to complete")
 	if err := wg.Wait(); err != nil {
 		h.logger.Error("error querying ids", zap.Error(err))
 	}
+	h.logger.Debug("all api sub-tasks completed")
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
@@ -186,19 +190,35 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		// Create the URL for the request.
 		url, err := h.apiHandler.CreateURL(ids)
 		if err != nil {
-			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrCreateURLWithErr(err)))
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrCreateURLWithErr(err),
+					providertypes.ErrorUnableToCreateURL,
+				),
+			),
+			)
 			return nil
 		}
 
 		h.logger.Debug("created url", zap.String("url", url))
 
 		// Make the request.
-		ctx, cancel := context.WithTimeout(ctx, h.config.Timeout)
+		apiCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
 		defer cancel()
 
-		resp, err := h.requestHandler.Do(ctx, url)
+		resp, err := h.requestHandler.Do(apiCtx, url)
 		if err != nil {
-			h.writeResponse(responseCh, providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrDoRequestWithErr(err)))
+			status := providertypes.ErrorUnknown
+			if resp != nil {
+				status = providertypes.ErrorCode(resp.StatusCode)
+			}
+
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrDoRequestWithErr(err),
+					status,
+				)),
+			)
 			return nil
 		}
 
@@ -206,25 +226,44 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		var response providertypes.GetResponse[K, V]
 		switch {
 		case resp.StatusCode == http.StatusTooManyRequests:
-			response = providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrRateLimit)
+			response = providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrRateLimit,
+					providertypes.ErrorRateLimitExceeded,
+				),
+			)
 		case resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices:
-			response = providertypes.NewGetResponseWithErr[K, V](ids, errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode))
+			response = providertypes.NewGetResponseWithErr[K, V](ids,
+				providertypes.NewErrorWithCode(
+					errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode),
+					providertypes.ErrorCode(resp.StatusCode),
+				),
+			)
 		default:
 			response = h.apiHandler.ParseResponse(ids, resp)
 		}
 
-		h.writeResponse(responseCh, response)
+		h.writeResponse(ctx, responseCh, response)
 		return nil
 	}
 }
 
 // writeResponse is used to write the response to the response channel.
 func (h *APIQueryHandlerImpl[K, V]) writeResponse(
+	ctx context.Context,
 	responseCh chan<- providertypes.GetResponse[K, V],
 	response providertypes.GetResponse[K, V],
 ) {
-	responseCh <- response
-	h.logger.Debug("wrote response", zap.String("response", response.String()))
+	// Write the response to the response channel. We only do so if the
+	// context has not been cancelled. Otherwise, we risk writing to a
+	// channel that is not being read from.
+	select {
+	case <-ctx.Done():
+		h.logger.Debug("context cancelled, stopping write response")
+		return
+	case responseCh <- response:
+		h.logger.Debug("wrote response", zap.String("response", response.String()))
+	}
 
 	// Update the metrics.
 	for id := range response.Resolved {

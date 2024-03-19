@@ -18,6 +18,7 @@ import (
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
+	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -97,6 +98,7 @@ var (
 		coinbaseapi.Name:   coinbaseapi.DefaultMarketConfig,
 		coingecko.Name:     coingecko.DefaultMarketConfig,
 		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
+		krakenapi.Name:     krakenapi.DefaultMarketConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
@@ -118,7 +120,7 @@ var (
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
 	LocalOracleConfig = config.OracleConfig{
-		Production: false,
+		Production: true,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
@@ -140,18 +142,27 @@ var (
 			{
 				Name: binance.Name,
 				API:  binance.DefaultNonUSAPIConfig,
+				Type: types.ConfigType,
 			},
 			{
 				Name: coinbaseapi.Name,
 				API:  coinbaseapi.DefaultAPIConfig,
+				Type: types.ConfigType,
 			},
 			{
 				Name: coingecko.Name,
 				API:  coingecko.DefaultAPIConfig,
+				Type: types.ConfigType,
 			},
 			{
 				Name: geckoterminal.Name,
 				API:  geckoterminal.DefaultETHAPIConfig,
+				Type: types.ConfigType,
+			},
+			{
+				Name: krakenapi.Name,
+				API:  krakenapi.DefaultAPIConfig,
+				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//
 			// ---------------------Start WebSocket Providers--------------	//
@@ -163,47 +174,58 @@ var (
 			{
 				Name:      bitfinex.Name,
 				WebSocket: bitfinex.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      bitstamp.Name,
 				WebSocket: bitstamp.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      bybit.Name,
 				WebSocket: bybit.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      coinbasews.Name,
 				WebSocket: coinbasews.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      cryptodotcom.Name,
 				WebSocket: cryptodotcom.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      gate.Name,
 				WebSocket: gate.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      huobi.Name,
 				WebSocket: huobi.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      kraken.Name,
 				WebSocket: kraken.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      kucoin.Name,
 				WebSocket: kucoin.DefaultWebSocketConfig,
 				API:       kucoin.DefaultAPIConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      mexc.Name,
 				WebSocket: mexc.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 			{
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
+				Type:      types.ConfigType,
 			},
 		},
 	}

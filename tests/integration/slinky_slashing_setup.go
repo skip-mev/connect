@@ -25,6 +25,7 @@ import (
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/static"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -170,14 +171,16 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 	oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 		Name: static.Name,
 		API: oracleconfig.APIConfig{
-			Enabled:    true,
-			Timeout:    250 * time.Millisecond,
-			Interval:   250 * time.Millisecond,
-			MaxQueries: 1,
-			URL:        "http://un-used-url.com",
-			Atomic:     true,
-			Name:       static.Name,
+			Enabled:          true,
+			Timeout:          250 * time.Millisecond,
+			Interval:         250 * time.Millisecond,
+			ReconnectTimeout: 250 * time.Millisecond,
+			MaxQueries:       1,
+			URL:              "http://un-used-url.com",
+			Atomic:           true,
+			Name:             static.Name,
 		},
+		Type: types.ConfigType,
 	})
 
 	marketConfig := mmtypes.MarketMap{

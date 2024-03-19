@@ -17,6 +17,9 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
+// ConfigType is the type of the API/WebSocket configuration.
+const ConfigType = "price_provider"
+
 type (
 	// PriceProviderFactory is a type alias for the price provider factory. This
 	// specifically only returns price providers that implement the provider interface
@@ -81,10 +84,10 @@ type (
 	PriceResponse = providertypes.GetResponse[mmtypes.Ticker, *big.Int]
 
 	// ResolvedPrices is a type alias for the resolved prices.
-	ResolvedPrices = map[mmtypes.Ticker]providertypes.Result[*big.Int]
+	ResolvedPrices = map[mmtypes.Ticker]providertypes.ResolvedResult[*big.Int]
 
 	// UnResolvedPrices is a type alias for the unresolved prices.
-	UnResolvedPrices = map[mmtypes.Ticker]error
+	UnResolvedPrices = map[mmtypes.Ticker]providertypes.UnresolvedResult
 
 	// TickerPrices is a type alias for the map of prices. This is a map of tickers i.e.
 	// BTC/USD, ETH/USD, etc. to their respective prices.
@@ -92,7 +95,7 @@ type (
 
 	// PriceAggregator is a type alias for the price aggregator. This is responsible for
 	// aggregating the resolved prices from the price providers.
-	PriceAggregator = aggregator.DataAggregator[string, TickerPrices]
+	PriceAggregator = aggregator.Aggregator[string, TickerPrices]
 
 	// PriceAggregationFn is a type alias for the price aggregation function. This function
 	// is used to aggregate the resolved prices from the price providers.

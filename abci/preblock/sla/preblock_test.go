@@ -120,8 +120,15 @@ func (s *SLAPreBlockerHandlerTestSuite) SetupSubTest() {
 }
 
 func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
-	s.Run("returns if vote extensions have not been enabled", func() {
+	s.Run("returns error if req is nil", func() {
 		_, err := s.handler.PreBlocker()(s.ctx, nil)
+		s.Require().Error(err)
+	})
+
+	s.Run("returns if vote extensions have not been enabled", func() {
+		req := &cometabci.RequestFinalizeBlock{}
+
+		_, err := s.handler.PreBlocker()(s.ctx, req)
 		s.Require().NoError(err)
 	})
 
@@ -992,12 +999,12 @@ func (s *SLAPreBlockerHandlerTestSuite) initHandler(veEnabled, setSLA bool) {
 	s.slaKeeper = slakeeper.NewKeeper(
 		storeService,
 		encodingConfig.Codec,
-		sdk.AccAddress([]byte("authority")),
+		sdk.AccAddress("authority"),
 		slamocks.NewStakingKeeper(s.T()),
 		slamocks.NewSlashingKeeper(s.T()),
 	)
 
-	s.slaKeeper.SetParams(s.ctx, slatypes.DefaultParams())
+	s.Require().NoError(s.slaKeeper.SetParams(s.ctx, slatypes.DefaultParams()))
 
 	if setSLA {
 		id := "slaID1"

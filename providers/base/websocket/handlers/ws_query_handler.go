@@ -120,7 +120,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 
 	h.ids = ids
 	if len(h.ids) == 0 {
-		h.logger.Debug("no ids to query")
+		h.logger.Info("no ids to query; exiting")
 		return nil
 	}
 
@@ -130,7 +130,12 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
 	if err := h.start(); err != nil {
-		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids, err)
+		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids,
+			providertypes.NewErrorWithCode(
+				err,
+				providertypes.ErrorWebsocketStartFail,
+			),
+		)
 		return fmt.Errorf("failed to start connection: %w", err)
 	}
 
@@ -250,7 +255,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
-				h.logger.Error(
+				h.logger.Debug(
 					"failed to read message from websocket handler",
 					zap.String("message", string(message)),
 					zap.Error(err),
@@ -264,7 +269,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 					continue
 				}
 
-				h.logger.Error("max read errors reached")
+				h.logger.Error("max read errors reached", zap.Error(err))
 				if err := h.close(); err != nil {
 					return err
 				}
@@ -284,10 +289,21 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			}
 
 			// Immediately send the response to the response channel. Even if this is
-			// empty, it will be handled by the provider.
-			responseCh <- response
-			h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
-			h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
+			// empty, it will be handled by the provider. Note that if the context has been
+			// cancelled, we should not send the response to the channel. Otherwise, we risk
+			// sending a response to a closed channel.
+			select {
+			case <-ctx.Done():
+				h.logger.Debug("context finished")
+				if err := h.close(); err != nil {
+					return errors.ErrCloseWithErr(err)
+				}
+
+				return ctx.Err()
+			case responseCh <- response:
+				h.logger.Debug("handled message successfully; sent response to response channel", zap.String("response", response.String()))
+				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageSuccess)
+			}
 
 			// If the update messages are not nil, send it to the data provider.
 			if len(updateMessage) != 0 {

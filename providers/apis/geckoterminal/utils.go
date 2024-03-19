@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the GeckoTerminal provider.
-	Name = "geckoterminal"
+	Name = "GeckoTerminal"
 
 	// URL is the root URL for the GeckoTerminal API.
 	ETH_URL = "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/%s"
@@ -34,13 +34,14 @@ var (
 	// DefaultETHAPIConfig is the default configuration for querying Ethereum mainnet tokens
 	// on the GeckoTerminal API.
 	DefaultETHAPIConfig = config.APIConfig{
-		Name:       Name,
-		Atomic:     false,
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   3000 * time.Millisecond,
-		MaxQueries: 1,
-		URL:        ETH_URL,
+		Name:             Name,
+		Atomic:           false,
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         5 * time.Second,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		URL:              ETH_URL,
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for tokens on

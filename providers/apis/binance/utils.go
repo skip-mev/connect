@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the Binance provider.
-	Name = "binance"
+	Name = "Binance"
 
 	// URL is the base URL of the Binance API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
@@ -38,24 +38,26 @@ const (
 var (
 	// DefaultUSAPIConfig is the default configuration for the Binance API.
 	DefaultUSAPIConfig = config.APIConfig{
-		Name:       Name,
-		Atomic:     true,
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   150 * time.Millisecond,
-		MaxQueries: 1,
-		URL:        US_URL,
+		Name:             Name,
+		Atomic:           true,
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         150 * time.Millisecond,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		URL:              US_URL,
 	}
 
 	// DefaultNonUSAPIConfig is the default configuration for the Binance API.
 	DefaultNonUSAPIConfig = config.APIConfig{
-		Name:       Name,
-		Atomic:     true,
-		Enabled:    true,
-		Timeout:    500 * time.Millisecond,
-		Interval:   150 * time.Millisecond,
-		MaxQueries: 1,
-		URL:        URL,
+		Name:             Name,
+		Atomic:           true,
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         150 * time.Millisecond,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		URL:              URL,
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.
@@ -351,6 +353,10 @@ var (
 		constants.USDC_USDT: {
 			Name:           Name,
 			OffChainTicker: "USDCUSDT",
+		},
+		constants.USDT_USD: {
+			Name:           Name,
+			OffChainTicker: "USDTUSD",
 		},
 		constants.WORLD_USDT: {
 			Name:           Name,

@@ -66,3 +66,8 @@ func (cp *CurrencyPair) LegacyDecimals() int {
 	}
 	return 8
 }
+
+// Equal returns true iff the CurrencyPair is equal to the given CurrencyPair.
+func (cp *CurrencyPair) Equal(other CurrencyPair) bool {
+	return cp.Base == other.Base && cp.Quote == other.Quote
+}

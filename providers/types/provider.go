@@ -22,11 +22,14 @@ type Provider[K ResponseKey, V ResponseValue] interface {
 	// For example, if the provider is fetching prices for a set of currency
 	// pairs, the data returned by this function would be the latest prices
 	// for those currency pairs.
-	GetData() map[K]Result[V]
+	GetData() map[K]ResolvedResult[V]
 
 	// Start starts the provider.
 	Start(context.Context) error
 
 	// Type returns the type of the provider data handler.
 	Type() ProviderType
+
+	// IsRunning returns whether the provider is running.
+	IsRunning() bool
 }

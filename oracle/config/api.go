@@ -17,6 +17,10 @@ type APIConfig struct {
 	// Interval is the interval at which the provider should update the prices.
 	Interval time.Duration `json:"interval"`
 
+	// ReconnectTimeout is the amount of time the provider should wait before
+	// reconnecting to the API.
+	ReconnectTimeout time.Duration `json:"reconnectTimeout"`
+
 	// MaxQueries is the maximum number of queries that the provider will make
 	// within the interval. If the provider makes more queries than this, it will
 	// stop making queries until the next interval.
@@ -43,8 +47,8 @@ func (c *APIConfig) ValidateBasic() error {
 		return fmt.Errorf("api max queries must be greater than 0")
 	}
 
-	if c.Interval <= 0 || c.Timeout <= 0 {
-		return fmt.Errorf("provider interval and timeout must be strictly positive")
+	if c.Interval <= 0 || c.Timeout <= 0 || c.ReconnectTimeout <= 0 {
+		return fmt.Errorf("provider interval, timeout and reconnect timeout must be strictly positive")
 	}
 
 	if len(c.URL) == 0 {

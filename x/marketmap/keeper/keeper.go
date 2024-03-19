@@ -46,7 +46,7 @@ func NewKeeper(ss store.KVStoreService, cdc codec.BinaryCodec, authority sdk.Acc
 	sb := collections.NewSchemaBuilder(ss)
 
 	// Create the collections item that will track the module parameters.
-	params := collections.NewItem(
+	params := collections.NewItem[types.Params](
 		sb,
 		types.ParamsPrefix,
 		"params",

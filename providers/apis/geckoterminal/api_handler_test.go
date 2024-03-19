@@ -13,6 +13,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/base/testutils"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -128,7 +129,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: fmt.Errorf("bad format"),
+					constants.MOG_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(
+							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -153,7 +157,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: fmt.Errorf("bad format"),
+					constants.MOG_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(
+							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -178,7 +185,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: fmt.Errorf("bad format"),
+					constants.MOG_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(
+							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},
@@ -193,7 +203,10 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: fmt.Errorf("bad format"),
+					constants.MOG_USD: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(
+							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
+					},
 				},
 			),
 		},

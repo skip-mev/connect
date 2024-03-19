@@ -23,7 +23,6 @@ var (
 func TestConfigUpdater(t *testing.T) {
 	t.Run("restart on IDs update with an API provider", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
@@ -37,7 +36,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -45,9 +43,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial IDs should be the same as the provider's IDs.
@@ -57,7 +54,8 @@ func TestConfigUpdater(t *testing.T) {
 		// Wait for a few seconds and update the IDs.
 		time.Sleep(2 * time.Second)
 		updated := []slinkytypes.CurrencyPair{ethusd, solusd, btcusd}
-		updater.UpdateIDs(updated)
+		logger.Debug("test case updating ids")
+		provider.Update(base.WithNewIDs[slinkytypes.CurrencyPair, *big.Int](updated))
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -67,12 +65,12 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updated, ids)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, 2*time.Second, 100*time.Millisecond)
 	})
 
 	t.Run("restart on IDs update with a websocket provider", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
@@ -86,7 +84,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -94,9 +91,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial IDs should be the same as the provider's IDs.
@@ -106,7 +102,8 @@ func TestConfigUpdater(t *testing.T) {
 		// Wait for a few seconds and update the IDs.
 		time.Sleep(2 * time.Second)
 		updated := []slinkytypes.CurrencyPair{ethusd, solusd, btcusd}
-		updater.UpdateIDs(updated)
+		logger.Debug("test case updating ids")
+		provider.Update(base.WithNewIDs[slinkytypes.CurrencyPair, *big.Int](updated))
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -116,12 +113,14 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updated, ids)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool {
+			return !provider.IsRunning()
+		}, 2*time.Second, 100*time.Millisecond)
 	})
 
 	t.Run("restart on API handler update", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		apiHandler := testutils.CreateAPIQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			logger,
@@ -135,7 +134,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithAPIConfig[slinkytypes.CurrencyPair, *big.Int](apiCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -143,9 +141,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial API handler should be the same as the provider's API handler.
@@ -153,9 +150,9 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, apiHandler, handler)
 
 		// Wait for a few seconds and update the API handler with a handler that returns some data.
-		time.Sleep(2 * time.Second)
+		time.Sleep(4 * time.Second)
 
-		resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+		resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 			pairs[0]: {
 				Value:     big.NewInt(100),
 				Timestamp: respTime,
@@ -170,7 +167,8 @@ func TestConfigUpdater(t *testing.T) {
 			responses,
 			200*time.Millisecond,
 		)
-		updater.UpdateAPIHandler(updatedAPIHandler)
+		logger.Debug("test case updating api handler")
+		provider.Update(base.WithNewAPIHandler[slinkytypes.CurrencyPair, *big.Int](updatedAPIHandler))
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -180,12 +178,12 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updatedAPIHandler, handler)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, 2*time.Second, 100*time.Millisecond)
 	})
 
 	t.Run("restart on WebSocket handler update", func(t *testing.T) {
 		pairs := []slinkytypes.CurrencyPair{btcusd}
-		updater := base.NewConfigUpdater[slinkytypes.CurrencyPair, *big.Int]()
 		wsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
 			t,
 			time.Second,
@@ -199,7 +197,6 @@ func TestConfigUpdater(t *testing.T) {
 			base.WithWebSocketConfig[slinkytypes.CurrencyPair, *big.Int](wsCfg),
 			base.WithLogger[slinkytypes.CurrencyPair, *big.Int](logger),
 			base.WithIDs[slinkytypes.CurrencyPair, *big.Int](pairs),
-			base.WithConfigUpdater[slinkytypes.CurrencyPair, *big.Int](updater),
 		)
 		require.NoError(t, err)
 
@@ -207,9 +204,8 @@ func TestConfigUpdater(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 		defer cancel()
 
-		errCh := make(chan error)
 		go func() {
-			errCh <- provider.Start(ctx)
+			provider.Start(ctx)
 		}()
 
 		// The initial WebSocket handler should be the same as the provider's WebSocket handler.
@@ -217,9 +213,9 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, wsHandler, handler)
 
 		// Wait for a few seconds and update the WebSocket handler with a handler that returns some data.
-		time.Sleep(2 * time.Second)
+		time.Sleep(4 * time.Second)
 
-		resolved := map[slinkytypes.CurrencyPair]providertypes.Result[*big.Int]{
+		resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
 			pairs[0]: {
 				Value:     big.NewInt(100),
 				Timestamp: respTime,
@@ -229,7 +225,8 @@ func TestConfigUpdater(t *testing.T) {
 			providertypes.NewGetResponse(resolved, nil),
 		}
 		updatedWsHandler := testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](t, time.Second, logger, responses)
-		updater.UpdateWebSocketHandler(updatedWsHandler)
+		logger.Debug("test case updating websocket handler")
+		provider.Update(base.WithNewWebSocketHandler[slinkytypes.CurrencyPair, *big.Int](updatedWsHandler))
 
 		// Wait for the provider to restart.
 		time.Sleep(2 * time.Second)
@@ -239,6 +236,7 @@ func TestConfigUpdater(t *testing.T) {
 		require.Equal(t, updatedWsHandler, handler)
 
 		// Check that the provider exited without error.
-		require.Equal(t, context.DeadlineExceeded, <-errCh)
+		provider.Stop()
+		require.Eventually(t, func() bool { return !provider.IsRunning() }, 2*time.Second, 100*time.Millisecond)
 	})
 }

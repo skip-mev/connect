@@ -19,6 +19,7 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -259,14 +260,16 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 				Name: static.Name,
 				API: oracleconfig.APIConfig{
-					Enabled:    true,
-					Timeout:    250 * time.Millisecond,
-					Interval:   250 * time.Millisecond,
-					MaxQueries: 1,
-					URL:        "http://un-used-url.com",
-					Atomic:     true,
-					Name:       static.Name,
+					Enabled:          true,
+					Timeout:          250 * time.Millisecond,
+					Interval:         250 * time.Millisecond,
+					ReconnectTimeout: 250 * time.Millisecond,
+					MaxQueries:       1,
+					URL:              "http://un-used-url.com",
+					Atomic:           true,
+					Name:             static.Name,
 				},
+				Type: types.ConfigType,
 			})
 
 			marketConfig := mmtypes.MarketMap{
@@ -481,14 +484,16 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
-				Enabled:    true,
-				Timeout:    250 * time.Millisecond,
-				Interval:   250 * time.Millisecond,
-				MaxQueries: 1,
-				URL:        "http://un-used-url.com",
-				Atomic:     true,
-				Name:       static.Name,
+				Enabled:          true,
+				Timeout:          250 * time.Millisecond,
+				Interval:         250 * time.Millisecond,
+				ReconnectTimeout: 250 * time.Millisecond,
+				MaxQueries:       1,
+				URL:              "http://un-used-url.com",
+				Atomic:           true,
+				Name:             static.Name,
 			},
+			Type: types.ConfigType,
 		})
 
 		marketConfig := mmtypes.MarketMap{
@@ -580,14 +585,16 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: "static-mock-provider",
 			API: oracleconfig.APIConfig{
-				Enabled:    true,
-				Timeout:    250 * time.Millisecond,
-				Interval:   250 * time.Millisecond,
-				MaxQueries: 1,
-				URL:        "http://un-used-url.com",
-				Atomic:     true,
-				Name:       "static-mock-provider",
+				Enabled:          true,
+				Timeout:          250 * time.Millisecond,
+				Interval:         250 * time.Millisecond,
+				ReconnectTimeout: 250 * time.Millisecond,
+				MaxQueries:       1,
+				URL:              "http://un-used-url.com",
+				Atomic:           true,
+				Name:             "static-mock-provider",
 			},
+			Type: types.ConfigType,
 		})
 
 		marketConfig := mmtypes.MarketMap{
