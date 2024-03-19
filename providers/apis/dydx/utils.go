@@ -54,7 +54,7 @@ var DefaultAPIConfig = config.APIConfig{
 // These are references to the different providers that are supported by the dYdX market map.
 //
 // ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
-var providerMapping = map[string][]string{
+var ProviderMapping = map[string][]string{
 	"Binance":     {binance.Name},
 	"BinanceUS":   {binance.Name},
 	"Bitfinex":    {bitfinex.Name},
