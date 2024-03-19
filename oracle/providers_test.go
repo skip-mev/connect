@@ -6,6 +6,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -13,7 +15,6 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/mock"
 )
 
 func (s *OracleTestSuite) TestProviders() {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/skip-mev/slinky/providers/apis/kraken"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -57,6 +59,8 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = coingecko.NewAPIHandler(marketMap, cfg.API)
 	case geckoterminal.Name:
 		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
+	case kraken.Name:
+		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {
