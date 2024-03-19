@@ -100,8 +100,16 @@ func NewProvider[K providertypes.ResponseKey, V providertypes.ResponseValue](opt
 // Start starts the provider's main loop. The provider will fetch the data from the handler
 // and continuously update the data. This blocks until the provider is stopped.
 func (p *Provider[K, V]) Start(ctx context.Context) error {
-	p.logger.Info("starting provider")
+	if ctx == nil {
+		p.logger.Info("context is nil; exiting")
+		return nil
+	}
+	if len(p.ids) == 0 {
+		p.logger.Info("no ids set on provider; exiting")
+		return nil
+	}
 
+	p.logger.Info("starting provider")
 	mainCtx, mainCancel := p.setMainCtx(ctx)
 	defer func() {
 		mainCancel()
@@ -145,10 +153,10 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		}()
 
 		// Wait for the fetch loop to return or the context to be cancelled.
-		p.logger.Info("started provider fetch and recv routines")
+		p.logger.Debug("started provider fetch and recv routines")
 		wg.Wait()
 		retErr = <-errCh
-		p.logger.Info("provider routines stopped", zap.Error(retErr))
+		p.logger.Debug("provider routines stopped", zap.Error(retErr))
 
 		// If the provider was stopped due to a context cancellation, then we should
 		// not restart the provider.

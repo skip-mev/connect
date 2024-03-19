@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"sync"
 	"time"
-
-	"github.com/stretchr/testify/mock"
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
@@ -16,6 +13,7 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/stretchr/testify/mock"
 )
 
 func (s *OracleTestSuite) TestProviders() {
@@ -185,14 +183,11 @@ func (s *OracleTestSuite) TestProviders() {
 			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
 
-			ctx, cancel := context.WithTimeout(context.Background(), 3*cfg.UpdateInterval)
+			ctx, cancel := context.WithTimeout(context.Background(), 4*cfg.UpdateInterval)
 			defer cancel()
 
-			wg := &sync.WaitGroup{}
 			for _, provider := range providers {
-				wg.Add(1)
 				go func() {
-					defer wg.Done()
 					provider.Start(ctx)
 				}()
 			}
@@ -204,14 +199,12 @@ func (s *OracleTestSuite) TestProviders() {
 			)
 			s.Require().NoError(err)
 
-			wg.Add(1)
 			go func() {
-				defer wg.Done()
 				testOracle.Start(ctx)
 			}()
 
 			// Wait for the oracle to start and update.
-			time.Sleep(3 * cfg.UpdateInterval)
+			time.Sleep(2 * cfg.UpdateInterval)
 
 			// Get the prices.
 			prices := testOracle.GetPrices()
@@ -220,12 +213,21 @@ func (s *OracleTestSuite) TestProviders() {
 			// Stop the oracle.
 			testOracle.Stop()
 
+			time.Sleep(5 * cfg.UpdateInterval)
+
 			// Ensure that the oracle is not running.
 			checkFn := func() bool {
-				wg.Wait()
 				return !testOracle.IsRunning()
 			}
 			s.Eventually(checkFn, 5*time.Second, 100*time.Millisecond)
+
+			// Ensure that the providers are not running.
+			for _, provider := range providers {
+				providerCheckFn := func() bool {
+					return !provider.IsRunning()
+				}
+				s.Eventually(providerCheckFn, 5*time.Second, 100*time.Millisecond)
+			}
 		})
 	}
 }
@@ -234,9 +236,10 @@ func (s *OracleTestSuite) noStartProvider(name string) types.PriceProviderI {
 	provider := providermocks.NewProvider[mmtypes.Ticker, *big.Int](s.T())
 
 	provider.On("Name").Return(name).Maybe()
-	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz error")).Maybe()
+	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz start")).Maybe()
 	provider.On("GetData").Return(nil).Maybe()
-	provider.On("Type").Return(providertypes.API)
+	provider.On("Type").Return(providertypes.API).Maybe()
+	provider.On("IsRunning").Return(false).Maybe()
 
 	return provider
 }

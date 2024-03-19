@@ -29,4 +29,7 @@ type Provider[K ResponseKey, V ResponseValue] interface {
 
 	// Type returns the type of the provider data handler.
 	Type() ProviderType
+
+	// IsRunning returns whether the provider is running.
+	IsRunning() bool
 }
