@@ -31,7 +31,7 @@ func TestCreateURL(t *testing.T) {
 			cps: []mmtypes.Ticker{
 				constants.BITCOIN_USDT,
 			},
-			url:         "https://api.kraken.com/0/public/Ticker?pair=BTCUSDT",
+			url:         "https://api.kraken.com/0/public/Ticker?pair=XBTUSDT",
 			expectedErr: false,
 		},
 		{
@@ -40,7 +40,7 @@ func TestCreateURL(t *testing.T) {
 				constants.BITCOIN_USDT,
 				constants.ETHEREUM_USDT,
 			},
-			url:         "https://api.kraken.com/0/public/Ticker?pair=BTCUSDT,ETHUSDT",
+			url:         "https://api.kraken.com/0/public/Ticker?pair=XBTUSDT,ETHUSDT",
 			expectedErr: false,
 		},
 		{
@@ -81,14 +81,14 @@ func TestParseResponse(t *testing.T) {
 	}{
 		{
 			name: "valid single",
-			cps:  []mmtypes.Ticker{constants.BITCOIN_USDT},
+			cps:  []mmtypes.Ticker{constants.BITCOIN_USD},
 			response: testutils.CreateResponseFromJSON(
 				`{"error":[],"result":{"XXBTZUSD":{"a":["64587.50000","2","2.000"],"b":["64587.40000","11","11.000"],"c":["64587.40000","0.01026127"],"v":["5866.14264484","6251.33408493"],"p":["64487.45123","64670.54770"],"t":[56819,62596],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.BITCOIN_USDT: {
-						Value: big.NewInt(6458740000),
+					constants.BITCOIN_USD: {
+						Value: big.NewInt(6458740000000),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -97,19 +97,19 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
+				constants.BITCOIN_USD,
+				constants.ETHEREUM_USD,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`{"error":[],"result":{"XETHZUSD":{"a":["3338.95000","1","1.000"],"b":["3338.94000","246","246.000"],"c":["3338.08000","0.00702654"],"v":["33234.61736920","35692.20596751"],"p":["3310.12909","3324.16514"],"t":[25646,28278],"l":["3200.17000","3200.17000"],"h":["3547.76000","3547.76000"],"o":"3518.43000"},"XXBTZUSD":{"a":["64547.20000","4","4.000"],"b":["64547.10000","15","15.000"],"c":["64547.20000","0.00013362"],"v":["5869.92462186","6253.84063618"],"p":["64487.50403","64670.01016"],"t":[56856,62595],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.BITCOIN_USDT: {
-						Value: big.NewInt(6454720000),
+					constants.BITCOIN_USD: {
+						Value: big.NewInt(6454720000000),
 					},
-					constants.ETHEREUM_USDT: {
-						Value: big.NewInt(333895000),
+					constants.ETHEREUM_USD: {
+						Value: big.NewInt(333808000000),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -152,7 +152,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad price response",
 			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+				constants.BITCOIN_USD,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`{"error":[],"result":{"XXBTZUSD":{"a":["$64587.50000","2","2.000"],"b":["$64587.40000","11","11.000"],"c":["$64587.40000","0.01026127"],"v":["5866.14264484","6251.33408493"],"p":["64487.45123","64670.54770"],"t":[56819,62596],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
@@ -160,7 +160,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+					constants.BITCOIN_USD: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -228,17 +228,33 @@ func TestDecode(t *testing.T) {
 		{
 			name: "valid single",
 			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"BTCUSDT","price":"46707.03000000"}]`,
+				`{"error":[],"result":{"XXBTZUSD":{"a":["64587.50000","2","2.000"],"b":["64587.40000","11","11.000"],"c":["64587.40000","0.01026127"],"v":["5866.14264484","6251.33408493"],"p":["64487.45123","64670.54770"],"t":[56819,62596],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
 			),
-			expected:  kraken.ResponseBody{},
-			expectErr: false,
+			expected: kraken.ResponseBody{
+				Errors: []string{},
+				Tickers: map[string]kraken.TickerResult{
+					"XXBTZUSD": {
+						ClosePriceStats: []string{"64587.40000", "0.01026127"},
+					},
+				},
+			}, expectErr: false,
 		},
 		{
 			name: "valid multi",
 			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"ETHUSDT","price":"707.03000000"}]`,
+				`{"error":[],"result":{"XETHZUSD":{"a":["3338.95000","1","1.000"],"b":["3338.94000","246","246.000"],"c":["3338.08000","0.00702654"],"v":["33234.61736920","35692.20596751"],"p":["3310.12909","3324.16514"],"t":[25646,28278],"l":["3200.17000","3200.17000"],"h":["3547.76000","3547.76000"],"o":"3518.43000"},"XXBTZUSD":{"a":["64547.20000","4","4.000"],"b":["64547.10000","15","15.000"],"c":["64547.20000","0.00013362"],"v":["5869.92462186","6253.84063618"],"p":["64487.50403","64670.01016"],"t":[56856,62595],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
 			),
-			expected:  kraken.ResponseBody{},
+			expected: kraken.ResponseBody{
+				Errors: []string{},
+				Tickers: map[string]kraken.TickerResult{
+					"XETHZUSD": {
+						ClosePriceStats: []string{"3338.08000", "0.00702654"},
+					},
+					"XXBTZUSD": {
+						ClosePriceStats: []string{"64547.20000", "0.00013362"},
+					},
+				},
+			},
 			expectErr: false,
 		},
 	}
