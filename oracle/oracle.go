@@ -54,7 +54,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *types.PriceAggregator
+	priceAggregator types.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics metrics.Metrics
@@ -106,9 +106,6 @@ func (o *OracleImpl) IsRunning() bool {
 // provider concurrently every oracleTicker interval.
 func (o *OracleImpl) Start(ctx context.Context) error {
 	o.logger.Info("starting oracle")
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	o.running.Store(true)
 	defer o.running.Store(false)
@@ -180,6 +177,15 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 			o.logger.Error("provider panicked", zap.Error(fmt.Errorf("%v", r)))
 		}
 	}()
+
+	if !provider.IsRunning() {
+		o.logger.Debug(
+			"provider is not running",
+			zap.String("provider", provider.Name()),
+		)
+
+		return
+	}
 
 	o.logger.Info(
 		"retrieving prices",

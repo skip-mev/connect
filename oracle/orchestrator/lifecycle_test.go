@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
-	"github.com/stretchr/testify/require"
 )
 
 func TestStart(t *testing.T) {
@@ -20,6 +21,8 @@ func TestStart(t *testing.T) {
 
 		err = o.Start(context.Background())
 		require.Error(t, err)
+
+		o.Stop()
 	})
 
 	t.Run("price providers with no market map", func(t *testing.T) {

@@ -35,6 +35,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			},
 		})
 		require.Error(t, err)
+
+		o.Stop()
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no running providers", func(t *testing.T) {
@@ -67,6 +69,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		binanceState, ok := providers[binance.Name]
 		require.True(t, ok)
 		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
+
+		o.Stop()
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with running providers", func(t *testing.T) {
@@ -77,21 +81,18 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
-
-		providers := o.GetProviderState()
-		require.Len(t, providers, 3)
 
 		// Start the providers.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		for _, state := range providers {
-			go func(s orchestrator.ProviderState) {
-				s.Provider.Start(ctx)
-			}(state)
-		}
+		go func() {
+			require.NoError(t, o.Start(ctx))
+		}()
 
 		time.Sleep(1000 * time.Millisecond)
+
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
 
 		// Update the orchestrator's market map.
 		require.NoError(t, o.UpdateWithMarketMap(marketMap))
@@ -112,13 +113,10 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 		binanceState, ok := providers[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, providertypes.API, true, binanceState)
+		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
 
 		// Stop the providers.
-		for _, state := range providers {
-			state.Provider.Stop()
-		}
-
+		o.Stop()
 		time.Sleep(2000 * time.Millisecond)
 
 		// Ensure all providers are stopped.
@@ -164,6 +162,8 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		binanceState, ok := providers[binance.Name]
 		require.True(t, ok)
 		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
+
+		o.Stop()
 	})
 
 	t.Run("can update the orchestrator's market map and update the providers' market maps with no tickers and running providers", func(t *testing.T) {
@@ -175,21 +175,17 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
-
-		providers := o.GetProviderState()
-		require.Len(t, providers, 3)
 
 		// Start the providers.
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		for _, state := range providers {
-			go func(s orchestrator.ProviderState) {
-				s.Provider.Start(ctx)
-			}(state)
-		}
+		go func() {
+			require.NoError(t, o.Start(ctx))
+		}()
 
 		time.Sleep(1000 * time.Millisecond)
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
 
 		// Update the orchestrator's market map.
 		require.NoError(t, o.UpdateWithMarketMap(mmtypes.MarketMap{}))
@@ -202,34 +198,18 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		// Check the state after the update.
 		coinbaseState, ok := providers[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, coinbase.Name, providertypes.API, true, coinbaseState)
+		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, coinbaseState)
 
 		okxState, ok := providers[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, true, okxState)
+		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, okxState)
 
 		binanceState, ok := providers[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, providertypes.API, true, binanceState)
+		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
 
 		// Stop the providers.
-		for _, state := range providers {
-			state.Provider.Stop()
-		}
-
-		time.Sleep(2000 * time.Millisecond)
-
-		// Ensure all providers are stopped.
-		for _, state := range providers {
-			require.Eventually(
-				t,
-				func() bool {
-					return !state.Provider.IsRunning()
-				},
-				5*time.Second,
-				500*time.Millisecond,
-			)
-		}
+		o.Stop()
 	})
 }
 
@@ -263,17 +243,6 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, false, updatedState)
-
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
-		require.Eventually(
-			t,
-			func() bool {
-				return !updatedState.Provider.IsRunning()
-			},
-			5*time.Second,
-			500*time.Millisecond,
-		)
 	})
 
 	t.Run("can update a single api provider state with no configuration and running", func(t *testing.T) {
@@ -284,7 +253,16 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		// Start the provider.
+		go func() {
+			o.Start(ctx)
+		}()
+
+		time.Sleep(500 * time.Millisecond)
 
 		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
@@ -295,18 +273,8 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[coinbase.Name]
 		require.True(t, ok)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		// Start the provider.
-		go func() {
-			providerState.Provider.Start(ctx)
-		}()
-
-		time.Sleep(500 * time.Millisecond)
-
 		// Check the state before any modifications are done.
-		checkProviderState(t, nil, coinbase.Name, providertypes.API, true, providerState)
+		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, providerState)
 
 		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
 		require.NoError(t, err)
@@ -316,8 +284,7 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, true, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
+		o.Stop()
 		require.Eventually(
 			t,
 			func() bool {
@@ -359,16 +326,7 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
-		require.Eventually(
-			t,
-			func() bool {
-				return !updatedState.Provider.IsRunning()
-			},
-			5*time.Second,
-			500*time.Millisecond,
-		)
+		o.Stop()
 	})
 
 	t.Run("can update a single api provider state removing all tickers on a running provider", func(t *testing.T) {
@@ -380,23 +338,21 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
-
-		providers := o.GetProviderState()
-		require.Len(t, providers, 3)
-
-		providerState, ok := providers[coinbase.Name]
-		require.True(t, ok)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
 		// Start the provider.
 		go func() {
-			providerState.Provider.Start(ctx)
+			o.Start(ctx)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		providerState, ok := providers[coinbase.Name]
+		require.True(t, ok)
 
 		// Check the state before any modifications are done.
 		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, true, providerState)
@@ -410,10 +366,9 @@ func TestUpdateProviderState(t *testing.T) {
 		time.Sleep(1000 * time.Millisecond)
 
 		// Check the state after the update.
-		checkProviderState(t, nil, coinbase.Name, providertypes.API, true, updatedState)
+		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
+		o.Stop()
 		require.Eventually(
 			t,
 			func() bool {
@@ -452,8 +407,7 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, false, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
+		o.Stop()
 		require.Eventually(
 			t,
 			func() bool {
@@ -472,8 +426,16 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
 
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		// Start the provider.
+		go func() {
+			o.Start(ctx)
+		}()
+
+		time.Sleep(3 * time.Millisecond)
 		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(okx.Name, marketMap)
 		require.NoError(t, err)
 
@@ -483,18 +445,8 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[okx.Name]
 		require.True(t, ok)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		// Start the provider.
-		go func() {
-			providerState.Provider.Start(ctx)
-		}()
-
-		time.Sleep(3 * time.Millisecond)
-
 		// Check the state before any modifications are done.
-		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, true, providerState)
+		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, providerState)
 
 		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
 		require.NoError(t, err)
@@ -504,8 +456,7 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, true, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
+		o.Stop()
 		require.Eventually(
 			t,
 			func() bool {
@@ -547,8 +498,7 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state after the update.
 		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
+		o.Stop()
 		require.Eventually(
 			t,
 			func() bool {
@@ -568,23 +518,21 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
-
-		providers := o.GetProviderState()
-		require.Len(t, providers, 3)
-
-		providerState, ok := providers[okx.Name]
-		require.True(t, ok)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
 		// Start the provider.
 		go func() {
-			providerState.Provider.Start(ctx)
+			o.Start(ctx)
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
+		providers := o.GetProviderState()
+		require.Len(t, providers, 3)
+
+		providerState, ok := providers[okx.Name]
+		require.True(t, ok)
 
 		// Check the state before any modifications are done.
 		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, true, providerState)
@@ -598,10 +546,9 @@ func TestUpdateProviderState(t *testing.T) {
 		time.Sleep(1000 * time.Millisecond)
 
 		// Check the state after the update.
-		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, true, updatedState)
+		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, updatedState)
 
-		updatedState.Provider.Stop()
-		time.Sleep(2000 * time.Millisecond)
+		o.Stop()
 		require.Eventually(
 			t,
 			func() bool {
