@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -10,7 +12,6 @@ import (
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 // ConfigType is the type of the API/WebSocket configuration.

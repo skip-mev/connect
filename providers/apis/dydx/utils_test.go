@@ -3,6 +3,8 @@ package dydx_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -11,7 +13,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestConvertMarketParamsToMarketMap(t *testing.T) {
@@ -177,6 +178,48 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 		expectedProviders mmtypes.Providers
 		err               bool
 	}{
+		{
+			name: "handles duplicate configs",
+			ticker: mmtypes.Ticker{
+				CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
+				Decimals:         8,
+				MinProviderCount: 3,
+			},
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: coinbase.Name,
+						Ticker:       "BTC-USD",
+					},
+					{
+						ExchangeName: coinbase.Name,
+						Ticker:       "BTC-USD",
+					},
+				},
+			},
+			expectedPaths: mmtypes.Paths{
+				Paths: []mmtypes.Path{
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     coinbase.Name,
+								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+								Invert:       false,
+							},
+						},
+					},
+				},
+			},
+			expectedProviders: mmtypes.Providers{
+				Providers: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "BTC-USD",
+					},
+				},
+			},
+			err: false,
+		},
 		{
 			name:   "single direct path with no inversion",
 			ticker: constants.BITCOIN_USD,

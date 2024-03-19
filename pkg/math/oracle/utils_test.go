@@ -79,7 +79,7 @@ func TestGetProviderPrice(t *testing.T) {
 		prices := types.TickerPrices{
 			BTC_USD: createPrice(100, BTC_USD.Decimals),
 		}
-		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
@@ -107,10 +107,10 @@ func TestGetProviderPrice(t *testing.T) {
 		prices := types.TickerPrices{
 			BTC_USD: createPrice(100, BTC_USD.Decimals),
 		}
-		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Set the index price.
-		m.PriceAggregator.SetAggregatedData(prices)
+		m.DataAggregator.SetAggregatedData(prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
@@ -139,7 +139,7 @@ func TestGetProviderPrice(t *testing.T) {
 		prices := types.TickerPrices{
 			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
 		}
-		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
@@ -159,7 +159,7 @@ func TestGetProviderPrice(t *testing.T) {
 		prices := types.TickerPrices{
 			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
 		}
-		m.PriceAggregator.SetProviderData(coinbase.Name, prices)
+		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{

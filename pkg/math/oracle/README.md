@@ -22,16 +22,7 @@ The MarketMap contains:
 > Say that the oracle is configured to fetch prices for the following feeds:
 >
 > * BITCOIN/USD (8 decimal precision)
-> * BITCOIN/USDT (8 decimal precision)
 > * ETHEREUM/USD (18 decimal precision)
-> * ETHEREUM/USDT (18 decimal precision)
-> * USDT/USD (6 decimal precision)
-> * USDC/USD (6 decimal precision)
-> 
-> We care about calculating the price of 
-> 
-> * BITCOIN/USD (8 decimal precision)
-> * ETHEREUM/USD (8 decimal precision)
 > * USDT/USD (6 decimal precision)
 
 Using the example above, a sample market map might look like the following (assume we have correctly configured the providers):
@@ -40,11 +31,8 @@ Using the example above, a sample market map might look like the following (assu
 marketmap = mmtypes.MarketMap{
     Tickers: map[string]mmtypes.Ticker{
         BTC_USD.String():   BTC_USD,
-        BTC_USDT.String():  BTC_USDT,
-        USDT_USD.String():  USDT_USD,
-        USDC_USDT.String(): USDC_USDT,
         ETH_USD.String():   ETH_USD,
-        ETH_USDT.String():  ETH_USDT,
+        USDT_USD.String():  USDT_USD,
     },
     Paths: map[string]mmtypes.Paths{
         BTC_USD.String(): {
