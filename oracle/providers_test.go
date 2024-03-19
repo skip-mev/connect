@@ -18,9 +18,6 @@ import (
 )
 
 func (s *OracleTestSuite) TestProviders() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	testCases := []struct {
 		name           string
 		factory        types.PriceProviderFactoryI
@@ -183,8 +180,18 @@ func (s *OracleTestSuite) TestProviders() {
 			cfg := config.OracleConfig{
 				UpdateInterval: 1 * time.Second,
 			}
+
 			providers, err := tc.factory(cfg)
 			s.Require().NoError(err)
+
+			ctx, cancel := context.WithTimeout(context.Background(), 4*cfg.UpdateInterval)
+			defer cancel()
+
+			for _, provider := range providers {
+				go func() {
+					provider.Start(ctx)
+				}()
+			}
 
 			testOracle, err := oracle.New(
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
@@ -194,11 +201,11 @@ func (s *OracleTestSuite) TestProviders() {
 			s.Require().NoError(err)
 
 			go func() {
-				s.Require().NoError(testOracle.Start(ctx))
+				testOracle.Start(ctx)
 			}()
 
 			// Wait for the oracle to start and update.
-			time.Sleep(3 * cfg.UpdateInterval)
+			time.Sleep(2 * cfg.UpdateInterval)
 
 			// Get the prices.
 			prices := testOracle.GetPrices()
@@ -207,11 +214,21 @@ func (s *OracleTestSuite) TestProviders() {
 			// Stop the oracle.
 			testOracle.Stop()
 
+			time.Sleep(5 * cfg.UpdateInterval)
+
 			// Ensure that the oracle is not running.
 			checkFn := func() bool {
 				return !testOracle.IsRunning()
 			}
 			s.Eventually(checkFn, 5*time.Second, 100*time.Millisecond)
+
+			// Ensure that the providers are not running.
+			for _, provider := range providers {
+				providerCheckFn := func() bool {
+					return !provider.IsRunning()
+				}
+				s.Eventually(providerCheckFn, 5*time.Second, 100*time.Millisecond)
+			}
 		})
 	}
 }
@@ -220,9 +237,10 @@ func (s *OracleTestSuite) noStartProvider(name string) types.PriceProviderI {
 	provider := providermocks.NewProvider[mmtypes.Ticker, *big.Int](s.T())
 
 	provider.On("Name").Return(name).Maybe()
-	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz error")).Maybe()
+	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz start")).Maybe()
 	provider.On("GetData").Return(nil).Maybe()
-	provider.On("Type").Return(providertypes.API)
+	provider.On("Type").Return(providertypes.API).Maybe()
+	provider.On("IsRunning").Return(false).Maybe()
 
 	return provider
 }

@@ -5,10 +5,10 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/oracle"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
@@ -30,8 +30,8 @@ type ProviderOrchestrator struct {
 	mainCtx context.Context
 	// mainCancel is the main context cancel function.
 	mainCancel context.CancelFunc
-	// errGroup is the error group for the provider orchestrator.
-	errGroup *errgroup.Group
+	// wg is the wait group for the provider orchestrator.
+	wg sync.WaitGroup
 
 	// -------------------Stateful Fields-------------------//
 	//
@@ -40,6 +40,8 @@ type ProviderOrchestrator struct {
 	// mmProvider is the market map provider. Specifically this provider is responsible
 	// for making requests for the latest market map data.
 	mmProvider *mmclienttypes.MarketMapProvider
+	// aggregator is the price aggregator.
+	aggregator *oracle.MedianAggregator
 
 	// -------------------Oracle Configuration Fields-------------------//
 	//
@@ -47,6 +49,8 @@ type ProviderOrchestrator struct {
 	cfg config.OracleConfig
 	// marketMap is the market map that the oracle is using.
 	marketMap mmtypes.MarketMap
+	// writeTo is a path to write the market map to.
+	writeTo string
 
 	// -------------------Provider Constructor Fields-------------------//
 	//
@@ -111,7 +115,7 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	return o.providers
 }
 
-// GetProviders returns all of the providers.
+// GetPriceProviders returns all of the price providers.
 func (o *ProviderOrchestrator) GetPriceProviders() []types.PriceProviderI {
 	o.mut.Lock()
 	defer o.mut.Unlock()
@@ -130,4 +134,12 @@ func (o *ProviderOrchestrator) GetMarketMapProvider() *mmclienttypes.MarketMapPr
 	defer o.mut.Unlock()
 
 	return o.mmProvider
+}
+
+// GetMarketMap returns the market map.
+func (o *ProviderOrchestrator) GetMarketMap() mmtypes.MarketMap {
+	o.mut.Lock()
+	defer o.mut.Unlock()
+
+	return o.marketMap
 }

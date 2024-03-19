@@ -3,6 +3,7 @@ package base
 import (
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	apihandler "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -38,11 +39,11 @@ func WithNewWebSocketHandler[K providertypes.ResponseKey, V providertypes.Respon
 
 // Update updates the provider with the given options.
 func (p *Provider[K, V]) Update(opts ...UpdateOption[K, V]) {
-	p.logger.Info("updating provider")
+	p.logger.Debug("updating provider")
 	for _, opt := range opts {
 		opt(p)
 	}
-	p.logger.Info("provider updated")
+	p.logger.Debug("provider updated")
 
 	if _, cancel := p.getFetchCtx(); cancel != nil {
 		p.logger.Info("canceling fetch context; restarting provider")
@@ -56,7 +57,7 @@ func (p *Provider[K, V]) setIDs(ids []K) {
 	p.ids = ids
 	p.mu.Unlock()
 
-	p.logger.Info("set ids", zap.Any("ids", ids))
+	p.logger.Debug("set ids", zap.Any("ids", ids))
 }
 
 // GetIDs returns the set of IDs that the provider is responsible for fetching data for.
@@ -80,7 +81,7 @@ func (p *Provider[K, V]) setAPIHandler(apiHandler apihandler.APIQueryHandler[K, 
 	p.api = apiHandler
 	p.mu.Unlock()
 
-	p.logger.Info("set api query handler")
+	p.logger.Debug("set api query handler")
 }
 
 // GetAPIHandler returns the API handler that the provider will use to fetch data.
@@ -105,7 +106,7 @@ func (p *Provider[K, V]) setWebSocketHandler(wsHandler wshandlers.WebSocketQuery
 	p.ws = wsHandler
 	p.mu.Unlock()
 
-	p.logger.Info("set websocket query handler")
+	p.logger.Debug("set websocket query handler")
 }
 
 // GetWebSocketHandler returns the WebSocket handler that the provider will use to fetch data.
@@ -118,4 +119,9 @@ func (p *Provider[K, V]) GetWebSocketHandler() wshandlers.WebSocketQueryHandler[
 	}
 
 	return p.ws
+}
+
+// GetAPIConfig returns the API configuration for the provider.
+func (p *Provider[K, V]) GetAPIConfig() config.APIConfig {
+	return p.apiCfg
 }

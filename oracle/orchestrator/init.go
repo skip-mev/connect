@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"math/big"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 // Init initializes the all of the providers that are configured via the oracle config.

@@ -116,7 +116,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		}
 
 		h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
-		h.logger.Info("finished api query handler")
+		h.logger.Debug("finished api query handler")
 	}()
 
 	// Set the concurrency limit based on the maximum number of queries allowed for a single
@@ -124,7 +124,7 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	wg := errgroup.Group{}
 	limit := math.Min(h.config.MaxQueries, len(ids))
 	wg.SetLimit(limit)
-	h.logger.Info("setting concurrency limit", zap.Int("limit", limit))
+	h.logger.Debug("setting concurrency limit", zap.Int("limit", limit))
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -147,7 +147,7 @@ MainLoop:
 	for {
 		select {
 		case <-ctx.Done():
-			h.logger.Info("context cancelled, stopping queries")
+			h.logger.Debug("context cancelled, stopping queries")
 			break MainLoop
 		default:
 			wg.Go(tasks[index])
@@ -161,11 +161,11 @@ MainLoop:
 	}
 
 	// Wait for all tasks to complete.
-	h.logger.Info("waiting for api sub-tasks to complete")
+	h.logger.Debug("waiting for api sub-tasks to complete")
 	if err := wg.Wait(); err != nil {
 		h.logger.Error("error querying ids", zap.Error(err))
 	}
-	h.logger.Info("all api sub-tasks completed")
+	h.logger.Debug("all api sub-tasks completed")
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
@@ -259,7 +259,7 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 	// channel that is not being read from.
 	select {
 	case <-ctx.Done():
-		h.logger.Info("context cancelled, stopping write response")
+		h.logger.Debug("context cancelled, stopping write response")
 		return
 	case responseCh <- response:
 		h.logger.Debug("wrote response", zap.String("response", response.String()))
