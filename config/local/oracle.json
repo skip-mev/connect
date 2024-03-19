@@ -33,7 +33,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CoinbasePro",
+      "name": "CoinbaseProAPI",
       "api": {
         "enabled": true,
         "timeout": 500000000,
@@ -42,7 +42,7 @@
         "maxQueries": 5,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
-        "name": "CoinbasePro"
+        "name": "CoinbaseProAPI"
       },
       "webSocket": {
         "enabled": false,
@@ -123,7 +123,7 @@
       "type": "price_provider"
     },
     {
-      "name": "KrakenAPI",
+      "name": "Kraken",
       "api": {
         "enabled": true,
         "timeout": 500000000,
@@ -132,7 +132,7 @@
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
-        "name": "KrakenAPI"
+        "name": "Kraken"
       },
       "webSocket": {
         "enabled": false,
@@ -243,7 +243,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CoinbaseProWebSocket",
+      "name": "CoinbasePro",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -259,7 +259,7 @@
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws-feed.exchange.coinbase.com",
-        "name": "CoinbaseProWebSocket",
+        "name": "CoinbasePro",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -363,7 +363,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Kraken",
+      "name": "KrakenWebSocket",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -379,7 +379,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws.kraken.com",
-        "name": "Kraken",
+        "name": "KrakenWebSocket",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -481,9 +481,39 @@
         "maxSubscriptionsPerConnection": 0
       },
       "type": "price_provider"
+    },
+    {
+      "name": "dYdX",
+      "api": {
+        "enabled": true,
+        "timeout": 2000000000,
+        "interval": 10000000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "https://dydx-api.polkachu.com",
+        "name": "dYdX"
+      },
+      "webSocket": {
+        "enabled": false,
+        "maxBufferSize": 0,
+        "reconnectionTimeout": 0,
+        "wss": "",
+        "name": "",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 0,
+        "enableCompression": false,
+        "readTimeout": 0,
+        "writeTimeout": 0,
+        "pingInterval": 0,
+        "maxReadErrorCount": 0,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "market_map_provider"
     }
   ],
-  "production": true,
+  "production": false,
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true

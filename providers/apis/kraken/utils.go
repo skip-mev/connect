@@ -33,7 +33,7 @@ var (
 		Atomic:           true,
 		Enabled:          true,
 		Timeout:          500 * time.Millisecond,
-		Interval:         150 * time.Millisecond,
+		Interval:         400 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
