@@ -355,3 +355,8 @@ func (k *Keeper) DecrementCPCounterBy(ctx sdk.Context, amt uint64) error {
 
 	return k.numRemoves.Set(ctx, val-amt)
 }
+
+// GetCPCounter gets the counter of currency pairs.
+func (k *Keeper) GetCPCounter(ctx sdk.Context) (uint64, error) {
+	return k.numCPs.Get(ctx)
+}
