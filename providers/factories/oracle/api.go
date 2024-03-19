@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"fmt"
+	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -57,6 +58,8 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = coingecko.NewAPIHandler(marketMap, cfg.API)
 	case geckoterminal.Name:
 		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
+	case kraken.Name:
+		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {
