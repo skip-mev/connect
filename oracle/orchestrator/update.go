@@ -81,9 +81,10 @@ func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarke
 		)
 	}
 
-	if len(tickers) == 0 {
+	switch {
+	case len(tickers) == 0:
 		provider.Stop()
-	} else if !provider.IsRunning() {
+	case len(tickers) > 0 && !provider.IsRunning():
 		o.wg.Add(1)
 		go func() {
 			defer o.wg.Done()

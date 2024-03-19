@@ -104,16 +104,10 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		p.logger.Info("context is nil; exiting")
 		return nil
 	}
-	if len(p.ids) == 0 {
-		p.logger.Info("no ids set on provider; exiting")
-		return nil
-	}
 
 	p.logger.Info("starting provider")
 	mainCtx, mainCancel := p.setMainCtx(ctx)
-	defer func() {
-		mainCancel()
-	}()
+	defer mainCancel()
 
 	wg := sync.WaitGroup{}
 
@@ -125,6 +119,13 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		retErr error
 	)
 	for {
+		// Ensure that the provider has IDs set. This could be reset if the provider is
+		// restarted / reconfigured.
+		if len(p.GetIDs()) == 0 {
+			p.logger.Info("no ids set on provider; exiting")
+			return nil
+		}
+
 		// Create the response channel for the provider. This channel is used to receive the
 		// response(s) from the query handler.
 		if err := p.createResponseCh(); err != nil {
@@ -179,7 +180,6 @@ func (p *Provider[K, V]) Stop() {
 	mainCtx, cancelMain := p.getMainCtx()
 	if mainCtx == nil {
 		p.logger.Info("provider is not running")
-
 		return
 	}
 
