@@ -17,10 +17,11 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/median"
+	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -53,7 +54,7 @@ func main() {
 		return
 	}
 
-	marketCfg, err := types.ReadMarketConfigFromFile(*marketCfgPath)
+	_, err = types.ReadMarketConfigFromFile(*marketCfgPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read market config file: %s\n", err.Error())
 		return
@@ -74,12 +75,19 @@ func main() {
 		}
 	}
 
+	aggregator, err := oraclemath.NewMedianAggregator(
+		logger,
+		mmtypes.MarketMap{},
+	)
+
 	orch, err := orchestrator.NewProviderOrchestrator(
 		cfg,
 		orchestrator.WithLogger(logger),
-		orchestrator.WithMarketMap(marketCfg),
 		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
 		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
+		orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
+		orchestrator.WithAggregator(aggregator),
+		orchestrator.WithWriteTo(*marketCfgPath),
 	)
 	if err != nil {
 		logger.Error("failed to create provider orchestrator", zap.Error(err))
@@ -97,7 +105,7 @@ func main() {
 	oracle, err := oracle.New(
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
 		oracle.WithProviders(orch.GetPriceProviders()),
-		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
+		oracle.WithDataAggregator(aggregator),
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
 		oracle.WithLogger(logger),

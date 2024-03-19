@@ -17,6 +17,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
@@ -30,6 +31,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -226,6 +228,11 @@ var (
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      types.ConfigType,
+			},
+			{
+				Name: dydx.Name,
+				API:  dydx.DefaultAPIConfig,
+				Type: mmclienttypes.ConfigType,
 			},
 		},
 	}

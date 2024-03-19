@@ -48,7 +48,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	URL:              "localhost:1317",
+	URL:              "https://dydx-api.polkachu.com",
 }
 
 // These are references to the different providers that are supported by the dYdX market map.
