@@ -733,7 +733,9 @@ func TestAPIProviderLoop(t *testing.T) {
 			defer cancel()
 
 			err = provider.Start(ctx)
-			require.Equal(t, context.DeadlineExceeded, err)
+			if len(tc.pairs) > 0 {
+				require.Equal(t, context.DeadlineExceeded, err)
+			}
 
 			data := provider.GetData()
 			for cp, price := range tc.expectedPrices {

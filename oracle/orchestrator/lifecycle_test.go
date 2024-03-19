@@ -20,6 +20,8 @@ func TestStart(t *testing.T) {
 
 		err = o.Start(context.Background())
 		require.Error(t, err)
+
+		o.Stop()
 	})
 
 	t.Run("price providers with no market map", func(t *testing.T) {
