@@ -48,9 +48,10 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 //
 // The index price cache contains the previously calculated median prices.
 func (m *MedianAggregator) AggregatedData() {
+	cfg := m.GetMarketMap()
 	updatedPrices := make(types.TickerPrices)
-	for ticker, paths := range m.cfg.Paths {
-		target, ok := m.cfg.Tickers[ticker]
+	for ticker, paths := range cfg.Paths {
+		target, ok := cfg.Tickers[ticker]
 		if !ok {
 			m.logger.Error(
 				"failed to get ticker; skipping aggregation",
