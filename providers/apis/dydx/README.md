@@ -1,6 +1,6 @@
 # dYdX Market Params API
 
-> To learn more about the price aggregation that pairs with this API as well as the structure of the side-cars market config (Market Map), please refer to the [Median Index Price Aggregator readme](../../../pkg/math/oracle/README.md).
+> To learn more about the price aggregation that pairs with this API as well as the structure of the side-car's market config (Market Map), please refer to the [Median Index Price Aggregator readme](../../../pkg/math/oracle/README.md).
 
 The dYdX Market Params API provides a list of all market parameters for the dYdX protocol. Specifically, this includes all markets that the dYdX protocol supports, the exchanges that need to provide prices along with the relevant translations, and a set of operations that convert all markets into a common set of prices. The side-car utilizes this API to update the price providers with all relevant market parameters, such that it can support the dYdX protocol out of the box. 
 
