@@ -17,17 +17,17 @@ import (
 func TestAggregateData(t *testing.T) {
 	testCases := []struct {
 		name           string
-		malleate       func(aggregator *types.PriceAggregator)
+		malleate       func(aggregator types.PriceAggregator)
 		expectedPrices types.TickerPrices
 	}{
 		{
 			name:           "no data",
-			malleate:       func(*types.PriceAggregator) {},
+			malleate:       func(types.PriceAggregator) {},
 			expectedPrices: types.TickerPrices{},
 		},
 		{
 			name: "coinbase direct feed for BTC/USD - fail since it does not have enough providers",
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
 				}
@@ -37,7 +37,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD - fail since index price does not exist",
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
@@ -53,7 +53,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
@@ -76,7 +76,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase USDT direct, coinbase USDC/USDT inverted, binance direct feeds for USDT/USD - success",
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					USDT_USD:  createPrice(1.1, USDT_USD.Decimals),
 					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
@@ -94,7 +94,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase USDT direct, binance USDT/USD direct feeds for USDT/USD - success (average of two prices)",
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
 				}
@@ -111,7 +111,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase USDT direct, kucoin BTC/USDT inverted, index BTC/USD direct feeds for USDT/USD - success",
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					USDT_USD: createPrice(1.0, USDT_USD.Decimals),
 				}
@@ -139,13 +139,13 @@ func TestAggregateData(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
-			tc.malleate(m.PriceAggregator)
+			tc.malleate(m.DataAggregator)
 
 			// Aggregate the data.
-			m.AggregatedData()
+			m.AggregateData()
 
 			// Ensure that the aggregated data is as expected.
-			result := m.PriceAggregator.GetAggregatedData()
+			result := m.DataAggregator.GetAggregatedData()
 			require.Equal(t, len(tc.expectedPrices), len(result))
 			for ticker, price := range result {
 				verifyPrice(t, tc.expectedPrices[ticker], price)
@@ -159,7 +159,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 		name           string
 		target         mmtypes.Ticker
 		paths          mmtypes.Paths
-		malleate       func(aggregator *types.PriceAggregator)
+		malleate       func(aggregator types.PriceAggregator)
 		expectedPrices []*big.Int
 	}{
 		{
@@ -188,14 +188,14 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate:       func(*types.PriceAggregator) {},
+			malleate:       func(types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
 			name:           "no conversion paths",
 			target:         BTC_USD,
 			paths:          mmtypes.Paths{},
-			malleate:       func(*types.PriceAggregator) {},
+			malleate:       func(types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
@@ -208,7 +208,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate:       func(*types.PriceAggregator) {},
+			malleate:       func(types.PriceAggregator) {},
 			expectedPrices: make([]*big.Int, 0),
 		},
 		{
@@ -227,7 +227,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
 				}
@@ -256,7 +256,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -290,7 +290,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -319,7 +319,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
 				}
@@ -352,7 +352,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
 				}
@@ -403,7 +403,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -432,7 +432,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
-			tc.malleate(m.PriceAggregator)
+			tc.malleate(m.DataAggregator)
 
 			// Calculate the converted prices.
 			prices := m.CalculateConvertedPrices(tc.target, tc.paths)
@@ -455,7 +455,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		name          string
 		target        mmtypes.Ticker
 		operations    []mmtypes.Operation
-		malleate      func(aggregator *types.PriceAggregator)
+		malleate      func(aggregator types.PriceAggregator)
 		expectedPrice *big.Int
 		expectedErr   bool
 	}{
@@ -463,7 +463,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			name:          "nil operations",
 			target:        BTC_USD,
 			operations:    nil,
-			malleate:      func(*types.PriceAggregator) {},
+			malleate:      func(types.PriceAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
@@ -471,7 +471,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			name:          "empty operations",
 			target:        BTC_USD,
 			operations:    []mmtypes.Operation{},
-			malleate:      func(*types.PriceAggregator) {},
+			malleate:      func(types.PriceAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
@@ -495,7 +495,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate:      func(*types.PriceAggregator) {},
+			malleate:      func(types.PriceAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
@@ -509,7 +509,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate:      func(*types.PriceAggregator) {},
+			malleate:      func(types.PriceAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
@@ -523,7 +523,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
 				}
@@ -547,7 +547,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -571,7 +571,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -600,7 +600,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -624,7 +624,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       true,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
 				}
@@ -648,7 +648,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					ETH_USDT: createPrice(4_000, ETH_USDT.Decimals),
 				}
@@ -677,7 +677,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					ETH_USDT: createPrice(4_100, ETH_USDT.Decimals),
 				}
@@ -706,7 +706,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					PEPE_USDT: createPrice(0.00000831846, PEPE_USDT.Decimals),
 				}
@@ -730,7 +730,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(0.0000001, BTC_USD.Decimals), // 0.0000001 BTC
 				}
@@ -754,7 +754,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(0.0000001, BTC_USDT.Decimals), // 0.0000001 BTC
 				}
@@ -783,7 +783,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(0.00001, BTC_USDT.Decimals), // 0.00001 BTC
 				}
@@ -807,7 +807,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(1_000_000_000, BTC_USD.Decimals), // 1,000,000,000 BTC
 				}
@@ -831,7 +831,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(1_000_000_000, BTC_USDT.Decimals), // 1,000,000,000 BTC
 				}
@@ -860,7 +860,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(1_000_000_000, BTC_USDT.Decimals), // 1,000,000,000 BTC
 				}
@@ -889,7 +889,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Invert:       false,
 				},
 			},
-			malleate: func(aggregator *types.PriceAggregator) {
+			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
 				}
@@ -911,7 +911,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
-			tc.malleate(m.PriceAggregator)
+			tc.malleate(m.DataAggregator)
 
 			// Calculate the adjusted price.
 			price, err := m.CalculateAdjustedPrice(tc.target, tc.operations)
