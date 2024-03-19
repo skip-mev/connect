@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the Kraken API provider.
-	Name = "KrakenAPI"
+	Name = "Kraken"
 
 	// URL is the base URL of the Kraken API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
