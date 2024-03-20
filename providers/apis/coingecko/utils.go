@@ -17,7 +17,7 @@ import (
 
 const (
 	// Name is the name of the Coingecko provider.
-	Name = "Coingecko"
+	Name = "coingecko_api"
 
 	// URL is the base URL for the CoinGecko API. This URL does not require
 	// an API key but may be rate limited.
