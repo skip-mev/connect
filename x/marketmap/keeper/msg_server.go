@@ -22,7 +22,7 @@ func NewMsgServer(k *Keeper) types.MsgServer {
 
 var _ types.MsgServer = (*msgServer)(nil)
 
-// CreateMarkets updates the marketmap by creating marketsfrom the given message.  All updates are made to the market
+// CreateMarkets updates the marketmap by creating markets from the given message.  All updates are made to the market
 // map and then the resulting final state is checked to verify that the end state is valid.
 func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMarkets) (*types.MsgCreateMarketsResponse, error) {
 	if msg == nil {
@@ -73,6 +73,8 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	return &types.MsgCreateMarketsResponse{}, nil
 }
 
+// UpdateMarkets updates the marketmap by updating markets from the given message.  All updates are made to the market
+// map and then the resulting final state is checked to verify that the end state is valid.
 func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMarkets) (*types.MsgUpdateMarketsResponse, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
@@ -80,8 +82,40 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	params, err := ms.k.GetParams(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get marketmap params: %w", err)
+	}
+
+	if msg.Signer != params.MarketAuthority {
+		return nil, fmt.Errorf("request signer %s does not match module market authority %s", msg.Signer, params.MarketAuthority)
+	}
+
+	for _, market := range msg.UpdateMarkets {
+		err = ms.k.UpdateMarket(ctx, market.Ticker, market.Paths, market.Providers)
+		if err != nil {
+			return nil, err
+		}
+
+		err = ms.k.hooks.AfterMarketUpdated(ctx, market.Ticker)
+		if err != nil {
+			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
+		}
+
+		event := sdk.NewEvent(
+			types.EventTypeUpdateMarket,
+			sdk.NewAttribute(types.AttributeKeyCurrencyPair, market.Ticker.String()),
+			sdk.NewAttribute(types.AttributeKeyDecimals, strconv.FormatUint(market.Ticker.Decimals, 10)),
+			sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
+			sdk.NewAttribute(types.AttributeKeyMetadata, market.Ticker.Metadata_JSON),
+			sdk.NewAttribute(types.AttributeKeyProviders, market.Providers.String()),
+			sdk.NewAttribute(types.AttributeKeyPaths, market.Paths.String()),
+		)
+		ctx.EventManager().EmitEvent(event)
+	}
+
 	// validate that the new state of the marketmap is valid
-	err := ms.k.ValidateState(ctx, nil, msg.UpdateMarkets)
+	err = ms.k.ValidateState(ctx, nil, msg.UpdateMarkets)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}

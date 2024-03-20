@@ -121,7 +121,22 @@ func (k *Keeper) CreateTicker(ctx sdk.Context, ticker types.Ticker) error {
 		return err
 	}
 	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(ticker.String()))
+		return types.NewMarketAlreadyExistsError(types.TickerString(ticker.String()))
+	}
+	// Create the config
+	return k.tickers.Set(ctx, types.TickerString(ticker.String()), ticker)
+}
+
+// UpdateTicker updates a Ticker.
+// The Ticker.String corresponds to a market, and must exist.
+func (k *Keeper) UpdateTicker(ctx sdk.Context, ticker types.Ticker) error {
+	// Check if Ticker already exists for the provider
+	alreadyExists, err := k.tickers.Has(ctx, types.TickerString(ticker.String()))
+	if err != nil {
+		return err
+	}
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(ticker.String()))
 	}
 	// Create the config
 	return k.tickers.Set(ctx, types.TickerString(ticker.String()), ticker)
@@ -156,7 +171,22 @@ func (k *Keeper) CreateProviders(ctx sdk.Context, providers types.Providers, tic
 		return err
 	}
 	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(ticker.String()))
+		return types.NewMarketAlreadyExistsError(types.TickerString(ticker.String()))
+	}
+	// Create the config
+	return k.providers.Set(ctx, types.TickerString(ticker.String()), providers)
+}
+
+// UpdateProviders updates a Providers.
+// The Ticker.String corresponds to a market, and must exist.
+func (k *Keeper) UpdateProviders(ctx sdk.Context, providers types.Providers, ticker types.Ticker) error {
+	// Check if MarketConfig already exists for the provider
+	alreadyExists, err := k.providers.Has(ctx, types.TickerString(ticker.String()))
+	if err != nil {
+		return err
+	}
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(ticker.String()))
 	}
 	// Create the config
 	return k.providers.Set(ctx, types.TickerString(ticker.String()), providers)
@@ -191,7 +221,22 @@ func (k *Keeper) CreatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ti
 		return err
 	}
 	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(ticker.String()))
+		return types.NewMarketAlreadyExistsError(types.TickerString(ticker.String()))
+	}
+	// Create the config
+	return k.paths.Set(ctx, types.TickerString(ticker.String()), paths)
+}
+
+// UpdatePaths updates a Paths.
+// The Ticker.String corresponds to a market, and must already exist.
+func (k *Keeper) UpdatePaths(ctx sdk.Context, paths types.Paths, ticker types.Ticker) error {
+	// Check if MarketConfig already exists for the provider
+	alreadyExists, err := k.paths.Has(ctx, types.TickerString(ticker.String()))
+	if err != nil {
+		return err
+	}
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(ticker.String()))
 	}
 	// Create the config
 	return k.paths.Set(ctx, types.TickerString(ticker.String()), paths)
@@ -209,6 +254,24 @@ func (k *Keeper) CreateMarket(ctx sdk.Context, ticker types.Ticker, paths types.
 	}
 
 	if err := k.CreateProviders(ctx, providers, ticker); err != nil {
+		return err
+	}
+
+	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
+}
+
+// UpdateMarket updaters the ticker, paths, and providers for a given market.  It also
+// sets the LastUpdated field to the current block height.
+func (k *Keeper) UpdateMarket(ctx sdk.Context, ticker types.Ticker, paths types.Paths, providers types.Providers) error {
+	if err := k.UpdateTicker(ctx, ticker); err != nil {
+		return err
+	}
+
+	if err := k.UpdatePaths(ctx, paths, ticker); err != nil {
+		return err
+	}
+
+	if err := k.UpdateProviders(ctx, providers, ticker); err != nil {
 		return err
 	}
 
