@@ -72,10 +72,53 @@ func (mm *MarketMap) String() string {
 	)
 }
 
+// ValidateBasic performs stateless validation of a Market.
+func (m *Market) ValidateBasic() error {
+	if err := m.Ticker.ValidateBasic(); err != nil {
+		return err
+	}
+
+	for _, path := range m.Paths.Paths {
+		if err := path.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	if uint64(len(m.Providers.Providers)) < m.Ticker.MinProviderCount {
+		return fmt.Errorf("this ticker must have at least %d providers; got %d",
+			m.Ticker.MinProviderCount,
+			len(m.Providers.Providers),
+		)
+	}
+
+	seenProviders := make(map[string]struct{})
+	for _, provider := range m.Providers.Providers {
+		if err := provider.ValidateBasic(); err != nil {
+			return err
+		}
+
+		// check for duplicate providers
+		if _, seen := seenProviders[provider.Name]; seen {
+			return fmt.Errorf("duplicate provider found: %s", provider.Name)
+		}
+		seenProviders[provider.Name] = struct{}{}
+
+	}
+
+	return nil
+}
+
+// String returns the string representation of the market.
+func (m *Market) String() string {
+	return fmt.Sprintf(
+		"Market: {Ticker %v Paths: %v Providers: %v}", m.Ticker, m.Paths, m.Providers,
+	)
+}
+
 // ValidateIndexPriceAggregation validates the market map configuration and its expected configuration for
 // this aggregator. In particular, this will
 //
-//  1. Ensure that the market map is valid (ValidateBasic). This ensure's that each of the provider's
+//  1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
 //     markets are supported by the market map.
 //  2. Ensure that each path has a corresponding ticker.
 //  3. Ensure that each path has a valid number of operations.
