@@ -57,3 +57,13 @@ jobs:
         if: env.GIT_DIFF
         run: |
           make govulncheck
+  diff-local-configs:
+    name: Diff local configs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      -name: Diff local configs
+      run: |
+        make diff-local-configs
