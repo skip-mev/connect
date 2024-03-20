@@ -72,7 +72,7 @@ func VoteExtensionsEnabled(ctx sdk.Context) bool {
 // ValidateVoteExtensionsFn defines the function for validating vote extensions. This
 // function is not explicitly used to validate the oracle data but rather that
 // the signed vote extensions included in the proposal are valid and provide
-// a supermajority of vote extensions for the current block. This method is
+// a super-majority of vote extensions for the current block. This method is
 // expected to be used in PrepareProposal and ProcessProposal.
 type ValidateVoteExtensionsFn func(
 	ctx sdk.Context,
@@ -120,7 +120,7 @@ func ValidateVoteExtensions(
 	commitInfo := ctx.CometInfo().GetLastCommit()
 
 	// Check that both extCommit + commit are ordered in accordance with vp/address.
-	if err := validateExtendedCommitAgainstLastCommit(extCommit, commitInfo); err != nil {
+	if err := ValidateExtendedCommitAgainstLastCommit(extCommit, commitInfo); err != nil {
 		return err
 	}
 
@@ -232,11 +232,11 @@ func ValidateVoteExtensions(
 	return nil
 }
 
-// validateExtendedCommitAgainstLastCommit validates an ExtendedCommitInfo against a LastCommit. Specifically,
+// ValidateExtendedCommitAgainstLastCommit validates an ExtendedCommitInfo against a LastCommit. Specifically,
 // it checks that the ExtendedCommit + LastCommit (for the same height), are consistent with each other + that
 // they are ordered correctly (by voting power) in accordance with
 // [comet](https://github.com/cometbft/cometbft/blob/4ce0277b35f31985bbf2c25d3806a184a4510010/types/validator_set.go#L784).
-func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc comet.CommitInfo) error {
+func ValidateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc comet.CommitInfo) error {
 	// check that the rounds are the same
 	if ec.Round != lc.Round() {
 		return fmt.Errorf("extended commit round %d does not match last commit round %d", ec.Round, lc.Round())
