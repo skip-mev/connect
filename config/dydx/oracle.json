@@ -457,6 +457,8 @@
     "metrics": {
       "prometheusServerAddress": "0.0.0.0:8002",
       "enabled": true
-    }
+    },
+    "host": "0.0.0.0",
+    "port": "8080"
   }
   

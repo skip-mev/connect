@@ -32,7 +32,7 @@ var (
 	marketCfgPath     = flag.String("market-config-path", "market_config.json", "path to the market config file")
 	runPprof          = flag.Bool("run-pprof", false, "run pprof server")
 	profilePort       = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
-	chain             = flag.String("chain", "dydx", "the chain for which the side car should run for")
+	chain             = flag.String("chain", "", "the chain for which the side car should run for")
 	updateLocalConfig = flag.Bool("update-local-market-config", true, "update the market map config when a new one is received; this will overwrite the existing config file.")
 )
 
