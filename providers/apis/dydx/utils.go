@@ -54,7 +54,7 @@ var DefaultAPIConfig = config.APIConfig{
 // These are references to the different providers that are supported by the dYdX market map.
 //
 // ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
-var ProviderMapping = map[string][]string{
+var providerMapping = map[string][]string{
 	"Binance":     {binance.Name},
 	"BinanceUS":   {binance.Name},
 	"Bitfinex":    {bitfinex.Name},
@@ -163,7 +163,7 @@ func ConvertExchangeConfigJSON(
 		seen[cfg] = struct{}{}
 
 		// This means we have seen an exchange that slinky cannot support.
-		exchangeNames, ok := ProviderMapping[cfg.ExchangeName]
+		exchangeNames, ok := providerMapping[cfg.ExchangeName]
 		if !ok {
 			continue
 		}
@@ -176,13 +176,13 @@ func ConvertExchangeConfigJSON(
 		// Determine the relevant operations and provider configs based on the exchange config.
 		switch {
 		case len(cfg.AdjustByMarket) == 0 && !cfg.Invert:
-			exchangePaths = DirectConversion(ticker, cfg, exchangeNames)
+			exchangePaths = DirectConversion(ticker, exchangeNames)
 		case len(cfg.AdjustByMarket) == 0 && cfg.Invert:
-			exchangePaths = InvertedConversion(ticker, cfg, exchangeNames)
+			exchangePaths = InvertedConversion(ticker, exchangeNames)
 		case len(cfg.AdjustByMarket) > 0 && !cfg.Invert:
 			exchangePaths, err = IndirectConversion(ticker, cfg, exchangeNames)
 		case len(cfg.AdjustByMarket) > 0 && cfg.Invert:
-			exchangePaths, err = IndirectInvertedConversion(ticker, cfg, exchangeNames)
+			exchangePaths, err = IndirectInvertedConversion(cfg, exchangeNames)
 			addProviders = false
 		}
 
@@ -212,7 +212,6 @@ func ConvertExchangeConfigJSON(
 // DirectConversion is a conversion from market to desired ticker i.e. BTC/USD -> BTC/USD.
 func DirectConversion(
 	ticker mmtypes.Ticker,
-	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
 ) []mmtypes.Path {
 	paths := make([]mmtypes.Path, 0)
@@ -234,7 +233,6 @@ func DirectConversion(
 // InvertedConversion is a conversion with an inverted price i.e. USD/BTC ^ -1 = BTC/USD.
 func InvertedConversion(
 	ticker mmtypes.Ticker,
-	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
 ) []mmtypes.Path {
 	paths := make([]mmtypes.Path, 0)
@@ -253,8 +251,7 @@ func InvertedConversion(
 	return paths
 }
 
-// IndirectConversion is a conversion of two markets to a desired ticker
-// i.e. BTC/USDT * USDT/USD = BTC/USD.
+// IndirectConversion is a conversion of two markets i.e. BTC/USDT * USDT/USD = BTC/USD.
 func IndirectConversion(
 	ticker mmtypes.Ticker,
 	cfg dydxtypes.ExchangeMarketConfigJson,
@@ -291,7 +288,6 @@ func IndirectConversion(
 // where the inverted quote of the first market and quote of the second market are used.
 // i.e. BTC/USDT ^ -1 * BTC/USD = USDT/USD.
 func IndirectInvertedConversion(
-	ticker mmtypes.Ticker,
 	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
 ) ([]mmtypes.Path, error) {
@@ -325,7 +321,7 @@ func IndirectInvertedConversion(
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
 func ConvertDenomByProvider(denom string, exchange string) string {
-	providers, ok := ProviderMapping[exchange]
+	providers, ok := providerMapping[exchange]
 	if !ok {
 		return denom
 	}
