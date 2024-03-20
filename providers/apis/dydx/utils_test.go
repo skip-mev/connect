@@ -182,6 +182,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 		config            dydxtypes.ExchangeConfigJson
 		expectedPaths     mmtypes.Paths
 		expectedProviders mmtypes.Providers
+		expectedErr       bool
 	}{
 		{
 			name: "handles duplicate configs",
@@ -236,6 +237,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
+			expectedErr: false,
 		},
 		{
 			name:   "single direct path with no inversion",
@@ -282,6 +284,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
+			expectedErr: false,
 		},
 		{
 			name:   "single direct path with inversion",
@@ -316,6 +319,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
+			expectedErr: false,
 		},
 		{
 			name:   "single indirect path with an adjustable market",
@@ -355,6 +359,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
+			expectedErr: false,
 		},
 		{
 			name:   "single indirect path with an adjustable market and inversion that does not match the ticker",
@@ -390,6 +395,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			expectedProviders: mmtypes.Providers{
 				Providers: []mmtypes.ProviderConfig{},
 			},
+			expectedErr: false,
 		},
 		{
 			name:   "invalid adjust by market",
@@ -405,6 +411,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedPaths:     mmtypes.Paths{},
 			expectedProviders: mmtypes.Providers{},
+			expectedErr:       true,
 		},
 		{
 			name:   "invalid exchange name",
@@ -419,12 +426,17 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedPaths:     mmtypes.Paths{},
 			expectedProviders: mmtypes.Providers{},
+			expectedErr:       true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			paths, providers := dydx.ConvertExchangeConfigJSON(tc.ticker, tc.config)
+			paths, providers, err := dydx.ConvertExchangeConfigJSON(tc.ticker, tc.config)
+			if tc.expectedErr {
+				require.Error(t, err)
+				return
+			}
 
 			require.Equal(t, len(tc.expectedPaths.Paths), len(paths.Paths))
 			require.Equal(t, len(tc.expectedProviders.Providers), len(providers.Providers))

@@ -91,9 +91,9 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 		}
 
 		// Convert the exchange config JSON to a set of paths and providers.
-		tickerPaths, tickerProviders := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
-		if len(tickerPaths.Paths) == 0 || len(tickerProviders.Providers) == 0 {
-			continue
+		tickerPaths, tickerProviders, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
+		if err != nil {
+			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to convert exchange config json for %s: %w", ticker.String(), err)
 		}
 
 		// Add the ticker, provider, and paths to the market map.
@@ -148,7 +148,7 @@ func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error
 func ConvertExchangeConfigJSON(
 	ticker mmtypes.Ticker,
 	config dydxtypes.ExchangeConfigJson,
-) (mmtypes.Paths, mmtypes.Providers) {
+) (mmtypes.Paths, mmtypes.Providers, error) {
 	var (
 		paths     []mmtypes.Path
 		providers []mmtypes.ProviderConfig
@@ -165,7 +165,7 @@ func ConvertExchangeConfigJSON(
 		// This means we have seen an exchange that slinky cannot support.
 		exchangeNames, ok := providerMapping[cfg.ExchangeName]
 		if !ok {
-			continue
+			return mmtypes.Paths{}, mmtypes.Providers{}, fmt.Errorf("unsupported exchange: %s", cfg.ExchangeName)
 		}
 
 		var (
@@ -185,15 +185,13 @@ func ConvertExchangeConfigJSON(
 			exchangePaths, err = IndirectInvertedConversion(cfg, exchangeNames)
 			addProviders = false
 		}
-
-		// We passively ignore errors here, as we don't want to fail the entire conversion.
 		if err != nil {
-			continue
+			return mmtypes.Paths{}, mmtypes.Providers{}, err
 		}
-		paths = append(paths, exchangePaths...)
 
 		// We only update the providers for a given ticker if the conversion includes the exchanges
 		// off-chain representation i.e. Case 1,2,3.
+		paths = append(paths, exchangePaths...)
 		if addProviders {
 			offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
 			for _, name := range exchangeNames {
@@ -206,7 +204,7 @@ func ConvertExchangeConfigJSON(
 
 	}
 
-	return mmtypes.Paths{Paths: paths}, mmtypes.Providers{Providers: providers}
+	return mmtypes.Paths{Paths: paths}, mmtypes.Providers{Providers: providers}, nil
 }
 
 // DirectConversion is a conversion from market to desired ticker i.e. BTC/USD -> BTC/USD.
