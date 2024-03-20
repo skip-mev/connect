@@ -64,6 +64,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      -name: Diff local configs
-      run: |
-        make diff-local-configs
+      - name: Diff local configs
+        run: |
+          make diff-local-configs
