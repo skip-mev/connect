@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage: make diff-local-config
+# Usage: make diff-local-configs
 
 echo "Diffing local configs against HEAD"
 diff_output=$(git diff HEAD ./config/local/*.json)

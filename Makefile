@@ -45,8 +45,8 @@ update-local-config:
 	@echo "Updating local config..."
 	@go generate ${CONFIG_DIR}
 
-diff-local-config: update-local-config
-	./scripts/diff-local-config.sh
+diff-local-configs: update-local-config
+	./scripts/diff-local-configs.sh
 
 start-oracle: update-local-config
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
