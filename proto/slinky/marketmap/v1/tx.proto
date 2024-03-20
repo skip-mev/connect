@@ -24,36 +24,6 @@ service Msg {
   rpc Params(MsgParams) returns (MsgParamsResponse);
 }
 
-// CreateMarket contains all information needed to create a new market.
-message CreateMarket {
-  // Ticker is the on-chain representation of the ticker. This is the target
-  // ticker that the prices of the set of tickers will be converted to.
-  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
-
-  // Providers maps provider names to their off-chain
-  // representations for the given ticker of the message.
-  Providers providers = 2 [ (gogoproto.nullable) = false ];
-
-  // Paths is the list of convertable markets that will be used to convert the
-  // prices of a set of tickers to a common ticker.
-  Paths paths = 3 [ (gogoproto.nullable) = false ];
-}
-
-// UpdateMarket contains all information needed to update market.
-message UpdateMarket {
-  // Ticker is the on-chain representation of the ticker. This is the target
-  // ticker that the prices of the set of tickers will be converted to.
-  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
-
-  // Providers maps provider names to their off-chain
-  // representations for the given ticker of the message.
-  Providers providers = 2 [ (gogoproto.nullable) = false ];
-
-  // Paths is the list of convertable markets that will be used to convert the
-  // prices of a set of tickers to a common ticker.
-  Paths paths = 3 [ (gogoproto.nullable) = false ];
-}
-
 // MsgCreateMarkets defines a message carrying a payload for creating markets in
 // the x/marketmap module.
 message MsgCreateMarkets {
@@ -67,7 +37,7 @@ message MsgCreateMarkets {
 
   // CreateMarkets is the list of all markets to be created for the given
   // transaction.
-  repeated CreateMarket create_markets = 2 [ (gogoproto.nullable) = false ];
+  repeated Market create_markets = 2 [ (gogoproto.nullable) = false ];
 }
 
 // MsgUpdateMarketMapResponse is the response message for MsgUpdateMarketMap.
@@ -86,7 +56,7 @@ message MsgUpdateMarkets {
 
   // UpdateMarkets is the list of all markets to be updated for the given
   // transaction.
-  repeated UpdateMarket update_markets = 2 [ (gogoproto.nullable) = false ];
+  repeated Market update_markets = 2 [ (gogoproto.nullable) = false ];
 }
 
 // MsgUpdateMarketsResponse is the response message for MsgUpdateMarkets.
