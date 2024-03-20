@@ -214,8 +214,8 @@ func DirectConversion(
 	ticker mmtypes.Ticker,
 	exchangeNames []string,
 ) []mmtypes.Path {
-	paths := make([]mmtypes.Path, 0)
-	for _, name := range exchangeNames {
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
 		path := mmtypes.Path{
 			Operations: []mmtypes.Operation{
 				{
@@ -225,7 +225,7 @@ func DirectConversion(
 				},
 			},
 		}
-		paths = append(paths, path)
+		paths[i] = path
 	}
 	return paths
 }
@@ -235,8 +235,8 @@ func InvertedConversion(
 	ticker mmtypes.Ticker,
 	exchangeNames []string,
 ) []mmtypes.Path {
-	paths := make([]mmtypes.Path, 0)
-	for _, name := range exchangeNames {
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
 		path := mmtypes.Path{
 			Operations: []mmtypes.Operation{
 				{
@@ -246,7 +246,7 @@ func InvertedConversion(
 				},
 			},
 		}
-		paths = append(paths, path)
+		paths[i] = path
 	}
 	return paths
 }
@@ -262,8 +262,8 @@ func IndirectConversion(
 		return nil, err
 	}
 
-	paths := make([]mmtypes.Path, 0)
-	for _, name := range exchangeNames {
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
 		path := mmtypes.Path{
 			Operations: []mmtypes.Operation{
 				{
@@ -278,7 +278,7 @@ func IndirectConversion(
 				},
 			},
 		}
-		paths = append(paths, path)
+		paths[i] = path
 	}
 
 	return paths, nil
@@ -296,8 +296,8 @@ func IndirectInvertedConversion(
 		return nil, err
 	}
 
-	paths := make([]mmtypes.Path, 0)
-	for _, name := range exchangeNames {
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
 		path := mmtypes.Path{
 			Operations: []mmtypes.Operation{
 				{
@@ -312,7 +312,7 @@ func IndirectInvertedConversion(
 				},
 			},
 		}
-		paths = append(paths, path)
+		paths[i] = path
 	}
 
 	return paths, nil
@@ -333,6 +333,12 @@ func ConvertDenomByProvider(denom string, exchange string) string {
 		}
 
 		return denom
+	case len(providers) == 1 && providers[0] == bitstamp.Name:
+		if strings.Contains(denom, "/") {
+			return strings.ToLower(strings.ReplaceAll(denom, "/", ""))
+		}
+
+		return strings.ToLower(denom)
 	default:
 		return denom
 	}
