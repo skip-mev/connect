@@ -33,7 +33,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CoinbasePro",
+      "name": "CoinbaseProAPI",
       "api": {
         "enabled": true,
         "timeout": 500000000,
@@ -42,7 +42,7 @@
         "maxQueries": 5,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
-        "name": "CoinbasePro"
+        "name": "CoinbaseProAPI"
       },
       "webSocket": {
         "enabled": false,
@@ -243,7 +243,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CoinbaseProWebSocket",
+      "name": "CoinbasePro",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -259,7 +259,7 @@
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws-feed.exchange.coinbase.com",
-        "name": "CoinbaseProWebSocket",
+        "name": "CoinbasePro",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
