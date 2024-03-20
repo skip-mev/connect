@@ -274,8 +274,8 @@ func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 			return fmt.Errorf("extended commit vote power %d does not match last commit vote power %d", vote.Validator.Power, lcVote.Validator().Power())
 		}
 
-		// only check non-absent votes
-		if vote.BlockIdFlag == cmtproto.BlockIDFlagAbsent && len(vote.VoteExtension) == 0 {
+		// only check non-absent votes (these could have been modified via pruning in prepare proposal)
+		if vote.BlockIdFlag == cmtproto.BlockIDFlagAbsent && len(vote.VoteExtension) == 0 && len(vote.ExtensionSignature) == 0 {
 			if int32(vote.BlockIdFlag) != int32(lcVote.GetBlockIDFlag()) {
 				return fmt.Errorf("mismatched block ID flag between extended commit vote %d and last proposed commit %d", int32(vote.BlockIdFlag), int32(lcVote.GetBlockIDFlag()))
 			}
