@@ -275,7 +275,7 @@ func validateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 		}
 
 		// only check non-absent votes (these could have been modified via pruning in prepare proposal)
-		if vote.BlockIdFlag == cmtproto.BlockIDFlagAbsent && len(vote.VoteExtension) == 0 && len(vote.ExtensionSignature) == 0 {
+		if !(vote.BlockIdFlag == cmtproto.BlockIDFlagAbsent && len(vote.VoteExtension) == 0 && len(vote.ExtensionSignature) == 0) {
 			if int32(vote.BlockIdFlag) != int32(lcVote.GetBlockIDFlag()) {
 				return fmt.Errorf("mismatched block ID flag between extended commit vote %d and last proposed commit %d", int32(vote.BlockIdFlag), int32(lcVote.GetBlockIDFlag()))
 			}
