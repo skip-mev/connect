@@ -5,7 +5,7 @@ import (
 
 	storetypes "cosmossdk.io/store/types"
 	cometabci "github.com/cometbft/cometbft/abci/types"
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -57,18 +57,28 @@ func CreateExtendedVoteInfo(
 	prices map[uint64][]byte,
 	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
+	return CreateExtendedVoteInfoWithPower(consAddr, 1, prices, codec)
+}
+
+// CreateExtendedVoteInfoWithPower CreateExtendedVoteInfo creates an extended vote info
+// with the given power, prices, timestamp and height.
+func CreateExtendedVoteInfoWithPower(
+	consAddr sdk.ConsAddress,
+	power int64,
+	prices map[uint64][]byte,
+	codec compression.VoteExtensionCodec,
+) (cometabci.ExtendedVoteInfo, error) {
 	ve, err := CreateVoteExtensionBytes(prices, codec)
 	if err != nil {
 		return cometabci.ExtendedVoteInfo{}, err
 	}
-
 	voteInfo := cometabci.ExtendedVoteInfo{
 		Validator: cometabci.Validator{
 			Address: consAddr,
-			Power:   1000,
+			Power:   power,
 		},
 		VoteExtension: ve,
-		BlockIdFlag:   cmtproto.BlockIDFlagCommit,
+		BlockIdFlag:   cometproto.BlockIDFlagCommit,
 	}
 
 	return voteInfo, nil
@@ -77,8 +87,8 @@ func CreateExtendedVoteInfo(
 // UpdateContextWithVEHeight updates the context with the given height and enables vote extensions
 // for the given height.
 func UpdateContextWithVEHeight(ctx sdk.Context, height int64) sdk.Context {
-	params := cmtproto.ConsensusParams{
-		Abci: &cmtproto.ABCIParams{
+	params := cometproto.ConsensusParams{
+		Abci: &cometproto.ABCIParams{
 			VoteExtensionsEnableHeight: height,
 		},
 	}
