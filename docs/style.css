@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+
+h1, h2, h3, #navbar {
+  font-family: "Inconsolata", monospace;
+}
+
+.dark #navbar {
+  background-color: #121213;
+}

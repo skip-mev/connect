@@ -1,0 +1,514 @@
+---
+title: "Validator Configuration Reference"
+description: This readme gives an overview of the configuration options for the oracle service and its corresponding metrics intrumentation.
+---
+
+Validators running on a network that supports the oracle **must** run the oracle side-car. Non-validator nodes can configure their oracle config's to be disabled, and the oracle side-car will not run.
+
+> 
+|Type         |Oracle Config|App Config|
+|-------------|-------------|----------|
+|Validator    |Required     |Required  |
+|Non-Validator|Optional     |Optional  |
+
+
+All oracle configurations are broken down into two files:
+
+1.  **Oracle side-car configuration (`oracle.toml`):** This contains the data provider's that are utilized, the desired markets to be requested, metrics instrumentation, and more.
+2.  **Oracle configuration in the application (`app.toml`):** A few additional lines of code that must be added to the application's `app.toml` file to configure the oracle side car into the application.
+
+The `app.toml` file is the configuration file that is consumed by the application. This file contains over-arching configurations for your entire Cosmos SDK application, as well as a few new configurations for the oracle. You must use this template to add the oracle configurations to your `app.toml` file:
+
+```perl
+# Other configurations
+
+...
+
+###############################################################################
+###                                  Oracle                                 ###
+###############################################################################
+[oracle]
+# Enabled indicates whether the oracle is enabled.
+enabled = "{{ .Oracle.Enabled }}"
+
+# Oracle Address is the URL of the out of process oracle sidecar. This is used to
+# connect to the oracle sidecar when the application boots up. Note that the address
+# can be modified at any point, but will only take effect after the application is
+# restarted. This can be the address of an oracle container running on the same
+# machine or a remote machine.
+oracle_address = "{{ .Oracle.OracleAddress }}"
+
+# Client Timeout is the time that the client is willing to wait for responses from
+# the oracle before timing out.
+client_timeout = "{{ .Oracle.ClientTimeout }}"
+
+# MetricsEnabled determines whether oracle metrics are enabled. Specifically
+# this enables intsrumentation of the oracle client and the interaction between
+# the oracle and the app.
+metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
+
+# PrometheusServerAddress is the address of the prometheus server that metrics will be
+# exposed to.
+prometheus_server_address = "{{ .Oracle.PrometheusServerAddress }}"
+
+...
+
+# More configurations
+```
+In your `app.toml`, you should see / write something that looks like this.
+
+<Note>
+This is only required if you are running a validator node. If you are running a non-validator node, you can skip this section.
+</Note>
+
+```perl
+...
+
+
+###############################################################################
+###                                  Oracle                                 ###
+###############################################################################
+[oracle]
+# Enabled indicates whether the oracle is enabled.
+enabled = "true"
+
+# Oracle Address is the URL of the out of process oracle sidecar. This is used to
+# connect to the oracle sidecar when the application boots up. Note that the address
+# can be modified at any point, but will only take effect after the application is
+# restarted. This can be the address of an oracle container running on the same
+# machine or a remote machine.
+oracle_address = "0.0.0.0:8080"
+
+# Client Timeout is the time that the client is willing to wait for responses from
+# the oracle before timing out.
+client_timeout = "1s"
+
+# MetricsEnabled determines whether oracle metrics are enabled. Specifically
+# this enables intsrumentation of the oracle client and the interaction between
+# the oracle and the app.
+metrics_enabled = "true"
+
+# PrometheusServerAddress is the address of the prometheus server that metrics will be
+# exposed to.
+prometheus_server_address = "0.0.0.0:8001"
+
+...
+
+```
+
+
+The `oracle.toml` file is the configuration file that is consumed by the oracle side-car. Note that in most cases, this should **NOT** be custom made by validators. A predefined oracle side car configuration should be provided by the chain that the oracle supports. This file contains:
+
+*   The desired data providers to be utilized i.e. Coinbase, Binance, etc.
+*   The desired markets to be requested (i.e. BTC/USD, ETH/USD, etc.).
+*   Metrics instrumentation.
+
+## Oracle Configuration[​](#oracle-configuration "Direct link to heading")
+
+The main oracle configuration object is located in [oracle.go](https://github.com/skip-mev/slinky/blob/main/oracle/config/oracle.go). This is utilized to set up the oracle and to configure the providers that the oracle will use. The object is defined as follows:
+
+```
+type OracleConfig struct {
+    UpdateInterval time.Duration              `mapstructure:"update_interval" toml:"update_interval"`
+    Providers      []ProviderConfig           `mapstructure:"providers" toml:"providers"`
+    CurrencyPairs  []oracletypes.CurrencyPair `mapstructure:"currency_pairs" toml:"currency_pairs"`
+    Production     bool                       `mapstructure:"production" toml:"production"`
+    Metrics        MetricsConfig              `mapstructure:"metrics" toml:"metrics"`
+}
+
+```
+
+
+## UpdateInterval[​](#updateinterval "Direct link to heading")
+
+This field is utilized to set the interval at which the oracle will fetch prices from providers.
+
+## Providers[​](#providers "Direct link to heading")
+
+This field is utilized to set the list of providers that the oracle will fetch prices from. A given provider's configuration is composed of:
+
+*   A market configuration that defines the currency pairs that the oracle will fetch prices for from the provider.
+*   An API configuration that defines the various API configurations that the oracle will use to fetch prices from the provider.
+*   A WebSocket configuration that defines the various WebSocket configurations that the oracle will use to fetch prices from the provider.
+
+> Note: Typically only one of either the API or websocket config is required. However, some providers may require both. Please read the provider's documentation to learn more about how to configure the provider. Each provider provides sensible defaults for the API and WebSocket configurations that should be used for most cases.
+
+```
+type ProviderConfig struct {
+    Name      string          `mapstructure:"name" toml:"name"`
+    API       APIConfig       `mapstructure:"api" toml:"api"`
+    WebSocket WebSocketConfig `mapstructure:"web_socket" toml:"web_socket"`
+    Market    MarketConfig    `mapstructure:"market_config" toml:"market_config"`
+}
+
+```
+
+
+### Name[​](#name "Direct link to heading")
+
+This field is utilized to set the name of the provider. This name is used to identify the provider in the oracle's logs as well as in the oracle's metrics.
+
+### API[​](#api "Direct link to heading")
+
+This field is utilized to set the various API configurations that are specific to the provider.
+
+```
+type APIConfig struct {
+    Enabled    bool          `mapstructure:"enabled" toml:"enabled"`
+    Timeout    time.Duration `mapstructure:"timeout" toml:"timeout"`
+    Interval   time.Duration `mapstructure:"interval" toml:"interval"`
+    MaxQueries int           `mapstructure:"max_queries" toml:"max_queries"`
+    Atomic     bool          `mapstructure:"atomic" toml:"atomic"`
+    URL        string        `mapstructure:"url" toml:"url"`
+    Name       string        `mapstructure:"name" toml:"name"`
+}
+
+```
+
+
+#### Enabled (API)[​](#enabled-api "Direct link to heading")
+
+This field is utilized to set whether the provider is API based. If the provider is not API based, this field should be set to `false`.
+
+#### Timeout[​](#timeout "Direct link to heading")
+
+This field is utilized to set the amount of time the provider should wait for a response from its API before timing out.
+
+#### Interval[​](#interval "Direct link to heading")
+
+This field is utilized to set the interval at which the provider should update the prices. Note that provider's may rate limit based on this interval so it is recommended to tune this value as necessary.
+
+#### MaxQueries[​](#maxqueries "Direct link to heading")
+
+This field is utilized to set the maximum number of queries that the provider will make within the interval.
+
+#### Atomic[​](#atomic "Direct link to heading")
+
+This field is utilized to set whether the provider can fulfill its queries in a single request. If the provider can fulfill its queries in a single request, this field should be set to `true`. Otherwise, this field should be set to `false`. In the case where all requests can be fulfilled atomically, the oracle will make a single request to the provider to fetch prices for all currency pairs once every interval.
+
+#### URL[​](#url "Direct link to heading")
+
+This field is utilized to set the URL that is used to fetch data from the API.
+
+#### Name (Should be the same as the provider's name)[​](#name-should-be-the-same-as-the-providers-name "Direct link to heading")
+
+This field is utilized to set the name of the provider. Mostly used as a sanity check to ensure the API configurations correctly correspond to the provider.
+
+### WebSocket[​](#websocket "Direct link to heading")
+
+This field is utilized to set the various WebSocket configurations that are specific to the provider.
+
+```
+type WebSocketConfig struct {
+    Enabled             bool          `mapstructure:"enabled" toml:"enabled"`
+    MaxBufferSize       int           `mapstructure:"max_buffer_size" toml:"max_buffer_size"`
+    ReconnectionTimeout time.Duration `mapstructure:"reconnection_timeout" toml:"reconnection_timeout"`
+    WSS                 string        `mapstructure:"wss" toml:"wss"`
+    Name                string        `mapstructure:"name" toml:"name"`
+    ReadBufferSize      int           `mapstructure:"read_buffer_size" toml:"read_buffer_size"`
+    WriteBufferSize     int           `mapstructure:"write_buffer_size" toml:"write_buffer_size"`
+    HandshakeTimeout    time.Duration `mapstructure:"handshake_timeout" toml:"handshake_timeout"`
+    EnableCompression   bool          `mapstructure:"enable_compression" toml:"enable_compression"`
+    ReadTimeout         time.Duration `mapstructure:"read_deadline" toml:"read_deadline"`
+    WriteTimeout        time.Duration `mapstructure:"write_deadline" toml:"write_deadline"`
+    PingInterval        time.Duration `mapstructure:"ping_interval" toml:"ping_interval"`
+    MaxReadErrorCount   int           `mapstructure:"max_read_error_count" toml:"max_read_error_count"`
+}
+
+```
+
+
+#### Enabled (Websocket)[​](#enabled-websocket "Direct link to heading")
+
+This field is utilized to set whether the provider is WebSocket based. If the provider is not WebSocket based, this field should be set to `false`.
+
+#### MaxBufferSize[​](#maxbuffersize "Direct link to heading")
+
+This field is utilized to set the maximum number of messages that the provider will buffer at any given time. If the provider receives more messages than this, it will block receiving messages until the buffer is cleared.
+
+#### ReconnectionTimeout[​](#reconnectiontimeout "Direct link to heading")
+
+This field is utilized to set the timeout for the provider to attempt to reconnect to the websocket endpoint. In the case when the connection is corrupted, the provider will wait the `ReconnectionTimeout` before attempting to reconnect.
+
+#### WSS[​](#wss "Direct link to heading")
+
+This field is utilized to set the websocket endpoint for the provider.
+
+#### Name (Should match the provider's name)[​](#name-should-match-the-providers-name "Direct link to heading")
+
+This field is utilized to set the name of the provider. Mostly used as a sanity check to ensure the WebSocket configurations correctly correspond to the provider.
+
+#### ReadBufferSize[​](#readbuffersize "Direct link to heading")
+
+This field is utilized to set the I/O read buffer size. If a buffer size of 0 is specified, then a default buffer size is used.
+
+#### WriteBufferSize[​](#writebuffersize "Direct link to heading")
+
+This field is utilized to set the I/O write buffer size. If a buffer size of 0 is specified, then a default buffer size is used.
+
+#### HandshakeTimeout[​](#handshaketimeout "Direct link to heading")
+
+This field is utilized to set the duration for the handshake to complete.
+
+#### EnableCompression[​](#enablecompression "Direct link to heading")
+
+This field is utilized to set whether the client should attempt to negotiate per message compression (RFC 7692). Setting this value to true does not guarantee that compression will be supported. Note that enabling compression may increase latency.
+
+#### ReadTimeout[​](#readtimeout "Direct link to heading")
+
+This field is utilized to set the read deadline on the underlying network connection. After a read has timed out, the websocket connection state is corrupt and all future reads will return an error. A zero value for t means reads will not time out.
+
+#### WriteTimeout[​](#writetimeout "Direct link to heading")
+
+This field is utilized to set the write deadline on the underlying network connection. After a write has timed out, the websocket state is corrupt and all future writes will return an error. A zero value for t means writes will not time out.
+
+#### PingInterval[​](#pinginterval "Direct link to heading")
+
+This field is utilized to set the interval to ping the server. Note that a ping interval of 0 disables pings. This is utilized to send heartbeat messages to the server to ensure that the connection is still alive.
+
+#### MaxReadErrorCount[​](#maxreaderrorcount "Direct link to heading")
+
+This field is utilized to set the maximum number of read errors that the provider will tolerate before closing the connection and attempting to reconnect.
+
+### MarketConfig[​](#marketconfig "Direct link to heading")
+
+This field is utilized to set the various market configurations that are specific to the provider i.e. what prices is this provider responsible for fetching.
+
+```
+type MarketConfig struct {
+    Name                        string                              `mapstructure:"name" toml:"name"`
+    CurrencyPairToMarketConfigs map[string]CurrencyPairMarketConfig `mapstructure:"currency_pair_to_market_configs" toml:"currency_pair_to_market_configs"`
+}
+
+type CurrencyPairMarketConfig struct {
+    Ticker       string                   `mapstructure:"ticker" toml:"ticker"`
+    CurrencyPair oracletypes.CurrencyPair `mapstructure:"currency_pair" toml:"currency_pair"`
+}
+
+```
+
+
+#### Name (Should match the provider's name)[​](#name-should-match-the-providers-name-1 "Direct link to heading")
+
+This field is utilized to set the name of the provider. Mostly used as a sanity check to ensure the market configurations correctly correspond to the provider.
+
+#### CurrencyPairToMarketConfigs[​](#currencypairtomarketconfigs "Direct link to heading")
+
+This field is utilized to set the mappings between on-chain and off-chain currency pairs. In particular, this config maps the on-chain currency pair representation (i.e. BITCOIN/USD) to the off-chain currency pair representation (i.e. BTC/USD).
+
+## CurrencyPairs[​](#currencypairs "Direct link to heading")
+
+This field is utilized to set the list of currency pairs that the oracle will fetch prices for. These should be the same exact currency pairs that the oracle module (`x/oracle`) is currently configured to accept.
+
+## Production[​](#production "Direct link to heading")
+
+This field is utilized to set whether the oracle is running in production mode. This is used to determine whether the oracle should be run in debug mode or not. This particularly helpful for logging purposes.
+
+## Metrics[​](#metrics "Direct link to heading")
+
+This field is utilized to set the metrics configurations for the oracle. To read more about the various metrics that are collected and corresponding queries, please read the [Readme](https://github.com/skip-mev/slinky/blob/main/oracle/metrics/README.md).
+
+```
+type MetricsConfig struct {
+    PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
+    Enabled                 bool   `mapstructure:"enabled" toml:"enabled"`
+}
+
+```
+
+
+### PrometheusServerAddress[​](#prometheusserveraddress "Direct link to heading")
+
+This field is utilized to set the address of the prometheus server that the oracle will expose metrics to.
+
+### Enabled[​](#enabled "Direct link to heading")
+
+This field is utilized to set whether metrics should be enabled.
+
+Sample configuration:
+
+```json 
+update_interval = "1s"
+production = true
+
+[[providers]]
+  name = "coinbase"
+  [providers.api]
+    enabled = true
+    timeout = "500ms"
+    interval = "1s"
+    max_queries = 5
+    atomic = false
+    url = "https://api.coinbase.com/v2/prices/%s/spot"
+    name = "coinbase"
+  [providers.web_socket]
+    enabled = false
+    max_buffer_size = 0
+    reconnection_timeout = "0s"
+    wss = ""
+    name = ""
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "0s"
+    enable_compression = false
+    read_deadline = "0s"
+    write_deadline = "0s"
+    ping_interval = "0s"
+    max_read_error_count = 0
+  [providers.market_config]
+    name = "coinbase"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOM-USD"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "AVAX-USD"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "BTC-USD"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+        ticker = "TIA-USD"
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
+          Base = "CELESTIA"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "DYDX-USD"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ETH-BTC"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETH-USD"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD"]
+        ticker = "OSMO-USD"
+        [providers.market_config.currency_pair_to_market_configs."OSMOSIS/USD".currency_pair]
+          Base = "OSMOSIS"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOL-USD"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[providers]]
+  name = "okx"
+  [providers.api]
+    enabled = false
+    timeout = "0s"
+    interval = "0s"
+    max_queries = 0
+    atomic = false
+    url = ""
+    name = ""
+  [providers.web_socket]
+    enabled = true
+    max_buffer_size = 1000
+    reconnection_timeout = "10s"
+    wss = "wss://ws.okx.com:8443/ws/v5/public"
+    name = "okx"
+    read_buffer_size = 0
+    write_buffer_size = 0
+    handshake_timeout = "45s"
+    enable_compression = false
+    read_deadline = "45s"
+    write_deadline = "45s"
+    ping_interval = "0s"
+    max_read_error_count = 100
+  [providers.market_config]
+    name = "okx"
+    [providers.market_config.currency_pair_to_market_configs]
+      [providers.market_config.currency_pair_to_market_configs."ATOM/USD"]
+        ticker = "ATOM-USD"
+        [providers.market_config.currency_pair_to_market_configs."ATOM/USD".currency_pair]
+          Base = "ATOM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."AVAX/USD"]
+        ticker = "AVAX-USD"
+        [providers.market_config.currency_pair_to_market_configs."AVAX/USD".currency_pair]
+          Base = "AVAX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD"]
+        ticker = "BTC-USD"
+        [providers.market_config.currency_pair_to_market_configs."BITCOIN/USD".currency_pair]
+          Base = "BITCOIN"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD"]
+        ticker = "TIA-USD"
+        [providers.market_config.currency_pair_to_market_configs."CELESTIA/USD".currency_pair]
+          Base = "CELESTIA"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."DYDX/USD"]
+        ticker = "DYDX-USD"
+        [providers.market_config.currency_pair_to_market_configs."DYDX/USD".currency_pair]
+          Base = "DYDX"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN"]
+        ticker = "ETH-BTC"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/BITCOIN".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "BITCOIN"
+      [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD"]
+        ticker = "ETH-USD"
+        [providers.market_config.currency_pair_to_market_configs."ETHEREUM/USD".currency_pair]
+          Base = "ETHEREUM"
+          Quote = "USD"
+      [providers.market_config.currency_pair_to_market_configs."SOLANA/USD"]
+        ticker = "SOL-USD"
+        [providers.market_config.currency_pair_to_market_configs."SOLANA/USD".currency_pair]
+          Base = "SOLANA"
+          Quote = "USD"
+
+[[currency_pairs]]
+  Base = "BITCOIN"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "ETHEREUM"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "ATOM"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "SOLANA"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "CELESTIA"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "AVAX"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "DYDX"
+  Quote = "USD"
+
+[[currency_pairs]]
+  Base = "ETHEREUM"
+  Quote = "BITCOIN"
+
+[[currency_pairs]]
+  Base = "OSMOSIS"
+  Quote = "USD"
+
+[metrics]
+  prometheus_server_address = "0.0.0.0:8002"
+  enabled = true
+```
