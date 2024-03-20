@@ -33,7 +33,7 @@ var (
 	runPprof          = flag.Bool("run-pprof", false, "run pprof server")
 	profilePort       = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
 	chain             = flag.String("chain", "dydx", "the chain for which the side car should run for")
-	updateLocalConfig = flag.Bool("update-local-market-config", false, "update the market map config when a new one is received; this will overwrite the existing config file.")
+	updateLocalConfig = flag.Bool("update-local-market-config", true, "update the market map config when a new one is received; this will overwrite the existing config file.")
 )
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -103,7 +103,7 @@ func main() {
 			return
 		}
 
-		// We must also provide the oracle with a data aggregator. In this case it is the same as the orchestrator's.
+		// The oracle must be configured with the median index price aggregator.
 		customOracleOpts := []oracle.Option{
 			oracle.WithDataAggregator(aggregator),
 		}

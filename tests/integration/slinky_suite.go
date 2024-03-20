@@ -45,8 +45,6 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 			"oracle",
 			"--oracle-config-path", "/oracle/oracle.json",
 			"--market-config-path", "/oracle/market.json",
-			"--host", "0.0.0.0",
-			"--port", "8080",
 		},
 		ValidatorProcess: true,
 		PreStart:         true,

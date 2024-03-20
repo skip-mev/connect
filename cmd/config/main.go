@@ -59,40 +59,39 @@ var (
 		"chain that we expect the oracle to be running on. ex dydx.",
 	)
 
-	// dydx-node-url is the URL of the dYdX node. This is required if the chain is
-	// set to dydx.
-	dydxNodeURL = flag.String(
-		"dydx-node-url",
+	// nodeURL is the URL of the validator. This is required if running the oracle with a market map provider.
+	nodeURL = flag.String(
+		"node-http-url",
 		"",
 		"URL of the dYdX node. this is required if running the oracle on the dYdX chain. this is the http address of the dYdX node.",
 	)
 
-	// host is the host that the oracle will listen on.
+	// host is the oracle / prometheus server host.
 	host = flag.String(
 		"host",
 		"0.0.0.0",
-		"host that the oracle will listen on",
+		"host is the oracle / prometheus server host.",
 	)
 
-	// pricesPort is the port that the oracle will listen on.
+	// pricesPort is the port that the oracle will make prices available on.
 	pricesPort = flag.String(
 		"port",
 		"8080",
 		"port that the oracle will make prices available on. to query prices after starting the oracle, use the following command: curl http://<host>:<port>/slinky/oracle/v1/prices",
 	)
 
-	// prometheusPort is the port that the prometheus server will listen on.
+	// prometheusPort is the port that prometheus will make metrics available on.
 	prometheusPort = flag.String(
 		"prometheus-port",
 		"8002",
 		"port that the prometheus server will listen on. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
 	)
 
-	// enabledMetrics is a flag that enables the prometheus server.
+	// disabledMetrics is a flag that disables the prometheus server.
 	disabledMetrics = flag.Bool(
 		"disable-metrics",
 		false,
-		"flag that enables the prometheus server. if this is enabled the prometheus port must be specified. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
+		"flag that disables the prometheus server. if this is enabled the prometheus port must be specified. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
 	)
 
 	// debug is a flag that enables debug mode. Specifically, all logging will be
@@ -100,7 +99,7 @@ var (
 	debug = flag.Bool(
 		"debug-mode",
 		false,
-		"flag that enables debug mode. specifically the side-car will run in debug mode. this is useful for local development.",
+		"flag that enables debug mode. specifically the side-car will run in debug mode. this is useful for local development / debugging.",
 	)
 
 	// updateInterval is the interval at which the oracle will update the prices.
@@ -295,11 +294,11 @@ func createOracleConfig() error {
 			}
 		}
 
-		if len(*dydxNodeURL) == 0 {
-			return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --dydx-node-url flag (ex. --dydx-node-url http://localhost:1317)")
+		if len(*nodeURL) == 0 {
+			return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --node-http-url flag (ex. --node-http-url http://localhost:1317)")
 		}
 		apiCfg := dydx.DefaultAPIConfig
-		apiCfg.URL = *dydxNodeURL
+		apiCfg.URL = *nodeURL
 
 		// Add the dYdX market map provider to the list of providers.
 		ps = append(ps, config.ProviderConfig{
