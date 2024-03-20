@@ -370,3 +370,105 @@ func TestValidateMarketMap(t *testing.T) {
 		})
 	}
 }
+
+func TestMarketMapEqual(t *testing.T) {
+	cases := []struct {
+		name      string
+		marketMap types.MarketMap
+		other     types.MarketMap
+		expect    bool
+	}{
+		{
+			name:      "empty market map",
+			marketMap: types.MarketMap{},
+			other:     types.MarketMap{},
+			expect:    true,
+		},
+		{
+			name: "same market map",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			expect: true,
+		},
+		{
+			name: "different tickers",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					btcusdt.Ticker.String(): btcusdt,
+				},
+			},
+			expect: false,
+		},
+		{
+			name: "different paths",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): {
+						Ticker:    ethusdt.Ticker,
+						Paths:     btcusdt.Paths,
+						Providers: ethusdt.Providers,
+					},
+				},
+			},
+			expect: false,
+		},
+		{
+			name: "different providers",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): {
+						Ticker:    ethusdt.Ticker,
+						Paths:     ethusdt.Paths,
+						Providers: btcusdt.Providers,
+					},
+				},
+			},
+			expect: false,
+		},
+
+		{
+			name: "different aggregation type",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+				AggregationType: types.AggregationType_INDEX_PRICE_AGGREGATION,
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			expect: false,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.expect, tc.marketMap.Equal(tc.other))
+		})
+	}
+}

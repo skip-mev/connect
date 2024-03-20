@@ -18,6 +18,7 @@ import (
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
+	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -97,6 +98,7 @@ var (
 		coinbaseapi.Name:   coinbaseapi.DefaultMarketConfig,
 		coingecko.Name:     coingecko.DefaultMarketConfig,
 		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
+		krakenapi.Name:     krakenapi.DefaultMarketConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
@@ -155,6 +157,11 @@ var (
 			{
 				Name: geckoterminal.Name,
 				API:  geckoterminal.DefaultETHAPIConfig,
+				Type: types.ConfigType,
+			},
+			{
+				Name: krakenapi.Name,
+				API:  krakenapi.DefaultAPIConfig,
 				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//
@@ -332,11 +339,9 @@ func main() {
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
 func createMarketMap() (mmtypes.MarketMap, error) {
-	var (
-		// Markets defines a map of tickers to their respective market configurations. This
-		// contains all markets that are supported by the oracle.
-		markets = make(map[string]mmtypes.Market)
-	)
+	// Markets defines a map of tickers to their respective market configurations. This
+	// contains all markets that are supported by the oracle.
+	markets := make(map[string]mmtypes.Market)
 
 	// Iterate through all provider ticker configurations and update the
 	// tickers and tickers to providers maps.

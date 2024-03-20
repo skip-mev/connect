@@ -19,16 +19,19 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_UpdateMarketMap_FullMethodName = "/slinky.marketmap.v1.Msg/UpdateMarketMap"
-	Msg_Params_FullMethodName          = "/slinky.marketmap.v1.Msg/Params"
+	Msg_CreateMarkets_FullMethodName = "/slinky.marketmap.v1.Msg/CreateMarkets"
+	Msg_UpdateMarkets_FullMethodName = "/slinky.marketmap.v1.Msg/UpdateMarkets"
+	Msg_Params_FullMethodName        = "/slinky.marketmap.v1.Msg/Params"
 )
 
 // MsgClient is the client API for Msg service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// UpdateMarketMap creates markets from the given message.
-	UpdateMarketMap(ctx context.Context, in *MsgUpdateMarketMap, opts ...grpc.CallOption) (*MsgUpdateMarketMapResponse, error)
+	// CreateMarkets creates markets from the given message.
+	CreateMarkets(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error)
+	// UpdateMarkets updates markets from the given message.
+	UpdateMarkets(ctx context.Context, in *MsgUpdateMarkets, opts ...grpc.CallOption) (*MsgUpdateMarketsResponse, error)
 	// Params defines a method for updating the x/marketmap module parameters.
 	Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error)
 }
@@ -41,9 +44,18 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) UpdateMarketMap(ctx context.Context, in *MsgUpdateMarketMap, opts ...grpc.CallOption) (*MsgUpdateMarketMapResponse, error) {
-	out := new(MsgUpdateMarketMapResponse)
-	err := c.cc.Invoke(ctx, Msg_UpdateMarketMap_FullMethodName, in, out, opts...)
+func (c *msgClient) CreateMarkets(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error) {
+	out := new(MsgCreateMarketsResponse)
+	err := c.cc.Invoke(ctx, Msg_CreateMarkets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateMarkets(ctx context.Context, in *MsgUpdateMarkets, opts ...grpc.CallOption) (*MsgUpdateMarketsResponse, error) {
+	out := new(MsgUpdateMarketsResponse)
+	err := c.cc.Invoke(ctx, Msg_UpdateMarkets_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +75,10 @@ func (c *msgClient) Params(ctx context.Context, in *MsgParams, opts ...grpc.Call
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// UpdateMarketMap creates markets from the given message.
-	UpdateMarketMap(context.Context, *MsgUpdateMarketMap) (*MsgUpdateMarketMapResponse, error)
+	// CreateMarkets creates markets from the given message.
+	CreateMarkets(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error)
+	// UpdateMarkets updates markets from the given message.
+	UpdateMarkets(context.Context, *MsgUpdateMarkets) (*MsgUpdateMarketsResponse, error)
 	// Params defines a method for updating the x/marketmap module parameters.
 	Params(context.Context, *MsgParams) (*MsgParamsResponse, error)
 	mustEmbedUnimplementedMsgServer()
@@ -74,8 +88,11 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (UnimplementedMsgServer) UpdateMarketMap(context.Context, *MsgUpdateMarketMap) (*MsgUpdateMarketMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMarketMap not implemented")
+func (UnimplementedMsgServer) CreateMarkets(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMarkets not implemented")
+}
+func (UnimplementedMsgServer) UpdateMarkets(context.Context, *MsgUpdateMarkets) (*MsgUpdateMarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMarkets not implemented")
 }
 func (UnimplementedMsgServer) Params(context.Context, *MsgParams) (*MsgParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
@@ -93,20 +110,38 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 	s.RegisterService(&Msg_ServiceDesc, srv)
 }
 
-func _Msg_UpdateMarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateMarketMap)
+func _Msg_CreateMarkets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateMarkets)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateMarketMap(ctx, in)
+		return srv.(MsgServer).CreateMarkets(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_UpdateMarketMap_FullMethodName,
+		FullMethod: Msg_CreateMarkets_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateMarketMap(ctx, req.(*MsgUpdateMarketMap))
+		return srv.(MsgServer).CreateMarkets(ctx, req.(*MsgCreateMarkets))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateMarkets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateMarkets)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateMarkets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_UpdateMarkets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateMarkets(ctx, req.(*MsgUpdateMarkets))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -137,8 +172,12 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateMarketMap",
-			Handler:    _Msg_UpdateMarketMap_Handler,
+			MethodName: "CreateMarkets",
+			Handler:    _Msg_CreateMarkets_Handler,
+		},
+		{
+			MethodName: "UpdateMarkets",
+			Handler:    _Msg_UpdateMarkets_Handler,
 		},
 		{
 			MethodName: "Params",

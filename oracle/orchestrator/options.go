@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -66,5 +67,23 @@ func WithMarketMapperFactory(factory mmclienttypes.MarketMapFactory) Option {
 		}
 
 		m.marketMapperFactory = factory
+	}
+}
+
+// WithWriteTo sets the file path to which market map updates will be written to. Note that this is optional.
+func WithWriteTo(filePath string) Option {
+	return func(m *ProviderOrchestrator) {
+		m.writeTo = filePath
+	}
+}
+
+// WithAggregator sets the aggregation function for the provider orchestrator.
+func WithAggregator(fn *oracle.MedianAggregator) Option {
+	return func(m *ProviderOrchestrator) {
+		if fn == nil {
+			panic("aggregation function cannot be nil")
+		}
+
+		m.aggregator = fn
 	}
 }

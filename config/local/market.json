@@ -702,19 +702,23 @@
     "ADA/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "ADA-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ADA-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "ADA/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "ADA-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "ADAUSD"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ADA-USD"
-        },
-        {
-          "name": "CoinbasePro",
+          "name": "okx_ws",
           "off_chain_ticker": "ADA-USD"
         }
       ]
@@ -722,15 +726,15 @@
     "ADA/USDC": {
       "providers": [
         {
-          "name": "Okx",
-          "off_chain_ticker": "ADA-USDC"
-        },
-        {
-          "name": "Mexc",
+          "name": "mexc_ws",
           "off_chain_ticker": "ADAUSDC"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ADA-USDC"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ADA-USDC"
         }
       ]
@@ -738,31 +742,35 @@
     "ADA/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "ADAUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "ADAUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "ADA_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ADA-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "adausdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "ADAUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "ADAUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ADAUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ADA-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ADA-USDT"
         }
       ]
@@ -770,31 +778,31 @@
     "APE/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "APE-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "APE-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "APE/USD"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "APE-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "APE-USD"
         }
       ]
     },
     "APE/USDC": {
       "providers": [
         {
-          "name": "Okx",
+          "name": "coinbase_api",
           "off_chain_ticker": "APE-USDC"
         },
         {
-          "name": "CoinbasePro",
+          "name": "kucoin_ws",
           "off_chain_ticker": "APE-USDC"
         },
         {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "APE-USDC"
         }
       ]
@@ -802,31 +810,35 @@
     "APE/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "APEUSDT"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "APE-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "APE_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "APE-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "APE-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "APEUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "coinbase_api",
+          "off_chain_ticker": "APE-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "APEUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "APEUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "APE-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "APE-USDT"
         }
       ]
@@ -834,19 +846,23 @@
     "APT/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "APT-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "APT-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "APTUSD"
         }
       ]
     },
     "APT/USDC": {
       "providers": [
         {
-          "name": "Okx",
+          "name": "okx_ws",
           "off_chain_ticker": "APT-USDC"
         }
       ]
@@ -854,31 +870,31 @@
     "APT/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "APTUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "APTUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "APT_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "APT-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "aptusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "APTUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "APTUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "APT-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "APT-USDT"
         }
       ]
@@ -886,43 +902,47 @@
     "ARB/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ARB-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "ARB-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ARBUSD"
         }
       ]
     },
     "ARB/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "ARBUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "ARBUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "ARB_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ARB-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "arbusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "ARBUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "ARBUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ARB-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ARB-USDT"
         }
       ]
@@ -930,47 +950,51 @@
     "ATOM/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "ATOM-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ATOM-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "ATOM/USD"
         },
         {
-          "name": "Coingecko",
+          "name": "coingecko_api",
           "off_chain_ticker": "cosmos/usd"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "ATOM-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "ATOMUSD"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ATOM-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ATOM-USD"
-        },
-        {
-          "name": "CryptoCom",
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "ATOMUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ATOM-USD"
         }
       ]
     },
     "ATOM/USDC": {
       "providers": [
         {
-          "name": "Okx",
+          "name": "coinbase_api",
           "off_chain_ticker": "ATOM-USDC"
         },
         {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ATOM-USDC"
-        },
-        {
-          "name": "Mexc",
+          "name": "mexc_ws",
           "off_chain_ticker": "ATOMUSDC"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ATOM-USDC"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ATOM-USDC"
         }
       ]
@@ -978,43 +1002,47 @@
     "ATOM/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "ATOMUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "ATOMUSDT"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ATOM-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "ATOM_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ATOM-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ATOM-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "atomusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "ATOMUSDT"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_api",
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "ATOM_USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ATOM-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ATOM-USDT"
         }
       ]
@@ -1022,51 +1050,55 @@
     "AVAX/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "AVAX/USD"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "AVAX-USD"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "AVAX-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "AVAX-USD"
-        },
-        {
-          "name": "Bitstamp",
+          "name": "bitstamp_ws",
           "off_chain_ticker": "avaxusd"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "AVAX-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "AVAX-USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "AVAX/USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "AVAXUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "AVAXUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "AVAX-USD"
         }
       ]
     },
     "AVAX/USDC": {
       "providers": [
         {
-          "name": "Bybit",
+          "name": "bybit_ws",
           "off_chain_ticker": "AVAXUSDC"
         },
         {
-          "name": "Okx",
+          "name": "coinbase_api",
           "off_chain_ticker": "AVAX-USDC"
         },
         {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "AVAX-USDC"
-        },
-        {
-          "name": "Mexc",
+          "name": "mexc_ws",
           "off_chain_ticker": "AVAXUSDC"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "AVAX-USDC"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "AVAX-USDC"
         }
       ]
@@ -1074,47 +1106,51 @@
     "AVAX/USDT": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "AVAX/USDT"
-        },
-        {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "AVAXUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "AVAXUSDT"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "AVAX-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "AVAX_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "AVAX-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "AVAX-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "avaxusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "AVAXUSDT"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_api",
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "AVAX/USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "AVAX_USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "AVAX-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "AVAX-USDT"
         }
       ]
@@ -1122,47 +1158,55 @@
     "BCH/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "BCH-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BCH-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "BCH/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "BCH-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "BCH-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "BCHUSD"
         }
       ]
     },
     "BCH/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "BCHUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "BCHUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "BCH_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "BCH-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "bchusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "BCHUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "BCHUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "BCHUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "BCH-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "BCH-USDT"
         }
       ]
@@ -1170,35 +1214,35 @@
     "BLUR/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "BLUR-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BLUR-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "BLUR/USD"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "BLUR-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "BLUR-USD"
         }
       ]
     },
     "BLUR/USDT": {
       "providers": [
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "BLUR_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "BLUR-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "mexc_ws",
           "off_chain_ticker": "BLURUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "BLUR-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "BLUR-USDT"
         }
       ]
@@ -1206,75 +1250,83 @@
     "BTC/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "XBT/USD"
-        },
-        {
-          "name": "Coingecko",
-          "off_chain_ticker": "bitcoin/usd"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "BTC-USD"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "BTC-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "BTC-USD"
-        },
-        {
-          "name": "Bitstamp",
-          "off_chain_ticker": "btcusd"
-        },
-        {
-          "name": "Bitfinex",
+          "name": "bitfinex_ws",
           "off_chain_ticker": "BTCUSD"
         },
         {
-          "name": "CryptoCom",
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "btcusd"
+        },
+        {
+          "name": "coinbase_ws",
+          "off_chain_ticker": "BTC-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BTC-USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "XBT/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "bitcoin/usd"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "XXBTZUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "BTCUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "BTC-USD"
         }
       ]
     },
     "BTC/USDC": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "btcusdc"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "BTCUSDC"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "btcusdc"
+        },
+        {
+          "name": "binance_api",
+          "off_chain_ticker": "BTCUSDC"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "XBT/USDC"
         },
         {
-          "name": "Binance",
+          "name": "mexc_ws",
           "off_chain_ticker": "BTCUSDC"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "BTCUSDC"
+          "name": "kraken_api",
+          "off_chain_ticker": "XBTUSDC"
         },
         {
-          "name": "Okx",
+          "name": "kucoin_ws",
           "off_chain_ticker": "BTC-USDC"
         },
         {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "BTC-USDC"
-        },
-        {
-          "name": "Bitstamp",
-          "off_chain_ticker": "btcusdc"
-        },
-        {
-          "name": "Huobi",
-          "off_chain_ticker": "btcusdc"
-        },
-        {
-          "name": "Mexc",
-          "off_chain_ticker": "BTCUSDC"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "BTC-USDC"
         }
       ]
@@ -1282,51 +1334,55 @@
     "BTC/USDT": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "btcusdt"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "BTCUSDT"
+        },
+        {
+          "name": "coinbase_ws",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "BTC_USDT"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "btcusdt"
+        },
+        {
+          "name": "binance_api",
+          "off_chain_ticker": "BTCUSDT"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "XBT/USDT"
         },
         {
-          "name": "Binance",
+          "name": "mexc_ws",
           "off_chain_ticker": "BTCUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "BTCUSDT"
+          "name": "kraken_api",
+          "off_chain_ticker": "XBTUSDT"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "BTC-USDT"
-        },
-        {
-          "name": "Gate",
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "BTC_USDT"
         },
         {
-          "name": "Okx",
+          "name": "kucoin_ws",
           "off_chain_ticker": "BTC-USDT"
         },
         {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "BTC-USDT"
-        },
-        {
-          "name": "Bitstamp",
-          "off_chain_ticker": "btcusdt"
-        },
-        {
-          "name": "Huobi",
-          "off_chain_ticker": "btcusdt"
-        },
-        {
-          "name": "Mexc",
-          "off_chain_ticker": "BTCUSDT"
-        },
-        {
-          "name": "CryptoCom",
-          "off_chain_ticker": "BTC_USDT"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "BTC-USDT"
         }
       ]
@@ -1334,75 +1390,83 @@
     "COMP/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "COMP-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "COMP-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "COMP/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "COMP-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "COMP-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "COMPUSD"
         }
       ]
     },
     "COMP/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "COMPUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "COMP_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "COMP-USDT"
+          "name": "binance_api",
+          "off_chain_ticker": "COMPUSDT"
         },
         {
-          "name": "Mexc",
+          "name": "mexc_ws",
           "off_chain_ticker": "COMPUSDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "COMP-USDT"
         }
       ]
     },
     "CRV/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "CRV-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "CRV-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "CRV/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "CRV-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "CRV-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "CRVUSD"
         }
       ]
     },
     "CRV/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "CRVUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "CRV_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "CRV-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "CRVUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "CRVUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "CRV-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "CRV-USDT"
         }
       ]
@@ -1410,47 +1474,55 @@
     "DOGE/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "DOGE-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "DOGE-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "XDG/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "DOGE-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "DOGE-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "XDGUSD"
         }
       ]
     },
     "DOGE/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "DOGEUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "DOGEUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "DOGE_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "DOGE-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "dogeusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "DOGEUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "DOGEUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "XDGUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "DOGE-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "DOGE-USDT"
         }
       ]
@@ -1458,43 +1530,51 @@
     "DOT/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "DOT-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "DOT-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "DOT/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "DOT-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "DOT-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "DOTUSD"
         }
       ]
     },
     "DOT/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "DOTUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "DOTUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "DOT_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "DOT-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "DOTUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "DOTUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "DOTUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "DOT-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "DOT-USDT"
         }
       ]
@@ -1502,31 +1582,35 @@
     "DYDX/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_api",
+          "off_chain_ticker": "DYDX-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "DYDX/USD"
         },
         {
-          "name": "Coingecko",
+          "name": "coingecko_api",
           "off_chain_ticker": "dydx-chain/usd"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "DYDX-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "DYDXUSD"
         },
         {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "DYDX-USD"
-        },
-        {
-          "name": "CryptoCom",
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "DYDXUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "DYDX-USD"
         }
       ]
     },
     "DYDX/USDC": {
       "providers": [
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "DYDX-USDC"
         }
       ]
@@ -1534,39 +1618,39 @@
     "DYDX/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "DYDXUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "DYDXUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "DYDX_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "DYDX-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "DYDX-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "dydxusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "DYDXUSDT"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_api",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "DYDXUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "DYDX_USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "DYDX-USDT"
         }
       ]
@@ -1574,39 +1658,43 @@
     "ETC/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ETC-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "ETC-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ETCUSD"
         }
       ]
     },
     "ETC/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "ETCUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "ETC_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ETC-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "etcusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "ETCUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETCUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ETC-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ETC-USDT"
         }
       ]
@@ -1614,55 +1702,59 @@
     "ETH/BTC": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "bitfinex_ws",
+          "off_chain_ticker": "ETHBTC"
+        },
+        {
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "ethbtc"
+        },
+        {
+          "name": "coinbase_ws",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "ETH_BTC"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "ethbtc"
+        },
+        {
+          "name": "binance_api",
+          "off_chain_ticker": "ETHBTC"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "ETH/XBT"
         },
         {
-          "name": "Binance",
+          "name": "mexc_ws",
           "off_chain_ticker": "ETHBTC"
         },
         {
-          "name": "Coingecko",
+          "name": "coingecko_api",
           "off_chain_ticker": "ethereum/btc"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "ETH-BTC"
+          "name": "kraken_api",
+          "off_chain_ticker": "XETHXXBT"
         },
         {
-          "name": "Gate",
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "ETH_BTC"
         },
         {
-          "name": "Okx",
+          "name": "kucoin_ws",
           "off_chain_ticker": "ETH-BTC"
         },
         {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ETH-BTC"
-        },
-        {
-          "name": "Bitstamp",
-          "off_chain_ticker": "ethbtc"
-        },
-        {
-          "name": "Huobi",
-          "off_chain_ticker": "ethbtc"
-        },
-        {
-          "name": "Mexc",
-          "off_chain_ticker": "ETHBTC"
-        },
-        {
-          "name": "Bitfinex",
-          "off_chain_ticker": "ETHBTC"
-        },
-        {
-          "name": "CryptoCom",
-          "off_chain_ticker": "ETH_BTC"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "ETH-BTC"
         }
       ]
@@ -1670,71 +1762,79 @@
     "ETH/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "ETH/USD"
-        },
-        {
-          "name": "Coingecko",
-          "off_chain_ticker": "ethereum/usd"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "ETH-USD"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "ETH-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ETH-USD"
-        },
-        {
-          "name": "Bitstamp",
-          "off_chain_ticker": "ethusd"
-        },
-        {
-          "name": "Bitfinex",
+          "name": "bitfinex_ws",
           "off_chain_ticker": "ETHUSD"
         },
         {
-          "name": "CryptoCom",
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "ethusd"
+        },
+        {
+          "name": "coinbase_ws",
+          "off_chain_ticker": "ETH-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "ethereum/usd"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "XETHZUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "ETHUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ETH-USD"
         }
       ]
     },
     "ETH/USDC": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "ETH/USDC"
-        },
-        {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "ETHUSDC"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "ETHUSDC"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "ETH-USDC"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ETH-USDC"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "ethusdc"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "ETHUSDC"
         },
         {
-          "name": "Kucoin",
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-USDC"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/USDC"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ETH-USDC"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ETH-USDC"
         }
       ]
@@ -1742,47 +1842,51 @@
     "ETH/USDT": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "ETH/USDT"
-        },
-        {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "ETHUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "ETHUSDT"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ETH-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "ETH_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "ETH-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "ETH-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "ethusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "ETHUSDT"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-USDT"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "ETH_USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ETH-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "ETH-USDT"
         }
       ]
@@ -1790,75 +1894,83 @@
     "FIL/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "FIL-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "FIL-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "FIL/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "FIL-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "FIL-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "FILUSD"
         }
       ]
     },
     "FIL/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "FILUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "FIL_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "FIL-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "filusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "FILUSDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "FILUSDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "FIL-USDT"
         }
       ]
     },
     "LDO/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "LDO-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "LDO-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "LDO/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "LDO-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "LDO-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "LDOUSD"
         }
       ]
     },
     "LDO/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "binance_api",
           "off_chain_ticker": "LDOUSDT"
         },
         {
-          "name": "Okx",
+          "name": "mexc_ws",
+          "off_chain_ticker": "LDOUSDT"
+        },
+        {
+          "name": "kucoin_ws",
           "off_chain_ticker": "LDO-USDT"
         },
         {
-          "name": "Mexc",
-          "off_chain_ticker": "LDOUSDT"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "LDO-USDT"
         }
       ]
@@ -1866,39 +1978,47 @@
     "LINK/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "LINK-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "LINK-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "LINK/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "LINK-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "LINK-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "LINKUSD"
         }
       ]
     },
     "LINK/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "LINKUSDT"
         },
         {
-          "name": "Bybit",
+          "name": "binance_api",
           "off_chain_ticker": "LINKUSDT"
         },
         {
-          "name": "Okx",
+          "name": "mexc_ws",
+          "off_chain_ticker": "LINKUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "LINKUSDT"
+        },
+        {
+          "name": "kucoin_ws",
           "off_chain_ticker": "LINK-USDT"
         },
         {
-          "name": "Mexc",
-          "off_chain_ticker": "LINKUSDT"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "LINK-USDT"
         }
       ]
@@ -1906,43 +2026,51 @@
     "LTC/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "LTC-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "LTC-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "XLTCZ/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "LTC-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "LTC-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "XLTCZUSD"
         }
       ]
     },
     "LTC/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "LTCUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "LTCUSDT"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "LTC-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "ltcusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "LTCUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "LTCUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "LTCUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "LTC-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "LTC-USDT"
         }
       ]
@@ -1950,47 +2078,55 @@
     "MATIC/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "MATIC-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "MATIC-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "MATIC/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "MATIC-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "MATIC-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "MATICUSD"
         }
       ]
     },
     "MATIC/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "MATICUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "MATICUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "MATIC_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "MATIC-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "maticusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "MATICUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "MATICUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "MATICUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "MATIC-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "MATIC-USDT"
         }
       ]
@@ -1998,35 +2134,39 @@
     "MKR/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "MKR-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "MKR-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "MKR/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "MKR-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "MKR-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "MKRUSD"
         }
       ]
     },
     "MKR/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "binance_api",
           "off_chain_ticker": "MKRUSDT"
         },
         {
-          "name": "Okx",
+          "name": "mexc_ws",
+          "off_chain_ticker": "MKRUSDT"
+        },
+        {
+          "name": "kucoin_ws",
           "off_chain_ticker": "MKR-USDT"
         },
         {
-          "name": "Mexc",
-          "off_chain_ticker": "MKRUSDT"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "MKR-USDT"
         }
       ]
@@ -2034,7 +2174,7 @@
     "MOG/USD": {
       "providers": [
         {
-          "name": "GeckoTerminal",
+          "name": "gecko_terminal_api",
           "off_chain_ticker": "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a"
         }
       ]
@@ -2042,39 +2182,43 @@
     "NEAR/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "NEAR-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "NEAR-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "NEARUSD"
         }
       ]
     },
     "NEAR/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "NEARUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "NEAR_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "NEAR-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "nearusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "NEARUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "NEARUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "NEAR-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "NEAR-USDT"
         }
       ]
@@ -2082,35 +2226,39 @@
     "OP/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OP-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "OP-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "OPUSD"
         }
       ]
     },
     "OP/USDT": {
       "providers": [
         {
-          "name": "Binance",
-          "off_chain_ticker": "OPUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "OP_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "OP-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "OPUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "OPUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "OP-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "OP-USDT"
         }
       ]
@@ -2118,19 +2266,19 @@
     "OSMO/USD": {
       "providers": [
         {
-          "name": "Coingecko",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "OSMO-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "OSMO-USD"
+        },
+        {
+          "name": "coingecko_api",
           "off_chain_ticker": "osmosis/usd"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "OSMO-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "OSMO-USD"
-        },
-        {
-          "name": "CryptoCom",
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "OSMO_USD"
         }
       ]
@@ -2138,11 +2286,11 @@
     "OSMO/USDC": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OSMO-USDC"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "OSMO-USDC"
         }
       ]
@@ -2150,15 +2298,15 @@
     "OSMO/USDT": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OSMO-USDT"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "OSMO-USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
           "off_chain_ticker": "OSMO-USDT"
         }
       ]
@@ -2166,39 +2314,43 @@
     "PEPE/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "gecko_terminal_api",
+          "off_chain_ticker": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "PEPE/USD"
         },
         {
-          "name": "GeckoTerminal",
-          "off_chain_ticker": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+          "name": "kraken_api",
+          "off_chain_ticker": "PEPEUSD"
         }
       ]
     },
     "PEPE/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "PEPEUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "PEPEUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "PEPE_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "PEPE-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "PEPEUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "PEPEUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "PEPE-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "PEPE-USDT"
         }
       ]
@@ -2206,39 +2358,43 @@
     "SEI/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SEI-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "SEI-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "SEIUSD"
         }
       ]
     },
     "SEI/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "SEIUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "SEIUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "SEI_USDT"
         },
         {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "seiusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "SEIUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "SEIUSDT"
+        },
+        {
+          "name": "kucoin_ws",
           "off_chain_ticker": "SEI-USDT"
         }
       ]
@@ -2246,43 +2402,51 @@
     "SHIB/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "SHIB-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "SHIB-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "SHIB/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "SHIB-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "SHIB-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "SHIBUSD"
         }
       ]
     },
     "SHIB/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "SHIBUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "SHIBUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "SHIB_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "SHIB-USDT"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "SHIBUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "SHIBUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "SHIBUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SHIB-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "SHIB-USDT"
         }
       ]
@@ -2290,71 +2454,75 @@
     "SOL/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "SOL/USD"
-        },
-        {
-          "name": "Coingecko",
-          "off_chain_ticker": "solana/usd"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "SOL-USD"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "SOL-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "SOL-USD"
-        },
-        {
-          "name": "Bitstamp",
-          "off_chain_ticker": "solusd"
-        },
-        {
-          "name": "Bitfinex",
+          "name": "bitfinex_ws",
           "off_chain_ticker": "SOLUSD"
         },
         {
-          "name": "CryptoCom",
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "solusd"
+        },
+        {
+          "name": "coinbase_ws",
+          "off_chain_ticker": "SOL-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "SOL-USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "SOL/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "solana/usd"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "SOLUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "SOLUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "SOL-USD"
         }
       ]
     },
     "SOL/USDC": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "SOLUSDC"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "SOLUSDC"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SOL-USDC"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "SOL_USDC"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "SOL-USDC"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "SOL-USDC"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "SOLUSDC"
         },
         {
-          "name": "Kucoin",
+          "name": "coinbase_api",
+          "off_chain_ticker": "SOL-USDC"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "SOLUSDC"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SOL-USDC"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "SOL-USDC"
         }
       ]
@@ -2362,47 +2530,51 @@
     "SOL/USDT": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "SOL/USDT"
-        },
-        {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "SOLUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "SOLUSDT"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SOL-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "SOL_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "SOL-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "SOL-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "solusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "SOLUSDT"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_api",
+          "off_chain_ticker": "SOL-USDT"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "SOL/USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "SOL_USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SOL-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "SOL-USDT"
         }
       ]
@@ -2410,43 +2582,47 @@
     "SUI/USD": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SUI-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "SUI-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "SUIUSD"
         }
       ]
     },
     "SUI/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "SUIUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "SUIUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "SUI_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "SUI-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "suiusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "SUIUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "SUIUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SUI-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "SUI-USDT"
         }
       ]
@@ -2454,43 +2630,43 @@
     "TIA/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "TIA/USD"
-        },
-        {
-          "name": "Coingecko",
-          "off_chain_ticker": "celestia/usd"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "TIA-USD"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "TIA-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "TIA-USD"
-        },
-        {
-          "name": "Bitfinex",
+          "name": "bitfinex_ws",
           "off_chain_ticker": "TIAUSD"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "TIA-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "TIA-USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "TIA/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "celestia/usd"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "TIAUSD-PERP"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "TIA-USD"
         }
       ]
     },
     "TIA/USDC": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "TIA-USDC"
         },
         {
-          "name": "CoinbasePro",
+          "name": "coinbase_api",
           "off_chain_ticker": "TIA-USDC"
         }
       ]
@@ -2498,31 +2674,31 @@
     "TIA/USDT": {
       "providers": [
         {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "TIA-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "TIA_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "TIA-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "TIA-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "tiausdt"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_api",
+          "off_chain_ticker": "TIA-USDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "TIA_USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "TIA-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "TIA-USDT"
         }
       ]
@@ -2530,39 +2706,43 @@
     "TRX/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "kraken_ws",
           "off_chain_ticker": "TRX/USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "TRXUSD"
         }
       ]
     },
     "TRX/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "TRXUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "TRXUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "TRX_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "TRX-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "trxusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "TRXUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "TRXUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "TRX-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "TRX-USDT"
         }
       ]
@@ -2570,39 +2750,43 @@
     "UNI/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "UNI-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "UNI-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "UNI/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "UNI-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "UNI-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "UNIUSD"
         }
       ]
     },
     "UNI/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "UNIUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "UNIUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "UNI_USDT"
         },
         {
-          "name": "Okx",
+          "name": "binance_api",
+          "off_chain_ticker": "UNIUSDT"
+        },
+        {
+          "name": "kucoin_ws",
           "off_chain_ticker": "UNI-USDT"
         },
         {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "UNI-USDT"
         }
       ]
@@ -2610,15 +2794,15 @@
     "USDC/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "USDC/USD"
-        },
-        {
-          "name": "Okx",
+          "name": "coinbase_api",
           "off_chain_ticker": "USDC-USD"
         },
         {
-          "name": "CoinbasePro",
+          "name": "kraken_ws",
+          "off_chain_ticker": "USDC/USD"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "USDC-USD"
         }
       ]
@@ -2626,47 +2810,51 @@
     "USDC/USDT": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "USDC/USDT"
+          "name": "bitstamp_ws",
+          "off_chain_ticker": "usdcusdt"
         },
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "USDCUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "USDCUSDT"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
+          "name": "coinbase_ws",
           "off_chain_ticker": "USDC-USDT"
         },
         {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "USDC_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "USDC-USDT"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "USDC-USDT"
-        },
-        {
-          "name": "Bitstamp",
+          "name": "huobi_ws",
           "off_chain_ticker": "usdcusdt"
         },
         {
-          "name": "Huobi",
-          "off_chain_ticker": "usdcusdt"
-        },
-        {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "USDCUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "coinbase_api",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "USDC/USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "USDCUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "USDCUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "USDC-USDT"
         }
       ]
@@ -2674,63 +2862,67 @@
     "USDT/USD": {
       "providers": [
         {
-          "name": "Kraken",
-          "off_chain_ticker": "USDT/USD"
-        },
-        {
-          "name": "Binance",
-          "off_chain_ticker": "USDTUSD"
-        },
-        {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "USDT-USD"
-        },
-        {
-          "name": "Okx",
-          "off_chain_ticker": "USDT-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "USDT-USD"
-        },
-        {
-          "name": "Bitstamp",
+          "name": "bitstamp_ws",
           "off_chain_ticker": "usdtusd"
         },
         {
-          "name": "CryptoCom",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "USDT-USD"
+        },
+        {
+          "name": "binance_api",
+          "off_chain_ticker": "USDTUSD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "USDT-USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "USDT/USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "USDTZUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "USDT_USD"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "USDT-USD"
         }
       ]
     },
     "WLD/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "WLDUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "WLDUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "WLD_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "WLD-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "wldusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "WLDUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "WLDUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "WLD-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "WLD-USDT"
         }
       ]
@@ -2738,39 +2930,43 @@
     "XLM/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "XLM-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "XLM-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "XXLMZ/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "XLM-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "XLM-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "XXLMZUSD"
         }
       ]
     },
     "XLM/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "XLMUSDT"
         },
         {
-          "name": "Bybit",
+          "name": "binance_api",
           "off_chain_ticker": "XLMUSDT"
         },
         {
-          "name": "Okx",
+          "name": "mexc_ws",
+          "off_chain_ticker": "XLMUSDT"
+        },
+        {
+          "name": "kucoin_ws",
           "off_chain_ticker": "XLM-USDT"
         },
         {
-          "name": "Mexc",
-          "off_chain_ticker": "XLMUSDT"
-        },
-        {
-          "name": "Kucoin",
+          "name": "okx_ws",
           "off_chain_ticker": "XLM-USDT"
         }
       ]
@@ -2778,47 +2974,55 @@
     "XRP/USD": {
       "providers": [
         {
-          "name": "Kraken",
+          "name": "coinbase_ws",
+          "off_chain_ticker": "XRP-USD"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "XRP-USD"
+        },
+        {
+          "name": "kraken_ws",
           "off_chain_ticker": "XXRPZ/USD"
         },
         {
-          "name": "CoinbaseProWebSocket",
-          "off_chain_ticker": "XRP-USD"
-        },
-        {
-          "name": "CoinbasePro",
-          "off_chain_ticker": "XRP-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "XXRPZUSD"
         }
       ]
     },
     "XRP/USDT": {
       "providers": [
         {
-          "name": "Binance",
+          "name": "bybit_ws",
           "off_chain_ticker": "XRPUSDT"
         },
         {
-          "name": "Bybit",
-          "off_chain_ticker": "XRPUSDT"
-        },
-        {
-          "name": "Gate",
+          "name": "gate_ws",
           "off_chain_ticker": "XRP_USDT"
         },
         {
-          "name": "Okx",
-          "off_chain_ticker": "XRP-USDT"
-        },
-        {
-          "name": "Huobi",
+          "name": "huobi_ws",
           "off_chain_ticker": "xrpusdt"
         },
         {
-          "name": "Mexc",
+          "name": "binance_api",
           "off_chain_ticker": "XRPUSDT"
         },
         {
-          "name": "Kucoin",
+          "name": "mexc_ws",
+          "off_chain_ticker": "XRPUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "XRPUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "XRP-USDT"
+        },
+        {
+          "name": "okx_ws",
           "off_chain_ticker": "XRP-USDT"
         }
       ]

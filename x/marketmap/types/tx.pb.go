@@ -31,95 +31,28 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// CreateMarket contains all information needed to create a new market.
-type CreateMarket struct {
-	// Ticker is the on-chain representation of the ticker. This is the target
-	// ticker that the prices of the set of tickers will be converted to.
-	Ticker Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker"`
-	// Providers maps provider names to their off-chain
-	// representations for the given ticker of the message.
-	Providers Providers `protobuf:"bytes,2,opt,name=providers,proto3" json:"providers"`
-	// Paths is the list of convertable markets that will be used to convert the
-	// prices of a set of tickers to a common ticker.
-	Paths Paths `protobuf:"bytes,3,opt,name=paths,proto3" json:"paths"`
-}
-
-func (m *CreateMarket) Reset()         { *m = CreateMarket{} }
-func (m *CreateMarket) String() string { return proto.CompactTextString(m) }
-func (*CreateMarket) ProtoMessage()    {}
-func (*CreateMarket) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{0}
-}
-func (m *CreateMarket) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *CreateMarket) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_CreateMarket.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *CreateMarket) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateMarket.Merge(m, src)
-}
-func (m *CreateMarket) XXX_Size() int {
-	return m.Size()
-}
-func (m *CreateMarket) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateMarket.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateMarket proto.InternalMessageInfo
-
-func (m *CreateMarket) GetTicker() Ticker {
-	if m != nil {
-		return m.Ticker
-	}
-	return Ticker{}
-}
-
-func (m *CreateMarket) GetProviders() Providers {
-	if m != nil {
-		return m.Providers
-	}
-	return Providers{}
-}
-
-func (m *CreateMarket) GetPaths() Paths {
-	if m != nil {
-		return m.Paths
-	}
-	return Paths{}
-}
-
-// MsgUpdateMarketMap defines a message carrying a payload for updating the
-// x/marketmap module.
-type MsgUpdateMarketMap struct {
+// MsgCreateMarkets defines a message carrying a payload for creating markets in
+// the x/marketmap module.
+type MsgCreateMarkets struct {
 	// Signer is the signer of this transaction.
 	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// CreateMarkets is the list of all markets to be created for the given
 	// transaction.
-	CreateMarkets []CreateMarket `protobuf:"bytes,2,rep,name=create_markets,json=createMarkets,proto3" json:"create_markets"`
+	CreateMarkets []Market `protobuf:"bytes,2,rep,name=create_markets,json=createMarkets,proto3" json:"create_markets"`
 }
 
-func (m *MsgUpdateMarketMap) Reset()         { *m = MsgUpdateMarketMap{} }
-func (m *MsgUpdateMarketMap) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateMarketMap) ProtoMessage()    {}
-func (*MsgUpdateMarketMap) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{1}
+func (m *MsgCreateMarkets) Reset()         { *m = MsgCreateMarkets{} }
+func (m *MsgCreateMarkets) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateMarkets) ProtoMessage()    {}
+func (*MsgCreateMarkets) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9adadfc18297083, []int{0}
 }
-func (m *MsgUpdateMarketMap) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateMarkets) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateMarketMap) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateMarkets) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateMarketMap.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateMarkets.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -129,26 +62,26 @@ func (m *MsgUpdateMarketMap) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateMarketMap) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateMarketMap.Merge(m, src)
+func (m *MsgCreateMarkets) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateMarkets.Merge(m, src)
 }
-func (m *MsgUpdateMarketMap) XXX_Size() int {
+func (m *MsgCreateMarkets) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateMarketMap) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateMarketMap.DiscardUnknown(m)
+func (m *MsgCreateMarkets) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateMarkets.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateMarketMap proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateMarkets proto.InternalMessageInfo
 
-func (m *MsgUpdateMarketMap) GetSigner() string {
+func (m *MsgCreateMarkets) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
 	return ""
 }
 
-func (m *MsgUpdateMarketMap) GetCreateMarkets() []CreateMarket {
+func (m *MsgCreateMarkets) GetCreateMarkets() []Market {
 	if m != nil {
 		return m.CreateMarkets
 	}
@@ -156,21 +89,21 @@ func (m *MsgUpdateMarketMap) GetCreateMarkets() []CreateMarket {
 }
 
 // MsgUpdateMarketMapResponse is the response message for MsgUpdateMarketMap.
-type MsgUpdateMarketMapResponse struct {
+type MsgCreateMarketsResponse struct {
 }
 
-func (m *MsgUpdateMarketMapResponse) Reset()         { *m = MsgUpdateMarketMapResponse{} }
-func (m *MsgUpdateMarketMapResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateMarketMapResponse) ProtoMessage()    {}
-func (*MsgUpdateMarketMapResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{2}
+func (m *MsgCreateMarketsResponse) Reset()         { *m = MsgCreateMarketsResponse{} }
+func (m *MsgCreateMarketsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateMarketsResponse) ProtoMessage()    {}
+func (*MsgCreateMarketsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9adadfc18297083, []int{1}
 }
-func (m *MsgUpdateMarketMapResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateMarketsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateMarketMapResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateMarketsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateMarketMapResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateMarketsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -180,17 +113,111 @@ func (m *MsgUpdateMarketMapResponse) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateMarketMapResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateMarketMapResponse.Merge(m, src)
+func (m *MsgCreateMarketsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateMarketsResponse.Merge(m, src)
 }
-func (m *MsgUpdateMarketMapResponse) XXX_Size() int {
+func (m *MsgCreateMarketsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateMarketMapResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateMarketMapResponse.DiscardUnknown(m)
+func (m *MsgCreateMarketsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateMarketsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateMarketMapResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateMarketsResponse proto.InternalMessageInfo
+
+// MsgUpdateMarkets defines a message carrying a payload for updating the
+// x/marketmap module.
+type MsgUpdateMarkets struct {
+	// Signer is the signer of this transaction.
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// UpdateMarkets is the list of all markets to be updated for the given
+	// transaction.
+	UpdateMarkets []Market `protobuf:"bytes,2,rep,name=update_markets,json=updateMarkets,proto3" json:"update_markets"`
+}
+
+func (m *MsgUpdateMarkets) Reset()         { *m = MsgUpdateMarkets{} }
+func (m *MsgUpdateMarkets) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateMarkets) ProtoMessage()    {}
+func (*MsgUpdateMarkets) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9adadfc18297083, []int{2}
+}
+func (m *MsgUpdateMarkets) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateMarkets) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateMarkets.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateMarkets) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateMarkets.Merge(m, src)
+}
+func (m *MsgUpdateMarkets) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateMarkets) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateMarkets.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateMarkets proto.InternalMessageInfo
+
+func (m *MsgUpdateMarkets) GetSigner() string {
+	if m != nil {
+		return m.Signer
+	}
+	return ""
+}
+
+func (m *MsgUpdateMarkets) GetUpdateMarkets() []Market {
+	if m != nil {
+		return m.UpdateMarkets
+	}
+	return nil
+}
+
+// MsgUpdateMarketsResponse is the response message for MsgUpdateMarkets.
+type MsgUpdateMarketsResponse struct {
+}
+
+func (m *MsgUpdateMarketsResponse) Reset()         { *m = MsgUpdateMarketsResponse{} }
+func (m *MsgUpdateMarketsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateMarketsResponse) ProtoMessage()    {}
+func (*MsgUpdateMarketsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e9adadfc18297083, []int{3}
+}
+func (m *MsgUpdateMarketsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateMarketsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateMarketsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateMarketsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateMarketsResponse.Merge(m, src)
+}
+func (m *MsgUpdateMarketsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateMarketsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateMarketsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateMarketsResponse proto.InternalMessageInfo
 
 // MsgParams defines the Msg/Params request type. It contains the
 // new parameters for the x/marketmap module.
@@ -206,7 +233,7 @@ func (m *MsgParams) Reset()         { *m = MsgParams{} }
 func (m *MsgParams) String() string { return proto.CompactTextString(m) }
 func (*MsgParams) ProtoMessage()    {}
 func (*MsgParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{3}
+	return fileDescriptor_e9adadfc18297083, []int{4}
 }
 func (m *MsgParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -257,7 +284,7 @@ func (m *MsgParamsResponse) Reset()         { *m = MsgParamsResponse{} }
 func (m *MsgParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgParamsResponse) ProtoMessage()    {}
 func (*MsgParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e9adadfc18297083, []int{4}
+	return fileDescriptor_e9adadfc18297083, []int{5}
 }
 func (m *MsgParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -287,9 +314,10 @@ func (m *MsgParamsResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgParamsResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*CreateMarket)(nil), "slinky.marketmap.v1.CreateMarket")
-	proto.RegisterType((*MsgUpdateMarketMap)(nil), "slinky.marketmap.v1.MsgUpdateMarketMap")
-	proto.RegisterType((*MsgUpdateMarketMapResponse)(nil), "slinky.marketmap.v1.MsgUpdateMarketMapResponse")
+	proto.RegisterType((*MsgCreateMarkets)(nil), "slinky.marketmap.v1.MsgCreateMarkets")
+	proto.RegisterType((*MsgCreateMarketsResponse)(nil), "slinky.marketmap.v1.MsgCreateMarketsResponse")
+	proto.RegisterType((*MsgUpdateMarkets)(nil), "slinky.marketmap.v1.MsgUpdateMarkets")
+	proto.RegisterType((*MsgUpdateMarketsResponse)(nil), "slinky.marketmap.v1.MsgUpdateMarketsResponse")
 	proto.RegisterType((*MsgParams)(nil), "slinky.marketmap.v1.MsgParams")
 	proto.RegisterType((*MsgParamsResponse)(nil), "slinky.marketmap.v1.MsgParamsResponse")
 }
@@ -297,40 +325,38 @@ func init() {
 func init() { proto.RegisterFile("slinky/marketmap/v1/tx.proto", fileDescriptor_e9adadfc18297083) }
 
 var fileDescriptor_e9adadfc18297083 = []byte{
-	// 515 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xc1, 0x6a, 0x13, 0x41,
-	0x18, 0xc7, 0x77, 0x8c, 0x0d, 0x64, 0xaa, 0x95, 0x4e, 0x0b, 0xc6, 0xb5, 0x6c, 0xeb, 0x82, 0x5a,
-	0x82, 0xdd, 0xb5, 0x11, 0x0a, 0xed, 0xcd, 0x08, 0xde, 0x56, 0x42, 0xd4, 0x8b, 0x97, 0xb2, 0xdd,
-	0x0c, 0x93, 0x65, 0xdd, 0x9d, 0x61, 0x66, 0x1a, 0x9a, 0x9b, 0x78, 0xf4, 0x20, 0x3e, 0x82, 0x8f,
-	0x90, 0x83, 0xaf, 0x20, 0x14, 0xbc, 0x44, 0x4f, 0x9e, 0x44, 0x92, 0x43, 0x7c, 0x0c, 0xd9, 0x99,
-	0xd9, 0x24, 0x98, 0x35, 0xf4, 0x12, 0x76, 0xbe, 0xef, 0xf7, 0x9f, 0xf9, 0x7f, 0xdf, 0x9f, 0xc0,
-	0x1d, 0xf1, 0x36, 0xce, 0x92, 0x81, 0x9f, 0x86, 0x3c, 0xc1, 0x32, 0x0d, 0x99, 0xdf, 0x3f, 0xf4,
-	0xe5, 0x85, 0xc7, 0x38, 0x95, 0x14, 0x6d, 0xe9, 0xae, 0x37, 0xeb, 0x7a, 0xfd, 0x43, 0xfb, 0x76,
-	0x44, 0x45, 0x4a, 0x85, 0x9f, 0x0a, 0x92, 0xc3, 0xa9, 0x20, 0x9a, 0xb6, 0xb7, 0x09, 0x25, 0x54,
-	0x7d, 0xfa, 0xf9, 0x97, 0xa9, 0xde, 0xd1, 0xf8, 0xa9, 0x6e, 0xe8, 0x83, 0x69, 0x6d, 0x86, 0x69,
-	0x9c, 0x51, 0x5f, 0xfd, 0x9a, 0xd2, 0x5e, 0x99, 0x1f, 0x7d, 0x58, 0x45, 0xb0, 0x90, 0x87, 0xa9,
-	0xb9, 0xd6, 0xfd, 0x0a, 0xe0, 0x8d, 0x67, 0x1c, 0x87, 0x12, 0x07, 0x8a, 0x41, 0xc7, 0xb0, 0x2a,
-	0xe3, 0x28, 0xc1, 0xbc, 0x0e, 0xf6, 0xc0, 0xfe, 0x7a, 0xf3, 0xae, 0x57, 0x32, 0x97, 0xf7, 0x4a,
-	0x21, 0xad, 0xeb, 0x97, 0xbf, 0x76, 0xad, 0x8e, 0x11, 0xa0, 0x16, 0xac, 0x31, 0x4e, 0xfb, 0x71,
-	0x17, 0x73, 0x51, 0xbf, 0xa6, 0xd4, 0x4e, 0xa9, 0xba, 0x5d, 0x50, 0xe6, 0x82, 0xb9, 0x0c, 0x1d,
-	0xc1, 0x35, 0x16, 0xca, 0x9e, 0xa8, 0x57, 0x94, 0xde, 0x2e, 0xd7, 0xe7, 0x84, 0xd1, 0x6a, 0xdc,
-	0xfd, 0x0e, 0x20, 0x0a, 0x04, 0x79, 0xcd, 0xba, 0xb3, 0x51, 0x82, 0x90, 0xa1, 0xc7, 0xb0, 0x2a,
-	0x62, 0x92, 0x99, 0x69, 0x6a, 0xad, 0xfa, 0x8f, 0x2f, 0x07, 0xdb, 0x66, 0xaf, 0x4f, 0xbb, 0x5d,
-	0x8e, 0x85, 0x78, 0x29, 0x79, 0x9c, 0x91, 0x8e, 0xe1, 0xd0, 0x0b, 0xb8, 0x11, 0xa9, 0x7d, 0x9c,
-	0xea, 0x27, 0xf3, 0x49, 0x2a, 0xfb, 0xeb, 0xcd, 0x7b, 0xa5, 0x4e, 0x16, 0x57, 0x67, 0x0c, 0xdd,
-	0x8c, 0x16, 0x6a, 0xe2, 0xe4, 0xf8, 0xcf, 0xe7, 0x5d, 0xeb, 0xfd, 0x74, 0xd8, 0x30, 0x0f, 0x7c,
-	0x98, 0x0e, 0x1b, 0xf7, 0x4d, 0x2c, 0x17, 0x0b, 0xc1, 0x2c, 0x9b, 0x77, 0x77, 0xa0, 0xbd, 0x5c,
-	0xed, 0x60, 0xc1, 0x68, 0x26, 0xb0, 0xfb, 0x11, 0xc0, 0x5a, 0x20, 0x48, 0x5b, 0xa5, 0x99, 0xc7,
-	0xa6, 0x73, 0x5d, 0x19, 0x9b, 0x86, 0x8b, 0xd8, 0xb4, 0x00, 0x1d, 0xc1, 0x5a, 0x78, 0x2e, 0x7b,
-	0x94, 0xc7, 0x72, 0xa0, 0x62, 0x5b, 0xb5, 0xa6, 0x39, 0x7a, 0xb2, 0x91, 0x4f, 0x35, 0x3f, 0xbb,
-	0x5b, 0x70, 0x73, 0xe6, 0xa7, 0x70, 0xd9, 0xfc, 0x06, 0x60, 0x25, 0x10, 0x04, 0x25, 0xf0, 0xd6,
-	0xbf, 0xd9, 0x3c, 0x2c, 0xb5, 0xb8, 0x3c, 0xb1, 0xed, 0x5f, 0x11, 0x2c, 0x1e, 0x45, 0x6d, 0x58,
-	0x35, 0x6b, 0x71, 0xfe, 0x27, 0xd5, 0x7d, 0xfb, 0xc1, 0xea, 0x7e, 0x71, 0xa3, 0xbd, 0xf6, 0x6e,
-	0x3a, 0x6c, 0x80, 0xd6, 0xf3, 0xcb, 0xb1, 0x03, 0x46, 0x63, 0x07, 0xfc, 0x1e, 0x3b, 0xe0, 0xd3,
-	0xc4, 0xb1, 0x46, 0x13, 0xc7, 0xfa, 0x39, 0x71, 0xac, 0x37, 0x8f, 0x48, 0x2c, 0x7b, 0xe7, 0x67,
-	0x5e, 0x44, 0x53, 0x5f, 0x24, 0x31, 0x3b, 0x48, 0x71, 0xdf, 0x2f, 0x89, 0x59, 0x0e, 0x18, 0x16,
-	0x67, 0x55, 0xf5, 0xe7, 0x7b, 0xf2, 0x37, 0x00, 0x00, 0xff, 0xff, 0x8e, 0x70, 0x1d, 0x7a, 0x52,
-	0x04, 0x00, 0x00,
+	// 485 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x29, 0xce, 0xc9, 0xcc,
+	0xcb, 0xae, 0xd4, 0xcf, 0x4d, 0x2c, 0xca, 0x4e, 0x2d, 0xc9, 0x4d, 0x2c, 0xd0, 0x2f, 0x33, 0xd4,
+	0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x86, 0xc8, 0xea, 0xc1, 0x65, 0xf5,
+	0xca, 0x0c, 0xa5, 0xc4, 0x93, 0xf3, 0x8b, 0x73, 0xf3, 0x8b, 0xf5, 0x73, 0x8b, 0xd3, 0x41, 0x8a,
+	0x73, 0x8b, 0xd3, 0x21, 0xaa, 0xa5, 0x44, 0xd2, 0xf3, 0xd3, 0xf3, 0xc1, 0x4c, 0x7d, 0x10, 0x0b,
+	0x2a, 0x2a, 0x09, 0x51, 0x1e, 0x0f, 0x91, 0x80, 0x70, 0xa0, 0x52, 0x82, 0x89, 0xb9, 0x99, 0x79,
+	0xf9, 0xfa, 0x60, 0x12, 0x2a, 0xa4, 0x80, 0xcd, 0x3d, 0x10, 0x0e, 0x3e, 0x15, 0x05, 0x89, 0x45,
+	0x89, 0xb9, 0x50, 0x63, 0x95, 0x8e, 0x33, 0x72, 0x09, 0xf8, 0x16, 0xa7, 0x3b, 0x17, 0xa5, 0x26,
+	0x96, 0xa4, 0xfa, 0x82, 0x95, 0x15, 0x0b, 0x19, 0x70, 0xb1, 0x15, 0x67, 0xa6, 0xe7, 0xa5, 0x16,
+	0x49, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x3a, 0x49, 0x5c, 0xda, 0xa2, 0x2b, 0x02, 0x75, 0x8d, 0x63,
+	0x4a, 0x4a, 0x51, 0x6a, 0x71, 0x71, 0x70, 0x49, 0x51, 0x66, 0x5e, 0x7a, 0x10, 0x54, 0x9d, 0x90,
+	0x07, 0x17, 0x5f, 0x32, 0xd8, 0x88, 0x78, 0x88, 0x55, 0xc5, 0x12, 0x4c, 0x0a, 0xcc, 0x1a, 0xdc,
+	0x46, 0xd2, 0x7a, 0x58, 0x42, 0x45, 0x0f, 0x62, 0x8f, 0x13, 0xcb, 0x89, 0x7b, 0xf2, 0x0c, 0x41,
+	0xbc, 0xc9, 0xc8, 0x76, 0x5b, 0x99, 0xbf, 0x58, 0x20, 0xcf, 0xd0, 0xf4, 0x7c, 0x83, 0x16, 0xd4,
+	0xe8, 0xae, 0xe7, 0x1b, 0xb4, 0x94, 0xa1, 0xde, 0xa8, 0x40, 0xf2, 0x08, 0xba, 0xa3, 0x95, 0xa4,
+	0xb8, 0x24, 0xd0, 0xc5, 0x82, 0x52, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a, 0x53, 0x61, 0xbe, 0x0c, 0x2d,
+	0x48, 0xa1, 0xd4, 0x97, 0xa5, 0x60, 0x23, 0xc8, 0xf0, 0x65, 0x29, 0xb2, 0xdd, 0xa4, 0xf8, 0x12,
+	0xc5, 0xd1, 0x50, 0x5f, 0xa2, 0x88, 0xc1, 0x7d, 0xd9, 0xc7, 0xc8, 0xc5, 0xe9, 0x5b, 0x9c, 0x1e,
+	0x00, 0x8e, 0x5f, 0x21, 0x4b, 0x2e, 0x36, 0x48, 0x4c, 0x83, 0xbd, 0x87, 0xcb, 0x91, 0x10, 0xc5,
+	0x50, 0x47, 0x42, 0x35, 0x08, 0x99, 0x71, 0x71, 0x26, 0x96, 0x96, 0x64, 0xe4, 0x17, 0x65, 0x96,
+	0x54, 0x4a, 0x30, 0x11, 0x08, 0x1c, 0x84, 0x52, 0x2b, 0x3e, 0x90, 0x8f, 0x10, 0x7c, 0x25, 0x61,
+	0x2e, 0x41, 0xb8, 0x7b, 0x60, 0xae, 0x34, 0x5a, 0xc3, 0xc4, 0xc5, 0xec, 0x5b, 0x9c, 0x2e, 0x94,
+	0xca, 0xc5, 0x8b, 0x9a, 0xea, 0x54, 0xb1, 0x87, 0x22, 0x5a, 0x9c, 0x4a, 0xe9, 0x12, 0xa5, 0x0c,
+	0x66, 0x1d, 0xc8, 0x1a, 0xd4, 0x68, 0xc7, 0x69, 0x0d, 0x8a, 0x32, 0xdc, 0xd6, 0x60, 0x0d, 0x7b,
+	0xa1, 0x00, 0x2e, 0x36, 0x68, 0xb8, 0xcb, 0xe1, 0xd2, 0x08, 0x91, 0x97, 0x52, 0xc3, 0x2f, 0x0f,
+	0x33, 0x51, 0x8a, 0xb5, 0xe1, 0xf9, 0x06, 0x2d, 0x46, 0x27, 0xb7, 0x13, 0x8f, 0xe4, 0x18, 0x2f,
+	0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18,
+	0x6e, 0x3c, 0x96, 0x63, 0x88, 0xd2, 0x49, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf,
+	0xd5, 0x2f, 0xce, 0xce, 0x2c, 0xd0, 0xcd, 0x4d, 0x2d, 0xd3, 0xc7, 0x92, 0x86, 0x4a, 0x2a, 0x0b,
+	0x52, 0x8b, 0x93, 0xd8, 0xc0, 0xf9, 0xdd, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x22, 0xf7, 0x88,
+	0xe8, 0xc5, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -345,8 +371,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// UpdateMarketMap creates markets from the given message.
-	UpdateMarketMap(ctx context.Context, in *MsgUpdateMarketMap, opts ...grpc.CallOption) (*MsgUpdateMarketMapResponse, error)
+	// CreateMarkets creates markets from the given message.
+	CreateMarkets(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error)
+	// UpdateMarkets updates markets from the given message.
+	UpdateMarkets(ctx context.Context, in *MsgUpdateMarkets, opts ...grpc.CallOption) (*MsgUpdateMarketsResponse, error)
 	// Params defines a method for updating the x/marketmap module parameters.
 	Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error)
 }
@@ -359,9 +387,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) UpdateMarketMap(ctx context.Context, in *MsgUpdateMarketMap, opts ...grpc.CallOption) (*MsgUpdateMarketMapResponse, error) {
-	out := new(MsgUpdateMarketMapResponse)
-	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Msg/UpdateMarketMap", in, out, opts...)
+func (c *msgClient) CreateMarkets(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error) {
+	out := new(MsgCreateMarketsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Msg/CreateMarkets", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateMarkets(ctx context.Context, in *MsgUpdateMarkets, opts ...grpc.CallOption) (*MsgUpdateMarketsResponse, error) {
+	out := new(MsgUpdateMarketsResponse)
+	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Msg/UpdateMarkets", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -379,8 +416,10 @@ func (c *msgClient) Params(ctx context.Context, in *MsgParams, opts ...grpc.Call
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// UpdateMarketMap creates markets from the given message.
-	UpdateMarketMap(context.Context, *MsgUpdateMarketMap) (*MsgUpdateMarketMapResponse, error)
+	// CreateMarkets creates markets from the given message.
+	CreateMarkets(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error)
+	// UpdateMarkets updates markets from the given message.
+	UpdateMarkets(context.Context, *MsgUpdateMarkets) (*MsgUpdateMarketsResponse, error)
 	// Params defines a method for updating the x/marketmap module parameters.
 	Params(context.Context, *MsgParams) (*MsgParamsResponse, error)
 }
@@ -389,8 +428,11 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) UpdateMarketMap(ctx context.Context, req *MsgUpdateMarketMap) (*MsgUpdateMarketMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateMarketMap not implemented")
+func (*UnimplementedMsgServer) CreateMarkets(ctx context.Context, req *MsgCreateMarkets) (*MsgCreateMarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMarkets not implemented")
+}
+func (*UnimplementedMsgServer) UpdateMarkets(ctx context.Context, req *MsgUpdateMarkets) (*MsgUpdateMarketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMarkets not implemented")
 }
 func (*UnimplementedMsgServer) Params(ctx context.Context, req *MsgParams) (*MsgParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
@@ -400,20 +442,38 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_UpdateMarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateMarketMap)
+func _Msg_CreateMarkets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateMarkets)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateMarketMap(ctx, in)
+		return srv.(MsgServer).CreateMarkets(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/slinky.marketmap.v1.Msg/UpdateMarketMap",
+		FullMethod: "/slinky.marketmap.v1.Msg/CreateMarkets",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateMarketMap(ctx, req.(*MsgUpdateMarketMap))
+		return srv.(MsgServer).CreateMarkets(ctx, req.(*MsgCreateMarkets))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateMarkets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateMarkets)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateMarkets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.marketmap.v1.Msg/UpdateMarkets",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateMarkets(ctx, req.(*MsgUpdateMarkets))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -441,8 +501,12 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateMarketMap",
-			Handler:    _Msg_UpdateMarketMap_Handler,
+			MethodName: "CreateMarkets",
+			Handler:    _Msg_CreateMarkets_Handler,
+		},
+		{
+			MethodName: "UpdateMarkets",
+			Handler:    _Msg_UpdateMarkets_Handler,
 		},
 		{
 			MethodName: "Params",
@@ -453,7 +517,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "slinky/marketmap/v1/tx.proto",
 }
 
-func (m *CreateMarket) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateMarkets) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -463,65 +527,12 @@ func (m *CreateMarket) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CreateMarket) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateMarkets) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CreateMarket) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Paths.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintTx(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x1a
-	{
-		size, err := m.Providers.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintTx(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	{
-		size, err := m.Ticker.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintTx(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgUpdateMarketMap) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateMarketMap) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateMarketMap) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateMarkets) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -550,7 +561,7 @@ func (m *MsgUpdateMarketMap) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateMarketMapResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateMarketsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -560,12 +571,79 @@ func (m *MsgUpdateMarketMapResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateMarketMapResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateMarketsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateMarketsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateMarkets) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateMarkets) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateMarkets) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.UpdateMarkets) > 0 {
+		for iNdEx := len(m.UpdateMarkets) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.UpdateMarkets[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateMarketsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateMarketsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateMarketsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -647,22 +725,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *CreateMarket) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Ticker.Size()
-	n += 1 + l + sovTx(uint64(l))
-	l = m.Providers.Size()
-	n += 1 + l + sovTx(uint64(l))
-	l = m.Paths.Size()
-	n += 1 + l + sovTx(uint64(l))
-	return n
-}
-
-func (m *MsgUpdateMarketMap) Size() (n int) {
+func (m *MsgCreateMarkets) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -681,7 +744,35 @@ func (m *MsgUpdateMarketMap) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateMarketMapResponse) Size() (n int) {
+func (m *MsgCreateMarketsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateMarkets) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Signer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.UpdateMarkets) > 0 {
+		for _, e := range m.UpdateMarkets {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgUpdateMarketsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -720,7 +811,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *CreateMarket) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateMarkets) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -743,159 +834,10 @@ func (m *CreateMarket) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CreateMarket: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateMarkets: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CreateMarket: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Ticker.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Providers", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Providers.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Paths.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgUpdateMarketMap) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateMarketMap: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateMarketMap: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateMarkets: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -959,7 +901,7 @@ func (m *MsgUpdateMarketMap) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreateMarkets = append(m.CreateMarkets, CreateMarket{})
+			m.CreateMarkets = append(m.CreateMarkets, Market{})
 			if err := m.CreateMarkets[len(m.CreateMarkets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -985,7 +927,7 @@ func (m *MsgUpdateMarketMap) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateMarketMapResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateMarketsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1008,10 +950,176 @@ func (m *MsgUpdateMarketMapResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateMarketMapResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateMarketsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateMarketMapResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateMarketsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateMarkets) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateMarkets: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateMarkets: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UpdateMarkets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UpdateMarkets = append(m.UpdateMarkets, Market{})
+			if err := m.UpdateMarkets[len(m.UpdateMarkets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateMarketsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateMarketsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateMarketsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

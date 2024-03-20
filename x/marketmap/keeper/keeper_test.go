@@ -228,7 +228,7 @@ func (s *KeeperTestSuite) TestGets() {
 
 		s.Run("unable to set markets again", func() {
 			for _, market := range markets {
-				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewTickerAlreadyExistsError(types.TickerString(market.Ticker.String())))
+				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
 			}
 		})
 	})

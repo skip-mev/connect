@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/skip-mev/slinky/oracle"
@@ -79,14 +78,14 @@ func (s *OracleMetricsTestSuite) TestTickMetric() {
 	s.mockMetrics.On("AddTick").Return()
 
 	s.mockProvider1.On("Name").Return("provider1")
-	s.mockProvider1.On("Start", mock.Anything).Return(nil)
 	s.mockProvider1.On("Type").Return(providertypes.API)
 	s.mockProvider1.On("GetData").Return(nil)
+	s.mockProvider1.On("IsRunning").Return(true)
 
 	s.mockProvider2.On("Name").Return("provider2")
-	s.mockProvider2.On("Start", mock.Anything).Return(nil)
 	s.mockProvider2.On("Type").Return(providertypes.API)
 	s.mockProvider2.On("GetData").Return(nil, nil)
+	s.mockProvider2.On("IsRunning").Return(true)
 
 	// wait for a tick on the oracle
 	go func() {

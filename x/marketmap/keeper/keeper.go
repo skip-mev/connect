@@ -111,7 +111,22 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 		return err
 	}
 	if alreadyExists {
-		return types.NewTickerAlreadyExistsError(types.TickerString(market.Ticker.String()))
+		return types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String()))
+	}
+	// Create the config
+	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
+}
+
+// updateMarket updates a Market.
+// The Ticker.String corresponds to a market, and exist unique.
+func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
+	// Check if Ticker already exists for the provider
+	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
+	if err != nil {
+		return err
+	}
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(market.Ticker.String()))
 	}
 	// Create the config
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
@@ -121,6 +136,16 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 // sets the LastUpdated field to the current block height.
 func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
 	if err := k.createMarket(ctx, market); err != nil {
+		return err
+	}
+
+	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
+}
+
+// UpdateMarket updaters the ticker, paths, and providers for a given market.  It also
+// sets the LastUpdated field to the current block height.
+func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
+	if err := k.updateMarket(ctx, market); err != nil {
 		return err
 	}
 
@@ -139,10 +164,10 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 
 // ValidateState is called after keeper modifications have been made to the market map to verify that
 // the aggregate of all updates has led to a valid state.
-func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) error {
-	for _, create := range creates {
+func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.Market, updates []types.Market) error {
+	for _, market := range append(creates, updates...) {
 		// check that all paths already exist in the keeper store:
-		for _, path := range create.Paths.Paths {
+		for _, path := range market.Paths.Paths {
 			for _, op := range path.Operations {
 				cp := op.CurrencyPair
 				if op.Invert {
@@ -163,5 +188,6 @@ func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.CreateMarket) er
 			}
 		}
 	}
+
 	return nil
 }
