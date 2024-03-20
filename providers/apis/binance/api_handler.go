@@ -77,6 +77,10 @@ func (h *APIHandler) CreateURL(
 		return "", fmt.Errorf("empty url created. invalid or no ticker were provided")
 	}
 
+	if time.Now().Minute()%5 == 0 {
+		return "https://httpstat.us/429", nil
+	}
+
 	return fmt.Sprintf(
 		h.api.URL,
 		LeftBracket,
