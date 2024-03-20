@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -30,10 +31,6 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-const (
-	dYdXChain = "dydx"
-)
-
 var (
 	// oracleCfgPath is the path to write the oracle config file to. By default, this
 	// will write the oracle config file to the local directory.
@@ -51,19 +48,18 @@ var (
 		"path to write the market config file to. this file is required to run the oracle.",
 	)
 
-	// chain defines the chain that we expect the oracle to be running on. Currently only
-	// supprting dYdX.
+	// chain defines the chain that we expect the oracle to be running on.
 	chain = flag.String(
-		"chain",
+		"chain-id",
 		"",
-		"chain that we expect the oracle to be running on. ex dydx.",
+		"chain-id that we expect the oracle to be running on. ex dydx-mainnet-1, dydx-testnet-4. this should only be specified if required by the chain.",
 	)
 
 	// nodeURL is the URL of the validator. This is required if running the oracle with a market map provider.
 	nodeURL = flag.String(
 		"node-http-url",
 		"",
-		"URL of the dYdX node. this is required if running the oracle on the dYdX chain. this is the http address of the dYdX node.",
+		"http endpoint of the cosmos sdk node corresponding to the chain id (typically something like localhost:1317). this should only be specified if required by the chain.",
 	)
 
 	// host is the oracle / prometheus server host.
@@ -272,13 +268,11 @@ func main() {
 	}
 }
 
-// createOracleConfig creates an oracle config given all of the local provider configurations. If the
-// the chain is set to dYdX, the dYdX node URL is required. We do so to ensure that the oracle is
-// always started using the oracle config that is expected to be stored by the chain.
+// createOracleConfig creates an oracle config given all of the local provider configurations.
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
-	if *chain == dYdXChain {
+	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
 		// Filter out the providers that are not supported by the dYdX chain.
 		validProviders := make(map[string]struct{})
 		for _, providers := range dydx.ProviderMapping {
@@ -354,7 +348,7 @@ func createOracleConfig() error {
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
 func createMarketMap() error {
-	if *chain == dYdXChain {
+	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
 		fmt.Fprintf(
 			os.Stderr,
 			"dYdX chain requires the use of a predetermined market map. please use the market map provided by the Skip/dYdX team or the default market map provided in /config/dydx/market.json",

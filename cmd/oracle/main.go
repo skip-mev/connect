@@ -15,16 +15,14 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-)
-
-const (
-	dYdXChain = "dydx"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -32,7 +30,7 @@ var (
 	marketCfgPath     = flag.String("market-config-path", "market_config.json", "path to the market config file")
 	runPprof          = flag.Bool("run-pprof", false, "run pprof server")
 	profilePort       = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
-	chain             = flag.String("chain", "", "the chain for which the side car should run for")
+	chain             = flag.String("chain-id", "", "the chain id for which the side car should run for (ex. dydx-mainnet-1)")
 	updateLocalConfig = flag.Bool("update-local-market-config", true, "update the market map config when a new one is received; this will overwrite the existing config file.")
 )
 
@@ -92,32 +90,15 @@ func main() {
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
 	}
 
-	if *chain == dYdXChain {
-		// dYdX uses the median index price aggregation strategy.
-		aggregator, err := oraclemath.NewMedianAggregator(
-			logger,
-			marketCfg,
-		)
+	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
+		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg)
 		if err != nil {
-			logger.Error("failed to create median aggregator", zap.Error(err))
+			logger.Error("failed to create dydx orchestrator and oracle options", zap.Error(err))
 			return
 		}
 
-		// The oracle must be configured with the median index price aggregator.
-		customOracleOpts := []oracle.Option{
-			oracle.WithDataAggregator(aggregator),
-		}
-		oracleOpts = append(oracleOpts, customOracleOpts...)
-
-		// Additionally, dYdX requires a custom market map provider that fetches market params from the chain.
-		customOrchestratorOps := []orchestrator.Option{
-			orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
-			orchestrator.WithAggregator(aggregator),
-		}
-		if *updateLocalConfig {
-			customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(*marketCfgPath))
-		}
 		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
+		oracleOpts = append(oracleOpts, customOracleOpts...)
 	}
 
 	// Create the orchestrator and start the orchestrator.
@@ -187,4 +168,35 @@ func main() {
 	if err := srv.StartServer(ctx, cfg.Host, cfg.Port); err != nil {
 		logger.Error("stopping server", zap.Error(err))
 	}
+}
+
+// dydxOptions specifies the custom orchestrator and oracle options for dYdX.
+func dydxOptions(
+	logger *zap.Logger,
+	marketCfg mmtypes.MarketMap,
+) ([]orchestrator.Option, []oracle.Option, error) {
+	// dYdX uses the median index price aggregation strategy.
+	aggregator, err := oraclemath.NewMedianAggregator(
+		logger,
+		marketCfg,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// The oracle must be configured with the median index price aggregator.
+	customOracleOpts := []oracle.Option{
+		oracle.WithDataAggregator(aggregator),
+	}
+
+	// Additionally, dYdX requires a custom market map provider that fetches market params from the chain.
+	customOrchestratorOps := []orchestrator.Option{
+		orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
+		orchestrator.WithAggregator(aggregator),
+	}
+	if *updateLocalConfig {
+		customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(*marketCfgPath))
+	}
+
+	return customOrchestratorOps, customOracleOpts, nil
 }

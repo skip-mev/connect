@@ -51,7 +51,7 @@ var DefaultAPIConfig = config.APIConfig{
 	URL:              "localhost:1317",
 }
 
-// ProviderMapping are references to the different providers that are supported by the dYdX market map.
+// ProviderMapping is referencing the different providers that are supported by the dYdX market params.
 //
 // ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
 var ProviderMapping = map[string][]string{
