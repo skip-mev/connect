@@ -10,7 +10,7 @@ import (
 
 const (
 	// Name is the name of the bitstamp provider.
-	Name = "Bitstamp"
+	Name = "bitstamp_ws"
 
 	// WSS is the bitstamp websocket address.
 	WSS = "wss://ws.bitstamp.net"
