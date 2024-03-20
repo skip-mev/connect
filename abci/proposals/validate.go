@@ -1,7 +1,6 @@
 package proposals
 
 import (
-	"github.com/bits-and-blooms/bitset"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	cometproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,8 +19,7 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 	height int64,
 	extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) error {
-	noModifiedVotes := bitset.New(uint(len(extendedCommitInfo.Votes)))
-	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo, noModifiedVotes); err != nil {
+	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo); err != nil {
 		h.logger.Error(
 			"failed to validate vote extensions; vote extensions may not comprise a super-majority",
 			"height", height,
@@ -56,8 +54,6 @@ func (h *ProposalHandler) ValidateExtendedCommitInfo(
 func (h *ProposalHandler) PruneAndValidateExtendedCommitInfo(
 	ctx sdk.Context, extendedCommitInfo cometabci.ExtendedCommitInfo,
 ) (cometabci.ExtendedCommitInfo, error) {
-	modifiedVotes := bitset.New(uint(len(extendedCommitInfo.Votes)))
-
 	// Validate all oracle vote extensions.
 	for i, vote := range extendedCommitInfo.Votes {
 		// validate the vote-extension
@@ -73,12 +69,11 @@ func (h *ProposalHandler) PruneAndValidateExtendedCommitInfo(
 			vote.ExtensionSignature = nil
 			vote.VoteExtension = nil
 			extendedCommitInfo.Votes[i] = vote
-			modifiedVotes.Set(uint(i))
 		}
 	}
 
 	// validate after pruning
-	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo, modifiedVotes); err != nil {
+	if err := h.validateVoteExtensionsFn(ctx, extendedCommitInfo); err != nil {
 		h.logger.Error(
 			"failed to validate vote extensions; vote extensions may not comprise a super-majority",
 			"err", err,

@@ -5,8 +5,6 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/bits-and-blooms/bitset"
-
 	"cosmossdk.io/core/comet"
 	"cosmossdk.io/core/header"
 	"cosmossdk.io/log"
@@ -155,7 +153,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsHappyPath() {
 	s.ctx = s.ctx.WithCometInfo(info)
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 // check ValidateVoteExtensions works when a single node has submitted a BlockID_Absent.
@@ -206,7 +204,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteAbsent() {
 	s.ctx = s.ctx.WithCometInfo(info)
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 // check ValidateVoteExtensions works with duplicate votes.
@@ -252,7 +250,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsDuplicateVotes() {
 	s.ctx = s.ctx.WithCometInfo(info)
 
 	// expect fail (duplicate votes)
-	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 // check ValidateVoteExtensions works when a single node has submitted a BlockID_Nil.
@@ -304,7 +302,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsSingleVoteNil() {
 	s.ctx = s.ctx.WithCometInfo(info)
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().NoError(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 // check ValidateVoteExtensions works when two nodes have submitted a BlockID_Nil / BlockID_Absent.
@@ -352,7 +350,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsTwoVotesNilAbsent() {
 	s.ctx = s.ctx.WithCometInfo(info)
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsIncorrectVotingPower() {
@@ -403,7 +401,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsIncorrectVotingPower() {
 	llc.Votes[2].Validator.Power = 332
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsIncorrectOrder() {
@@ -453,7 +451,7 @@ func (s *ABCIUtilsTestSuite) TestValidateVoteExtensionsIncorrectOrder() {
 	llc.Votes[0], llc.Votes[2] = llc.Votes[2], llc.Votes[0]
 
 	// expect-pass (votes of height 2 are included in next block)
-	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc, bitset.New(uint(len(llc.Votes)))))
+	s.Require().Error(ve.ValidateVoteExtensions(s.ctx, s.valStore, llc))
 }
 
 func marshalDelimitedFn(msg proto.Message) ([]byte, error) {
