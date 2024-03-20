@@ -355,4 +355,8 @@ Translated to the side-car, this would look like:
 
 The dYdX Mexc API uses the [Spot V2 endpoint](https://mexcdevelop.github.io/apidocs/spot_v2_en/#ticker-information) which has a different representation of tickers relative to the [Spot V3 websocket API](https://mexcdevelop.github.io/apidocs/spot_v3_en/#miniticker). V2 includes underscores that we omit in the V3 API.
 
+#### Bitstamp Ticker Conversions
+
+The dYdX Bitstamp API uses the [Ticker endpoint](https://www.bitstamp.net/api/v2/ticker/) which has a different representation of tickers relative to the [Websocket API](https://www.bitstamp.net/websocket/v2/). The ticker endpoint uses a `/` delimiter, while the websocket connection does not have a delimeter and lowercases the ticker.
+
 
