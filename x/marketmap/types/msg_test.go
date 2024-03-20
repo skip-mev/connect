@@ -38,7 +38,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			"invalid ticker - fail",
 			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+				CreateMarkets: []types.Market{
 					{
 						Ticker: types.Ticker{
 							CurrencyPair:     validCurrencyPair,
@@ -78,7 +78,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			"invalid num providers - fail",
 			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+				CreateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -110,7 +110,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			"invalid empty offchain ticker - fail",
 			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+				CreateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -146,7 +146,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			"invalid no paths - fail",
 			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+				CreateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -171,7 +171,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			"invalid path - fail",
 			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+				CreateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -198,7 +198,7 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			"valid message",
 			types.MsgCreateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+				CreateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -272,7 +272,7 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"invalid ticker - fail",
 			types.MsgUpdateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				UpdateMarkets: []types.UpdateMarket{
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: types.Ticker{
 							CurrencyPair:     validCurrencyPair,
@@ -312,7 +312,7 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"invalid num providers - fail",
 			types.MsgUpdateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				UpdateMarkets: []types.UpdateMarket{
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -344,7 +344,7 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"invalid empty offchain ticker - fail",
 			types.MsgUpdateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				UpdateMarkets: []types.UpdateMarket{
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -380,7 +380,7 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"invalid no paths - fail",
 			types.MsgUpdateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				UpdateMarkets: []types.UpdateMarket{
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -405,7 +405,7 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"invalid path - fail",
 			types.MsgUpdateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				UpdateMarkets: []types.UpdateMarket{
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{
@@ -432,7 +432,7 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"valid message",
 			types.MsgUpdateMarkets{
 				Signer: sample.Address(sample.Rand()),
-				UpdateMarkets: []types.UpdateMarket{
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
 						Providers: types.Providers{

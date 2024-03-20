@@ -13,7 +13,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	// create initial markets
 	msg := &types.MsgCreateMarkets{
 		Signer: s.authority.String(),
-		CreateMarkets: []types.CreateMarket{
+		CreateMarkets: []types.Market{
 			{
 				Ticker:    btcusdt,
 				Providers: btcusdtProviders,
@@ -71,7 +71,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	s.Run("unable to create market that already exists", func() {
 		msg = &types.MsgCreateMarkets{
 			Signer: s.authority.String(),
-			CreateMarkets: []types.CreateMarket{
+			CreateMarkets: []types.Market{
 				{
 					Ticker:    btcusdt,
 					Providers: btcusdtProviders,
@@ -87,7 +87,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	s.Run("unable to create market with paths that are not on chain tickers", func() {
 		msg = &types.MsgCreateMarkets{
 			Signer: s.authority.String(),
-			CreateMarkets: []types.CreateMarket{
+			CreateMarkets: []types.Market{
 				{
 					Ticker:    ethusdt,
 					Providers: ethusdtProviders,
@@ -127,7 +127,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 	// create initial markets
 	createMsg := &types.MsgCreateMarkets{
 		Signer: s.authority.String(),
-		CreateMarkets: []types.CreateMarket{
+		CreateMarkets: []types.Market{
 			{
 				Ticker:    btcusdt,
 				Providers: btcusdtProviders,
@@ -188,7 +188,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 
 		msg := &types.MsgUpdateMarkets{
 			Signer: s.authority.String(),
-			UpdateMarkets: []types.UpdateMarket{
+			UpdateMarkets: []types.Market{
 				{
 					Ticker:    tickerUpdate,
 					Providers: btcusdtProviders,
@@ -221,7 +221,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 
 		msg := &types.MsgUpdateMarkets{
 			Signer: s.authority.String(),
-			UpdateMarkets: []types.UpdateMarket{
+			UpdateMarkets: []types.Market{
 				{
 					Ticker:    tickerUpdate,
 					Providers: btcusdtProviders,
@@ -237,7 +237,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 	s.Run("unable to update market if it does not already exist", func() {
 		msg := &types.MsgUpdateMarkets{
 			Signer: s.authority.String(),
-			UpdateMarkets: []types.UpdateMarket{
+			UpdateMarkets: []types.Market{
 				{
 					Ticker:    ethusdt,
 					Providers: ethusdtProviders,
