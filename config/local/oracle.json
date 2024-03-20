@@ -6,8 +6,8 @@
       "name": "binance_api",
       "api": {
         "enabled": true,
-        "timeout": 500000000,
-        "interval": 150000000,
+        "timeout": 1000000000,
+        "interval": 400000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
@@ -487,5 +487,7 @@
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true
-  }
+  },
+  "host": "0.0.0.0",
+  "port": "8080"
 }
