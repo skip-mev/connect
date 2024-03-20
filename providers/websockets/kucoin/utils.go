@@ -10,7 +10,7 @@ import (
 
 const (
 	// Name is the name of the KuCoin provider.
-	Name = "Kucoin"
+	Name = "kucoin_ws"
 
 	// WSSEndpoint contains the endpoint format for Kucoin websocket API. Specifically
 	// this inputs the dynamically generated token from the user and the endpoint.
