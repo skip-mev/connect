@@ -17,19 +17,23 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/median"
+	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 )
 
+const (
+	dYdXChain = "dydx"
+)
+
 var (
-	host          = flag.String("host", "0.0.0.0", "host for the grpc-service to listen on")
-	port          = flag.String("port", "8080", "port for the grpc-service to listen on")
-	oracleCfgPath = flag.String("oracle-config-path", "oracle_config.json", "path to the oracle config file")
-	marketCfgPath = flag.String("market-config-path", "market_config.json", "path to the market config file")
-	runPprof      = flag.Bool("run-pprof", false, "run pprof server")
-	profilePort   = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
+	oracleCfgPath     = flag.String("oracle-config-path", "oracle_config.json", "path to the oracle config file")
+	marketCfgPath     = flag.String("market-config-path", "market_config.json", "path to the market config file")
+	runPprof          = flag.Bool("run-pprof", false, "run pprof server")
+	profilePort       = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
+	chain             = flag.String("chain", "dydx", "the chain for which the side car should run for")
+	updateLocalConfig = flag.Bool("update-local-market-config", false, "update the market map config when a new one is received; this will overwrite the existing config file.")
 )
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -74,41 +78,72 @@ func main() {
 		}
 	}
 
-	orch, err := orchestrator.NewProviderOrchestrator(
-		cfg,
+	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
+	orchestratorOpts := []orchestrator.Option{
 		orchestrator.WithLogger(logger),
 		orchestrator.WithMarketMap(marketCfg),
 		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
 		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
+	}
+	oracleOpts := []oracle.Option{
+		oracle.WithLogger(logger),
+		oracle.WithUpdateInterval(cfg.UpdateInterval),
+		oracle.WithMetricsConfig(cfg.Metrics),
+		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
+	}
+
+	if *chain == dYdXChain {
+		// dYdX uses the median index price aggregation strategy.
+		aggregator, err := oraclemath.NewMedianAggregator(
+			logger,
+			marketCfg,
+		)
+		if err != nil {
+			logger.Error("failed to create median aggregator", zap.Error(err))
+			return
+		}
+
+		// We must also provide the oracle with a data aggregator. In this case it is the same as the orchestrator's.
+		customOracleOpts := []oracle.Option{
+			oracle.WithDataAggregator(aggregator),
+		}
+		oracleOpts = append(oracleOpts, customOracleOpts...)
+
+		// Additionally, dYdX requires a custom market map provider that fetches market params from the chain.
+		customOrchestratorOps := []orchestrator.Option{
+			orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
+			orchestrator.WithAggregator(aggregator),
+		}
+		if *updateLocalConfig {
+			customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(*marketCfgPath))
+		}
+		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
+	}
+
+	// Create the orchestrator and start the orchestrator.
+	orch, err := orchestrator.NewProviderOrchestrator(
+		cfg,
+		orchestratorOpts...,
 	)
 	if err != nil {
 		logger.Error("failed to create provider orchestrator", zap.Error(err))
 		return
 	}
 
-	// start the provider orchestrator
 	if err := orch.Start(ctx); err != nil {
 		logger.Error("failed to start provider orchestrator", zap.Error(err))
 		return
 	}
 	defer orch.Stop()
 
-	// Create the oracle.
-	oracle, err := oracle.New(
-		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithProviders(orch.GetPriceProviders()),
-		oracle.WithAggregateFunction(median.ComputeMedian()), // Replace with custom aggregation function.
-		oracle.WithMetricsConfig(cfg.Metrics),
-		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
-		oracle.WithLogger(logger),
-	)
+	// Create the oracle and start the oracle server.
+	oracleOpts = append(oracleOpts, oracle.WithProviders(orch.GetPriceProviders()))
+	orc, err := oracle.New(oracleOpts...)
 	if err != nil {
 		logger.Error("failed to create oracle", zap.Error(err))
 		return
 	}
-
-	// create server
-	srv := oracleserver.NewOracleServer(oracle, logger)
+	srv := oracleserver.NewOracleServer(orc, logger)
 
 	// cancel oracle on interrupt or terminate
 	go func() {
@@ -138,7 +173,7 @@ func main() {
 	}
 
 	if *runPprof {
-		endpoint := fmt.Sprintf("%s:%s", *host, *profilePort)
+		endpoint := fmt.Sprintf("%s:%s", cfg.Host, *profilePort)
 		// Start pprof server
 		go func() {
 			logger.Info("Starting pprof server", zap.String("endpoint", endpoint))
@@ -149,7 +184,7 @@ func main() {
 	}
 
 	// start oracle + server, and wait for either to finish
-	if err := srv.StartServer(ctx, *host, *port); err != nil {
+	if err := srv.StartServer(ctx, cfg.Host, cfg.Port); err != nil {
 		logger.Error("stopping server", zap.Error(err))
 	}
 }

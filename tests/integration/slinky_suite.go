@@ -58,6 +58,8 @@ func DefaultOracleConfig() oracleconfig.OracleConfig {
 	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    1 * time.Minute,
+		Host:           "0.0.0.0",
+		Port:           "8080",
 	}
 
 	return oracleConfig
