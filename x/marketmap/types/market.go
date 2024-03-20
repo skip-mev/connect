@@ -14,7 +14,7 @@ const (
 	MaxConversionOperations = 2
 
 	// IndexPrice is the provider name for the index price. This is specific to the IndexPriceAggregation.
-	IndexPrice = "index"
+	IndexPrice = "index_price"
 )
 
 // ValidateBasic performs aggregate validation for all fields in the MarketMap. We consider

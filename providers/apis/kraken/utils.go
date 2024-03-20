@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the Kraken API provider.
-	Name = "KrakenAPI"
+	Name = "kraken_api"
 
 	// URL is the base URL of the Kraken API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
@@ -33,7 +33,7 @@ var (
 		Atomic:           true,
 		Enabled:          true,
 		Timeout:          500 * time.Millisecond,
-		Interval:         150 * time.Millisecond,
+		Interval:         400 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
