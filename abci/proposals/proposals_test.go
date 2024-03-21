@@ -181,10 +181,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			veEnabled: true,
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
-
+				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(0), nil).Once()
 				return cpStrategy
 			},
 			expectedProposalTxns: 1,
@@ -213,10 +210,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			veEnabled: true,
 			currencyPairStrategy: func() currencypair.CurrencyPairStrategy {
 				cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
-
-				cpStrategy.On("FromID", mock.Anything, uint64(0)).Return(btcUSD, nil)
-				cpStrategy.On("GetDecodedPrice", mock.Anything, btcUSD, mock.Anything).Return(big.NewInt(10), nil)
-
+				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(1), nil).Once()
 				return cpStrategy
 			},
 			expectedProposalTxns: 3,

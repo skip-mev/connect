@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"math/big"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
@@ -123,16 +121,10 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp slinkyty
 	return currentPrice, nil
 }
 
-// GetMaxBzSize returns the maximum size that the sum of the price bytes should be.  This method returns an error if the size cannot
+// GetMaxNumCP returns the number of pairs that the VEs should include.  This method returns an error if the size cannot
 // be queried from the x/oracle state.
-func (s *DeltaCurrencyPairStrategy) GetMaxBzSize(
+func (s *DeltaCurrencyPairStrategy) GetMaxNumCP(
 	ctx sdk.Context,
 ) (uint64, error) {
-	numCP, err := s.oracleKeeper.GetPrevBlockCPCounter(ctx)
-	if err != nil {
-		return 0, err
-	}
-
-	size := numCP * slinkyabci.MaximumPriceSize
-	return size, nil
+	return s.oracleKeeper.GetPrevBlockCPCounter(ctx)
 }
