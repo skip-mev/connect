@@ -3,16 +3,16 @@
   "maxPriceAge": 120000000000,
   "providers": [
     {
-      "name": "Binance",
+      "name": "binance_api",
       "api": {
         "enabled": true,
-        "timeout": 500000000,
-        "interval": 150000000,
+        "timeout": 1000000000,
+        "interval": 400000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s",
-        "name": "Binance"
+        "name": "binance_api"
       },
       "webSocket": {
         "enabled": false,
@@ -33,7 +33,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CoinbaseProAPI",
+      "name": "coinbase_api",
       "api": {
         "enabled": true,
         "timeout": 500000000,
@@ -42,7 +42,7 @@
         "maxQueries": 5,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
-        "name": "CoinbaseProAPI"
+        "name": "coinbase_api"
       },
       "webSocket": {
         "enabled": false,
@@ -63,7 +63,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Coingecko",
+      "name": "coingecko_api",
       "api": {
         "enabled": true,
         "timeout": 500000000,
@@ -72,7 +72,7 @@
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.coingecko.com/api/v3",
-        "name": "Coingecko"
+        "name": "coingecko_api"
       },
       "webSocket": {
         "enabled": false,
@@ -93,7 +93,7 @@
       "type": "price_provider"
     },
     {
-      "name": "GeckoTerminal",
+      "name": "gecko_terminal_api",
       "api": {
         "enabled": true,
         "timeout": 500000000,
@@ -102,7 +102,7 @@
         "maxQueries": 1,
         "atomic": false,
         "url": "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/%s",
-        "name": "GeckoTerminal"
+        "name": "gecko_terminal_api"
       },
       "webSocket": {
         "enabled": false,
@@ -123,16 +123,16 @@
       "type": "price_provider"
     },
     {
-      "name": "KrakenAPI",
+      "name": "kraken_api",
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 150000000,
+        "interval": 400000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
-        "name": "KrakenAPI"
+        "name": "kraken_api"
       },
       "webSocket": {
         "enabled": false,
@@ -153,7 +153,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Bitfinex",
+      "name": "bitfinex_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -169,7 +169,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://api-pub.bitfinex.com/ws/2",
-        "name": "Bitfinex",
+        "name": "bitfinex_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -183,7 +183,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Bitstamp",
+      "name": "bitstamp_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -199,7 +199,7 @@
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws.bitstamp.net",
-        "name": "Bitstamp",
+        "name": "bitstamp_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -213,7 +213,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Bybit",
+      "name": "bybit_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -229,7 +229,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://stream.bybit.com/v5/public/spot",
-        "name": "Bybit",
+        "name": "bybit_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -243,7 +243,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CoinbasePro",
+      "name": "coinbase_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -259,7 +259,7 @@
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws-feed.exchange.coinbase.com",
-        "name": "CoinbasePro",
+        "name": "coinbase_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -273,7 +273,7 @@
       "type": "price_provider"
     },
     {
-      "name": "CryptoCom",
+      "name": "crypto_dot_com_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -289,7 +289,7 @@
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://stream.crypto.com/exchange/v1/market",
-        "name": "CryptoCom",
+        "name": "crypto_dot_com_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -303,7 +303,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Gate",
+      "name": "gate_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -319,7 +319,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://api.gateio.ws/ws/v4/",
-        "name": "Gate",
+        "name": "gate_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -333,7 +333,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Huobi",
+      "name": "huobi_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -349,7 +349,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://api.huobi.pro/ws",
-        "name": "Huobi",
+        "name": "huobi_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -363,7 +363,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Kraken",
+      "name": "kraken_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -379,7 +379,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws.kraken.com",
-        "name": "Kraken",
+        "name": "kraken_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -393,7 +393,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Kucoin",
+      "name": "kucoin_ws",
       "api": {
         "enabled": false,
         "timeout": 5000000000,
@@ -402,14 +402,14 @@
         "maxQueries": 1,
         "atomic": false,
         "url": "https://api.kucoin.com",
-        "name": "Kucoin"
+        "name": "kucoin_ws"
       },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws-api-spot.kucoin.com/",
-        "name": "Kucoin",
+        "name": "kucoin_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -423,7 +423,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Mexc",
+      "name": "mexc_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -439,7 +439,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://wbs.mexc.com/ws",
-        "name": "Mexc",
+        "name": "mexc_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -453,7 +453,7 @@
       "type": "price_provider"
     },
     {
-      "name": "Okx",
+      "name": "okx_ws",
       "api": {
         "enabled": false,
         "timeout": 0,
@@ -469,7 +469,7 @@
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://ws.okx.com:8443/ws/v5/public",
-        "name": "Okx",
+        "name": "okx_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -487,5 +487,7 @@
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true
-  }
+  },
+  "host": "0.0.0.0",
+  "port": "8080"
 }

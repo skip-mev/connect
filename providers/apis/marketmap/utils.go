@@ -8,7 +8,7 @@ import (
 
 const (
 	// Name is the name of the MarketMap provider.
-	Name = "marketmap"
+	Name = "marketmap_api"
 )
 
 // DefaultAPIConfig returns the default configuration for the MarketMap API.

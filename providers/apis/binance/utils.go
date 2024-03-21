@@ -16,7 +16,7 @@ import (
 
 const (
 	// Name is the name of the Binance provider.
-	Name = "Binance"
+	Name = "binance_api"
 
 	// URL is the base URL of the Binance API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
@@ -41,8 +41,8 @@ var (
 		Name:             Name,
 		Atomic:           true,
 		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         150 * time.Millisecond,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         400 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              US_URL,
@@ -53,8 +53,8 @@ var (
 		Name:             Name,
 		Atomic:           true,
 		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         150 * time.Millisecond,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         400 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,

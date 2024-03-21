@@ -11,7 +11,7 @@ const (
 	// here: https://huobiapi.github.io/docs/spot/v1/en/#websocket-market-data.
 
 	// Name is the name of the Huobi provider.
-	Name = "Huobi"
+	Name = "huobi_ws"
 
 	// URL is the public Huobi Websocket URL.
 	URL = "wss://api.huobi.pro/ws"
