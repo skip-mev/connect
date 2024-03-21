@@ -2,6 +2,15 @@ package dydx_test
 
 import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/apis/binance"
+	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
+	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
+	"github.com/skip-mev/slinky/providers/websockets/huobi"
+	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
+	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -90,35 +99,39 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 			"BTC/USD": {
 				Providers: []mmtypes.ProviderConfig{
 					{
-						Name:           "Binance",
+						Name:           binance.Name,
 						OffChainTicker: "BTCUSDT",
 					},
 					{
-						Name:           "Bybit",
+						Name:           bybit.Name,
 						OffChainTicker: "BTCUSDT",
 					},
 					{
-						Name:           "CoinbasePro",
+						Name:           coinbaseapi.Name,
 						OffChainTicker: "BTC-USD",
 					},
 					{
-						Name:           "Huobi",
+						Name:           coinbasews.Name,
+						OffChainTicker: "BTC-USD",
+					},
+					{
+						Name:           huobi.Name,
 						OffChainTicker: "btcusdt",
 					},
 					{
-						Name:           "Kraken",
+						Name:           kraken.Name,
 						OffChainTicker: "XXBTZUSD",
 					},
 					{
-						Name:           "Kucoin",
+						Name:           kucoin.Name,
 						OffChainTicker: "BTC-USDT",
 					},
 					{
-						Name:           "Mexc",
+						Name:           mexc.Name,
 						OffChainTicker: "BTCUSDT",
 					},
 					{
-						Name:           "Okx",
+						Name:           okx.Name,
 						OffChainTicker: "BTC-USDT",
 					},
 				},
@@ -126,35 +139,39 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 			"ETH/USD": {
 				Providers: []mmtypes.ProviderConfig{
 					{
-						Name:           "Binance",
+						Name:           binance.Name,
 						OffChainTicker: "ETHUSDT",
 					},
 					{
-						Name:           "Bybit",
+						Name:           bybit.Name,
 						OffChainTicker: "ETHUSDT",
 					},
 					{
-						Name:           "CoinbasePro",
+						Name:           coinbaseapi.Name,
 						OffChainTicker: "ETH-USD",
 					},
 					{
-						Name:           "Huobi",
+						Name:           coinbasews.Name,
+						OffChainTicker: "ETH-USD",
+					},
+					{
+						Name:           huobi.Name,
 						OffChainTicker: "ethusdt",
 					},
 					{
-						Name:           "Kraken",
+						Name:           kraken.Name,
 						OffChainTicker: "XETHZUSD",
 					},
 					{
-						Name:           "Kucoin",
+						Name:           kucoin.Name,
 						OffChainTicker: "ETH-USDT",
 					},
 					{
-						Name:           "Mexc",
+						Name:           mexc.Name,
 						OffChainTicker: "ETHUSDT",
 					},
 					{
-						Name:           "Okx",
+						Name:           okx.Name,
 						OffChainTicker: "ETH-USDT",
 					},
 				},
@@ -162,23 +179,27 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 			"USDT/USD": {
 				Providers: []mmtypes.ProviderConfig{
 					{
-						Name:           "Binance",
+						Name:           binance.Name,
 						OffChainTicker: "USDCUSDT",
 					},
 					{
-						Name:           "Bybit",
+						Name:           bybit.Name,
 						OffChainTicker: "USDCUSDT",
 					},
 					{
-						Name:           "CoinbasePro",
+						Name:           coinbaseapi.Name,
 						OffChainTicker: "USDT-USD",
 					},
 					{
-						Name:           "Kraken",
+						Name:           coinbasews.Name,
+						OffChainTicker: "USDT-USD",
+					},
+					{
+						Name:           kraken.Name,
 						OffChainTicker: "USDTZUSD",
 					},
 					{
-						Name:           "Okx",
+						Name:           okx.Name,
 						OffChainTicker: "USDC-USDT",
 					},
 				},
@@ -190,7 +211,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Binance",
+								Provider:     binance.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -204,7 +225,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Bybit",
+								Provider:     bybit.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -218,7 +239,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "CoinbasePro",
+								Provider:     coinbaseapi.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -227,21 +248,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Huobi",
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
-						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     "Kraken",
+								Provider:     coinbasews.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -250,7 +257,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Kucoin",
+								Provider:     huobi.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -264,7 +271,16 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Mexc",
+								Provider:     kraken.Name,
+								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+								Invert:       false,
+							},
+						},
+					},
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     kucoin.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -278,7 +294,21 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Okx",
+								Provider:     mexc.Name,
+								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+								Invert:       false,
+							},
+							{
+								Provider:     mmtypes.IndexPrice,
+								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+								Invert:       false,
+							},
+						},
+					},
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     okx.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       false,
 							},
@@ -296,7 +326,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Binance",
+								Provider:     binance.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -310,7 +340,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Bybit",
+								Provider:     bybit.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -324,7 +354,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "CoinbasePro",
+								Provider:     coinbaseapi.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -333,21 +363,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Huobi",
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
-						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     "Kraken",
+								Provider:     coinbasews.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -356,7 +372,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Kucoin",
+								Provider:     huobi.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -370,7 +386,16 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Mexc",
+								Provider:     kraken.Name,
+								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+								Invert:       false,
+							},
+						},
+					},
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     kucoin.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -384,7 +409,21 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Okx",
+								Provider:     mexc.Name,
+								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+								Invert:       false,
+							},
+							{
+								Provider:     mmtypes.IndexPrice,
+								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+								Invert:       false,
+							},
+						},
+					},
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     okx.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       false,
 							},
@@ -402,7 +441,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Binance",
+								Provider:     binance.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 								Invert:       true,
 							},
@@ -411,7 +450,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Bybit",
+								Provider:     bybit.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 								Invert:       true,
 							},
@@ -420,7 +459,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "CoinbasePro",
+								Provider:     coinbaseapi.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 								Invert:       false,
 							},
@@ -429,7 +468,16 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Huobi",
+								Provider:     coinbasews.Name,
+								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+								Invert:       false,
+							},
+						},
+					},
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:     huobi.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
 								Invert:       true,
 							},
@@ -443,7 +491,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Kraken",
+								Provider:     kraken.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 								Invert:       false,
 							},
@@ -452,7 +500,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Kucoin",
+								Provider:     kucoin.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
 								Invert:       true,
 							},
@@ -466,7 +514,7 @@ var convertedResponse = mmtypes.GetMarketMapResponse{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:     "Okx",
+								Provider:     okx.Name,
 								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
 								Invert:       true,
 							},

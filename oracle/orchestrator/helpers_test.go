@@ -53,6 +53,8 @@ var (
 				Type:      oracletypes.ConfigType,
 			},
 		},
+		Host: "localhost",
+		Port: "8080",
 	}
 
 	oracleCfgWithMapper = config.OracleConfig{
@@ -81,6 +83,8 @@ var (
 			// Market map provider.
 			mapperCfg,
 		},
+		Host: "localhost",
+		Port: "8080",
 	}
 
 	oracleCfgWithMockMapper = config.OracleConfig{
@@ -109,6 +113,8 @@ var (
 			// Market map provider.
 			mockMapperCfg,
 		},
+		Host: "localhost",
+		Port: "8080",
 	}
 
 	oracleCfgWithOnlyMockMapper = config.OracleConfig{
@@ -122,6 +128,8 @@ var (
 			// Market map provider.
 			mockMapperCfg,
 		},
+		Host: "localhost",
+		Port: "8080",
 	}
 
 	mapperCfg = config.ProviderConfig{

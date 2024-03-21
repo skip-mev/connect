@@ -8,14 +8,26 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/apis/binance"
+	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
+	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
+	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
+	"github.com/skip-mev/slinky/providers/websockets/bybit"
+	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
+	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
+	"github.com/skip-mev/slinky/providers/websockets/gate"
+	"github.com/skip-mev/slinky/providers/websockets/huobi"
+	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
+	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
 	// Name is the name of the MarketMap provider.
-	Name = "dYdX"
+	Name = "dydx_api"
 
 	// ChainID is the chain ID for the dYdX market map provider.
 	ChainID = "dydx-mainnet-1"
@@ -39,6 +51,25 @@ var DefaultAPIConfig = config.APIConfig{
 	URL:              "localhost:1317",
 }
 
+// ProviderMapping is referencing the different providers that are supported by the dYdX market params.
+//
+// ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
+var ProviderMapping = map[string][]string{
+	"Binance":     {binance.Name},
+	"BinanceUS":   {binance.Name},
+	"Bitfinex":    {bitfinex.Name},
+	"Kraken":      {kraken.Name}, // We only support the API since the WebSocket has different pairs.
+	"Gate":        {gate.Name},
+	"Bitstamp":    {bitstamp.Name},
+	"Bybit":       {bybit.Name},
+	"CryptoCom":   {cryptodotcom.Name},
+	"Huobi":       {huobi.Name},
+	"Kucoin":      {kucoin.Name},
+	"Okx":         {okx.Name},
+	"Mexc":        {mexc.Name},
+	"CoinbasePro": {coinbaseapi.Name, coinbasews.Name}, // We support both the API and WebSocket.
+}
+
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
 func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsResponse) (mmtypes.GetMarketMapResponse, error) {
 	marketMap := mmtypes.MarketMap{
@@ -59,15 +90,16 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config for %s: %w", ticker.String(), err)
 		}
 
-		paths, providers, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
+		// Convert the exchange config JSON to a set of paths and providers.
+		tickerPaths, tickerProviders, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
 		if err != nil {
-			return mmtypes.GetMarketMapResponse{}, err
+			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to convert exchange config json for %s: %w", ticker.String(), err)
 		}
 
 		// Add the ticker, provider, and paths to the market map.
 		marketMap.Tickers[ticker.String()] = ticker
-		marketMap.Paths[ticker.String()] = paths
-		marketMap.Providers[ticker.String()] = providers
+		marketMap.Paths[ticker.String()] = tickerPaths
+		marketMap.Providers[ticker.String()] = tickerProviders
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {
@@ -112,133 +144,199 @@ func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error
 
 // ConvertExchangeConfigJSON creates a set of paths and providers for a given ticker
 // from a dYdX market. These paths represent the different ways to convert a currency
-// pair using the dYdX market. This involves either a direct or indirect conversion
-// (via an index price).
+// pair using the dYdX market.
 func ConvertExchangeConfigJSON(
 	ticker mmtypes.Ticker,
 	config dydxtypes.ExchangeConfigJson,
 ) (mmtypes.Paths, mmtypes.Providers, error) {
-	paths := make([]mmtypes.Path, 0)
-	providers := make([]mmtypes.ProviderConfig, 0)
+	var (
+		paths     []mmtypes.Path
+		providers []mmtypes.ProviderConfig
+		seen      = make(map[dydxtypes.ExchangeMarketConfigJson]struct{})
+	)
 
-	seen := make(map[dydxtypes.ExchangeMarketConfigJson]struct{})
 	for _, cfg := range config.Exchanges {
+		// Ignore duplicates.
 		if _, ok := seen[cfg]; ok {
 			continue
 		}
+		seen[cfg] = struct{}{}
 
-		var (
-			operations     []mmtypes.Operation
-			offChainTicker = ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
-		)
-
-		switch {
-		case len(cfg.AdjustByMarket) == 0 && !cfg.Invert:
-			// Direct conversion.
-			operation := mmtypes.Operation{
-				CurrencyPair: ticker.CurrencyPair,
-				Provider:     cfg.ExchangeName,
-				Invert:       false,
-			}
-			providerCfg := mmtypes.ProviderConfig{
-				Name:           cfg.ExchangeName,
-				OffChainTicker: offChainTicker,
-			}
-
-			operations = append(operations, operation)
-			providers = append(providers, providerCfg)
-		case len(cfg.AdjustByMarket) == 0 && cfg.Invert:
-			// Direct conversion with inverted price.
-			operation := mmtypes.Operation{
-				CurrencyPair: ticker.CurrencyPair,
-				Provider:     cfg.ExchangeName,
-				Invert:       true,
-			}
-
-			providerCfg := mmtypes.ProviderConfig{
-				Name:           cfg.ExchangeName,
-				OffChainTicker: offChainTicker,
-			}
-
-			operations = append(operations, operation)
-			providers = append(providers, providerCfg)
-		case len(cfg.AdjustByMarket) > 0 && !cfg.Invert:
-			// Indirect conversion with index price. This is effectively a conversion
-			// from the base currency to the quote currency via the index currency.
-			// Ex. BTC/USD via BTC/USDT and USDT/USD.
-			first := mmtypes.Operation{
-				CurrencyPair: ticker.CurrencyPair,
-				Provider:     cfg.ExchangeName,
-				Invert:       false,
-			}
-
-			cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
-			if err != nil {
-				return mmtypes.Paths{}, mmtypes.Providers{}, err
-			}
-			second := mmtypes.Operation{
-				CurrencyPair: cp,
-				Provider:     mmtypes.IndexPrice,
-				Invert:       false,
-			}
-
-			providerCfg := mmtypes.ProviderConfig{
-				Name:           cfg.ExchangeName,
-				OffChainTicker: offChainTicker,
-			}
-
-			operations = append(operations, first, second)
-			providers = append(providers, providerCfg)
-		case len(cfg.AdjustByMarket) > 0 && cfg.Invert:
-			// Indirect inverted conversion with index price. This is effectively a conversion
-			// from the base currency to the quote currency via the index currency with an inverted
-			// price. Ex. USDT/USD via BTC/USDT and BTC/USD. In this case, we are not defining
-			// a new market but are instead using an existing one. The existing market must match
-			// to the market used in the index price.
-			cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
-			if err != nil {
-				return mmtypes.Paths{}, mmtypes.Providers{}, err
-			}
-			first := mmtypes.Operation{
-				CurrencyPair: cp,
-				Provider:     cfg.ExchangeName,
-				Invert:       true,
-			}
-
-			second := mmtypes.Operation{
-				CurrencyPair: cp,
-				Provider:     mmtypes.IndexPrice,
-				Invert:       false,
-			}
-
-			operations = append(operations, first, second)
+		// This means we have seen an exchange that slinky cannot support.
+		exchangeNames, ok := ProviderMapping[cfg.ExchangeName]
+		if !ok {
+			return mmtypes.Paths{}, mmtypes.Providers{}, fmt.Errorf("unsupported exchange: %s", cfg.ExchangeName)
 		}
 
-		// Add the provider config and operations to the paths and providers.
-		paths = append(paths, mmtypes.Path{Operations: operations})
-		seen[cfg] = struct{}{}
+		var (
+			exchangePaths []mmtypes.Path
+			err           error
+			addProviders  = true
+		)
+		// Determine the relevant operations and provider configs based on the exchange config.
+		switch {
+		case len(cfg.AdjustByMarket) == 0 && !cfg.Invert:
+			exchangePaths = DirectConversion(ticker, exchangeNames)
+		case len(cfg.AdjustByMarket) == 0 && cfg.Invert:
+			exchangePaths = InvertedConversion(ticker, exchangeNames)
+		case len(cfg.AdjustByMarket) > 0 && !cfg.Invert:
+			exchangePaths, err = IndirectConversion(ticker, cfg, exchangeNames)
+		case len(cfg.AdjustByMarket) > 0 && cfg.Invert:
+			exchangePaths, err = IndirectInvertedConversion(cfg, exchangeNames)
+			addProviders = false
+		}
+		if err != nil {
+			return mmtypes.Paths{}, mmtypes.Providers{}, err
+		}
+
+		// We only update the providers for a given ticker if the conversion includes the exchanges
+		// off-chain representation i.e. Case 1,2,3.
+		paths = append(paths, exchangePaths...)
+		if addProviders {
+			offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
+			for _, name := range exchangeNames {
+				providers = append(providers, mmtypes.ProviderConfig{
+					Name:           name,
+					OffChainTicker: offChainTicker,
+				})
+			}
+		}
+
 	}
 
-	allPaths := mmtypes.Paths{
-		Paths: paths,
+	return mmtypes.Paths{Paths: paths}, mmtypes.Providers{Providers: providers}, nil
+}
+
+// DirectConversion is a conversion from market to desired ticker i.e. BTC/USD -> BTC/USD.
+func DirectConversion(
+	ticker mmtypes.Ticker,
+	exchangeNames []string,
+) []mmtypes.Path {
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
+		path := mmtypes.Path{
+			Operations: []mmtypes.Operation{
+				{
+					CurrencyPair: ticker.CurrencyPair,
+					Provider:     name,
+					Invert:       false,
+				},
+			},
+		}
+		paths[i] = path
 	}
-	allProviders := mmtypes.Providers{
-		Providers: providers,
+	return paths
+}
+
+// InvertedConversion is a conversion with an inverted price i.e. USD/BTC ^ -1 = BTC/USD.
+func InvertedConversion(
+	ticker mmtypes.Ticker,
+	exchangeNames []string,
+) []mmtypes.Path {
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
+		path := mmtypes.Path{
+			Operations: []mmtypes.Operation{
+				{
+					CurrencyPair: ticker.CurrencyPair,
+					Provider:     name,
+					Invert:       true,
+				},
+			},
+		}
+		paths[i] = path
+	}
+	return paths
+}
+
+// IndirectConversion is a conversion of two markets i.e. BTC/USDT * USDT/USD = BTC/USD.
+func IndirectConversion(
+	ticker mmtypes.Ticker,
+	cfg dydxtypes.ExchangeMarketConfigJson,
+	exchangeNames []string,
+) ([]mmtypes.Path, error) {
+	cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
+	if err != nil {
+		return nil, err
 	}
 
-	return allPaths, allProviders, nil
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
+		path := mmtypes.Path{
+			Operations: []mmtypes.Operation{
+				{
+					CurrencyPair: ticker.CurrencyPair,
+					Provider:     name,
+					Invert:       false,
+				},
+				{
+					CurrencyPair: cp,
+					Provider:     mmtypes.IndexPrice,
+					Invert:       false,
+				},
+			},
+		}
+		paths[i] = path
+	}
+
+	return paths, nil
+}
+
+// IndirectInvertedConversion is a conversion of two markets to a desired ticker
+// where the inverted quote of the first market and quote of the second market are used.
+// i.e. BTC/USDT ^ -1 * BTC/USD = USDT/USD.
+func IndirectInvertedConversion(
+	cfg dydxtypes.ExchangeMarketConfigJson,
+	exchangeNames []string,
+) ([]mmtypes.Path, error) {
+	cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
+	if err != nil {
+		return nil, err
+	}
+
+	paths := make([]mmtypes.Path, len(exchangeNames))
+	for i, name := range exchangeNames {
+		path := mmtypes.Path{
+			Operations: []mmtypes.Operation{
+				{
+					CurrencyPair: cp,
+					Provider:     name,
+					Invert:       true,
+				},
+				{
+					CurrencyPair: cp,
+					Provider:     mmtypes.IndexPrice,
+					Invert:       false,
+				},
+			},
+		}
+		paths[i] = path
+	}
+
+	return paths, nil
 }
 
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
-func ConvertDenomByProvider(denom string, provider string) string {
+func ConvertDenomByProvider(denom string, exchange string) string {
+	providers, ok := ProviderMapping[exchange]
+	if !ok {
+		return denom
+	}
+
 	switch {
-	case provider == mexc.Name:
+	case len(providers) == 1 && providers[0] == mexc.Name:
 		if strings.Contains(denom, "_") {
 			return strings.ReplaceAll(denom, "_", "")
 		}
 
 		return denom
+	case len(providers) == 1 && providers[0] == bitstamp.Name:
+		if strings.Contains(denom, "/") {
+			return strings.ToLower(strings.ReplaceAll(denom, "/", ""))
+		}
+
+		return strings.ToLower(denom)
 	default:
 		return denom
 	}

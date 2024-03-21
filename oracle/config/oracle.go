@@ -29,6 +29,12 @@ type OracleConfig struct {
 
 	// Metrics is the metrics configurations for the oracle.
 	Metrics MetricsConfig `json:"metrics"`
+
+	// Host is the host that the oracle will listen on.
+	Host string `json:"host"`
+
+	// Port is the port that the oracle will listen on.
+	Port string `json:"port"`
 }
 
 // ValidateBasic performs basic validation on the oracle config.
@@ -45,6 +51,14 @@ func (c *OracleConfig) ValidateBasic() error {
 		if err := p.ValidateBasic(); err != nil {
 			return fmt.Errorf("provider is not formatted correctly: %w", err)
 		}
+	}
+
+	if len(c.Host) == 0 {
+		return fmt.Errorf("oracle host cannot be empty")
+	}
+
+	if len(c.Port) == 0 {
+		return fmt.Errorf("oracle port cannot be empty")
 	}
 
 	return c.Metrics.ValidateBasic()
