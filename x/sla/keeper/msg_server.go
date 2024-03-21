@@ -39,7 +39,7 @@ func (m *MsgServer) AddSLAs(goCtx context.Context, req *slatypes.MsgAddSLAs) (*s
 }
 
 // RemoveSLAs defines a method that removes a set of SLAs from the store. The SLAs provided must
-// do not need to exist in the store, and the signer of the message must be the module authority.
+// exist in the store, and the signer of the message must be the module authority.
 func (m *MsgServer) RemoveSLAs(goCtx context.Context, req *slatypes.MsgRemoveSLAs) (*slatypes.MsgRemoveSLAsResponse, error) {
 	// Remove the SLAs in message from state.
 	ctx := sdk.UnwrapSDKContext(goCtx)

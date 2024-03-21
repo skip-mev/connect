@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/testutil"
 )
 
 func TestValidateBasic(t *testing.T) {
@@ -43,6 +44,22 @@ func TestValidateBasic(t *testing.T) {
 			slinkytypes.CurrencyPair{
 				Base:  "AA",
 				Quote: "",
+			},
+			false,
+		},
+		{
+			"Base is too long - fail",
+			slinkytypes.CurrencyPair{
+				Base:  testutil.RandomString(slinkytypes.MaxCPFieldLength + 1),
+				Quote: "AA",
+			},
+			false,
+		},
+		{
+			"Quote is too long - fail",
+			slinkytypes.CurrencyPair{
+				Base:  "BB",
+				Quote: testutil.RandomString(slinkytypes.MaxCPFieldLength + 1),
 			},
 			false,
 		},
