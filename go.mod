@@ -12,7 +12,7 @@ require (
 	cosmossdk.io/depinject v1.0.0-alpha.4
 	cosmossdk.io/log v1.3.1
 	cosmossdk.io/math v1.3.0
-	cosmossdk.io/store v1.0.2
+	cosmossdk.io/store v1.1.0
 	cosmossdk.io/tools/confix v0.1.1
 	cosmossdk.io/x/circuit v0.1.0
 	cosmossdk.io/x/tx v0.13.1
@@ -32,7 +32,7 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/klauspost/compress v1.17.7
-	github.com/prometheus/client_golang v1.18.0
+	github.com/prometheus/client_golang v1.19.0
 	github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
@@ -41,7 +41,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/vektra/mockery/v2 v2.42.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
+	golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f
 	golang.org/x/net v0.22.0
 	golang.org/x/sync v0.6.0
 	golang.org/x/vuln v1.0.4
@@ -113,7 +113,7 @@ require (
 	github.com/cometbft/cometbft-db v0.9.1 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
-	github.com/cosmos/iavl v1.0.1 // indirect
+	github.com/cosmos/iavl v1.1.1 // indirect
 	github.com/cosmos/ics23/go v0.10.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.3 // indirect
 	github.com/creachadair/atomicfile v0.3.1 // indirect
@@ -254,14 +254,13 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/polyfloyd/go-errorlint v1.4.8 // indirect
 	github.com/prometheus/client_model v0.6.0 // indirect
-	github.com/prometheus/common v0.47.0 // indirect
-	github.com/prometheus/procfs v0.12.0 // indirect
+	github.com/prometheus/common v0.50.0 // indirect
+	github.com/prometheus/procfs v0.13.0 // indirect
 	github.com/quasilyte/go-ruleguard v0.4.2 // indirect
 	github.com/quasilyte/gogrep v0.5.0 // indirect
 	github.com/quasilyte/regex/syntax v0.0.0-20210819130434-b3f0c404a727 // indirect
 	github.com/quasilyte/stdinfo v0.0.0-20220114132959-f7386bf02567 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/rs/zerolog v1.32.0 // indirect
@@ -322,7 +321,7 @@ require (
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
 	golang.org/x/mod v0.16.0 // indirect
-	golang.org/x/oauth2 v0.16.0 // indirect
+	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
