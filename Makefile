@@ -29,7 +29,7 @@ NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
 build: tidy
 	@go build -o ./build/ ./...
 
-run-oracle-server: build update-local-config
+run-oracle-server: build
 	@./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
@@ -41,11 +41,11 @@ run-prom-client:
 		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
 		prom/prometheus
 
-update-local-config:
+update-local-configs: build
 	@echo "Updating local config..."
-	@go generate ${CONFIG_DIR}
+	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
-start-oracle: update-local-config
+start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
 
