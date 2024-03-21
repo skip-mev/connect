@@ -62,6 +62,12 @@ type Keeper struct {
 	// indexes
 	idIndex *indexes.Multi[uint64, string, types.CurrencyPairState]
 
+	// numRemoves is the number of CPs removed in the previous block.
+	numRemoves collections.Item[uint64]
+
+	// numCPs is the number of CPs.
+	numCPs collections.Item[uint64]
+
 	// module authority
 	authority sdk.AccAddress
 }
@@ -88,6 +94,8 @@ func NewKeeper(
 		cdc:                cdc,
 		authority:          authority,
 		mmKeeper:           mmKeeper,
+		numRemoves:         collections.NewItem[uint64](sb, types.NumRemovesKeyPrefix, "removed_cps", types.CounterCodec),
+		numCPs:             collections.NewItem[uint64](sb, types.NumCPsKeyPrefix, "num_cps", types.CounterCodec),
 		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
 		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
 		idIndex:            idMulti,
@@ -104,8 +112,11 @@ func NewKeeper(
 }
 
 // RemoveCurrencyPair removes a given CurrencyPair from state, i.e. removes its nonce + QuotePrice from the module's store.
-func (k *Keeper) RemoveCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) {
-	k.currencyPairs.Remove(ctx, cp.String())
+func (k *Keeper) RemoveCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) error {
+	if err := k.currencyPairs.Remove(ctx, cp.String()); err != nil {
+		return err
+	}
+	return k.incrementRemovedCPCounter(ctx)
 }
 
 // HasCurrencyPair returns true if a given CurrencyPair is stored in state, false otherwise.
@@ -209,7 +220,12 @@ func (k *Keeper) CreateCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair
 	}
 
 	state := types.NewCurrencyPairState(id, 0, nil)
-	return k.currencyPairs.Set(ctx, cp.String(), state)
+	err = k.currencyPairs.Set(ctx, cp.String(), state)
+	if err != nil {
+		return err
+	}
+
+	return k.incrementCPCounter(ctx)
 }
 
 // GetIDForCurrencyPair returns the ID for a given CurrencyPair. If the CurrencyPair does not exist, return 0, false, if
@@ -305,4 +321,36 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 	}
 
 	return ticker.Decimals, nil
+}
+
+// IncrementRemovedCPCounter increments the counter of removed currency pairs.
+func (k *Keeper) incrementRemovedCPCounter(ctx sdk.Context) error {
+	val, err := k.numRemoves.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	val++
+	return k.numRemoves.Set(ctx, val)
+}
+
+// GetRemovedCPCounter gets the counter of removed currency pairs.
+func (k *Keeper) GetRemovedCPCounter(ctx sdk.Context) (uint64, error) {
+	return k.numRemoves.Get(ctx)
+}
+
+// IncrementCPCounter increments the counter of currency pairs.
+func (k *Keeper) incrementCPCounter(ctx sdk.Context) error {
+	val, err := k.numCPs.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	val++
+	return k.numCPs.Set(ctx, val)
+}
+
+// GetPrevBlockCPCounter gets the counter of currency pairs in the previous block.
+func (k *Keeper) GetPrevBlockCPCounter(ctx sdk.Context) (uint64, error) {
+	return k.numCPs.Get(ctx)
 }
