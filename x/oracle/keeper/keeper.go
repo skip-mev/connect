@@ -342,7 +342,7 @@ func (k *Keeper) IncrementCPCounter(ctx sdk.Context) error {
 	return k.numCPs.Set(ctx, val)
 }
 
-// GetCPCounter gets the counter of currency pairs.
-func (k *Keeper) GetCPCounter(ctx sdk.Context) (uint64, error) {
+// GetPrevBlockCPCounter gets the counter of currency pairs in the previous block.
+func (k *Keeper) GetPrevBlockCPCounter(ctx sdk.Context) (uint64, error) {
 	return k.numCPs.Get(ctx)
 }
