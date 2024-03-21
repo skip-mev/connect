@@ -4,6 +4,11 @@ import (
 	"fmt"
 )
 
+const (
+	MaxProviderNameFieldLength   = 128
+	MaxProviderTickerFieldLength = 256
+)
+
 // ValidateBasic performs basic validation on Providers.
 func (p *Providers) ValidateBasic() error {
 	for _, provider := range p.Providers {
@@ -21,8 +26,16 @@ func (pc *ProviderConfig) ValidateBasic() error {
 		return fmt.Errorf("provider name must not be empty")
 	}
 
+	if len(pc.Name) > MaxProviderNameFieldLength {
+		return fmt.Errorf("provider length is longer than maximum length of %d", MaxProviderNameFieldLength)
+	}
+
 	if len(pc.OffChainTicker) == 0 {
 		return fmt.Errorf("provider offchain ticker must not be empty")
+	}
+
+	if len(pc.OffChainTicker) > MaxProviderTickerFieldLength {
+		return fmt.Errorf("provider offchain ticker is longer than maximum length of %d", MaxProviderTickerFieldLength)
 	}
 
 	return nil
