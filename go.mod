@@ -24,7 +24,7 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.4
 	github.com/cosmos/cosmos-sdk v0.50.5
 	github.com/cosmos/gogogateway v1.2.0
-	github.com/cosmos/gogoproto v1.4.11
+	github.com/cosmos/gogoproto v1.4.12
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
