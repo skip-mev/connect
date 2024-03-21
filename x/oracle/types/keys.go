@@ -33,6 +33,6 @@ var (
 	// NumCPsKeyPrefix is the key-prefix under which the number CPs is stored.
 	NumCPsKeyPrefix = collections.NewPrefix(5)
 
-	// NumRemovesCodec is the collections.KeyCodec value used for the numRemoves value.
-	NumRemovesCodec = codec.KeyToValueCodec[uint64](codec.NewUint64Key[uint64]())
+	// CounterCodec is the collections.KeyCodec value used for the counter values.
+	CounterCodec = codec.KeyToValueCodec[uint64](codec.NewUint64Key[uint64]())
 )
