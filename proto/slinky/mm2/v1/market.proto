@@ -1,0 +1,94 @@
+syntax = "proto3";
+package slinky.mm2.v1;
+
+option go_package = "github.com/skip-mev/slinky/x/mm2/types";
+
+import "gogoproto/gogo.proto";
+import "slinky/types/v1/currency_pair.proto";
+
+message Market {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  Ticker ticker = 1;
+
+  repeated ProviderConfig provider_configs = 2;
+}
+
+// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
+// feed is scaled to a number of decimal places and has a minimum number of
+// providers required to consider the ticker valid.
+message Ticker {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  // CurrencyPair is the currency pair for this ticker.
+  slinky.types.v1.CurrencyPair currency_pair = 1
+      [ (gogoproto.nullable) = false ];
+
+  // Decimals is the number of decimal places for the ticker. The number of
+  // decimal places is used to convert the price to a human-readable format.
+  uint64 decimals = 2;
+
+  // MinProviderCount is the minimum number of providers required to consider
+  // the ticker valid.
+  uint64 min_provider_count = 3;
+
+  // Enabled is the flag that denotes if the Ticker is enabled for price
+  // fetching by an oracle.
+  bool enabled = 14;
+
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given ticker.
+  string metadata_JSON = 15;
+}
+
+message ProviderConfig {
+  // Name corresponds to the name of the provider for which the configuration is
+  // being set.
+  string name = 1;
+
+  // OffChainTicker is the off-chain representation of the ticker i.e. BTC/USD.
+  // The off-chain ticker is unique to a given provider and is used to fetch the
+  // price of the ticker from the provider.
+  string off_chain_ticker = 2;
+
+  string index = 3;
+
+  bool invert = 4;
+
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given provider config.
+  string metadata_JSON = 15;
+}
+
+message MarketMap {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  // Markets is the full list of tickers and their associated configurations
+  // to be stored on-chain.
+  map<string, Market> markets = 1 [ (gogoproto.nullable) = false ];
+
+  // AggregationType is the type of aggregation that will be used to aggregate
+  // the prices of the tickers.
+  AggregationType aggregation_type = 4;
+}
+
+// AggregationType is the type of aggregation that will be used to aggregate the
+// prices of the tickers.
+enum AggregationType {
+  // UNKNOWN_AGGREGATION_TYPE is the default value for the aggregation type.
+  UNKNOWN_AGGREGATION_TYPE = 0;
+
+  // IndexPriceAggregation is the type of aggregation that will be used to
+  // aggregate the prices of the tickers. Specifically, this converts the prices
+  // either directly or using the index price to a common currency pair.
+  INDEX_PRICE_AGGREGATION = 1;
+
+  // StandardMedianAggregation is the type of aggregation that will be used to
+  // aggregate the prices of the tickers. Specifically, this converts the prices
+  // to a common currency pair and then takes the median of the prices. No
+  // conversions are done if the prices are already in the common currency pair.
+  STANDARD_MEDIAN_AGGREGATION = 2;
+}
