@@ -6,13 +6,19 @@ option go_package = "github.com/skip-mev/slinky/x/mm2/types";
 import "gogoproto/gogo.proto";
 import "slinky/types/v1/currency_pair.proto";
 
+// Market encapsulates a Ticker and its provider-specific configuration.
 message Market {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
 
+  // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The
+  // price feed is scaled to a number of decimal places and has a minimum number
+  // of providers required to consider the ticker valid.
   Ticker ticker = 1;
 
-  repeated ProviderConfig provider_configs = 2;
+  // ProviderConfigs is the list of provider-specific configs for this Market.
+  repeated ProviderConfig provider_configs = 2 [ (gogoproto.nullable) = false ];
+  ;
 }
 
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
@@ -62,6 +68,7 @@ message ProviderConfig {
   string metadata_JSON = 15;
 }
 
+// MarketMap maps ticker strings to their Markets.
 message MarketMap {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
