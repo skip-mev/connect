@@ -30,6 +30,14 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	if err := k.nextCurrencyPairID.Set(ctx, gs.NextId); err != nil {
 		panic(fmt.Errorf("error in genesis: %w", err))
 	}
+
+	if err := k.numCPs.Set(ctx, uint64(len(gs.CurrencyPairGenesis))); err != nil {
+		panic(fmt.Errorf("error in genesis: %w", err))
+	}
+
+	if err := k.numRemoves.Set(ctx, 0); err != nil {
+		panic(fmt.Errorf("error in genesis: %w", err))
+	}
 }
 
 // ExportGenesis retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.

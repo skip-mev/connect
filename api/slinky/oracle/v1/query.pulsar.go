@@ -2893,7 +2893,7 @@ func (*GetAllCurrencyPairsRequest) Descriptor() ([]byte, []int) {
 }
 
 // GetAllCurrencyPairsResponse returns all CurrencyPairs that the module is
-// currently tracking
+// currently tracking.
 type GetAllCurrencyPairsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2930,7 +2930,7 @@ func (x *GetAllCurrencyPairsResponse) GetCurrencyPairs() []*v1.CurrencyPair {
 }
 
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
-// CurrencyPair in the format base/quote
+// CurrencyPair in the format base/quote.
 type GetPriceRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2968,7 +2968,7 @@ func (x *GetPriceRequest) GetCurrencyPair() *v1.CurrencyPair {
 }
 
 // GetPriceResponse is the response from the GetPrice grpc method exposed from
-// the x/oracle query service
+// the x/oracle query service.
 type GetPriceResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3036,7 +3036,7 @@ func (x *GetPriceResponse) GetId() uint64 {
 }
 
 // GetPricesRequest takes an identifier for the CurrencyPair
-// in the format base/quote
+// in the format base/quote.
 type GetPricesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3073,7 +3073,7 @@ func (x *GetPricesRequest) GetCurrencyPairIds() []string {
 }
 
 // GetPricesResponse is the response from the GetPrices grpc method exposed from
-// the x/oracle query service
+// the x/oracle query service.
 type GetPricesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

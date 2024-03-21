@@ -3,8 +3,9 @@
 package mocks
 
 import (
-	incentivestypes "github.com/skip-mev/slinky/x/incentives/types"
 	mock "github.com/stretchr/testify/mock"
+
+	incentivestypes "github.com/skip-mev/slinky/x/incentives/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
