@@ -44,7 +44,7 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 	}, nil
 }
 
-// AggregatedData implements the aggregate function for the median price calculation. Specifically, this
+// AggregateData implements the aggregate function for the median price calculation. Specifically, this
 // aggregation function aggregates the prices seen by each provider by first converting each price to a
 // common ticker and then calculating the median of the converted prices. Prices are converted either
 //
