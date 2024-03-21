@@ -47,4 +47,17 @@ type CurrencyPairStrategy interface { //nolint
 		cp slinkytypes.CurrencyPair,
 		priceBytes []byte,
 	) (*big.Int, error)
+
+	// GetMaxBzSize returns the maximum size that the VEs should be.  This method returns an error if the size cannot
+	// be queried from the x/oracle state.
+	GetMaxBzSize(
+		ctx sdk.Context,
+	) (uint64, error)
+
+	// GetMaxErrorAmount returns the maximum amount of errors could be in VEs.  This value is derived from the number
+	// of CPs that were removed in the previous block.  This method returns an error if the value cannot  be queried
+	// from the x/oracle state.
+	GetMaxErrorAmount(
+		ctx sdk.Context,
+	) (uint64, error)
 }
