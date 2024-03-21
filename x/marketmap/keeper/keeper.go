@@ -115,31 +115,35 @@ func (k *Keeper) GetAllTickersMap(ctx sdk.Context) (map[string]types.Ticker, err
 // CreateTicker initializes a new Ticker.
 // The Ticker.String corresponds to a market, and must be unique.
 func (k *Keeper) CreateTicker(ctx sdk.Context, ticker types.Ticker) error {
+	tickerString := types.TickerString(ticker.String())
+
 	// Check if Ticker already exists for the provider
-	alreadyExists, err := k.tickers.Has(ctx, types.TickerString(ticker.String()))
+	alreadyExists, err := k.tickers.Has(ctx, tickerString)
 	if err != nil {
 		return err
 	}
 	if alreadyExists {
-		return types.NewMarketAlreadyExistsError(types.TickerString(ticker.String()))
+		return types.NewMarketAlreadyExistsError(tickerString)
 	}
 	// Create the config
-	return k.tickers.Set(ctx, types.TickerString(ticker.String()), ticker)
+	return k.tickers.Set(ctx, tickerString, ticker)
 }
 
 // UpdateTicker updates a Ticker.
 // The Ticker.String corresponds to a market, and must exist.
 func (k *Keeper) UpdateTicker(ctx sdk.Context, ticker types.Ticker) error {
+	tickerString := types.TickerString(ticker.String())
+
 	// Check if Ticker already exists for the provider
-	alreadyExists, err := k.tickers.Has(ctx, types.TickerString(ticker.String()))
+	alreadyExists, err := k.tickers.Has(ctx, tickerString)
 	if err != nil {
 		return err
 	}
 	if !alreadyExists {
-		return types.NewMarketDoesNotExistsError(types.TickerString(ticker.String()))
+		return types.NewMarketDoesNotExistsError(tickerString)
 	}
 	// Create the config
-	return k.tickers.Set(ctx, types.TickerString(ticker.String()), ticker)
+	return k.tickers.Set(ctx, tickerString, ticker)
 }
 
 // GetAllProvidersMap returns the set of Providers objects currently stored in state

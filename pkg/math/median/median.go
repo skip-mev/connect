@@ -36,8 +36,7 @@ func ComputeMedian() types.PriceAggregationFn {
 			}
 		}
 
-		medianPrices := make(types.TickerPrices)
-
+		medianPrices := make(types.TickerPrices, len(pricesByAsset))
 		// Iterate through all assets and compute the median price
 		for cp, prices := range pricesByAsset {
 			if len(prices) == 0 {

@@ -127,7 +127,7 @@ func ValidateIndexPriceAggregation(
 	marketMap MarketMap,
 ) error {
 	for ticker, paths := range marketMap.Paths {
-		// The ticker must be supported by the market map. Otherwise we do not how to resolve the
+		// The ticker must be supported by the market map. Otherwise, we do not how to resolve the
 		// prices.
 		if _, ok := marketMap.Tickers[ticker]; !ok {
 			return fmt.Errorf("path includes a ticker that is not supported: %s", ticker)
