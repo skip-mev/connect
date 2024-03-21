@@ -2,6 +2,7 @@ package currencypair
 
 import (
 	"fmt"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -111,4 +112,18 @@ func (s *DefaultCurrencyPairStrategy) GetDecodedPrice(
 	}
 
 	return &price, nil
+}
+
+// GetMaxBzSize returns the maximum size that the sum of the price bytes should be.  This method returns an error if the size cannot
+// be queried from the x/oracle state.
+func (s *DefaultCurrencyPairStrategy) GetMaxBzSize(
+	ctx sdk.Context,
+) (uint64, error) {
+	numCP, err := s.oracleKeeper.GetPrevBlockCPCounter(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	size := numCP * slinkyabci.MaximumPriceSize
+	return size, nil
 }
