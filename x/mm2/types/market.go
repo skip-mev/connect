@@ -52,7 +52,8 @@ func (m *Market) ValidateBasic() error {
 
 	seenProviders := make(map[string]struct{})
 	for _, providerConfig := range m.ProviderConfigs {
-		if err := providerConfig.ValidateBasic(); err != nil {
+		if err := providerConfig.ValidateBasic(); err != nil {		if err := providerConfig.ValidateBasic(); err != nil {
+
 			return err
 		}
 
