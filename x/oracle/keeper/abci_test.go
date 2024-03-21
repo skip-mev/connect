@@ -1,6 +1,8 @@
 package keeper_test
 
-import "github.com/skip-mev/slinky/x/oracle/types"
+import (
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+)
 
 func (s *KeeperTestSuite) TestBeginBlocker() {
 	s.Run("run with no state", func() {
@@ -10,19 +12,9 @@ func (s *KeeperTestSuite) TestBeginBlocker() {
 		s.Require().Equal(removes, uint64(0))
 	})
 
-	s.Run("run with invalid state 1 removed, 0 in state (cannot happen)", func() {
-		s.Require().NoError(s.oracleKeeper.IncrementRemovedCPCounter(s.ctx))
-		s.Require().Error(s.oracleKeeper.BeginBlocker(s.ctx))
-
-		// reset state
-		s.Require().NotPanics(func() {
-			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
-		})
-	})
-
 	s.Run("run with 1 in state - 1 removed", func() {
-		s.Require().NoError(s.oracleKeeper.IncrementRemovedCPCounter(s.ctx))
-		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 
 		s.Require().NoError(s.oracleKeeper.BeginBlocker(s.ctx))
 		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
@@ -32,17 +24,12 @@ func (s *KeeperTestSuite) TestBeginBlocker() {
 		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(cps, uint64(0))
-
-		// reset state
-		s.Require().NotPanics(func() {
-			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
-		})
 	})
 
 	s.Run("run with 2 in state - 1 removed", func() {
-		s.Require().NoError(s.oracleKeeper.IncrementRemovedCPCounter(s.ctx))
-		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
-		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
 
 		s.Require().NoError(s.oracleKeeper.BeginBlocker(s.ctx))
 		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
@@ -52,10 +39,5 @@ func (s *KeeperTestSuite) TestBeginBlocker() {
 		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(cps, uint64(1))
-
-		// reset state
-		s.Require().NotPanics(func() {
-			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
-		})
 	})
 }

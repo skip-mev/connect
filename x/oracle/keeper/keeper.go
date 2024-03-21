@@ -112,8 +112,11 @@ func NewKeeper(
 }
 
 // RemoveCurrencyPair removes a given CurrencyPair from state, i.e. removes its nonce + QuotePrice from the module's store.
-func (k *Keeper) RemoveCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) {
-	k.currencyPairs.Remove(ctx, cp.String())
+func (k *Keeper) RemoveCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) error {
+	if err := k.currencyPairs.Remove(ctx, cp.String()); err != nil {
+		return err
+	}
+	return k.incrementRemovedCPCounter(ctx)
 }
 
 // HasCurrencyPair returns true if a given CurrencyPair is stored in state, false otherwise.
@@ -217,7 +220,12 @@ func (k *Keeper) CreateCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair
 	}
 
 	state := types.NewCurrencyPairState(id, 0, nil)
-	return k.currencyPairs.Set(ctx, cp.String(), state)
+	err = k.currencyPairs.Set(ctx, cp.String(), state)
+	if err != nil {
+		return err
+	}
+
+	return k.incrementCPCounter(ctx)
 }
 
 // GetIDForCurrencyPair returns the ID for a given CurrencyPair. If the CurrencyPair does not exist, return 0, false, if
@@ -316,7 +324,7 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 }
 
 // IncrementRemovedCPCounter increments the counter of removed currency pairs.
-func (k *Keeper) IncrementRemovedCPCounter(ctx sdk.Context) error {
+func (k *Keeper) incrementRemovedCPCounter(ctx sdk.Context) error {
 	val, err := k.numRemoves.Get(ctx)
 	if err != nil {
 		return err
@@ -332,7 +340,7 @@ func (k *Keeper) GetRemovedCPCounter(ctx sdk.Context) (uint64, error) {
 }
 
 // IncrementCPCounter increments the counter of currency pairs.
-func (k *Keeper) IncrementCPCounter(ctx sdk.Context) error {
+func (k *Keeper) incrementCPCounter(ctx sdk.Context) error {
 	val, err := k.numCPs.Get(ctx)
 	if err != nil {
 		return err

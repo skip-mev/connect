@@ -50,10 +50,6 @@ func (m *msgServer) AddCurrencyPairs(goCtx context.Context, req *types.MsgAddCur
 			if err != nil {
 				return nil, fmt.Errorf("error creating currency pair state: %w", err)
 			}
-
-			if err := m.k.IncrementCPCounter(ctx); err != nil {
-				return nil, fmt.Errorf("error incrementing currency pairs counter: %w", err)
-			}
 		}
 	}
 
@@ -89,9 +85,8 @@ func (m *msgServer) RemoveCurrencyPairs(goCtx context.Context, req *types.MsgRem
 		}
 
 		// delete the currency pair from state
-		m.k.RemoveCurrencyPair(ctx, cp)
-		if err := m.k.IncrementRemovedCPCounter(ctx); err != nil {
-			return nil, fmt.Errorf("error incrementing removed currency pairs counter: %w", err)
+		if err := m.k.RemoveCurrencyPair(ctx, cp); err != nil {
+			return nil, fmt.Errorf("error removing currency pair from state: %w", err)
 		}
 	}
 
