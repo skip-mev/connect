@@ -40,6 +40,10 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.mockMarketMapKeeper = mocks.NewMarketMapKeeper(s.T())
 	s.oracleKeeper = keeper.NewKeeper(ss, encCfg.Codec, s.mockMarketMapKeeper, moduleAuthAddr)
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
+
+	s.Require().NotPanics(func() {
+		s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+	})
 }
 
 func TestKeeperTestSuite(t *testing.T) {
