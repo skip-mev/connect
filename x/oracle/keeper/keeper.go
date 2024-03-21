@@ -62,6 +62,9 @@ type Keeper struct {
 	// indexes
 	idIndex *indexes.Multi[uint64, string, types.CurrencyPairState]
 
+	// numRemoves is the number of CPs removed in the previous block.
+	numRemoves collections.Item[uint64]
+
 	// numCPs is the number of CPs.
 	numCPs collections.Item[uint64]
 
@@ -91,6 +94,7 @@ func NewKeeper(
 		cdc:                cdc,
 		authority:          authority,
 		mmKeeper:           mmKeeper,
+		numRemoves:         collections.NewItem[uint64](sb, types.NumRemovesKeyPrefix, "removed_cps", types.CounterCodec),
 		numCPs:             collections.NewItem[uint64](sb, types.NumCPsKeyPrefix, "num_cps", types.CounterCodec),
 		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
 		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
@@ -311,6 +315,22 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 	return ticker.Decimals, nil
 }
 
+// IncrementRemovedCPCounter increments the counter of removed currency pairs.
+func (k *Keeper) IncrementRemovedCPCounter(ctx sdk.Context) error {
+	val, err := k.numRemoves.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	val++
+	return k.numRemoves.Set(ctx, val)
+}
+
+// GetRemovedCPCounter gets the counter of removed currency pairs.
+func (k *Keeper) GetRemovedCPCounter(ctx sdk.Context) (uint64, error) {
+	return k.numRemoves.Get(ctx)
+}
+
 // IncrementCPCounter increments the counter of currency pairs.
 func (k *Keeper) IncrementCPCounter(ctx sdk.Context) error {
 	val, err := k.numCPs.Get(ctx)
@@ -322,7 +342,7 @@ func (k *Keeper) IncrementCPCounter(ctx sdk.Context) error {
 	return k.numCPs.Set(ctx, val)
 }
 
-// GetCPCounter gets the counter of currency pairs.
-func (k *Keeper) GetCPCounter(ctx sdk.Context) (uint64, error) {
+// GetPrevBlockCPCounter gets the counter of currency pairs in the previous block.
+func (k *Keeper) GetPrevBlockCPCounter(ctx sdk.Context) (uint64, error) {
 	return k.numCPs.Get(ctx)
 }

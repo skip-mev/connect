@@ -29,7 +29,7 @@ func (s *KeeperTestSuite) TestBeginBlocker() {
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(0))
 
-		cps, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(cps, uint64(0))
 
@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestBeginBlocker() {
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(0))
 
-		cps, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(cps, uint64(1))
 

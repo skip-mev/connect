@@ -342,7 +342,7 @@ func (s *KeeperTestSuite) TestRemoveCounter() {
 
 func (s *KeeperTestSuite) TestCPCounter() {
 	s.Run("get 0 with no state", func() {
-		removes, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		removes, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(0))
 
@@ -355,7 +355,7 @@ func (s *KeeperTestSuite) TestCPCounter() {
 	s.Run("get 1 with 1 cp", func() {
 		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
 
-		removes, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		removes, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(1))
 
@@ -369,7 +369,7 @@ func (s *KeeperTestSuite) TestCPCounter() {
 		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
 		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
 
-		removes, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		removes, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(2))
 
