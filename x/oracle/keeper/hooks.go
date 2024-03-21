@@ -24,11 +24,7 @@ func (k *Keeper) Hooks() Hooks {
 // the marketmap.  After the market is created, a currency pair and its state are initialized in the
 // oracle module.
 func (h Hooks) AfterMarketCreated(ctx sdk.Context, ticker marketmaptypes.Ticker) error {
-	if err := h.k.CreateCurrencyPair(ctx, ticker.CurrencyPair); err != nil {
-		return err
-	}
-
-	return h.k.IncrementCPCounter(ctx)
+	return h.k.CreateCurrencyPair(ctx, ticker.CurrencyPair)
 }
 
 func (h Hooks) AfterMarketUpdated(_ sdk.Context, _ marketmaptypes.Ticker) error {
