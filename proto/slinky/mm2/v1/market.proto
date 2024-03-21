@@ -14,7 +14,7 @@ message Market {
   // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The
   // price feed is scaled to a number of decimal places and has a minimum number
   // of providers required to consider the ticker valid.
-  Ticker ticker = 1;
+  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
 
   // ProviderConfigs is the list of provider-specific configs for this Market.
   repeated ProviderConfig provider_configs = 2 [ (gogoproto.nullable) = false ];
