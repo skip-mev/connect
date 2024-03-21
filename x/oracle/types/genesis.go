@@ -38,7 +38,7 @@ func DefaultGenesisState() *GenesisState {
 }
 
 // Validate validates the currency-pair geneses that the Genesis-State is composed of
-// valid CurrencyPairGeneses, and that no ID for a currency-pair is repeated.
+// valid CurrencyPairGenesis, and that no ID for a currency-pair is repeated.
 func (gs *GenesisState) Validate() error {
 	ids := make(map[uint64]struct{})
 	cps := make(map[string]struct{})
@@ -48,7 +48,7 @@ func (gs *GenesisState) Validate() error {
 			return err
 		}
 
-		// check if the ID > that gs.NextID
+		// check if the ID > gs.NextID
 		if cpg.Id >= gs.NextId {
 			return fmt.Errorf("invalid id: %v, must be less than next id: %v", cpg.Id, gs.NextId)
 		}
