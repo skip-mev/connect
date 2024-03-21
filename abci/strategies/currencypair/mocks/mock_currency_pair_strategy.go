@@ -105,12 +105,12 @@ func (_m *CurrencyPairStrategy) GetEncodedPrice(ctx types.Context, cp pkgtypes.C
 	return r0, r1
 }
 
-// GetMaxBzSize provides a mock function with given fields: ctx
-func (_m *CurrencyPairStrategy) GetMaxBzSize(ctx types.Context) (uint64, error) {
+// GetMaxNumCP provides a mock function with given fields: ctx
+func (_m *CurrencyPairStrategy) GetMaxNumCP(ctx types.Context) (uint64, error) {
 	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetMaxBzSize")
+		panic("no return value specified for GetMaxNumCP")
 	}
 
 	var r0 uint64

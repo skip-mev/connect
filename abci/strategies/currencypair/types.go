@@ -47,9 +47,9 @@ type CurrencyPairStrategy interface { //nolint
 		priceBytes []byte,
 	) (*big.Int, error)
 
-	// GetMaxBzSize returns the maximum size that the VEs should be.  This method returns an error if the size cannot
+	// GetMaxNumCP returns the number of pairs that the VEs should include.  This method returns an error if the size cannot
 	// be queried from the x/oracle state.
-	GetMaxBzSize(
+	GetMaxNumCP(
 		ctx sdk.Context,
 	) (uint64, error)
 }

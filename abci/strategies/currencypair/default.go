@@ -2,8 +2,9 @@ package currencypair
 
 import (
 	"fmt"
-	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"math/big"
+
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
