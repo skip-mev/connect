@@ -299,3 +299,83 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		s.Require().Equal(unusedID+1, id)
 	})
 }
+
+func (s *KeeperTestSuite) TestRemoveCounter() {
+	s.Run("get 0 with no state", func() {
+		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(0))
+
+		// reset state
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+		})
+	})
+
+	s.Run("get 1 with 1 remove", func() {
+		s.Require().NoError(s.oracleKeeper.IncrementRemovedCPCounter(s.ctx))
+
+		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(1))
+
+		// reset state
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+		})
+	})
+
+	s.Run("get 2 with 2 removes", func() {
+		s.Require().NoError(s.oracleKeeper.IncrementRemovedCPCounter(s.ctx))
+		s.Require().NoError(s.oracleKeeper.IncrementRemovedCPCounter(s.ctx))
+
+		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(2))
+
+		// reset state
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+		})
+	})
+}
+
+func (s *KeeperTestSuite) TestCPCounter() {
+	s.Run("get 0 with no state", func() {
+		removes, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(0))
+
+		// reset state
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+		})
+	})
+
+	s.Run("get 1 with 1 cp", func() {
+		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
+
+		removes, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(1))
+
+		// reset state
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+		})
+	})
+
+	s.Run("get 2 with 2 cp", func() {
+		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
+		s.Require().NoError(s.oracleKeeper.IncrementCPCounter(s.ctx))
+
+		removes, err := s.oracleKeeper.GetCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(2))
+
+		// reset state
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+		})
+	})
+}
