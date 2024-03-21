@@ -34,8 +34,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig is the default market configuration for Gate.io.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for Gate.io.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ARB_USDT",

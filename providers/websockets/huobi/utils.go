@@ -39,8 +39,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for the Huobi Websocket.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "arbusdt",

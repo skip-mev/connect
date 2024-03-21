@@ -35,8 +35,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig is the default market configuration for BitFinex.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for BitFinex.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.BITCOIN_USD: {
 			Name:           Name,
 			OffChainTicker: "BTCUSD",

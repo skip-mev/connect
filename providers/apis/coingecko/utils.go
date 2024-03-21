@@ -53,8 +53,8 @@ var (
 		URL:              URL,
 	}
 
-	// DefaultMarketConfig is the default market configuration for CoinGecko.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for CoinGecko.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.ATOM_USD: {
 			Name:           Name,
 			OffChainTicker: "cosmos/usd",

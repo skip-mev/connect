@@ -132,7 +132,7 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
@@ -211,7 +211,7 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
@@ -228,7 +228,7 @@ func TestCreateMessages(t *testing.T) {
 }
 
 func TestHeartBeatMessages(t *testing.T) {
-	marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
+	marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultProviderConfig)
 	require.NoError(t, err)
 
 	wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)

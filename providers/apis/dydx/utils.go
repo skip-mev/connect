@@ -51,10 +51,10 @@ var DefaultAPIConfig = config.APIConfig{
 	URL:              "localhost:1317",
 }
 
-// These are references to the different providers that are supported by the dYdX market map.
+// ProviderMapping is referencing the different providers that are supported by the dYdX market params.
 //
 // ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
-var providerMapping = map[string][]string{
+var ProviderMapping = map[string][]string{
 	"Binance":     {binance.Name},
 	"BinanceUS":   {binance.Name},
 	"Bitfinex":    {bitfinex.Name},
@@ -163,7 +163,7 @@ func ConvertExchangeConfigJSON(
 		seen[cfg] = struct{}{}
 
 		// This means we have seen an exchange that slinky cannot support.
-		exchangeNames, ok := providerMapping[cfg.ExchangeName]
+		exchangeNames, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
 			return mmtypes.Paths{}, mmtypes.Providers{}, fmt.Errorf("unsupported exchange: %s", cfg.ExchangeName)
 		}
@@ -319,7 +319,7 @@ func IndirectInvertedConversion(
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
 func ConvertDenomByProvider(denom string, exchange string) string {
-	providers, ok := providerMapping[exchange]
+	providers, ok := ProviderMapping[exchange]
 	if !ok {
 		return denom
 	}

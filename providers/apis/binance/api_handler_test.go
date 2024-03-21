@@ -55,7 +55,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultNonUSMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultNonUSProviderConfig)
 			require.NoError(t, err)
 
 			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)

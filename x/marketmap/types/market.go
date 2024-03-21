@@ -211,7 +211,6 @@ func (m *Market) Equal(other Market) bool {
 
 	if !m.Paths.Equal(other.Paths) {
 		return false
-
 	}
 
 	return true

@@ -152,7 +152,7 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(bitfinex.Name, bitfinex.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(bitfinex.Name, bitfinex.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := bitfinex.NewWebSocketDataHandler(logger, marketConfig, bitfinex.DefaultWebSocketConfig)
@@ -262,7 +262,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(bitfinex.Name, bitfinex.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(bitfinex.Name, bitfinex.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := bitfinex.NewWebSocketDataHandler(logger, marketConfig, bitfinex.DefaultWebSocketConfig)

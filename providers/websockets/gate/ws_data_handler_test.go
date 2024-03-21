@@ -198,7 +198,7 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(gate.Name, gate.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(gate.Name, gate.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := gate.NewWebSocketDataHandler(logger, marketConfig, gate.DefaultWebSocketConfig)
@@ -304,7 +304,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(gate.Name, gate.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(gate.Name, gate.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			handler, err := gate.NewWebSocketDataHandler(logger, marketConfig, gate.DefaultWebSocketConfig)

@@ -42,8 +42,8 @@ var (
 		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
 	}
 
-	// DefaultMarketConfig is the default market configuration for OKX.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for OKX.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USDC: {
 			Name:           Name,
 			OffChainTicker: "APE-USDC",

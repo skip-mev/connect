@@ -261,7 +261,7 @@ func TestHandleMessage(t *testing.T) {
 		},
 	}
 
-	marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultMarketConfig)
+	marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultProviderConfig)
 	require.NoError(t, err)
 
 	handler, err := kucoin.NewWebSocketDataHandler(logger, marketConfig, kucoin.DefaultWebSocketConfig)
@@ -383,7 +383,7 @@ func TestCreateMessages(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(kucoin.Name, kucoin.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			handler, err := kucoin.NewWebSocketDataHandler(logger, marketConfig, kucoin.DefaultWebSocketConfig)

@@ -74,7 +74,7 @@ var (
 		},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
+				coinbase.DefaultProviderConfig[constants.BITCOIN_USD],
 			},
 		},
 	}
@@ -105,9 +105,9 @@ var (
 		},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				coinbase.DefaultMarketConfig[constants.BITCOIN_USDT],
-				binance.DefaultNonUSMarketConfig[constants.BITCOIN_USDT],
-				kucoin.DefaultMarketConfig[constants.BITCOIN_USDT],
+				coinbase.DefaultProviderConfig[constants.BITCOIN_USDT],
+				binance.DefaultNonUSProviderConfig[constants.BITCOIN_USDT],
+				kucoin.DefaultProviderConfig[constants.BITCOIN_USDT],
 			},
 		},
 	}
@@ -164,7 +164,7 @@ var (
 		},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
+				coinbase.DefaultProviderConfig[constants.ETHEREUM_USD],
 			},
 		},
 	}
@@ -174,8 +174,8 @@ var (
 		Paths:  mmtypes.Paths{},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				coinbase.DefaultMarketConfig[constants.ETHEREUM_USDT],
-				binance.DefaultNonUSMarketConfig[constants.ETHEREUM_USDT],
+				coinbase.DefaultProviderConfig[constants.ETHEREUM_USDT],
+				binance.DefaultNonUSProviderConfig[constants.ETHEREUM_USDT],
 			},
 		},
 	}
@@ -238,8 +238,8 @@ var (
 		},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				coinbase.DefaultMarketConfig[constants.USDT_USD],
-				binance.DefaultNonUSMarketConfig[constants.USDT_USD],
+				coinbase.DefaultProviderConfig[constants.USDT_USD],
+				binance.DefaultNonUSProviderConfig[constants.USDT_USD],
 			},
 		},
 	}
@@ -249,7 +249,7 @@ var (
 		Paths:  mmtypes.Paths{},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				coinbase.DefaultMarketConfig[constants.USDC_USDT],
+				coinbase.DefaultProviderConfig[constants.USDC_USDT],
 			},
 		},
 	}
@@ -287,7 +287,7 @@ var (
 		},
 		Providers: mmtypes.Providers{
 			Providers: []mmtypes.ProviderConfig{
-				binance.DefaultNonUSMarketConfig[constants.PEPE_USDT],
+				binance.DefaultNonUSProviderConfig[constants.PEPE_USDT],
 			},
 		},
 	}

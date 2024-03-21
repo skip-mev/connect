@@ -256,7 +256,7 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, marketConfig, cryptodotcom.DefaultWebSocketConfig)
@@ -349,7 +349,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, marketConfig, cryptodotcom.DefaultWebSocketConfig)

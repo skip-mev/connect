@@ -41,8 +41,8 @@ var (
 		Name:             Name,
 		Atomic:           true,
 		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         150 * time.Millisecond,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         400 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              US_URL,
@@ -53,8 +53,8 @@ var (
 		Name:             Name,
 		Atomic:           true,
 		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         150 * time.Millisecond,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         400 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
@@ -204,8 +204,8 @@ var (
 		},
 	}
 
-	// DefaultNonUSMarketConfig is the default market configuration for Binance.
-	DefaultNonUSMarketConfig = types.TickerToProviderConfig{
+	// DefaultNonUSProviderConfig is the default market configuration for Binance.
+	DefaultNonUSProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",

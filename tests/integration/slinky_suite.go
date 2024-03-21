@@ -45,8 +45,6 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 			"oracle",
 			"--oracle-config-path", "/oracle/oracle.json",
 			"--market-config-path", "/oracle/market.json",
-			"--host", "0.0.0.0",
-			"--port", "8080",
 		},
 		ValidatorProcess: true,
 		PreStart:         true,
@@ -58,6 +56,8 @@ func DefaultOracleConfig() oracleconfig.OracleConfig {
 	oracleConfig := oracleconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    1 * time.Minute,
+		Host:           "0.0.0.0",
+		Port:           "8080",
 	}
 
 	return oracleConfig
