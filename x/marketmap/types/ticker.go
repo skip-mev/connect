@@ -17,6 +17,8 @@ const (
 	DefaultMinProviderCount = 1
 	// MaxPathLength is the maximum length of a path for a ticker conversion.
 	MaxPathLength = 3
+	// MaxMetadataJSONFieldLength is the maximum length of the MetadataJSON field.
+	MaxMetadataJSONFieldLength = 16384
 )
 
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
@@ -49,6 +51,10 @@ func (t *Ticker) ValidateBasic() error {
 
 	if err := t.CurrencyPair.ValidateBasic(); err != nil {
 		return err
+	}
+
+	if len(t.Metadata_JSON) > MaxMetadataJSONFieldLength {
+		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
 	}
 
 	return json.IsValid([]byte(t.Metadata_JSON))

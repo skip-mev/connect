@@ -37,7 +37,7 @@ func (m *MsgUpdateMarketMap) ValidateBasic() error {
 			)
 		}
 
-		seenProviders := make(map[string]struct{})
+		seenProviders := make(map[string]struct{}, len(market.Providers.Providers))
 		for _, provider := range market.Providers.Providers {
 			if err := provider.ValidateBasic(); err != nil {
 				return err
