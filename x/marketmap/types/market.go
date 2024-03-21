@@ -75,7 +75,7 @@ func (mm *MarketMap) String() string {
 // ValidateIndexPriceAggregation validates the market map configuration and its expected configuration for
 // this aggregator. In particular, this will
 //
-//  1. Ensure that the market map is valid (ValidateBasic). This ensure's that each of the provider's
+//  1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
 //     markets are supported by the market map.
 //  2. Ensure that each path has a corresponding ticker.
 //  3. Ensure that each path has a valid number of operations.
@@ -84,7 +84,7 @@ func ValidateIndexPriceAggregation(
 	marketMap MarketMap,
 ) error {
 	for ticker, paths := range marketMap.Paths {
-		// The ticker must be supported by the market map. Otherwise we do not how to resolve the
+		// The ticker must be supported by the market map. Otherwise, we do not how to resolve the
 		// prices.
 		if _, ok := marketMap.Tickers[ticker]; !ok {
 			return fmt.Errorf("path includes a ticker that is not supported: %s", ticker)

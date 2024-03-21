@@ -26,14 +26,14 @@ NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
 ###                               build                                     ###
 ###############################################################################
 
-build:
-	go build -o ./build/ ./...
+build: tidy
+	@go build -o ./build/ ./...
 
-run-oracle-server: build update-local-config
-	./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+run-oracle-server: build
+	@./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
-	./build/client --host localhost --port 8080
+	@./build/client --host localhost --port 8080
 
 run-prom-client: 
 	@$(DOCKER) run \
@@ -41,11 +41,11 @@ run-prom-client:
 		-v ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
 		prom/prometheus
 
-update-local-config:
+update-local-configs: build
 	@echo "Updating local config..."
-	@go generate ${CONFIG_DIR}
+	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
-start-oracle: update-local-config
+start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
 
@@ -53,8 +53,8 @@ stop-oracle:
 	@echo "Stopping network..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
-install:
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle 
+install: tidy
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle
 
 .PHONY: build run-oracle-server install
 
@@ -124,27 +124,27 @@ BUILD_TARGETS := build-test-app
 build-test-app: BUILD_ARGS=-o $(BUILD_DIR)/
 
 $(BUILD_TARGETS): $(BUILD_DIR)/
-	cd $(CURDIR)/tests/simapp && go build -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+	@cd $(CURDIR)/tests/simapp && go build -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILD_DIR)/:
-	mkdir -p $(BUILD_DIR)/
+	@mkdir -p $(BUILD_DIR)/
 
 # build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
 build-configs:
-	./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
-	./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
-	./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
-	./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
-	jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BTC", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+	@./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
+	@./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
+	@./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
+	@./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
+	@./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
+	@./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
+	@jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+	@jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BTC", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+	@jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
 # this will set the environment variable for running locally
 start-app:
-	./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level info --home $(HOMEDIR)
+	@./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level info --home $(HOMEDIR)
 
 
 # build-and-start-app builds a slinky simulation application binary in the build folder
@@ -159,13 +159,13 @@ build-and-start-app: build-configs start-app
 ###                               Testing                                   ###
 ###############################################################################
 
-test-integration: docker-build
+test-integration: tidy docker-build
 	@echo "Running integration tests..."
-	@cd ./tests/integration && go mod tidy &&  go test -p 1 -v -race -timeout 30m
+	@cd ./tests/integration &&  go test -p 1 -v -race -timeout 30m
 
-test-petri-integ: docker-build
+test-petri-integ: tidy docker-build
 	@echo "Running petri integration tests..."
-	@cd ./tests/petri && go mod tidy &&  go test -p 1 -v -race -timeout 30m
+	@cd ./tests/petri &&  go test -p 1 -v -race -timeout 30m
 
 test: tidy
 	@go test -v -race $(shell go list ./... | grep -v tests/)
@@ -192,7 +192,7 @@ protoVer=0.14.0
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
-proto-all: proto-format proto-gen proto-pulsar-gen format
+proto-all: tidy proto-format proto-gen proto-pulsar-gen format
 
 proto-gen:
 	@echo "Generating Protobuf files"
@@ -224,6 +224,7 @@ proto-update-deps:
 
 tidy:
 	@go mod tidy
+	@cd ./tests/integration && go mod tidy
 
 .PHONY: tidy
 
@@ -265,9 +266,9 @@ gen-mocks:
 ###############################################################################
 
 format:
-	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*mocks*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run mvdan.cc/gofumpt -w .
-	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*mocks*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run github.com/client9/misspell/cmd/misspell -w
-	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*mocks*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run golang.org/x/tools/cmd/goimports -w -local github.com/skip-mev/slinky
+	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*/mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run mvdan.cc/gofumpt -w .
+	@find . -name '*.go' -type f -not -path "*.git*" -not -path "*/mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run github.com/client9/misspell/cmd/misspell -w
+	@find . -name '*.go' -type f -not -path "*.git*" -not -path "/*mocks/*" -not -name '*.pb.go' -not -name '*.pulsar.go' -not -name '*.gw.go' | xargs go run golang.org/x/tools/cmd/goimports -w -local github.com/skip-mev/slinky
 
 .PHONY: format
 
@@ -276,10 +277,10 @@ format:
 ###############################################################################
 
 deploy-dev:
-	touch ${LEVANT_VAR_FILE}
-	yq e -i '.sidecar_image |= "${SIDECAR_IMAGE}"' ${LEVANT_VAR_FILE}
-	yq e -i '.chain_image |= "${CHAIN_IMAGE}"' ${LEVANT_VAR_FILE}
-	levant deploy -force -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_SLINKY}
+	@touch ${LEVANT_VAR_FILE}
+	@yq e -i '.sidecar_image |= "${SIDECAR_IMAGE}"' ${LEVANT_VAR_FILE}
+	@yq e -i '.chain_image |= "${CHAIN_IMAGE}"' ${LEVANT_VAR_FILE}
+	@levant deploy -force -force-count -var-file=${LEVANT_VAR_FILE} ${NOMAD_FILE_SLINKY}
 
 .PHONY: deploy-dev
 

@@ -51,15 +51,8 @@ func GetOracleVotes(
 			}
 		}
 
-		address := sdk.ConsAddress{}
-		if err := address.Unmarshal(voteInfo.Validator.Address); err != nil {
-			return nil, slinkyabci.CodecError{
-				Err: fmt.Errorf("error decoding validator address: %w", err),
-			}
-		}
-
 		votes[i] = Vote{
-			ConsAddress:         address,
+			ConsAddress:         voteInfo.Validator.Address,
 			OracleVoteExtension: voteExtension,
 		}
 	}
@@ -85,7 +78,7 @@ type VoteAggregator interface {
 	//     currency pair.
 	//
 	// In order for a currency pair to be included in the final oracle price, the currency
-	// pair must be provided by a supermajority (2/3+) of validators. This is enforced by the
+	// pair must be provided by a super-majority (2/3+) of validators. This is enforced by the
 	// price aggregator but can be replaced by the application.
 	//
 	// Notice: This method overwrites the VoteAggregator's local view of prices.

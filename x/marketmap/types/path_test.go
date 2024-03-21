@@ -143,6 +143,15 @@ var (
 		},
 	}
 
+	usdteth = types.Ticker{
+		CurrencyPair: slinkytypes.CurrencyPair{
+			Base:  "USDT",
+			Quote: "ETHEREUM",
+		},
+		Decimals:         8,
+		MinProviderCount: 1,
+	}
+
 	tickers = map[string]types.Ticker{
 		btcusdt.String(): btcusdt,
 		usdcusd.String(): usdcusd,
@@ -312,6 +321,22 @@ func TestPath(t *testing.T) {
 					},
 					{
 						CurrencyPair: usdtusd.CurrencyPair,
+						Invert:       true,
+					},
+				},
+			},
+			target: "",
+			expErr: true,
+		},
+		{
+			name: "invalid path with multiple operations inverted duplicate",
+			path: types.Path{
+				Operations: []types.Operation{
+					{
+						CurrencyPair: ethusdt.CurrencyPair,
+					},
+					{
+						CurrencyPair: usdteth.CurrencyPair,
 						Invert:       true,
 					},
 				},

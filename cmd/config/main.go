@@ -1,6 +1,3 @@
-//go:build ignore
-// +build ignore
-
 package main
 
 import (
@@ -8,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -17,6 +13,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
@@ -30,6 +27,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
+	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -39,7 +37,7 @@ var (
 	oracleCfgPath = flag.String(
 		"oracle-config-path",
 		"oracle.json",
-		"path to write the oracle config file to",
+		"path to write the oracle config file to. this file is required to run the oracle.",
 	)
 
 	// marketCfgPath is the path to write the market config file to. By default, this
@@ -47,46 +45,72 @@ var (
 	marketCfgPath = flag.String(
 		"market-config-path",
 		"market.json",
-		"path to write the market config file to",
+		"path to write the market config file to. this file is required to run the oracle.",
 	)
 
-	// providersOpt defines an optional list of providers to include in the local
-	// market config file. If this is not provided, all providers will be included.
-	providersOpt = flag.String(
-		"providers",
+	// chain defines the chain that we expect the oracle to be running on.
+	chain = flag.String(
+		"chain-id",
 		"",
-		"optional list of providers to include in the local market config file",
+		"chain-id that we expect the oracle to be running on. ex dydx-mainnet-1, dydx-testnet-4. this should only be specified if required by the chain.",
 	)
 
-	// tickersOpt defines an optional list of tickers to include in the local market
-	// config file. If this is not provided, all tickers will be included.
-	tickersOpt = flag.String(
-		"tickers",
+	// nodeURL is the URL of the validator. This is required if running the oracle with a market map provider.
+	nodeURL = flag.String(
+		"node-http-url",
 		"",
-		"optional list of tickers to include in the local market config file",
+		"http endpoint of the cosmos sdk node corresponding to the chain id (typically something like localhost:1317). this should only be specified if required by the chain.",
 	)
 
-	// usePathsOpt defines an optional flag to include the conversion paths in the
-	// local market config file. If this is not provided, the conversion paths will
-	// not be included.
-	usePathsOpt = flag.Bool(
-		"use-paths",
+	// host is the oracle / prometheus server host.
+	host = flag.String(
+		"host",
+		"0.0.0.0",
+		"host is the oracle / prometheus server host.",
+	)
+
+	// pricesPort is the port that the oracle will make prices available on.
+	pricesPort = flag.String(
+		"port",
+		"8080",
+		"port that the oracle will make prices available on. to query prices after starting the oracle, use the following command: curl http://<host>:<port>/slinky/oracle/v1/prices",
+	)
+
+	// prometheusPort is the port that prometheus will make metrics available on.
+	prometheusPort = flag.String(
+		"prometheus-port",
+		"8002",
+		"port that the prometheus server will listen on. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
+	)
+
+	// disabledMetrics is a flag that disables the prometheus server.
+	disabledMetrics = flag.Bool(
+		"disable-metrics",
 		false,
-		"optional flag to include the conversion paths in the local market config file",
+		"flag that disables the prometheus server. if this is enabled the prometheus port must be specified. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
 	)
 
-	// TickerPaths defines a map of tickers to the corresponding conversion markets
-	// that should be utilized to determine a final price.
-	TickerPaths = map[mmtypes.Ticker]mmtypes.Paths{
-		constants.ATOM_USD:     constants.ATOM_USD_PATHS,
-		constants.AVAX_USD:     constants.AVAX_USD_PATHS,
-		constants.BITCOIN_USD:  constants.BITCOIN_USD_PATHS,
-		constants.CELESTIA_USD: constants.CELESTIA_USD_PATHS,
-		constants.DYDX_USD:     constants.DYDX_USD_PATHS,
-		constants.ETHEREUM_USD: constants.ETHEREUM_USD_PATHS,
-		constants.OSMOSIS_USD:  constants.OSMOSIS_USD_PATHS,
-		constants.SOLANA_USD:   constants.SOLANA_USD_PATHS,
-	}
+	// debug is a flag that enables debug mode. Specifically, all logging will be
+	// in debug mode.
+	debug = flag.Bool(
+		"debug-mode",
+		false,
+		"flag that enables debug mode. specifically the side-car will run in debug mode. this is useful for local development / debugging.",
+	)
+
+	// updateInterval is the interval at which the oracle will update the prices.
+	updateInterval = flag.Duration(
+		"update-interval",
+		1500*time.Millisecond,
+		"interval at which the oracle will update the prices. this should be set to the interval desired by the chain.",
+	)
+
+	// maxPriceAge is the maximum age of a price that the oracle will accept.
+	maxPriceAge = flag.Duration(
+		"max-price-age",
+		2*time.Minute,
+		"maximum age of a price that the oracle will accept. this should be set to the maximum age desired by the chain.",
+	)
 
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
@@ -124,11 +148,7 @@ var (
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
-		Metrics: config.MetricsConfig{
-			Enabled:                 true,
-			PrometheusServerAddress: "0.0.0.0:8002",
-		},
-
+		Metrics:        config.MetricsConfig{},
 		UpdateInterval: 1500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
@@ -236,111 +256,106 @@ var (
 func main() {
 	flag.Parse()
 
-	// Open the local config file. This will overwrite any changes made to the
-	// local config file.
+	// Create the oracle config that contains all of the providers that are supported.
+	if err := createOracleConfig(); err != nil {
+		panic(err)
+	}
+
+	// Create the market map that contains all of the tickers and providers that are
+	// supported.
+	if err := createMarketMap(); err != nil {
+		panic(err)
+	}
+}
+
+// createOracleConfig creates an oracle config given all of the local provider configurations.
+func createOracleConfig() error {
+	// If the providers is not empty, filter the providers to include only the
+	// providers that are specified.
+	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
+		// Filter out the providers that are not supported by the dYdX chain.
+		validProviders := make(map[string]struct{})
+		for _, providers := range dydx.ProviderMapping {
+			for _, provider := range providers {
+				validProviders[provider] = struct{}{}
+			}
+		}
+
+		ps := make([]config.ProviderConfig, 0)
+		for _, provider := range LocalOracleConfig.Providers {
+			if _, ok := validProviders[provider.Name]; ok {
+				ps = append(ps, provider)
+			}
+		}
+
+		if len(*nodeURL) == 0 {
+			return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --node-http-url flag (ex. --node-http-url http://localhost:1317)")
+		}
+		apiCfg := dydx.DefaultAPIConfig
+		apiCfg.URL = *nodeURL
+
+		// Add the dYdX market map provider to the list of providers.
+		ps = append(ps, config.ProviderConfig{
+			Name: dydx.Name,
+			API:  apiCfg,
+			Type: mmclienttypes.ConfigType,
+		})
+		LocalOracleConfig.Providers = ps
+	}
+
+	// Set the host and port for the oracle.
+	LocalOracleConfig.Host = *host
+	LocalOracleConfig.Port = *pricesPort
+
+	// Set the prometheus server address for the oracle.
+	if !*disabledMetrics {
+		LocalOracleConfig.Metrics.Enabled = true
+		LocalOracleConfig.Metrics.PrometheusServerAddress = fmt.Sprintf("%s:%s", *host, *prometheusPort)
+	}
+
+	// Set the update interval for the oracle.
+	LocalOracleConfig.UpdateInterval = *updateInterval
+	LocalOracleConfig.MaxPriceAge = *maxPriceAge
+
+	if *debug {
+		LocalOracleConfig.Production = false
+	}
+
+	if err := LocalOracleConfig.ValidateBasic(); err != nil {
+		fmt.Fprintf(os.Stderr, "error validating local config: %v\n", err)
+		return err
+	}
+
 	f, err := os.Create(*oracleCfgPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error creating local config file: %v\n", err)
 	}
 	defer f.Close()
 
-	// If the providers is not empty, filter the providers to include only the
-	// providers that are specified.
-	providersFlag := *providersOpt
-	if providersFlag != "" {
-		ps := make([]config.ProviderConfig, 0)
-		for _, provider := range LocalOracleConfig.Providers {
-			if strings.Contains(providersFlag, provider.Name) {
-				ps = append(ps, provider)
-			}
-		}
-
-		LocalOracleConfig.Providers = ps
-	}
-
-	if err := LocalOracleConfig.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "error validating local config: %v\n", err)
-		return
-	}
-
 	// Encode the local oracle config file.
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(LocalOracleConfig); err != nil {
-		panic(err)
+		return err
 	}
 
-	// Open the local market config file. This will overwrite any changes made to the
-	// local market config file.
-	f, err = os.Create(*marketCfgPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error creating local market config file: %v\n", err)
-		return
-	}
-	defer f.Close()
-
-	marketMap, err := createMarketMap()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error generating the local market map")
-		return
-	}
-
-	// If the tickers is not empty, filter the tickers to include only the tickers
-	// that are specified.
-	tickersFlag := *tickersOpt
-	if tickersFlag != "" {
-		for _, ticker := range marketMap.Tickers {
-			if !strings.Contains(tickersFlag, ticker.String()) {
-				delete(marketMap.Providers, ticker.String())
-				delete(marketMap.Paths, ticker.String())
-				delete(marketMap.Tickers, ticker.String())
-			}
-		}
-	}
-
-	if len(providersFlag) > 0 {
-		for ticker, providers := range marketMap.Providers {
-			ps := make([]mmtypes.ProviderConfig, 0)
-
-			// Filter the providers to include only the providers that are specified.
-			for _, provider := range providers.Providers {
-				if strings.Contains(providersFlag, provider.Name) {
-					ps = append(ps, provider)
-				}
-			}
-
-			providers.Providers = ps
-			marketMap.Providers[ticker] = providers
-
-			// If there are no providers for a given ticker, remove the ticker from the
-			// market map.
-			if len(providers.Providers) == 0 {
-				delete(marketMap.Providers, ticker)
-				delete(marketMap.Paths, ticker)
-				delete(marketMap.Tickers, ticker)
-			}
-		}
-	}
-
-	// Validate the market map.
-	if err := marketMap.ValidateBasic(); err != nil {
-		fmt.Fprintf(os.Stderr, "error validating the market map: %v\n", err)
-		return
-	}
-
-	// Encode the local market config file.
-	encoder = json.NewEncoder(f)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(marketMap); err != nil {
-		panic(err)
-	}
+	fmt.Fprintf(os.Stdout, "successfully created oracle config file at %s\n", *oracleCfgPath)
+	return nil
 }
 
 // createMarketMap creates a market map given all of the local market configurations for
 // each provider as well as the custom conversion markets. We do so to ensure that the
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
-func createMarketMap() (mmtypes.MarketMap, error) {
+func createMarketMap() error {
+	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
+		fmt.Fprintf(
+			os.Stderr,
+			"dYdX chain requires the use of a predetermined market map. please use the market map provided by the Skip/dYdX team or the default market map provided in /config/dydx/market.json",
+		)
+		return nil
+	}
+
 	var (
 		// Tickers defines a map of tickers to their respective ticker configurations. This
 		// contains all of the tickers that are supported by the oracle.
@@ -348,11 +363,6 @@ func createMarketMap() (mmtypes.MarketMap, error) {
 		// TickersToProviders defines a map of tickers to their respective providers. This
 		// contains all of the providers that are supported per ticker.
 		tickersToProviders = make(map[string]mmtypes.Providers)
-		// OptionalTickerPaths defines a map of tickers to their respective conversion markets
-		// that should be utilized to determine a final price. Not that this is optional as the
-		// aggregation function utilized by the oracle may not require conversion markets to be
-		// specified.
-		optionalTickerPaths = make(map[string]mmtypes.Paths)
 	)
 
 	// Iterate through all of the provider ticker configurations and update the
@@ -365,11 +375,8 @@ func createMarketMap() (mmtypes.MarketMap, error) {
 			// ticker already exists, ensure that the ticker configuration is the same.
 			if t, ok := tickers[tickerStr]; !ok {
 				tickers[tickerStr] = ticker
-			} else {
-				if t != ticker {
-					return mmtypes.MarketMap{},
-						fmt.Errorf("ticker %s already exists with different configuration for provider %s", tickerStr, name)
-				}
+			} else if t != ticker {
+				return fmt.Errorf("ticker %s already exists with different configuration for provider %s", tickerStr, name)
 			}
 
 			// Instantiate the providers for a given ticker.
@@ -383,23 +390,40 @@ func createMarketMap() (mmtypes.MarketMap, error) {
 			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
 		}
 	}
-	if *usePathsOpt {
-		for ticker, paths := range TickerPaths {
-			optionalTickerPaths[ticker.String()] = paths
-		}
-	}
 
 	// Create a new market map from the provider to market map.
 	marketMap := mmtypes.MarketMap{
 		Tickers:   tickers,
 		Providers: tickersToProviders,
-		Paths:     optionalTickerPaths,
 	}
 
 	// Validate the market map.
 	if err := marketMap.ValidateBasic(); err != nil {
-		return mmtypes.MarketMap{}, fmt.Errorf("error validating the market map: %w", err)
+		return fmt.Errorf("error validating the market map: %w", err)
 	}
 
-	return marketMap, nil
+	// Open the local market config file. This will overwrite any changes made to the
+	// local market config file.
+	f, err := os.Create(*marketCfgPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error creating local market config file: %v\n", err)
+		return err
+	}
+	defer f.Close()
+
+	// Validate the market map.
+	if err := marketMap.ValidateBasic(); err != nil {
+		fmt.Fprintf(os.Stderr, "error validating the market map: %v\n", err)
+		return err
+	}
+
+	// Encode the local market config file.
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(marketMap); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "successfully created market config file at %s\n", *marketCfgPath)
+	return nil
 }

@@ -16,8 +16,6 @@ services:
       "oracle", 
       "--oracle-config-path", "/etc/slinky/default_config/oracle.json", 
       "--market-config-path", "/etc/slinky/default_config/market.json", 
-      "--host", "0.0.0.0", 
-      "--port", "8080", 
       "--pprof-port", "6060", 
       "--run-pprof", "true",
       ]

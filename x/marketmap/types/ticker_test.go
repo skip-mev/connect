@@ -3,6 +3,8 @@ package types_test
 import (
 	"testing"
 
+	"github.com/skip-mev/slinky/testutil"
+
 	"github.com/stretchr/testify/require"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
@@ -26,6 +28,19 @@ func TestTicker(t *testing.T) {
 				MinProviderCount: 1,
 			},
 			expErr: false,
+		},
+		{
+			name: "invalid metadata length",
+			ticker: types.Ticker{
+				CurrencyPair: slinkytypes.CurrencyPair{
+					Base:  "BITCOIN",
+					Quote: "USDT",
+				},
+				Decimals:         8,
+				MinProviderCount: 1,
+				Metadata_JSON:    testutil.RandomString(types.MaxMetadataJSONFieldLength + 1),
+			},
+			expErr: true,
 		},
 		{
 			name: "empty base",

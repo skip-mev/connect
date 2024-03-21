@@ -109,6 +109,12 @@ func (p *Path) ValidateBasic() error {
 			return err
 		}
 
+		if op.Invert {
+			if _, ok := seen[op.CurrencyPair.Invert()]; ok {
+				return fmt.Errorf("duplicated pair found")
+			}
+		}
+
 		if _, ok := seen[op.CurrencyPair]; ok {
 			return fmt.Errorf("path is not a directed acyclic graph")
 		}
@@ -166,7 +172,7 @@ func (p *Paths) ValidateBasic(cp slinkytypes.CurrencyPair) error {
 
 		route := path.ShowRoute()
 		if _, ok := routes[route]; ok {
-			return fmt.Errorf("duplicate path found: %s", route)
+			return fmt.Errorf("duplicate route found: %s", route)
 		}
 		routes[route] = struct{}{}
 
