@@ -96,6 +96,8 @@ func NewProposalHandler(
 // by base app when a new block proposal is requested. The PrepareProposalHandler
 // will first fill the proposal with transactions. Then, if vote extensions are
 // enabled, the handler will inject the extended commit info into the proposal.
+// If the size of the vote extensions exceed the requests MaxTxBytes size, this
+// handler will fail.
 func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 	return func(ctx sdk.Context, req *cometabci.RequestPrepareProposal) (resp *cometabci.ResponsePrepareProposal, err error) {
 		var (
