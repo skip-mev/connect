@@ -45,7 +45,7 @@ update-local-configs: build
 	@echo "Updating local config..."
 	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
-diff-local-configs: update-local-config
+diff-local-configs: update-local-configs
 	./scripts/diff-local-configs.sh
 
 start-oracle: update-local-config
