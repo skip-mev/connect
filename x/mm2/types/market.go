@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 // ValidateBasic performs aggregate validation for all fields in the MarketMap. We consider
@@ -12,7 +10,7 @@ import (
 // 1. Each ticker a provider supports is included in the main set of tickers.
 // 2. Each ticker is valid.
 // 3. Each provider is valid.
-// 4. Aggregation function is valid
+// 4. Aggregation function is valid.
 func (mm *MarketMap) ValidateBasic() error {
 	for _, market := range mm.Markets {
 		if err := market.ValidateBasic(); err != nil {
@@ -87,32 +85,15 @@ func ValidateIndexPriceAggregation(
 ) error {
 	for _, market := range marketMap.Markets {
 		for _, providerConfig := range market.ProviderConfigs {
-			_ = providerConfig
-			// TODO
+			if len(providerConfig.Index) != 0 {
+				if _, found := marketMap.Markets[providerConfig.Index]; !found {
+					return fmt.Errorf("provider index of %s was not found in the marketmap", providerConfig.Index)
+				}
+			}
 		}
 	}
 
 	return nil
-}
-
-// checkIfProviderSupportsTicker checks if the provider supports the given ticker.
-func checkIfProviderSupportsTicker(
-	provider string,
-	cp slinkytypes.CurrencyPair,
-	marketMap MarketMap,
-) error {
-	market, ok := marketMap.Markets[cp.String()]
-	if !ok {
-		return fmt.Errorf("provider %s included a ticker %s that has no providers supporting it", provider, cp.String())
-	}
-
-	for _, p := range market.ProviderConfigs {
-		if p.Name == provider {
-			return nil
-		}
-	}
-
-	return fmt.Errorf("provider %s does not support ticker: %s", provider, cp.String())
 }
 
 // Equal returns true if the MarketMap is equal to the given MarketMap.
@@ -149,12 +130,11 @@ func (m *Market) Equal(other Market) bool {
 		return false
 	}
 
-	// TODO
-	//for i, providerConfig := range m.ProviderConfigs {
-	//if !providerConfig.Equal(other[i]) {
-	//	return false
-	//}
-	//}
+	for i, providerConfig := range m.ProviderConfigs {
+		if !providerConfig.Equal(other.ProviderConfigs[i]) {
+			return false
+		}
+	}
 
 	return true
 }
