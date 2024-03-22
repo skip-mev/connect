@@ -40,6 +40,10 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.mockMarketMapKeeper = mocks.NewMarketMapKeeper(s.T())
 	s.oracleKeeper = keeper.NewKeeper(ss, encCfg.Codec, s.mockMarketMapKeeper, moduleAuthAddr)
 	s.ctx = testutil.DefaultContext(key, storetypes.NewTransientStoreKey("transient_key"))
+
+	s.Require().NotPanics(func() {
+		s.oracleKeeper.InitGenesis(s.ctx, *types.DefaultGenesisState())
+	})
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -293,5 +297,70 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 
 		// check that the id is unusedID + 1
 		s.Require().Equal(unusedID+1, id)
+	})
+}
+
+func (s *KeeperTestSuite) TestRemoveCounter() {
+	s.Run("get 0 with no state", func() {
+		s.SetupTest()
+
+		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(0))
+	})
+
+	s.Run("get 1 with 1 remove", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+
+		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(1))
+	})
+
+	s.Run("get 2 with 2 removes", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
+		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
+
+		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(2))
+	})
+}
+
+func (s *KeeperTestSuite) TestCPCounter() {
+	s.Run("get 0 with no state", func() {
+		s.SetupTest()
+
+		removes, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(removes, uint64(0))
+	})
+
+	s.Run("get 1 with 1 cp", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+
+		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(cps, uint64(1))
+	})
+
+	s.Run("get 2 with 2 cp", func() {
+		s.SetupTest()
+
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
+		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
+
+		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(cps, uint64(2))
 	})
 }

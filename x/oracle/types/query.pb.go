@@ -67,7 +67,7 @@ func (m *GetAllCurrencyPairsRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_GetAllCurrencyPairsRequest proto.InternalMessageInfo
 
 // GetAllCurrencyPairsResponse returns all CurrencyPairs that the module is
-// currently tracking
+// currently tracking.
 type GetAllCurrencyPairsResponse struct {
 	CurrencyPairs []types.CurrencyPair `protobuf:"bytes,1,rep,name=currency_pairs,json=currencyPairs,proto3" json:"currency_pairs"`
 }
@@ -113,7 +113,7 @@ func (m *GetAllCurrencyPairsResponse) GetCurrencyPairs() []types.CurrencyPair {
 }
 
 // GetPriceRequest either takes a CurrencyPair, or an identifier for the
-// CurrencyPair in the format base/quote
+// CurrencyPair in the format base/quote.
 type GetPriceRequest struct {
 	// CurrencyPair represents the pair that the user wishes to query.
 	CurrencyPair types.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair"`
@@ -160,7 +160,7 @@ func (m *GetPriceRequest) GetCurrencyPair() types.CurrencyPair {
 }
 
 // GetPriceResponse is the response from the GetPrice grpc method exposed from
-// the x/oracle query service
+// the x/oracle query service.
 type GetPriceResponse struct {
 	// QuotePrice represents the quote-price for the CurrencyPair given in
 	// GetPriceRequest (possibly nil if no update has been made)
@@ -237,7 +237,7 @@ func (m *GetPriceResponse) GetId() uint64 {
 }
 
 // GetPricesRequest takes an identifier for the CurrencyPair
-// in the format base/quote
+// in the format base/quote.
 type GetPricesRequest struct {
 	CurrencyPairIds []string `protobuf:"bytes,1,rep,name=currency_pair_ids,json=currencyPairIds,proto3" json:"currency_pair_ids,omitempty"`
 }
@@ -283,7 +283,7 @@ func (m *GetPricesRequest) GetCurrencyPairIds() []string {
 }
 
 // GetPricesResponse is the response from the GetPrices grpc method exposed from
-// the x/oracle query service
+// the x/oracle query service.
 type GetPricesResponse struct {
 	Prices []GetPriceResponse `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices"`
 }
@@ -389,10 +389,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Get all the currency pairs the x/oracle module is tracking price-data for
+	// Get all the currency pairs the x/oracle module is tracking price-data for.
 	GetAllCurrencyPairs(ctx context.Context, in *GetAllCurrencyPairsRequest, opts ...grpc.CallOption) (*GetAllCurrencyPairsResponse, error)
 	// Given a CurrencyPair (or its identifier) return the latest QuotePrice for
-	// that CurrencyPair
+	// that CurrencyPair.
 	GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error)
 	GetPrices(ctx context.Context, in *GetPricesRequest, opts ...grpc.CallOption) (*GetPricesResponse, error)
 }
@@ -434,10 +434,10 @@ func (c *queryClient) GetPrices(ctx context.Context, in *GetPricesRequest, opts 
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Get all the currency pairs the x/oracle module is tracking price-data for
+	// Get all the currency pairs the x/oracle module is tracking price-data for.
 	GetAllCurrencyPairs(context.Context, *GetAllCurrencyPairsRequest) (*GetAllCurrencyPairsResponse, error)
 	// Given a CurrencyPair (or its identifier) return the latest QuotePrice for
-	// that CurrencyPair
+	// that CurrencyPair.
 	GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error)
 	GetPrices(context.Context, *GetPricesRequest) (*GetPricesResponse, error)
 }

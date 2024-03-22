@@ -28,10 +28,10 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// Get all the currency pairs the x/oracle module is tracking price-data for
+	// Get all the currency pairs the x/oracle module is tracking price-data for.
 	GetAllCurrencyPairs(ctx context.Context, in *GetAllCurrencyPairsRequest, opts ...grpc.CallOption) (*GetAllCurrencyPairsResponse, error)
 	// Given a CurrencyPair (or its identifier) return the latest QuotePrice for
-	// that CurrencyPair
+	// that CurrencyPair.
 	GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error)
 	GetPrices(ctx context.Context, in *GetPricesRequest, opts ...grpc.CallOption) (*GetPricesResponse, error)
 }
@@ -75,10 +75,10 @@ func (c *queryClient) GetPrices(ctx context.Context, in *GetPricesRequest, opts 
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// Get all the currency pairs the x/oracle module is tracking price-data for
+	// Get all the currency pairs the x/oracle module is tracking price-data for.
 	GetAllCurrencyPairs(context.Context, *GetAllCurrencyPairsRequest) (*GetAllCurrencyPairsResponse, error)
 	// Given a CurrencyPair (or its identifier) return the latest QuotePrice for
-	// that CurrencyPair
+	// that CurrencyPair.
 	GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error)
 	GetPrices(context.Context, *GetPricesRequest) (*GetPricesResponse, error)
 	mustEmbedUnimplementedQueryServer()

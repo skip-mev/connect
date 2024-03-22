@@ -11,10 +11,10 @@ RUN make build
 
 FROM ubuntu:rolling
 EXPOSE 8080
-EXPOSE 8001
+EXPOSE 8002
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
 RUN apt-get update && apt-get install ca-certificates -y
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT ["oracle", "--oracle-config-path", "/oracle/oracle.json", "--market-config-path", "/oracle/market.json", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["oracle", "--oracle-config-path", "/oracle/oracle.json", "--market-config-path", "/oracle/market.json"]

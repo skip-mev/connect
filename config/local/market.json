@@ -697,7 +697,7 @@
       "min_provider_count": 1
     }
   },
-  "paths": {},
+  "paths": null,
   "providers": {
     "ADA/USD": {
       "providers": [
