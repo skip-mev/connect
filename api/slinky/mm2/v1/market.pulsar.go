@@ -2009,16 +2009,14 @@ func (x *_MarketMap_1_map) IsValid() bool {
 }
 
 var (
-	md_MarketMap                  protoreflect.MessageDescriptor
-	fd_MarketMap_markets          protoreflect.FieldDescriptor
-	fd_MarketMap_aggregation_type protoreflect.FieldDescriptor
+	md_MarketMap         protoreflect.MessageDescriptor
+	fd_MarketMap_markets protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_slinky_mm2_v1_market_proto_init()
 	md_MarketMap = File_slinky_mm2_v1_market_proto.Messages().ByName("MarketMap")
 	fd_MarketMap_markets = md_MarketMap.Fields().ByName("markets")
-	fd_MarketMap_aggregation_type = md_MarketMap.Fields().ByName("aggregation_type")
 }
 
 var _ protoreflect.Message = (*fastReflection_MarketMap)(nil)
@@ -2092,12 +2090,6 @@ func (x *fastReflection_MarketMap) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.AggregationType != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.AggregationType))
-		if !f(fd_MarketMap_aggregation_type, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -2115,8 +2107,6 @@ func (x *fastReflection_MarketMap) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "slinky.mm2.v1.MarketMap.markets":
 		return len(x.Markets) != 0
-	case "slinky.mm2.v1.MarketMap.aggregation_type":
-		return x.AggregationType != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
@@ -2135,8 +2125,6 @@ func (x *fastReflection_MarketMap) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "slinky.mm2.v1.MarketMap.markets":
 		x.Markets = nil
-	case "slinky.mm2.v1.MarketMap.aggregation_type":
-		x.AggregationType = 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
@@ -2159,9 +2147,6 @@ func (x *fastReflection_MarketMap) Get(descriptor protoreflect.FieldDescriptor) 
 		}
 		mapValue := &_MarketMap_1_map{m: &x.Markets}
 		return protoreflect.ValueOfMap(mapValue)
-	case "slinky.mm2.v1.MarketMap.aggregation_type":
-		value := x.AggregationType
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
@@ -2186,8 +2171,6 @@ func (x *fastReflection_MarketMap) Set(fd protoreflect.FieldDescriptor, value pr
 		mv := value.Map()
 		cmv := mv.(*_MarketMap_1_map)
 		x.Markets = *cmv.m
-	case "slinky.mm2.v1.MarketMap.aggregation_type":
-		x.AggregationType = (AggregationType)(value.Enum())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
@@ -2214,8 +2197,6 @@ func (x *fastReflection_MarketMap) Mutable(fd protoreflect.FieldDescriptor) prot
 		}
 		value := &_MarketMap_1_map{m: &x.Markets}
 		return protoreflect.ValueOfMap(value)
-	case "slinky.mm2.v1.MarketMap.aggregation_type":
-		panic(fmt.Errorf("field aggregation_type of message slinky.mm2.v1.MarketMap is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
@@ -2232,8 +2213,6 @@ func (x *fastReflection_MarketMap) NewField(fd protoreflect.FieldDescriptor) pro
 	case "slinky.mm2.v1.MarketMap.markets":
 		m := make(map[string]*Market)
 		return protoreflect.ValueOfMap(&_MarketMap_1_map{m: &m})
-	case "slinky.mm2.v1.MarketMap.aggregation_type":
-		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
@@ -2329,9 +2308,6 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 				}
 			}
 		}
-		if x.AggregationType != 0 {
-			n += 1 + runtime.Sov(uint64(x.AggregationType))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -2360,11 +2336,6 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.AggregationType != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.AggregationType))
-			i--
-			dAtA[i] = 0x20
 		}
 		if len(x.Markets) > 0 {
 			MaRsHaLmAp := func(k string, v *Market) (protoiface.MarshalOutput, error) {
@@ -2594,25 +2565,6 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 				}
 				x.Markets[mapkey] = mapvalue
 				iNdEx = postIndex
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AggregationType", wireType)
-				}
-				x.AggregationType = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.AggregationType |= AggregationType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2660,65 +2612,6 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
-
-// AggregationType is the type of aggregation that will be used to aggregate the
-// prices of the tickers.
-type AggregationType int32
-
-const (
-	// UNKNOWN_AGGREGATION_TYPE is the default value for the aggregation type.
-	AggregationType_UNKNOWN_AGGREGATION_TYPE AggregationType = 0
-	// IndexPriceAggregation is the type of aggregation that will be used to
-	// aggregate the prices of the tickers. Specifically, this converts the prices
-	// either directly or using the index price to a common currency pair.
-	AggregationType_INDEX_PRICE_AGGREGATION AggregationType = 1
-	// StandardMedianAggregation is the type of aggregation that will be used to
-	// aggregate the prices of the tickers. Specifically, this converts the prices
-	// to a common currency pair and then takes the median of the prices. No
-	// conversions are done if the prices are already in the common currency pair.
-	AggregationType_STANDARD_MEDIAN_AGGREGATION AggregationType = 2
-)
-
-// Enum value maps for AggregationType.
-var (
-	AggregationType_name = map[int32]string{
-		0: "UNKNOWN_AGGREGATION_TYPE",
-		1: "INDEX_PRICE_AGGREGATION",
-		2: "STANDARD_MEDIAN_AGGREGATION",
-	}
-	AggregationType_value = map[string]int32{
-		"UNKNOWN_AGGREGATION_TYPE":    0,
-		"INDEX_PRICE_AGGREGATION":     1,
-		"STANDARD_MEDIAN_AGGREGATION": 2,
-	}
-)
-
-func (x AggregationType) Enum() *AggregationType {
-	p := new(AggregationType)
-	*p = x
-	return p
-}
-
-func (x AggregationType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (AggregationType) Descriptor() protoreflect.EnumDescriptor {
-	return file_slinky_mm2_v1_market_proto_enumTypes[0].Descriptor()
-}
-
-func (AggregationType) Type() protoreflect.EnumType {
-	return &file_slinky_mm2_v1_market_proto_enumTypes[0]
-}
-
-func (x AggregationType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use AggregationType.Descriptor instead.
-func (AggregationType) EnumDescriptor() ([]byte, []int) {
-	return file_slinky_mm2_v1_market_proto_rawDescGZIP(), []int{0}
-}
 
 // Market encapsulates a Ticker and its provider-specific configuration.
 type Market struct {
@@ -2936,9 +2829,6 @@ type MarketMap struct {
 	// Markets is the full list of tickers and their associated configurations
 	// to be stored on-chain.
 	Markets map[string]*Market `protobuf:"bytes,1,rep,name=markets,proto3" json:"markets,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// AggregationType is the type of aggregation that will be used to aggregate
-	// the prices of the tickers.
-	AggregationType AggregationType `protobuf:"varint,4,opt,name=aggregation_type,json=aggregationType,proto3,enum=slinky.mm2.v1.AggregationType" json:"aggregation_type,omitempty"`
 }
 
 func (x *MarketMap) Reset() {
@@ -2966,13 +2856,6 @@ func (x *MarketMap) GetMarkets() map[string]*Market {
 		return x.Markets
 	}
 	return nil
-}
-
-func (x *MarketMap) GetAggregationType() AggregationType {
-	if x != nil {
-		return x.AggregationType
-	}
-	return AggregationType_UNKNOWN_AGGREGATION_TYPE
 }
 
 var File_slinky_mm2_v1_market_proto protoreflect.FileDescriptor
@@ -3022,40 +2905,28 @@ var file_slinky_mm2_v1_market_proto_rawDesc = []byte{
 	0x28, 0x08, 0x52, 0x06, 0x69, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x65,
 	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x18, 0x0f, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x4a, 0x53, 0x4f, 0x4e, 0x22,
-	0xfa, 0x01, 0x0a, 0x09, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x12, 0x45, 0x0a,
+	0xaf, 0x01, 0x0a, 0x09, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x12, 0x45, 0x0a,
 	0x07, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25,
 	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
 	0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x73,
 	0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x6d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x73, 0x12, 0x49, 0x0a, 0x10, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e,
-	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31, 0x2e, 0x41,
-	0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0f,
-	0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x1a,
-	0x51, 0x0a, 0x0c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12,
-	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65,
-	0x79, 0x12, 0x2b, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x15, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
-	0x38, 0x01, 0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x2a, 0x6d, 0x0a, 0x0f,
-	0x41, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12,
-	0x1c, 0x0a, 0x18, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x5f, 0x41, 0x47, 0x47, 0x52, 0x45,
-	0x47, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x10, 0x00, 0x12, 0x1b, 0x0a,
-	0x17, 0x49, 0x4e, 0x44, 0x45, 0x58, 0x5f, 0x50, 0x52, 0x49, 0x43, 0x45, 0x5f, 0x41, 0x47, 0x47,
-	0x52, 0x45, 0x47, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10, 0x01, 0x12, 0x1f, 0x0a, 0x1b, 0x53, 0x54,
-	0x41, 0x4e, 0x44, 0x41, 0x52, 0x44, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x4e, 0x5f, 0x41, 0x47,
-	0x47, 0x52, 0x45, 0x47, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10, 0x02, 0x42, 0x9c, 0x01, 0x0a, 0x11,
-	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76,
-	0x31, 0x42, 0x0b, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x24, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x6d, 0x32, 0x2f, 0x76, 0x31,
-	0x3b, 0x6d, 0x6d, 0x32, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x4d, 0x58, 0xaa, 0x02, 0x0d, 0x53,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4d, 0x6d, 0x32, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x53,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x6d, 0x32, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x53,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x6d, 0x32, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x53, 0x6c, 0x69, 0x6e, 0x6b,
-	0x79, 0x3a, 0x3a, 0x4d, 0x6d, 0x32, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x6b, 0x65, 0x74, 0x73, 0x1a, 0x51, 0x0a, 0x0c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x73, 0x45,
+	0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x2b, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d,
+	0x6d, 0x32, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x52, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20,
+	0x00, 0x42, 0x9c, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
+	0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x24, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
+	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f,
+	0x6d, 0x6d, 0x32, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x6d, 0x32, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53,
+	0x4d, 0x58, 0xaa, 0x02, 0x0d, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4d, 0x6d, 0x32, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x0d, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x6d, 0x32, 0x5c,
+	0x56, 0x31, 0xe2, 0x02, 0x19, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x6d, 0x32, 0x5c,
+	0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
+	0x0f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x3a, 0x3a, 0x4d, 0x6d, 0x32, 0x3a, 0x3a, 0x56, 0x31,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3070,30 +2941,27 @@ func file_slinky_mm2_v1_market_proto_rawDescGZIP() []byte {
 	return file_slinky_mm2_v1_market_proto_rawDescData
 }
 
-var file_slinky_mm2_v1_market_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_slinky_mm2_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_slinky_mm2_v1_market_proto_goTypes = []interface{}{
-	(AggregationType)(0),    // 0: slinky.mm2.v1.AggregationType
-	(*Market)(nil),          // 1: slinky.mm2.v1.Market
-	(*Ticker)(nil),          // 2: slinky.mm2.v1.Ticker
-	(*ProviderConfig)(nil),  // 3: slinky.mm2.v1.ProviderConfig
-	(*MarketMap)(nil),       // 4: slinky.mm2.v1.MarketMap
-	nil,                     // 5: slinky.mm2.v1.MarketMap.MarketsEntry
-	(*v1.CurrencyPair)(nil), // 6: slinky.types.v1.CurrencyPair
+	(*Market)(nil),          // 0: slinky.mm2.v1.Market
+	(*Ticker)(nil),          // 1: slinky.mm2.v1.Ticker
+	(*ProviderConfig)(nil),  // 2: slinky.mm2.v1.ProviderConfig
+	(*MarketMap)(nil),       // 3: slinky.mm2.v1.MarketMap
+	nil,                     // 4: slinky.mm2.v1.MarketMap.MarketsEntry
+	(*v1.CurrencyPair)(nil), // 5: slinky.types.v1.CurrencyPair
 }
 var file_slinky_mm2_v1_market_proto_depIdxs = []int32{
-	2, // 0: slinky.mm2.v1.Market.ticker:type_name -> slinky.mm2.v1.Ticker
-	3, // 1: slinky.mm2.v1.Market.provider_configs:type_name -> slinky.mm2.v1.ProviderConfig
-	6, // 2: slinky.mm2.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	6, // 3: slinky.mm2.v1.ProviderConfig.normalizeByPair:type_name -> slinky.types.v1.CurrencyPair
-	5, // 4: slinky.mm2.v1.MarketMap.markets:type_name -> slinky.mm2.v1.MarketMap.MarketsEntry
-	0, // 5: slinky.mm2.v1.MarketMap.aggregation_type:type_name -> slinky.mm2.v1.AggregationType
-	1, // 6: slinky.mm2.v1.MarketMap.MarketsEntry.value:type_name -> slinky.mm2.v1.Market
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	1, // 0: slinky.mm2.v1.Market.ticker:type_name -> slinky.mm2.v1.Ticker
+	2, // 1: slinky.mm2.v1.Market.provider_configs:type_name -> slinky.mm2.v1.ProviderConfig
+	5, // 2: slinky.mm2.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	5, // 3: slinky.mm2.v1.ProviderConfig.normalizeByPair:type_name -> slinky.types.v1.CurrencyPair
+	4, // 4: slinky.mm2.v1.MarketMap.markets:type_name -> slinky.mm2.v1.MarketMap.MarketsEntry
+	0, // 5: slinky.mm2.v1.MarketMap.MarketsEntry.value:type_name -> slinky.mm2.v1.Market
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_slinky_mm2_v1_market_proto_init() }
@@ -3156,14 +3024,13 @@ func file_slinky_mm2_v1_market_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_slinky_mm2_v1_market_proto_rawDesc,
-			NumEnums:      1,
+			NumEnums:      0,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_slinky_mm2_v1_market_proto_goTypes,
 		DependencyIndexes: file_slinky_mm2_v1_market_proto_depIdxs,
-		EnumInfos:         file_slinky_mm2_v1_market_proto_enumTypes,
 		MessageInfos:      file_slinky_mm2_v1_market_proto_msgTypes,
 	}.Build()
 	File_slinky_mm2_v1_market_proto = out.File

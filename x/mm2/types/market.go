@@ -12,26 +12,14 @@ import (
 // 3. Each provider is valid.
 // 4. Aggregation function is valid.
 func (mm *MarketMap) ValidateBasic() error {
-	for _, market := range mm.Markets {
-		if err := market.ValidateBasic(); err != nil {
-			return err
-		}
-	}
-
-	switch mm.AggregationType {
-	case AggregationType_INDEX_PRICE_AGGREGATION:
-		return ValidateIndexPriceAggregation(*mm)
-	default:
-		return nil
-	}
+	return mm.ValidateIndexPriceAggregation()
 }
 
 // String returns the string representation of the market map.
 func (mm *MarketMap) String() string {
 	return fmt.Sprintf(
-		"MarketMap: {Markets %v AggregationType: %s}",
+		"MarketMap: {Markets %v}",
 		mm.Markets,
-		mm.AggregationType,
 	)
 }
 
@@ -80,13 +68,15 @@ func (m *Market) String() string {
 //  2. Ensure that each path has a corresponding ticker.
 //  3. Ensure that each path has a valid number of operations.
 //  4. Ensure that each operation has a valid ticker and that the provider supports the ticker.
-func ValidateIndexPriceAggregation(
-	marketMap MarketMap,
-) error {
-	for _, market := range marketMap.Markets {
+func (mm *MarketMap) ValidateIndexPriceAggregation() error {
+	for _, market := range mm.Markets {
+		if err := market.ValidateBasic(); err != nil {
+			return err
+		}
+
 		for _, providerConfig := range market.ProviderConfigs {
 			if providerConfig.NormalizeByPair != nil {
-				if _, found := marketMap.Markets[providerConfig.NormalizeByPair.String()]; !found {
+				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
 					return fmt.Errorf("provider index of %s was not found in the marketmap", providerConfig.NormalizeByPair.String())
 				}
 			}
@@ -99,10 +89,6 @@ func ValidateIndexPriceAggregation(
 // Equal returns true if the MarketMap is equal to the given MarketMap.
 func (mm *MarketMap) Equal(other MarketMap) bool {
 	if len(mm.Markets) != len(other.Markets) {
-		return false
-	}
-
-	if mm.AggregationType != other.AggregationType {
 		return false
 	}
 
