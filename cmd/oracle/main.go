@@ -2,16 +2,15 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
-	_ "net/http/pprof" //nolint: gosec
-
+	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
@@ -26,16 +25,74 @@ import (
 )
 
 var (
-	oracleCfgPath     = flag.String("oracle-config-path", "oracle_config.json", "path to the oracle config file")
-	marketCfgPath     = flag.String("market-config-path", "market_config.json", "path to the market config file")
-	runPprof          = flag.Bool("run-pprof", false, "run pprof server")
-	profilePort       = flag.String("pprof-port", "6060", "port for the pprof server to listen on")
-	chain             = flag.String("chain-id", "", "the chain id for which the side car should run for (ex. dydx-mainnet-1)")
-	updateLocalConfig = flag.Bool("update-local-market-config", true, "update the market map config when a new one is received; this will overwrite the existing config file.")
+	rootCmd = &cobra.Command{
+		Use:   "oracle",
+		Short: "Run the slinky oracle server.",
+		Args:  cobra.NoArgs,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return runOracle()
+		},
+	}
+
+	oracleCfgPath     string
+	marketCfgPath     string
+	runPprof          bool
+	profilePort       string
+	chain             string
+	updateLocalConfig bool
 )
+
+func init() {
+	rootCmd.Flags().StringVarP(
+		&oracleCfgPath,
+		"oracle-config-path",
+		"",
+		"oracle.json",
+		"path to the oracle config file",
+	)
+	rootCmd.Flags().StringVarP(
+		&marketCfgPath,
+		"market-config-path",
+		"",
+		"market.json",
+		"path to the market config file",
+	)
+	rootCmd.Flags().BoolVarP(
+		&runPprof,
+		"run-pprof",
+		"",
+		false,
+		"run pprof server",
+	)
+	rootCmd.Flags().StringVarP(
+		&profilePort,
+		"pprof-port",
+		"",
+		"6060",
+		"port for the pprof server to listen on",
+	)
+	rootCmd.Flags().StringVarP(
+		&chain,
+		"chain-id",
+		"",
+		"",
+		"the chain id for which the side car should run for (ex. dydx-mainnet-1)",
+	)
+	rootCmd.Flags().BoolVarP(
+		&updateLocalConfig,
+		"update-local-market-config",
+		"",
+		true,
+		"update the market map config when a new one is received; this will overwrite the existing config file.",
+	)
+}
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
 func main() {
+	rootCmd.Execute()
+}
+
+func runOracle() error {
 	// channel with width for either signal
 	sigs := make(chan os.Signal, 1)
 
@@ -46,33 +103,26 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// parse flags
-	flag.Parse()
-
-	cfg, err := config.ReadOracleConfigFromFile(*oracleCfgPath)
+	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to read oracle config file: %s\n", err.Error())
-		return
+		return fmt.Errorf("failed to read oracle config file: %s\n", err.Error())
 	}
 
-	marketCfg, err := types.ReadMarketConfigFromFile(*marketCfgPath)
+	marketCfg, err := types.ReadMarketConfigFromFile(marketCfgPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to read market config file: %s\n", err.Error())
-		return
+		return fmt.Errorf("failed to read market config file: %s\n", err.Error())
 	}
 
 	var logger *zap.Logger
 	if !cfg.Production {
 		logger, err = zap.NewDevelopment()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to create logger: %s\n", err.Error())
-			return
+			return fmt.Errorf("failed to create logger: %s\n", err.Error())
 		}
 	} else {
 		logger, err = zap.NewProduction()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to create logger: %s\n", err.Error())
-			return
+			return fmt.Errorf("failed to create logger: %s\n", err.Error())
 		}
 	}
 
@@ -90,11 +140,10 @@ func main() {
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
 	}
 
-	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
+	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
 		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg)
 		if err != nil {
-			logger.Error("failed to create dydx orchestrator and oracle options", zap.Error(err))
-			return
+			return fmt.Errorf("failed to create dydx orchestrator and oracle options", zap.Error(err))
 		}
 
 		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
@@ -107,13 +156,11 @@ func main() {
 		orchestratorOpts...,
 	)
 	if err != nil {
-		logger.Error("failed to create provider orchestrator", zap.Error(err))
-		return
+		return fmt.Errorf("failed to create provider orchestrator", zap.Error(err))
 	}
 
 	if err := orch.Start(ctx); err != nil {
-		logger.Error("failed to start provider orchestrator", zap.Error(err))
-		return
+		return fmt.Errorf("failed to start provider orchestrator", zap.Error(err))
 	}
 	defer orch.Stop()
 
@@ -121,8 +168,7 @@ func main() {
 	oracleOpts = append(oracleOpts, oracle.WithProviders(orch.GetPriceProviders()))
 	orc, err := oracle.New(oracleOpts...)
 	if err != nil {
-		logger.Error("failed to create oracle", zap.Error(err))
-		return
+		return fmt.Errorf("failed to create oracle", zap.Error(err))
 	}
 	srv := oracleserver.NewOracleServer(orc, logger)
 
@@ -139,8 +185,7 @@ func main() {
 		logger.Info("starting prometheus metrics", zap.String("address", cfg.Metrics.PrometheusServerAddress))
 		ps, err := promserver.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, logger)
 		if err != nil {
-			logger.Error("failed to start prometheus metrics", zap.Error(err))
-			return
+			return fmt.Errorf("failed to start prometheus metrics", zap.Error(err))
 		}
 
 		go ps.Start()
@@ -153,8 +198,8 @@ func main() {
 		}()
 	}
 
-	if *runPprof {
-		endpoint := fmt.Sprintf("%s:%s", cfg.Host, *profilePort)
+	if runPprof {
+		endpoint := fmt.Sprintf("%s:%s", cfg.Host, profilePort)
 		// Start pprof server
 		go func() {
 			logger.Info("Starting pprof server", zap.String("endpoint", endpoint))
@@ -168,6 +213,7 @@ func main() {
 	if err := srv.StartServer(ctx, cfg.Host, cfg.Port); err != nil {
 		logger.Error("stopping server", zap.Error(err))
 	}
+	return nil
 }
 
 // dydxOptions specifies the custom orchestrator and oracle options for dYdX.
@@ -194,8 +240,8 @@ func dydxOptions(
 		orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
 		orchestrator.WithAggregator(aggregator),
 	}
-	if *updateLocalConfig {
-		customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(*marketCfgPath))
+	if updateLocalConfig {
+		customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(marketCfgPath))
 	}
 
 	return customOrchestratorOps, customOracleOpts, nil
