@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/mm2/types"
 )
 
@@ -164,23 +163,15 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.Market, updates []types.Market) error {
 	for _, market := range append(creates, updates...) {
 		// check that all paths already exist in the keeper store:
-		for _, path := range market.Paths.Paths {
-			for _, op := range path.Operations {
-				cp := op.CurrencyPair
-				if op.Invert {
-					cp = slinkytypes.CurrencyPair{
-						Base:  cp.Quote,
-						Quote: cp.Base,
-					}
-				}
-
-				has, err := k.markets.Has(ctx, types.TickerString(cp.String()))
+		for _, providerConfig := range market.ProviderConfigs {
+			if providerConfig.NormalizeByPair != nil {
+				has, err := k.markets.Has(ctx, types.TickerString(providerConfig.NormalizeByPair.String()))
 				if err != nil {
 					return err
 				}
 
 				if !has {
-					return fmt.Errorf("currency pair %s in path %s does not exist", cp.String(), path.ShowRoute())
+					return fmt.Errorf("currency pair %s in provider config does not exist", providerConfig.NormalizeByPair.String())
 				}
 			}
 		}
