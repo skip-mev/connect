@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 const (
@@ -70,7 +71,7 @@ func (p Providers) MarshalJSON() ([]byte, error) {
 	slices.SortFunc(p.Providers, func(i, j ProviderConfig) int {
 		return strings.Compare(i.Name, j.Name)
 	})
-	var b = &bytes.Buffer{}
+	b := &bytes.Buffer{}
 	_, err := b.WriteString("{\"providers\":[")
 	if err != nil {
 		return nil, err
