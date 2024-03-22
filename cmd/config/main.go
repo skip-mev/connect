@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/spf13/cobra"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
@@ -32,85 +33,49 @@ import (
 )
 
 var (
+	rootCmd = &cobra.Command{
+		Use:   "config",
+		Short: "Create configuration required for running slinky.",
+		Args:  cobra.NoArgs,
+		Run: func(_ *cobra.Command, _ []string) {
+			// Create the oracle config that contains all of the providers that are supported.
+			if err := createOracleConfig(); err != nil {
+				panic(err)
+			}
+
+			// Create the market map that contains all of the tickers and providers that are
+			// supported.
+			if err := createMarketMap(); err != nil {
+				panic(err)
+			}
+		},
+	}
+
 	// oracleCfgPath is the path to write the oracle config file to. By default, this
 	// will write the oracle config file to the local directory.
-	oracleCfgPath = flag.String(
-		"oracle-config-path",
-		"oracle.json",
-		"path to write the oracle config file to. this file is required to run the oracle.",
-	)
-
+	oracleCfgPath string
 	// marketCfgPath is the path to write the market config file to. By default, this
 	// will write the market config file to the local directory.
-	marketCfgPath = flag.String(
-		"market-config-path",
-		"market.json",
-		"path to write the market config file to. this file is required to run the oracle.",
-	)
-
+	marketCfgPath string
 	// chain defines the chain that we expect the oracle to be running on.
-	chain = flag.String(
-		"chain-id",
-		"",
-		"chain-id that we expect the oracle to be running on. ex dydx-mainnet-1, dydx-testnet-4. this should only be specified if required by the chain.",
-	)
-
+	chain string
 	// nodeURL is the URL of the validator. This is required if running the oracle with a market map provider.
-	nodeURL = flag.String(
-		"node-http-url",
-		"",
-		"http endpoint of the cosmos sdk node corresponding to the chain id (typically something like localhost:1317). this should only be specified if required by the chain.",
-	)
-
+	nodeURL string
 	// host is the oracle / prometheus server host.
-	host = flag.String(
-		"host",
-		"0.0.0.0",
-		"host is the oracle / prometheus server host.",
-	)
-
+	host string
 	// pricesPort is the port that the oracle will make prices available on.
-	pricesPort = flag.String(
-		"port",
-		"8080",
-		"port that the oracle will make prices available on. to query prices after starting the oracle, use the following command: curl http://<host>:<port>/slinky/oracle/v1/prices",
-	)
-
+	pricesPort string
 	// prometheusPort is the port that prometheus will make metrics available on.
-	prometheusPort = flag.String(
-		"prometheus-port",
-		"8002",
-		"port that the prometheus server will listen on. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
-	)
-
+	prometheusPort string
 	// disabledMetrics is a flag that disables the prometheus server.
-	disabledMetrics = flag.Bool(
-		"disable-metrics",
-		false,
-		"flag that disables the prometheus server. if this is enabled the prometheus port must be specified. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
-	)
-
+	disabledMetrics bool
 	// debug is a flag that enables debug mode. Specifically, all logging will be
 	// in debug mode.
-	debug = flag.Bool(
-		"debug-mode",
-		false,
-		"flag that enables debug mode. specifically the side-car will run in debug mode. this is useful for local development / debugging.",
-	)
-
+	debug bool
 	// updateInterval is the interval at which the oracle will update the prices.
-	updateInterval = flag.Duration(
-		"update-interval",
-		1500*time.Millisecond,
-		"interval at which the oracle will update the prices. this should be set to the interval desired by the chain.",
-	)
-
+	updateInterval time.Duration
 	// maxPriceAge is the maximum age of a price that the oracle will accept.
-	maxPriceAge = flag.Duration(
-		"max-price-age",
-		2*time.Minute,
-		"maximum age of a price that the oracle will accept. this should be set to the maximum age desired by the chain.",
-	)
+	maxPriceAge time.Duration
 
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
@@ -251,28 +216,97 @@ var (
 	}
 )
 
+func init() {
+	rootCmd.Flags().StringVarP(
+		&oracleCfgPath,
+		"oracle-config-path",
+		"",
+		"oracle.json",
+		"path to write the oracle config file to. this file is required to run the oracle.",
+	)
+	rootCmd.Flags().StringVarP(
+		&marketCfgPath,
+		"market-config-path",
+		"",
+		"market.json",
+		"path to write the market config file to. this file is required to run the oracle.",
+	)
+	rootCmd.Flags().StringVarP(
+		&chain,
+		"chain-id",
+		"",
+		"",
+		"chain-id that we expect the oracle to be running on. ex dydx-mainnet-1, dydx-testnet-4. this should only be specified if required by the chain.",
+	)
+	rootCmd.Flags().StringVarP(
+		&nodeURL,
+		"node-http-url",
+		"",
+		"",
+		"http endpoint of the cosmos sdk node corresponding to the chain id (typically something like localhost:1317). this should only be specified if required by the chain.",
+	)
+	rootCmd.Flags().StringVarP(
+		&host,
+		"host",
+		"",
+		"0.0.0.0",
+		"host is the oracle / prometheus server host.",
+	)
+	rootCmd.Flags().StringVarP(
+		&pricesPort,
+		"port",
+		"",
+		"8080",
+		"port that the oracle will make prices available on. to query prices after starting the oracle, use the following command: curl http://<host>:<port>/slinky/oracle/v1/prices",
+	)
+	rootCmd.Flags().StringVarP(
+		&prometheusPort,
+		"prometheus-port",
+		"",
+		"8002",
+		"port that the prometheus server will listen on. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
+	)
+	rootCmd.Flags().BoolVarP(
+		&disabledMetrics,
+		"disable-metrics",
+		"",
+		false,
+		"flag that disables the prometheus server. if this is enabled the prometheus port must be specified. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
+	)
+	rootCmd.Flags().BoolVarP(
+		&debug,
+		"debug-mode",
+		"",
+		false,
+		"flag that enables debug mode. specifically the side-car will run in debug mode. this is useful for local development / debugging.",
+	)
+	rootCmd.Flags().DurationVarP(
+		&updateInterval,
+		"update-interval",
+		"",
+		1500*time.Millisecond,
+		"interval at which the oracle will update the prices. this should be set to the interval desired by the chain.",
+	)
+	rootCmd.Flags().DurationVarP(
+		&maxPriceAge,
+		"max-price-age",
+		"",
+		2*time.Minute,
+		"maximum age of a price that the oracle will accept. this should be set to the maximum age desired by the chain.",
+	)
+}
+
 // main executes a simple script that encodes the local config file to the local
 // directory.
 func main() {
-	flag.Parse()
-
-	// Create the oracle config that contains all of the providers that are supported.
-	if err := createOracleConfig(); err != nil {
-		panic(err)
-	}
-
-	// Create the market map that contains all of the tickers and providers that are
-	// supported.
-	if err := createMarketMap(); err != nil {
-		panic(err)
-	}
+	rootCmd.Execute()
 }
 
 // createOracleConfig creates an oracle config given all of the local provider configurations.
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
-	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
+	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
 		// Filter out the providers that are not supported by the dYdX chain.
 		validProviders := make(map[string]struct{})
 		for _, providers := range dydx.ProviderMapping {
@@ -288,11 +322,11 @@ func createOracleConfig() error {
 			}
 		}
 
-		if len(*nodeURL) == 0 {
+		if len(nodeURL) == 0 {
 			return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --node-http-url flag (ex. --node-http-url http://localhost:1317)")
 		}
 		apiCfg := dydx.DefaultAPIConfig
-		apiCfg.URL = *nodeURL
+		apiCfg.URL = nodeURL
 
 		// Add the dYdX market map provider to the list of providers.
 		ps = append(ps, config.ProviderConfig{
@@ -304,20 +338,20 @@ func createOracleConfig() error {
 	}
 
 	// Set the host and port for the oracle.
-	LocalOracleConfig.Host = *host
-	LocalOracleConfig.Port = *pricesPort
+	LocalOracleConfig.Host = host
+	LocalOracleConfig.Port = pricesPort
 
 	// Set the prometheus server address for the oracle.
-	if !*disabledMetrics {
+	if !disabledMetrics {
 		LocalOracleConfig.Metrics.Enabled = true
-		LocalOracleConfig.Metrics.PrometheusServerAddress = fmt.Sprintf("%s:%s", *host, *prometheusPort)
+		LocalOracleConfig.Metrics.PrometheusServerAddress = fmt.Sprintf("%s:%s", host, prometheusPort)
 	}
 
 	// Set the update interval for the oracle.
-	LocalOracleConfig.UpdateInterval = *updateInterval
-	LocalOracleConfig.MaxPriceAge = *maxPriceAge
+	LocalOracleConfig.UpdateInterval = updateInterval
+	LocalOracleConfig.MaxPriceAge = maxPriceAge
 
-	if *debug {
+	if debug {
 		LocalOracleConfig.Production = false
 	}
 
@@ -326,7 +360,7 @@ func createOracleConfig() error {
 		return err
 	}
 
-	f, err := os.Create(*oracleCfgPath)
+	f, err := os.Create(oracleCfgPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error creating local config file: %v\n", err)
 	}
@@ -339,7 +373,7 @@ func createOracleConfig() error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "successfully created oracle config file at %s\n", *oracleCfgPath)
+	fmt.Fprintf(os.Stdout, "successfully created oracle config file at %s\n", oracleCfgPath)
 	return nil
 }
 
@@ -348,7 +382,7 @@ func createOracleConfig() error {
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
 func createMarketMap() error {
-	if *chain == constants.DYDXMainnet.ID || *chain == constants.DYDXTestnet.ID {
+	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
 		fmt.Fprintf(
 			os.Stderr,
 			"dYdX chain requires the use of a predetermined market map. please use the market map provided by the Skip/dYdX team or the default market map provided in /config/dydx/market.json",
@@ -404,7 +438,7 @@ func createMarketMap() error {
 
 	// Open the local market config file. This will overwrite any changes made to the
 	// local market config file.
-	f, err := os.Create(*marketCfgPath)
+	f, err := os.Create(marketCfgPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error creating local market config file: %v\n", err)
 		return err
@@ -424,6 +458,6 @@ func createMarketMap() error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "successfully created market config file at %s\n", *marketCfgPath)
+	fmt.Fprintf(os.Stdout, "successfully created market config file at %s\n", marketCfgPath)
 	return nil
 }
