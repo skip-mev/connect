@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"github.com/skip-mev/slinky/testutil"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -56,6 +57,14 @@ func TestProviderConfigValidateBasic(t *testing.T) {
 			Name:           "mexc",
 			OffChainTicker: "ticker",
 			Metadata_JSON:  "invalid",
+		}
+		require.Error(t, pc.ValidateBasic())
+	})
+	t.Run("invalid json length - fail", func(t *testing.T) {
+		pc := types.ProviderConfig{
+			Name:           "mexc",
+			OffChainTicker: "ticker",
+			Metadata_JSON:  testutil.RandomString(types.MaxMetadataJSONFieldLength + 1),
 		}
 		require.Error(t, pc.ValidateBasic())
 	})

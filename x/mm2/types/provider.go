@@ -18,6 +18,10 @@ func (pc *ProviderConfig) ValidateBasic() error {
 
 	// index is allowed to be empty
 
+	if len(pc.Metadata_JSON) > MaxMetadataJSONFieldLength {
+		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
+	}
+
 	return json.IsValid([]byte(pc.Metadata_JSON))
 }
 
