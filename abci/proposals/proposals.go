@@ -173,10 +173,10 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				// Reserve bytes for our VE Tx
 				req.MaxTxBytes -= extInfoBzSize
 			} else {
-				h.logger.Error("omitting VE because size consumes entire block",
+				h.logger.Error("VE size consumes entire block",
 					"extInfoBzSize", extInfoBzSize,
 					"MaxTxBytes", req.MaxTxBytes)
-				extInfoBz = []byte{}
+
 			}
 
 			// determine whether the wrapped prepare proposal handler should retain the extended commit info
