@@ -1,8 +1,9 @@
 package types_test
 
 import (
-	"github.com/skip-mev/slinky/testutil"
 	"testing"
+
+	"github.com/skip-mev/slinky/testutil"
 
 	"github.com/stretchr/testify/require"
 

@@ -18,7 +18,6 @@ message Market {
 
   // ProviderConfigs is the list of provider-specific configs for this Market.
   repeated ProviderConfig provider_configs = 2 [ (gogoproto.nullable) = false ];
-  ;
 }
 
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
@@ -59,8 +58,14 @@ message ProviderConfig {
   // price of the ticker from the provider.
   string off_chain_ticker = 2;
 
-  string index = 3;
+  // NormalizeByPair is the currency pair for this ticker to be normalized by.
+  // For example, if the desired Ticker is BTD/USD, this market could be reached
+  // using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
+  // optional and nullable.
+  slinky.types.v1.CurrencyPair normalizeByPair = 3;
 
+  // Invert is a boolean indicating if the BASE and QUOTE of the market should
+  // be inverted. i.e. BASE -> QUOTE, QUOTE -> BASE
   bool invert = 4;
 
   // MetadataJSON is a string of JSON that encodes any extra configuration

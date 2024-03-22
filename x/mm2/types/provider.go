@@ -16,7 +16,12 @@ func (pc *ProviderConfig) ValidateBasic() error {
 		return fmt.Errorf("provider offchain ticker must not be empty")
 	}
 
-	// index is allowed to be empty
+	// NormalizeByPair is allowed to be empty
+	if pc.NormalizeByPair != nil {
+		if err := pc.NormalizeByPair.ValidateBasic(); err != nil {
+			return err
+		}
+	}
 
 	if len(pc.Metadata_JSON) > MaxMetadataJSONFieldLength {
 		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
@@ -39,8 +44,18 @@ func (pc *ProviderConfig) Equal(other ProviderConfig) bool {
 		return false
 	}
 
-	if pc.Index != other.Index {
-		return false
+	if pc.NormalizeByPair == nil {
+		if other.NormalizeByPair != nil {
+			return false
+		}
+	} else {
+		if other.NormalizeByPair == nil {
+			return false
+		}
+
+		if !pc.NormalizeByPair.Equal(*other.NormalizeByPair) {
+			return false
+		}
 	}
 
 	return pc.Metadata_JSON == other.Metadata_JSON

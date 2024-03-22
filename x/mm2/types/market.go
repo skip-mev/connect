@@ -85,9 +85,9 @@ func ValidateIndexPriceAggregation(
 ) error {
 	for _, market := range marketMap.Markets {
 		for _, providerConfig := range market.ProviderConfigs {
-			if len(providerConfig.Index) != 0 {
-				if _, found := marketMap.Markets[providerConfig.Index]; !found {
-					return fmt.Errorf("provider index of %s was not found in the marketmap", providerConfig.Index)
+			if providerConfig.NormalizeByPair != nil {
+				if _, found := marketMap.Markets[providerConfig.NormalizeByPair.String()]; !found {
+					return fmt.Errorf("provider index of %s was not found in the marketmap", providerConfig.NormalizeByPair.String())
 				}
 			}
 		}
