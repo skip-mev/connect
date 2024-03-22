@@ -15,6 +15,8 @@ const (
 	// DefaultMinProviderCount is the minimum number of providers required for a
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
+	// MaxMetadataJSONFieldLength is the maximum length of the MetadataJSON field.
+	MaxMetadataJSONFieldLength = 16384
 )
 
 // NewTicker returns a new Ticker instance. A Ticker represents a price feed for
@@ -47,6 +49,10 @@ func (t *Ticker) ValidateBasic() error {
 
 	if err := t.CurrencyPair.ValidateBasic(); err != nil {
 		return err
+	}
+
+	if len(t.Metadata_JSON) > MaxMetadataJSONFieldLength {
+		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
 	}
 
 	return json.IsValid([]byte(t.Metadata_JSON))

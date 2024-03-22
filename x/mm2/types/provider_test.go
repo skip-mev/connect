@@ -5,6 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/testutil"
 	"github.com/skip-mev/slinky/x/mm2/types"
 )
 
@@ -26,14 +28,29 @@ func TestProviderConfigValidateBasic(t *testing.T) {
 		}
 		require.NoError(t, pc.ValidateBasic())
 	})
-	t.Run("valid config with index - pass", func(t *testing.T) {
+	t.Run("valid config with normalize by - pass", func(t *testing.T) {
 		pc := types.ProviderConfig{
 			Name:           "mexc",
 			OffChainTicker: "ticker",
-			Index:          "index",
-			Metadata_JSON:  "",
+			NormalizeByPair: &slinkytypes.CurrencyPair{
+				Base:  "BASE",
+				Quote: "QUOTE",
+			},
+			Metadata_JSON: "",
 		}
 		require.NoError(t, pc.ValidateBasic())
+	})
+	t.Run("invalid config with normalize by - fail", func(t *testing.T) {
+		pc := types.ProviderConfig{
+			Name:           "mexc",
+			OffChainTicker: "ticker",
+			NormalizeByPair: &slinkytypes.CurrencyPair{
+				Base:  "BASE",
+				Quote: "",
+			},
+			Metadata_JSON: "",
+		}
+		require.Error(t, pc.ValidateBasic())
 	})
 	t.Run("invalid name - fail", func(t *testing.T) {
 		pc := types.ProviderConfig{
@@ -56,6 +73,14 @@ func TestProviderConfigValidateBasic(t *testing.T) {
 			Name:           "mexc",
 			OffChainTicker: "ticker",
 			Metadata_JSON:  "invalid",
+		}
+		require.Error(t, pc.ValidateBasic())
+	})
+	t.Run("invalid json length - fail", func(t *testing.T) {
+		pc := types.ProviderConfig{
+			Name:           "mexc",
+			OffChainTicker: "ticker",
+			Metadata_JSON:  testutil.RandomString(types.MaxMetadataJSONFieldLength + 1),
 		}
 		require.Error(t, pc.ValidateBasic())
 	})
@@ -83,20 +108,26 @@ func TestProviderConfigEqual(t *testing.T) {
 			exp: true,
 		},
 		{
-			name: "equal - inverted with index",
+			name: "equal - inverted with normalize by",
 			pc: types.ProviderConfig{
 				Name:           "mexc",
 				OffChainTicker: "ticker",
-				Index:          "index",
-				Invert:         true,
-				Metadata_JSON:  "",
+				NormalizeByPair: &slinkytypes.CurrencyPair{
+					Base:  "BASE",
+					Quote: "QUOTE",
+				},
+				Invert:        true,
+				Metadata_JSON: "",
 			},
 			other: types.ProviderConfig{
 				Name:           "mexc",
 				OffChainTicker: "ticker",
-				Index:          "index",
-				Invert:         true,
-				Metadata_JSON:  "",
+				NormalizeByPair: &slinkytypes.CurrencyPair{
+					Base:  "BASE",
+					Quote: "QUOTE",
+				},
+				Invert:        true,
+				Metadata_JSON: "",
 			},
 			exp: true,
 		},
@@ -155,20 +186,26 @@ func TestProviderConfigEqual(t *testing.T) {
 			exp: false,
 		},
 		{
-			name: "different index",
+			name: "different normalize by",
 			pc: types.ProviderConfig{
 				Name:           "mexc",
 				OffChainTicker: "ticker",
 				Invert:         true,
-				Index:          "",
-				Metadata_JSON:  "",
+				NormalizeByPair: &slinkytypes.CurrencyPair{
+					Base:  "BASE",
+					Quote: "QUOTE",
+				},
+				Metadata_JSON: "",
 			},
 			other: types.ProviderConfig{
 				Name:           "mexc",
 				OffChainTicker: "ticker",
 				Invert:         true,
-				Index:          "index",
-				Metadata_JSON:  "",
+				NormalizeByPair: &slinkytypes.CurrencyPair{
+					Base:  "QUOTE",
+					Quote: "QUOTE",
+				},
+				Metadata_JSON: "",
 			},
 			exp: false,
 		},
