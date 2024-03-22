@@ -29,7 +29,8 @@ func TestValidateBasic(t *testing.T) {
 				Version:           10,
 			},
 			expectErr: false,
-		}, {
+		},
+		{
 			name: "invalid duplicate authority",
 			params: types.Params{
 				MarketAuthorities: []string{types.DefaultMarketAuthority, types.DefaultMarketAuthority},
