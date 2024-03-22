@@ -12,13 +12,7 @@ import (
 // 3. Each provider is valid.
 // 4. Aggregation function is valid.
 func (mm *MarketMap) ValidateBasic() error {
-	for _, market := range mm.Markets {
-		if err := market.ValidateBasic(); err != nil {
-			return err
-		}
-	}
-
-	return ValidateIndexPriceAggregation(*mm)
+	return mm.ValidateIndexPriceAggregation()
 }
 
 // String returns the string representation of the market map.
@@ -76,6 +70,10 @@ func (m *Market) String() string {
 //  4. Ensure that each operation has a valid ticker and that the provider supports the ticker.
 func (mm *MarketMap) ValidateIndexPriceAggregation() error {
 	for _, market := range mm.Markets {
+		if err := market.ValidateBasic(); err != nil {
+			return err
+		}
+
 		for _, providerConfig := range market.ProviderConfigs {
 			if providerConfig.NormalizeByPair != nil {
 				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
