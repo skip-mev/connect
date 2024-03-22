@@ -358,7 +358,7 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 			prepareProposalHandler: &removeFirstTxn,
 		},
 		{
-			name: "can exclude VE Txn when it's too large",
+			name: "will fail if VE Txn is too large",
 			request: func() *cometabci.RequestPrepareProposal {
 				proposal := [][]byte{
 					[]byte("one"),
@@ -385,8 +385,8 @@ func (s *ProposalsTestSuite) TestPrepareProposal() {
 				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(1), nil).Once()
 				return cpStrategy
 			},
-			expectedProposalTxns: 2,
-			expectedError:        false,
+			expectedProposalTxns: 0,
+			expectedError:        true,
 		},
 	}
 
