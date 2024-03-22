@@ -2,6 +2,7 @@ package proposals
 
 import (
 	"bytes"
+	"fmt"
 	"time"
 
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
@@ -176,7 +177,8 @@ func (h *ProposalHandler) PrepareProposalHandler() sdk.PrepareProposalHandler {
 				h.logger.Error("VE size consumes entire block",
 					"extInfoBzSize", extInfoBzSize,
 					"MaxTxBytes", req.MaxTxBytes)
-
+				err := fmt.Errorf("VE size consumes entire block: extInfoBzSize = %d: MaxTxBytes = %d", extInfoBzSize, req.MaxTxBytes)
+				return &cometabci.ResponsePrepareProposal{Txs: make([][]byte, 0)}, err
 			}
 
 			// determine whether the wrapped prepare proposal handler should retain the extended commit info
