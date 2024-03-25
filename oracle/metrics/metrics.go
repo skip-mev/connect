@@ -67,12 +67,12 @@ func NewMetrics() Metrics {
 	m := &OracleMetricsImpl{
 		ticks: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_system",
+			Name:      "health_check_system_total",
 			Help:      "Number of ticks with a successful oracle update.",
 		}),
 		tickerTicks: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_ticker",
+			Name:      "health_check_ticker_total",
 			Help:      "Number of ticks with a successful ticker update.",
 		}, []string{PairIDLabel}),
 		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -87,7 +87,7 @@ func NewMetrics() Metrics {
 		}, []string{PairIDLabel, DecimalsLabel}),
 		providerTick: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_provider",
+			Name:      "health_check_provider_total",
 			Help:      "Number of ticks with a successful provider update.",
 		}, []string{ProviderLabel, PairIDLabel}),
 	}
@@ -129,7 +129,7 @@ func (m *noOpOracleMetrics) UpdateAggregatePrice(string, uint64, float64) {
 // AddProviderTick increments the number of ticks for a given provider. Specifically,
 // this is used to track the number of times a provider included a price update that
 // was used in the aggregation.
-func (m *noOpOracleMetrics) AddProviderTick(providerName, pairID string) {
+func (m *noOpOracleMetrics) AddProviderTick(_, _ string) {
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
