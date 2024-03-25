@@ -43,7 +43,7 @@ run-prom-client:
 
 update-local-configs: build
 	@echo "Updating local config..."
-	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
@@ -55,6 +55,7 @@ stop-oracle:
 
 install: tidy
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
 .PHONY: build run-oracle-server install
 

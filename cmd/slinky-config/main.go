@@ -35,7 +35,7 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "config",
+		Use:   "slinky-config",
 		Short: "Create configuration required for running slinky.",
 		Args:  cobra.NoArgs,
 		Run: func(_ *cobra.Command, _ []string) {

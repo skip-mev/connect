@@ -8,10 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "net/http/pprof" //nolint: gosec
-
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
@@ -22,6 +21,7 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -34,11 +34,11 @@ var (
 		},
 	}
 
-	oracleCfgPath     string
-	marketCfgPath     string
-	runPprof          bool
-	profilePort       string
-	updateLocalConfig bool
+	oracleCfgPath       string
+	marketCfgPath       string
+	updateMarketCfgPath string
+	runPprof            bool
+	profilePort         string
 )
 
 func init() {
@@ -53,8 +53,15 @@ func init() {
 		&marketCfgPath,
 		"market-config-path",
 		"",
-		"market.json",
-		"Path to the market config file.",
+		"",
+		"Path to the market config file. If you supplied a node URL in your config, this will not be required.",
+	)
+	rootCmd.Flags().StringVarP(
+		&updateMarketCfgPath,
+		"update-market-config-path",
+		"",
+		"",
+		"Path where the current market config will be written. Overwrites any pre-existing file. Requires an http-node-url/marketmap provider in your oracle.json config.",
 	)
 	rootCmd.Flags().BoolVarP(
 		&runPprof,
@@ -70,13 +77,7 @@ func init() {
 		"6060",
 		"Port for the pprof server to listen on.",
 	)
-	rootCmd.Flags().BoolVarP(
-		&updateLocalConfig,
-		"update-local-market-config",
-		"",
-		true,
-		"Update the market map config when a new one is received; this will overwrite the existing config file.",
-	)
+	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
 }
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -100,9 +101,12 @@ func runOracle() error {
 		return fmt.Errorf("failed to read oracle config file: %s", err.Error())
 	}
 
-	marketCfg, err := types.ReadMarketConfigFromFile(marketCfgPath)
-	if err != nil {
-		return fmt.Errorf("failed to read market config file: %s", err.Error())
+	var marketCfg mmtypes.MarketMap
+	if marketCfgPath != "" {
+		marketCfg, err = types.ReadMarketConfigFromFile(marketCfgPath)
+		if err != nil {
+			return fmt.Errorf("failed to read market config file: %s", err.Error())
+		}
 	}
 
 	var logger *zap.Logger
@@ -137,8 +141,8 @@ func runOracle() error {
 		orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
 		orchestrator.WithAggregator(aggregator),
 	}
-	if updateLocalConfig {
-		orchestratorOpts = append(orchestratorOpts, orchestrator.WithWriteTo(marketCfgPath))
+	if updateMarketCfgPath != "" {
+		orchestratorOpts = append(orchestratorOpts, orchestrator.WithWriteTo(updateMarketCfgPath))
 	}
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
