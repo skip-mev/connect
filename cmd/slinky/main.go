@@ -38,7 +38,6 @@ var (
 	marketCfgPath     string
 	runPprof          bool
 	profilePort       string
-	chain             string
 	updateLocalConfig bool
 )
 
@@ -70,13 +69,6 @@ func init() {
 		"",
 		"6060",
 		"Port for the pprof server to listen on.",
-	)
-	rootCmd.Flags().StringVarP(
-		&chain,
-		"chain",
-		"",
-		"",
-		"The chain which the side car should run for {dydx, \"\"}. Empty (default) runs against a static market.json config.",
 	)
 	rootCmd.Flags().BoolVarP(
 		&updateLocalConfig,
