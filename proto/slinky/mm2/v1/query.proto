@@ -3,6 +3,7 @@ package slinky.mm2.v1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "slinky/types/v1/currency_pair.proto";
 import "slinky/mm2/v1/market.proto";
 import "slinky/mm2/v1/params.proto";
 
@@ -58,11 +59,15 @@ message MarketMapResponse {
   string chain_id = 4;
 }
 
-// MarketMapRequest is the query request for the Market query.
-// It takes no arguments.
-message MarketRequest {}
+// MarketRequest is the query request for the Market query.
+// It takes the currency pair of the market as an argument.
+message MarketRequest {
+  // CurrencyPair is the currency pair associated with the market being
+  // requested.
+  slinky.types.v1.CurrencyPair currency_pair = 3;
+}
 
-// MarketMapResponse is the query response for the Market query.
+// MarketResponse is the query response for the Market query.
 message MarketResponse {
   // Market is the configuration of a single market to be price-fetched for.
   Market market = 1 [ (gogoproto.nullable) = false ];
