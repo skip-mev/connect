@@ -8,13 +8,15 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "net/http/pprof" //nolint: gosec
+
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
@@ -126,6 +128,8 @@ func runOracle() error {
 		}
 	}
 
+	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
+
 	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
 	orchestratorOpts := []orchestrator.Option{
 		orchestrator.WithLogger(logger),
@@ -136,12 +140,12 @@ func runOracle() error {
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
-		oracle.WithMetricsConfig(cfg.Metrics),
+		oracle.WithMetrics(metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
 	}
 
 	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
-		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg)
+		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg, metrics)
 		if err != nil {
 			return fmt.Errorf("failed to create dydx orchestrator and oracle options: %w", err)
 		}
@@ -220,11 +224,13 @@ func runOracle() error {
 func dydxOptions(
 	logger *zap.Logger,
 	marketCfg mmtypes.MarketMap,
+	metrics oraclemetrics.Metrics,
 ) ([]orchestrator.Option, []oracle.Option, error) {
 	// dYdX uses the median index price aggregation strategy.
 	aggregator, err := oraclemath.NewMedianAggregator(
 		logger,
 		marketCfg,
+		metrics,
 	)
 	if err != nil {
 		return nil, nil, err
