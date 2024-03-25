@@ -3,6 +3,7 @@ package cli
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/spf13/cobra"
 
 	"github.com/skip-mev/slinky/x/mm2/types"
@@ -22,6 +23,7 @@ func GetQueryCmd() *cobra.Command {
 		CmdQueryParams(),
 		CmdQueryMarketMap(),
 		CmdQueryLastUpdated(),
+		CmdQueryMarket(),
 	)
 
 	return cmd
@@ -66,6 +68,38 @@ func CmdQueryMarketMap() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.MarketMap(clientCtx.CmdContext, &types.MarketMapRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func CmdQueryMarket() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "market",
+		Short: "Query the a market using the given currency pair",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			cp, err := slinkytypes.CurrencyPairFromString(args[0])
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.Market(clientCtx.CmdContext, &types.MarketRequest{
+				CurrencyPair: cp,
+			})
 			if err != nil {
 				return err
 			}
