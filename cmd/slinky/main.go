@@ -15,7 +15,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -127,14 +126,15 @@ func runOracle() error {
 		}
 	}
 
+	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
 	aggregator, err := oraclemath.NewMedianAggregator(
 		logger,
 		marketCfg,
+		metrics,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create data aggregator: %w", err)
 	}
-	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
 
 	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
 	orchestratorOpts := []orchestrator.Option{
