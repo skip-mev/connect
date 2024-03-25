@@ -51,7 +51,7 @@ var (
 					log.Printf("Calling Prices RPC...\n")
 					resp, err := client.Prices(context.Background(), &types.QueryPricesRequest{})
 					if err != nil {
-						log.Fatalf("could not get prices: %v", err) //nolint
+						log.Fatalf("could not get prices: %v", err)
 					}
 
 					prices := resp.GetPrices()
@@ -78,9 +78,9 @@ var (
 			}
 		},
 	}
-	// host stores the host portion of the sidecar RPC to query
+	// host stores the host portion of the sidecar RPC to query.
 	host string
-	// port stores the port of the sidecar RPC to query
+	// port stores the port of the sidecar RPC to query.
 	port string
 )
 

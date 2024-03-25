@@ -105,24 +105,24 @@ func runOracle() error {
 
 	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
 	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %s\n", err.Error())
+		return fmt.Errorf("failed to read oracle config file: %s", err.Error())
 	}
 
 	marketCfg, err := types.ReadMarketConfigFromFile(marketCfgPath)
 	if err != nil {
-		return fmt.Errorf("failed to read market config file: %s\n", err.Error())
+		return fmt.Errorf("failed to read market config file: %s", err.Error())
 	}
 
 	var logger *zap.Logger
 	if !cfg.Production {
 		logger, err = zap.NewDevelopment()
 		if err != nil {
-			return fmt.Errorf("failed to create logger: %s\n", err.Error())
+			return fmt.Errorf("failed to create logger: %s", err.Error())
 		}
 	} else {
 		logger, err = zap.NewProduction()
 		if err != nil {
-			return fmt.Errorf("failed to create logger: %s\n", err.Error())
+			return fmt.Errorf("failed to create logger: %s", err.Error())
 		}
 	}
 
@@ -143,7 +143,7 @@ func runOracle() error {
 	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
 		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg)
 		if err != nil {
-			return fmt.Errorf("failed to create dydx orchestrator and oracle options", zap.Error(err))
+			return fmt.Errorf("failed to create dydx orchestrator and oracle options: %w", err)
 		}
 
 		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
@@ -156,11 +156,11 @@ func runOracle() error {
 		orchestratorOpts...,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create provider orchestrator", zap.Error(err))
+		return fmt.Errorf("failed to create provider orchestrator: %w", err)
 	}
 
 	if err := orch.Start(ctx); err != nil {
-		return fmt.Errorf("failed to start provider orchestrator", zap.Error(err))
+		return fmt.Errorf("failed to start provider orchestrator: %w", err)
 	}
 	defer orch.Stop()
 
@@ -168,7 +168,7 @@ func runOracle() error {
 	oracleOpts = append(oracleOpts, oracle.WithProviders(orch.GetPriceProviders()))
 	orc, err := oracle.New(oracleOpts...)
 	if err != nil {
-		return fmt.Errorf("failed to create oracle", zap.Error(err))
+		return fmt.Errorf("failed to create oracle: %w", err)
 	}
 	srv := oracleserver.NewOracleServer(orc, logger)
 
@@ -185,7 +185,7 @@ func runOracle() error {
 		logger.Info("starting prometheus metrics", zap.String("address", cfg.Metrics.PrometheusServerAddress))
 		ps, err := promserver.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, logger)
 		if err != nil {
-			return fmt.Errorf("failed to start prometheus metrics", zap.Error(err))
+			return fmt.Errorf("failed to start prometheus metrics: %w", err)
 		}
 
 		go ps.Start()
