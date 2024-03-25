@@ -47,7 +47,7 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 			return nil, fmt.Errorf("unable to create market: %w", err)
 		}
 
-		err = ms.k.hooks.AfterMarketCreated_(ctx, market)
+		err = ms.k.hooks.AfterMarketCreated(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to run create market hook: %w", err)
 		}
@@ -89,7 +89,7 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 			return nil, fmt.Errorf("unable to update market: %w", err)
 		}
 
-		err = ms.k.hooks.AfterMarketUpdated_(ctx, market)
+		err = ms.k.hooks.AfterMarketUpdated(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to run update market hook: %w", err)
 		}

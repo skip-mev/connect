@@ -149,7 +149,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				s.mockMarketMapKeeper.On("GetMarket", mock.Anything, mock.Anything).Return(marketmaptypes.Market{
 					Ticker: marketmaptypes.Ticker{
 						CurrencyPair:     slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"},
-						Decimals:         8,
+						Decimals:         18,
 						MinProviderCount: 3,
 						Metadata_JSON:    "",
 					},
