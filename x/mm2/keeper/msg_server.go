@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/x/mm2/types"
@@ -127,7 +128,17 @@ func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.
 	return &types.MsgParamsResponse{}, nil
 }
 
-// checkMarketAuthority checks if the given authority is is the x/marketmap's list of MarketAuthorities.
+// checkMarketAuthority checks if the given authority is the x/marketmap's list of MarketAuthorities.
 func checkMarketAuthority(authority string, params types.Params) bool {
-	return true
+	if len(params.MarketAuthorities) == 0 {
+		return false
+	}
+
+	for _, auth := range params.MarketAuthorities {
+		if authority == auth {
+			return true
+		}
+	}
+
+	return false
 }
