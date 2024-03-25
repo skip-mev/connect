@@ -42,7 +42,7 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 		HomeDir:     "/oracle",
 		Ports:       []string{"8080", "8081"},
 		StartCmd: []string{
-			"oracle",
+			"slinky",
 			"--oracle-config-path", "/oracle/oracle.json",
 			"--market-config-path", "/oracle/market.json",
 		},
