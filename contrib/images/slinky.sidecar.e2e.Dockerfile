@@ -16,7 +16,7 @@ EXPOSE 8080
 EXPOSE 8002
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
-COPY --from=builder /src/slinky/config/dydx /etc/slinky/default_config
+COPY --from=builder /src/slinky/config/local /etc/slinky/default_config
 RUN apt-get update && apt-get install ca-certificates -y
 
 WORKDIR /usr/local/bin/

@@ -1,8 +1,8 @@
-# Side-Car Metrics
+# Slinky Metrics
 
-This document describes the various instrumentation points that are available in the side-car. This should be utilized to monitor the health of the side-car and the services it is proxying.
+This document describes the various instrumentation points that are available in the side-car. This should be utilized to monitor the health of Slinky and the services it is proxying.
 
-If there are any additional metrics that you would like to see, please open an issue in the [GitHub repository](https://github.com/skip-mev/slinky). Note that this document is not fully comprehensive and may be updated in the future. However, it should provide a good starting point for monitoring the side-car.
+If there are any additional metrics that you would like to see, please open an issue in the [GitHub repository](https://github.com/skip-mev/slinky). Note that this document is not fully comprehensive and may be updated in the future. However, it should provide a good starting point for monitoring Slinky.
 
 # Table of Contents
 
@@ -23,11 +23,11 @@ If there are any additional metrics that you would like to see, please open an i
 > * **Price Provider**: A price provider is a service that provides price data for a given market. For example, the Coinbase API is a price provider for the Coinbase markets.
 > * **Market Map Provider**: A market map provider is a service that supplies the markets that the side-car needs to fetch data for.
 
-The side-car exposes metrics on the `/metrics` endpoint. These metrics are in the Prometheus format and can be scraped by Prometheus or any other monitoring system that supports Prometheus format.
+Slinky exposes metrics on the `/metrics` endpoint on port `8002` by default. These metrics are in the Prometheus format and can be scraped by Prometheus or any other monitoring system that supports Prometheus format.
 
 ## Health Metrics
 
-There are three primary health metrics that are exposed by the side-car:
+There are three primary health metrics that are exposed by Slinky:
 
 * [`side_car_health_check_system_updates_total`](#side_car_health_check_system_updates_total): This metric is a counter that increments every time the side-car updates its internal state. This is a good indicator of the side-car's overall health.
 * [`side_car_health_check_ticker_updates_total`](#side_car_health_check_ticker_updates_total): This metric is a counter that increments every time the side-car updates the price of a given market. This is a good indicator of the overall health of a given market.
@@ -35,7 +35,7 @@ There are three primary health metrics that are exposed by the side-car:
 
 ### `side_car_health_check_system_updates_total`
 
-This metric should be monotonically increasing. Specifically, the rate of this metric should be inversely correlated to the configured `UpdateInterval` in the oracle side-car configuration (`oracle.json`). To check this, you can run the following query in Prometheus:
+This metric should be increasing. Specifically, the rate of this metric should be inversely correlated to the configured `UpdateInterval` in the oracle side-car configuration (`oracle.json`). To check this, you can run the following query in Prometheus:
 
 ```promql
 rate(side_car_health_check_system_updates_total[5m])
@@ -68,7 +68,9 @@ rate(side_car_health_check_provider_updates_total{provider="coinbase_api", succe
 
 ### Health Metrics Summary
 
-In summary, the health metrics should be monitored to ensure that the side-car is updating its internal state, updating the price of each market, and fetching data from the price providers as expected. The rate of updates for each of these metrics should be inversely correlated with the `UpdateInterval` in the oracle side-car configuration.
+In summary, the health metrics should be monitored to ensure that the side-car is updating its internal state, updating the price of each market, and fetching data from the price providers as expected. The rate of updates for each of these metrics should be inversely correlated with the `UpdateInterval` in the oracle side-car configuration. 
+
+For example, if the `UpdateInterval` is set to 1 minute, we should expect to see an update every minute for each market and provider (rate of 1.0). If the rate of updates for the market or provider is lower than expected, this may indicate an issue with the side-car. 
 
 ## Prices Metrics
 
@@ -91,7 +93,7 @@ side_car_provider_price{provider="coinbase_api", id="btc/usd"}
 
 ![Architecture Overview](./resources/side_car_provider_price_coinbase.png)
 
-Alternatively, if we wanted to check that last recorded price of the BTC-USD market across all price providers, we can run the following query in Prometheus:
+Alternatively, if we wanted to check that last recorded prices of the BTC-USD market across all price providers, we can run the following query in Prometheus:
 
 ```promql
 side_car_provider_price{id="btc/usd"}
