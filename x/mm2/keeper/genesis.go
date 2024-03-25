@@ -30,7 +30,7 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 		panic(err)
 	}
 
-	if err := k.hooks.AfterMarketGenesis(ctx, gs.MarketMap.Markets); err != nil {
+	if err := k.hooks.AfterMarketGenesis_(ctx, gs.MarketMap.Markets); err != nil {
 		panic(err)
 	}
 }

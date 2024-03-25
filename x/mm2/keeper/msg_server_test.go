@@ -31,7 +31,9 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 		},
 	})
 
-	// TODO: test hooks
+	// query the oracle module to see if they were created via hooks
+	cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
+	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.Ticker.CurrencyPair, usdtusd.Ticker.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
 		msg = &types.MsgCreateMarkets{

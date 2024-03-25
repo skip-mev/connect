@@ -84,6 +84,10 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 			},
 		}
 
+		s.Require().NotPanics(func() {
+			s.oracleKeeper.InitGenesis(s.ctx, *ogs)
+		})
+
 		gs := types.DefaultGenesisState()
 		gs.MarketMap = types.MarketMap{
 			Markets: markets,

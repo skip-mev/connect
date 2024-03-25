@@ -3,6 +3,9 @@ package keeper_test
 import (
 	"testing"
 
+	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -21,21 +24,26 @@ type KeeperTestSuite struct {
 	ctx sdk.Context
 
 	// Keeper variables
-	authority sdk.AccAddress
-	keeper    *keeper.Keeper
+	authority    sdk.AccAddress
+	keeper       *keeper.Keeper
+	oracleKeeper oraclekeeper.Keeper
 }
 
 func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	mmKey := storetypes.NewKVStoreKey(types.StoreKey)
+	oracleKey := storetypes.NewKVStoreKey(oracletypes.StoreKey)
 	mmSS := runtime.NewKVStoreService(mmKey)
+	oracleSS := runtime.NewKVStoreService(oracleKey)
 	encCfg := moduletestutil.MakeTestEncodingConfig()
 
 	keys := map[string]*storetypes.KVStoreKey{
-		types.StoreKey: mmKey,
+		types.StoreKey:       mmKey,
+		oracletypes.StoreKey: oracleKey,
 	}
 
 	transientKeys := map[string]*storetypes.TransientStoreKey{
-		types.StoreKey: storetypes.NewTransientStoreKey("transient_mm"),
+		types.StoreKey:       storetypes.NewTransientStoreKey("transient_mm"),
+		oracletypes.StoreKey: storetypes.NewTransientStoreKey("transient_oracle"),
 	}
 
 	s.authority = sdk.AccAddress("authority")
@@ -49,6 +57,16 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 		Version:           10,
 	}
 	s.Require().NoError(k.SetParams(s.ctx, params))
+
+	s.oracleKeeper = oraclekeeper.NewKeeper(oracleSS, encCfg.Codec, k, s.authority)
+	hooks := types.MultiMarketMapHooks{
+		s.oracleKeeper.Hooks(),
+	}
+	k.SetHooks(hooks)
+
+	s.Require().NotPanics(func() {
+		s.oracleKeeper.InitGenesis(s.ctx, *oracletypes.DefaultGenesisState())
+	})
 
 	return k
 }

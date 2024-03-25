@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/mm2/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
@@ -121,11 +121,13 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency-pair with no price, only the nonce (0) is returned - pass",
 			func() {
-				s.mockMarketMapKeeper.On("GetTicker", mock.Anything, mock.Anything).Return(marketmaptypes.Ticker{
-					CurrencyPair:     slinkytypes.CurrencyPair{Base: "CC", Quote: "BB"},
-					Decimals:         8,
-					MinProviderCount: 3,
-					Metadata_JSON:    "",
+				s.mockMarketMapKeeper.On("GetMarket", mock.Anything, mock.Anything).Return(marketmaptypes.Market{
+					Ticker: marketmaptypes.Ticker{
+						CurrencyPair:     slinkytypes.CurrencyPair{Base: "CC", Quote: "BB"},
+						Decimals:         8,
+						MinProviderCount: 3,
+						Metadata_JSON:    "",
+					},
 				}, nil).Once()
 			},
 			&types.GetPriceRequest{
@@ -144,11 +146,13 @@ func (s *KeeperTestSuite) TestGetPrice() {
 		{
 			"if the query is for a currency pair that has valid price data, return the price + the nonce - pass",
 			func() {
-				s.mockMarketMapKeeper.On("GetTicker", mock.Anything, mock.Anything).Return(marketmaptypes.Ticker{
-					CurrencyPair:     slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"},
-					Decimals:         18,
-					MinProviderCount: 3,
-					Metadata_JSON:    "",
+				s.mockMarketMapKeeper.On("GetMarket", mock.Anything, mock.Anything).Return(marketmaptypes.Market{
+					Ticker: marketmaptypes.Ticker{
+						CurrencyPair:     slinkytypes.CurrencyPair{Base: "AA", Quote: "ETHEREUM"},
+						Decimals:         8,
+						MinProviderCount: 3,
+						Metadata_JSON:    "",
+					},
 				}, nil).Once()
 			},
 			&types.GetPriceRequest{

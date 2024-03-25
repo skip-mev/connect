@@ -4,14 +4,14 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // MarketMapHooks is the interface that defines the hooks that can be integrated by other modules.
 type MarketMapHooks interface {
-	// AfterMarketCreated is called after CreateMarket is called.
-	AfterMarketCreated(ctx sdk.Context, market Market) error
+	// AfterMarketCreated_ is called after CreateMarket is called.
+	AfterMarketCreated_(ctx sdk.Context, market Market) error
 
-	// AfterMarketUpdated is called after UpdateMarket is called.
-	AfterMarketUpdated(ctx sdk.Context, market Market) error
+	// AfterMarketUpdated_ is called after UpdateMarket is called.
+	AfterMarketUpdated_(ctx sdk.Context, market Market) error
 
-	// AfterMarketGenesis is called after x/marketmap init genesis.
-	AfterMarketGenesis(ctx sdk.Context, tickers map[string]Market) error
+	// AfterMarketGenesis_ is called after x/marketmap init genesis.
+	AfterMarketGenesis_(ctx sdk.Context, tickers map[string]Market) error
 }
 
 var _ MarketMapHooks = &MultiMarketMapHooks{}
@@ -19,10 +19,10 @@ var _ MarketMapHooks = &MultiMarketMapHooks{}
 // MultiMarketMapHooks defines an array of MarketMapHooks which can be executed in sequence.
 type MultiMarketMapHooks []MarketMapHooks
 
-// AfterMarketCreated calls all AfterMarketCreated hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketCreated(ctx sdk.Context, market Market) error {
+// AfterMarketCreated_ calls all AfterMarketCreated hooks registered to the MultiMarketMapHooks.
+func (mh MultiMarketMapHooks) AfterMarketCreated_(ctx sdk.Context, market Market) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketCreated(ctx, market); err != nil {
+		if err := mh[i].AfterMarketCreated_(ctx, market); err != nil {
 			return err
 		}
 	}
@@ -30,10 +30,10 @@ func (mh MultiMarketMapHooks) AfterMarketCreated(ctx sdk.Context, market Market)
 	return nil
 }
 
-// AfterMarketUpdated calls all AfterMarketUpdated hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context, market Market) error {
+// AfterMarketUpdated_ calls all AfterMarketUpdated hooks registered to the MultiMarketMapHooks.
+func (mh MultiMarketMapHooks) AfterMarketUpdated_(ctx sdk.Context, market Market) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketUpdated(ctx, market); err != nil {
+		if err := mh[i].AfterMarketUpdated_(ctx, market); err != nil {
 			return err
 		}
 	}
@@ -41,10 +41,10 @@ func (mh MultiMarketMapHooks) AfterMarketUpdated(ctx sdk.Context, market Market)
 	return nil
 }
 
-// AfterMarketGenesis calls all AfterMarketGenesis hooks registered to the MultiMarketMapHooks.
-func (mh MultiMarketMapHooks) AfterMarketGenesis(ctx sdk.Context, markets map[string]Market) error {
+// AfterMarketGenesis_ calls all AfterMarketGenesis hooks registered to the MultiMarketMapHooks.
+func (mh MultiMarketMapHooks) AfterMarketGenesis_(ctx sdk.Context, markets map[string]Market) error {
 	for i := range mh {
-		if err := mh[i].AfterMarketGenesis(ctx, markets); err != nil {
+		if err := mh[i].AfterMarketGenesis_(ctx, markets); err != nil {
 			return err
 		}
 	}
