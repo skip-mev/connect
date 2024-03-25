@@ -30,7 +30,7 @@ build: tidy
 	@go build -o ./build/ ./...
 
 run-oracle-server: build
-	@./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -54,7 +54,7 @@ stop-oracle:
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
 install: tidy
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
 
 .PHONY: build run-oracle-server install
 

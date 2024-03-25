@@ -76,7 +76,7 @@ func init() {
 		"chain-id",
 		"",
 		"",
-		"the chain id for which the side car should run for (ex. dydx-mainnet-1)",
+		"the chain id which the side car should run for (ex. dydx-mainnet-1)",
 	)
 	rootCmd.Flags().BoolVarP(
 		&updateLocalConfig,
@@ -132,6 +132,10 @@ func runOracle() error {
 		orchestrator.WithMarketMap(marketCfg),
 		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
 		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
+		orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+	}
+	if updateLocalConfig {
+		orchestratorOpts = append(orchestratorOpts, orchestrator.WithWriteTo(marketCfgPath))
 	}
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
@@ -229,19 +233,12 @@ func dydxOptions(
 	if err != nil {
 		return nil, nil, err
 	}
-
 	// The oracle must be configured with the median index price aggregator.
 	customOracleOpts := []oracle.Option{
 		oracle.WithDataAggregator(aggregator),
 	}
-
-	// Additionally, dYdX requires a custom market map provider that fetches market params from the chain.
 	customOrchestratorOps := []orchestrator.Option{
-		orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
 		orchestrator.WithAggregator(aggregator),
-	}
-	if updateLocalConfig {
-		customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(marketCfgPath))
 	}
 
 	return customOrchestratorOps, customOracleOpts, nil
