@@ -1,13 +1,13 @@
 package oracle
 
 import (
-	"fmt"
 	"net/http"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
+	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
@@ -43,7 +43,7 @@ func MarketMapProviderFactory(
 		apiDataHandler, err = dydx.NewAPIHandler(cfg.API)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
-		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
+		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
 	}
 	if err != nil {
 		return nil, err

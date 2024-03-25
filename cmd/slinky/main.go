@@ -14,14 +14,12 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -48,42 +46,42 @@ func init() {
 		"oracle-config-path",
 		"",
 		"oracle.json",
-		"path to the oracle config file",
+		"Path to the oracle config file.",
 	)
 	rootCmd.Flags().StringVarP(
 		&marketCfgPath,
 		"market-config-path",
 		"",
 		"market.json",
-		"path to the market config file",
+		"Path to the market config file.",
 	)
 	rootCmd.Flags().BoolVarP(
 		&runPprof,
 		"run-pprof",
 		"",
 		false,
-		"run pprof server",
+		"Run pprof server.",
 	)
 	rootCmd.Flags().StringVarP(
 		&profilePort,
 		"pprof-port",
 		"",
 		"6060",
-		"port for the pprof server to listen on",
+		"Port for the pprof server to listen on.",
 	)
 	rootCmd.Flags().StringVarP(
 		&chain,
-		"chain-id",
+		"chain",
 		"",
 		"",
-		"the chain id which the side car should run for (ex. dydx-mainnet-1)",
+		"The chain which the side car should run for {dydx, \"\"}. Empty (default) runs against a static market.json config.",
 	)
 	rootCmd.Flags().BoolVarP(
 		&updateLocalConfig,
 		"update-local-market-config",
 		"",
 		true,
-		"update the market map config when a new one is received; this will overwrite the existing config file.",
+		"Update the market map config when a new one is received; this will overwrite the existing config file.",
 	)
 }
 
@@ -126,6 +124,14 @@ func runOracle() error {
 		}
 	}
 
+	aggregator, err := oraclemath.NewMedianAggregator(
+		logger,
+		marketCfg,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create data aggregator: %w", err)
+	}
+
 	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
 	orchestratorOpts := []orchestrator.Option{
 		orchestrator.WithLogger(logger),
@@ -133,6 +139,7 @@ func runOracle() error {
 		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
 		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
 		orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+		orchestrator.WithAggregator(aggregator),
 	}
 	if updateLocalConfig {
 		orchestratorOpts = append(orchestratorOpts, orchestrator.WithWriteTo(marketCfgPath))
@@ -142,16 +149,7 @@ func runOracle() error {
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
 		oracle.WithMetricsConfig(cfg.Metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
-	}
-
-	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
-		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg)
-		if err != nil {
-			return fmt.Errorf("failed to create dydx orchestrator and oracle options: %w", err)
-		}
-
-		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
-		oracleOpts = append(oracleOpts, customOracleOpts...)
+		oracle.WithDataAggregator(aggregator),
 	}
 
 	// Create the orchestrator and start the orchestrator.
@@ -218,28 +216,4 @@ func runOracle() error {
 		logger.Error("stopping server", zap.Error(err))
 	}
 	return nil
-}
-
-// dydxOptions specifies the custom orchestrator and oracle options for dYdX.
-func dydxOptions(
-	logger *zap.Logger,
-	marketCfg mmtypes.MarketMap,
-) ([]orchestrator.Option, []oracle.Option, error) {
-	// dYdX uses the median index price aggregation strategy.
-	aggregator, err := oraclemath.NewMedianAggregator(
-		logger,
-		marketCfg,
-	)
-	if err != nil {
-		return nil, nil, err
-	}
-	// The oracle must be configured with the median index price aggregator.
-	customOracleOpts := []oracle.Option{
-		oracle.WithDataAggregator(aggregator),
-	}
-	customOrchestratorOps := []orchestrator.Option{
-		orchestrator.WithAggregator(aggregator),
-	}
-
-	return customOrchestratorOps, customOracleOpts, nil
 }
