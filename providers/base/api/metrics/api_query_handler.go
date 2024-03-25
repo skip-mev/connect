@@ -108,7 +108,7 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, sta
 	).Add(1)
 }
 
-// AddHTTPStatusCode increments the number of responses by provider and status.
+// AddHTTPStatusCode increments the http status code by provider and response.
 func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Response) {
 	var status string
 	switch {
