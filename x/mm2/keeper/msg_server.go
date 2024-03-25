@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -52,7 +53,14 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 			return nil, fmt.Errorf("unable to run create market hook: %w", err)
 		}
 
-		// TODO events
+		event := sdk.NewEvent(
+			types.EventTypeCreateMarket,
+			sdk.NewAttribute(types.AttributeKeyCurrencyPair, market.Ticker.String()),
+			sdk.NewAttribute(types.AttributeKeyDecimals, strconv.FormatUint(market.Ticker.Decimals, 10)),
+			sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
+			sdk.NewAttribute(types.AttributeKeyMetadata, market.Ticker.Metadata_JSON),
+		)
+		ctx.EventManager().EmitEvent(event)
 	}
 
 	// validate that the new state of the marketmap is valid
@@ -94,7 +102,15 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 			return nil, fmt.Errorf("unable to run update market hook: %w", err)
 		}
 
-		// TODO events
+		event := sdk.NewEvent(
+			types.EventTypeUpdateMarket,
+			sdk.NewAttribute(types.AttributeKeyCurrencyPair, market.Ticker.String()),
+			sdk.NewAttribute(types.AttributeKeyDecimals, strconv.FormatUint(market.Ticker.Decimals, 10)),
+			sdk.NewAttribute(types.AttributeKeyMinProviderCount, strconv.FormatUint(market.Ticker.MinProviderCount, 10)),
+			sdk.NewAttribute(types.AttributeKeyMetadata, market.Ticker.Metadata_JSON),
+		)
+		ctx.EventManager().EmitEvent(event)
+
 	}
 
 	// validate that the new state of the marketmap is valid
