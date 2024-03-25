@@ -14,7 +14,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.6
 	github.com/cosmos/cosmos-sdk v0.50.5
-	github.com/pelletier/go-toml/v2 v2.1.1
+	github.com/pelletier/go-toml/v2 v2.2.0
 	github.com/skip-mev/slinky v0.2.2
 	github.com/strangelove-ventures/interchaintest/v8 v8.2.0
 	github.com/stretchr/testify v1.9.0

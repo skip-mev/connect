@@ -119,6 +119,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusOK).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 
 				return m
@@ -168,6 +169,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusOK).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 
 				return m
@@ -203,6 +205,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusTooManyRequests).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Maybe()
 				return m
 			},
@@ -237,6 +240,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusInternalServerError).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Maybe()
 
 				return m
@@ -314,7 +318,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				}
-				response := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				response := providertypes.NewGetResponse(
 					resolved,
 					nil,
 				)
@@ -327,6 +331,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusOK).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
@@ -406,6 +411,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusOK).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
@@ -461,7 +467,7 @@ func TestAPIQueryHandler(t *testing.T) {
 						Value: big.NewInt(300),
 					},
 				}
-				atomResponse := providertypes.NewGetResponse[slinkytypes.CurrencyPair, *big.Int](
+				atomResponse := providertypes.NewGetResponse(
 					atomResolved,
 					nil,
 				)
@@ -474,7 +480,9 @@ func TestAPIQueryHandler(t *testing.T) {
 			metrics: func() metrics.APIMetrics {
 				m := mockmetrics.NewAPIMetrics(t)
 
-				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Times(1)
+				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusOK).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusTooManyRequests).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Unknown).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
@@ -556,6 +564,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m := mockmetrics.NewAPIMetrics(t)
 
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
+				m.On("AddHTTPStatusCode", "handler1", http.StatusOK).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Success).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()

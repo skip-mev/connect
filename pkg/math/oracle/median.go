@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -18,12 +19,17 @@ import (
 // These are defined in the market map configuration.
 type MedianAggregator struct {
 	*aggregator.DataAggregator[string, types.TickerPrices]
-	logger *zap.Logger
-	cfg    mmtypes.MarketMap
+	logger  *zap.Logger
+	cfg     mmtypes.MarketMap
+	metrics oraclemetrics.Metrics
 }
 
 // NewMedianAggregator returns a new Median aggregator.
-func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggregator, error) {
+func NewMedianAggregator(
+	logger *zap.Logger,
+	cfg mmtypes.MarketMap,
+	metrics oraclemetrics.Metrics,
+) (*MedianAggregator, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -37,9 +43,15 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 		return nil, fmt.Errorf("invalid aggregation type; expected %s got: %s", mmtypes.AggregationType_INDEX_PRICE_AGGREGATION, cfg.AggregationType)
 	}
 
+	if metrics == nil {
+		logger.Warn("metrics is nil; using a no-op metrics implementation")
+		metrics = oraclemetrics.NewNopMetrics()
+	}
+
 	return &MedianAggregator{
 		logger:         logger,
 		cfg:            cfg,
+		metrics:        metrics,
 		DataAggregator: aggregator.NewDataAggregator[string, types.TickerPrices](),
 	}, nil
 }
@@ -98,7 +110,10 @@ func (m *MedianAggregator) AggregateData() {
 			zap.String("price", price.String()),
 			zap.Any("converted_prices", convertedPrices),
 		)
+		m.metrics.AddTickerTick(target.String())
 
+		floatPrice, _ := price.Float64()
+		m.metrics.UpdateAggregatePrice(target.String(), target.GetDecimals(), floatPrice)
 	}
 
 	// Update the aggregated data. These prices are going to be used as the index prices the

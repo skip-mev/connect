@@ -174,11 +174,20 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 	responseCh chan<- providertypes.GetResponse[K, V],
 ) func() error {
 	return func() error {
-		start := time.Now().UTC()
+		var (
+			start = time.Now().UTC()
+			resp  *http.Response
+			err   error
+		)
+
 		defer func() {
 			// Recover from any panics that occur.
 			if r := recover(); r != nil {
 				h.logger.Error("panic occurred in subtask", zap.Any("panic", r), zap.Any("ids", ids))
+			}
+
+			if resp != nil {
+				h.metrics.AddHTTPStatusCode(h.config.Name, resp.StatusCode)
 			}
 
 			h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
@@ -190,13 +199,15 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		// Create the URL for the request.
 		url, err := h.apiHandler.CreateURL(ids)
 		if err != nil {
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
+				ids,
 				providertypes.NewErrorWithCode(
 					errors.ErrCreateURLWithErr(err),
 					providertypes.ErrorUnableToCreateURL,
 				),
 			),
 			)
+
 			return nil
 		}
 
@@ -206,18 +217,19 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		apiCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
 		defer cancel()
 
-		resp, err := h.requestHandler.Do(apiCtx, url)
+		resp, err = h.requestHandler.Do(apiCtx, url)
 		if err != nil {
 			status := providertypes.ErrorUnknown
 			if resp != nil {
 				status = providertypes.ErrorCode(resp.StatusCode)
 			}
-
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](ids,
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
+				ids,
 				providertypes.NewErrorWithCode(
 					errors.ErrDoRequestWithErr(err),
 					status,
-				)),
+				),
+			),
 			)
 			return nil
 		}
@@ -226,14 +238,16 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		var response providertypes.GetResponse[K, V]
 		switch {
 		case resp.StatusCode == http.StatusTooManyRequests:
-			response = providertypes.NewGetResponseWithErr[K, V](ids,
+			response = providertypes.NewGetResponseWithErr[K, V](
+				ids,
 				providertypes.NewErrorWithCode(
 					errors.ErrRateLimit,
 					providertypes.ErrorRateLimitExceeded,
 				),
 			)
 		case resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices:
-			response = providertypes.NewGetResponseWithErr[K, V](ids,
+			response = providertypes.NewGetResponseWithErr[K, V](
+				ids,
 				providertypes.NewErrorWithCode(
 					errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode),
 					providertypes.ErrorCode(resp.StatusCode),

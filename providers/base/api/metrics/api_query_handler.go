@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -12,7 +13,10 @@ import (
 
 const (
 	// StatusLabel is a label for the status of a provider API response.
-	StatusLabel = "status"
+	StatusLabel = "internal_status"
+
+	// StatusCodeLabel is a label for the status code of a provider API response.
+	StatusCodeLabel = "status_code"
 )
 
 // APIMetrics is an interface that defines the API for metrics collection for providers
@@ -24,6 +28,10 @@ type APIMetrics interface {
 	// This increments the number of responses by provider, id (i.e. currency pair), and status.
 	AddProviderResponse(providerName, id string, status Status)
 
+	// AddHTTPStatusCode increments the number of responses by provider and status.
+	// This is used to track the number of responses by provider and status.
+	AddHTTPStatusCode(providerName string, status int)
+
 	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
 	// time it took for all the requests to complete.
@@ -34,6 +42,9 @@ type APIMetrics interface {
 type APIMetricsImpl struct {
 	// Number of provider successes.
 	apiResponseStatusPerProvider *prometheus.CounterVec
+
+	// Number of provider responses by status code.
+	apiHTTPStatusCodePerProvider *prometheus.CounterVec
 
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
 	apiResponseTimePerProvider *prometheus.HistogramVec
@@ -52,9 +63,14 @@ func NewAPIMetrics() APIMetrics {
 	m := &APIMetricsImpl{
 		apiResponseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "api_response_status",
+			Name:      "api_response_internal_status",
 			Help:      "Number of API provider successes.",
 		}, []string{providermetrics.ProviderLabel, providermetrics.IDLabel, StatusLabel}),
+		apiHTTPStatusCodePerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: oraclemetrics.OracleSubsystem,
+			Name:      "api_http_status_code",
+			Help:      "Number of API provider responses by status code.",
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_latency",
@@ -65,6 +81,7 @@ func NewAPIMetrics() APIMetrics {
 
 	// register the above metrics
 	prometheus.MustRegister(m.apiResponseStatusPerProvider)
+	prometheus.MustRegister(m.apiHTTPStatusCodePerProvider)
 	prometheus.MustRegister(m.apiResponseTimePerProvider)
 
 	return m
@@ -78,6 +95,7 @@ func NewNopAPIMetrics() APIMetrics {
 }
 
 func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ Status)         {}
+func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ int)                        {}
 func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration) {}
 
 // AddProviderResponse increments the number of requests by provider and status.
@@ -86,6 +104,15 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, sta
 		providermetrics.ProviderLabel: providerName,
 		providermetrics.IDLabel:       id,
 		StatusLabel:                   status.String(),
+	},
+	).Add(1)
+}
+
+// AddHTTPStatusCode increments the number of responses by provider and status.
+func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, status int) {
+	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
+		providermetrics.ProviderLabel: providerName,
+		StatusCodeLabel:               fmt.Sprintf("%d", status),
 	},
 	).Add(1)
 }

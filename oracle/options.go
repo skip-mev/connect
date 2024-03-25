@@ -8,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/metrics"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
@@ -48,7 +49,7 @@ func WithLogger(logger *zap.Logger) Option {
 }
 
 // WithMetrics sets the metrics on the Oracle.
-func WithMetrics(metrics metrics.Metrics) Option {
+func WithMetrics(metrics oraclemetrics.Metrics) Option {
 	return func(o *OracleImpl) {
 		if metrics == nil {
 			panic("cannot set nil metrics")
