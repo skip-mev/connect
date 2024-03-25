@@ -69,12 +69,12 @@ func NewMetrics() Metrics {
 	m := &OracleMetricsImpl{
 		ticks: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "system_health_check",
+			Name:      "health_check_system",
 			Help:      "Number of ticks with a successful oracle update.",
 		}),
 		tickerTicks: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "ticker_health_check",
+			Name:      "health_check_ticker",
 			Help:      "Number of ticks with a successful ticker update.",
 		}, []string{PairIDLabel}),
 		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -89,7 +89,7 @@ func NewMetrics() Metrics {
 		}, []string{PairIDLabel, DecimalsLabel}),
 		providerTick: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "provider_health_check",
+			Name:      "health_check_provider",
 			Help:      "Number of ticks with a successful provider update.",
 		}, []string{ProviderLabel, PairIDLabel}),
 	}

@@ -112,16 +112,14 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, sta
 func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Response) {
 	var status string
 	switch {
-	case resp == nil:
-		status = "unknown"
+	case resp == nil || resp.StatusCode >= 500:
+		status = "5XX"
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
 		status = "2XX"
 	case resp.StatusCode >= 300 && resp.StatusCode < 400:
 		status = "3XX"
 	case resp.StatusCode >= 400 && resp.StatusCode < 500:
 		status = "4XX"
-	case resp.StatusCode >= 500:
-		status = "5XX"
 	}
 
 	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
