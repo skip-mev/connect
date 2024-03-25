@@ -29,9 +29,9 @@ func (_m *Metrics) UpdateAggregatePrice(pairID string, decimals uint64, price fl
 	_m.Called(pairID, decimals, price)
 }
 
-// UpdatePrice provides a mock function with given fields: name, handlerType, pairID, decimals, price
-func (_m *Metrics) UpdatePrice(name string, handlerType string, pairID string, decimals uint64, price float64) {
-	_m.Called(name, handlerType, pairID, decimals, price)
+// UpdatePrice provides a mock function with given fields: name, pairID, decimals, price
+func (_m *Metrics) UpdatePrice(name string, pairID string, decimals uint64, price float64) {
+	_m.Called(name, pairID, decimals, price)
 }
 
 // NewMetrics creates a new instance of Metrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

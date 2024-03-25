@@ -12,8 +12,6 @@ import (
 const (
 	// ProviderLabel is a label for the provider name.
 	ProviderLabel = "provider"
-	// ProviderTypeLabel is a label for the type of provider (WS, API, etc.)
-	ProviderTypeLabel = "type"
 	// PairIDLabel is the currency pair for which the metric applies.
 	PairIDLabel = "id"
 	// DecimalsLabel is the number of decimal points associated with the price.
@@ -35,7 +33,7 @@ type Metrics interface {
 	AddTickerTick(ticker string)
 
 	// UpdatePrice price updates the price for the given pairID for the provider.
-	UpdatePrice(name, handlerType, pairID string, decimals uint64, price float64)
+	UpdatePrice(name, pairID string, decimals uint64, price float64)
 
 	// UpdateAggregatePrice updates the aggregated price for the given pairID.
 	UpdateAggregatePrice(pairID string, decimals uint64, price float64)
@@ -81,7 +79,7 @@ func NewMetrics() Metrics {
 			Namespace: OracleSubsystem,
 			Name:      "provider_price",
 			Help:      "Price gauge for a given currency pair on a provider",
-		}, []string{ProviderLabel, ProviderTypeLabel, PairIDLabel, DecimalsLabel}),
+		}, []string{ProviderLabel, PairIDLabel, DecimalsLabel}),
 		aggregatePrices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: OracleSubsystem,
 			Name:      "aggregated_price",
@@ -121,7 +119,7 @@ func (m *noOpOracleMetrics) AddTickerTick(_ string) {
 }
 
 // UpdatePrice price updates the price for the given pairID for the provider.
-func (m *noOpOracleMetrics) UpdatePrice(_, _, _ string, _ uint64, _ float64) {
+func (m *noOpOracleMetrics) UpdatePrice(_, _ string, _ uint64, _ float64) {
 }
 
 // UpdateAggregatePrice updates the aggregated price for the given pairID.
@@ -150,15 +148,14 @@ func (m *OracleMetricsImpl) AddTickerTick(ticker string) {
 
 // UpdatePrice price updates the price for the given pairID for the provider.
 func (m *OracleMetricsImpl) UpdatePrice(
-	providerName, handlerType, pairID string,
+	providerName, pairID string,
 	decimals uint64,
 	price float64,
 ) {
 	m.prices.With(prometheus.Labels{
-		ProviderLabel:     strings.ToLower(providerName),
-		ProviderTypeLabel: strings.ToLower(handlerType),
-		PairIDLabel:       strings.ToLower(pairID),
-		DecimalsLabel:     fmt.Sprintf("%d", decimals),
+		ProviderLabel: strings.ToLower(providerName),
+		PairIDLabel:   strings.ToLower(pairID),
+		DecimalsLabel: fmt.Sprintf("%d", decimals),
 	},
 	).Set(price)
 }

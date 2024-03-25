@@ -3,7 +3,6 @@ package oracle
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -207,17 +206,6 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 
 	timeFilteredPrices := make(types.TickerPrices)
 	for pair, result := range prices {
-		floatValue, _ := result.Value.Float64() // we ignore the accuracy in this conversion
-
-		// Update price metrics.
-		o.metrics.UpdatePrice(
-			provider.Name(),
-			string(provider.Type()),
-			strings.ToLower(pair.String()),
-			pair.Decimals,
-			floatValue,
-		)
-
 		// If the price is older than the maxCacheAge, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
 		if diff > o.maxCacheAge {

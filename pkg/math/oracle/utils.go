@@ -44,7 +44,6 @@ func (m *MedianAggregator) GetProviderPrice(
 	if !ok {
 		return nil, fmt.Errorf("missing %s price for ticker: %s", operation.Provider, ticker.String())
 	}
-	m.metrics.AddProviderTick(operation.Provider, ticker.String())
 
 	scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
 	if err != nil {

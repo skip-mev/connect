@@ -7,7 +7,6 @@ import (
 
 	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/metrics"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 )
@@ -62,7 +61,7 @@ func WithMetrics(metrics oraclemetrics.Metrics) Option {
 // WithMetricsConfig sets the metrics on the oracle from the given config.
 func WithMetricsConfig(config config.MetricsConfig) Option {
 	return func(o *OracleImpl) {
-		o.metrics = metrics.NewMetricsFromConfig(config)
+		o.metrics = oraclemetrics.NewMetricsFromConfig(config)
 	}
 }
 

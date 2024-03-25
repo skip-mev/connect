@@ -195,7 +195,15 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// If we have a single operation, then we can simply return the price. This implies that
 	// we have a direct conversion from the base ticker to the target ticker.
 	if len(operations) == 1 {
-		return ScaleDownCurrencyPairPrice(target.Decimals, price)
+		price, err := ScaleDownCurrencyPairPrice(target.Decimals, price)
+		if err != nil {
+			return nil, err
+		}
+
+		m.metrics.AddProviderTick(operations[0].Provider, target.String())
+		floatPrice, _ := price.Float64()
+		m.metrics.UpdatePrice(operations[0].Provider, target.String(), target.GetDecimals(), floatPrice)
+		return price, nil
 	}
 
 	// If we have more than one operation, then can only adjust the price using the index.
@@ -211,6 +219,13 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// Make sure that the price is adjusted by the market price.
 	adjustedPrice := big.NewInt(0).Mul(price, adjustableByMarketPrice)
 	adjustedPrice = adjustedPrice.Div(adjustedPrice, ScaledOne(ScaledDecimals))
+	price, err = ScaleDownCurrencyPairPrice(target.Decimals, adjustedPrice)
+	if err != nil {
+		return nil, err
+	}
 
-	return ScaleDownCurrencyPairPrice(target.Decimals, adjustedPrice)
+	m.metrics.AddProviderTick(operations[0].Provider, target.String())
+	floatPrice, _ := price.Float64()
+	m.metrics.UpdatePrice(operations[0].Provider, target.String(), target.GetDecimals(), floatPrice)
+	return price, nil
 }
