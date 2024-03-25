@@ -58,7 +58,7 @@ func (h Hooks) AfterMarketCreated(ctx sdk.Context, market mm2types.Market) error
 
 // AfterMarketUpdated is the marketmap hook for x/oracle that is run after a market is updated in
 // the marketmap.
-func (h Hooks) AfterMarketUpdated(ctx sdk.Context, market mm2types.Market) error {
+func (h Hooks) AfterMarketUpdated(_ sdk.Context, _ mm2types.Market) error {
 	// TODO
 	return nil
 }
