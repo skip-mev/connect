@@ -114,7 +114,7 @@ var (
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
 		Metrics:        config.MetricsConfig{},
-		UpdateInterval: 1500 * time.Millisecond,
+		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
