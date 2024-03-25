@@ -30,7 +30,9 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 		panic(err)
 	}
 
-	// TODO hooks
+	if err := k.hooks.AfterMarketGenesis(ctx, gs.MarketMap.Markets); err != nil {
+		panic(err)
+	}
 }
 
 // ExportGenesis retrieves the genesis from state.
