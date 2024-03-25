@@ -18,6 +18,9 @@ type Metrics interface {
 
 	// UpdateAggregatePrice updates the aggregated price for the given pairID.
 	UpdateAggregatePrice(pairID string, price float64)
+
+	// AddProviderTick increments the number of ticks for the given provider and pair.
+	AddProviderTick(provider, pair string)
 }
 ```
 

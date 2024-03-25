@@ -52,14 +52,14 @@ func NewAPIMetrics() APIMetrics {
 	m := &APIMetricsImpl{
 		apiResponseStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "api_response_status_per_provider",
+			Name:      "api_response_status",
 			Help:      "Number of API provider successes.",
 		}, []string{providermetrics.ProviderLabel, providermetrics.IDLabel, StatusLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "api_response_time_per_provider",
+			Name:      "api_response_latency",
 			Help:      "Response time per API provider.",
-			Buckets:   []float64{50, 100, 250, 500, 1000},
+			Buckets:   []float64{50, 100, 250, 500, 1000, 2000},
 		}, []string{providermetrics.ProviderLabel}),
 	}
 
