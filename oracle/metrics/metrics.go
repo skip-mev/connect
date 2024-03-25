@@ -18,6 +18,8 @@ const (
 	DecimalsLabel = "decimals"
 	// OracleSubsystem is a subsystem shared by all metrics exposed by this package.
 	OracleSubsystem = "side_car"
+	// SuccessLabel is a label for a successful operation.
+	SuccessLabel = "success"
 )
 
 // Metrics is an interface that defines the API for oracle metrics.
@@ -41,7 +43,7 @@ type Metrics interface {
 	// AddProviderTick increments the number of ticks for a given provider. Specifically,
 	// this is used to track the number of times a provider included a price update that
 	// was used in the aggregation.
-	AddProviderTick(providerName, pairID string)
+	AddProviderTick(providerName, pairID string, success bool)
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
@@ -67,12 +69,12 @@ func NewMetrics() Metrics {
 	m := &OracleMetricsImpl{
 		ticks: prometheus.NewCounter(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_system_total",
+			Name:      "health_check_system_updates_total",
 			Help:      "Number of ticks with a successful oracle update.",
 		}),
 		tickerTicks: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_ticker_total",
+			Name:      "health_check_ticker_updates_total",
 			Help:      "Number of ticks with a successful ticker update.",
 		}, []string{PairIDLabel}),
 		prices: prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -87,9 +89,9 @@ func NewMetrics() Metrics {
 		}, []string{PairIDLabel, DecimalsLabel}),
 		providerTick: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_provider_total",
+			Name:      "health_check_provider_updates_total",
 			Help:      "Number of ticks with a successful provider update.",
-		}, []string{ProviderLabel, PairIDLabel}),
+		}, []string{ProviderLabel, PairIDLabel, SuccessLabel}),
 	}
 
 	// register the above metrics
@@ -129,7 +131,7 @@ func (m *noOpOracleMetrics) UpdateAggregatePrice(string, uint64, float64) {
 // AddProviderTick increments the number of ticks for a given provider. Specifically,
 // this is used to track the number of times a provider included a price update that
 // was used in the aggregation.
-func (m *noOpOracleMetrics) AddProviderTick(_, _ string) {
+func (m *noOpOracleMetrics) AddProviderTick(_, _ string, _ bool) {
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
@@ -176,10 +178,11 @@ func (m *OracleMetricsImpl) UpdateAggregatePrice(
 // AddProviderTick increments the number of ticks for a given provider. Specifically,
 // this is used to track the number of times a provider included a price update that
 // was used in the aggregation.
-func (m *OracleMetricsImpl) AddProviderTick(providerName, pairID string) {
+func (m *OracleMetricsImpl) AddProviderTick(providerName, pairID string, success bool) {
 	m.providerTick.With(prometheus.Labels{
 		ProviderLabel: strings.ToLower(providerName),
 		PairIDLabel:   strings.ToLower(pairID),
+		SuccessLabel:  fmt.Sprintf("%t", success),
 	},
 	).Add(1)
 }

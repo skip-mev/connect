@@ -141,7 +141,17 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 
 	convertedPrices := make([]*big.Int, 0, len(paths.Paths))
 	for _, path := range paths.Paths {
+		if len(path.Operations) == 0 {
+			m.logger.Error(
+				"no operations",
+				zap.String("ticker", target.String()),
+			)
+
+			continue
+		}
+
 		// Calculate the converted price.
+		provider := path.Operations[0].Provider
 		adjustedPrice, err := m.CalculateAdjustedPrice(target, path.Operations)
 		if err != nil {
 			m.logger.Debug(
@@ -151,6 +161,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 				zap.Any("conversions", path),
 			)
 
+			m.metrics.AddProviderTick(provider, target.String(), false)
 			continue
 		}
 
@@ -161,6 +172,10 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 			zap.String("price", adjustedPrice.String()),
 			zap.Any("conversions", path.Operations),
 		)
+
+		m.metrics.AddProviderTick(provider, target.String(), true)
+		floatPrice, _ := adjustedPrice.Float64()
+		m.metrics.UpdatePrice(provider, target.String(), target.GetDecimals(), floatPrice)
 	}
 
 	return convertedPrices
@@ -195,15 +210,7 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// If we have a single operation, then we can simply return the price. This implies that
 	// we have a direct conversion from the base ticker to the target ticker.
 	if len(operations) == 1 {
-		price, err := ScaleDownCurrencyPairPrice(target.Decimals, price)
-		if err != nil {
-			return nil, err
-		}
-
-		m.metrics.AddProviderTick(operations[0].Provider, target.String())
-		floatPrice, _ := price.Float64()
-		m.metrics.UpdatePrice(operations[0].Provider, target.String(), target.GetDecimals(), floatPrice)
-		return price, nil
+		return ScaleDownCurrencyPairPrice(target.Decimals, price)
 	}
 
 	// If we have more than one operation, then can only adjust the price using the index.
@@ -219,13 +226,5 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// Make sure that the price is adjusted by the market price.
 	adjustedPrice := big.NewInt(0).Mul(price, adjustableByMarketPrice)
 	adjustedPrice = adjustedPrice.Div(adjustedPrice, ScaledOne(ScaledDecimals))
-	price, err = ScaleDownCurrencyPairPrice(target.Decimals, adjustedPrice)
-	if err != nil {
-		return nil, err
-	}
-
-	m.metrics.AddProviderTick(operations[0].Provider, target.String())
-	floatPrice, _ := price.Float64()
-	m.metrics.UpdatePrice(operations[0].Provider, target.String(), target.GetDecimals(), floatPrice)
-	return price, nil
+	return ScaleDownCurrencyPairPrice(target.Decimals, adjustedPrice)
 }

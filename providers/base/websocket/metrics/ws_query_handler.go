@@ -59,12 +59,12 @@ func NewWebSocketMetrics() WebSocketMetrics {
 		connectionStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "web_socket_connection_status",
-			Help:      "Statuses associated with the underlying web socket connection to a given provider.",
+			Help:      "Statuses associated with the underlying web socket connection.",
 		}, []string{providermetrics.ProviderLabel, StatusLabel}),
 		dataHandlerStatusPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "web_socket_parser_status",
-			Help:      "Statuses associated with parsing/sending web socket messages from/to a web socket connection to a given provider.",
+			Name:      "web_socket_data_handler_status_per_provider",
+			Help:      "Statuses associated with parsing/sending web socket messages from/to a web socket connection.",
 		}, []string{providermetrics.ProviderLabel, StatusLabel}),
 		responseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,

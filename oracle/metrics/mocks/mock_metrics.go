@@ -9,9 +9,9 @@ type Metrics struct {
 	mock.Mock
 }
 
-// AddProviderTick provides a mock function with given fields: providerName, pairID
-func (_m *Metrics) AddProviderTick(providerName string, pairID string) {
-	_m.Called(providerName, pairID)
+// AddProviderTick provides a mock function with given fields: providerName, pairID, success
+func (_m *Metrics) AddProviderTick(providerName string, pairID string, success bool) {
+	_m.Called(providerName, pairID, success)
 }
 
 // AddTick provides a mock function with given fields:
