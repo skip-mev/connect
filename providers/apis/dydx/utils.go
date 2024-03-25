@@ -33,7 +33,7 @@ const (
 	ChainID = "dydx-mainnet-1"
 
 	// Endpoint is the endpoint for the dYdX market map API.
-	Endpoint = "%s/dydxprotocol/prices/params/market"
+	Endpoint = "%s/dydxprotocol/prices/params/market?limit=10000"
 
 	// Delimeter is the delimeter used to separate the base and quote assets in a pair.
 	Delimeter = "-"
@@ -44,7 +44,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Name:             Name,
 	Atomic:           true,
 	Enabled:          true,
-	Timeout:          2000 * time.Millisecond,
+	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
