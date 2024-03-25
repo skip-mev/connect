@@ -41,13 +41,7 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 
 	// create markets
 	for _, createMarket := range msg.CreateMarkets {
-		market := types.Market{
-			Ticker:    createMarket.Ticker,
-			Paths:     createMarket.Paths,
-			Providers: createMarket.Providers,
-		}
-
-		err = ms.k.CreateMarket(ctx, market)
+		err = ms.k.CreateMarket(ctx, createMarket)
 		if err != nil {
 			return nil, err
 		}
