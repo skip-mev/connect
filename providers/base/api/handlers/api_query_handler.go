@@ -186,11 +186,8 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 				h.logger.Error("panic occurred in subtask", zap.Any("panic", r), zap.Any("ids", ids))
 			}
 
-			if resp != nil {
-				h.metrics.AddHTTPStatusCode(h.config.Name, resp.StatusCode)
-			}
-
 			h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
+			h.metrics.AddHTTPStatusCode(h.config.Name, resp)
 			h.logger.Debug("finished subtask", zap.Any("ids", ids))
 		}()
 

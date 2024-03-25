@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	http "net/http"
+
 	metrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	mock "github.com/stretchr/testify/mock"
 
@@ -14,9 +16,9 @@ type APIMetrics struct {
 	mock.Mock
 }
 
-// AddHTTPStatusCode provides a mock function with given fields: providerName, status
-func (_m *APIMetrics) AddHTTPStatusCode(providerName string, status int) {
-	_m.Called(providerName, status)
+// AddHTTPStatusCode provides a mock function with given fields: providerName, resp
+func (_m *APIMetrics) AddHTTPStatusCode(providerName string, resp *http.Response) {
+	_m.Called(providerName, resp)
 }
 
 // AddProviderResponse provides a mock function with given fields: providerName, id, status

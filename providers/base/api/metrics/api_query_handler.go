@@ -1,7 +1,7 @@
 package metrics
 
 import (
-	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -30,7 +30,7 @@ type APIMetrics interface {
 
 	// AddHTTPStatusCode increments the number of responses by provider and status.
 	// This is used to track the number of responses by provider and status.
-	AddHTTPStatusCode(providerName string, status int)
+	AddHTTPStatusCode(providerName string, resp *http.Response)
 
 	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
@@ -95,7 +95,7 @@ func NewNopAPIMetrics() APIMetrics {
 }
 
 func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ Status)         {}
-func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ int)                        {}
+func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)             {}
 func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration) {}
 
 // AddProviderResponse increments the number of requests by provider and status.
@@ -109,10 +109,24 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, sta
 }
 
 // AddHTTPStatusCode increments the number of responses by provider and status.
-func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, status int) {
+func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Response) {
+	var status string
+	switch {
+	case resp == nil:
+		status = "unknown"
+	case resp.StatusCode >= 200 && resp.StatusCode < 300:
+		status = "2XX"
+	case resp.StatusCode >= 300 && resp.StatusCode < 400:
+		status = "3XX"
+	case resp.StatusCode >= 400 && resp.StatusCode < 500:
+		status = "4XX"
+	case resp.StatusCode >= 500:
+		status = "5XX"
+	}
+
 	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
-		StatusCodeLabel:               fmt.Sprintf("%d", status),
+		StatusCodeLabel:               status,
 	},
 	).Add(1)
 }
