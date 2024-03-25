@@ -401,7 +401,7 @@
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
-        "url": "https://dydx-api.polkachu.com",
+        "url": "localhost:1317",
         "name": "dydx_api"
       },
       "webSocket": {

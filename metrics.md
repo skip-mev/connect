@@ -7,12 +7,12 @@ If there are any additional metrics that you would like to see, please open an i
 # Table of Contents
 
 * [Metrics](#metrics)
-  * [Health Metrics](#health-metrics)
-  * [Prices Metrics](#prices-metrics)
-    * [Price Feed Metrics](#price-feed-Metrics)
-    * [Aggregated Price Metrics](#aggregated-price-metrics)
-  * [HTTP Metrics](#http-metrics)
-  * [WebSocket Metrics](#websocket-metrics)
+    * [Health Metrics](#health-metrics)
+    * [Prices Metrics](#prices-metrics)
+        * [Price Feed Metrics](#price-feed-metrics)
+        * [Aggregated Price Metrics](#aggregated-price-metrics)
+    * [HTTP Metrics](#http-metrics)
+    * [WebSocket Metrics](#websocket-metrics)
 
 # Metrics
 
@@ -30,8 +30,8 @@ The side-car exposes metrics on the `/metrics` endpoint. These metrics are in th
 There are three primary health metrics that are exposed by the side-car:
 
 * [`side_car_health_check_system_updates_total`](#side_car_health_check_system_updates_total): This metric is a counter that increments every time the side-car updates its internal state. This is a good indicator of the side-car's overall health.
-* [`side_car_health_check_ticker_updates_total`](#side_car_health_check_ticker_updates_total): This metric is a counter that increments every time the side-car updates the price of a given ticker. This is a good indicator of the overall health of a given market.
-* [`side_car_health_check_provider_updates_total`](#side_car_health_check_provider_updates_total): This metric is a counter that increments everytime the side-car utilizes a given providers market data. This is a good indicator of the health of a given provider.
+* [`side_car_health_check_ticker_updates_total`](#side_car_health_check_ticker_updates_total): This metric is a counter that increments every time the side-car updates the price of a given market. This is a good indicator of the overall health of a given market.
+* [`side_car_health_check_provider_updates_total`](#side_car_health_check_provider_updates_total): This metric is a counter that increments everytime the side-car utilizes a given providers market data. This is a good indicator of the health of a given provider. Note that providers may not be responsible for every market. However, the side-car correctly tracks the number of expected updates for each provider.
 
 ### `side_car_health_check_system_updates_total`
 
@@ -46,9 +46,9 @@ rate(side_car_health_check_system_updates_total[5m])
 
 ### `side_car_health_check_ticker_updates_total`
 
-This should be a monotonically increasing counter for each ticker. Each ticker's counter should be relatively close to the `side_car_health_check_system_updates_total` counter.
+This should be a monotonically increasing counter for each market. Each market's counter should be relatively close to the `side_car_health_check_system_updates_total` counter.
 
-To verify that the rate of updates for each price feed is as expected, you can run the following query in Prometheus:
+To verify that the rate of updates for each market is as expected, you can run the following query in Prometheus:
 
 ```promql
 rate(side_car_health_check_ticker_updates_total[5m])
@@ -68,22 +68,22 @@ rate(side_car_health_check_provider_updates_total{provider="coinbase_api", succe
 
 ### Health Metrics Summary
 
-In summary, the health metrics should be monitored to ensure that the side-car is updating its internal state, updating the price of tickers, and fetching data from the price providers as expected. The rate of updates for each of these metrics should be inversely correlated with the `UpdateInterval` in the oracle side-car configuration.
+In summary, the health metrics should be monitored to ensure that the side-car is updating its internal state, updating the price of each market, and fetching data from the price providers as expected. The rate of updates for each of these metrics should be inversely correlated with the `UpdateInterval` in the oracle side-car configuration.
 
 ## Prices Metrics
 
-The side-car exposes various metrics related to the prices of tickers. These metrics are useful for monitoring the health of the price feeds and the aggregation process.
+The side-car exposes various metrics related to market prices. These metrics are useful for monitoring the health of the price feeds and the aggregation process.
 
 ### Price Feed Metrics
 
 The following price feed metrics are available to operators:
 
 * [`side_car_provider_price`](#side_car_provider_price): The last recorded price for a given price feed.
-* [`side_car_provider_last_updated_id`](#side_car_provider_last_updated_id): The error rate for a given price feed.
+* [`side_car_provider_last_updated_id`](#side_car_provider_last_updated_id): The last UNIX timestamp for a given price feed.
 
 #### `side_car_provider_price`
 
-This metric represents the last recorded price for a given price feed. The metric is indexed by the provider, market, and ticker. For example, if we want to check the last recorded price of the BTC-USD market from the Coinbase API, we can run the following query in Prometheus:
+This metric represents the last recorded price for a given price feed. The metric is indexed by the provider and market. For example, if we want to check the last recorded price of the BTC-USD market from the Coinbase API, we can run the following query in Prometheus:
 
 ```promql
 side_car_provider_price{provider="coinbase_api", id="btc/usd"}
@@ -101,7 +101,7 @@ side_car_provider_price{id="btc/usd"}
 
 #### `side_car_provider_last_updated_id`
 
-This metric represents the last recorded timestamp for a given price feed. The metric is indexed by the provider, market, and ticker. All prices are UNIX timestamped. For example, if we want to check the last recorded timestamp of the BTC-USD market from the Coinbase API, we can run the following query in Prometheus:
+This metric represents the last recorded timestamp for a given price feed. The metric is indexed by the provider and market. All prices are UNIX timestamped. For example, if we want to check the last recorded timestamp of the BTC-USD market from the Coinbase API, we can run the following query in Prometheus:
 
 ```promql
 side_car_provider_last_updated_id{provider="coinbase_api", id="btc/usd"}
@@ -115,7 +115,7 @@ Alerts can be configured based on the age of the last recorded price. For exampl
 
 The following aggregated price metrics are available to operators:
 
-* [`side_car_aggregated_price`](#side_car_aggregated_price): The aggregated price for a given market. This provides the final price that can be consumed by a cosmos chain.
+* [`side_car_aggregated_price`](#side_car_aggregated_price): The aggregated price for a given market. This provides the final price that can be consumed by a client.
 
 #### `side_car_aggregated_price`
 
@@ -179,7 +179,7 @@ The side-car exposes various metrics related to WebSocket connections made by th
 
 * [`side_car_web_socket_connection_status`](#side_car_web_socket_connection_status): This includes various metrics related to the WebSocket connections made by the side-car.
 * [`side_car_web_socket_data_handler_status`](#side_car_web_socket_data_handler_status): This includes various metrics related to whether WebSocket messages are being correctly handled by the side-car.
-* [`side_car_web_socket_response_time`](#side_car_web_socket_response_time): This includes the response time of the WebSocket messages received by the side-car.
+* [`side_car_web_socket_response_time_bucket`](#side_car_web_socket_response_time_bucket): This includes the response time of the WebSocket messages received by the side-car.
 
 ### `side_car_web_socket_connection_status`
 
@@ -190,8 +190,6 @@ side_car_web_socket_connection_status{provider="coinbase_ws"}
 ```
 
 ![Architecture Overview](./resources/side_car_web_socket_connection_status_coinbase.png)
-
-The most important metrics to monitor here are the number of read, write, and dial errors.
 
 ### `side_car_web_socket_data_handler_status`
 
@@ -205,7 +203,7 @@ side_car_web_socket_data_handler_status{provider="coinbase_ws}
 
 The most important statuses to monitor here are `handle_message_success` and `heart_beat_success`. These metrics should be close to the total number of messages and heartbeats sent by the WebSocket connection.
 
-### `side_car_web_socket_response_time`
+### `side_car_web_socket_response_time_bucket`
 
 This metric includes the response time of the WebSocket messages received by the side-car. Specifically, this includes the time it took to receive a new message and process it. For example, if we wanted to check the response time for the Coinbase WebSocket connection, we can run the following query in Prometheus:
 
