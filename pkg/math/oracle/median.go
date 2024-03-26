@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
@@ -18,12 +19,17 @@ import (
 // These are defined in the market map configuration.
 type MedianAggregator struct {
 	*aggregator.DataAggregator[string, types.TickerPrices]
-	logger *zap.Logger
-	cfg    mmtypes.MarketMap
+	logger  *zap.Logger
+	cfg     mmtypes.MarketMap
+	metrics oraclemetrics.Metrics
 }
 
 // NewMedianAggregator returns a new Median aggregator.
-func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggregator, error) {
+func NewMedianAggregator(
+	logger *zap.Logger,
+	cfg mmtypes.MarketMap,
+	metrics oraclemetrics.Metrics,
+) (*MedianAggregator, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -32,9 +38,15 @@ func NewMedianAggregator(logger *zap.Logger, cfg mmtypes.MarketMap) (*MedianAggr
 		return nil, err
 	}
 
+	if metrics == nil {
+		logger.Warn("metrics is nil; using a no-op metrics implementation")
+		metrics = oraclemetrics.NewNopMetrics()
+	}
+
 	return &MedianAggregator{
 		logger:         logger,
 		cfg:            cfg,
+		metrics:        metrics,
 		DataAggregator: aggregator.NewDataAggregator[string, types.TickerPrices](),
 	}, nil
 }
@@ -79,11 +91,14 @@ func (m *MedianAggregator) AggregateData() {
 		updatedPrices[market.Ticker] = price
 		m.logger.Info(
 			"calculated median price",
-			zap.String("ticker", ticker),
+			zap.String("ticker", market.Ticker.String()),
 			zap.String("price", price.String()),
 			zap.Any("converted_prices", convertedPrices),
 		)
+		m.metrics.AddTickerTick(market.Ticker.String())
 
+		floatPrice, _ := price.Float64()
+		m.metrics.UpdateAggregatePrice(market.Ticker.String(), market.Ticker.GetDecimals(), floatPrice)
 	}
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
@@ -96,40 +111,43 @@ func (m *MedianAggregator) AggregateData() {
 // The prices utilized are the prices most recently seen by the providers. Each price is within a
 // MaxPriceAge window so is safe to use.
 func (m *MedianAggregator) CalculateConvertedPrices(
-	target mmtypes.Market,
+	market mmtypes.Market,
 ) []*big.Int {
-	m.logger.Debug("calculating converted prices", zap.String("ticker", target.String()))
-	if len(target.ProviderConfigs) == 0 {
+	m.logger.Debug("calculating converted prices", zap.String("ticker", market.Ticker.String()))
+	if len(market.ProviderConfigs) == 0 {
 		m.logger.Error(
 			"no provider configs",
-			zap.String("ticker", target.String()),
+			zap.String("ticker", market.Ticker.String()),
 		)
 
 		return nil
 	}
 
-	convertedPrices := make([]*big.Int, 0, len(target.ProviderConfigs))
-	for _, config := range target.ProviderConfigs {
+	convertedPrices := make([]*big.Int, 0, len(market.ProviderConfigs))
+	for _, config := range market.ProviderConfigs {
 		// Calculate the converted price.
-		adjustedPrice, err := m.CalculateAdjustedPrice(target, path.Operations)
+		adjustedPrice, err := m.CalculateAdjustedPrice(market.Ticker, config)
 		if err != nil {
 			m.logger.Debug(
 				"failed to calculate converted price",
 				zap.Error(err),
-				zap.String("ticker", target.String()),
-				zap.Any("conversions", path),
+				zap.String("ticker", market.Ticker.String()),
 			)
 
+			m.metrics.AddProviderTick(config.Name, market.Ticker.String(), false)
 			continue
 		}
 
 		convertedPrices = append(convertedPrices, adjustedPrice)
 		m.logger.Debug(
 			"calculated converted price",
-			zap.String("ticker", target.String()),
+			zap.String("ticker", market.Ticker.String()),
 			zap.String("price", adjustedPrice.String()),
-			zap.Any("conversions", path.Operations),
 		)
+
+		m.metrics.AddProviderTick(config.Name, market.Ticker.String(), true)
+		floatPrice, _ := adjustedPrice.Float64()
+		m.metrics.UpdatePrice(config.Name, market.Ticker.String(), market.Ticker.GetDecimals(), floatPrice)
 	}
 
 	return convertedPrices
@@ -146,25 +164,21 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 // to adjust the price by the index price of the asset. If the index price is not available, we
 // return an error.
 func (m *MedianAggregator) CalculateAdjustedPrice(
-	target mmtypes.Market,
+	target mmtypes.Ticker,
+	providerConfig mmtypes.ProviderConfig,
 ) (*big.Int, error) {
-	price, err := m.GetProviderPrice(operations[0])
+	price, err := m.GetProviderPrice(target, providerConfig, false)
 	if err != nil {
 		return nil, err
 	}
 
-	// If we have a single operation, then we can simply return the price. This implies that
+	// If there is no NormalizeByPair, then we can simply return the price. This implies that
 	// we have a direct conversion from the base ticker to the target ticker.
-	if len(operations) == 1 {
+	if providerConfig.NormalizeByPair == nil {
 		return ScaleDownCurrencyPairPrice(target.Decimals, price)
 	}
 
-	// If we have more than one operation, then can only adjust the price using the index.
-	if operations[1].Provider != mmtypes.IndexPrice {
-		return nil, fmt.Errorf("expected index price but got %s", operations[1].Provider)
-	}
-
-	adjustableByMarketPrice, err := m.GetProviderPrice(operations[1])
+	adjustableByMarketPrice, err := m.GetProviderPrice(target, providerConfig, true)
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +186,5 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	// Make sure that the price is adjusted by the market price.
 	adjustedPrice := big.NewInt(0).Mul(price, adjustableByMarketPrice)
 	adjustedPrice = adjustedPrice.Div(adjustedPrice, ScaledOne(ScaledDecimals))
-
 	return ScaleDownCurrencyPairPrice(target.Decimals, adjustedPrice)
 }

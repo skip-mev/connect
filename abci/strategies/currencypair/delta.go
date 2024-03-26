@@ -120,3 +120,11 @@ func (s *DeltaCurrencyPairStrategy) getOnChainPrice(ctx sdk.Context, cp slinkyty
 	s.cache[cp] = currentPrice
 	return currentPrice, nil
 }
+
+// GetMaxNumCP returns the number of pairs that the VEs should include.  This method returns an error if the size cannot
+// be queried from the x/oracle state.
+func (s *DeltaCurrencyPairStrategy) GetMaxNumCP(
+	ctx sdk.Context,
+) (uint64, error) {
+	return s.oracleKeeper.GetPrevBlockCPCounter(ctx)
+}
