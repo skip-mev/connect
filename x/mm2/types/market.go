@@ -4,14 +4,31 @@ import (
 	"fmt"
 )
 
-// ValidateBasic performs aggregate validation for all fields in the MarketMap. We consider
-// the market map to be valid iff:
+// ValidateBasic validates the market map configuration and its expected configuration.
 //
-// 1. Each ticker is valid.
-// 2. Each provider is valid.
-// 3. Any provider configuration that requires a transformation (normalizeByPair) must be included in the main set of tickers.
+//	In particular, this will
+//
+//	1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
+//	   markets are supported by the market map.
+//	2. Ensure that each path has a corresponding ticker.
+//	3. Ensure that each path has a valid number of operations.
+//	4. Ensure that each operation has a valid ticker and that the provider supports the ticker.
 func (mm *MarketMap) ValidateBasic() error {
-	return mm.ValidateIndexPriceAggregation()
+	for _, market := range mm.Markets {
+		if err := market.ValidateBasic(); err != nil {
+			return err
+		}
+
+		for _, providerConfig := range market.ProviderConfigs {
+			if providerConfig.NormalizeByPair != nil {
+				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
+					return fmt.Errorf("provider's (%s) pair for normalization (%s) was not found in the marketmap", providerConfig.Name, providerConfig.NormalizeByPair.String())
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 // String returns the string representation of the market map.
@@ -57,32 +74,6 @@ func (m *Market) String() string {
 	return fmt.Sprintf(
 		"Market: {Ticker %v Providers: %v}", m.Ticker, m.ProviderConfigs,
 	)
-}
-
-// ValidateIndexPriceAggregation validates the market map configuration and its expected configuration for
-// this aggregator. In particular, this will
-//
-//  1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
-//     markets are supported by the market map.
-//  2. Ensure that each path has a corresponding ticker.
-//  3. Ensure that each path has a valid number of operations.
-//  4. Ensure that each operation has a valid ticker and that the provider supports the ticker.
-func (mm *MarketMap) ValidateIndexPriceAggregation() error {
-	for _, market := range mm.Markets {
-		if err := market.ValidateBasic(); err != nil {
-			return err
-		}
-
-		for _, providerConfig := range market.ProviderConfigs {
-			if providerConfig.NormalizeByPair != nil {
-				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
-					return fmt.Errorf("provider's (%s) pair for normalization (%s) was not found in the marketmap", providerConfig.Name, providerConfig.NormalizeByPair.String())
-				}
-			}
-		}
-	}
-
-	return nil
 }
 
 // Equal returns true if the MarketMap is equal to the given MarketMap.
