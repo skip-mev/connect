@@ -12,6 +12,10 @@ builds:
     goos:
     - 'linux'
     - 'darwin'
+  - main: 'cmd/slinky-config/main.go'
+    goos:
+    - 'linux'
+    - 'darwin'
 archives:
   - format: tar.gz
     wrap_in_directory: true
