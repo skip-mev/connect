@@ -1,3 +1,3 @@
 package constants
 
-const Dydx = "dydx"
+const DYDX = "dydx"
