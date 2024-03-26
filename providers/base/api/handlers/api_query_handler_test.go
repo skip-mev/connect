@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math/big"
 	"net/http"
 	"strings"
@@ -90,7 +91,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -140,7 +141,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -190,7 +191,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newRateLimitResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newRateLimitResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -225,7 +226,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newUnexpectedStatusCodeResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newUnexpectedStatusCodeResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -261,7 +262,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(nil, fmt.Errorf("client has no rizz")).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(nil, fmt.Errorf("client has no rizz")).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -297,7 +298,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -361,7 +362,7 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -441,8 +442,8 @@ func TestAPIQueryHandler(t *testing.T) {
 			requestHandler: func() handlers.RequestHandler {
 				h := mocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
-				h.On("Do", mock.Anything, constantURL+"eth").Return(newRateLimitResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL+"eth", nil).Return(newRateLimitResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -513,7 +514,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				h := mocks.NewRequestHandler(t)
 
 				// Delay the responses by 1 second to ensure that the requests are made sequentially.
-				h.On("Do", mock.Anything, constantURL).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
+				h.On("Do", mock.Anything, constantURL, nil).Return(newValidResponse(), nil).Maybe().After(1 * time.Second)
 
 				return h
 			},
@@ -639,6 +640,108 @@ func TestAPIQueryHandler(t *testing.T) {
 			require.Equal(t, len(expectedResponses.UnResolved), len(unResolved))
 		})
 	}
+}
+
+func TestAPIQueryHandlerWithBody(t *testing.T) {
+	apiHandler := mocks.NewAPIDataHandlerWithBody[slinkytypes.CurrencyPair, *big.Int](t)
+	httpClient := mocks.NewHTTPClient(t)
+	requestHandler, err := handlers.NewRequestHandlerImpl(
+		httpClient,
+		handlers.WithHTTPMethod(http.MethodPost),
+		handlers.WithJSONHeader(),
+	)
+	mockMetrics := mockmetrics.NewAPIMetrics(t)
+
+	handler, err := handlers.NewAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](
+		zap.NewNop(),
+		cfg,
+		requestHandler,
+		apiHandler,
+		mockMetrics,
+	)
+	require.NoError(t, err)
+
+	// expect failure if CreateBody fails
+	t.Run("expect failure if CreateBody fails", func(t *testing.T) {
+		// On
+		apiHandler.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return("url", nil) // successful url creation
+		// failing create-body
+		err := fmt.Errorf("error!")
+		apiHandler.On("CreateBody", []slinkytypes.CurrencyPair{btcusd}).Return(nil, err).Once()
+		// expect metrics reports
+		mockMetrics.On("AddProviderResponse", cfg.Name, strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Once()
+		mockMetrics.On("ObserveProviderResponseLatency", cfg.Name, mock.Anything).Once()
+		mockMetrics.On("AddHTTPStatusCode", cfg.Name, (*http.Response)(nil)).Once()
+
+		responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], 1)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		go func() {
+			handler.Query(ctx, []slinkytypes.CurrencyPair{btcusd}, responseCh)
+			close(responseCh)
+		}()
+
+		// expect error
+		resp := <-responseCh
+		cancel()
+
+		// all responses should be unresolved
+		require.Equal(t, 1, len(resp.UnResolved))
+		require.Equal(t, errors.ErrCreateBodyWithErr(err).Error(), resp.UnResolved[btcusd].Error())
+	})
+
+	// expect calling with the correct body / delegation to request handler
+	t.Run("expect correct body / header", func(t *testing.T) {
+		// On APIDataHandler responses
+		apiHandler.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return("url", nil) // successful url creation
+		apiHandler.On("CreateBody", []slinkytypes.CurrencyPair{btcusd}).Return([]byte{1, 2, 3}, nil).Once()
+		resp := &http.Response{
+			StatusCode: http.StatusOK,
+		}
+		apiHandler.On("ParseResponse", []slinkytypes.CurrencyPair{btcusd}, resp).Return(providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+			Resolved: map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+				btcusd: {
+					Value: big.NewInt(100),
+				},
+			},
+		}).Once()
+		// expect metrics reports
+		mockMetrics.On("AddProviderResponse", cfg.Name, strings.ToLower(fmt.Sprint(btcusd)), mock.Anything)
+		mockMetrics.On("ObserveProviderResponseLatency", cfg.Name, mock.Anything)
+		mockMetrics.On("AddHTTPStatusCode", cfg.Name, resp).Return()
+
+		httpClient.On("Do", mock.Anything).Return(resp, nil).Run(func(args mock.Arguments) {
+			req := args.Get(0).(*http.Request)
+
+			// expect JSON headers
+			require.Equal(t, req.Header.Get("Content-Type"), "application/json")
+			require.Equal(t, req.Header.Get("Accept"), "application/json")
+
+			// expect body
+			body, err := ioutil.ReadAll(req.Body)
+			require.NoError(t, err)
+			require.Equal(t, []byte{1, 2, 3}, body)
+		}).Once()
+
+		responseCh := make(chan providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int], 1)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		go func() {
+			handler.Query(ctx, []slinkytypes.CurrencyPair{btcusd}, responseCh)
+			close(responseCh)
+		}()
+
+		// expect error
+		res := <-responseCh
+		cancel()
+
+		// all responses should be unresolved
+		require.Equal(t, 1, len(res.Resolved))
+	})
 }
 
 func newRateLimitResponse() *http.Response {

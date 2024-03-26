@@ -11,6 +11,10 @@ var (
 	// to create the url i.e. a malformed config.
 	ErrCreateURL = errors.New("api data handler failed to create request")
 
+	// ErrCreateBody is returned when the APIDataHandlerWithBody fails to
+	// create an HTTP request body.
+	ErrCreateBody = errors.New("api data handler failed to create request body")
+
 	// ErrDoRequest is returned when the APIQueryHandler was unable to make
 	// a request.
 	ErrDoRequest = errors.New("api query handler failed to make the request")
@@ -31,6 +35,13 @@ var (
 // create the error.
 func ErrCreateURLWithErr(err error) error {
 	return errors.Join(ErrCreateURL, err)
+}
+
+// ErrCreateBodyWithErr is used to create a new ErrCreateBody with the given error.
+// This error should be thrown on an unsuccessful attempt of the APIDataHandler
+// to create an HTTP request body for a given set of ids.
+func ErrCreateBodyWithErr(err error) error {
+	return errors.Join(ErrCreateBody, err)
 }
 
 // ErrDoRequestWithErr is used to create a new ErrDoRequest with the given error.

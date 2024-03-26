@@ -20,6 +20,8 @@ const (
 	UnexpectedStatusCode
 	// Success indicates that the provider successfully queried the data.
 	Success
+	// CreateBody
+	CreateBody
 	// Unknown indicates that the provider encountered an unknown error.
 	Unknown
 )
@@ -42,6 +44,8 @@ func (s Status) String() string {
 		return "unexpected_status_code_err"
 	case Success:
 		return "success"
+	case CreateBody:
+		return "create_body_err"
 	default:
 		return "unknown_err"
 	}
@@ -62,6 +66,8 @@ func StatusFromError(err error) Status {
 		return RateLimit
 	case errors.Is(err, providererrors.ErrUnexpectedStatusCode):
 		return UnexpectedStatusCode
+	case errors.Is(err, providererrors.ErrCreateBody):
+		return CreateBody
 	default:
 		return Unknown
 	}

@@ -31,7 +31,7 @@ func TestPreDialHook(t *testing.T) {
 			requestHandler: func() apihandlers.RequestHandler {
 				h := apimocks.NewRequestHandler(t)
 
-				h.On("Do", mock.Anything, postURL).Return(nil, fmt.Errorf("error")).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(nil, fmt.Errorf("error")).Once()
 
 				return h
 			},
@@ -45,7 +45,7 @@ func TestPreDialHook(t *testing.T) {
 				resp := http.Response{
 					StatusCode: http.StatusForbidden,
 				}
-				h.On("Do", mock.Anything, postURL).Return(&resp, nil).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(&resp, nil).Once()
 
 				return h
 			},
@@ -59,7 +59,7 @@ func TestPreDialHook(t *testing.T) {
 				resp := testutils.CreateResponseFromJSON("invalid json,")
 				resp.StatusCode = http.StatusOK
 
-				h.On("Do", mock.Anything, postURL).Return(resp, nil).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(resp, nil).Once()
 
 				return h
 			},
@@ -73,7 +73,7 @@ func TestPreDialHook(t *testing.T) {
 				resp := testutils.CreateResponseFromJSON(`{"code": "error"}`)
 				resp.StatusCode = http.StatusOK
 
-				h.On("Do", mock.Anything, postURL).Return(resp, nil).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(resp, nil).Once()
 
 				return h
 			},
@@ -87,7 +87,7 @@ func TestPreDialHook(t *testing.T) {
 				resp := testutils.CreateResponseFromJSON(`{"code": "200000", "data": {}}`)
 				resp.StatusCode = http.StatusOK
 
-				h.On("Do", mock.Anything, postURL).Return(resp, nil).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(resp, nil).Once()
 
 				return h
 			},
@@ -115,7 +115,7 @@ func TestPreDialHook(t *testing.T) {
 				resp := testutils.CreateResponseFromJSON(jsonResp)
 				resp.StatusCode = http.StatusOK
 
-				h.On("Do", mock.Anything, postURL).Return(resp, nil).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(resp, nil).Once()
 
 				return h
 			},
@@ -144,7 +144,7 @@ func TestPreDialHook(t *testing.T) {
 				resp := testutils.CreateResponseFromJSON(jsonResp)
 				resp.StatusCode = http.StatusOK
 
-				h.On("Do", mock.Anything, postURL).Return(resp, nil).Once()
+				h.On("Do", mock.Anything, postURL, nil).Return(resp, nil).Once()
 
 				return h
 			},

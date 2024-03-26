@@ -2,6 +2,7 @@ package static
 
 import (
 	"context"
+	"io"
 	"net/http"
 
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -18,7 +19,7 @@ func NewStaticMockClient() *MockClient {
 }
 
 // Do is a no-op.
-func (s *MockClient) Do(_ context.Context, _ string) (*http.Response, error) {
+func (s *MockClient) Do(_ context.Context, _ string, _ io.Reader) (*http.Response, error) {
 	return &http.Response{
 		StatusCode: http.StatusOK,
 	}, nil

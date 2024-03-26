@@ -140,7 +140,7 @@ func fetchCredentials(cfg config.APIConfig, requestHandler apihandlers.RequestHa
 
 	// Make the request to the endpoint.
 	endpoint := fmt.Sprintf("%s%s", cfg.URL, BulletPublicEndpoint)
-	httpResp, err := requestHandler.Do(ctx, endpoint)
+	httpResp, err := requestHandler.Do(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

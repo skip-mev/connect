@@ -8,21 +8,22 @@ import (
 type ErrorCode int
 
 const (
-	OK                         ErrorCode = 0
-	ErrorRateLimitExceeded     ErrorCode = 1
-	ErrorUnknown               ErrorCode = 2
-	ErrorUnknownPair           ErrorCode = 3
-	ErrorUnableToCreateURL     ErrorCode = 4
-	ErrorWebsocketStartFail    ErrorCode = 5
-	ErrorInvalidAPIChains      ErrorCode = 6
-	ErrorNoResponse            ErrorCode = 7
-	ErrorInvalidResponse       ErrorCode = 8
-	ErrorInvalidChainID        ErrorCode = 9
-	ErrorFailedToParsePrice    ErrorCode = 10
-	ErrorInvalidWebSocketTopic ErrorCode = 11
-	ErrorFailedToDecode        ErrorCode = 12
-	ErrorAPIGeneral            ErrorCode = 13
-	ErrorWebSocketGeneral      ErrorCode = 14
+	OK                             ErrorCode = 0
+	ErrorRateLimitExceeded         ErrorCode = 1
+	ErrorUnknown                   ErrorCode = 2
+	ErrorUnknownPair               ErrorCode = 3
+	ErrorUnableToCreateURL         ErrorCode = 4
+	ErrorWebsocketStartFail        ErrorCode = 5
+	ErrorInvalidAPIChains          ErrorCode = 6
+	ErrorNoResponse                ErrorCode = 7
+	ErrorInvalidResponse           ErrorCode = 8
+	ErrorInvalidChainID            ErrorCode = 9
+	ErrorFailedToParsePrice        ErrorCode = 10
+	ErrorInvalidWebSocketTopic     ErrorCode = 11
+	ErrorFailedToDecode            ErrorCode = 12
+	ErrorAPIGeneral                ErrorCode = 13
+	ErrorWebSocketGeneral          ErrorCode = 14
+	ErrorUnableToCreateRequestBody ErrorCode = 15
 )
 
 // Error returns the error representation of the ErrorCode.
@@ -56,6 +57,8 @@ func (e ErrorCode) Error() error {
 		return errors.New("failed to create URL for request")
 	case ErrorWebsocketStartFail:
 		return errors.New("failed to start websocker connection")
+	case ErrorUnableToCreateRequestBody:
+		return errors.New("failed to create request body")
 	case ErrorUnknown:
 		fallthrough
 	default:
@@ -71,6 +74,11 @@ type ErrorWithCode struct {
 // Error returns an error string wrapping the internalErr and the error code.
 func (ec ErrorWithCode) Error() string {
 	return ec.internalErr.Error()
+}
+
+// InternalError returns the internal error.
+func (ec ErrorWithCode) InternalError() error {
+	return ec.internalErr
 }
 
 // Code returns the internal ErrorCode.

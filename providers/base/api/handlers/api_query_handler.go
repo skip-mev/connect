@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -210,11 +212,30 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 
 		h.logger.Debug("created url", zap.String("url", url))
 
+		// get the request body if required for this API provider
+		var body io.Reader
+		if apiHandlerWithBody, ok := h.apiHandler.(APIDataHandlerWithBody[K, V]); ok {
+			bz, err := apiHandlerWithBody.CreateBody(ids)
+			if err != nil {
+				h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
+					ids,
+					providertypes.NewErrorWithCode(
+						errors.ErrCreateBodyWithErr(err),
+						providertypes.ErrorUnableToCreateRequestBody,
+					)),
+				)
+
+				return nil
+			}
+
+			body = bytes.NewReader(bz)
+		}
+
 		// Make the request.
 		apiCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
 		defer cancel()
 
-		resp, err = h.requestHandler.Do(apiCtx, url)
+		resp, err = h.requestHandler.Do(apiCtx, url, body)
 		if err != nil {
 			status := providertypes.ErrorUnknown
 			if resp != nil {
@@ -281,6 +302,6 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.Success)
 	}
 	for id, err := range response.UnResolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.StatusFromError(err))
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.StatusFromError(err.InternalError()))
 	}
 }
