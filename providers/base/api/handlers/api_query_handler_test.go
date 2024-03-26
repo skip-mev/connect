@@ -485,7 +485,7 @@ func TestAPIQueryHandler(t *testing.T) {
 				m.On("ObserveProviderResponseLatency", "handler1", mock.Anything).Maybe()
 				m.On("AddHTTPStatusCode", "handler1", mock.Anything).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(btcusd)), metrics.Success).Maybe()
-				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.Unknown).Maybe()
+				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(ethusd)), metrics.RateLimit).Maybe()
 				m.On("AddProviderResponse", "handler1", strings.ToLower(fmt.Sprint(atomusd)), metrics.Success).Maybe()
 
 				return m
