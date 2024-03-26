@@ -16,4 +16,4 @@ EXPOSE 8002
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT ["oracle", "--oracle-config-path", "/oracle/oracle.json", "--market-config-path", "/oracle/market.json"]
+ENTRYPOINT ["slinky", "--oracle-config-path", "/oracle/oracle.json", "--market-config-path", "/oracle/market.json"]
