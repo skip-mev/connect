@@ -26,7 +26,6 @@ func TestValidateBasic(t *testing.T) {
 			name: "valid multiple authorities",
 			params: types.Params{
 				MarketAuthorities: []string{authtypes.NewModuleAddress(authtypes.ModuleName).String(), types.DefaultMarketAuthority},
-				Version:           10,
 			},
 			expectErr: false,
 		},
@@ -34,7 +33,6 @@ func TestValidateBasic(t *testing.T) {
 			name: "invalid duplicate authority",
 			params: types.Params{
 				MarketAuthorities: []string{types.DefaultMarketAuthority, types.DefaultMarketAuthority},
-				Version:           10,
 			},
 			expectErr: true,
 		},
@@ -42,7 +40,6 @@ func TestValidateBasic(t *testing.T) {
 			name: "invalid authority string",
 			params: types.Params{
 				MarketAuthorities: []string{"incorrect"},
-				Version:           10,
 			},
 			expectErr: true,
 		},
@@ -50,7 +47,6 @@ func TestValidateBasic(t *testing.T) {
 			name: "invalid nil authority",
 			params: types.Params{
 				MarketAuthorities: nil,
-				Version:           10,
 			},
 			expectErr: true,
 		},
