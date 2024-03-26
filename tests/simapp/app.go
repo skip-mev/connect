@@ -24,7 +24,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	testdatapulsar "github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -78,12 +77,7 @@ import (
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )
 
-const (
-	ChainID = "skip-1"
-)
-
 var (
-	BondDenom = sdk.DefaultBondDenom
 
 	// DefaultNodeHome default home directories for the application daemon.
 	DefaultNodeHome string
@@ -546,21 +540,4 @@ func GetMaccPerms() map[string][]string {
 	}
 
 	return dup
-}
-
-// BlockedAddresses returns all the app's blocked account addresses.
-func BlockedAddresses() map[string]bool {
-	result := make(map[string]bool)
-
-	if len(blockAccAddrs) > 0 {
-		for _, addr := range blockAccAddrs {
-			result[addr] = true
-		}
-	} else {
-		for addr := range GetMaccPerms() {
-			result[addr] = true
-		}
-	}
-
-	return result
 }
