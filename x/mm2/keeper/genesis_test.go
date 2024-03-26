@@ -14,7 +14,6 @@ func (s *KeeperTestSuite) TestInitGenesisInvalidGenesis() {
 			MarketMap: types.DefaultGenesisState().MarketMap,
 			Params: types.Params{
 				MarketAuthorities: []string{"invalid"},
-				Version:           0,
 			},
 		}
 
