@@ -430,9 +430,10 @@ func createMarketMap() error {
 			}
 			paths := tickersToPaths[tickerStr].Paths
 			paths = append(paths, mmtypes.Path{Operations: []mmtypes.Operation{
-				{ticker.CurrencyPair,
-					false,
-					config.Name,
+				{
+					CurrencyPair: ticker.CurrencyPair,
+					Invert:       false,
+					Provider:     config.Name,
 				},
 			}})
 			tickersToPaths[tickerStr] = mmtypes.Paths{Paths: paths}
