@@ -54,7 +54,6 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 
 	params := types.Params{
 		MarketAuthorities: []string{s.authority.String()},
-		Version:           10,
 	}
 	s.Require().NoError(k.SetParams(s.ctx, params))
 

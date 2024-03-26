@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -14,7 +15,7 @@ import (
 
 func TestGetTickerFromOperation(t *testing.T) {
 	t.Run("has ticker included in the market config", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		operation := mmtypes.Operation{
@@ -26,7 +27,7 @@ func TestGetTickerFromOperation(t *testing.T) {
 	})
 
 	t.Run("has ticker not included in the market config", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		operation := mmtypes.Operation{
@@ -40,7 +41,7 @@ func TestGetTickerFromOperation(t *testing.T) {
 
 func TestGetProviderPrice(t *testing.T) {
 	t.Run("does not have a ticker in the config", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		operation := mmtypes.Operation{
@@ -51,7 +52,7 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("has no provider prices or index prices", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		// Attempt to retrieve the provider.
@@ -72,7 +73,7 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("has provider prices but no index prices", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		// Set the provider price.
@@ -100,7 +101,7 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("has provider prices and index prices", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		// Set the provider price.
@@ -132,7 +133,7 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("has provider prices and can correctly scale up", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		// Set the provider price.
@@ -152,7 +153,7 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("has provider prices and can correctly invert", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap)
+		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 		require.NoError(t, err)
 
 		// Set the provider price.
