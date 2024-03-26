@@ -128,6 +128,12 @@ func runOracle() error {
 		}
 	}
 
+	logger.Info(
+		"successfully read in configs",
+		zap.String("oracle_config_path", oracleCfgPath),
+		zap.String("market_config_path", marketCfgPath),
+	)
+
 	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
 
 	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
@@ -152,6 +158,8 @@ func runOracle() error {
 
 		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
 		oracleOpts = append(oracleOpts, customOracleOpts...)
+	} else {
+		logger.Warn("no custom orchestrator or oracle options for chain; running default version")
 	}
 
 	// Create the orchestrator and start the orchestrator.
@@ -227,6 +235,7 @@ func dydxOptions(
 	metrics oraclemetrics.Metrics,
 ) ([]orchestrator.Option, []oracle.Option, error) {
 	// dYdX uses the median index price aggregation strategy.
+	logger.Info("running dYdX sidecar; adding custom options for orchestrator and oracle")
 	aggregator, err := oraclemath.NewMedianAggregator(
 		logger,
 		marketCfg,
