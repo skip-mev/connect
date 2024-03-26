@@ -130,7 +130,8 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 	// Initialize the connection to the data provider and subscribe to the events
 	// for the corresponding IDs.
 	if err := h.start(); err != nil {
-		responseCh <- providertypes.NewGetResponseWithErr[K, V](ids,
+		responseCh <- providertypes.NewGetResponseWithErr[K, V](
+			ids,
 			providertypes.NewErrorWithCode(
 				err,
 				providertypes.ErrorWebsocketStartFail,
@@ -177,10 +178,10 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
 			return errors.ErrWriteWithErr(err)
 		}
+		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 	}
 
 	h.logger.Debug("initial payload sent; websocket connection successfully started")
-	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 	return nil
 }
 
@@ -241,10 +242,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 		// Track the time it takes to receive a message from the data provider.
 		now := time.Now().UTC()
 
-		// Case 1: The context is cancelled. Close the connection and return.
-		// Case 2: The context is not cancelled. Wait for a message from the data provider.
 		select {
 		case <-ctx.Done():
+			// Case 1: The context is cancelled. Close the connection and return.
 			h.logger.Debug("context finished")
 			if err := h.close(); err != nil {
 				return err
@@ -252,7 +252,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 
 			return ctx.Err()
 		default:
-			// Wait for a message from the data provider.
+			// Case 2: The context is not cancelled. Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
 				h.logger.Debug(

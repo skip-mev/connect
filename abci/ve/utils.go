@@ -26,22 +26,20 @@ func ValidateOracleVoteExtension(
 	ve vetypes.OracleVoteExtension,
 	strategy currencypair.CurrencyPairStrategy,
 ) error {
+	maxNumCP, err := strategy.GetMaxNumCP(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to get max price bytes size: %w", err)
+	}
+
+	if uint64(len(ve.Prices)) > maxNumCP {
+		return fmt.Errorf("number of oracle vote extension pairs of %d greater than maximum expected pairs of %d", uint64(len(ve.Prices)), maxNumCP)
+	}
+
 	// Verify prices are valid.
-	for id, bz := range ve.Prices {
+	for _, bz := range ve.Prices {
 		// Ensure that the price bytes are not too long.
 		if len(bz) > slinkyabci.MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(bz))
-		}
-
-		// Ensure that the currency pair ID is valid.
-		cp, err := strategy.FromID(ctx, id)
-		if err != nil {
-			return fmt.Errorf("invalid currency pair ID: %d", id)
-		}
-
-		// Ensure that the price bytes are valid.
-		if _, err := strategy.GetDecodedPrice(ctx, cp, bz); err != nil {
-			return fmt.Errorf("invalid price bytes: %w", err)
 		}
 	}
 
