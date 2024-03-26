@@ -32,11 +32,6 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRe
 		return nil, err
 	}
 
-	params, err := q.k.GetParams(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	lastUpdated, err := q.k.GetLastUpdated(ctx)
 	return &types.MarketMapResponse{
 			MarketMap: types.MarketMap{
@@ -44,7 +39,6 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRe
 			},
 
 			LastUpdated: lastUpdated,
-			Version:     params.Version,
 			ChainId:     ctx.ChainID(),
 		},
 		err

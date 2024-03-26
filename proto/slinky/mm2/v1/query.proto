@@ -51,12 +51,8 @@ message MarketMapResponse {
   // is a new update to the map.
   uint64 last_updated = 2;
 
-  // Version is the schema version for the MarketMap data structure and query
-  // response.
-  uint64 version = 3;
-
   // ChainId is the chain identifier for the market map.
-  string chain_id = 4;
+  string chain_id = 3;
 }
 
 // MarketRequest is the query request for the Market query.
