@@ -31,7 +31,7 @@ archives:
       - ./config/local/market.json
       - ./config/local/oracle.json
       - ./config/dydx/market.json
-      - ./config/dydx/market.json
+      - ./config/dydx/oracle.json
       - README.md
 
 snapshot:
