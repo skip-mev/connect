@@ -11,7 +11,7 @@ func WithHTTPMethod(method string) Option {
 }
 
 // WithJSONHeader is an option that's used to set the HTTP headers in accordance with standard JSON-RPC
-// fields
+// fields.
 func WithJSONHeader() Option {
 	return func(r *RequestHandlerImpl) {
 		r.requestHeaderPairs = map[string]string{
