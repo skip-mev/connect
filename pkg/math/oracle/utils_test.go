@@ -17,10 +17,7 @@ func TestGetTickerFromOperation(t *testing.T) {
 		m, err := oracle.NewMedianAggregator(logger, marketmap)
 		require.NoError(t, err)
 
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-		}
-		ticker, err := m.GetTickerFromOperation(operation)
+		ticker, err := m.GetTickerFromCurrencyPair(BTC_USD.CurrencyPair)
 		require.NoError(t, err)
 		require.Equal(t, BTC_USD, ticker)
 	})
@@ -29,10 +26,7 @@ func TestGetTickerFromOperation(t *testing.T) {
 		m, err := oracle.NewMedianAggregator(logger, marketmap)
 		require.NoError(t, err)
 
-		operation := mmtypes.Operation{
-			CurrencyPair: constants.MOG_USD.CurrencyPair,
-		}
-		ticker, err := m.GetTickerFromOperation(operation)
+		ticker, err := m.GetTickerFromCurrencyPair(constants.MOG_USD.CurrencyPair)
 		require.Error(t, err)
 		require.Empty(t, ticker)
 	})
@@ -113,20 +107,19 @@ func TestGetProviderPrice(t *testing.T) {
 		m.DataAggregator.SetAggregatedData(prices)
 
 		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
+		providerConfig := mmtypes.ProviderConfig{
+			Name: coinbase.Name,
 		}
-		price, err := m.GetProviderPrice(operation)
+		price, err := m.GetProviderPrice(BTC_USD, providerConfig, false)
 		require.NoError(t, err)
 		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
 
-		// Attempt to retrieve the index price.
-		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     mmtypes.IndexPrice,
+		// Attempt to retrieve the provider.
+		providerCfg := mmtypes.ProviderConfig{
+			Name:            coinbase.Name,
+			NormalizeByPair: &BTC_USD.CurrencyPair,
 		}
-		price, err = m.GetProviderPrice(operation)
+		price, err = m.GetProviderPrice(BTC_USD, providerCfg, true)
 		require.NoError(t, err)
 		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
 	})
@@ -142,11 +135,10 @@ func TestGetProviderPrice(t *testing.T) {
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
+		providerCfg := mmtypes.ProviderConfig{
+			Name: coinbase.Name,
 		}
-		price, err := m.GetProviderPrice(operation)
+		price, err := m.GetProviderPrice(BTC_USD, providerCfg, false)
 		require.NoError(t, err)
 		require.Equal(t, createPrice(40_000, oracle.ScaledDecimals), price)
 	})
@@ -162,12 +154,11 @@ func TestGetProviderPrice(t *testing.T) {
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
-			Invert:       true,
+		providerCfg := mmtypes.ProviderConfig{
+			Name:   coinbase.Name,
+			Invert: true,
 		}
-		price, err := m.GetProviderPrice(operation)
+		price, err := m.GetProviderPrice(BTC_USD, providerCfg)
 		require.NoError(t, err)
 		expectedPrice := createPrice(0.000025, oracle.ScaledDecimals)
 		verifyPrice(t, expectedPrice, price)

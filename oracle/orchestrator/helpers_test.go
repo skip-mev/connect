@@ -23,7 +23,7 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -162,13 +162,13 @@ var (
 		Providers: map[string]mmtypes.Providers{
 			constants.BITCOIN_USD.String(): {
 				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
+					coinbase.DefaultProviderConfig[constants.BITCOIN_USD],
 					okx.DefaultMarketConfig[constants.BITCOIN_USD],
 				},
 			},
 			constants.ETHEREUM_USD.String(): {
 				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
+					coinbase.DefaultProviderConfig[constants.ETHEREUM_USD],
 					okx.DefaultMarketConfig[constants.ETHEREUM_USD],
 				},
 			},

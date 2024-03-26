@@ -7,7 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 func TestProviderMarketMap(t *testing.T) {
@@ -125,12 +125,10 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 		{
 			name: "valid market map with no entries for the given provider",
 			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
+						Ticker: constants.BITCOIN_USD,
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "test",
 								OffChainTicker: "BTC-USD",
@@ -150,12 +148,10 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 		{
 			name: "valid market map with entries for the given provider",
 			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
+						Ticker: constants.BITCOIN_USD,
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "coinbase",
 								OffChainTicker: "BTC-USD",
@@ -182,12 +178,10 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 		{
 			name: "multiple providers for the same ticker",
 			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
+				Markets: map[string]mmtypes.Market{
 					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
+						Ticker: constants.BITCOIN_USD,
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "coinbase",
 								OffChainTicker: "BTC-USD",

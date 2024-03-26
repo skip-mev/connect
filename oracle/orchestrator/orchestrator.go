@@ -13,11 +13,11 @@ import (
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // ProviderOrchestrator is a stateful orchestrator that is responsible for maintaining
-// all of the providers that the oracle is using. This includes initializing the providers,
+// all providers that the oracle is using. This includes initializing the providers,
 // creating the provider specific market map, and enabling/disabling the providers based
 // on the oracle configuration and market map.
 type ProviderOrchestrator struct {

@@ -15,7 +15,7 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 func TestUpdateWithMarketMap(t *testing.T) {
@@ -30,7 +30,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.NoError(t, o.Init())
 
 		err = o.UpdateWithMarketMap(mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
+			Markets: map[string]mmtypes.Market{
 				"bad": {},
 			},
 		})

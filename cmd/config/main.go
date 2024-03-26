@@ -83,8 +83,8 @@ var (
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//
-		binance.Name:       binance.DefaultNonUSMarketConfig,
-		coinbaseapi.Name:   coinbaseapi.DefaultMarketConfig,
+		binance.Name:       binance.DefaultNonUSProviderConfig,
+		coinbaseapi.Name:   coinbaseapi.DefaultProviderConfig,
 		coingecko.Name:     coingecko.DefaultMarketConfig,
 		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
 		krakenapi.Name:     krakenapi.DefaultMarketConfig,

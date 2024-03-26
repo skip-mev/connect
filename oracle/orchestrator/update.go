@@ -8,7 +8,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // UpdateWithMarketMap updates the orchestrator's market map and updates the providers'
@@ -23,7 +23,7 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 		return err
 	}
 
-	// Iterate over all of the existing providers and update their market maps.
+	// Iterate over all existing providers and update their market maps.
 	for name, state := range o.providers {
 		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(name, marketMap)
 		if err != nil {

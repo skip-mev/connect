@@ -60,8 +60,8 @@ var (
 		URL:              URL,
 	}
 
-	// DefaultUSMarketConfig is the default US market configuration for Binance.
-	DefaultUSMarketConfig = types.TickerToProviderConfig{
+	// DefaultUSProviderConfig is the default US market configuration for Binance.
+	DefaultUSProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",
@@ -204,8 +204,8 @@ var (
 		},
 	}
 
-	// DefaultNonUSMarketConfig is the default market configuration for Binance.
-	DefaultNonUSMarketConfig = types.TickerToProviderConfig{
+	// DefaultNonUSProviderConfig is the default market configuration for Binance.
+	DefaultNonUSProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",

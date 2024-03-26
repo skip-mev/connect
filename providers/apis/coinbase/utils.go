@@ -34,8 +34,8 @@ var (
 		URL:              URL,
 	}
 
-	// DefaultMarketConfig is the default market configuration for Coinbase.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for Coinbase.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USD: {
 			Name:           Name,
 			OffChainTicker: "APE-USD",

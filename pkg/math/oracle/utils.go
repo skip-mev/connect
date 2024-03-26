@@ -29,17 +29,19 @@ func (m *MedianAggregator) GetTickerFromCurrencyPair(
 func (m *MedianAggregator) GetProviderPrice(
 	ticker mmtypes.Ticker,
 	providerConfig mmtypes.ProviderConfig,
+	normalize bool,
 ) (*big.Int, error) {
 	var (
 		err          error
 		cache        types.TickerPrices
 		targetTicker = ticker
 	)
-	isNormalize := providerConfig.NormalizeByPair != nil
-
-	if !isNormalize {
+	if !normalize {
 		cache = m.GetDataByProvider(providerConfig.Name)
 	} else {
+		if providerConfig.NormalizeByPair == nil {
+			return nil, fmt.Errorf("normalize by pair is nil")
+		}
 		cache = m.GetAggregatedData()
 		targetTicker, err = m.GetTickerFromCurrencyPair(*providerConfig.NormalizeByPair)
 	}
@@ -57,7 +59,7 @@ func (m *MedianAggregator) GetProviderPrice(
 		return nil, err
 	}
 
-	if providerConfig.Invert && !isNormalize {
+	if providerConfig.Invert && !normalize {
 		scaledPrice = InvertCurrencyPairPrice(scaledPrice, ScaledDecimals)
 	}
 
