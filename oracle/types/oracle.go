@@ -14,7 +14,7 @@ import (
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/types/factory"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // ConfigType is the type of the API/WebSocket configuration.
@@ -26,7 +26,7 @@ type (
 	// and the additional base provider methods.
 	PriceProviderFactory = factory.BaseProviderFactory[mmtypes.Ticker, *big.Int]
 
-	// PriceProviderFactory is a type alias for the price provider factory. This
+	// PriceProviderFactoryI is a type alias for the price provider factory. This
 	// specifically only returns price providers that implement the provider interface.
 	PriceProviderFactoryI = factory.ProviderFactory[mmtypes.Ticker, *big.Int]
 
