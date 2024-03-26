@@ -24,7 +24,6 @@ func (s *KeeperTestSuite) TestMarketMap() {
 				Markets: make(map[string]types.Market),
 			},
 			LastUpdated: uint64(s.ctx.BlockHeight()),
-			Version:     10,
 			ChainId:     "test-chain",
 		}
 
