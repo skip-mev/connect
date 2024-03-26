@@ -10,14 +10,15 @@ services:
       context: .
       dockerfile: contrib/images/slinky.sidecar.e2e.Dockerfile
     volumes:
-      - ./config/local/oracle.json:/oracle/oracle.json
-      - ./config/local/market.json:/oracle/market.json
+      - ./config/dydx/oracle.json:/oracle/oracle.json
+      - ./config/dydx/market.json:/oracle/market.json
     entrypoint: [
       "oracle", 
       "--oracle-config-path", "/etc/slinky/default_config/oracle.json", 
       "--market-config-path", "/etc/slinky/default_config/market.json", 
+      "--chain-id", "dydx-mainnet-1",
       "--pprof-port", "6060", 
-      "--run-pprof", "true",
+      "--run-pprof",
       ]
     ports:
       - "8080:8080" # main oracle port
