@@ -7,10 +7,9 @@ import (
 // ValidateBasic performs aggregate validation for all fields in the MarketMap. We consider
 // the market map to be valid iff:
 //
-// 1. Each ticker a provider supports is included in the main set of tickers.
-// 2. Each ticker is valid.
-// 3. Each provider is valid.
-// 4. Aggregation function is valid.
+// 1. Each ticker is valid.
+// 2. Each provider is valid.
+// 3. Any provider configuration that requires a transformation (normalizeByPair) must be included in the main set of tickers.
 func (mm *MarketMap) ValidateBasic() error {
 	return mm.ValidateIndexPriceAggregation()
 }
@@ -77,7 +76,7 @@ func (mm *MarketMap) ValidateIndexPriceAggregation() error {
 		for _, providerConfig := range market.ProviderConfigs {
 			if providerConfig.NormalizeByPair != nil {
 				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
-					return fmt.Errorf("provider index of %s was not found in the marketmap", providerConfig.NormalizeByPair.String())
+					return fmt.Errorf("provider's (%s) pair for normalization (%s) was not found in the marketmap", providerConfig.Name, providerConfig.NormalizeByPair.String())
 				}
 			}
 		}

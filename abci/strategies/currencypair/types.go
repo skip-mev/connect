@@ -46,4 +46,10 @@ type CurrencyPairStrategy interface { //nolint
 		cp slinkytypes.CurrencyPair,
 		priceBytes []byte,
 	) (*big.Int, error)
+
+	// GetMaxNumCP returns the number of pairs that the VEs should include.  This method returns an error if the size cannot
+	// be queried from the x/oracle state.
+	GetMaxNumCP(
+		ctx sdk.Context,
+	) (uint64, error)
 }
