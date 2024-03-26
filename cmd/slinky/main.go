@@ -123,6 +123,12 @@ func runOracle() error {
 		}
 	}
 
+	logger.Info(
+		"successfully read in configs",
+		zap.String("oracle_config_path", oracleCfgPath),
+		zap.String("market_config_path", marketCfgPath),
+	)
+
 	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
 	aggregator, err := oraclemath.NewMedianAggregator(
 		logger,

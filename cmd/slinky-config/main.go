@@ -115,7 +115,7 @@ var (
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
 		Metrics:        config.MetricsConfig{},
-		UpdateInterval: 1500 * time.Millisecond,
+		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
@@ -285,7 +285,7 @@ func init() {
 		&updateInterval,
 		"update-interval",
 		"",
-		1500*time.Millisecond,
+		500*time.Millisecond,
 		"Interval at which the oracle will update the prices. This should be set to the interval desired by the chain.",
 	)
 	rootCmd.Flags().DurationVarP(
@@ -307,7 +307,7 @@ func main() {
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
-	if strings.ToLower(chain) == constants.Dydx {
+	if strings.ToLower(chain) == constants.DYDX {
 		// Filter out the providers that are not supported by the dYdX chain.
 		validProviders := make(map[string]struct{})
 		for _, providers := range dydx.ProviderMapping {
@@ -383,7 +383,7 @@ func createOracleConfig() error {
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
 func createMarketMap() error {
-	if strings.ToLower(chain) == constants.Dydx {
+	if strings.ToLower(chain) == constants.DYDX {
 		fmt.Fprintf(
 			os.Stderr,
 			"dYdX chain requires the use of a predetermined market map. please use the market map provided by the Skip/dYdX team or the default market map provided in /config/dydx/market.json",
