@@ -3,7 +3,6 @@ package oracle
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -11,7 +10,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/aggregator"
-	"github.com/skip-mev/slinky/oracle/metrics"
+	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/median"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
@@ -57,7 +56,7 @@ type OracleImpl struct { //nolint
 	priceAggregator types.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
-	metrics metrics.Metrics
+	metrics oraclemetrics.Metrics
 
 	// updateInterval is the interval at which the oracle will fetch prices from
 	// each provider.
@@ -79,7 +78,7 @@ func New(opts ...Option) (*OracleImpl, error) {
 	o := &OracleImpl{
 		closer:  ssync.NewCloser(),
 		logger:  zap.NewNop(),
-		metrics: metrics.NewNopMetrics(),
+		metrics: oraclemetrics.NewNopMetrics(),
 		priceAggregator: types.NewPriceAggregator(
 			aggregator.WithAggregateFn(median.ComputeMedian()),
 		),
@@ -207,17 +206,6 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 
 	timeFilteredPrices := make(types.TickerPrices)
 	for pair, result := range prices {
-		floatValue, _ := result.Value.Float64() // we ignore the accuracy in this conversion
-
-		// Update price metrics.
-		o.metrics.UpdatePrice(
-			provider.Name(),
-			string(provider.Type()),
-			strings.ToLower(pair.String()),
-			pair.Decimals,
-			floatValue,
-		)
-
 		// If the price is older than the maxCacheAge, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
 		if diff > o.maxCacheAge {
@@ -269,16 +257,5 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 // GetPrices returns the aggregate prices from the oracle.
 func (o *OracleImpl) GetPrices() types.TickerPrices {
 	prices := o.priceAggregator.GetAggregatedData()
-
-	for cp, price := range prices {
-		floatValue, _ := price.Float64() // we ignore the accuracy in this conversion
-
-		o.metrics.UpdateAggregatePrice(
-			strings.ToLower(cp.String()),
-			cp.Decimals,
-			floatValue,
-		)
-	}
-
 	return prices
 }

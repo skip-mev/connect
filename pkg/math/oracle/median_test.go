@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -135,7 +136,7 @@ func TestAggregateData(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			m, err := oracle.NewMedianAggregator(logger, marketmap)
+			m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
@@ -428,7 +429,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			m, err := oracle.NewMedianAggregator(logger, marketmap)
+			m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
@@ -907,7 +908,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			m, err := oracle.NewMedianAggregator(logger, marketmap)
+			m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
