@@ -6,12 +6,9 @@ import (
 	"fmt"
 	"sort"
 
+	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-
-	"golang.org/x/exp/maps"
-
-	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -21,6 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/maps"
 
 	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/mm2/module/v1"
 	"github.com/skip-mev/slinky/x/mm2/client/cli"
@@ -58,7 +56,7 @@ func (amb AppModuleBasic) GetTxCmd() *cobra.Command {
 	return nil
 }
 
-// GetQueryCmd returns the x/oracle module base query cli-command.
+// GetQueryCmd returns the x/marketmap module base query cli-command.
 func (amb AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
