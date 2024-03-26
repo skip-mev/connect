@@ -108,17 +108,9 @@ func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.
 
 	// Update the module's parameters.
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	params, err := ms.k.GetParams(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	if msg.Authority != ms.k.authority.String() {
 		return nil, fmt.Errorf("request authority %s does not match module keeper authority %s", msg.Authority, ms.k.authority.String())
-	}
-
-	if msg.Params.Version < params.Version {
-		return nil, fmt.Errorf("request version %d is less than current params version %d", msg.Params.Version, params.Version)
 	}
 
 	if err := ms.k.SetParams(ctx, msg.Params); err != nil {
