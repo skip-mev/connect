@@ -398,6 +398,7 @@ func createMarketMap() error {
 		// TickersToProviders defines a map of tickers to their respective providers. This
 		// contains all of the providers that are supported per ticker.
 		tickersToProviders = make(map[string]mmtypes.Providers)
+		tickersToPaths     = make(map[string]mmtypes.Paths)
 	)
 
 	// Iterate through all of the provider ticker configurations and update the
@@ -423,6 +424,18 @@ func createMarketMap() error {
 			providers := tickersToProviders[tickerStr].Providers
 			providers = append(providers, config)
 			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
+
+			if _, ok := tickersToPaths[tickerStr]; !ok {
+				tickersToPaths[tickerStr] = mmtypes.Paths{}
+			}
+			paths := tickersToPaths[tickerStr].Paths
+			paths = append(paths, mmtypes.Path{Operations: []mmtypes.Operation{
+				{ticker.CurrencyPair,
+					false,
+					config.Name,
+				},
+			}})
+			tickersToPaths[tickerStr] = mmtypes.Paths{Paths: paths}
 		}
 	}
 
@@ -430,6 +443,7 @@ func createMarketMap() error {
 	marketMap := mmtypes.MarketMap{
 		Tickers:   tickers,
 		Providers: tickersToProviders,
+		Paths:     tickersToPaths,
 	}
 
 	// Validate the market map.
