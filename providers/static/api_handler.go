@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
-
 	"github.com/skip-mev/slinky/oracle/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var _ types.PriceAPIDataHandler = (*MockAPIHandler)(nil)

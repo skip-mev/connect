@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 func ComputeMedianWithContext(_ sdk.Context) types.PriceAggregationFn {
@@ -21,18 +21,18 @@ func ComputeMedian() types.PriceAggregationFn {
 		// Aggregate prices across all providers for each asset.
 		pricesByAsset := make(map[mmtypes.Ticker][]*big.Int)
 		for _, providerPrices := range providers {
-			for cp, price := range providerPrices {
+			for ticker, price := range providerPrices {
 				// Only include prices that are not nil
 				if price == nil {
 					continue
 				}
 
 				// Initialize the asset array if it doesn't exist
-				if _, ok := pricesByAsset[cp]; !ok {
-					pricesByAsset[cp] = make([]*big.Int, 0)
+				if _, ok := pricesByAsset[ticker]; !ok {
+					pricesByAsset[ticker] = make([]*big.Int, 0)
 				}
 
-				pricesByAsset[cp] = append(pricesByAsset[cp], price)
+				pricesByAsset[ticker] = append(pricesByAsset[ticker], price)
 			}
 		}
 

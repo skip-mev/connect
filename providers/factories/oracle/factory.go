@@ -14,7 +14,7 @@ import (
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/types/factory"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // DefaultOracleProviderFactory is a sample implementation of the provider factory. This provider

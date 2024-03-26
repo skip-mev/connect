@@ -10,10 +10,10 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
-// Init initializes the all of the providers that are configured via the oracle config.
+// Init initializes the all providers that are configured via the oracle config.
 func (o *ProviderOrchestrator) Init() error {
 	o.mut.Lock()
 	defer o.mut.Unlock()

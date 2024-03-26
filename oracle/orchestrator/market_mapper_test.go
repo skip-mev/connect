@@ -150,7 +150,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
 
 		resolved := make(mmclienttypes.ResolvedMarketMap)
-		resp := mmtypes.GetMarketMapResponse{
+		resp := mmtypes.MarketMapResponse{
 			MarketMap: marketMap,
 		}
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
@@ -187,7 +187,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
 
 		resolved := make(mmclienttypes.ResolvedMarketMap)
-		resp := mmtypes.GetMarketMapResponse{
+		resp := mmtypes.MarketMapResponse{
 			MarketMap: marketMap,
 		}
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())

@@ -29,7 +29,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -38,12 +38,12 @@ var (
 		Short: "Create configuration required for running slinky.",
 		Args:  cobra.NoArgs,
 		Run: func(_ *cobra.Command, _ []string) {
-			// Create the oracle config that contains all of the providers that are supported.
+			// Create the oracle config that contains all providers that are supported.
 			if err := createOracleConfig(); err != nil {
 				panic(err)
 			}
 
-			// Create the market map that contains all of the tickers and providers that are
+			// Create the market map that contains all tickers and providers that are
 			// supported.
 			if err := createMarketMap(); err != nil {
 				panic(err)
@@ -104,7 +104,7 @@ var (
 		okx.Name:          okx.DefaultMarketConfig,
 	}
 
-	// LocalConfig defines a readable config for local development. Any changes to this
+	// LocalOracleConfig defines a readable config for local development. Any changes to this
 	// file should be reflected in oracle.json. To update the oracle.json file, run
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
@@ -377,7 +377,7 @@ func createOracleConfig() error {
 	return nil
 }
 
-// createMarketMap creates a market map given all of the local market configurations for
+// createMarketMap creates a market map given all local market configurations for
 // each provider as well as the custom conversion markets. We do so to ensure that the
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
@@ -392,17 +392,16 @@ func createMarketMap() error {
 
 	var (
 		// Tickers defines a map of tickers to their respective ticker configurations. This
-		// contains all of the tickers that are supported by the oracle.
+		// contains all tickers that are supported by the oracle.
 		tickers = make(map[string]mmtypes.Ticker)
-		// TickersToProviders defines a map of tickers to their respective providers. This
-		// contains all of the providers that are supported per ticker.
-		tickersToProviders = make(map[string]mmtypes.Providers)
+
+		markets = make(map[string]mmtypes.Market)
 	)
 
-	// Iterate through all of the provider ticker configurations and update the
+	// Iterate through all provider ticker configurations and update the
 	// tickers and tickers to providers maps.
-	for name, providerConfig := range ProviderToMarkets {
-		for ticker, config := range providerConfig {
+	for name, providerConfigs := range ProviderToMarkets {
+		for ticker, providerConfig := range providerConfigs {
 			tickerStr := ticker.String()
 
 			// Add the ticker to the tickers map iff the ticker does not already exist. If the
@@ -414,22 +413,22 @@ func createMarketMap() error {
 			}
 
 			// Instantiate the providers for a given ticker.
-			if _, ok := tickersToProviders[tickerStr]; !ok {
-				tickersToProviders[tickerStr] = mmtypes.Providers{}
+			if _, ok := markets[tickerStr]; !ok {
+				markets[tickerStr] = mmtypes.Market{
+					Ticker:          ticker,
+					ProviderConfigs: make([]mmtypes.ProviderConfig, 0),
+				}
 			}
 
 			// Add the provider to the tickers to providers map.
-			providers := tickersToProviders[tickerStr].Providers
-			providers = append(providers, config)
-			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
+			market := markets[tickerStr]
+			market.ProviderConfigs = append(market.ProviderConfigs, providerConfig)
+			markets[tickerStr] = market
 		}
 	}
 
 	// Create a new market map from the provider to market map.
-	marketMap := mmtypes.MarketMap{
-		Tickers:   tickers,
-		Providers: tickersToProviders,
-	}
+	marketMap := mmtypes.MarketMap{Markets: markets}
 
 	// Validate the market map.
 	if err := marketMap.ValidateBasic(); err != nil {

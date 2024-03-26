@@ -15,7 +15,7 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 func TestInit(t *testing.T) {
@@ -135,11 +135,11 @@ func TestInit(t *testing.T) {
 	t.Run("errors when a provider is not supported by the web socket query handler factory", func(t *testing.T) {
 		cfg := oracleCfg
 
-		okx := okx.DefaultWebSocketConfig
-		okx.Name = "unsupported"
+		okxCfg := okx.DefaultWebSocketConfig
+		okxCfg.Name = "unsupported"
 		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
 			Name:      "unsupported",
-			WebSocket: okx,
+			WebSocket: okxCfg,
 			Type:      oracletypes.ConfigType,
 		})
 

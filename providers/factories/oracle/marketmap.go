@@ -13,7 +13,7 @@ import (
 	apimetrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // DefaultMarketMapProvider returns a sample implementation of the market map provider. This provider
@@ -50,11 +50,11 @@ func DefaultMarketMapProvider(
 	}
 
 	return types.NewMarketMapProvider(
-		base.WithName[types.Chain, *mmtypes.GetMarketMapResponse](cfg.Name),
-		base.WithLogger[types.Chain, *mmtypes.GetMarketMapResponse](logger),
+		base.WithName[types.Chain, *mmtypes.MarketMapResponse](cfg.Name),
+		base.WithLogger[types.Chain, *mmtypes.MarketMapResponse](logger),
 		base.WithAPIQueryHandler(queryHandler),
-		base.WithAPIConfig[types.Chain, *mmtypes.GetMarketMapResponse](cfg.API),
-		base.WithMetrics[types.Chain, *mmtypes.GetMarketMapResponse](providerMetrics),
+		base.WithAPIConfig[types.Chain, *mmtypes.MarketMapResponse](cfg.API),
+		base.WithMetrics[types.Chain, *mmtypes.MarketMapResponse](providerMetrics),
 	)
 }
 
@@ -91,15 +91,15 @@ func DefaultDYDXMarketMapProvider(
 		return nil, err
 	}
 
-	// By default the dYdX market map provider only supports the dYdX chain.
+	// By default, the dYdX market map provider only supports the dYdX chain.
 	ids := []types.Chain{{ChainID: dydx.ChainID}}
 
 	return types.NewMarketMapProvider(
-		base.WithName[types.Chain, *mmtypes.GetMarketMapResponse](cfg.Name),
-		base.WithLogger[types.Chain, *mmtypes.GetMarketMapResponse](logger),
+		base.WithName[types.Chain, *mmtypes.MarketMapResponse](cfg.Name),
+		base.WithLogger[types.Chain, *mmtypes.MarketMapResponse](logger),
 		base.WithAPIQueryHandler(queryHandler),
-		base.WithAPIConfig[types.Chain, *mmtypes.GetMarketMapResponse](cfg.API),
-		base.WithMetrics[types.Chain, *mmtypes.GetMarketMapResponse](providerMetrics),
-		base.WithIDs[types.Chain, *mmtypes.GetMarketMapResponse](ids),
+		base.WithAPIConfig[types.Chain, *mmtypes.MarketMapResponse](cfg.API),
+		base.WithMetrics[types.Chain, *mmtypes.MarketMapResponse](providerMetrics),
+		base.WithIDs[types.Chain, *mmtypes.MarketMapResponse](ids),
 	)
 }

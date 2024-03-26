@@ -8,10 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	_ "net/http/pprof" //nolint: gosec
-
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
@@ -23,7 +22,7 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
