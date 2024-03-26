@@ -3,7 +3,7 @@ package handlers_test
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/big"
 	"net/http"
 	"strings"
@@ -650,6 +650,8 @@ func TestAPIQueryHandlerWithBody(t *testing.T) {
 		handlers.WithHTTPMethod(http.MethodPost),
 		handlers.WithJSONHeader(),
 	)
+	require.NoError(t, err)
+
 	mockMetrics := mockmetrics.NewAPIMetrics(t)
 
 	handler, err := handlers.NewAPIQueryHandler[slinkytypes.CurrencyPair, *big.Int](
@@ -666,7 +668,7 @@ func TestAPIQueryHandlerWithBody(t *testing.T) {
 		// On
 		apiHandler.On("CreateURL", []slinkytypes.CurrencyPair{btcusd}).Return("url", nil) // successful url creation
 		// failing create-body
-		err := fmt.Errorf("error!")
+		err := fmt.Errorf("error")
 		apiHandler.On("CreateBody", []slinkytypes.CurrencyPair{btcusd}).Return(nil, err).Once()
 		// expect metrics reports
 		mockMetrics.On("AddProviderResponse", cfg.Name, strings.ToLower(fmt.Sprint(btcusd)), mock.Anything).Once()
@@ -720,7 +722,7 @@ func TestAPIQueryHandlerWithBody(t *testing.T) {
 			require.Equal(t, req.Header.Get("Accept"), "application/json")
 
 			// expect body
-			body, err := ioutil.ReadAll(req.Body)
+			body, err := io.ReadAll(req.Body)
 			require.NoError(t, err)
 			require.Equal(t, []byte{1, 2, 3}, body)
 		}).Once()
