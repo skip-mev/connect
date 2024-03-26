@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -22,7 +21,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -153,8 +152,8 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.user = users[0]
 
 	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
-		MarketAuthority: s.user.FormattedAddress(),
-		Version:         0,
+		MarketAuthorities: []string{s.user.FormattedAddress()},
+		Version:           0,
 	})
 	s.Require().NoError(err, resp)
 }
@@ -273,13 +272,11 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			})
 
 			marketConfig := mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					eth_usdc.String(): eth_usdc,
-				},
-				Providers: map[string]mmtypes.Providers{
-					eth_usdc.String(): {
-						Providers: []mmtypes.ProviderConfig{
-							{
+				Markets: map[string]mmtypes.Market{
+					eth_usdc.String(): mmtypes.Market{
+						Ticker: eth_usdc,
+						ProviderConfigs: []mmtypes.ProviderConfig{
+							mmtypes.ProviderConfig{
 								Name:           static.Name,
 								OffChainTicker: "1140",
 							},
@@ -497,14 +494,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		marketConfig := mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
-				eth_usdc.String(): eth_usdc,
-				eth_usdt.String(): eth_usdt,
-				eth_usd.String():  eth_usd,
-			},
-			Providers: map[string]mmtypes.Providers{
+			Markets: map[string]mmtypes.Market{
 				eth_usdc.String(): {
-					Providers: []mmtypes.ProviderConfig{
+					Ticker: eth_usdc,
+					ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
@@ -512,7 +505,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					},
 				},
 				eth_usdt.String(): {
-					Providers: []mmtypes.ProviderConfig{
+					Ticker: eth_usdt,
+					ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
@@ -520,7 +514,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					},
 				},
 				eth_usd.String(): {
-					Providers: []mmtypes.ProviderConfig{
+					Ticker: eth_usd,
+					ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1142",
@@ -598,13 +593,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		marketConfig := mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
-				eth_usdc.String(): eth_usdc,
-				eth_usdt.String(): eth_usdt,
-			},
-			Providers: map[string]mmtypes.Providers{
+			Markets: map[string]mmtypes.Market{
 				eth_usdc.String(): {
-					Providers: []mmtypes.ProviderConfig{
+					Ticker: eth_usdc,
+					ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
@@ -612,7 +604,8 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					},
 				},
 				eth_usdt.String(): {
-					Providers: []mmtypes.ProviderConfig{
+					Ticker: eth_usdt,
+					ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
