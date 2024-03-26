@@ -8,11 +8,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-const (
-	// DefaultVersion is the default value for the Version Param.
-	DefaultVersion = 0
-)
-
 // DefaultMarketAuthority is the default value for the market authority Param.
 var DefaultMarketAuthority = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 
@@ -20,19 +15,17 @@ var DefaultMarketAuthority = authtypes.NewModuleAddress(govtypes.ModuleName).Str
 func DefaultParams() Params {
 	return Params{
 		MarketAuthorities: []string{DefaultMarketAuthority},
-		Version:           DefaultVersion,
 	}
 }
 
 // NewParams returns a new Params instance.
-func NewParams(authorities []string, version uint64) (Params, error) {
+func NewParams(authorities []string) (Params, error) {
 	if authorities != nil {
 		return Params{}, fmt.Errorf("cannot create Params with nil authority")
 	}
 
 	return Params{
 		MarketAuthorities: authorities,
-		Version:           version,
 	}, nil
 }
 
