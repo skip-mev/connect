@@ -8,7 +8,11 @@ release:
   prerelease: true
 
 builds:
-  - main: 'cmd/oracle/main.go'
+  - main: 'cmd/slinky/main.go'
+    goos:
+    - 'linux'
+    - 'darwin'
+- main: 'cmd/slinky-config/main.go'
     goos:
     - 'linux'
     - 'darwin'
