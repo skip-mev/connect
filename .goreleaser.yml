@@ -12,7 +12,7 @@ builds:
     goos:
     - 'linux'
     - 'darwin'
-- main: 'cmd/slinky-config/main.go'
+  - main: 'cmd/slinky-config/main.go'
     goos:
     - 'linux'
     - 'darwin'

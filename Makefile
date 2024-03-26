@@ -30,7 +30,7 @@ build: tidy
 	@go build -o ./build/ ./...
 
 run-oracle-server: build
-	@./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -43,7 +43,7 @@ run-prom-client:
 
 update-local-configs: build
 	@echo "Updating local config..."
-	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
@@ -54,7 +54,8 @@ stop-oracle:
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
 install: tidy
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
 .PHONY: build run-oracle-server install
 
