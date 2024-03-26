@@ -273,10 +273,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 			marketConfig := mmtypes.MarketMap{
 				Markets: map[string]mmtypes.Market{
-					eth_usdc.String(): mmtypes.Market{
+					eth_usdc.String(): {
 						Ticker: eth_usdc,
 						ProviderConfigs: []mmtypes.ProviderConfig{
-							mmtypes.ProviderConfig{
+							{
 								Name:           static.Name,
 								OffChainTicker: "1140",
 							},

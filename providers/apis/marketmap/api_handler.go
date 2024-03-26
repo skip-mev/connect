@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
-
 	"github.com/skip-mev/slinky/oracle/config"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
@@ -79,7 +78,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Parse the response body into a market map object.
-	var market mmtypes.GetMarketMapResponse
+	var market mmtypes.MarketMapResponse
 	if err := json.NewDecoder(resp.Body).Decode(&market); err != nil {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(

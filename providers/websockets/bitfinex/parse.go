@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
-
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 const (

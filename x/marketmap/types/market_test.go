@@ -152,7 +152,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "provider includes a ticker that is supported by the main set - no paths",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Providers: map[string]types.Providers{
 					constants.BITCOIN_USD.String(): {
@@ -182,7 +182,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "paths includes a path that has no operations",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Paths: map[string]types.Paths{
 					constants.BITCOIN_USD.String(): {
@@ -201,7 +201,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "paths includes a path that has too many operations",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Paths: map[string]types.Paths{
 					constants.BITCOIN_USD.String(): {
@@ -233,7 +233,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "operation includes a ticker that is not supported",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Paths: map[string]types.Paths{
 					constants.BITCOIN_USD.String(): {
@@ -257,7 +257,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "operation includes a provider that does not support the ticker",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Paths: map[string]types.Paths{
 					constants.BITCOIN_USD.String(): {
@@ -281,7 +281,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "provider does not support a ticker included in an operation",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Providers: map[string]types.Providers{
 					constants.BITCOIN_USD.String(): {
@@ -310,7 +310,7 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "valid single path",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+					constants.BITCOIN_USD.String(): types.Ticker(constants.BITCOIN_USD),
 				},
 				Providers: map[string]types.Providers{
 					constants.BITCOIN_USD.String(): {
@@ -344,8 +344,8 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "path includes a index ticker that is not supported",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USDT.String(): constants.BITCOIN_USDT,
-					constants.BITCOIN_USD.String():  constants.BITCOIN_USD,
+					constants.BITCOIN_USDT.String(): types.Ticker(constants.BITCOIN_USDT),
+					constants.BITCOIN_USD.String():  types.Ticker(constants.BITCOIN_USD),
 				},
 				Providers: map[string]types.Providers{
 					constants.BITCOIN_USDT.String(): {
@@ -383,9 +383,9 @@ func TestValidateMarketMap(t *testing.T) {
 			name: "second operation is not an index price provider",
 			cfg: types.MarketMap{
 				Tickers: map[string]types.Ticker{
-					constants.BITCOIN_USDT.String(): constants.BITCOIN_USDT,
-					constants.BITCOIN_USD.String():  constants.BITCOIN_USD,
-					constants.USDT_USD.String():     constants.USDT_USD,
+					constants.BITCOIN_USDT.String(): types.Ticker(constants.BITCOIN_USDT),
+					constants.BITCOIN_USD.String():  types.Ticker(constants.BITCOIN_USD),
+					constants.USDT_USD.String():     types.Ticker(constants.USDT_USD),
 				},
 				Providers: map[string]types.Providers{
 					constants.BITCOIN_USDT.String(): {

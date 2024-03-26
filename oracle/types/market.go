@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 type (
@@ -37,20 +37,16 @@ func ProviderMarketMapFromMarketMap(name string, marketMap mmtypes.MarketMap) (P
 		return ProviderMarketMap{}, fmt.Errorf("invalid market map: %w", err)
 	}
 
-	// Iterate over the providers and their respective tickers.
 	tickers := make(TickerToProviderConfig)
-	for tickerStr, config := range marketMap.Providers {
-		ticker, ok := marketMap.Tickers[tickerStr]
-		if !ok {
-			return ProviderMarketMap{}, fmt.Errorf("ticker %s not found in market map", tickerStr)
-		}
 
-		for _, provider := range config.Providers {
+	// Iterate over the providers and their respective tickers.
+	for _, market := range marketMap.Markets {
+		for _, provider := range market.ProviderConfigs {
 			if provider.Name != name {
 				continue
 			}
 
-			tickers[ticker] = provider
+			tickers[market.Ticker] = provider
 			break
 		}
 	}

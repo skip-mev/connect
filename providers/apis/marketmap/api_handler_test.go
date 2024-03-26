@@ -13,7 +13,7 @@ import (
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -27,12 +27,10 @@ var (
 	}
 
 	goodMarketMap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			constants.BITCOIN_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
+				Ticker: constants.BITCOIN_USD,
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:           "coinbase",
 						OffChainTicker: "BTC/USD",
@@ -43,8 +41,10 @@ var (
 	}
 
 	badMarketMap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
+		Markets: map[string]mmtypes.Market{
+			constants.BITCOIN_USD.String(): {
+				Ticker: constants.BITCOIN_USD,
+			},
 		},
 	}
 )
@@ -121,7 +121,7 @@ func TestParseResponse(t *testing.T) {
 			name:   "errors when the market map response is invalid",
 			chains: chains[:1],
 			resp: func() *http.Response {
-				resp := mmtypes.GetMarketMapResponse{
+				resp := mmtypes.MarketMapResponse{
 					MarketMap: badMarketMap,
 				}
 
@@ -142,15 +142,15 @@ func TestParseResponse(t *testing.T) {
 			name:   "returns a market map that does not match the chain id",
 			chains: chains[:1],
 			resp: func() *http.Response {
-				resp := mmtypes.GetMarketMapResponse{
+				resp := mmtypes.MarketMapResponse{
 					MarketMap: goodMarketMap,
 					ChainId:   "invalid",
 				}
 
-				json, err := json.Marshal(resp)
+				jsonResp, err := json.Marshal(resp)
 				require.NoError(t, err)
 
-				return testutils.CreateResponseFromJSON(string(json))
+				return testutils.CreateResponseFromJSON(string(jsonResp))
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
@@ -164,7 +164,7 @@ func TestParseResponse(t *testing.T) {
 			name:   "returns a resolved market map",
 			chains: chains[:1],
 			resp: func() *http.Response {
-				resp := mmtypes.GetMarketMapResponse{
+				resp := mmtypes.MarketMapResponse{
 					MarketMap: goodMarketMap,
 					ChainId:   chains[0].ChainID,
 				}
@@ -177,7 +177,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.MarketMapResponse{
 				Resolved: types.ResolvedMarketMap{
 					chains[0]: types.MarketMapResult{
-						Value: &mmtypes.GetMarketMapResponse{
+						Value: &mmtypes.MarketMapResponse{
 							MarketMap: goodMarketMap,
 							ChainId:   chains[0].ChainID,
 						},

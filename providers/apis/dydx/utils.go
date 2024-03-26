@@ -22,7 +22,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 const (
@@ -71,47 +71,45 @@ var ProviderMapping = map[string][]string{
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
-func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsResponse) (mmtypes.GetMarketMapResponse, error) {
+func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsResponse) (mmtypes.MarketMapResponse, error) {
 	marketMap := mmtypes.MarketMap{
-		Tickers:         make(map[string]mmtypes.Ticker),
-		Providers:       make(map[string]mmtypes.Providers),
-		Paths:           make(map[string]mmtypes.Paths),
-		AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,
+		Markets: make(map[string]mmtypes.Market),
 	}
 
 	for _, market := range params.MarketParams {
 		ticker, err := CreateTickerFromMarket(market)
 		if err != nil {
-			return mmtypes.GetMarketMapResponse{}, err
+			return mmtypes.MarketMapResponse{}, err
 		}
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
 		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
-			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config for %s: %w", ticker.String(), err)
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config for %s: %w", ticker.String(), err)
 		}
 
 		// Convert the exchange config JSON to a set of paths and providers.
-		tickerPaths, tickerProviders, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
+		tickerProviders, err := ConvertExchangeConfigJSON(exchangeConfigJSON)
 		if err != nil {
-			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to convert exchange config json for %s: %w", ticker.String(), err)
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to convert exchange config json for %s: %w", ticker.String(), err)
 		}
 
 		// Add the ticker, provider, and paths to the market map.
-		marketMap.Tickers[ticker.String()] = ticker
-		marketMap.Paths[ticker.String()] = tickerPaths
-		marketMap.Providers[ticker.String()] = tickerProviders
+		marketMap.Markets[ticker.String()] = mmtypes.Market{
+			Ticker:          ticker,
+			ProviderConfigs: tickerProviders,
+		}
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {
-		return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to validate market map: %w", err)
+		return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to validate market map: %w", err)
 	}
 
-	return mmtypes.GetMarketMapResponse{
+	return mmtypes.MarketMapResponse{
 		MarketMap: marketMap,
 	}, nil
 }
 
-// CreateCurrencyPairFromMarket creates a currency pair from a dYdX market.
+// CreateCurrencyPairFromPair creates a currency pair from a dYdX market.
 func CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
 	split := strings.Split(pair, Delimeter)
 	if len(split) != 2 {
@@ -146,11 +144,9 @@ func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error
 // from a dYdX market. These paths represent the different ways to convert a currency
 // pair using the dYdX market.
 func ConvertExchangeConfigJSON(
-	ticker mmtypes.Ticker,
 	config dydxtypes.ExchangeConfigJson,
-) (mmtypes.Paths, mmtypes.Providers, error) {
+) ([]mmtypes.ProviderConfig, error) {
 	var (
-		paths     []mmtypes.Path
 		providers []mmtypes.ProviderConfig
 		seen      = make(map[dydxtypes.ExchangeMarketConfigJson]struct{})
 	)
@@ -165,121 +161,100 @@ func ConvertExchangeConfigJSON(
 		// This means we have seen an exchange that slinky cannot support.
 		exchangeNames, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
-			return mmtypes.Paths{}, mmtypes.Providers{}, fmt.Errorf("unsupported exchange: %s", cfg.ExchangeName)
+			return nil, fmt.Errorf("unsupported exchange: %s", cfg.ExchangeName)
 		}
 
 		var (
-			exchangePaths []mmtypes.Path
-			err           error
-			addProviders  = true
+			err              error
+			createdProviders []mmtypes.ProviderConfig
 		)
+
 		// Determine the relevant operations and provider configs based on the exchange config.
 		switch {
 		case len(cfg.AdjustByMarket) == 0 && !cfg.Invert:
-			exchangePaths = DirectConversion(ticker, exchangeNames)
+			createdProviders, err = DirectConversion(cfg, exchangeNames)
 		case len(cfg.AdjustByMarket) == 0 && cfg.Invert:
-			exchangePaths = InvertedConversion(ticker, exchangeNames)
+			createdProviders, err = InvertedConversion(cfg, exchangeNames)
+
 		case len(cfg.AdjustByMarket) > 0 && !cfg.Invert:
-			exchangePaths, err = IndirectConversion(ticker, cfg, exchangeNames)
+			createdProviders, err = IndirectConversion(cfg, exchangeNames)
+
 		case len(cfg.AdjustByMarket) > 0 && cfg.Invert:
-			exchangePaths, err = IndirectInvertedConversion(cfg, exchangeNames)
-			addProviders = false
+			createdProviders, err = IndirectInvertedConversion(cfg, exchangeNames)
 		}
 		if err != nil {
-			return mmtypes.Paths{}, mmtypes.Providers{}, err
+			return nil, err
 		}
 
-		// We only update the providers for a given ticker if the conversion includes the exchanges
-		// off-chain representation i.e. Case 1,2,3.
-		paths = append(paths, exchangePaths...)
-		if addProviders {
-			offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
-			for _, name := range exchangeNames {
-				providers = append(providers, mmtypes.ProviderConfig{
-					Name:           name,
-					OffChainTicker: offChainTicker,
-				})
-			}
-		}
+		providers = append(providers, createdProviders...)
 
 	}
 
-	return mmtypes.Paths{Paths: paths}, mmtypes.Providers{Providers: providers}, nil
+	return providers, nil
 }
 
 // DirectConversion is a conversion from market to desired ticker i.e. BTC/USD -> BTC/USD.
 func DirectConversion(
-	ticker mmtypes.Ticker,
+	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
-) []mmtypes.Path {
-	paths := make([]mmtypes.Path, len(exchangeNames))
+) ([]mmtypes.ProviderConfig, error) {
+	providers := make([]mmtypes.ProviderConfig, len(exchangeNames))
+
+	offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
 	for i, name := range exchangeNames {
-		path := mmtypes.Path{
-			Operations: []mmtypes.Operation{
-				{
-					CurrencyPair: ticker.CurrencyPair,
-					Provider:     name,
-					Invert:       false,
-				},
-			},
+		providers[i] = mmtypes.ProviderConfig{
+			Name:            name,
+			OffChainTicker:  offChainTicker,
+			Invert:          false,
+			NormalizeByPair: nil,
 		}
-		paths[i] = path
 	}
-	return paths
+	return providers, nil
 }
 
 // InvertedConversion is a conversion with an inverted price i.e. USD/BTC ^ -1 = BTC/USD.
 func InvertedConversion(
-	ticker mmtypes.Ticker,
+	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
-) []mmtypes.Path {
-	paths := make([]mmtypes.Path, len(exchangeNames))
+) ([]mmtypes.ProviderConfig, error) {
+	providers := make([]mmtypes.ProviderConfig, len(exchangeNames))
+
+	offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
 	for i, name := range exchangeNames {
-		path := mmtypes.Path{
-			Operations: []mmtypes.Operation{
-				{
-					CurrencyPair: ticker.CurrencyPair,
-					Provider:     name,
-					Invert:       true,
-				},
-			},
+		providers[i] = mmtypes.ProviderConfig{
+			Name:            name,
+			OffChainTicker:  offChainTicker,
+			Invert:          true,
+			NormalizeByPair: nil,
 		}
-		paths[i] = path
 	}
-	return paths
+
+	return providers, nil
 }
 
 // IndirectConversion is a conversion of two markets i.e. BTC/USDT * USDT/USD = BTC/USD.
 func IndirectConversion(
-	ticker mmtypes.Ticker,
 	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
-) ([]mmtypes.Path, error) {
+) ([]mmtypes.ProviderConfig, error) {
+	providers := make([]mmtypes.ProviderConfig, len(exchangeNames))
+
 	cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
 	if err != nil {
 		return nil, err
 	}
 
-	paths := make([]mmtypes.Path, len(exchangeNames))
+	offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
 	for i, name := range exchangeNames {
-		path := mmtypes.Path{
-			Operations: []mmtypes.Operation{
-				{
-					CurrencyPair: ticker.CurrencyPair,
-					Provider:     name,
-					Invert:       false,
-				},
-				{
-					CurrencyPair: cp,
-					Provider:     mmtypes.IndexPrice,
-					Invert:       false,
-				},
-			},
+		providers[i] = mmtypes.ProviderConfig{
+			Name:            name,
+			OffChainTicker:  offChainTicker,
+			Invert:          false,
+			NormalizeByPair: &cp,
 		}
-		paths[i] = path
 	}
 
-	return paths, nil
+	return providers, nil
 }
 
 // IndirectInvertedConversion is a conversion of two markets to a desired ticker
@@ -288,32 +263,25 @@ func IndirectConversion(
 func IndirectInvertedConversion(
 	cfg dydxtypes.ExchangeMarketConfigJson,
 	exchangeNames []string,
-) ([]mmtypes.Path, error) {
+) ([]mmtypes.ProviderConfig, error) {
+	providers := make([]mmtypes.ProviderConfig, len(exchangeNames))
+
 	cp, err := CreateCurrencyPairFromPair(cfg.AdjustByMarket)
 	if err != nil {
 		return nil, err
 	}
 
-	paths := make([]mmtypes.Path, len(exchangeNames))
+	offChainTicker := ConvertDenomByProvider(cfg.Ticker, cfg.ExchangeName)
 	for i, name := range exchangeNames {
-		path := mmtypes.Path{
-			Operations: []mmtypes.Operation{
-				{
-					CurrencyPair: cp,
-					Provider:     name,
-					Invert:       true,
-				},
-				{
-					CurrencyPair: cp,
-					Provider:     mmtypes.IndexPrice,
-					Invert:       false,
-				},
-			},
+		providers[i] = mmtypes.ProviderConfig{
+			Name:            name,
+			OffChainTicker:  offChainTicker,
+			Invert:          true,
+			NormalizeByPair: &cp,
 		}
-		paths[i] = path
 	}
 
-	return paths, nil
+	return providers, nil
 }
 
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
