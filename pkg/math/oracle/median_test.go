@@ -384,7 +384,6 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		expectedPrice  *big.Int
 		expectedErr    bool
 	}{
-
 		{
 			name:           "empty providerConfig",
 			target:         BTC_USD,

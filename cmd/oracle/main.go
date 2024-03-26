@@ -8,9 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "net/http/pprof" //nolint: gosec
+
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
