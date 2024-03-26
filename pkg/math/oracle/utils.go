@@ -5,20 +5,21 @@ import (
 	"math/big"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
-// GetTickerFromOperation returns the ticker for the given operation.
-func (m *MedianAggregator) GetTickerFromOperation(
-	operation mmtypes.Operation,
+// GetTickerFromCurrencyPair returns the ticker for the given currency pair.
+func (m *MedianAggregator) GetTickerFromCurrencyPair(
+	cp slinkytypes.CurrencyPair,
 ) (mmtypes.Ticker, error) {
 	cfg := m.GetMarketMap()
-	ticker, ok := cfg.Tickers[operation.CurrencyPair.String()]
+	market, ok := cfg.Markets[cp.String()]
 	if !ok {
-		return mmtypes.Ticker{}, fmt.Errorf("missing ticker: %s", operation.CurrencyPair.String())
+		return mmtypes.Ticker{}, fmt.Errorf("missing ticker: %s", cp.String())
 	}
 
-	return ticker, nil
+	return market.Ticker, nil
 }
 
 // GetProviderPrice returns the relevant provider price. Note that if the operation
@@ -26,31 +27,37 @@ func (m *MedianAggregator) GetTickerFromOperation(
 // median prices. Otherwise, the price is retrieved from the provider cache. Additionally,
 // this function normalizes (scales, inverts) the price to maintain the maximum precision.
 func (m *MedianAggregator) GetProviderPrice(
-	operation mmtypes.Operation,
+	ticker mmtypes.Ticker,
+	providerConfig mmtypes.ProviderConfig,
 ) (*big.Int, error) {
-	ticker, err := m.GetTickerFromOperation(operation)
-	if err != nil {
-		return nil, err
-	}
+	var (
+		err          error
+		cache        types.TickerPrices
+		targetTicker = ticker
+	)
+	isNormalize := providerConfig.NormalizeByPair != nil
 
-	var cache types.TickerPrices
-	if operation.Provider != mmtypes.IndexPrice {
-		cache = m.GetDataByProvider(operation.Provider)
+	if !isNormalize {
+		cache = m.GetDataByProvider(providerConfig.Name)
 	} else {
 		cache = m.GetAggregatedData()
+		targetTicker, err = m.GetTickerFromCurrencyPair(*providerConfig.NormalizeByPair)
 	}
-
-	price, ok := cache[ticker]
-	if !ok {
-		return nil, fmt.Errorf("missing %s price for ticker: %s", operation.Provider, ticker.String())
-	}
-
-	scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
 	if err != nil {
 		return nil, err
 	}
 
-	if operation.Invert {
+	price, ok := cache[targetTicker]
+	if !ok {
+		return nil, fmt.Errorf("missing %s price for ticker: %s", providerConfig.Name, targetTicker.String())
+	}
+
+	scaledPrice, err := ScaleUpCurrencyPairPrice(targetTicker.Decimals, price)
+	if err != nil {
+		return nil, err
+	}
+
+	if providerConfig.Invert && !isNormalize {
 		scaledPrice = InvertCurrencyPairPrice(scaledPrice, ScaledDecimals)
 	}
 
