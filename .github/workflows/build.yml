@@ -15,7 +15,7 @@ jobs:
       matrix:
         image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"},
                 {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
     permissions:
       contents: read
       packages: write
@@ -59,8 +59,8 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}.{{patch}}
-            type=semver,pattern={{major}}
+            type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
+            type=semver,pattern=v{{major}}
             type=sha,prefix=
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -70,6 +70,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+          platforms: linux/amd64,linux/arm64
       - uses: cloudposse/github-action-matrix-outputs-write@1.0.0
         id: out
         with:
