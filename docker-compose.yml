@@ -8,15 +8,14 @@ services:
   oracle:
     build:
       context: .
-      dockerfile: contrib/images/slinky.sidecar.e2e.Dockerfile
+      dockerfile: contrib/images/slinky.sidecar.prod.Dockerfile
     volumes:
       - ./config/dydx/oracle.json:/oracle/oracle.json
       - ./config/dydx/market.json:/oracle/market.json
     entrypoint: [
-      "oracle", 
-      "--oracle-config-path", "/etc/slinky/default_config/oracle.json", 
-      "--market-config-path", "/etc/slinky/default_config/market.json", 
-      "--chain-id", "dydx-mainnet-1",
+      "slinky", 
+      "--oracle-config-path", "/oracle/oracle.json", 
+      "--market-config-path", "/oracle/market.json", 
       "--pprof-port", "6060", 
       "--run-pprof",
       ]
