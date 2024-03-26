@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"fmt"
 )
 
 // ErrorCode is a type alias for an int error code.
@@ -71,7 +70,7 @@ type ErrorWithCode struct {
 
 // Error returns an error string wrapping the internalErr and the error code.
 func (ec ErrorWithCode) Error() string {
-	return fmt.Sprintf("%s: %s", ec.code.Error(), ec.internalErr.Error())
+	return ec.internalErr.Error()
 }
 
 // Code returns the internal ErrorCode.
