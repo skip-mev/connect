@@ -20,7 +20,7 @@ const (
 	UnexpectedStatusCode
 	// Success indicates that the provider successfully queried the data.
 	Success
-	// CreateBody.
+	// CreateBody indicates that the provider could not construct a valid body to query.
 	CreateBody
 	// Unknown indicates that the provider encountered an unknown error.
 	Unknown
