@@ -114,7 +114,7 @@ var (
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
 		Metrics:        config.MetricsConfig{},
-		UpdateInterval: 1500 * time.Millisecond,
+		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
@@ -284,7 +284,7 @@ func init() {
 		&updateInterval,
 		"update-interval",
 		"",
-		1500*time.Millisecond,
+		500*time.Millisecond,
 		"interval at which the oracle will update the prices. this should be set to the interval desired by the chain.",
 	)
 	rootCmd.Flags().DurationVarP(
