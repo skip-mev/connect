@@ -280,7 +280,6 @@ func TestValidateBasicMsgParams(t *testing.T) {
 			msg: types.MsgParams{
 				Params: types.Params{
 					MarketAuthorities: nil,
-					Version:           0,
 				},
 				Authority: sample.Address(sample.Rand()),
 			},
@@ -291,7 +290,6 @@ func TestValidateBasicMsgParams(t *testing.T) {
 			msg: types.MsgParams{
 				Params: types.Params{
 					MarketAuthorities: []string{sample.Address(sample.Rand())},
-					Version:           0,
 				},
 				Authority: sample.Address(sample.Rand()),
 			},
