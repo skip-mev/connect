@@ -203,7 +203,7 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 					{
 						CurrencyPair: ticker.CurrencyPair,
 						Invert:       false,
-						Provider:     "mexc",
+						Provider:     static.Name,
 					},
 				}}},
 			}},
