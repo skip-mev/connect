@@ -309,3 +309,46 @@ func TestValidateBasicMsgParams(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
+	tcs := []struct {
+		name       string
+		msg        types.MsgRemoveMarketAuthorities
+		expectPass bool
+	}{
+		{
+			"if the Admin is not an acc-address - fail",
+			types.MsgRemoveMarketAuthorities{
+				Admin: "invalid",
+			},
+			false,
+		},
+		{
+			name: "invalid message (no authorities) - fail",
+			msg: types.MsgRemoveMarketAuthorities{
+				RemoveAddresses: nil,
+				Admin:           sample.Address(sample.Rand()),
+			},
+			expectPass: false,
+		},
+		{
+			name: "valid message",
+			msg: types.MsgRemoveMarketAuthorities{
+				RemoveAddresses: []string{sample.Address(sample.Rand())},
+				Admin:           sample.Address(sample.Rand()),
+			},
+			expectPass: true,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msg.ValidateBasic()
+			if !tc.expectPass {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
