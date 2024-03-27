@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -8,6 +9,7 @@ var (
 	_ sdk.Msg = &MsgCreateMarkets{}
 	_ sdk.Msg = &MsgUpdateMarkets{}
 	_ sdk.Msg = &MsgParams{}
+	_ sdk.Msg = &MsgRemoveMarketAuthorities{}
 )
 
 // ValidateBasic determines whether the information in the message is formatted correctly, specifically
@@ -53,4 +55,32 @@ func (m *MsgParams) ValidateBasic() error {
 	}
 
 	return m.Params.ValidateBasic()
+}
+
+// ValidateBasic determines whether the information in the message is formatted correctly, specifically
+// whether the signer is a valid acc-address.
+func (m *MsgRemoveMarketAuthorities) ValidateBasic() error {
+	// validate signer address
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return err
+	}
+
+	if len(m.RemoveAddresses) == 0 {
+		return fmt.Errorf("addresses to remove cannot be nil")
+	}
+
+	seenAuthorities := make(map[string]struct{}, len(m.RemoveAddresses))
+	for _, authority := range m.RemoveAddresses {
+		if _, seen := seenAuthorities[authority]; seen {
+			return fmt.Errorf("duplicate address %s found", authority)
+		}
+
+		if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+			return fmt.Errorf("invalid market authority string: %w", err)
+		}
+
+		seenAuthorities[authority] = struct{}{}
+	}
+
+	return nil
 }

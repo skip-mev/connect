@@ -22,6 +22,11 @@ service Msg {
 
   // Params defines a method for updating the x/marketmap module parameters.
   rpc Params(MsgParams) returns (MsgParamsResponse);
+
+  // RemoveMarketAuthorities defines a method for removing market authorities
+  // from the x/marketmap module. the signer must be the admin.
+  rpc RemoveMarketAuthorities(MsgRemoveMarketAuthorities)
+      returns (MsgRemoveMarketAuthoritiesResponse);
 }
 
 // MsgCreateMarkets defines a message carrying a payload for creating markets in
@@ -78,3 +83,21 @@ message MsgParams {
 
 // MsgParamsResponse defines the Msg/Params response type.
 message MsgParamsResponse {}
+
+// MsgRemoveMarketAuthorities defines the Msg/RemoveMarketAuthoritiesResponse
+// request type. It contains the new addresses to remove from the list of
+// authorities
+message MsgRemoveMarketAuthorities {
+  option (cosmos.msg.v1.signer) = "admin";
+
+  // RemoveAddresses is the list of addresses to remove.
+  repeated string remove_addresses = 1 [ (gogoproto.nullable) = false ];
+
+  // Admin defines the authority that is the x/marketmap
+  // Admin account.  This account is set in the module parameters.
+  string admin = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgRemoveMarketAuthoritiesResponse defines the
+// Msg/RemoveMarketAuthoritiesResponse response type.
+message MsgRemoveMarketAuthoritiesResponse {}

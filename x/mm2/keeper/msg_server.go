@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -128,7 +129,6 @@ func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.
 		return nil, fmt.Errorf("unable to process nil msg")
 	}
 
-	// Update the module's parameters.
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if msg.Authority != ms.k.authority.String() {
@@ -140,6 +140,41 @@ func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.
 	}
 
 	return &types.MsgParamsResponse{}, nil
+}
+
+func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.MsgRemoveMarketAuthorities) (*types.MsgRemoveMarketAuthoritiesResponse, error) {
+	if msg == nil {
+		return nil, fmt.Errorf("unable to process nil msg")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	params, err := ms.k.GetParams(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if msg.Admin != params.Admin {
+		return nil, fmt.Errorf("request admin %s does not match module admin %s", msg.Admin, params.Admin)
+	}
+
+	if len(msg.RemoveAddresses) > len(params.MarketAuthorities) {
+		return nil, fmt.Errorf("remove addresses must be a subset of the current market authorities")
+	}
+
+	for i, address := range params.MarketAuthorities {
+		for _, remove := range msg.RemoveAddresses {
+			if remove == address {
+				params.MarketAuthorities = slices.Delete(params.MarketAuthorities, i, i+1)
+			}
+		}
+	}
+
+	if err := ms.k.SetParams(ctx, params); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgRemoveMarketAuthoritiesResponse{}, nil
 }
 
 // checkMarketAuthority checks if the given authority is the x/marketmap's list of MarketAuthorities.
