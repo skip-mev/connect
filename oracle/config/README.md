@@ -1,8 +1,8 @@
 # Configurations
 
-> This readme overviews how to configure the oracle side-car as well as how to hook it up to your application. To see an example of a properly configured oracle-side car, please visit the [local config](./../../config/local) files - `oracle.json` and `market.json`. To see an example of a properly configured application, please visit the test application's [app.toml](./../../tests/simapp/slinkyd/testappd/root.go) generation code. Otherwise, please read on to learn how to configure the oracle side-car and application.
+> This readme overviews how to configure the oracle side-car as well as how to hook it up to your application. To see an example of a properly configured oracle-side car, visit the [local config](./../../config/local) files - `oracle.json` and `market.json`. To see an example of a properly configured application, please visit the test application's [app.toml](./../../tests/simapp/slinkyd/testappd/root.go) generation code. Otherwise, read on to learn how to configure the oracle side-car and application.
 >
-> To generate custom side-car configs, please use the `slinky-config` binary after running `make build`. Run `./build/slinky-config --help` to determine the relevant fields that can be set.
+> To generate custom side-car configs, use the `slinky-config` binary after running `make build`. Run `./build/slinky-config --help` to determine the relevant fields that can be set.
 > 
 > Validator's running on a network that support's Slinky **must** run the oracle side-car and configure it into their application. Non-validator's can configure their oracle config's to be disabled, and the oracle side-car will not be run.
 >
@@ -109,7 +109,7 @@ The `oracle.json` file is the configuration file that is consumed by the oracle 
 * Metrics instrumentation.
 * API & WebSocket configurations for each provider.
 
-In some cases, validators must configure the market map provider into their `oracle.json`. The market map provider is a special provider that provides the desired markets that the oracle should fetch prices for. This is particularly useful for chains that have a large number of markets that are constantly changing. The market map provider allows the oracle to be updated with new markets without needing to restart the side-car. **Please check the relevant chain's documentation & channels to determine if you need to configure the market map provider.**
+In some cases, validators must configure the market map provider into their `oracle.json`. The market map provider is a special provider that provides the desired markets that the oracle should fetch prices for. This is particularly useful for chains that have a large number of markets that are constantly changing. The market map provider allows the side-car to be updated with new markets without needing to restart the side-car. **Please check the relevant chain's documentation & channels to determine if you need to configure the market map provider.**
 
 
 ## Oracle Configuration
@@ -130,11 +130,11 @@ type OracleConfig struct {
 
 ## UpdateInterval
 
-This field is utilized to set the interval at which the oracle will aggregate price feeds from price providers.
+This field is utilized to set the interval at which the side-car will aggregate price feeds from price providers.
 
 ## MaxPriceAge
 
-This field is utilized to set the maximum age of a price that the oracle will consider when aggregating prices. If a price is older than this value, the oracle will not consider it when aggregating prices.
+This field is utilized to set the maximum age of a price that the oracle will consider when aggregating prices. If a price is older than this value, the side-car will not consider it when aggregating prices.
 
 ## Providers
 
@@ -144,7 +144,7 @@ This field is utilized to set the list of providers that the oracle will fetch p
 * A WebSocket configuration that defines the various WebSocket configurations that the oracle will use to fetch prices from the provider.
 * A type that defines the type of provider - specifically this is currently either a price or market map provider. Price providers supply price feeds for a given set of markets, while a market map provider supplies the desired markets that need to be fetched. Market map providers allow the side-car to be updated with new markets without needing to restart the side-car.
 
-> Note: Typically only one of either the API or websocket config is required. However, some providers may require both. Please read the provider's documentation to learn more about how to configure the provider. Each provider provides sensible defaults for the API and WebSocket configurations that should be used for most cases. This should be modified with caution.
+> Note: Typically only one of either the API or WebSocket config is required. However, some providers may require both. Please read the provider's documentation to learn more about how to configure the provider. Each provider provides sensible defaults for the API and WebSocket configurations that should be used for most cases. This should be modified with caution.
 
 ```go
 type ProviderConfig struct {
