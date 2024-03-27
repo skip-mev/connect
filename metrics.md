@@ -208,7 +208,7 @@ The most important statuses to monitor here are `healthy`, `read_success`, `dial
 
 ### `side_car_web_socket_data_handler_status`
 
-This metric includes various metrics related to whether WebSocket messages are being correctly handled by the side-car. Specifically, this includes the number of messages that were correctly handled, how many heartbeats were sent, and more. For example, if we wanted to check these metrics for the Coinbase WebSocket connection, we can run the following query in Prometheus:
+This metric includes various metrics related to whether WebSocket messages are being correctly handled by the side-car. Specifically, this includes the number of messages that were correctly handled, how many heartbeats were sent, and more. For example, if we wanted to check these metrics for the Kucoin WebSocket connection, we can run the following query in Prometheus:
 
 ```promql
 side_car_web_socket_data_handler_status{provider="kucoin_ws"}
@@ -220,7 +220,7 @@ The most important statuses to monitor here are `handle_message_success` and `he
 
 ### `side_car_web_socket_response_time_bucket`
 
-This metric includes the response time of the WebSocket messages received by the side-car. Specifically, this includes the time it took to receive a new message and process it. For example, if we wanted to check the response time for the Coinbase WebSocket connection, we can run the following query in Prometheus:
+This metric includes the response time of the WebSocket messages received by the side-car. Specifically, this includes the time it took to receive a new message and process it. For example, if we wanted to check the response time for the Kucoin WebSocket connection, we can run the following query in Prometheus:
 
 ```promql
 side_car_web_socket_response_time_bucket{provider="kucoin_ws"}
