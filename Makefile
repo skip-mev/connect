@@ -53,6 +53,14 @@ stop-oracle:
 	@echo "Stopping network..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
+start-sidecar:
+	@echo "Starting oracle side-car and prometheus dashboard..."
+	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus
+
+stop-sidecar:
+	@echo "Stopping network..."
+	@$(DOCKER_COMPOSE) -f docker-compose.yml down
+
 install: tidy
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
