@@ -49,7 +49,7 @@ func (m *MedianAggregator) GetProviderPrice(
 		return nil, err
 	}
 
-	price, ok := cache[targetTicker]
+	price, ok := cache[ticker]
 	if !ok {
 		return nil, fmt.Errorf("missing %s price for ticker: %s", providerConfig.Name, targetTicker.String())
 	}
