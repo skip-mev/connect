@@ -203,10 +203,12 @@ var convertedResponse = mmtypes.MarketMapResponse{
 					{
 						Name:           binance.Name,
 						OffChainTicker: "USDCUSDT",
+						Invert:         true,
 					},
 					{
 						Name:           bybit.Name,
 						OffChainTicker: "USDCUSDT",
+						Invert:         true,
 					},
 					{
 						Name:           coinbaseapi.Name,

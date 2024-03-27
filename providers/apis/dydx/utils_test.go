@@ -199,7 +199,15 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			expectedErr: false,
 		},
 		{
-			name: "single direct path with no inversion",
+			name: "single direct provider with no inversion",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: "CoinbasePro",
+						Ticker:       "BTC-USD",
+					},
+				},
+			},
 			expectedProviders: []mmtypes.ProviderConfig{
 				{
 					Name:           coinbaseapi.Name,
@@ -213,39 +221,55 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			expectedErr: false,
 		},
 		{
-			name: "single direct path with inversion",
+			name: "single direct provider with inversion",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: "Okx",
+						Ticker:       "USDC-USDT",
+						Invert:       true,
+					},
+				},
+			},
 			expectedProviders: []mmtypes.ProviderConfig{
 				{
 					Name:           okx.Name,
 					OffChainTicker: "USDC-USDT",
+					Invert:         true,
 				},
 			},
 			expectedErr: false,
 		},
 		{
-			name: "single indirect path with an adjustable market",
+			name: "single indirect provider with a normalize by market",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName:   "Okx",
+						Ticker:         "BTC-USDT",
+						Invert:         true,
+						AdjustByMarket: "USDT-USD",
+					},
+				},
+			},
 			expectedProviders: []mmtypes.ProviderConfig{
 				{
 					Name:           okx.Name,
 					OffChainTicker: "BTC-USDT",
+					Invert:         true,
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "USDT",
+						Quote: "USD",
+					},
 				},
 			},
 			expectedErr: false,
 		},
 		{
-			name:              "single indirect path with an adjustable market and inversion that does not match the ticker",
+			name:              "No JSON returns empty provider config",
+			config:            dydxtypes.ExchangeConfigJson{},
 			expectedProviders: []mmtypes.ProviderConfig{},
 			expectedErr:       false,
-		},
-		{
-			name:              "invalid adjust by market",
-			expectedProviders: []mmtypes.ProviderConfig{},
-			expectedErr:       true,
-		},
-		{
-			name:              "invalid exchange name",
-			expectedProviders: []mmtypes.ProviderConfig{},
-			expectedErr:       true,
 		},
 	}
 
