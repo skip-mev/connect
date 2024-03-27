@@ -1,12 +1,14 @@
 ---
-title: "Quickstart"
+title: 'Quickstart'
 ---
+
 <Note>
 
 **Running Slinky? First step is to join our [Discord](https://discord.gg/amAgf9Z39w)**
+
 </Note>
 
-## Summary of Steps[​](#summary-of-steps "Direct link to heading")
+## Summary of Steps[​](#summary-of-steps 'Direct link to heading')
 
 **Estimated Time**: 10 mins
 
@@ -18,18 +20,18 @@ In this walkthrough, we'll be going through the 5 steps to set up Slinky.
 4.  Run the slinky sidecar.
 5.  Start the chain application.
 
-## 1\. Install the Chain Binary ✅[​](#1-install-the-chain-binary- "Direct link to heading")
+## 1. Install the Chain Binary ✅[​](#1-install-the-chain-binary- 'Direct link to heading')
 
 **🚨** Please visit the chain's validator-specific instructions to install and configure the node binary for the desired chain.
 
 For the purposes of this guide we'll use `testappd` as our example application binary, but it will be the same for any chain!
 
-## 2\. Install the `slinky` binary ✅[​](#2-install-the-slinky-binary- "Direct link to heading")
+## 2. Install the `slinky` binary ✅[​](#2-install-the-slinky-binary- 'Direct link to heading')
 
 You can install the slinky binary either by building from source or by downloading a pre-built binary.
 
-*   Install the latest binary from the **[releases page](https://github.com/skip-mev/slinky/releases)**
-*   Build from source by cloning the **[repo](https://github.com/skip-mev/slinky)** and running `make install`
+- Install the latest binary from the **[releases page](https://github.com/skip-mev/slinky/releases)**
+- Build from source by cloning the **[repo](https://github.com/skip-mev/slinky)** and running `make install`
 
 ```bash
 git clone git@github.com:skip-mev/slinky.git
@@ -38,14 +40,15 @@ make install
 
 ```
 
-
 Slinky should now be in your path. Check to make sure with:
 
-## 3\. Configure your Slinky Sidecar Process ✅[​](#3-configure-your-slinky-sidecar-process- "Direct link to heading")
+## 3. Configure your Slinky Sidecar Process ✅[​](#3-configure-your-slinky-sidecar-process- 'Direct link to heading')
 
-*   The provided releases include an `oracle.toml` file that you can use as a template for configuring your sidecar process.
-*   Alternatively, the repository contains the most up-to-date version of the config file **[here](https://github.com/skip-mev/slinky/blob/main/config/local/oracle.toml)**
+- The provided releases include an `oracle.toml` file that you can use as a template for configuring your sidecar process.
+- Alternatively, the repository contains the most up-to-date version of the config file **[here](https://github.com/skip-mev/slinky/blob/main/config/local/oracle.toml)**
+
 <Warning>
+
 danger
 
 **Make sure your config matches your version and chain!**
@@ -53,9 +56,10 @@ danger
 The config file in the Slinky repository is regenerated every time a change is made to the sidecar. As such, it may contain additional config options that are not yet supported by earlier versions of the sidecar. Please use the config file from the release if you are unsure.
 
 Config files for the sidecar are generally chain-specific. Prefer to use the config file provided by the chain you're running for instead of the default config located in the repository.
+
 </Warning>
 
-## 4\. Run the Slinky Sidecar ✅[​](#4-run-the-slinky-sidecar- "Direct link to heading")
+## 4. Run the Slinky Sidecar ✅[​](#4-run-the-slinky-sidecar- 'Direct link to heading')
 
 You can run the slinky sidecar by running the following command:
 
@@ -64,14 +68,12 @@ slinky oracle --config oracle.toml
 
 ```
 
-
 You can verify whether prices are being retrieved by running the following command:
 
 ```bash
 curl --request -x GET 'http://localhost:8080/slinky/v1/oracle/prices | jq .'
 
 ```
-
 
 You should see output similar to the following:
 
@@ -88,14 +90,12 @@ You should see output similar to the following:
   },
   "timestamp": "2024-01-23T01:15:09.776890Z"
 }
-
 ```
 
-
-## 5\. Start the chain application ✅[​](#5-start-the-chain-application- "Direct link to heading")
+## 5. Start the chain application ✅[​](#5-start-the-chain-application- 'Direct link to heading')
 
 Starting the chain application should be no different than starting the application without the sidecar.
 
-## Troubleshooting[​](#troubleshooting "Direct link to heading")
+## Troubleshooting[​](#troubleshooting 'Direct link to heading')
 
 If you are having issues running the oracle sidecar, please see the [Troubleshooting section](https://docs.skip.money/slinky/validator/troubleshooting) for more information.

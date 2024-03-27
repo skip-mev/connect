@@ -43,25 +43,25 @@
     {
       "name": "Home",
       "icon": "house",
-      "url": "https://docs.skip.money"
+      "url": "https://skip.mintlify.app"
     }
   ],
   "navigation": [
     {
       "group": "Slinky",
       "pages": [
-        "slinky/overview",
-        "slinky/security-properties",
-        "slinky/incentivize-slashing",
+        "docs/overview",
+        "docs/security-properties",
+        "docs/incentivize-slashing",
         {
           "group": "Validator Docs",
           "pages": [
-            "slinky/validator-docs/quickstart",
-            "slinky/validator-docs/validator-config-ref",
-            "slinky/validator-docs/slinky-troubleshoot"
+            "docs/validator-docs/quickstart",
+            "docs/validator-docs/validator-config-ref",
+            "docs/validator-docs/slinky-troubleshoot"
           ]
         },
-        "slinky/upcoming-features"
+        "docs/upcoming-features"
       ]
     }
   ],
