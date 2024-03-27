@@ -237,6 +237,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 					{
 						Name:           okx.Name,
 						OffChainTicker: "USDC-USDT",
+						Invert:         true,
 					},
 				},
 			},
