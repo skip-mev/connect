@@ -78,7 +78,7 @@ func TestGetProviderPrice(t *testing.T) {
 		}
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
-		ticker := constants.BITCOIN_USD
+		ticker := BTC_USD
 		providerConfig := mmtypes.ProviderConfig{
 			Name: coinbase.Name,
 		}

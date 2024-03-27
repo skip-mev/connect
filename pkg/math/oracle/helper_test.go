@@ -1,9 +1,10 @@
 package oracle_test
 
 import (
-	"github.com/skip-mev/slinky/providers/websockets/okx"
 	"math/big"
 	"testing"
+
+	"github.com/skip-mev/slinky/providers/websockets/okx"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"github.com/skip-mev/chaintestutil/sample"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/mm2/keeper"
 	"github.com/skip-mev/slinky/x/mm2/types"
