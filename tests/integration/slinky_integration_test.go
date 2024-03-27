@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/skip-mev/slinky/x/incentives"
-	marketmapmodule "github.com/skip-mev/slinky/x/marketmap/module"
 	"github.com/skip-mev/slinky/x/sla"
 
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
@@ -19,6 +18,7 @@ import (
 
 	"github.com/skip-mev/slinky/tests/integration"
 	"github.com/skip-mev/slinky/x/alerts"
+	marketmapmodule "github.com/skip-mev/slinky/x/mm2"
 	"github.com/skip-mev/slinky/x/oracle"
 )
 
