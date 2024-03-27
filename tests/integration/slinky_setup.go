@@ -138,6 +138,7 @@ func AddSidecarToNode(node *cosmos.ChainNode, conf ibc.SidecarConfig) {
 }
 
 // spin up the network (with side-cars enabled)
+
 // BuildPOBInterchain creates a new Interchain testing env with the configured POB CosmosChain
 func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *interchaintest.Interchain {
 	ic := interchaintest.NewInterchain()

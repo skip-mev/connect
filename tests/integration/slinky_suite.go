@@ -153,7 +153,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 
 	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
 		MarketAuthorities: []string{s.user.FormattedAddress()},
-		Version:           0,
+		Admin:             s.user.FormattedAddress(),
 	})
 	s.Require().NoError(err, resp)
 }
