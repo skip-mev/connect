@@ -132,6 +132,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 				"failed to calculate converted price",
 				zap.Error(err),
 				zap.String("ticker", market.Ticker.String()),
+				zap.String("provider", config.Name),
 			)
 
 			m.metrics.AddProviderTick(config.Name, market.Ticker.String(), false)
@@ -143,6 +144,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 			"calculated converted price",
 			zap.String("ticker", market.Ticker.String()),
 			zap.String("price", adjustedPrice.String()),
+			zap.String("provider", config.Name),
 		)
 
 		m.metrics.AddProviderTick(config.Name, market.Ticker.String(), true)

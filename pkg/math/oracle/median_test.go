@@ -29,7 +29,7 @@ func TestAggregateData(t *testing.T) {
 			expectedPrices: types.TickerPrices{},
 		},
 		{
-			name: "coinbase direct feed, coinbase adjusted feed, no feed for usdt/usd - fail to report BTC/USD",
+			name: "coinbase direct feed, binance normalized feed, okx normalized feed for BTC/USD, no feed for usdt/usd - fail to report BTC/USD",
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
@@ -49,7 +49,7 @@ func TestAggregateData(t *testing.T) {
 			expectedPrices: types.TickerPrices{},
 		},
 		{
-			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
+			name: "coinbase direct feed, binance normalized feed, okx normalized feed for BTC/USD with index prices - success",
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
@@ -72,27 +72,10 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				BTC_USD: createPrice(78_500, BTC_USD.Decimals), // median of 70_000, 78,100, 79_500
+				BTC_USD: createPrice(75_900, BTC_USD.Decimals), // median of 70_000, 75_900, 78,100
 			},
 		},
-		{
-			name: "coinbase USDT direct, coinbase USDC/USDT inverted, binance direct feeds for USDT/USD - success",
-			malleate: func(aggregator types.PriceAggregator) {
-				prices := types.TickerPrices{
-					USDT_USD:  createPrice(1.1, USDT_USD.Decimals),
-					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
-				}
-				aggregator.SetProviderData(coinbase.Name, prices)
 
-				prices = types.TickerPrices{
-					USDT_USD: createPrice(1.2, USDT_USD.Decimals),
-				}
-				aggregator.SetProviderData(binance.Name, prices)
-			},
-			expectedPrices: types.TickerPrices{
-				USDT_USD: createPrice(1.1, USDT_USD.Decimals), // median of 0.90909, 1, 1.2
-			},
-		},
 		{
 			name: "coinbase USDT direct, binance USDT/USD direct feeds for USDT/USD - success (average of two prices)",
 			malleate: func(aggregator types.PriceAggregator) {
@@ -119,7 +102,7 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					USDT_USD: createPrice(70_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(kucoin.Name, prices)
 
@@ -210,7 +193,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(70_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
@@ -237,7 +220,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					USDT_USD: createPrice(70_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
@@ -249,22 +232,21 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			expectedPrices: []*big.Int{createPrice(1.1, USDT_USD.Decimals)},
 		},
 		{
-			name: "single conversion path with a single adjusted conversion (USDC/USDT ^ -1 = USDT/USDC)",
+			name: "single conversion path with a single inverted conversion (USDC/USDT ^ -1 = USDT/USDC)",
 			target: mmtypes.Market{
 				Ticker: USDT_USD,
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
-						Name:            coinbase.Name,
-						OffChainTicker:  "btc-usdt",
-						NormalizeByPair: &USDT_USD.CurrencyPair,
-						Invert:          false,
-						Metadata_JSON:   "",
+						Name:           coinbase.Name,
+						OffChainTicker: "usdc-usdt",
+						Invert:         true,
+						Metadata_JSON:  "",
 					},
 				},
 			},
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
-					USDC_USDT: createPrice(1.1, USDC_USDT.Decimals),
+					USDT_USD: createPrice(1.1, USDC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 			},
@@ -322,7 +304,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					{
 						Name:            binance.Name,
 						OffChainTicker:  "btc-usd",
-						NormalizeByPair: nil,
+						NormalizeByPair: &USDT_USD.CurrencyPair,
 						Invert:          false,
 						Metadata_JSON:   "",
 					},
@@ -330,12 +312,12 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(70_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(69_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(69_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 
@@ -350,7 +332,6 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())

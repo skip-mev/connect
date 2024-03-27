@@ -1,6 +1,7 @@
 package oracle_test
 
 import (
+	"github.com/skip-mev/slinky/providers/websockets/okx"
 	"math/big"
 	"testing"
 
@@ -75,7 +76,7 @@ var (
 						Metadata_JSON:   "",
 					},
 					{
-						Name:            binance.Name,
+						Name:            okx.Name,
 						OffChainTicker:  "btc-usdt",
 						NormalizeByPair: &USDT_USD.CurrencyPair,
 						Invert:          false,
@@ -99,13 +100,6 @@ var (
 						OffChainTicker:  "usdt-usd",
 						NormalizeByPair: nil,
 						Invert:          false,
-						Metadata_JSON:   "",
-					},
-					{
-						Name:            coinbase.Name,
-						OffChainTicker:  "usd-usdt",
-						NormalizeByPair: nil,
-						Invert:          true,
 						Metadata_JSON:   "",
 					},
 					{
