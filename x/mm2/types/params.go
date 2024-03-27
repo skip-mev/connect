@@ -37,8 +37,8 @@ func NewParams(authorities []string, admin string) (Params, error) {
 
 // ValidateBasic performs stateless validation of the Params.
 func (p *Params) ValidateBasic() error {
-	if p.MarketAuthorities == nil {
-		return fmt.Errorf("cannot create Params with nil authority")
+	if len(p.MarketAuthorities) == 0 {
+		return fmt.Errorf("cannot create Params with empty market authorities")
 	}
 
 	seenAuthorities := make(map[string]struct{}, len(p.MarketAuthorities))
