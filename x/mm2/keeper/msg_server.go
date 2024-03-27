@@ -170,6 +170,10 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 		}
 	}
 
+	if err := ms.k.SetParams(ctx, params); err != nil {
+		return nil, err
+	}
+
 	return &types.MsgRemoveMarketAuthoritiesResponse{}, nil
 }
 
