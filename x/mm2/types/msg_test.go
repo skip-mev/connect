@@ -290,6 +290,7 @@ func TestValidateBasicMsgParams(t *testing.T) {
 			msg: types.MsgParams{
 				Params: types.Params{
 					MarketAuthorities: []string{sample.Address(sample.Rand())},
+					Admin:             sample.Address(sample.Rand()),
 				},
 				Authority: sample.Address(sample.Rand()),
 			},
