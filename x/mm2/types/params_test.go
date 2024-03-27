@@ -63,14 +63,6 @@ func TestValidateBasic(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name: "invalid empty params",
-			params: types.Params{
-				MarketAuthorities: make([]string, 0),
-				Admin:             types.DefaultAdmin,
-			},
-			expectErr: true,
-		},
-		{
 			name:      "invalid empty params",
 			params:    types.Params{},
 			expectErr: true,
