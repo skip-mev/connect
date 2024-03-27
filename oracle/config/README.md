@@ -4,7 +4,7 @@
 >
 > To generate custom side-car configs, use the `slinky-config` binary after running `make build`. Run `./build/slinky-config --help` to determine the relevant fields that can be set.
 > 
-> Validator's running on a network that support's Slinky **must** run the oracle side-car and configure it into their application. Non-validator's can configure their oracle config's to be disabled, and the oracle side-car will not be run.
+> Validators running on a network that support's Slinky **must** run the oracle side-car and configure it into their application. Non-validators can configure their oracle config's to be disabled, and the oracle side-car will not be run.
 >
 > <div align="center">
 > 
@@ -17,7 +17,7 @@
 All oracle configurations are broken down into three files:
 
 1. **Oracle side-car configuration (`oracle.json`):** This contains the data provider's that are utilized, how often they should be polled, and a variety of other configurations for API and web socket providers.
-2. **Market side-car configuration (`market.json`):** This contains the desired markets that the side-car will fetch prices for. NOTE: It is recommended that this file is **NOT** modified nor created by validators. This file is typically provided by the chain that the oracle supports.
+2. **Market side-car configuration (`market.json`):** This contains the desired markets that the side-car will fetch prices for. NOTE: It is recommended that this file is **NOT** modified nor created by validators. This file is typically provided by the chain that the side-car supports.
 3. **Oracle configuration in the application (`app.toml`):** A few additional lines of code that must be added to the application's `app.toml` file to configure the oracle side car into the application.
 
 *The focus of this readme is the oracle side-car configuration and the application configuration. The market side-car configuration is typically provided by the chain that the oracle supports.*
@@ -144,7 +144,7 @@ This field is utilized to set the list of providers that the oracle will fetch p
 * A WebSocket configuration that defines the various WebSocket configurations that the oracle will use to fetch prices from the provider.
 * A type that defines the type of provider - specifically this is currently either a price or market map provider. Price providers supply price feeds for a given set of markets, while a market map provider supplies the desired markets that need to be fetched. Market map providers allow the side-car to be updated with new markets without needing to restart the side-car.
 
-> Note: Typically only one of either the API or WebSocket config is required. However, some providers may require both. Please read the provider's documentation to learn more about how to configure the provider. Each provider provides sensible defaults for the API and WebSocket configurations that should be used for most cases. This should be modified with caution.
+> Note: Typically only one of either the API or WebSocket config is required. However, some providers may require both. Read the provider's documentation to learn more about how to configure the provider. Each provider provides sensible defaults for the API and WebSocket configurations that should be used for most cases. This should be modified with caution.
 
 ```go
 type ProviderConfig struct {
