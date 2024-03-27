@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/skip-mev/chaintestutil/sample"
 	"testing"
 
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
@@ -18,13 +19,20 @@ import (
 	"github.com/skip-mev/slinky/x/mm2/types"
 )
 
+var (
+	r = sample.Rand()
+)
+
 type KeeperTestSuite struct {
 	suite.Suite
 
 	ctx sdk.Context
 
 	// Keeper variables
-	authority    sdk.AccAddress
+	authority         sdk.AccAddress
+	marketAuthorities []string
+	admin             string
+
 	keeper       *keeper.Keeper
 	oracleKeeper oraclekeeper.Keeper
 }
@@ -52,8 +60,12 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	k := keeper.NewKeeper(mmSS, encCfg.Codec, s.authority)
 	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight())))
 
+	s.admin = sample.Address(r)
+	s.marketAuthorities = []string{sample.Address(r), sample.Address(r), sample.Address(r)}
+
 	params := types.Params{
-		MarketAuthorities: []string{s.authority.String()},
+		MarketAuthorities: s.marketAuthorities,
+		Admin:             s.admin,
 	}
 	s.Require().NoError(k.SetParams(s.ctx, params))
 

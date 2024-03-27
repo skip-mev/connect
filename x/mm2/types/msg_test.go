@@ -263,6 +263,8 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 }
 
 func TestValidateBasicMsgParams(t *testing.T) {
+	rng := sample.Rand()
+
 	tcs := []struct {
 		name       string
 		msg        types.MsgParams
@@ -281,7 +283,7 @@ func TestValidateBasicMsgParams(t *testing.T) {
 				Params: types.Params{
 					MarketAuthorities: nil,
 				},
-				Authority: sample.Address(sample.Rand()),
+				Authority: sample.Address(rng),
 			},
 			expectPass: false,
 		},
@@ -289,10 +291,10 @@ func TestValidateBasicMsgParams(t *testing.T) {
 			name: "valid params",
 			msg: types.MsgParams{
 				Params: types.Params{
-					MarketAuthorities: []string{sample.Address(sample.Rand())},
-					Admin:             sample.Address(sample.Rand()),
+					MarketAuthorities: []string{sample.Address(rng)},
+					Admin:             sample.Address(rng),
 				},
-				Authority: sample.Address(sample.Rand()),
+				Authority: sample.Address(rng),
 			},
 			expectPass: true,
 		},
@@ -311,6 +313,8 @@ func TestValidateBasicMsgParams(t *testing.T) {
 }
 
 func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
+	rng := sample.Rand()
+
 	tcs := []struct {
 		name       string
 		msg        types.MsgRemoveMarketAuthorities
@@ -327,15 +331,15 @@ func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
 			name: "invalid message (no authorities) - fail",
 			msg: types.MsgRemoveMarketAuthorities{
 				RemoveAddresses: nil,
-				Admin:           sample.Address(sample.Rand()),
+				Admin:           sample.Address(rng),
 			},
 			expectPass: false,
 		},
 		{
 			name: "valid message",
 			msg: types.MsgRemoveMarketAuthorities{
-				RemoveAddresses: []string{sample.Address(sample.Rand())},
-				Admin:           sample.Address(sample.Rand()),
+				RemoveAddresses: []string{sample.Address(rng)},
+				Admin:           sample.Address(rng),
 			},
 			expectPass: true,
 		},
