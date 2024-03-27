@@ -167,7 +167,7 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 	target mmtypes.Ticker,
 	providerConfig mmtypes.ProviderConfig,
 ) (*big.Int, error) {
-	price, err := m.GetProviderPrice(target, providerConfig, false)
+	price, err := m.GetProviderPrice(target, providerConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -178,13 +178,13 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 		return ScaleDownCurrencyPairPrice(target.Decimals, price)
 	}
 
-	adjustableByMarketPrice, err := m.GetProviderPrice(target, providerConfig, true)
+	normalizeByMarketPrice, err := m.GetIndexPrice(providerConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	// Make sure that the price is adjusted by the market price.
-	adjustedPrice := big.NewInt(0).Mul(price, adjustableByMarketPrice)
+	// Make sure that the price is normalized by the market price.
+	adjustedPrice := big.NewInt(0).Mul(price, normalizeByMarketPrice)
 	adjustedPrice = adjustedPrice.Div(adjustedPrice, ScaledOne(ScaledDecimals))
 	return ScaleDownCurrencyPairPrice(target.Decimals, adjustedPrice)
 }

@@ -4,6 +4,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/skip-mev/slinky/providers/websockets/okx"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/metrics"
@@ -27,36 +29,42 @@ func TestAggregateData(t *testing.T) {
 			expectedPrices: types.TickerPrices{},
 		},
 		{
-			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD - fail to report BTC/USD but report BTC/USDT",
+			name: "coinbase direct feed, coinbase adjusted feed, no feed for usdt/usd - fail to report BTC/USD",
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(69_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(69_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
+
+				prices = types.TickerPrices{
+					BTC_USD: createPrice(71_000, BTC_USDT.Decimals),
+				}
+				aggregator.SetProviderData(okx.Name, prices)
 			},
-			expectedPrices: types.TickerPrices{
-				BTC_USDT: createPrice(69_500, BTC_USDT.Decimals),
-			},
+			expectedPrices: types.TickerPrices{},
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
-					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
-					BTC_USDT: createPrice(70_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
 				}
 				aggregator.SetProviderData(coinbase.Name, prices)
 
 				prices = types.TickerPrices{
-					BTC_USDT: createPrice(69_000, BTC_USDT.Decimals),
+					BTC_USD: createPrice(69_000, BTC_USDT.Decimals),
 				}
 				aggregator.SetProviderData(binance.Name, prices)
+
+				prices = types.TickerPrices{
+					BTC_USD: createPrice(71_000, BTC_USDT.Decimals),
+				}
+				aggregator.SetProviderData(okx.Name, prices)
 
 				indexPrices := types.TickerPrices{
 					USDT_USD: createPrice(1.1, USDT_USD.Decimals),
@@ -64,8 +72,7 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				BTC_USD:  createPrice(75_900, BTC_USD.Decimals), // median of 70_000, 75_900, 77_000
-				BTC_USDT: createPrice(69_500, BTC_USDT.Decimals),
+				BTC_USD: createPrice(78_500, BTC_USD.Decimals), // median of 70_000, 78,100, 79_500
 			},
 		},
 		{

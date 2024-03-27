@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
@@ -29,38 +28,48 @@ func (m *MedianAggregator) GetTickerFromCurrencyPair(
 func (m *MedianAggregator) GetProviderPrice(
 	ticker mmtypes.Ticker,
 	providerConfig mmtypes.ProviderConfig,
-	normalize bool,
 ) (*big.Int, error) {
-	var (
-		err          error
-		cache        types.TickerPrices
-		targetTicker = ticker
-	)
-	if !normalize {
-		cache = m.GetDataByProvider(providerConfig.Name)
-	} else {
-		if providerConfig.NormalizeByPair == nil {
-			return nil, fmt.Errorf("normalize by pair is nil")
-		}
-		cache = m.GetAggregatedData()
-		targetTicker, err = m.GetTickerFromCurrencyPair(*providerConfig.NormalizeByPair)
+	cache := m.GetDataByProvider(providerConfig.Name)
+
+	price, ok := cache[ticker]
+	if !ok {
+		return nil, fmt.Errorf("missing %s price for ticker: %s", providerConfig.Name, ticker.String())
 	}
+
+	scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
 	if err != nil {
 		return nil, err
 	}
 
-	price, ok := cache[ticker]
+	if providerConfig.Invert {
+		scaledPrice = InvertCurrencyPairPrice(scaledPrice, ScaledDecimals)
+	}
+
+	return scaledPrice, nil
+}
+
+// GetIndexPrice returns the aggregated index price.
+func (m *MedianAggregator) GetIndexPrice(
+	providerConfig mmtypes.ProviderConfig,
+) (*big.Int, error) {
+	if providerConfig.NormalizeByPair == nil {
+		return nil, fmt.Errorf("normalize by pair is nil")
+	}
+
+	cache := m.GetAggregatedData()
+	targetTicker, err := m.GetTickerFromCurrencyPair(*providerConfig.NormalizeByPair)
+	if err != nil {
+		return nil, err
+	}
+
+	price, ok := cache[targetTicker]
 	if !ok {
-		return nil, fmt.Errorf("missing %s price for ticker: %s", providerConfig.Name, targetTicker.String())
+		return nil, fmt.Errorf("missing index price for ticker: %s", targetTicker.String())
 	}
 
 	scaledPrice, err := ScaleUpCurrencyPairPrice(targetTicker.Decimals, price)
 	if err != nil {
 		return nil, err
-	}
-
-	if providerConfig.Invert && !normalize {
-		scaledPrice = InvertCurrencyPairPrice(scaledPrice, ScaledDecimals)
 	}
 
 	return scaledPrice, nil
