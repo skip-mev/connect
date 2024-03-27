@@ -27,17 +27,7 @@ func TestAggregateData(t *testing.T) {
 			expectedPrices: types.TickerPrices{},
 		},
 		{
-			name: "coinbase direct feed for BTC/USD - fail since it does not have enough providers",
-			malleate: func(aggregator types.PriceAggregator) {
-				prices := types.TickerPrices{
-					BTC_USD: createPrice(70_000, BTC_USD.Decimals),
-				}
-				aggregator.SetProviderData(coinbase.Name, prices)
-			},
-			expectedPrices: types.TickerPrices{},
-		},
-		{
-			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD - fail since index price does not exist",
+			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD - fail to report BTC/USD but report BTC/USDT",
 			malleate: func(aggregator types.PriceAggregator) {
 				prices := types.TickerPrices{
 					BTC_USD:  createPrice(70_000, BTC_USD.Decimals),
@@ -50,7 +40,9 @@ func TestAggregateData(t *testing.T) {
 				}
 				aggregator.SetProviderData(binance.Name, prices)
 			},
-			expectedPrices: types.TickerPrices{},
+			expectedPrices: types.TickerPrices{
+				BTC_USDT: createPrice(69_500, BTC_USDT.Decimals),
+			},
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
@@ -72,7 +64,8 @@ func TestAggregateData(t *testing.T) {
 				aggregator.SetAggregatedData(indexPrices)
 			},
 			expectedPrices: types.TickerPrices{
-				BTC_USD: createPrice(75_900, BTC_USD.Decimals), // median of 70_000, 75_900, 77_000
+				BTC_USD:  createPrice(75_900, BTC_USD.Decimals), // median of 70_000, 75_900, 77_000
+				BTC_USDT: createPrice(69_500, BTC_USDT.Decimals),
 			},
 		},
 		{

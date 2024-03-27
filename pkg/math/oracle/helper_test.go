@@ -60,7 +60,27 @@ var (
 			BTC_USD.String(): {
 				Ticker: BTC_USD,
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultProviderConfig[constants.BITCOIN_USD],
+					{
+						Name:            coinbase.Name,
+						OffChainTicker:  "btc-usd",
+						NormalizeByPair: nil,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            binance.Name,
+						OffChainTicker:  "btc-usdt",
+						NormalizeByPair: &USDT_USD.CurrencyPair,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            binance.Name,
+						OffChainTicker:  "btc-usdt",
+						NormalizeByPair: &USDT_USD.CurrencyPair,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
 				},
 			},
 			BTC_USDT.String(): {
@@ -74,8 +94,34 @@ var (
 			USDT_USD.String(): {
 				Ticker: USDT_USD,
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultProviderConfig[constants.USDT_USD],
-					binance.DefaultNonUSProviderConfig[constants.USDT_USD],
+					{
+						Name:            coinbase.Name,
+						OffChainTicker:  "usdt-usd",
+						NormalizeByPair: nil,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            coinbase.Name,
+						OffChainTicker:  "usd-usdt",
+						NormalizeByPair: nil,
+						Invert:          true,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            binance.Name,
+						OffChainTicker:  "usdt-usd",
+						NormalizeByPair: nil,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            kucoin.Name,
+						OffChainTicker:  "btc-usdt",
+						NormalizeByPair: &BTC_USD.CurrencyPair,
+						Invert:          true,
+						Metadata_JSON:   "",
+					},
 				},
 			},
 			USDC_USDT.String(): {
@@ -87,7 +133,27 @@ var (
 			ETH_USD.String(): {
 				Ticker: ETH_USD,
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultProviderConfig[constants.ETHEREUM_USD],
+					{
+						Name:            coinbase.Name,
+						OffChainTicker:  "eth-usd",
+						NormalizeByPair: nil,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            coinbase.Name,
+						OffChainTicker:  "eth-usdt",
+						NormalizeByPair: &USDT_USD.CurrencyPair,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
+					{
+						Name:            binance.Name,
+						OffChainTicker:  "eth-usdt",
+						NormalizeByPair: &USDT_USD.CurrencyPair,
+						Invert:          false,
+						Metadata_JSON:   "",
+					},
 				},
 			},
 			ETH_USDT.String(): {
@@ -236,7 +302,6 @@ var (
 								},
 							},
 						},
-
 						{
 							// Kucoin BTC/USDT ^-1 * INDEX BTC/USD = USDT/USD
 							Operations: []mmtypes.Operation{

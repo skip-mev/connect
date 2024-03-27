@@ -46,7 +46,8 @@ func (m *Market) ValidateBasic() error {
 	}
 
 	if uint64(len(m.ProviderConfigs)) < m.Ticker.MinProviderCount {
-		return fmt.Errorf("this ticker must have at least %d providers; got %d",
+		return fmt.Errorf("ticker %s must have at least %d providers; got %d",
+			m.Ticker.String(),
 			m.Ticker.MinProviderCount,
 			len(m.ProviderConfigs),
 		)
@@ -59,7 +60,8 @@ func (m *Market) ValidateBasic() error {
 		}
 
 		// check for duplicate providers
-		if _, seen := seenProviders[providerConfig.Name]; seen {
+		// a provider must have a unique data source and offchainticker pair
+		if _, seen := seenProviders[providerConfig.Name+providerConfig.OffChainTicker]; seen {
 			return fmt.Errorf("duplicate provider found: %s", providerConfig.Name)
 		}
 		seenProviders[providerConfig.Name] = struct{}{}
