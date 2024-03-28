@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/skip-mev/chaintestutil/sample"
 	"testing"
+
+	"github.com/skip-mev/chaintestutil/sample"
 
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -19,9 +20,7 @@ import (
 	"github.com/skip-mev/slinky/x/mm2/types"
 )
 
-var (
-	r = sample.Rand()
-)
+var r = sample.Rand()
 
 type KeeperTestSuite struct {
 	suite.Suite

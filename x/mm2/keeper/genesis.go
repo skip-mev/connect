@@ -17,7 +17,7 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	}
 
 	for _, market := range gs.MarketMap.Markets {
-		if err := k.CreateMarket(ctx, market); err != nil {
+		if err := k.createMarket(ctx, market); err != nil {
 			panic(err)
 		}
 	}
