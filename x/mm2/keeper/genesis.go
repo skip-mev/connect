@@ -47,10 +47,16 @@ func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 		panic(err)
 	}
 
+	params, err := k.GetParams(ctx)
+	if err != nil {
+		panic(err)
+	}
+
 	return &types.GenesisState{
 		MarketMap: types.MarketMap{
 			Markets: markets,
 		},
 		LastUpdated: lastUpdated,
+		Params:      params,
 	}
 }
