@@ -302,7 +302,7 @@ func main() {
 	rootCmd.Execute()
 }
 
-// createOracleConfig creates an oracle config given all of the local provider configurations.
+// createOracleConfig creates an oracle config given all local provider configurations.
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
