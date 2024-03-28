@@ -159,7 +159,14 @@ var (
 		},
 	}
 
-	markets = map[string]types.Market{
+	markets = []types.Market{
+		btcusdt,
+		usdcusd,
+		usdtusd,
+		ethusdt,
+	}
+
+	marketsMap = map[string]types.Market{
 		btcusdt.Ticker.String(): btcusdt,
 		usdcusd.Ticker.String(): usdcusd,
 		usdtusd.Ticker.String(): usdtusd,
@@ -175,14 +182,10 @@ func (s *KeeperTestSuite) TestGets() {
 	})
 
 	s.Run("setup initial markets", func() {
-		for _, market := range markets {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
-		}
+		s.Require().NoError(s.keeper.CreateMarkets(s.ctx, markets))
 
 		s.Run("unable to set markets again", func() {
-			for _, market := range markets {
-				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
-			}
+			s.Require().ErrorIs(s.keeper.CreateMarkets(s.ctx, markets), types.NewMarketAlreadyExistsError(types.TickerString(btcusdt.Ticker.String())))
 		})
 	})
 
@@ -191,7 +194,7 @@ func (s *KeeperTestSuite) TestGets() {
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(markets), len(got))
-		s.Require().Equal(markets, got)
+		s.Require().Equal(marketsMap, got)
 	})
 }
 
