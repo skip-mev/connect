@@ -85,7 +85,7 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 
 		gs := types.DefaultGenesisState()
 		gs.MarketMap = types.MarketMap{
-			Markets: markets,
+			Markets: marketsMap,
 		}
 
 		s.Require().NotPanics(func() {
