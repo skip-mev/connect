@@ -42,8 +42,8 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	}
 
 	// create markets
-	for _, createMarket := range msg.CreateMarkets {
-		err = ms.k.createMarket(ctx, createMarket)
+	for _, market := range msg.CreateMarkets {
+		err = ms.k.createMarket(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to create market: %w", err)
 		}
