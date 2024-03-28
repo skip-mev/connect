@@ -128,20 +128,32 @@ func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
-// CreateMarket sets the ticker, paths, and providers for a given market.  It also
+// CreateMarkets sets the market data for a given set of markets and validates the state  It also
 // sets the LastUpdated field to the current block height.
-func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
-	if err := k.createMarket(ctx, market); err != nil {
+func (k *Keeper) CreateMarkets(ctx sdk.Context, markets []types.Market) error {
+	for _, market := range markets {
+		if err := k.createMarket(ctx, market); err != nil {
+			return err
+		}
+	}
+
+	if err := k.validateState(ctx, markets); err != nil {
 		return err
 	}
 
 	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
-// UpdateMarket updaters the ticker, paths, and providers for a given market.  It also
+// UpdateMarkets updates the market data for a given set of markets and validates the state  It also
 // sets the LastUpdated field to the current block height.
-func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
-	if err := k.updateMarket(ctx, market); err != nil {
+func (k *Keeper) UpdateMarkets(ctx sdk.Context, markets []types.Market) error {
+	for _, market := range markets {
+		if err := k.updateMarket(ctx, market); err != nil {
+			return err
+		}
+	}
+
+	if err := k.validateState(ctx, markets); err != nil {
 		return err
 	}
 
@@ -158,10 +170,10 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	return k.params.Get(ctx)
 }
 
-// ValidateState is called after keeper modifications have been made to the market map to verify that
+// validateState is called after keeper modifications have been made to the market map to verify that
 // the aggregate of all updates has led to a valid state.
-func (k *Keeper) ValidateState(ctx sdk.Context, creates []types.Market, updates []types.Market) error {
-	for _, market := range append(creates, updates...) {
+func (k *Keeper) validateState(ctx sdk.Context, updates []types.Market) error {
+	for _, market := range updates {
 		// check that all paths already exist in the keeper store:
 		for _, providerConfig := range market.ProviderConfigs {
 			if providerConfig.NormalizeByPair != nil {
