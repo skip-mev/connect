@@ -70,7 +70,7 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgCreateMarketsResponse{}, nil
+	return &types.MsgCreateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
 // UpdateMarkets updates the marketmap by updating markets from the given message.  All updates are made to the market
@@ -120,7 +120,7 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgUpdateMarketsResponse{}, nil
+	return &types.MsgUpdateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
 // Params updates the x/marketmap module's Params.
