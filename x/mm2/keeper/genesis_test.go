@@ -43,13 +43,20 @@ func (s *KeeperTestSuite) TestInitGenesisInvalidGenesis() {
 	})
 }
 
-func (s *KeeperTestSuite) TestInitGenesisValid() {
-	s.Run("init valid default genesis", func() {
+func (s *KeeperTestSuite) TestInitExportGenesisValid() {
+	s.Run("init valid default genesis and export", func() {
 		gs := types.DefaultGenesisState()
 
 		s.Require().NotPanics(func() {
 			s.keeper.InitGenesis(s.ctx, *gs)
 		})
+
+		var gotState *types.GenesisState
+		s.Require().NotPanics(func() {
+			gotState = s.keeper.ExportGenesis(s.ctx)
+		})
+
+		s.Require().Equal(gs, gotState)
 	})
 
 	s.Run("init valid genesis with fields", func() {
@@ -99,5 +106,12 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 		gotMarkets, err := s.keeper.GetAllMarketsMap(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(gs.MarketMap.Markets, gotMarkets)
+
+		var gotState *types.GenesisState
+		s.Require().NotPanics(func() {
+			gotState = s.keeper.ExportGenesis(s.ctx)
+		})
+
+		s.Require().Equal(gs, gotState)
 	})
 }
