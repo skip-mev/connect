@@ -360,6 +360,15 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 					OffChainTicker: cp.String(),
 				},
 			},
+			Paths: mmtypes.Paths{Paths: []mmtypes.Path{
+				mmtypes.Path{Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: cp,
+						Invert:       false,
+						Provider:     "mexc",
+					},
+				}},
+			}},
 		}
 	}
 
