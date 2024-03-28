@@ -34,8 +34,8 @@ func (s *KeeperTestSuite) TestMarketMap() {
 		expectedMarketMap := types.MarketMap{
 			Markets: make(map[string]types.Market),
 		}
+		s.Require().NoError(s.keeper.CreateMarkets(s.ctx, markets))
 		for _, market := range markets {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
 			expectedMarketMap.Markets[market.Ticker.String()] = market
 		}
 
@@ -81,8 +81,9 @@ func (s *KeeperTestSuite) TestMarket() {
 		expectedMarketMap := types.MarketMap{
 			Markets: make(map[string]types.Market),
 		}
+		s.Require().NoError(s.keeper.CreateMarkets(s.ctx, markets))
+
 		for _, market := range markets {
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
 			expectedMarketMap.Markets[market.Ticker.String()] = market
 		}
 
@@ -121,9 +122,7 @@ func (s *KeeperTestSuite) TestParams() {
 func (s *KeeperTestSuite) TestLastUpdated() {
 	qs := keeper.NewQueryServer(s.keeper)
 	// set initial states
-	for _, market := range markets {
-		s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
-	}
+	s.Require().NoError(s.keeper.CreateMarkets(s.ctx, markets))
 
 	s.Run("run valid request", func() {
 		resp, err := qs.LastUpdated(s.ctx, &types.LastUpdatedRequest{})
