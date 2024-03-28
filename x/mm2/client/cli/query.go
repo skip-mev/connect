@@ -9,7 +9,7 @@ import (
 	"github.com/skip-mev/slinky/x/mm2/types"
 )
 
-// GetQueryCmd returns the parent command for all x/alerts cli query commands.
+// GetQueryCmd returns the parent command for all x/marketmap cli query commands.
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
