@@ -118,7 +118,7 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 			expectedMap: types.ProviderMarketMap{
 				Name:          "coinbase",
 				TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
-				OffChainMap:   map[string]mmtypes.Ticker{},
+				OffChainMap:   map[string][]mmtypes.Ticker{},
 			},
 			expErr: false,
 		},
@@ -141,7 +141,7 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 			expectedMap: types.ProviderMarketMap{
 				Name:          "coinbase",
 				TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
-				OffChainMap:   map[string]mmtypes.Ticker{},
+				OffChainMap:   map[string][]mmtypes.Ticker{},
 			},
 			expErr: false,
 		},
@@ -169,8 +169,8 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 						OffChainTicker: "BTC-USD",
 					},
 				},
-				OffChainMap: map[string]mmtypes.Ticker{
-					"BTC-USD": constants.BITCOIN_USD,
+				OffChainMap: map[string][]mmtypes.Ticker{
+					"BTC-USD": {constants.BITCOIN_USD},
 				},
 			},
 			expErr: false,
@@ -203,8 +203,8 @@ func TestProviderMarketMapFromMarketMap(t *testing.T) {
 						OffChainTicker: "BTC-USD",
 					},
 				},
-				OffChainMap: map[string]mmtypes.Ticker{
-					"BTC-USD": constants.BITCOIN_USD,
+				OffChainMap: map[string][]mmtypes.Ticker{
+					"BTC-USD": {constants.BITCOIN_USD},
 				},
 			},
 			expErr: false,
