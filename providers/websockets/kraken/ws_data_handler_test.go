@@ -193,7 +193,7 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			handler, err := kraken.NewWebSocketDataHandler(logger, marketConfig, kraken.DefaultWebSocketConfig)
@@ -310,7 +310,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			handler, err := kraken.NewWebSocketDataHandler(logger, marketConfig, kraken.DefaultWebSocketConfig)

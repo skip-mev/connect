@@ -44,9 +44,9 @@ var (
 		URL:              ETH_URL,
 	}
 
-	// DefaultETHMarketConfig is the default market configuration for tokens on
+	// DefaultETHProviderConfig is the default market configuration for tokens on
 	// Ethereum mainnet.
-	DefaultETHMarketConfig = types.TickerToProviderConfig{
+	DefaultETHProviderConfig = types.TickerToProviderConfig{
 		constants.MOG_USD: {
 			Name:           Name,
 			OffChainTicker: "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",

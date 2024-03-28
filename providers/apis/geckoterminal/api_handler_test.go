@@ -55,7 +55,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(geckoterminal.Name, geckoterminal.DefaultETHMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(geckoterminal.Name, geckoterminal.DefaultETHProviderConfig)
 			require.NoError(t, err)
 
 			h, err := geckoterminal.NewAPIHandler(marketConfig, geckoterminal.DefaultETHAPIConfig)
@@ -248,7 +248,7 @@ toms obvious but not minimal language
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(geckoterminal.Name, geckoterminal.DefaultETHMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(geckoterminal.Name, geckoterminal.DefaultETHProviderConfig)
 			require.NoError(t, err)
 
 			h, err := geckoterminal.NewAPIHandler(marketConfig, geckoterminal.DefaultETHAPIConfig)

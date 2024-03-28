@@ -85,23 +85,23 @@ var (
 		// -----------------------------------------------------------	//
 		binance.Name:       binance.DefaultNonUSProviderConfig,
 		coinbaseapi.Name:   coinbaseapi.DefaultProviderConfig,
-		coingecko.Name:     coingecko.DefaultMarketConfig,
-		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
-		krakenapi.Name:     krakenapi.DefaultMarketConfig,
+		coingecko.Name:     coingecko.DefaultProviderConfig,
+		geckoterminal.Name: geckoterminal.DefaultETHProviderConfig,
+		krakenapi.Name:     krakenapi.DefaultProviderConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
-		bitfinex.Name:     bitfinex.DefaultMarketConfig,
-		bitstamp.Name:     bitstamp.DefaultMarketConfig,
-		bybit.Name:        bybit.DefaultMarketConfig,
-		coinbasews.Name:   coinbasews.DefaultMarketConfig,
-		cryptodotcom.Name: cryptodotcom.DefaultMarketConfig,
-		gate.Name:         gate.DefaultMarketConfig,
-		huobi.Name:        huobi.DefaultMarketConfig,
-		kraken.Name:       kraken.DefaultMarketConfig,
-		kucoin.Name:       kucoin.DefaultMarketConfig,
-		mexc.Name:         mexc.DefaultMarketConfig,
-		okx.Name:          okx.DefaultMarketConfig,
+		bitfinex.Name:     bitfinex.DefaultProviderConfig,
+		bitstamp.Name:     bitstamp.DefaultProviderConfig,
+		bybit.Name:        bybit.DefaultProviderConfig,
+		coinbasews.Name:   coinbasews.DefaultProviderConfig,
+		cryptodotcom.Name: cryptodotcom.DefaultProviderConfig,
+		gate.Name:         gate.DefaultProviderConfig,
+		huobi.Name:        huobi.DefaultProviderConfig,
+		kraken.Name:       kraken.DefaultProviderConfig,
+		kucoin.Name:       kucoin.DefaultProviderConfig,
+		mexc.Name:         mexc.DefaultProviderConfig,
+		okx.Name:          okx.DefaultProviderConfig,
 	}
 
 	// LocalOracleConfig defines a readable config for local development. Any changes to this

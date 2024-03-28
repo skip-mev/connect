@@ -41,8 +41,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig is the default market configuration for Crypto.com.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for Crypto.com.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.ATOM_USD: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSD-PERP",

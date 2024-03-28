@@ -39,8 +39,8 @@ var (
 		URL:              URL,
 	}
 
-	// DefaultMarketConfig is the default market configuration for Kraken.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for Kraken.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",

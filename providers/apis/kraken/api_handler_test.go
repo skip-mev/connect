@@ -55,7 +55,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			h, err := kraken.NewAPIHandler(marketConfig, kraken.DefaultAPIConfig)
@@ -191,7 +191,7 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(kraken.Name, kraken.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			h, err := kraken.NewAPIHandler(marketConfig, kraken.DefaultAPIConfig)

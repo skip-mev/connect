@@ -49,8 +49,8 @@ var (
 		MaxSubscriptionsPerConnection: MaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for the MEXC Websocket.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",

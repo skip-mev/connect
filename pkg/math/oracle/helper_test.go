@@ -90,7 +90,7 @@ var (
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					coinbase.DefaultProviderConfig[constants.BITCOIN_USDT],
 					binance.DefaultNonUSProviderConfig[constants.BITCOIN_USDT],
-					kucoin.DefaultMarketConfig[constants.BITCOIN_USDT],
+					kucoin.DefaultProviderConfig[constants.BITCOIN_USDT],
 				},
 			},
 			USDT_USD.String(): {

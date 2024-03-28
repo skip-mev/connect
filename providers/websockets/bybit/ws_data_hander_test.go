@@ -159,7 +159,7 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(bybit.Name, bybit.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(bybit.Name, bybit.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := bybit.NewWebSocketDataHandler(logger, marketConfig, bybit.DefaultWebSocketConfig)
@@ -259,7 +259,7 @@ func TestCreateMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(bybit.Name, bybit.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(bybit.Name, bybit.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			wsHandler, err := bybit.NewWebSocketDataHandler(logger, marketConfig, bybit.DefaultWebSocketConfig)

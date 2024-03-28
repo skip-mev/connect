@@ -45,8 +45,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig is the default market configuration for ByBit.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig is the default market configuration for ByBit.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.APTOS_USDT: {
 			Name:           Name,
 			OffChainTicker: "APTUSDT",

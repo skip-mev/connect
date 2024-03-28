@@ -38,8 +38,8 @@ var (
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
 	}
 
-	// DefaultMarketConfig returns the default market config for bitstamp.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	// DefaultProviderConfig returns the default market config for bitstamp.
+	DefaultProviderConfig = types.TickerToProviderConfig{
 		constants.AVAX_USD: {
 			Name:           Name,
 			OffChainTicker: "avaxusd",
