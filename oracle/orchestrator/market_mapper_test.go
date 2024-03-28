@@ -261,7 +261,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		o.Stop()
 
 		// Check that the market map was written to the path.
-		mm, err := types.ReadMarketConfigFromFile(path)
+		mm, err := types.ReadMarketMapFromFile(path)
 		require.NoError(t, err)
 		require.Equal(t, o.GetMarketMap(), mm)
 

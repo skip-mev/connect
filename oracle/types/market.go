@@ -132,8 +132,8 @@ func (pmm *ProviderMarketMap) ValidateBasic() error {
 	return nil
 }
 
-// ReadMarketConfigFromFile reads a market map configuration from a file at the given path.
-func ReadMarketConfigFromFile(path string) (mmtypes.MarketMap, error) {
+// ReadMarketMapFromFile reads a market map configuration from a file at the given path.
+func ReadMarketMapFromFile(path string) (mmtypes.MarketMap, error) {
 	// Initialize the struct to hold the configuration
 	var config mmtypes.MarketMap
 

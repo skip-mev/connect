@@ -110,7 +110,7 @@ func runOracle() error {
 		return fmt.Errorf("failed to read oracle config file: %s", err.Error())
 	}
 
-	marketCfg, err := types.ReadMarketConfigFromFile(marketCfgPath)
+	marketCfg, err := types.ReadMarketMapFromFile(marketCfgPath)
 	if err != nil {
 		return fmt.Errorf("failed to read market config file: %s", err.Error())
 	}
