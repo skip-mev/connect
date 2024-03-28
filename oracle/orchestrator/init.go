@@ -42,7 +42,7 @@ func (o *ProviderOrchestrator) Init() error {
 func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) error {
 	// Create the provider market map. This creates the tickers the provider is configured to
 	// support.
-	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, o.marketMap)
+	providerMarketMap, err := types.ProviderMarketMapFromMarketMap(cfg.Name, o.marketMap)
 	if err != nil {
 		return fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
@@ -51,7 +51,7 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 	var provider *types.PriceProvider
 	switch {
 	case cfg.API.Enabled:
-		queryHandler, err := o.createAPIQueryHandler(cfg, market)
+		queryHandler, err := o.createAPIQueryHandler(cfg, providerMarketMap)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's api query handler: %w", cfg.Name, err)
 		}
@@ -61,14 +61,14 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
 			base.WithAPIQueryHandler(queryHandler),
 			base.WithAPIConfig[mmtypes.Ticker, *big.Int](cfg.API),
-			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
+			base.WithIDs[mmtypes.Ticker, *big.Int](providerMarketMap.GetTickers()),
 			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
 		)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
 		}
 	case cfg.WebSocket.Enabled:
-		queryHandler, err := o.createWebSocketQueryHandler(cfg, market)
+		queryHandler, err := o.createWebSocketQueryHandler(cfg, providerMarketMap)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's web socket query handler: %w", cfg.Name, err)
 		}
@@ -78,7 +78,7 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
 			base.WithWebSocketQueryHandler(queryHandler),
 			base.WithWebSocketConfig[mmtypes.Ticker, *big.Int](cfg.WebSocket),
-			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
+			base.WithIDs[mmtypes.Ticker, *big.Int](providerMarketMap.GetTickers()),
 			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
 		)
 		if err != nil {

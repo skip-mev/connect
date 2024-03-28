@@ -105,21 +105,23 @@ func (h *APIHandler) ParseResponse(
 
 	for _, data := range result {
 		// Filter out the responses that are not expected.
-		ticker, ok := h.market.OffChainMap[data.Symbol]
+		tickers, ok := h.market.OffChainMap[data.Symbol]
 		if !ok {
 			continue
 		}
 
-		price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
-		if err != nil {
-			wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
-			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+		for _, ticker := range tickers {
+			price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
+			if err != nil {
+				wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+				unresolved[ticker] = providertypes.UnresolvedResult{
+					ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+				}
+				continue
 			}
-			continue
-		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
+		}
 	}
 
 	// Add currency pairs that received no response to the unresolved map.

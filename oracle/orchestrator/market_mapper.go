@@ -55,6 +55,7 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 			}
 
 			// Write the market map to the configured path.
+			o.logger.Info("writing updated market map", zap.String("file", o.writeTo))
 			if err := o.WriteMarketMap(); err != nil {
 				o.logger.Error("failed to write market map", zap.Error(err))
 			}
@@ -67,6 +68,8 @@ func (o *ProviderOrchestrator) WriteMarketMap() error {
 	if len(o.writeTo) == 0 {
 		return nil
 	}
+
+	o.logger.Info("writing market map", zap.Any("map", o.marketMap))
 
 	o.mut.Lock()
 	defer o.mut.Unlock()
@@ -83,6 +86,6 @@ func (o *ProviderOrchestrator) WriteMarketMap() error {
 		return err
 	}
 
-	o.logger.Debug("wrote market map to file", zap.String("path", o.writeTo))
+	o.logger.Info("wrote market map to file", zap.String("path", o.writeTo))
 	return nil
 }

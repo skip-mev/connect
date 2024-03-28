@@ -101,14 +101,16 @@ func (h *APIHandler) ParseResponse(
 			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			ticker, ok := h.market.OffChainMap[offChainTicker]
+			tickers, ok := h.market.OffChainMap[offChainTicker]
 			if !ok {
 				continue
 			}
 
-			// Resolve the price.
-			price := math.Float64ToBigInt(price, ticker.Decimals)
-			resolved[ticker] = types.NewPriceResult(price, time.Now())
+			for _, ticker := range tickers {
+				// Resolve the price.
+				price := math.Float64ToBigInt(price, ticker.Decimals)
+				resolved[ticker] = types.NewPriceResult(price, time.Now())
+			}
 		}
 	}
 

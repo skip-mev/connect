@@ -15,7 +15,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -23,7 +22,6 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -36,12 +34,11 @@ var (
 		},
 	}
 
-	oracleCfgPath     string
-	marketCfgPath     string
-	runPprof          bool
-	profilePort       string
-	chain             string
-	updateLocalConfig bool
+	oracleCfgPath       string
+	marketCfgPath       string
+	updateMarketCfgPath string
+	runPprof            bool
+	profilePort         string
 )
 
 func init() {
@@ -50,43 +47,37 @@ func init() {
 		"oracle-config-path",
 		"",
 		"oracle.json",
-		"path to the oracle config file",
+		"Path to the oracle config file.",
 	)
 	rootCmd.Flags().StringVarP(
 		&marketCfgPath,
 		"market-config-path",
 		"",
-		"market.json",
-		"path to the market config file",
+		"",
+		"Path to the market config file. If you supplied a node URL in your config, this will not be required.",
+	)
+	rootCmd.Flags().StringVarP(
+		&updateMarketCfgPath,
+		"update-market-config-path",
+		"",
+		"",
+		"Path where the current market config will be written. Overwrites any pre-existing file. Requires an http-node-url/marketmap provider in your oracle.json config.",
 	)
 	rootCmd.Flags().BoolVarP(
 		&runPprof,
 		"run-pprof",
 		"",
 		false,
-		"run pprof server",
+		"Run pprof server.",
 	)
 	rootCmd.Flags().StringVarP(
 		&profilePort,
 		"pprof-port",
 		"",
 		"6060",
-		"port for the pprof server to listen on",
+		"Port for the pprof server to listen on.",
 	)
-	rootCmd.Flags().StringVarP(
-		&chain,
-		"chain-id",
-		"",
-		"",
-		"the chain id for which the side car should run for (ex. dydx-mainnet-1)",
-	)
-	rootCmd.Flags().BoolVarP(
-		&updateLocalConfig,
-		"update-local-market-config",
-		"",
-		true,
-		"update the market map config when a new one is received; this will overwrite the existing config file.",
-	)
+	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
 }
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -107,7 +98,7 @@ func runOracle() error {
 
 	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
 	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %s", err.Error())
+		return fmt.Errorf("failed to read oracle config file: %w", err)
 	}
 
 	marketCfg, err := types.ReadMarketMapFromFile(marketCfgPath)
@@ -115,20 +106,38 @@ func runOracle() error {
 		return fmt.Errorf("failed to read market config file: %s", err.Error())
 	}
 
+	if err := marketCfg.ValidateBasic(); err != nil {
+		return fmt.Errorf("market config is invalid: %w", err)
+	}
+
 	var logger *zap.Logger
 	if !cfg.Production {
 		logger, err = zap.NewDevelopment()
 		if err != nil {
-			return fmt.Errorf("failed to create logger: %s", err.Error())
+			return fmt.Errorf("failed to create logger: %w", err)
 		}
 	} else {
 		logger, err = zap.NewProduction()
 		if err != nil {
-			return fmt.Errorf("failed to create logger: %s", err.Error())
+			return fmt.Errorf("failed to create logger: %w", err)
 		}
 	}
 
+	logger.Info(
+		"successfully read in configs",
+		zap.String("oracle_config_path", oracleCfgPath),
+		zap.String("market_config_path", marketCfgPath),
+	)
+
 	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
+	aggregator, err := oraclemath.NewMedianAggregator(
+		logger,
+		marketCfg,
+		metrics,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create data aggregator: %w", err)
+	}
 
 	// Define the orchestrator and oracle options. These determine how the orchestrator and oracle are created & executed.
 	orchestratorOpts := []orchestrator.Option{
@@ -136,22 +145,18 @@ func runOracle() error {
 		orchestrator.WithMarketMap(marketCfg),
 		orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),             // Replace with custom API query handler factory.
 		orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory), // Replace with custom websocket query handler factory.
+		orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
+		orchestrator.WithAggregator(aggregator),
+	}
+	if updateMarketCfgPath != "" {
+		orchestratorOpts = append(orchestratorOpts, orchestrator.WithWriteTo(updateMarketCfgPath))
 	}
 	oracleOpts := []oracle.Option{
 		oracle.WithLogger(logger),
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
 		oracle.WithMetrics(metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
-	}
-
-	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
-		customOrchestratorOps, customOracleOpts, err := dydxOptions(logger, marketCfg, metrics)
-		if err != nil {
-			return fmt.Errorf("failed to create dydx orchestrator and oracle options: %w", err)
-		}
-
-		orchestratorOpts = append(orchestratorOpts, customOrchestratorOps...)
-		oracleOpts = append(oracleOpts, customOracleOpts...)
+		oracle.WithDataAggregator(aggregator),
 	}
 
 	// Create the orchestrator and start the orchestrator.
@@ -218,37 +223,4 @@ func runOracle() error {
 		logger.Error("stopping server", zap.Error(err))
 	}
 	return nil
-}
-
-// dydxOptions specifies the custom orchestrator and oracle options for dYdX.
-func dydxOptions(
-	logger *zap.Logger,
-	marketCfg mmtypes.MarketMap,
-	metrics oraclemetrics.Metrics,
-) ([]orchestrator.Option, []oracle.Option, error) {
-	// dYdX uses the median index price aggregation strategy.
-	aggregator, err := oraclemath.NewMedianAggregator(
-		logger,
-		marketCfg,
-		metrics,
-	)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// The oracle must be configured with the median index price aggregator.
-	customOracleOpts := []oracle.Option{
-		oracle.WithDataAggregator(aggregator),
-	}
-
-	// Additionally, dYdX requires a custom market map provider that fetches market params from the chain.
-	customOrchestratorOps := []orchestrator.Option{
-		orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
-		orchestrator.WithAggregator(aggregator),
-	}
-	if updateLocalConfig {
-		customOrchestratorOps = append(customOrchestratorOps, orchestrator.WithWriteTo(marketCfgPath))
-	}
-
-	return customOrchestratorOps, customOracleOpts, nil
 }

@@ -26,7 +26,7 @@ type (
 		TickerConfigs TickerToProviderConfig
 
 		// OffChainMap is a map of tickers to their respective on-chain markets.
-		OffChainMap map[string]mmtypes.Ticker
+		OffChainMap map[string][]mmtypes.Ticker
 	}
 )
 
@@ -64,11 +64,11 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 		return ProviderMarketMap{
 			Name:          name,
 			TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
-			OffChainMap:   make(map[string]mmtypes.Ticker),
+			OffChainMap:   make(map[string][]mmtypes.Ticker),
 		}, nil
 	}
 
-	offChainMap := make(map[string]mmtypes.Ticker)
+	offChainMap := make(map[string][]mmtypes.Ticker, len(tickerConfigs))
 	for ticker, config := range tickerConfigs {
 		if err := ticker.ValidateBasic(); err != nil {
 			return ProviderMarketMap{}, fmt.Errorf("invalid ticker %s: %w", ticker, err)
@@ -82,14 +82,21 @@ func NewProviderMarketMap(name string, tickerConfigs TickerToProviderConfig) (Pr
 			return ProviderMarketMap{}, fmt.Errorf("expected provider config name %s, got %s", name, config.Name)
 		}
 
-		offChainMap[config.OffChainTicker] = ticker
+		if offChainMap[config.OffChainTicker] == nil {
+			offChainMap[config.OffChainTicker] = []mmtypes.Ticker{ticker}
+			continue
+		}
+
+		offChainMap[config.OffChainTicker] = append(offChainMap[config.OffChainTicker], ticker)
 	}
 
-	return ProviderMarketMap{
+	pmm := ProviderMarketMap{
 		Name:          name,
 		TickerConfigs: tickerConfigs,
 		OffChainMap:   offChainMap,
-	}, nil
+	}
+
+	return pmm, pmm.ValidateBasic()
 }
 
 // GetTickers returns the tickers from the provider market map.
@@ -106,8 +113,8 @@ func (pmm *ProviderMarketMap) ValidateBasic() error {
 	if len(pmm.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
 	}
-	if len(pmm.OffChainMap) != len(pmm.TickerConfigs) {
-		return fmt.Errorf("off-chain map length mismatch")
+	if len(pmm.OffChainMap) > len(pmm.TickerConfigs) {
+		return fmt.Errorf("off-chain map length invalid %d>%d, %v %v", len(pmm.OffChainMap), len(pmm.TickerConfigs), pmm.OffChainMap, pmm.TickerConfigs)
 	}
 
 	for ticker, config := range pmm.TickerConfigs {
@@ -119,13 +126,20 @@ func (pmm *ProviderMarketMap) ValidateBasic() error {
 			return fmt.Errorf("invalid provider config for %s: %w", ticker, err)
 		}
 
-		t, ok := pmm.OffChainMap[config.OffChainTicker]
+		tickers, ok := pmm.OffChainMap[config.OffChainTicker]
 		if !ok {
 			return fmt.Errorf("off-chain ticker %s not found in off-chain map", config.OffChainTicker)
 		}
 
-		if t != ticker {
-			return fmt.Errorf("off-chain ticker %s does not match on-chain ticker %s", config.OffChainTicker, ticker)
+		found := false
+		for _, t := range tickers {
+			if t == ticker {
+				found = true
+			}
+		}
+
+		if !found {
+			return fmt.Errorf("ticker %s not found in off-chain map", config.OffChainTicker)
 		}
 	}
 

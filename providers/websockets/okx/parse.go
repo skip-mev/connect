@@ -84,23 +84,25 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 
 	// Iterate through all tickers and add them to the response.
 	for _, instrument := range resp.Data {
-		ticker, ok := h.market.OffChainMap[instrument.ID]
+		tickers, ok := h.market.OffChainMap[instrument.ID]
 		if !ok {
 			h.logger.Debug("ticker not found for instrument ID", zap.String("instrument_id", instrument.ID))
 			continue
 		}
 
-		// Convert the price to a big.Int.
-		price, err := math.Float64StringToBigInt(instrument.IndexPrice, ticker.Decimals)
-		if err != nil {
-			wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
-			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+		for _, ticker := range tickers {
+			// Convert the price to a big.Int.
+			price, err := math.Float64StringToBigInt(instrument.IndexPrice, ticker.Decimals)
+			if err != nil {
+				wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+				unresolved[ticker] = providertypes.UnresolvedResult{
+					ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+				}
+				continue
 			}
-			continue
-		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+			resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+		}
 	}
 
 	return types.NewPriceResponse(resolved, unresolved), nil

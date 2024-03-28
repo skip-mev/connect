@@ -1,5 +1,5 @@
 {
-  "updateInterval": 1500000000,
+  "updateInterval": 500000000,
   "maxPriceAge": 120000000000,
   "providers": [
     {
@@ -401,7 +401,7 @@
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
-        "url": "localhost:1317",
+        "url": "https://dydx-api.polkachu.com",
         "name": "dydx_api"
       },
       "webSocket": {

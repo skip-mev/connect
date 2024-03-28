@@ -36,50 +36,52 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 
 	// Parse the currency pair from the ticker data.
 	offChainTicker := tickerData[TickerIndex]
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	tickers, ok := h.market.OffChainMap[offChainTicker]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("market not found for ticker %s", offChainTicker)
 	}
 
-	// Check if the sequence number is valid.
-	sequence, err := strconv.ParseInt(msg.Data.Sequence, 10, 64)
-	if err != nil {
-		unResolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+	for _, ticker := range tickers {
+		// Check if the sequence number is valid.
+		sequence, err := strconv.ParseInt(msg.Data.Sequence, 10, 64)
+		if err != nil {
+			unResolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+			}
+			return types.NewPriceResponse(resolved, unResolved), err
 		}
-		return types.NewPriceResponse(resolved, unResolved), err
-	}
 
-	seenSequence, ok := h.sequences[ticker]
-	switch {
-	case !ok || seenSequence < sequence:
-		// If the sequence number is not found, then this is the first message
-		// received for this currency pair. Set the sequence number to the
-		// sequence number received. Additionally, if the sequence number is
-		// greater than the sequence number currently stored, then this message
-		// was received in order.
-		h.sequences[ticker] = sequence
-	default:
-		// If the sequence number is greater than the sequence number received,
-		// then this message was received out of order. Ignore the message.
-		err := fmt.Errorf("received out of order ticker response message")
-		unResolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+		seenSequence, ok := h.sequences[ticker]
+		switch {
+		case !ok || seenSequence < sequence:
+			// If the sequence number is not found, then this is the first message
+			// received for this currency pair. Set the sequence number to the
+			// sequence number received. Additionally, if the sequence number is
+			// greater than the sequence number currently stored, then this message
+			// was received in order.
+			h.sequences[ticker] = sequence
+		default:
+			// If the sequence number is greater than the sequence number received,
+			// then this message was received out of order. Ignore the message.
+			err := fmt.Errorf("received out of order ticker %s response message", ticker.String())
+			unResolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+			}
+			return types.NewPriceResponse(resolved, unResolved), err
 		}
-		return types.NewPriceResponse(resolved, unResolved), err
-	}
 
-	// Parse the price from the message.
-	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
-	if err != nil {
-		wErr := fmt.Errorf("failed to parse price %w", err)
-		unResolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+		// Parse the price from the message.
+		price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
+		if err != nil {
+			wErr := fmt.Errorf("failed to parse price %w", err)
+			unResolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+			}
+			return types.NewPriceResponse(resolved, unResolved), err
 		}
-		return types.NewPriceResponse(resolved, unResolved), err
-	}
 
-	resolved[ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = types.NewPriceResult(price, time.Now())
+	}
 	return types.NewPriceResponse(resolved, unResolved), nil
 }
