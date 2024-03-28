@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 type (

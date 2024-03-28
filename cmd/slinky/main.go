@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"net/http"
 	"os"
 	"os/signal"
@@ -103,7 +104,7 @@ func runOracle() error {
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
-		marketCfg, err = types.ReadMarketConfigFromFile(marketCfgPath)
+		marketCfg, err = types.ReadMarketMapFromFile(marketCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read market config file: %w", err)
 		}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIDataHandler = (*MockAPIHandler)(nil)

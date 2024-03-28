@@ -5,7 +5,7 @@ import (
 	"math/big"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // GetTickerFromCurrencyPair returns the ticker for the given currency pair.

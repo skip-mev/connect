@@ -11,7 +11,7 @@ import (
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestConvertMarketParamsToMarketMap(t *testing.T) {
