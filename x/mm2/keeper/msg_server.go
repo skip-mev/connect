@@ -41,8 +41,8 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	}
 
 	// create markets
-	for _, market := range msg.CreateMarkets {
-		err = ms.k.CreateMarket(ctx, market)
+	for _, createMarket := range msg.CreateMarkets {
+		err = ms.k.createMarket(ctx, createMarket)
 		if err != nil {
 			return nil, fmt.Errorf("unable to create market: %w", err)
 		}
@@ -56,12 +56,12 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	}
 
 	// validate that the new state of the marketmap is valid
-	err = ms.k.ValidateState(ctx, msg.CreateMarkets, nil)
+	err = ms.k.validateState(ctx, msg.CreateMarkets)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgCreateMarketsResponse{}, nil
+	return &types.MsgCreateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
 // UpdateMarkets updates the marketmap by updating markets from the given message.  All updates are made to the market
@@ -84,7 +84,7 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 	}
 
 	for _, market := range msg.UpdateMarkets {
-		err = ms.k.UpdateMarket(ctx, market)
+		err = ms.k.updateMarket(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to update market: %w", err)
 		}
@@ -98,12 +98,12 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 	}
 
 	// validate that the new state of the marketmap is valid
-	err = ms.k.ValidateState(ctx, nil, msg.UpdateMarkets)
+	err = ms.k.validateState(ctx, msg.UpdateMarkets)
 	if err != nil {
 		return nil, fmt.Errorf("invalid state resulting from update: %w", err)
 	}
 
-	return &types.MsgUpdateMarketsResponse{}, nil
+	return &types.MsgUpdateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
 // Params updates the x/marketmap module's Params.
