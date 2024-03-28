@@ -93,7 +93,7 @@ func (h *WebSocketHandler) parseTickerMessage(
 	}
 
 	// Get the ticker from the instrument.
-	ticker, ok := h.market.OffChainMap[resp.Pair]
+	tickers, ok := h.market.OffChainMap[resp.Pair]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("no ticker found for instrument %s", resp.Pair)
@@ -105,18 +105,20 @@ func (h *WebSocketHandler) parseTickerMessage(
 			fmt.Errorf("invalid price update length %d", len(resp.TickerData.VolumeWeightedAveragePrice))
 	}
 
-	// Parse the price update.
-	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
-	price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
-	if err != nil {
-		wErr := fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		unResolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+	for _, ticker := range tickers {
+		// Parse the price update.
+		priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
+		price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
+		if err != nil {
+			wErr := fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+			unResolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+			}
+			return types.NewPriceResponse(resolved, unResolved), unResolved[ticker]
 		}
-		return types.NewPriceResponse(resolved, unResolved), unResolved[ticker]
-	}
 
-	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+	}
 	return types.NewPriceResponse(resolved, unResolved), nil
 }
 

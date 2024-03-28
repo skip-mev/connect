@@ -23,42 +23,43 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	)
 
 	// Determine if the ticker is valid.
-	ticker, ok := h.market.OffChainMap[msg.Ticker]
+	tickers, ok := h.market.OffChainMap[msg.Ticker]
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("got response for an unsupported market %s", msg.Ticker)
 	}
-
-	// Determine if the sequence number is valid.
-	sequence, ok := h.sequence[ticker]
-	switch {
-	case !ok || sequence < msg.Sequence:
-		// If the sequence number is not found, then this is the first message
-		// received for this currency pair. Set the sequence number to the
-		// sequence number received. Additionally, if the sequence number is
-		// greater than the sequence number currently stored, then this message
-		// was received in order.
-		h.sequence[ticker] = msg.Sequence
-	default:
-		// If the sequence number is greater than the sequence number received,
-		// then this message was received out of order. Ignore the message.
-		err := fmt.Errorf("received out of order ticker response message")
-		unResolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+	for _, ticker := range tickers {
+		// Determine if the sequence number is valid.
+		sequence, ok := h.sequence[ticker]
+		switch {
+		case !ok || sequence < msg.Sequence:
+			// If the sequence number is not found, then this is the first message
+			// received for this currency pair. Set the sequence number to the
+			// sequence number received. Additionally, if the sequence number is
+			// greater than the sequence number currently stored, then this message
+			// was received in order.
+			h.sequence[ticker] = msg.Sequence
+		default:
+			// If the sequence number is greater than the sequence number received,
+			// then this message was received out of order. Ignore the message.
+			err := fmt.Errorf("received out of order ticker %s response message", ticker.String())
+			unResolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
+			}
+			return types.NewPriceResponse(resolved, unResolved), err
 		}
-		return types.NewPriceResponse(resolved, unResolved), err
-	}
 
-	// Convert the price to a big int.
-	price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
-	if err != nil {
-		unResolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
+		// Convert the price to a big int.
+		price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
+		if err != nil {
+			unResolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),
+			}
+			return types.NewPriceResponse(resolved, unResolved), err
 		}
-		return types.NewPriceResponse(resolved, unResolved), err
-	}
 
-	// Convert the time to a time object and resolve the price into the response.
-	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+		// Convert the time to a time object and resolve the price into the response.
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+	}
 	return types.NewPriceResponse(resolved, unResolved), nil
 }

@@ -99,14 +99,18 @@ func runOracle() error {
 
 	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
 	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %s", err.Error())
+		return fmt.Errorf("failed to read oracle config file: %w", err)
 	}
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
 		marketCfg, err = types.ReadMarketConfigFromFile(marketCfgPath)
 		if err != nil {
-			return fmt.Errorf("failed to read market config file: %s", err.Error())
+			return fmt.Errorf("failed to read market config file: %w", err)
+		}
+
+		if err := marketCfg.ValidateBasic(); err != nil {
+			return fmt.Errorf("market config is invalid: %w", err)
 		}
 	}
 
@@ -114,12 +118,12 @@ func runOracle() error {
 	if !cfg.Production {
 		logger, err = zap.NewDevelopment()
 		if err != nil {
-			return fmt.Errorf("failed to create logger: %s", err.Error())
+			return fmt.Errorf("failed to create logger: %w", err)
 		}
 	} else {
 		logger, err = zap.NewProduction()
 		if err != nil {
-			return fmt.Errorf("failed to create logger: %s", err.Error())
+			return fmt.Errorf("failed to create logger: %w", err)
 		}
 	}
 

@@ -127,11 +127,13 @@ func (h *WebSocketHandler) handleStream(
 
 // updateChannelMap updates the internal map for the given channelID and ticker.
 func (h *WebSocketHandler) updateChannelMap(channelID int, offChainTicker string) error {
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	tickers, ok := h.market.OffChainMap[offChainTicker]
 	if !ok {
 		return fmt.Errorf("unknown ticker %s", offChainTicker)
 	}
 
-	h.channelMap[channelID] = ticker
+	for _, ticker := range tickers {
+		h.channelMap[channelID] = ticker
+	}
 	return nil
 }

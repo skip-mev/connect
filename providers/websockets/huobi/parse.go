@@ -41,14 +41,16 @@ func (h *WebSocketHandler) parseTickerStream(stream TickerStream) (types.PriceRe
 			fmt.Errorf("incorrectly formatted stream: %v", stream)
 	}
 
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	tickers, ok := h.market.OffChainMap[offChainTicker]
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("received stream for unknown channel %s", stream.Channel)
 	}
 
-	price := math.Float64ToBigInt(stream.Tick.LastPrice, ticker.Decimals)
-	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+	for _, ticker := range tickers {
+		price := math.Float64ToBigInt(stream.Tick.LastPrice, ticker.Decimals)
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+	}
 
 	return types.NewPriceResponse(resolved, unresolved), nil
 }

@@ -105,23 +105,25 @@ func (h *APIHandler) ParseResponse(
 	// Filter out the responses that are not expected.
 	attributes := data.Attributes
 	for address, price := range attributes.TokenPrices {
-		ticker, ok := h.market.OffChainMap[address]
+		tickers, ok := h.market.OffChainMap[address]
 		err := fmt.Errorf("no ticker for address %s", address)
 		if !ok {
 			return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorUnknownPair))
 		}
 
-		// Convert the price to a big.Int.
-		price, err := math.Float64StringToBigInt(price, ticker.Decimals)
-		if err != nil {
-			wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
-			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+		for _, ticker := range tickers {
+			// Convert the price to a big.Int.
+			price, err := math.Float64StringToBigInt(price, ticker.Decimals)
+			if err != nil {
+				wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+				unresolved[ticker] = providertypes.UnresolvedResult{
+					ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+				}
+				continue
 			}
-			continue
-		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
+		}
 	}
 
 	// Add all expected tickers that did not return a response to the unresolved

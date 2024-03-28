@@ -33,23 +33,24 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 	for _, instrument := range instruments {
 		// If we don't have a mapping for the instrument, return an error. This is likely a configuration
 		// error.
-		ticker, ok := h.market.OffChainMap[instrument.Name]
+		tickers, ok := h.market.OffChainMap[instrument.Name]
 		if !ok {
 			h.logger.Error("failed to find currency pair for instrument", zap.String("instrument", instrument.Name))
 			continue
 		}
 
-		// Attempt to parse the price.
-		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, ticker.Decimals); err != nil {
-			wErr := fmt.Errorf("failed to parse price %s:"+
-				" %w", instrument.LatestTradePrice, err)
-			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+		for _, ticker := range tickers {
+			// Attempt to parse the price.
+			if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, ticker.Decimals); err != nil {
+				wErr := fmt.Errorf("failed to parse price %s:"+
+					" %w", instrument.LatestTradePrice, err)
+				unresolved[ticker] = providertypes.UnresolvedResult{
+					ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+				}
+			} else {
+				resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 			}
-		} else {
-			resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 		}
-
 	}
 
 	return types.NewPriceResponse(resolved, unresolved), nil

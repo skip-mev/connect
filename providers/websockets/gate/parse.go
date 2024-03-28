@@ -43,23 +43,25 @@ func (h *WebSocketHandler) parseTickerStream(
 	}
 
 	// Get the ticker from the off-chain representation.
-	ticker, ok := h.market.OffChainMap[stream.Result.CurrencyPair]
+	tickers, ok := h.market.OffChainMap[stream.Result.CurrencyPair]
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("no currency pair found for symbol %s", stream.Result.CurrencyPair)
 	}
 
-	// Parse the price update.
-	priceStr := stream.Result.Last
-	price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
-	if err != nil {
-		wErr := fmt.Errorf("failed to parse price %s: %w", priceStr, err)
-		unresolved[ticker] = providertypes.UnresolvedResult{
-			ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+	for _, ticker := range tickers {
+		// Parse the price update.
+		priceStr := stream.Result.Last
+		price, err := math.Float64StringToBigInt(priceStr, ticker.Decimals)
+		if err != nil {
+			wErr := fmt.Errorf("failed to parse price %s: %w", priceStr, err)
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+			}
+			return types.NewPriceResponse(resolved, unresolved), unresolved[ticker]
 		}
-		return types.NewPriceResponse(resolved, unresolved), unresolved[ticker]
-	}
 
-	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
+	}
 	return types.NewPriceResponse(resolved, unresolved), nil
 }
