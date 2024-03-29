@@ -283,15 +283,6 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 						},
 					},
 				},
-				Paths: map[string]mmtypes.Paths{
-					eth_usdc.String(): {Paths: []mmtypes.Path{
-						{Operations: []mmtypes.Operation{{
-							CurrencyPair: eth_usdc.CurrencyPair,
-							Invert:       false,
-							Provider:     static.Name,
-						}}},
-					}},
-				},
 			}
 
 			oracle := GetOracleSideCar(node)
@@ -532,29 +523,6 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					},
 				},
 			},
-			Paths: map[string]mmtypes.Paths{
-				eth_usdc.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdc.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-				eth_usdt.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdt.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-				eth_usd.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usd.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-			},
 		}
 
 		oracle := GetOracleSideCar(node)
@@ -644,22 +612,6 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						},
 					},
 				},
-			},
-			Paths: map[string]mmtypes.Paths{
-				eth_usdc.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdc.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-				eth_usdt.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdt.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
 			},
 		}
 
