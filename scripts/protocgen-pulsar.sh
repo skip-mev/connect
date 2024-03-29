@@ -36,4 +36,3 @@ echo "fixing market.pulsar.go"
 sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/marketmap/v1/market.pulsar.go && rm ./api/slinky/marketmap/v1/market.pulsar.go.bak
 sed -i.bak 's|cosmossdk.io/api/slinky/types/v1|github.com/skip-mev/slinky/api/slinky/types/v1|g' ./api/slinky/marketmap/v1/query.pulsar.go && rm ./api/slinky/marketmap/v1/query.pulsar.go.bak
 sed -i.bak 's|cosmossdk.io/api/slinky/oracle/v1|github.com/skip-mev/slinky/api/slinky/oracle/v1|g' ./api/slinky/marketmap/v1/market.pulsar.go && rm ./api/slinky/marketmap/v1/market.pulsar.go.bak
-
