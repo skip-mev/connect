@@ -2,9 +2,11 @@ package static
 
 import (
 	"context"
+	"io"
 	"net/http"
 
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
+	"strings"
 )
 
 var _ handlers.RequestHandler = (*MockClient)(nil)
@@ -21,6 +23,7 @@ func NewStaticMockClient() *MockClient {
 func (s *MockClient) Do(_ context.Context, _ string) (*http.Response, error) {
 	return &http.Response{
 		StatusCode: http.StatusOK,
+		Body: io.NopCloser(strings.NewReader(`{"result": "success"}`)),
 	}, nil
 }
 
