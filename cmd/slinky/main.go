@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 
 	_ "net/http/pprof" //nolint: gosec
 

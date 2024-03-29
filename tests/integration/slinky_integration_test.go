@@ -16,7 +16,7 @@ import (
 	"github.com/skip-mev/slinky/tests/integration"
 	"github.com/skip-mev/slinky/x/alerts"
 	"github.com/skip-mev/slinky/x/incentives"
-	marketmapmodule "github.com/skip-mev/slinky/x/marketmap"
+	"github.com/skip-mev/slinky/x/marketmap"
 	"github.com/skip-mev/slinky/x/oracle"
 	"github.com/skip-mev/slinky/x/sla"
 )
@@ -44,7 +44,7 @@ var (
 		gov.AppModuleBasic{},
 		alerts.AppModuleBasic{},
 		auth.AppModuleBasic{},
-		marketmapmodule.AppModuleBasic{},
+		marketmap.AppModuleBasic{},
 		incentives.AppModuleBasic{},
 		sla.AppModuleBasic{},
 	)
