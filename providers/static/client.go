@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
+	"strings"
 )
 
 var _ handlers.RequestHandler = (*MockClient)(nil)
