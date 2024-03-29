@@ -39,7 +39,7 @@ type APIPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue]
 	FetchPrices(
 		ctx context.Context,
 		ids []K,
-	) (providertypes.GetResponse[K, V])
+	) providertypes.GetResponse[K, V]
 }
 
 // APIQueryHandlerImpl is the default API implementation of the QueryHandler interface.
@@ -88,10 +88,10 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 	}
 
 	return &APIQueryHandlerImpl[K, V]{
-		logger:         logger.With(zap.String("api_data_handler", cfg.Name)),
-		config:         cfg,
-		metrics:        metrics,
-		priceFetcher:   priceFetcher,
+		logger:       logger.With(zap.String("api_data_handler", cfg.Name)),
+		config:       cfg,
+		metrics:      metrics,
+		priceFetcher: priceFetcher,
 	}, nil
 }
 
