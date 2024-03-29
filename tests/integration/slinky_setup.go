@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/skip-mev/slinky/providers/static"
+
 	"cosmossdk.io/math"
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
@@ -356,19 +358,10 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 			},
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
-					Name:           "mexc",
+					Name:           static.Name,
 					OffChainTicker: cp.String(),
 				},
 			},
-			Paths: mmtypes.Paths{Paths: []mmtypes.Path{
-				{Operations: []mmtypes.Operation{
-					{
-						CurrencyPair: cp,
-						Invert:       false,
-						Provider:     "mexc",
-					},
-				}},
-			}},
 		}
 	}
 
