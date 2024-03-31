@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -12,9 +13,11 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	raydium "github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
@@ -32,9 +35,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	raydium "github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"io"
 )
 
 const (
@@ -564,13 +564,13 @@ func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.P
 	providerToMarkets[raydium.Name] = make(map[mmtypes.Ticker]mmtypes.ProviderConfig)
 	for _, pair := range raydiumPairs {
 		providerToMarkets[raydium.Name][mmtypes.Ticker{
-			CurrencyPair: pair.Cp,
-			Decimals: 18,
+			CurrencyPair:     pair.Cp,
+			Decimals:         18,
 			MinProviderCount: 1,
-			Enabled: true,
-			Metadata_JSON: marshalToJSONString(pair.TickerMetaData),
+			Enabled:          true,
+			Metadata_JSON:    marshalToJSONString(pair.TickerMetaData),
 		}] = mmtypes.ProviderConfig{
-			Name: raydium.Name,
+			Name:           raydium.Name,
 			OffChainTicker: pair.Cp.String(),
 		}
 	}
