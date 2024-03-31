@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 
 	"go.uber.org/zap"
@@ -46,9 +47,14 @@ func APIQueryHandlerFactory(
 	}
 
 	var (
-		apiDataHandler types.PriceAPIDataHandler
-		requestHandler apihandlers.RequestHandler
+		apiPriceFetcher types.APIPriceFetcher
+		apiDataHandler  types.PriceAPIDataHandler
 	)
+
+	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
+	if err != nil {
+		return nil, err
+	}
 
 	switch cfg.Name {
 	case binance.Name:
@@ -68,6 +74,15 @@ func APIQueryHandlerFactory(
 		}
 
 		requestHandler = static.NewStaticMockClient()
+	case raydium.Name:
+		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
+			marketMap,
+			cfg.API,
+			logger,
+		)
+		if err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
@@ -75,20 +90,25 @@ func APIQueryHandlerFactory(
 		return nil, err
 	}
 
-	// If a custom request handler is not provided, create a new default one.
-	if requestHandler == nil {
-		requestHandler, err = apihandlers.NewRequestHandlerImpl(client)
+	// if no apiPriceFetcher has been created yet, create a default REST API price fetcher.
+	if apiPriceFetcher == nil {
+		apiPriceFetcher, err = apihandlers.NewRestAPIPriceFetcher(
+			requestHandler,
+			apiDataHandler,
+			metrics,
+			cfg.API,
+			logger,
+		)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
-	return types.NewPriceAPIQueryHandler(
+	return apihandlers.NewAPIQueryHandlerWithPriceFetcher(
 		logger,
 		cfg.API,
-		requestHandler,
-		apiDataHandler,
+		apiPriceFetcher,
 		metrics,
 	)
 }
