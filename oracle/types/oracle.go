@@ -62,6 +62,10 @@ type (
 	// returning the resolved and unresolved prices.
 	PriceAPIQueryHandler = apihandlers.APIQueryHandler[mmtypes.Ticker, *big.Int]
 
+	// APIPriceFetcher is a type alias for the API price fetcher. This is responsible
+	// for fetching the prices from the price provider using the API.
+	APIPriceFetcher = apihandlers.APIPriceFetcher[mmtypes.Ticker, *big.Int]
+
 	// PriceWebSocketQueryHandlerFactory is a type alias for the price web socket query handler factory.
 	// This is responsible for creating the web socket query handler for the price provider.
 	PriceWebSocketQueryHandlerFactory = func(
