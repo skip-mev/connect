@@ -30,13 +30,18 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 	)
 }
 
-// APIPriceFetcher is an interface that encapsulates fetching prices from a provider. This interface
+// APIFetcher is an interface that encapsulates fetching data from a provider. This interface
 // is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
-type APIPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
-	// FetchPrices fetches prices from the API for the given IDs. The response is returned
-	// as a map of IDs to their respective prices. The request should respect the context timeout
-	// and cancel the request if the context is cancelled.
-	FetchPrices(
+type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
+	// Init initializes the price fetcher. This method is called once per innvoation of the
+	// APIQueryHandler. This can be utilized to perform any setup that is required for the
+	// price fetcher.
+	Init(ctx context.Context) error
+
+	// Fetch fetches data from the API for the given IDs. The response is returned as a map of IDs to
+	// their respective responses. The request should respect the context timeout and cancel the request
+	// if the context is cancelled.
+	Fetch(
 		ctx context.Context,
 		ids []K,
 	) providertypes.GetResponse[K, V]
@@ -53,8 +58,8 @@ type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseVa
 	metrics metrics.APIMetrics
 	config  config.APIConfig
 
-	// priceFetcher is responsible for fetching prices from the API.
-	priceFetcher APIPriceFetcher[K, V]
+	// fetcher is responsible for fetching data from the API.
+	fetcher APIFetcher[K, V]
 }
 
 // NewAPIQueryHandler creates a new APIQueryHandler. It manages querying the data
@@ -82,16 +87,16 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		return nil, fmt.Errorf("no metrics specified for api query handler")
 	}
 
-	priceFetcher, err := NewRestAPIPriceFetcher(requestHandler, apiHandler, metrics, cfg, logger)
+	fetcher, err := NewRestAPIFetcher(requestHandler, apiHandler, metrics, cfg, logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create price fetcher: %w", err)
 	}
 
 	return &APIQueryHandlerImpl[K, V]{
-		logger:       logger.With(zap.String("api_data_handler", cfg.Name)),
-		config:       cfg,
-		metrics:      metrics,
-		priceFetcher: priceFetcher,
+		logger:  logger.With(zap.String("api_data_handler", cfg.Name)),
+		config:  cfg,
+		metrics: metrics,
+		fetcher: fetcher,
 	}, nil
 }
 
@@ -118,15 +123,21 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		h.logger.Debug("finished api query handler")
 	}()
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// Initialize the price fetcher.
+	if err := h.fetcher.Init(ctx); err != nil {
+		h.logger.Error("failed to initialize price fetcher", zap.Error(err))
+		return
+	}
+
 	// Set the concurrency limit based on the maximum number of queries allowed for a single
 	// interval.
 	wg := errgroup.Group{}
 	limit := math.Min(h.config.MaxQueries, len(ids))
 	wg.SetLimit(limit)
 	h.logger.Debug("setting concurrency limit", zap.Int("limit", limit))
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
 	// we need to make a request for each ID.
@@ -189,7 +200,7 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 
 		h.logger.Debug("starting subtask", zap.Any("ids", ids))
 
-		h.writeResponse(ctx, responseCh, h.priceFetcher.FetchPrices(ctx, ids))
+		h.writeResponse(ctx, responseCh, h.fetcher.Fetch(ctx, ids))
 		return nil
 	}
 }
