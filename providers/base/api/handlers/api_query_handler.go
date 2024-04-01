@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/base/api/errors"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -32,6 +30,18 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 	)
 }
 
+// APIPriceFetcher is an interface that encapsulates fetching prices from a provider. This interface
+// is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
+type APIPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
+	// FetchPrices fetches prices from the API for the given IDs. The response is returned
+	// as a map of IDs to their respective prices. The request should respect the context timeout
+	// and cancel the request if the context is cancelled.
+	FetchPrices(
+		ctx context.Context,
+		ids []K,
+	) providertypes.GetResponse[K, V]
+}
+
 // APIQueryHandlerImpl is the default API implementation of the QueryHandler interface.
 // This is used to query using http requests. It manages querying the data provider
 // by using the APIDataHandler and RequestHandler. All responses are sent to the
@@ -43,13 +53,8 @@ type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseVa
 	metrics metrics.APIMetrics
 	config  config.APIConfig
 
-	// The request handler is responsible for making outgoing HTTP requests with
-	// a given URL. This can be the default client or a custom client.
-	requestHandler RequestHandler
-
-	// The API data handler is responsible for creating the URL to be sent to the
-	// request handler and parsing the response from the request handler.
-	apiHandler APIDataHandler[K, V]
+	// priceFetcher is responsible for fetching prices from the API.
+	priceFetcher APIPriceFetcher[K, V]
 }
 
 // NewAPIQueryHandler creates a new APIQueryHandler. It manages querying the data
@@ -73,24 +78,20 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		return nil, fmt.Errorf("no logger specified for api query handler")
 	}
 
-	if requestHandler == nil {
-		return nil, fmt.Errorf("no request handler specified for api query handler")
-	}
-
-	if apiHandler == nil {
-		return nil, fmt.Errorf("no api data handler specified for api query handler")
-	}
-
 	if metrics == nil {
 		return nil, fmt.Errorf("no metrics specified for api query handler")
 	}
 
+	priceFetcher, err := NewRestAPIPriceFetcher(requestHandler, apiHandler, metrics, cfg, logger)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create price fetcher: %w", err)
+	}
+
 	return &APIQueryHandlerImpl[K, V]{
-		logger:         logger.With(zap.String("api_data_handler", cfg.Name)),
-		config:         cfg,
-		requestHandler: requestHandler,
-		apiHandler:     apiHandler,
-		metrics:        metrics,
+		logger:       logger.With(zap.String("api_data_handler", cfg.Name)),
+		config:       cfg,
+		metrics:      metrics,
+		priceFetcher: priceFetcher,
 	}, nil
 }
 
@@ -174,11 +175,7 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 	responseCh chan<- providertypes.GetResponse[K, V],
 ) func() error {
 	return func() error {
-		var (
-			start = time.Now().UTC()
-			resp  *http.Response
-			err   error
-		)
+		start := time.Now().UTC()
 
 		defer func() {
 			// Recover from any panics that occur.
@@ -187,74 +184,12 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 			}
 
 			h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
-			h.metrics.AddHTTPStatusCode(h.config.Name, resp)
 			h.logger.Debug("finished subtask", zap.Any("ids", ids))
 		}()
 
 		h.logger.Debug("starting subtask", zap.Any("ids", ids))
 
-		// Create the URL for the request.
-		url, err := h.apiHandler.CreateURL(ids)
-		if err != nil {
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
-				ids,
-				providertypes.NewErrorWithCode(
-					errors.ErrCreateURLWithErr(err),
-					providertypes.ErrorUnableToCreateURL,
-				),
-			),
-			)
-
-			return nil
-		}
-
-		h.logger.Debug("created url", zap.String("url", url))
-
-		// Make the request.
-		apiCtx, cancel := context.WithTimeout(ctx, h.config.Timeout)
-		defer cancel()
-
-		resp, err = h.requestHandler.Do(apiCtx, url)
-		if err != nil {
-			status := providertypes.ErrorUnknown
-			if resp != nil {
-				status = providertypes.ErrorCode(resp.StatusCode)
-			}
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
-				ids,
-				providertypes.NewErrorWithCode(
-					errors.ErrDoRequestWithErr(err),
-					status,
-				),
-			),
-			)
-			return nil
-		}
-
-		// TODO: add more error handling here.
-		var response providertypes.GetResponse[K, V]
-		switch {
-		case resp.StatusCode == http.StatusTooManyRequests:
-			response = providertypes.NewGetResponseWithErr[K, V](
-				ids,
-				providertypes.NewErrorWithCode(
-					errors.ErrRateLimit,
-					providertypes.ErrorRateLimitExceeded,
-				),
-			)
-		case resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices:
-			response = providertypes.NewGetResponseWithErr[K, V](
-				ids,
-				providertypes.NewErrorWithCode(
-					errors.ErrUnexpectedStatusCodeWithCode(resp.StatusCode),
-					providertypes.ErrorCode(resp.StatusCode),
-				),
-			)
-		default:
-			response = h.apiHandler.ParseResponse(ids, resp)
-		}
-
-		h.writeResponse(ctx, responseCh, response)
+		h.writeResponse(ctx, responseCh, h.priceFetcher.FetchPrices(ctx, ids))
 		return nil
 	}
 }
