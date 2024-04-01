@@ -33,11 +33,6 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 // APIFetcher is an interface that encapsulates fetching data from a provider. This interface
 // is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
 type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
-	// Init initializes the api fetcher. This method is called once per invocation of the
-	// APIQueryHandler. This can be utilized to perform any setup that is required for the
-	// fetcher such as setting up a custom client.
-	Init(ctx context.Context) error
-
 	// Fetch fetches data from the API for the given IDs. The response is returned as a map of IDs to
 	// their respective responses. The request should respect the context timeout and cancel the request
 	// if the context is cancelled.
@@ -123,21 +118,15 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		h.logger.Debug("finished api query handler")
 	}()
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	// Initialize the api fetcher.
-	if err := h.fetcher.Init(ctx); err != nil {
-		h.logger.Error("failed to initialize api fetcher", zap.Error(err))
-		return
-	}
-
 	// Set the concurrency limit based on the maximum number of queries allowed for a single
 	// interval.
 	wg := errgroup.Group{}
 	limit := math.Min(h.config.MaxQueries, len(ids))
 	wg.SetLimit(limit)
 	h.logger.Debug("setting concurrency limit", zap.Int("limit", limit))
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
 	// we need to make a request for each ID.
