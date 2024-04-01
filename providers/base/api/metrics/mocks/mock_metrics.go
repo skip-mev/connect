@@ -5,8 +5,9 @@ package mocks
 import (
 	http "net/http"
 
-	metrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 	mock "github.com/stretchr/testify/mock"
+
+	metrics "github.com/skip-mev/slinky/providers/base/api/metrics"
 
 	time "time"
 )
