@@ -11,32 +11,33 @@ import (
 
 	bin "github.com/gagliardetto/binary"
 	"github.com/gagliardetto/solana-go"
+	"github.com/gagliardetto/solana-go/programs/token"
 	"github.com/gagliardetto/solana-go/rpc"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
-	"github.com/gagliardetto/solana-go/programs/token"
-	"go.uber.org/zap"
 )
 
 const (
 	USDCVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh6"
-	BTCVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh5"
-	ETHVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh4"
+	BTCVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh5"
+	ETHVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh4"
 	USDTVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh3"
-	MOGVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh2"
-	SOLVaultAddress = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh1"
+	MOGVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh2"
+	SOLVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh1"
 )
 
-// Test Provider init
+// Test Provider init.
 func TestProviderInit(t *testing.T) {
 	t.Run("config fails validate basic", func(t *testing.T) {
 		cfg := oracleconfig.APIConfig{
-			Enabled: true,
+			Enabled:    true,
 			MaxQueries: 0,
 		}
 
@@ -45,17 +46,17 @@ func TestProviderInit(t *testing.T) {
 			cfg,
 			zap.NewNop(),
 		)
-		
+
 		require.Error(t, err)
 	})
 
 	t.Run("market config fails validate basic", func(t *testing.T) {
 		// valid config
 		cfg := oracleconfig.APIConfig{
-			Enabled: true,
-			MaxQueries: 2,
-			Interval: 1 * time.Second,
-			Timeout: 2 * time.Second,
+			Enabled:          true,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
 		}
 		market := oracletypes.ProviderMarketMap{
@@ -77,10 +78,10 @@ func TestProviderInit(t *testing.T) {
 
 	t.Run("incorrect provider name", func(t *testing.T) {
 		cfg := oracleconfig.APIConfig{
-			Enabled: true,
-			MaxQueries: 2,
-			Interval: 1 * time.Second,
-			Timeout: 2 * time.Second,
+			Enabled:          true,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
 		}
 		market := oracletypes.ProviderMarketMap{
@@ -97,12 +98,12 @@ func TestProviderInit(t *testing.T) {
 
 	t.Run("api not enabled", func(t *testing.T) {
 		cfg := oracleconfig.APIConfig{
-			Enabled: false,
-			MaxQueries: 2,
-			Interval: 1 * time.Second,
-			Timeout: 2 * time.Second,
+			Enabled:          false,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			Name: raydium.Name,
+			Name:             raydium.Name,
 		}
 		market := oracletypes.ProviderMarketMap{
 			Name: raydium.Name,
@@ -118,33 +119,33 @@ func TestProviderInit(t *testing.T) {
 
 	t.Run("unmarshalling metadata json for tickers fails", func(t *testing.T) {
 		cfg := oracleconfig.APIConfig{
-			Enabled: true,
-			MaxQueries: 2,
-			Interval: 1 * time.Second,
-			Timeout: 2 * time.Second,
+			Enabled:          true,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			Name: raydium.Name,
-			URL: "https://raydium.io",
+			Name:             raydium.Name,
+			URL:              "https://raydium.io",
 		}
 		market := oracletypes.ProviderMarketMap{
 			Name: raydium.Name,
 			TickerConfigs: oracletypes.TickerToProviderConfig{
 				mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals: 8,
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+					Decimals:         8,
 					MinProviderCount: 1,
-					Metadata_JSON: "{}",
+					Metadata_JSON:    "{}",
 				}: {
 					OffChainTicker: "BTC/USDC",
-					Name: raydium.Name,
+					Name:           raydium.Name,
 				},
 			},
 			OffChainMap: map[string]mmtypes.Ticker{
 				"BTC/USDC": {
-					CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals: 8,
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+					Decimals:         8,
 					MinProviderCount: 1,
-					Metadata_JSON: "{}",
+					Metadata_JSON:    "{}",
 				},
 			},
 		}
@@ -160,20 +161,20 @@ func TestProviderInit(t *testing.T) {
 
 	t.Run("correctly unmarshals metadata json for ticker", func(t *testing.T) {
 		cfg := oracleconfig.APIConfig{
-			Enabled: true,
-			MaxQueries: 2,
-			Interval: 1 * time.Second,
-			Timeout: 2 * time.Second,
+			Enabled:          true,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			Name: raydium.Name,
-			URL: "https://raydium.io",
+			Name:             raydium.Name,
+			URL:              "https://raydium.io",
 		}
 		market := oracletypes.ProviderMarketMap{
 			Name: raydium.Name,
 			TickerConfigs: oracletypes.TickerToProviderConfig{
 				mmtypes.Ticker{
-					CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals: 8,
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+					Decimals:         8,
 					MinProviderCount: 1,
 					Metadata_JSON: `{
 						"base_token_vault": {
@@ -187,13 +188,13 @@ func TestProviderInit(t *testing.T) {
 					}`,
 				}: {
 					OffChainTicker: "BTC/USDC",
-					Name: raydium.Name,
+					Name:           raydium.Name,
 				},
 			},
 			OffChainMap: map[string]mmtypes.Ticker{
 				"BTC/USDC": {
-					CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals: 8,
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+					Decimals:         8,
 					MinProviderCount: 1,
 					Metadata_JSON: `{
 						"base_token_vault": {
@@ -219,60 +220,60 @@ func TestProviderInit(t *testing.T) {
 	})
 }
 
-// Test getting prices
+// Test getting prices.
 func TestProviderFetchPrices(t *testing.T) {
 	btcUSDCMetadata := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: BTCVaultAddress,
-			TokenDecimals: 8,
+			TokenDecimals:     8,
 		},
 		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: USDCVaultAddress,
-			TokenDecimals: 6,
+			TokenDecimals:     6,
 		},
 	}
 	ethUSDTMetadata := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: ETHVaultAddress,
-			TokenDecimals: 18,
+			TokenDecimals:     18,
 		},
 		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: USDTVaultAddress,
-			TokenDecimals: 6,
+			TokenDecimals:     6,
 		},
 	}
 	mogSOLMetadata := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: MOGVaultAddress,
-			TokenDecimals: 18,
+			TokenDecimals:     18,
 		},
 		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: SOLVaultAddress,
-			TokenDecimals: 9,
+			TokenDecimals:     9,
 		},
 	}
 
 	tickers := []mmtypes.Ticker{
 		{
-			CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USDC"),
-			Decimals: 8,
+			CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+			Decimals:         8,
 			MinProviderCount: 1,
-			Metadata_JSON: marshalDataToJSON(btcUSDCMetadata),
+			Metadata_JSON:    marshalDataToJSON(btcUSDCMetadata),
 		},
 		{
-			CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USDT"),
-			Decimals: 8,
+			CurrencyPair:     slinkytypes.NewCurrencyPair("ETH", "USDT"),
+			Decimals:         8,
 			MinProviderCount: 1,
-			Metadata_JSON: marshalDataToJSON(ethUSDTMetadata),
+			Metadata_JSON:    marshalDataToJSON(ethUSDTMetadata),
 		},
 		{
-			CurrencyPair: slinkytypes.NewCurrencyPair("MOG", "SOL"),
-			Decimals: 18,
+			CurrencyPair:     slinkytypes.NewCurrencyPair("MOG", "SOL"),
+			Decimals:         18,
 			MinProviderCount: 1,
-			Metadata_JSON: marshalDataToJSON(mogSOLMetadata),
+			Metadata_JSON:    marshalDataToJSON(mogSOLMetadata),
 		},
-	} 
-	
+	}
+
 	client := mocks.NewSolanaJSONRPCClient(t)
 	pf, err := newPriceFetcherFromTickers(tickers, client)
 	require.NoError(t, err)
@@ -288,8 +289,7 @@ func TestProviderFetchPrices(t *testing.T) {
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
-			&rpc.GetMultipleAccountsResult{
-			}, nil,
+			&rpc.GetMultipleAccountsResult{}, nil,
 		).Once()
 
 		resp := pf.FetchPrices(ctx, tickers[:2])
@@ -368,23 +368,23 @@ func marshalDataToJSON(obj interface{}) string {
 
 func newPriceFetcherFromTickers(tickers []mmtypes.Ticker, client *mocks.SolanaJSONRPCClient) (*raydium.APIPriceFetcher, error) {
 	cfg := oracleconfig.APIConfig{
-		Enabled: true,
-		MaxQueries: 2,
-		Interval: 1 * time.Second,
-		Timeout: 2 * time.Second,
+		Enabled:          true,
+		MaxQueries:       2,
+		Interval:         1 * time.Second,
+		Timeout:          2 * time.Second,
 		ReconnectTimeout: 2 * time.Second,
-		Name: raydium.Name,
-		URL: "https://raydium.io",
+		Name:             raydium.Name,
+		URL:              "https://raydium.io",
 	}
 	market := oracletypes.ProviderMarketMap{
-		Name: raydium.Name,
+		Name:          raydium.Name,
 		TickerConfigs: make(oracletypes.TickerToProviderConfig),
-		OffChainMap: make(map[string]mmtypes.Ticker),
+		OffChainMap:   make(map[string]mmtypes.Ticker),
 	}
 
 	for _, ticker := range tickers {
 		market.TickerConfigs[ticker] = mmtypes.ProviderConfig{
-			Name: raydium.Name,
+			Name:           raydium.Name,
 			OffChainTicker: ticker.String(),
 		}
 		market.OffChainMap[ticker.String()] = ticker
@@ -395,5 +395,5 @@ func newPriceFetcherFromTickers(tickers []mmtypes.Ticker, client *mocks.SolanaJS
 		cfg,
 		client,
 		zap.NewExample(),
-	)	
+	)
 }
