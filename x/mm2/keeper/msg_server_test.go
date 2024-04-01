@@ -208,8 +208,8 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
 			Params: types.Params{
-				MarketAuthorities: []string{types.DefaultMarketAuthority, sample.Address(sample.Rand())},
-				Admin:             sample.Address(sample.Rand()),
+				MarketAuthorities: []string{types.DefaultMarketAuthority, sample.Address(r)},
+				Admin:             sample.Address(r),
 			},
 		}
 		resp, err := msgServer.Params(s.ctx, msg)
@@ -274,6 +274,22 @@ func (s *KeeperTestSuite) TestMsgServerRemoveMarketAuthorities() {
 		params, err := s.keeper.GetParams(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal([]string{s.marketAuthorities[1]}, params.MarketAuthorities)
+
+		// reset
+		s.Require().NoError(s.keeper.SetParams(s.ctx, types.Params{
+			MarketAuthorities: s.marketAuthorities,
+			Admin:             s.admin,
+		}))
+	})
+
+	s.Run("unable to accept a req that removes more authorities than exist in state", func() {
+		msg := &types.MsgRemoveMarketAuthorities{
+			Admin:           s.admin,
+			RemoveAddresses: []string{sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r)},
+		}
+		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
 
 		// reset
 		s.Require().NoError(s.keeper.SetParams(s.ctx, types.Params{
