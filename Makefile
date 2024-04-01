@@ -30,7 +30,7 @@ build: tidy
 	@go build -o ./build/ ./...
 
 run-oracle-server: build
-	@./build/oracle --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -43,7 +43,7 @@ run-prom-client:
 
 update-local-configs: build
 	@echo "Updating local config..."
-	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
@@ -53,8 +53,17 @@ stop-oracle:
 	@echo "Stopping network..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
+start-sidecar:
+	@echo "Starting oracle side-car and prometheus dashboard..."
+	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus
+
+stop-sidecar:
+	@echo "Stopping network..."
+	@$(DOCKER_COMPOSE) -f docker-compose.yml down
+
 install: tidy
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/oracle
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
 .PHONY: build run-oracle-server install
 
@@ -65,7 +74,7 @@ install: tidy
 docker-build:
 	@echo "Building E2E Docker image..."
 	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
-	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.dev.Dockerfile .
 
 .PHONY: docker-build
 

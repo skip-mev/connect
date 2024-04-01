@@ -38,11 +38,6 @@ func NewMedianAggregator(
 		return nil, err
 	}
 
-	if cfg.AggregationType != mmtypes.AggregationType_INDEX_PRICE_AGGREGATION {
-		logger.Error("invalid aggregation type; please ensure the correct market config is used")
-		return nil, fmt.Errorf("invalid aggregation type; expected %s got: %s", mmtypes.AggregationType_INDEX_PRICE_AGGREGATION, cfg.AggregationType)
-	}
-
 	if metrics == nil {
 		logger.Warn("metrics is nil; using a no-op metrics implementation")
 		metrics = oraclemetrics.NewNopMetrics()

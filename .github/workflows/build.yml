@@ -7,14 +7,18 @@ on:
     tags:
       - "v.*"
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"},
+        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"},
                 {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
+    permissions:
+      contents: read
+      packages: write
     env:
       registry_url: 494494944992.dkr.ecr.us-east-2.amazonaws.com/skip-mev/${{ matrix.image.name }}
       repo_name: skip-mev/${{ matrix.image.name }}
@@ -30,6 +34,12 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2 
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -44,12 +54,13 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ${{ env.registry_url }}
+            ghcr.io/skip-mev/${{ matrix.image.name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}.{{patch}}
-            type=semver,pattern={{major}}
+            type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
+            type=semver,pattern=v{{major}}
             type=sha,prefix=
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -59,6 +70,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+          platforms: linux/amd64,linux/arm64
       - uses: cloudposse/github-action-matrix-outputs-write@1.0.0
         id: out
         with:
@@ -68,7 +80,7 @@ jobs:
             image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
   deploy:
     needs: [build]
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
