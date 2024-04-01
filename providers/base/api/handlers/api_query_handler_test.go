@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"context"
 	"fmt"
+	"io"
 	"math/big"
 	"net/http"
 	"strings"
@@ -644,20 +645,20 @@ func TestAPIQueryHandler(t *testing.T) {
 func newRateLimitResponse() *http.Response {
 	return &http.Response{
 		StatusCode: http.StatusTooManyRequests,
-		Body:       nil,
+		Body:       io.NopCloser(strings.NewReader(`{"error": "rate limit exceeded"}`)),
 	}
 }
 
 func newUnexpectedStatusCodeResponse() *http.Response {
 	return &http.Response{
 		StatusCode: http.StatusInternalServerError,
-		Body:       nil,
+		Body:       io.NopCloser(strings.NewReader(`{"error": "unexpected error"}`)),
 	}
 }
 
 func newValidResponse() *http.Response {
 	return &http.Response{
 		StatusCode: http.StatusOK,
-		Body:       nil,
+		Body:       io.NopCloser(strings.NewReader(`{"result": "100"}`)),
 	}
 }
