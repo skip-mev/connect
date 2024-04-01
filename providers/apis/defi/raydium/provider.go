@@ -13,7 +13,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -25,6 +24,7 @@ var _ handlers.APIPriceFetcher[mmtypes.Ticker, *big.Int] = (*APIPriceFetcher)(ni
 
 // SolanaJSONRPCClient is the expected interface for a solana JSON-RPC client according
 // to the APIPriceFetcher.
+//
 //go:generate mockery --name SolanaJSONRPCClient --output ./mocks/ --case underscore
 type SolanaJSONRPCClient interface {
 	GetMultipleAccountsWithOpts(
@@ -67,6 +67,7 @@ func NewAPIPriceFetcher(
 		logger,
 	)
 }
+
 // NewAPIPriceFetcherWithClient returns a new APIPriceFetcher. This method requires
 // that the given market + config are valid, otherwise a nil implementation + an error
 // will be returned.
@@ -175,8 +176,8 @@ func (pf *APIPriceFetcher) FetchPrices(
 		)
 	}
 
-	resolved := make(types.ResolvedPrices)
-	unresolved := make(types.UnResolvedPrices)
+	resolved := make(oracletypes.ResolvedPrices)
+	unresolved := make(oracletypes.UnResolvedPrices)
 	for i, ticker := range tickers {
 		baseAccount := accountsResp.Value[i*2]
 		quoteAccount := accountsResp.Value[i*2+1]
@@ -214,10 +215,10 @@ func (pf *APIPriceFetcher) FetchPrices(
 		price := calculatePrice(baseTokenBalance, quoteTokenBalance, ticker.Decimals)
 
 		// return the price
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now())
 	}
 
-	return types.NewPriceResponse(resolved, unresolved)
+	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
 
 func getScaledTokenBalance(account *rpc.Account, tokenDecimals uint64) (*big.Int, error) {
