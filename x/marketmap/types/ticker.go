@@ -58,7 +58,7 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	if err := json.IsValid([]byte(t.Metadata_JSON)); err != nil {
-		return fmt.Errorf("invalid JSON metadata; %v", err)
+		return fmt.Errorf("invalid JSON metadata; %w", err)
 	}
 
 	return nil
