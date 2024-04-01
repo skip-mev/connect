@@ -91,6 +91,7 @@ var (
 			{
 				Operations: []types.Operation{
 					{
+						Provider: "kucoin",
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "BITCOIN",
 							Quote: "USDT",
@@ -124,6 +125,7 @@ var (
 			{
 				Operations: []types.Operation{
 					{
+						Provider: "kucoin",
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "USDT",
 							Quote: "USD",
@@ -157,6 +159,7 @@ var (
 			{
 				Operations: []types.Operation{
 					{
+						Provider: "kucoin",
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "USDC",
 							Quote: "USD",
@@ -190,6 +193,7 @@ var (
 			{
 				Operations: []types.Operation{
 					{
+						Provider: "kucoin",
 						CurrencyPair: slinkytypes.CurrencyPair{
 							Base:  "ETHEREUM",
 							Quote: "USDT",

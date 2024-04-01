@@ -67,7 +67,7 @@ job "slinky-dev" {
 
       config {
         image = "[[ .sidecar_image ]]"
-        entrypoint = ["oracle", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json", "--host", "0.0.0.0", "--port", "8080"]
+        entrypoint = ["slinky", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json"]
       }
 
       resources {
