@@ -115,17 +115,19 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 
 // updateMarket updates a Market.
 // The Ticker.String corresponds to a market, and exist unique.
-func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
+func (k *Keeper) updateMarket(ctx sdk.Context, update types.Market) error {
 	// Check if Ticker already exists for the provider
-	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
+	market, err := k.markets.Get(ctx, types.TickerString(update.Ticker.String()))
 	if err != nil {
-		return err
+		return types.NewMarketDoesNotExistsError(types.TickerString(update.Ticker.String()))
 	}
-	if !alreadyExists {
-		return types.NewMarketDoesNotExistsError(types.TickerString(market.Ticker.String()))
+
+	if !market.Ticker.CurrencyPair.Equal(update.Ticker.CurrencyPair) {
+		return fmt.Errorf("updated market ticker currency pair must be equal to existing market")
 	}
+
 	// Create the config
-	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
+	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), update)
 }
 
 // CreateMarkets sets the market data for a given set of markets and validates the state  It also
