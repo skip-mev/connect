@@ -103,7 +103,7 @@ func NewAPIPriceFetcherWithClient(
 	for _, ticker := range market.OffChainMap {
 		metadata, err := unmarshalMetadataJSON(ticker.Metadata_JSON)
 		if err != nil {
-			return nil, fmt.Errorf("error unmarshalling metadata for ticker %s: %v", ticker.String(), err)
+			return nil, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
 		}
 
 		if err := metadata.ValidateBasic(); err != nil {
