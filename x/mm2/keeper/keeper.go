@@ -115,19 +115,17 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 
 // updateMarket updates a Market.
 // The Ticker.String corresponds to a market, and exist unique.
-func (k *Keeper) updateMarket(ctx sdk.Context, update types.Market) error {
+func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
-	market, err := k.markets.Get(ctx, types.TickerString(update.Ticker.String()))
+	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
-		return types.NewMarketDoesNotExistsError(types.TickerString(update.Ticker.String()))
+		return err
 	}
-
-	if !market.Ticker.CurrencyPair.Equal(update.Ticker.CurrencyPair) {
-		return fmt.Errorf("updated market ticker currency pair must be equal to existing market")
+	if !alreadyExists {
+		return types.NewMarketDoesNotExistsError(types.TickerString(market.Ticker.String()))
 	}
-
 	// Create the config
-	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), update)
+	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
 // CreateMarkets sets the market data for a given set of markets and validates the state  It also
@@ -176,27 +174,17 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 // the aggregate of all updates has led to a valid state.
 func (k *Keeper) validateState(ctx sdk.Context, updates []types.Market) error {
 	for _, market := range updates {
-		if err := k.IsMarketValid(ctx, market); err != nil {
-			return err
-		}
-	}
+		// check that all paths already exist in the keeper store:
+		for _, providerConfig := range market.ProviderConfigs {
+			if providerConfig.NormalizeByPair != nil {
+				has, err := k.markets.Has(ctx, types.TickerString(providerConfig.NormalizeByPair.String()))
+				if err != nil {
+					return err
+				}
 
-	return nil
-}
-
-// IsMarketValid checks if a market is valid by statefully checking if each of the currency pairs
-// specified by its provider configs are valid and in state.
-func (k *Keeper) IsMarketValid(ctx sdk.Context, market types.Market) error {
-	// check that all markets already exist in the keeper store:
-	for _, providerConfig := range market.ProviderConfigs {
-		if providerConfig.NormalizeByPair != nil {
-			has, err := k.markets.Has(ctx, types.TickerString(providerConfig.NormalizeByPair.String()))
-			if err != nil {
-				return err
-			}
-
-			if !has {
-				return fmt.Errorf("currency pair %s in provider config does not exist", providerConfig.NormalizeByPair.String())
+				if !has {
+					return fmt.Errorf("currency pair %s in provider config does not exist", providerConfig.NormalizeByPair.String())
+				}
 			}
 		}
 	}
