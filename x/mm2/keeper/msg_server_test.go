@@ -1,6 +1,8 @@
 package keeper_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/mm2/keeper"
 	"github.com/skip-mev/slinky/x/mm2/types"
@@ -38,6 +40,15 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	s.Run("unable to process for invalid authority", func() {
 		msg = &types.MsgCreateMarkets{
 			Authority: "invalid",
+		}
+		resp, err = msgServer.CreateMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for invalid authority (valid bech32)", func() {
+		msg = &types.MsgCreateMarkets{
+			Authority: sdk.AccAddress("invalid").String(),
 		}
 		resp, err = msgServer.CreateMarkets(s.ctx, msg)
 		s.Require().Error(err)
@@ -124,6 +135,15 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 		s.Require().Nil(resp)
 	})
 
+	s.Run("unable to process for invalid authority (valid bech32)", func() {
+		msg := &types.MsgUpdateMarkets{
+			Authority: sdk.AccAddress("invalid").String(),
+		}
+		resp, err := msgServer.UpdateMarkets(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
 	// set a market in the map
 	s.Run("unable to process nil request", func() {
 		resp, err := msgServer.UpdateMarkets(s.ctx, nil)
@@ -196,6 +216,15 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 	s.Run("unable to process for invalid authority", func() {
 		msg := &types.MsgParams{
 			Authority: "invalid",
+		}
+		resp, err := msgServer.Params(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for invalid authority (valid bech32)", func() {
+		msg := &types.MsgParams{
+			Authority: sdk.AccAddress("invalid").String(),
 		}
 		resp, err := msgServer.Params(s.ctx, msg)
 		s.Require().Error(err)

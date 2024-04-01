@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -34,7 +35,7 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "config",
+		Use:   "slinky-config",
 		Short: "Create configuration required for running slinky.",
 		Args:  cobra.NoArgs,
 		Run: func(_ *cobra.Command, _ []string) {
@@ -114,7 +115,7 @@ var (
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
 		Metrics:        config.MetricsConfig{},
-		UpdateInterval: 1500 * time.Millisecond,
+		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
@@ -222,77 +223,77 @@ func init() {
 		"oracle-config-path",
 		"",
 		"oracle.json",
-		"path to write the oracle config file to. this file is required to run the oracle.",
+		"Path to write the oracle config file to. This file is required to run the oracle.",
 	)
 	rootCmd.Flags().StringVarP(
 		&marketCfgPath,
 		"market-config-path",
 		"",
 		"market.json",
-		"path to write the market config file to. this file is required to run the oracle.",
+		"Path to write the market config file to. This file is required to run the oracle.",
 	)
 	rootCmd.Flags().StringVarP(
 		&chain,
-		"chain-id",
+		"chain",
 		"",
 		"",
-		"chain-id that we expect the oracle to be running on. ex dydx-mainnet-1, dydx-testnet-4. this should only be specified if required by the chain.",
+		"Chain that we expect the oracle to be running on {dydx, \"\"}. This should only be specified if required by the chain.",
 	)
 	rootCmd.Flags().StringVarP(
 		&nodeURL,
 		"node-http-url",
 		"",
 		"",
-		"http endpoint of the cosmos sdk node corresponding to the chain id (typically something like localhost:1317). this should only be specified if required by the chain.",
+		"Http endpoint of the cosmos sdk node corresponding to the chain (typically localhost:1317 or a remote API). This should only be specified if required by the chain.",
 	)
 	rootCmd.Flags().StringVarP(
 		&host,
 		"host",
 		"",
 		"0.0.0.0",
-		"host is the oracle / prometheus server host.",
+		"Host is the oracle / prometheus server host.",
 	)
 	rootCmd.Flags().StringVarP(
 		&pricesPort,
 		"port",
 		"",
 		"8080",
-		"port that the oracle will make prices available on. to query prices after starting the oracle, use the following command: curl http://<host>:<port>/slinky/oracle/v1/prices",
+		"Port that the oracle will make prices available on. To query prices after starting the oracle, use the following command: curl http://<host>:<port>/slinky/oracle/v1/prices",
 	)
 	rootCmd.Flags().StringVarP(
 		&prometheusPort,
 		"prometheus-port",
 		"",
 		"8002",
-		"port that the prometheus server will listen on. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
+		"Port that the prometheus server will listen on. To query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
 	)
 	rootCmd.Flags().BoolVarP(
 		&disabledMetrics,
 		"disable-metrics",
 		"",
 		false,
-		"flag that disables the prometheus server. if this is enabled the prometheus port must be specified. to query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
+		"Flag that disables the prometheus server. If this is enabled the prometheus port must be specified. To query prometheus metrics after starting the oracle, use the following command: curl http://<host>:<port>/metrics",
 	)
 	rootCmd.Flags().BoolVarP(
 		&debug,
 		"debug-mode",
 		"",
 		false,
-		"flag that enables debug mode. specifically the side-car will run in debug mode. this is useful for local development / debugging.",
+		"Flag that enables debug mode for the side-car. This is useful for local development / debugging.",
 	)
 	rootCmd.Flags().DurationVarP(
 		&updateInterval,
 		"update-interval",
 		"",
-		1500*time.Millisecond,
-		"interval at which the oracle will update the prices. this should be set to the interval desired by the chain.",
+		500*time.Millisecond,
+		"Interval at which the oracle will update the prices. This should be set to the interval desired by the chain.",
 	)
 	rootCmd.Flags().DurationVarP(
 		&maxPriceAge,
 		"max-price-age",
 		"",
 		2*time.Minute,
-		"maximum age of a price that the oracle will accept. this should be set to the maximum age desired by the chain.",
+		"Maximum age of a price that the oracle will accept. This should be set to the maximum age desired by the chain.",
 	)
 }
 
@@ -306,7 +307,7 @@ func main() {
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
-	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
+	if strings.ToLower(chain) == constants.DYDX {
 		// Filter out the providers that are not supported by the dYdX chain.
 		validProviders := make(map[string]struct{})
 		for _, providers := range dydx.ProviderMapping {
@@ -382,7 +383,7 @@ func createOracleConfig() error {
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
 func createMarketMap() error {
-	if chain == constants.DYDXMainnet.ID || chain == constants.DYDXTestnet.ID {
+	if strings.ToLower(chain) == constants.DYDX {
 		fmt.Fprintf(
 			os.Stderr,
 			"dYdX chain requires the use of a predetermined market map. please use the market map provided by the Skip/dYdX team or the default market map provided in /config/dydx/market.json",
@@ -397,6 +398,7 @@ func createMarketMap() error {
 		// TickersToProviders defines a map of tickers to their respective providers. This
 		// contains all of the providers that are supported per ticker.
 		tickersToProviders = make(map[string]mmtypes.Providers)
+		tickersToPaths     = make(map[string]mmtypes.Paths)
 	)
 
 	// Iterate through all of the provider ticker configurations and update the
@@ -422,6 +424,19 @@ func createMarketMap() error {
 			providers := tickersToProviders[tickerStr].Providers
 			providers = append(providers, config)
 			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
+
+			if _, ok := tickersToPaths[tickerStr]; !ok {
+				tickersToPaths[tickerStr] = mmtypes.Paths{}
+			}
+			paths := tickersToPaths[tickerStr].Paths
+			paths = append(paths, mmtypes.Path{Operations: []mmtypes.Operation{
+				{
+					CurrencyPair: ticker.CurrencyPair,
+					Invert:       false,
+					Provider:     config.Name,
+				},
+			}})
+			tickersToPaths[tickerStr] = mmtypes.Paths{Paths: paths}
 		}
 	}
 
@@ -429,6 +444,7 @@ func createMarketMap() error {
 	marketMap := mmtypes.MarketMap{
 		Tickers:   tickers,
 		Providers: tickersToProviders,
+		Paths:     tickersToPaths,
 	}
 
 	// Validate the market map.
