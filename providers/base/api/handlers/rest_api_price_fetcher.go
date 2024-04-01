@@ -140,8 +140,3 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 
 	return response
 }
-
-// Init initializes the price fetcher. REST API fetchers do not require any initialization.
-func (pf *RestAPIFetcher[K, V]) Init(_ context.Context) error {
-	return nil
-}
