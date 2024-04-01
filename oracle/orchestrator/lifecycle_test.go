@@ -78,7 +78,7 @@ func TestStart(t *testing.T) {
 			orchestrator.WithLogger(logger),
 			orchestrator.WithPriceAPIQueryHandlerFactory(oraclefactory.APIQueryHandlerFactory),
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
-			orchestrator.WithMarketMapperFactory(oraclefactory.DefaultDYDXMarketMapProvider),
+			orchestrator.WithMarketMapperFactory(oraclefactory.MarketMapProviderFactory),
 		)
 		require.NoError(t, err)
 

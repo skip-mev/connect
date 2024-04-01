@@ -10,9 +10,7 @@ import (
 //
 //	1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
 //	   markets are supported by the market map.
-//	2. Ensure that each path has a corresponding ticker.
-//	3. Ensure that each path has a valid number of operations.
-//	4. Ensure that each operation has a valid ticker and that the provider supports the ticker.
+//	2. Ensure that each provider config has a valid corresponding ticker.
 func (mm *MarketMap) ValidateBasic() error {
 	for _, market := range mm.Markets {
 		if err := market.ValidateBasic(); err != nil {
