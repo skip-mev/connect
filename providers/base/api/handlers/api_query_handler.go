@@ -33,7 +33,7 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 // APIFetcher is an interface that encapsulates fetching data from a provider. This interface
 // is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
 type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
-	// Init initializes the api fetcher. This method is called once per innvoation of the
+	// Init initializes the api fetcher. This method is called once per invocation of the
 	// APIQueryHandler. This can be utilized to perform any setup that is required for the
 	// fetcher such as setting up a custom client.
 	Init(ctx context.Context) error
