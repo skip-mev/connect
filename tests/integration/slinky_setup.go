@@ -362,6 +362,18 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 					OffChainTicker: cp.String(),
 				},
 			},
+<<<<<<< HEAD
+=======
+			Paths: mmtypes.Paths{Paths: []mmtypes.Path{
+				{Operations: []mmtypes.Operation{
+					{
+						CurrencyPair: cp,
+						Invert:       false,
+						Provider:     "mexc",
+					},
+				}},
+			}},
+>>>>>>> feat/mm-admin
 		}
 	}
 
