@@ -52,13 +52,7 @@ func (mm *MarketMap) ValidateBasic() error {
 			return fmt.Errorf("ticker %s has invalid providers: %w", tickerStr, err)
 		}
 	}
-
-	switch mm.AggregationType {
-	case AggregationType_INDEX_PRICE_AGGREGATION:
-		return ValidateIndexPriceAggregation(*mm)
-	default:
-		return nil
-	}
+	return ValidateIndexPriceAggregation(*mm)
 }
 
 // String returns the string representation of the market map.
