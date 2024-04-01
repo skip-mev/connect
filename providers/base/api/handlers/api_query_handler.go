@@ -33,9 +33,9 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 // APIFetcher is an interface that encapsulates fetching data from a provider. This interface
 // is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
 type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
-	// Init initializes the price fetcher. This method is called once per innvoation of the
+	// Init initializes the api fetcher. This method is called once per innvoation of the
 	// APIQueryHandler. This can be utilized to perform any setup that is required for the
-	// price fetcher.
+	// fetcher such as setting up a custom client.
 	Init(ctx context.Context) error
 
 	// Fetch fetches data from the API for the given IDs. The response is returned as a map of IDs to
@@ -89,11 +89,11 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 
 	fetcher, err := NewRestAPIFetcher(requestHandler, apiHandler, metrics, cfg, logger)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create price fetcher: %w", err)
+		return nil, fmt.Errorf("failed to create api fetcher: %w", err)
 	}
 
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger.With(zap.String("api_data_handler", cfg.Name)),
+		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
 		config:  cfg,
 		metrics: metrics,
 		fetcher: fetcher,
@@ -126,9 +126,9 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	// Initialize the price fetcher.
+	// Initialize the api fetcher.
 	if err := h.fetcher.Init(ctx); err != nil {
-		h.logger.Error("failed to initialize price fetcher", zap.Error(err))
+		h.logger.Error("failed to initialize api fetcher", zap.Error(err))
 		return
 	}
 

@@ -71,7 +71,7 @@ func NewRestAPIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValu
 }
 
 // Fetch is used to fetch the corresponding IDs from the API. This method blocks until the
-// response is received from the API, is parsed, and returned.
+// response is received from the API, parsed, and returned.
 func (pf *RestAPIFetcher[K, V]) Fetch(
 	ctx context.Context,
 	ids []K,
