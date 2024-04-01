@@ -198,3 +198,56 @@ func (s *KeeperTestSuite) TestSetParams() {
 		s.Require().Equal(params, params2)
 	})
 }
+
+func (s *KeeperTestSuite) TestInvalidCreate() {
+	// invalid market with a normalize pair not in state
+	invalidMarket := types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "btc-usdt",
+				NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
+			},
+		},
+	}
+
+	s.Require().Error(s.keeper.CreateMarkets(s.ctx, []types.Market{invalidMarket}))
+}
+
+func (s *KeeperTestSuite) TestInvalidUpdate() {
+	// create a valid market
+	s.Require().NoError(s.keeper.CreateMarkets(s.ctx, []types.Market{btcusdt}))
+
+	// invalid market with a normalize pair not in state
+	invalidMarket := btcusdt
+	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
+	})
+
+	s.Require().Error(s.keeper.UpdateMarkets(s.ctx, []types.Market{invalidMarket}))
+}
+
+func (s *KeeperTestSuite) TestValidUpdate() {
+	// create a valid markets
+	s.Require().NoError(s.keeper.CreateMarkets(s.ctx, []types.Market{btcusdt, ethusdt}))
+
+	// valid market with a normalize pair that is in state
+	invalidMarket := btcusdt
+	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &ethusdt.Ticker.CurrencyPair,
+	})
+
+	s.Require().NoError(s.keeper.UpdateMarkets(s.ctx, []types.Market{invalidMarket}))
+}

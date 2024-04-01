@@ -30,6 +30,24 @@ var (
 		},
 	}
 
+	btcusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "btc-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+		},
+	}
+
 	usdtusd = types.Market{
 		Ticker: types.Ticker{
 			CurrencyPair: slinkytypes.CurrencyPair{
@@ -81,11 +99,41 @@ var (
 		},
 	}
 
+	ethusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "ETHEREUM",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 3,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "eth-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+			{
+				Name:            "binance",
+				OffChainTicker:  "eth-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+			{
+				Name:            "mexc",
+				OffChainTicker:  "eth-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+		},
+	}
+
 	markets = map[string]types.Market{
 		btcusdt.Ticker.String(): btcusdt,
+		btcusd.Ticker.String():  btcusd,
 		usdtusd.Ticker.String(): usdtusd,
 		usdcusd.Ticker.String(): usdcusd,
 		ethusdt.Ticker.String(): ethusdt,
+		ethusd.Ticker.String():  ethusd,
 	}
 )
 
