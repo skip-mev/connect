@@ -315,6 +315,8 @@ func TestValidateBasicMsgParams(t *testing.T) {
 func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
 	rng := sample.Rand()
 
+	sampleAuth := sample.Address(rng)
+
 	tcs := []struct {
 		name       string
 		msg        types.MsgRemoveMarketAuthorities
@@ -342,6 +344,14 @@ func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
 				Admin:           sample.Address(rng),
 			},
 			expectPass: true,
+		},
+		{
+			name: "invalid message (duplicate authorities",
+			msg: types.MsgRemoveMarketAuthorities{
+				RemoveAddresses: []string{sampleAuth, sampleAuth},
+				Admin:           sample.Address(rng),
+			},
+			expectPass: false,
 		},
 	}
 
