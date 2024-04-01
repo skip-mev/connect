@@ -23,6 +23,17 @@ import (
 
 var _ handlers.APIPriceFetcher[mmtypes.Ticker, *big.Int] = (*APIPriceFetcher)(nil)
 
+// SolanaJSONRPCClient is the expected interface for a solana JSON-RPC client according
+// to the APIPriceFetcher.
+//go:generate mockery --name SolanaJSONRPCClient --output ./mocks/ --case underscore
+type SolanaJSONRPCClient interface {
+	GetMultipleAccountsWithOpts(
+		ctx context.Context,
+		accounts []solana.PublicKey,
+		opts *rpc.GetMultipleAccountsOpts,
+	) (out *rpc.GetMultipleAccountsResult, err error)
+}
+
 // APIPriceFetcher is responsible for interacting with the solana API and querying information
 // about the price of a given currency pair.
 type APIPriceFetcher struct {
@@ -33,7 +44,7 @@ type APIPriceFetcher struct {
 	config config.APIConfig
 
 	// client is the solana JSON-RPC client used to query the API.
-	client *rpc.Client
+	client SolanaJSONRPCClient
 
 	// metaDataPerTicker is a map of ticker.String() -> TickerMetadata
 	metaDataPerTicker map[string]TickerMetadata
@@ -42,12 +53,27 @@ type APIPriceFetcher struct {
 	logger *zap.Logger
 }
 
-// NewAPIPriceFetcher returns a new APIPriceFetcher. This method requires
-// that the given market + config are valid, otherwise a nil implementation + an error
-// will be returned.
+// NewAPIPriceFetcher returns a new APIPriceFetcher. This method constructs the
+// default solana JSON-RPC client in accordance with the config's URL param.
 func NewAPIPriceFetcher(
 	market oracletypes.ProviderMarketMap,
 	config config.APIConfig,
+	logger *zap.Logger,
+) (*APIPriceFetcher, error) {
+	return NewAPIPriceFetcherWithClient(
+		market,
+		config,
+		rpc.New(config.URL),
+		logger,
+	)
+}
+// NewAPIPriceFetcherWithClient returns a new APIPriceFetcher. This method requires
+// that the given market + config are valid, otherwise a nil implementation + an error
+// will be returned.
+func NewAPIPriceFetcherWithClient(
+	market oracletypes.ProviderMarketMap,
+	config config.APIConfig,
+	client SolanaJSONRPCClient,
 	logger *zap.Logger,
 ) (*APIPriceFetcher, error) {
 	if err := config.ValidateBasic(); err != nil {
@@ -76,7 +102,7 @@ func NewAPIPriceFetcher(
 	for _, ticker := range market.OffChainMap {
 		metadata, err := unmarshalMetadataJSON(ticker.Metadata_JSON)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error unmarshalling metadata for ticker %s: %v", ticker.String(), err)
 		}
 
 		if err := metadata.ValidateBasic(); err != nil {
@@ -89,7 +115,7 @@ func NewAPIPriceFetcher(
 	return &APIPriceFetcher{
 		market:            market,
 		config:            config,
-		client:            rpc.New(config.URL),
+		client:            client,
 		metaDataPerTicker: metadataPerTicker,
 		logger:            logger.With(zap.String("provider", Name)),
 	}, nil
@@ -181,6 +207,8 @@ func (pf *APIPriceFetcher) FetchPrices(
 			}
 			continue
 		}
+
+		pf.logger.Debug("balances", zap.String("base", baseTokenBalance.String()), zap.String("quote", quoteTokenBalance.String()))
 
 		// calculate the price
 		price := calculatePrice(baseTokenBalance, quoteTokenBalance, ticker.Decimals)
