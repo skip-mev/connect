@@ -92,7 +92,7 @@ func APIQueryHandlerFactory(
 
 	// if no apiPriceFetcher has been created yet, create a default REST API price fetcher.
 	if apiPriceFetcher == nil {
-		apiPriceFetcher, err = apihandlers.NewRestAPIPriceFetcher(
+		apiPriceFetcher, err = apihandlers.NewRestAPIFetcher(
 			requestHandler,
 			apiDataHandler,
 			metrics,
