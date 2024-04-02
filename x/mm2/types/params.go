@@ -24,8 +24,8 @@ func DefaultParams() Params {
 }
 
 // NewParams returns a new Params instance.
-func NewParams(authorities []string, admin string) (Params, error) {
-	if authorities != nil {
+func NewParams(authorities []string) (Params, error) {
+	if authorities == nil {
 		return Params{}, fmt.Errorf("cannot create Params with nil authority")
 	}
 
