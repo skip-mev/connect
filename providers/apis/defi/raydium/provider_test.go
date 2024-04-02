@@ -47,13 +47,13 @@ func TestProviderInit(t *testing.T) {
 			zap.NewNop(),
 		)
 
-		require.Error(t, err)
+		require.True(t, strings.Contains(err.Error(), "config for raydium is invalid"))
 	})
 
 	t.Run("market config fails validate basic", func(t *testing.T) {
 		// valid config
 		cfg := oracleconfig.APIConfig{
-			Enabled:          true,
+			Enabled:          false,
 			MaxQueries:       2,
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
@@ -73,7 +73,7 @@ func TestProviderInit(t *testing.T) {
 			cfg,
 			zap.NewNop(),
 		)
-		require.Error(t, err)
+		require.True(t, strings.Contains(err.Error(), "market config for raydium is invalid"))
 	})
 
 	t.Run("incorrect provider name", func(t *testing.T) {
@@ -94,6 +94,25 @@ func TestProviderInit(t *testing.T) {
 			zap.NewNop(),
 		)
 		require.Error(t, err, fmt.Sprintf("config.Name is not %s", raydium.Name))
+
+		cfg = oracleconfig.APIConfig{
+			Enabled:          true,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
+			ReconnectTimeout: 2 * time.Second,
+			Name:             raydium.Name + "a",
+		}
+		market = oracletypes.ProviderMarketMap{
+			Name: raydium.Name,
+		}
+
+		_, err = raydium.NewAPIPriceFetcher(
+			market,
+			cfg,
+			zap.NewNop(),
+		)
+		require.Error(t, err, fmt.Sprintf("market.Name is not %s", raydium.Name))
 	})
 
 	t.Run("api not enabled", func(t *testing.T) {
