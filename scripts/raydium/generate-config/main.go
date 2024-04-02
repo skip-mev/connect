@@ -19,23 +19,23 @@ import (
 )
 
 const (
-	raydiumProgramID = "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"
 	node = "https://solana-mainnet.rpc.extrnode.com/5feba049-2dff-4cd5-89a1-15f67018ad47"
 )
 
 const (
-	url           = "https://api.raydium.io/v2/main/pairs"
-	pcVaultSeed   = "pc_vault_associated_seed"
-	authoritySeed = "amm authority"
+	url = "https://api.raydium.io/v2/main/pairs"
 )
 
 type TickerMetadata struct {
-	cp            slinkytypes.CurrencyPair
+	cp             slinkytypes.CurrencyPair
 	tickerMetaData raydium.TickerMetadata
 }
 
 func main() {
 	tickers, err := getTickerMetadata()
+	if err != nil {
+		panic(err)
+	}
 
 	mm := makeMarketMap(tickers)
 
@@ -72,7 +72,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err = os.WriteFile("oracle.json", bz, 0o644); err != nil {
+	if err = os.WriteFile("oracle.json", bz, 0o600); err != nil {
 		panic(err)
 	}
 
@@ -81,7 +81,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err = os.WriteFile("market.json", bz, 0o644); err != nil {
+	if err = os.WriteFile("market.json", bz, 0o600); err != nil {
 		panic(err)
 	}
 }
@@ -98,8 +98,8 @@ func getTickerMetadata() ([]TickerMetadata, error) {
 		return nil, err
 	}
 
-	var tickers []TickerMetadata
-	var accounts []solana.PublicKey
+	tickers := make([]TickerMetadata, 0)
+	accounts := make([]solana.PublicKey, 0)
 	for _, datum := range data {
 		if len(tickers) >= 50 {
 			break
@@ -119,7 +119,7 @@ func getTickerMetadata() ([]TickerMetadata, error) {
 		// get the market account
 		amm := datum["ammId"].(string)
 		tickers = append(tickers, TickerMetadata{
-			cp:            cp,
+			cp: cp,
 		})
 		accounts = append(accounts, solana.MustPublicKeyFromBase58(amm))
 	}
@@ -144,13 +144,13 @@ func getTickerMetadata() ([]TickerMetadata, error) {
 		}
 
 		tickers[i].tickerMetaData = raydium.TickerMetadata{
-			BaseTokenVault:  raydium.AMMTokenVaultMetadata{
+			BaseTokenVault: raydium.AMMTokenVaultMetadata{
 				TokenVaultAddress: accInfo.TokenCoin.String(),
-				TokenDecimals:    accInfo.CoinDecimals,
+				TokenDecimals:     accInfo.CoinDecimals,
 			},
 			QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 				TokenVaultAddress: accInfo.TokenPc.String(),
-				TokenDecimals:    accInfo.PcDecimals,
+				TokenDecimals:     accInfo.PcDecimals,
 			},
 		}
 	}
@@ -171,11 +171,11 @@ func makeMarketMap(tickers []TickerMetadata) mmtypes.MarketMap {
 			Decimals:         8,
 			MinProviderCount: 1,
 			Enabled:          true,
-			Metadata_JSON: marshalDataToJSON(ticker.tickerMetaData),
+			Metadata_JSON:    marshalDataToJSON(ticker.tickerMetaData),
 		}
 
 		mm.Paths[ticker.cp.String()] = mmtypes.Paths{
-			[]mmtypes.Path{
+			Paths: []mmtypes.Path{
 				{
 					Operations: []mmtypes.Operation{
 						{
@@ -188,7 +188,7 @@ func makeMarketMap(tickers []TickerMetadata) mmtypes.MarketMap {
 		}
 
 		mm.Providers[ticker.cp.String()] = mmtypes.Providers{
-			[]mmtypes.ProviderConfig{
+			Providers: []mmtypes.ProviderConfig{
 				{
 					Name:           raydium.Name,
 					OffChainTicker: ticker.cp.String(),
@@ -241,7 +241,7 @@ type AmmInfo struct {
 	TokenTempLp        solana.PublicKey
 	AmmOwner           solana.PublicKey
 	LpAmount           uint64
-	ClientOrderId      uint64
+	ClientOrderID      uint64
 	Padding            [2]uint64
 }
 
@@ -409,7 +409,7 @@ func (obj AmmInfo) MarshalWithEncoder(encoder *bin.Encoder) (err error) {
 		return err
 	}
 	// Serialize `ClientOrderId` param:
-	err = encoder.Encode(obj.ClientOrderId)
+	err = encoder.Encode(obj.ClientOrderID)
 	if err != nil {
 		return err
 	}
