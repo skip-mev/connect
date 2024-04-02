@@ -27,7 +27,11 @@ func (pc *ProviderConfig) ValidateBasic() error {
 		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
 	}
 
-	return json.IsValid([]byte(pc.Metadata_JSON))
+	if err := json.IsValid([]byte(pc.Metadata_JSON)); err != nil {
+		return fmt.Errorf("invalid provider config metadata json: %w", err)
+	}
+
+	return nil
 }
 
 // Equal returns true iff the ProviderConfig is equal to the given ProviderConfig.
