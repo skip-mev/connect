@@ -78,11 +78,11 @@ func NewAPIPriceFetcherWithClient(
 	logger *zap.Logger,
 ) (*APIPriceFetcher, error) {
 	if err := config.ValidateBasic(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
 	}
 
 	if err := market.ValidateBasic(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("market config for raydium is invalid: %w", err)
 	}
 
 	// check fields of config
@@ -132,7 +132,8 @@ func (pf *APIPriceFetcher) FetchPrices(
 	tickers []mmtypes.Ticker,
 ) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {
 	// get the acounts to query in order of the tickers given
-	accounts := make([]solana.PublicKey, len(tickers)*2)
+	expectedNumAccounts := len(tickers) * 2
+	accounts := make([]solana.PublicKey, expectedNumAccounts)
 
 	for i, ticker := range tickers {
 		metadata, ok := pf.metaDataPerTicker[ticker.String()]
@@ -166,11 +167,11 @@ func (pf *APIPriceFetcher) FetchPrices(
 	}
 
 	// expect a base / quote vault account for each ticker queried
-	if len(accountsResp.Value) != 2*len(tickers) {
+	if len(accountsResp.Value) != expectedNumAccounts {
 		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
 			tickers,
 			providertypes.NewErrorWithCode(
-				SolanaJSONRPCError(fmt.Errorf("expected %d accounts, got %d", 2*len(tickers), len(accountsResp.Value))),
+				SolanaJSONRPCError(fmt.Errorf("expected %d accounts, got %d", expectedNumAccounts, len(accountsResp.Value))),
 				providertypes.ErrorAPIGeneral,
 			),
 		)
