@@ -20,7 +20,7 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.APIPriceFetcher[mmtypes.Ticker, *big.Int] = (*APIPriceFetcher)(nil)
+var _ handlers.APIFetcher[mmtypes.Ticker, *big.Int] = (*APIPriceFetcher)(nil)
 
 // SolanaJSONRPCClient is the expected interface for a solana JSON-RPC client according
 // to the APIPriceFetcher.
@@ -127,7 +127,7 @@ func NewAPIPriceFetcherWithClient(
 //   - Query the raydium API base (coin) / quote (pc) token vault addresses
 //   - Normalize the token balances by 1e18
 //   - Calculate the price as quote / base, and scale by ticker.Decimals
-func (pf *APIPriceFetcher) FetchPrices(
+func (pf *APIPriceFetcher) Fetch(
 	ctx context.Context,
 	tickers []mmtypes.Ticker,
 ) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {

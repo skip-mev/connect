@@ -240,7 +240,7 @@ func TestProviderInit(t *testing.T) {
 }
 
 // Test getting prices.
-func TestProviderFetchPrices(t *testing.T) {
+func TestProviderFetch(t *testing.T) {
 	btcUSDCMetadata := raydium.TickerMetadata{
 		BaseTokenVault: raydium.AMMTokenVaultMetadata{
 			TokenVaultAddress: BTCVaultAddress,
@@ -311,7 +311,7 @@ func TestProviderFetchPrices(t *testing.T) {
 			&rpc.GetMultipleAccountsResult{}, nil,
 		).Once()
 
-		resp := pf.FetchPrices(ctx, tickers[:2])
+		resp := pf.Fetch(ctx, tickers[:2])
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 0)
 		require.Equal(t, len(resp.UnResolved), 2)
@@ -365,7 +365,7 @@ func TestProviderFetchPrices(t *testing.T) {
 			}, nil,
 		)
 
-		resp := pf.FetchPrices(ctx, tickers[:2])
+		resp := pf.Fetch(ctx, tickers[:2])
 		t.Log(resp)
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 1)
