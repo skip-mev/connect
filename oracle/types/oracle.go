@@ -48,6 +48,10 @@ type (
 		pMarketMap ProviderMarketMap,
 	) (PriceAPIQueryHandler, error)
 
+	// PriceAPIFetcher is a type alias for the price API fetcher. This is responsible
+	// for fetching the prices from the price provider.
+	PriceAPIFetcher = apihandlers.APIFetcher[mmtypes.Ticker, *big.Int]
+
 	// PriceAPIDataHandler is a type alias for the price API data handler. This
 	// is responsible for parsing http responses and returning the resolved
 	// and unresolved prices.
