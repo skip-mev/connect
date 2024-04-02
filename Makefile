@@ -45,6 +45,10 @@ update-local-configs: build
 	@echo "Updating local config..."
 	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
+generate-defi-configs:
+	@echo "Generating defi configs..."
+	@go run ./scripts/raydium/generate-config/main.go
+
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d

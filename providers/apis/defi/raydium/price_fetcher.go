@@ -38,7 +38,7 @@ type SolanaJSONRPCClient interface {
 // about the price of a given currency pair.
 type APIPriceFetcher struct {
 	// market represents the ticker configurations for this provider.
-	market oracletypes.ProviderMarketMap
+	markets oracletypes.ProviderMarketMap
 
 	// config is the APIConfiguration for this provider
 	config config.APIConfig
@@ -72,7 +72,7 @@ func NewAPIPriceFetcher(
 // that the given market + config are valid, otherwise a nil implementation + an error
 // will be returned.
 func NewAPIPriceFetcherWithClient(
-	market oracletypes.ProviderMarketMap,
+	markets oracletypes.ProviderMarketMap,
 	config config.APIConfig,
 	client SolanaJSONRPCClient,
 	logger *zap.Logger,
@@ -81,7 +81,7 @@ func NewAPIPriceFetcherWithClient(
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
 	}
 
-	if err := market.ValidateBasic(); err != nil {
+	if err := markets.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("market config for raydium is invalid: %w", err)
 	}
 
@@ -90,8 +90,8 @@ func NewAPIPriceFetcherWithClient(
 		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, config.Name)
 	}
 
-	if market.Name != Name {
-		return nil, fmt.Errorf("market config name is incorrect; expected: %s, got: %s", Name, market.Name)
+	if markets.Name != Name {
+		return nil, fmt.Errorf("market config name is incorrect; expected: %s, got: %s", Name, markets.Name)
 	}
 
 	if !config.Enabled {
@@ -100,7 +100,7 @@ func NewAPIPriceFetcherWithClient(
 
 	// generate metadata per ticker
 	metadataPerTicker := make(map[string]TickerMetadata)
-	for _, ticker := range market.OffChainMap {
+	for _, ticker := range markets.OffChainMap {
 		metadata, err := unmarshalMetadataJSON(ticker.Metadata_JSON)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
@@ -114,7 +114,7 @@ func NewAPIPriceFetcherWithClient(
 	}
 
 	return &APIPriceFetcher{
-		market:            market,
+		markets:           markets,
 		config:            config,
 		client:            client,
 		metaDataPerTicker: metadataPerTicker,
