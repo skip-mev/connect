@@ -108,10 +108,6 @@ func runOracle() error {
 		if err != nil {
 			return fmt.Errorf("failed to read market config file: %w", err)
 		}
-
-		if err := marketCfg.ValidateBasic(); err != nil {
-			return fmt.Errorf("market config is invalid: %w", err)
-		}
 	}
 
 	var logger *zap.Logger
