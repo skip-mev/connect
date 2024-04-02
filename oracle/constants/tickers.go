@@ -1,6 +1,7 @@
 package constants
 
 import (
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -85,7 +86,25 @@ var (
 	SUI_USDC       = mmtypes.NewTicker("SUI", "USDC", 8, 1)
 	TRON_USDC      = mmtypes.NewTicker("TRX", "USDC", 8, 1)
 	UNISWAP_USDC   = mmtypes.NewTicker("UNI", "USDC", 8, 1)
-	WORLD_USDC     = mmtypes.NewTicker("WLD", "USDC", 8, 1)
+	WETH_USDC      = mmtypes.Ticker{
+		CurrencyPair: pkgtypes.CurrencyPair{
+			Base:  "WETH",
+			Quote: "USDC",
+		},
+		Decimals:         18,
+		MinProviderCount: 1,
+		Metadata_JSON:    "{\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}",
+	}
+	DEGEN_WETH = mmtypes.Ticker{
+		CurrencyPair: pkgtypes.CurrencyPair{
+			Base:  "DEGEN",
+			Quote: "WETH",
+		},
+		Decimals:         18,
+		MinProviderCount: 1,
+		Metadata_JSON:    "{\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}",
+	}
+	WORLD_USDC = mmtypes.NewTicker("WLD", "USDC", 8, 1)
 
 	// USDT denominated tickers.
 	APE_USDT       = mmtypes.NewTicker("APE", "USDT", 8, 1)

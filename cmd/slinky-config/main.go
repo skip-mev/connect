@@ -18,6 +18,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/apis/uniswap"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -89,6 +90,7 @@ var (
 		coingecko.Name:     coingecko.DefaultMarketConfig,
 		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
 		krakenapi.Name:     krakenapi.DefaultMarketConfig,
+		uniswap.Name:       uniswap.DefaultMarketConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
@@ -125,29 +127,34 @@ var (
 			// NOTE: Some of the provider's are only capable of fetching data for a subset of
 			// all currency pairs. Before adding a new market to the oracle, ensure that
 			// the provider supports fetching data for the currency pair.
+			// {
+			// 	Name: binance.Name,
+			// 	API:  binance.DefaultNonUSAPIConfig,
+			// 	Type: types.ConfigType,
+			// },
+			// {
+			// 	Name: coinbaseapi.Name,
+			// 	API:  coinbaseapi.DefaultAPIConfig,
+			// 	Type: types.ConfigType,
+			// },
+			// {
+			// 	Name: coingecko.Name,
+			// 	API:  coingecko.DefaultAPIConfig,
+			// 	Type: types.ConfigType,
+			// },
+			// {
+			// 	Name: geckoterminal.Name,
+			// 	API:  geckoterminal.DefaultETHAPIConfig,
+			// 	Type: types.ConfigType,
+			// },
+			// {
+			// 	Name: krakenapi.Name,
+			// 	API:  krakenapi.DefaultAPIConfig,
+			// 	Type: types.ConfigType,
+			// },
 			{
-				Name: binance.Name,
-				API:  binance.DefaultNonUSAPIConfig,
-				Type: types.ConfigType,
-			},
-			{
-				Name: coinbaseapi.Name,
-				API:  coinbaseapi.DefaultAPIConfig,
-				Type: types.ConfigType,
-			},
-			{
-				Name: coingecko.Name,
-				API:  coingecko.DefaultAPIConfig,
-				Type: types.ConfigType,
-			},
-			{
-				Name: geckoterminal.Name,
-				API:  geckoterminal.DefaultETHAPIConfig,
-				Type: types.ConfigType,
-			},
-			{
-				Name: krakenapi.Name,
-				API:  krakenapi.DefaultAPIConfig,
+				Name: uniswap.Name,
+				API:  uniswap.DefaultAPIConfig,
 				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//
@@ -157,62 +164,62 @@ var (
 			// NOTE: Some of the provider's are only capable of fetching data for a subset of
 			// all currency pairs. Before adding a new market to the oracle, ensure that
 			// the provider supports fetching data for the currency pair.
-			{
-				Name:      bitfinex.Name,
-				WebSocket: bitfinex.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      bitstamp.Name,
-				WebSocket: bitstamp.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      bybit.Name,
-				WebSocket: bybit.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      coinbasews.Name,
-				WebSocket: coinbasews.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      cryptodotcom.Name,
-				WebSocket: cryptodotcom.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      gate.Name,
-				WebSocket: gate.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      huobi.Name,
-				WebSocket: huobi.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      kraken.Name,
-				WebSocket: kraken.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      kucoin.Name,
-				WebSocket: kucoin.DefaultWebSocketConfig,
-				API:       kucoin.DefaultAPIConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      mexc.Name,
-				WebSocket: mexc.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
-			{
-				Name:      okx.Name,
-				WebSocket: okx.DefaultWebSocketConfig,
-				Type:      types.ConfigType,
-			},
+			// {
+			// 	Name:      bitfinex.Name,
+			// 	WebSocket: bitfinex.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      bitstamp.Name,
+			// 	WebSocket: bitstamp.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      bybit.Name,
+			// 	WebSocket: bybit.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      coinbasews.Name,
+			// 	WebSocket: coinbasews.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      cryptodotcom.Name,
+			// 	WebSocket: cryptodotcom.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      gate.Name,
+			// 	WebSocket: gate.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      huobi.Name,
+			// 	WebSocket: huobi.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      kraken.Name,
+			// 	WebSocket: kraken.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      kucoin.Name,
+			// 	WebSocket: kucoin.DefaultWebSocketConfig,
+			// 	API:       kucoin.DefaultAPIConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      mexc.Name,
+			// 	WebSocket: mexc.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
+			// {
+			// 	Name:      okx.Name,
+			// 	WebSocket: okx.DefaultWebSocketConfig,
+			// 	Type:      types.ConfigType,
+			// },
 		},
 	}
 )

@@ -1,0 +1,47 @@
+{
+  "tickers": {
+    "MOG/USD": {
+      "currency_pair": {
+        "Base": "MOG",
+        "Quote": "USD"
+      },
+      "decimals": 10,
+      "min_provider_count": 1,
+      "metadata_JSON": "{\"base_decimals\":18,\"quote_decimals\":18,\"invert\":true,\"address\":\"0xc9034c3e7f58003e6ae0c8438e7c8f4598d5acaa\"}"
+    }
+  },
+  "paths": {
+    "MOG/USD": {
+      "paths": [
+        {
+          "operations": [
+            {
+              "currency_pair": {
+                "Base": "MOG",
+                "Quote": "ETH"
+              },
+              "provider": "uniswap_api"
+            },
+            {
+              "currency_pair": {
+                "Base": "DEGEN",
+                "Quote": "USD"
+              },
+              "provider": "index_price"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "providers": {
+    "MOG/USD": {
+      "providers": [
+        {
+          "name": "uniswap_api",
+          "off_chain_ticker": "DEGEN/WETH"
+        }
+      ]
+    }
+  }
+}
