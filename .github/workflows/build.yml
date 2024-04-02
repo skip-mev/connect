@@ -70,7 +70,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ startsWith(github.ref, 'refs/tags/v') && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
       - uses: cloudposse/github-action-matrix-outputs-write@1.0.0
         id: out
         with:
