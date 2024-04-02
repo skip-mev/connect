@@ -13,9 +13,9 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-// RestAPIPriceFetcher handles the logic of fetching prices from a REST API. This implementation
+// RestAPIFetcher handles the logic of fetching prices from a REST API. This implementation
 // depends on an APIDataHandler to handle the creation of URLs / parsing the API response.
-type RestAPIPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
+type RestAPIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] struct {
 	// requestHandler is responsible for making outgoing HTTP requests with a given URL.
 	requestHandler RequestHandler
 
@@ -33,14 +33,14 @@ type RestAPIPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseVa
 	logger *zap.Logger
 }
 
-// NewRestAPIPriceFetcher creates a new RestAPIPriceFetcher.
-func NewRestAPIPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue](
+// NewRestAPIFetcher creates a new RestAPIFetcher.
+func NewRestAPIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	requestHandler RequestHandler,
 	apiDataHandler APIDataHandler[K, V],
 	metrics metrics.APIMetrics,
 	config config.APIConfig,
 	logger *zap.Logger,
-) (*RestAPIPriceFetcher[K, V], error) {
+) (*RestAPIFetcher[K, V], error) {
 	if err := config.ValidateBasic(); err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func NewRestAPIPriceFetcher[K providertypes.ResponseKey, V providertypes.Respons
 		return nil, fmt.Errorf("metrics is nil")
 	}
 
-	return &RestAPIPriceFetcher[K, V]{
+	return &RestAPIFetcher[K, V]{
 		requestHandler: requestHandler,
 		apiDataHandler: apiDataHandler,
 		metrics:        metrics,
@@ -70,7 +70,9 @@ func NewRestAPIPriceFetcher[K providertypes.ResponseKey, V providertypes.Respons
 	}, nil
 }
 
-func (pf *RestAPIPriceFetcher[K, V]) FetchPrices(
+// Fetch is used to fetch the corresponding IDs from the API. This method blocks until the
+// response is received from the API, parsed, and returned.
+func (pf *RestAPIFetcher[K, V]) Fetch(
 	ctx context.Context,
 	ids []K,
 ) providertypes.GetResponse[K, V] {

@@ -55,7 +55,11 @@ func (t *Ticker) ValidateBasic() error {
 		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
 	}
 
-	return json.IsValid([]byte(t.Metadata_JSON))
+	if err := json.IsValid([]byte(t.Metadata_JSON)); err != nil {
+		return fmt.Errorf("invalid ticker metadata json: %w", err)
+	}
+
+	return nil
 }
 
 // Equal returns true iff the Ticker is equal to the given Ticker.
