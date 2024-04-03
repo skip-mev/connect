@@ -1,8 +1,8 @@
 package http
 
 import (
-	"io"
 	"bytes"
+	"io"
 	"net/http"
 	urlpkg "net/url"
 	"sync"
@@ -15,9 +15,9 @@ type RoundTripper interface {
 	http.RoundTripper
 }
 
-// Filter is a function that can be used to filter http.Response objects, it is intended that the only 
-// Responses given to the Filter are valid (i.e non-error http)
-type Filter func([] *http.Response) (*http.Response, error)
+// Filter is a function that can be used to filter http.Response objects, it is intended that the only
+// Responses given to the Filter are valid (i.e non-error http).
+type Filter func([]*http.Response) (*http.Response, error)
 
 type RoundTripperWithURL struct {
 	// url is the URL that this round-tripper will mutate it's http.Request with
@@ -37,12 +37,12 @@ func (rt *RoundTripperWithURL) RoundTrip(req *http.Request) (*http.Response, err
 	return rt.roundTripper.RoundTrip(req)
 }
 
-// URL returns the URL of the RoundTripperWithURL
+// URL returns the URL of the RoundTripperWithURL.
 func (rt *RoundTripperWithURL) URL() *urlpkg.URL {
 	return rt.url
 }
 
-// NewRoundTripperWithURL returns a new RoundTripperWithURL
+// NewRoundTripperWithURL returns a new RoundTripperWithURL.
 func NewRoundTripperWithURL(urlString string, rt RoundTripper) (*RoundTripperWithURL, error) {
 	url, err := urlpkg.Parse(urlString)
 	if err != nil {
@@ -50,13 +50,13 @@ func NewRoundTripperWithURL(urlString string, rt RoundTripper) (*RoundTripperWit
 	}
 
 	return &RoundTripperWithURL{
-		url: url,
+		url:          url,
 		roundTripper: rt,
 	}, nil
 }
 
 // MultiRoundTripper is an RoundTripper that delegates the transport of a request to multiple RoundTrippers.
-// and applies a filter over all non-error responses
+// and applies a filter over all non-error responses.
 type MultiRoundTripper struct {
 	// roundTrippers is the list of RoundTrippers that this MultiRoundTripper will delegate to
 	roundTrippers []RoundTripperWithURL
@@ -65,16 +65,16 @@ type MultiRoundTripper struct {
 	filter Filter
 }
 
-// NewMultiRoundTripper returns a new MultiRoundTripper
+// NewMultiRoundTripper returns a new MultiRoundTripper.
 func NewMultiRoundTripper(roundTrippers []RoundTripperWithURL, filter Filter) *MultiRoundTripper {
 	return &MultiRoundTripper{
 		roundTrippers: roundTrippers,
-		filter: filter,
+		filter:        filter,
 	}
 }
 
-// RoundTrip delegates the request to the underlying RoundTripperWithURLs, waits to collect all responses, and 
-// applies the filter to the responses. This method adheres to the request.Context's closure
+// RoundTrip delegates the request to the underlying RoundTripperWithURLs, waits to collect all responses, and
+// applies the filter to the responses. This method adheres to the request.Context's closure.
 func (mrt *MultiRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	responsesCh := make(chan *http.Response, len(mrt.roundTrippers))
 
@@ -105,7 +105,7 @@ func (mrt *MultiRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 		}(mrt.roundTrippers[i])
 	}
 
-	// wait for all responses to be collected, or for the context to be cancelled 
+	// wait for all responses to be collected, or for the context to be cancelled
 	go func() {
 		select {
 		case <-doneChannelForWaitGroup(&wg):
@@ -127,7 +127,7 @@ func (mrt *MultiRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 	return mrt.filter(responses)
 }
 
-// doneChannelForWaitGroup returns a channel that is closed when the wait group is done
+// doneChannelForWaitGroup returns a channel that is closed when the wait group is done.
 func doneChannelForWaitGroup(wg *sync.WaitGroup) chan struct{} {
 	done := make(chan struct{})
 	go func() {
@@ -137,7 +137,7 @@ func doneChannelForWaitGroup(wg *sync.WaitGroup) chan struct{} {
 	return done
 }
 
-// clone reader is a helper function that clones a reader
+// clone reader is a helper function that clones a reader.
 func cloneReader(reader io.Reader) io.Reader {
 	if reader == nil {
 		return nil

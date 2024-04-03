@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/providers/base/api/http"
 	"github.com/skip-mev/slinky/providers/base/api/http/mocks"
-	"github.com/stretchr/testify/require"
 )
 
 func TestMultiRoundTripper(t *testing.T) {
@@ -35,10 +36,10 @@ func TestMultiRoundTripper(t *testing.T) {
 			require.Len(t, req, 0)
 			return nil, nil
 		})
-		
+
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-	
+
 		req, err := gohttp.NewRequestWithContext(
 			ctx,
 			gohttp.MethodGet,
@@ -68,7 +69,7 @@ func TestMultiRoundTripper(t *testing.T) {
 	// test that the filter is applied to responses
 	t.Run("test that the filter is applied to responses", func(t *testing.T) {
 		ctx := context.Background()
-	
+
 		req, err := gohttp.NewRequestWithContext(
 			ctx,
 			gohttp.MethodGet,
@@ -130,6 +131,6 @@ func TestMultiRoundTripper(t *testing.T) {
 			return nil, nil
 		})
 		_, err = mrt.RoundTrip(req)
-		require.NoError(t, err)	
+		require.NoError(t, err)
 	})
 }
