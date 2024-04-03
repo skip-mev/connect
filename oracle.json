@@ -11,7 +11,7 @@
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": false,
-        "url": "https://1rpc.io/base",
+        "url": "https://eth.public-rpc.com/",
         "name": "uniswap_api"
       },
       "webSocket": {

@@ -1,31 +1,31 @@
 {
   "tickers": {
-    "MOG/USD": {
+    "WETH/USDC": {
       "currency_pair": {
-        "Base": "MOG",
-        "Quote": "USD"
+        "Base": "WETH",
+        "Quote": "USDC"
       },
-      "decimals": 10,
+      "decimals": 18,
       "min_provider_count": 1,
-      "metadata_JSON": "{\"base_decimals\":18,\"quote_decimals\":18,\"invert\":true,\"address\":\"0xc9034c3e7f58003e6ae0c8438e7c8f4598d5acaa\"}"
+      "metadata_JSON": "{\"base_decimals\":18,\"quote_decimals\":6,\"invert\":true,\"address\":\"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2\"}"
     }
   },
   "paths": {
-    "MOG/USD": {
+    "WETH/USDC": {
       "paths": [
         {
           "operations": [
             {
               "currency_pair": {
-                "Base": "MOG",
-                "Quote": "ETH"
+                "Base": "WETH",
+                "Quote": "USDC"
               },
               "provider": "uniswap_api"
             },
             {
               "currency_pair": {
-                "Base": "DEGEN",
-                "Quote": "USD"
+                "Base": "WETH",
+                "Quote": "USDC"
               },
               "provider": "index_price"
             }
@@ -35,11 +35,11 @@
     }
   },
   "providers": {
-    "MOG/USD": {
+    "WETH/USDC": {
       "providers": [
         {
           "name": "uniswap_api",
-          "off_chain_ticker": "DEGEN/WETH"
+          "off_chain_ticker": "WETH/USDC"
         }
       ]
     }
