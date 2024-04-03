@@ -42,6 +42,7 @@ services:
     ports:
       - "26656:26656"
       - "26657:26657"
+      - "26660:26660" # chain side metrics
       - "1317:1317" # used to query the blockchain
       - "7171:7171"
       - "26655:26655"

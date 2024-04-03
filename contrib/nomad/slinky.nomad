@@ -126,6 +126,24 @@ job "slinky-dev" {
     }
 
     service {
+      name = "slinky-simapp-dev-chain-metrics-service"
+      port = "26660"
+
+      connect {
+          sidecar_service {}
+      }
+
+      tags = [
+        "metrics",
+        "logs.promtail=true",
+        "traefik.enable=true",
+        "traefik.consulcatalog.connect=true",
+        "traefik.http.routers.slinky-simapp-dev-chain-metrics-service.rule=Host(`slinky-simapp-dev-chain-metrics.skip.money`)",
+        "traefik.http.routers.slinky-simapp-dev-chain-metrics-service.entrypoints=http",
+      ]
+    }
+
+    service {
       name = "slinky-simapp-dev-app-metrics-service"
       port = "8001"
 
