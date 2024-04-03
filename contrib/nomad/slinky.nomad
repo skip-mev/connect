@@ -23,8 +23,8 @@ job "slinky-dev" {
       tags = [
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-sidecar-dev-http-service.rule=Host(`slinky-sidecar-dev-http.skip-internal.money`)",
-        "traefik.http.routers.slinky-sidecar-dev-http-service.entrypoints=internal",
+        "traefik.http.routers.slinky-sidecar-dev-http-service.rule=Host(`slinky-sidecar-dev-http.skip.money`)",
+        "traefik.http.routers.slinky-sidecar-dev-http-service.entrypoints=http",
       ]
     }
 
@@ -41,8 +41,8 @@ job "slinky-dev" {
         "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-sidecar-dev-metrics-service.rule=Host(`slinky-sidecar-dev-metrics.skip-internal.money`)",
-        "traefik.http.routers.slinky-sidecar-dev-metrics-service.entrypoints=internal",
+        "traefik.http.routers.slinky-sidecar-dev-metrics-service.rule=Host(`slinky-sidecar-dev-metrics.skip.money`)",
+        "traefik.http.routers.slinky-sidecar-dev-metrics-service.entrypoints=http",
       ]
     }
 
@@ -137,8 +137,8 @@ job "slinky-dev" {
         "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.rule=Host(`slinky-simapp-dev-app-metrics.skip-internal.money`)",
-        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.entrypoints=internal",
+        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.rule=Host(`slinky-simapp-dev-app-metrics.skip.money`)",
+        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.entrypoints=http",
       ]
     }
 
