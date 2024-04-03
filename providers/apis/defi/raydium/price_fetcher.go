@@ -15,12 +15,12 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/base/api/handlers"
+	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ handlers.APIFetcher[mmtypes.Ticker, *big.Int] = (*APIPriceFetcher)(nil)
+var _ oracletypes.PriceAPIFetcher = (*APIPriceFetcher)(nil)
 
 // SolanaJSONRPCClient is the expected interface for a solana JSON-RPC client according
 // to the APIPriceFetcher.
@@ -87,11 +87,11 @@ func NewAPIPriceFetcherWithClient(
 
 	// check fields of config
 	if config.Name != Name {
-		return nil, fmt.Errorf("config.Name is not %s", Name)
+		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, config.Name)
 	}
 
 	if market.Name != Name {
-		return nil, fmt.Errorf("market.Name is not %s", Name)
+		return nil, fmt.Errorf("market config name is incorrect; expected: %s, got: %s", Name, market.Name)
 	}
 
 	if !config.Enabled {
@@ -118,7 +118,7 @@ func NewAPIPriceFetcherWithClient(
 		config:            config,
 		client:            client,
 		metaDataPerTicker: metadataPerTicker,
-		logger:            logger.With(zap.String("provider", Name)),
+		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
 	}, nil
 }
 
@@ -152,6 +152,9 @@ func (pf *APIPriceFetcher) Fetch(
 	}
 
 	// query the accounts
+	// We assume that the solana JSON-RPC response returns all accounts in the order
+	// that they were queried, there is not a very good way to handle if this order is incorrect
+	// or verify that the order is correct, as there is no way to correlate account data <> address
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
 		Commitment: rpc.CommitmentFinalized,
 		// TODO(nikhil): Keep track of latest height queried as well?
@@ -241,7 +244,7 @@ func getScaledTokenBalance(account *rpc.Account, tokenDecimals uint64) (*big.Int
 
 	// get the token balance + scale by decimals
 	balance := new(big.Int).SetUint64(tokenAccount.Amount)
-	return balance.Mul(balance, new(big.Int).Exp(big.NewInt(10), big.NewInt(NormalizedTokenAmountExponent-int64(tokenDecimals)), nil)), nil
+	return oraclemath.ScaleUpCurrencyPairPrice(tokenDecimals, balance)
 }
 
 func calculatePrice(baseTokenBalance, quoteTokenBalance *big.Int, decimals uint64) *big.Int {
