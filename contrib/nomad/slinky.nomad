@@ -67,6 +67,7 @@ job "slinky-dev" {
 
       config {
         image = "[[ .sidecar_image ]]"
+        force_pull = true
         entrypoint = ["slinky", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json"]
       }
 
@@ -161,6 +162,7 @@ job "slinky-dev" {
 
       config {
         image      = "[[ .chain_image ]]"
+        force_pull = true
         entrypoint = ["sh", "-c", "/tmp/init.sh"]
         volumes    = ["local/tmp/init.sh:/tmp/init.sh"]
       }
@@ -196,6 +198,7 @@ sed -i 's\oracle:8080\localhost:8080\g' /src/slinky/tests/.slinkyd/config/app.to
 
       config {
         image      = "[[ .chain_image ]]"
+        force_pull = true
         entrypoint = ["make", "start-app"]
       }
 
