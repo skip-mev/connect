@@ -91,7 +91,7 @@ message MsgRemoveMarketAuthorities {
   option (cosmos.msg.v1.signer) = "admin";
 
   // RemoveAddresses is the list of addresses to remove.
-  repeated string remove_addresses = 1 [ (gogoproto.nullable) = false ];
+  repeated string remove_addresses = 1;
 
   // Admin defines the authority that is the x/marketmap
   // Admin account.  This account is set in the module parameters.
