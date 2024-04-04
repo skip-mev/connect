@@ -31,16 +31,16 @@ var (
 	logger, _ = zap.NewDevelopment()
 	m         = metrics.NewNopAPIMetrics()
 
-	// PoolConfigs used for testing
-	weth_usdc_cfg = uniswapv3.PoolConfig{
+	// PoolConfigs used for testing.
+	weth_usdc_cfg = uniswapv3.PoolConfig{ //nolint
 		Address:       "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
 		BaseDecimals:  18,
 		QuoteDecimals: 6,
 		Invert:        true,
 	}
 
-	// Tickers used for testing
-	weth_usdc_ticker = mmtypes.Ticker{
+	// Tickers used for testing.
+	weth_usdc_ticker = mmtypes.Ticker{ //nolint
 		CurrencyPair: pkgtypes.CurrencyPair{
 			Base:  "WETH",
 			Quote: "USDC",
@@ -52,11 +52,11 @@ var (
 
 func createPriceFetcher(
 	t *testing.T,
-) *uniswapv3.UniswapV3PriceFetcher {
+) *uniswapv3.PriceFetcher {
 	t.Helper()
 
 	client := mocks.NewEVMClient(t)
-	fetcher, err := uniswapv3.NewUniswapV3PriceFetcher(
+	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
 		m,
 		uniswapv3.DefaultAPIConfig,
@@ -70,10 +70,10 @@ func createPriceFetcher(
 func createPriceFetcherWithClient(
 	t *testing.T,
 	client uniswapv3.EVMClient,
-) *uniswapv3.UniswapV3PriceFetcher {
+) *uniswapv3.PriceFetcher {
 	t.Helper()
 
-	fetcher, err := uniswapv3.NewUniswapV3PriceFetcher(
+	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
 		m,
 		uniswapv3.DefaultAPIConfig,

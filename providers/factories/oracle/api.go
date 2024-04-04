@@ -74,7 +74,7 @@ func APIQueryHandlerFactory(
 			return nil, err
 		}
 
-		apiPriceFetcher, err = uniswapv3.NewUniswapV3PriceFetcher(logger, metrics, cfg.API, ethClient)
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, metrics, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {

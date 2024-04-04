@@ -21,7 +21,7 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ types.PriceAPIFetcher = (*UniswapV3PriceFetcher)(nil)
+var _ types.PriceAPIFetcher = (*PriceFetcher)(nil)
 
 // UniswapV3PriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
 // querying Uniswap V3 pool contracts and returning the price of a given ticker. The price is
@@ -33,7 +33,7 @@ var _ types.PriceAPIFetcher = (*UniswapV3PriceFetcher)(nil)
 // We utilize the eth client's BatchCallContext to batch the calls to the ethereum network as
 // this is more performant than making individual calls or the multi call contract:
 // https://docs.chainstack.com/docs/http-batch-request-vs-multicall-contract#performance-comparison.
-type UniswapV3PriceFetcher struct {
+type PriceFetcher struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 	api     config.APIConfig
@@ -51,13 +51,13 @@ type UniswapV3PriceFetcher struct {
 	poolCache map[mmtypes.Ticker]PoolConfig
 }
 
-// NewUniswapV3PriceFetcher returns a new Uniswap V3 price fetcher.
-func NewUniswapV3PriceFetcher(
+// NewPriceFetcher returns a new Uniswap V3 price fetcher.
+func NewPriceFetcher(
 	logger *zap.Logger,
 	metrics metrics.APIMetrics,
 	api config.APIConfig,
 	client EVMClient,
-) (*UniswapV3PriceFetcher, error) {
+) (*PriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -88,7 +88,7 @@ func NewUniswapV3PriceFetcher(
 		return nil, fmt.Errorf("failed to pack slot0: %w", err)
 	}
 
-	return &UniswapV3PriceFetcher{
+	return &PriceFetcher{
 		logger:    logger,
 		metrics:   metrics,
 		api:       api,
@@ -103,7 +103,7 @@ func NewUniswapV3PriceFetcher(
 // overhead of making individual RPC calls for each ticker. The fetcher will query the Uniswap V3
 // pool contract for the price of the pool. The price is derived from the slot 0 data of the pool
 // contract, specifically the sqrtPriceX96 value.
-func (u *UniswapV3PriceFetcher) Fetch(
+func (u *PriceFetcher) Fetch(
 	ctx context.Context,
 	tickers []mmtypes.Ticker,
 ) types.PriceResponse {
@@ -221,7 +221,7 @@ func (u *UniswapV3PriceFetcher) Fetch(
 
 // GetPool returns the uniswap pool for the given ticker. This will unmarshal the metadata
 // and validate the pool config which contains all required information to query the EVM.
-func (u *UniswapV3PriceFetcher) GetPool(
+func (u *PriceFetcher) GetPool(
 	ticker mmtypes.Ticker,
 ) (PoolConfig, error) {
 	if pool, ok := u.poolCache[ticker]; ok {
@@ -241,7 +241,7 @@ func (u *UniswapV3PriceFetcher) GetPool(
 }
 
 // ParseSqrtPriceX96 parses the sqrtPriceX96 from the result of the batch call.
-func (u *UniswapV3PriceFetcher) ParseSqrtPriceX96(
+func (u *PriceFetcher) ParseSqrtPriceX96(
 	result interface{},
 ) (*big.Int, error) {
 	r, ok := result.(*string)

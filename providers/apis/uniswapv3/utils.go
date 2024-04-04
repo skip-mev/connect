@@ -54,16 +54,14 @@ func (pc *PoolConfig) ToJSON() string {
 	return string(b)
 }
 
-var (
-	// DefaultAPIConfig is the default configuration for the Uniswap API.
-	DefaultAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          1000 * time.Millisecond,
-		Interval:         2000 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		URL:              "https://eth.public-rpc.com/",
-	}
-)
+// DefaultAPIConfig is the default configuration for the Uniswap API.
+var DefaultAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          1000 * time.Millisecond,
+	Interval:         2000 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	URL:              "https://eth.public-rpc.com/",
+}
