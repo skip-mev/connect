@@ -34,7 +34,7 @@ const (
 )
 
 func TestTickerMetadataValidateBasic(t *testing.T) {
-	tcs := []struct{
+	tcs := []struct {
 		name string
 		raydium.TickerMetadata
 		expFail bool
@@ -44,11 +44,11 @@ func TestTickerMetadataValidateBasic(t *testing.T) {
 			TickerMetadata: raydium.TickerMetadata{
 				BaseTokenVault: raydium.AMMTokenVaultMetadata{
 					TokenVaultAddress: "",
-					TokenDecimals: 6,
+					TokenDecimals:     6,
 				},
 				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 					TokenVaultAddress: USDCVaultAddress,
-					TokenDecimals: 6,
+					TokenDecimals:     6,
 				},
 			},
 			expFail: true,
@@ -58,11 +58,11 @@ func TestTickerMetadataValidateBasic(t *testing.T) {
 			TickerMetadata: raydium.TickerMetadata{
 				BaseTokenVault: raydium.AMMTokenVaultMetadata{
 					TokenVaultAddress: USDCVaultAddress,
-					TokenDecimals: 6,
+					TokenDecimals:     6,
 				},
 				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 					TokenVaultAddress: "",
-					TokenDecimals: 6,
+					TokenDecimals:     6,
 				},
 			},
 			expFail: true,
@@ -72,11 +72,11 @@ func TestTickerMetadataValidateBasic(t *testing.T) {
 			TickerMetadata: raydium.TickerMetadata{
 				BaseTokenVault: raydium.AMMTokenVaultMetadata{
 					TokenVaultAddress: USDCVaultAddress,
-					TokenDecimals: 6,
+					TokenDecimals:     6,
 				},
 				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
 					TokenVaultAddress: USDCVaultAddress,
-					TokenDecimals: 6,
+					TokenDecimals:     6,
 				},
 			},
 			expFail: false,
@@ -145,8 +145,8 @@ func TestProviderInit(t *testing.T) {
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			URL: 			"https://api.raydium.io",
-			Name: 		   raydium.Name + "a",
+			URL:              "https://api.raydium.io",
+			Name:             raydium.Name + "a",
 		}
 		market := oracletypes.ProviderMarketMap{
 			Name: raydium.Name + "a",
@@ -165,8 +165,8 @@ func TestProviderInit(t *testing.T) {
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			URL: 			"https://api.raydium.io",
-			Name: 		   raydium.Name,
+			URL:              "https://api.raydium.io",
+			Name:             raydium.Name,
 		}
 		market = oracletypes.ProviderMarketMap{
 			Name: raydium.Name + "a",
@@ -218,7 +218,7 @@ func TestProviderInit(t *testing.T) {
 					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
 					Decimals:         8,
 					MinProviderCount: 1,
-					Metadata_JSON:    `{
+					Metadata_JSON: `{
 						"base_token_vault": ["base_token_vault_address"]
 					}`,
 				}: {
@@ -231,7 +231,7 @@ func TestProviderInit(t *testing.T) {
 					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
 					Decimals:         8,
 					MinProviderCount: 1,
-					Metadata_JSON:    `{
+					Metadata_JSON: `{
 						"base_token_vault": ["base_token_vault_address"]
 					}`,
 				},
@@ -443,7 +443,7 @@ func TestProviderFetch(t *testing.T) {
 	t.Run("failing accounts query", func(t *testing.T) {
 		ctx := context.Background()
 		err := fmt.Errorf("error")
-	
+
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
@@ -471,7 +471,7 @@ func TestProviderFetch(t *testing.T) {
 
 		resp := pf.Fetch(ctx, []mmtypes.Ticker{
 			{
-				CurrencyPair:     slinkytypes.NewCurrencyPair("MOG", "TIA"),
+				CurrencyPair: slinkytypes.NewCurrencyPair("MOG", "TIA"),
 			},
 		})
 		// expect a failed response
@@ -515,7 +515,7 @@ func TestProviderFetch(t *testing.T) {
 		solTokenVaultMetadata.MarshalWithEncoder(solEnc)
 
 		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk, mogVaultPk, solVaultPk,  
+			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk, mogVaultPk, solVaultPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
@@ -558,14 +558,14 @@ func TestProviderFetch(t *testing.T) {
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
 
 		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk,  
+			btcVaultPk, usdcVaultPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
 			&rpc.GetMultipleAccountsResult{
 				Value: []*rpc.Account{
 					{
-						Data: rpc.DataBytesOrJSONFromBytes([]byte{1,2,3}), // btc/usdc shld be unresolved
+						Data: rpc.DataBytesOrJSONFromBytes([]byte{1, 2, 3}), // btc/usdc shld be unresolved
 					},
 					{
 						Data: nil,
