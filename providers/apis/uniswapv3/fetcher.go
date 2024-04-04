@@ -1,4 +1,4 @@
-package uniswap
+package uniswapv3
 
 import (
 	"context"
@@ -15,26 +15,25 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	uniswappool "github.com/skip-mev/slinky/providers/apis/uniswap/pool"
+	uniswappool "github.com/skip-mev/slinky/providers/apis/uniswapv3/pool"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var _ types.PriceAPIFetcher = (*UniswapPriceFetcher)(nil)
+var _ types.PriceAPIFetcher = (*UniswapV3PriceFetcher)(nil)
 
-// UniswapPriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
-// querying the Uniswap V3 pool contract and returning the price of the pool. The price is
-// derived from the slot 0 data of the pool contract. Specifically the sqrtPriceX96 value
-// which is the square root of the price of the pool.
+// UniswapV3PriceFetcher is the Uniswap V3 price fetcher. This fetcher is responsible for
+// querying Uniswap V3 pool contracts and returning the price of a given ticker. The price is
+// derived from the slot 0 data of the pool contract.
 //
 // To read more about how the price is calculated, see the Uniswap V3 documentation
 // https://blog.uniswap.org/uniswap-v3-math-primer.
 //
 // Additionally, we utilize the eth client's BatchCallContext to batch the calls to the
-// ethereum network this is more performant than making individual calls or the multi call
-// contract: https://docs.chainstack.com/docs/http-batch-request-vs-multicall-contract.
-type UniswapPriceFetcher struct {
+// ethereum network as this is more performant than making individual calls or the multi call
+// contract: https://docs.chainstack.com/docs/http-batch-request-vs-multicall-contract#performance-comparison.
+type UniswapV3PriceFetcher struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 	api     config.APIConfig
@@ -47,15 +46,18 @@ type UniswapPriceFetcher struct {
 	// payload is the packed slot0 call to the pool contract. Since the slot0 payload is the same
 	// for all pools, we can reuse this payload for all pools.
 	payload []byte
+	// poolCache is a cache of the tickers to pool configs. This is used to avoid unmarshalling
+	// the metadata for each ticker.
+	poolCache map[mmtypes.Ticker]PoolConfig
 }
 
-// NewUniswapPriceFetcher returns a new Uniswap price fetcher.
-func NewUniswapPriceFetcher(
+// NewUniswapV3PriceFetcher returns a new Uniswap V3 price fetcher.
+func NewUniswapV3PriceFetcher(
 	logger *zap.Logger,
 	metrics metrics.APIMetrics,
 	api config.APIConfig,
 	client EVMClient,
-) (*UniswapPriceFetcher, error) {
+) (*UniswapV3PriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -86,22 +88,22 @@ func NewUniswapPriceFetcher(
 		return nil, fmt.Errorf("failed to pack slot0: %w", err)
 	}
 
-	return &UniswapPriceFetcher{
-		logger:  logger,
-		metrics: metrics,
-		api:     api,
-		client:  client,
-		abi:     abi,
-		payload: payload,
+	return &UniswapV3PriceFetcher{
+		logger:    logger,
+		metrics:   metrics,
+		api:       api,
+		client:    client,
+		abi:       abi,
+		payload:   payload,
+		poolCache: make(map[mmtypes.Ticker]PoolConfig),
 	}, nil
 }
 
-// Fetch returns the price of a given ticker. This fetcher expects only 1 ticker to be passed
-// in the tickers slice. If more than 1 ticker is passed, an error is returned. The fetcher
-// will then query the Uniswap V3 pool contract for the price of the pool. The price is derived
-// from the slot 0 data of the pool contract. Specifically the sqrtPriceX96 value which is the
-// square root of the price of the pool.
-func (u *UniswapPriceFetcher) Fetch(
+// Fetch returns the price of a given set of tickers. This fetch utilizes the batch call to lower
+// overhead of making individual RPC calls for each ticker. The fetcher will query the Uniswap V3
+// pool contract for the price of the pool. The price is derived from the slot 0 data of the pool
+// contract, specifically the sqrtPriceX96 value.
+func (u *UniswapV3PriceFetcher) Fetch(
 	ctx context.Context,
 	tickers []mmtypes.Ticker,
 ) types.PriceResponse {
@@ -114,8 +116,14 @@ func (u *UniswapPriceFetcher) Fetch(
 	batchElems := make([]rpc.BatchElem, len(tickers))
 	pools := make([]PoolConfig, len(tickers))
 	for i, ticker := range tickers {
-		pool, err := u.getPool(ticker)
+		pool, err := u.GetPool(ticker)
 		if err != nil {
+			u.logger.Error(
+				"failed to get pool for ticker",
+				zap.String("ticker", ticker.String()),
+				zap.Error(err),
+			)
+
 			return types.NewPriceResponseWithErr(
 				tickers,
 				providertypes.NewErrorWithCode(
@@ -126,7 +134,18 @@ func (u *UniswapPriceFetcher) Fetch(
 		}
 
 		// Create a batch element for the ticker and pool.
-		batchElems[i] = u.createBatchElement(pool)
+		var result string
+		batchElems[i] = rpc.BatchElem{
+			Method: "eth_call",
+			Args: []interface{}{
+				map[string]interface{}{
+					"to":   common.HexToAddress(pool.Address),
+					"data": hexutil.Bytes(u.payload),
+				},
+				"latest", // latest signifies the latest block.
+			},
+			Result: &result,
+		}
 		pools[i] = pool
 	}
 
@@ -144,6 +163,7 @@ func (u *UniswapPriceFetcher) Fetch(
 	}
 
 	// Parse the result from the batch call for each ticker.
+	fmt.Println("batchElems is ", batchElems)
 	for i, ticker := range tickers {
 		result := batchElems[i]
 		if result.Error != nil {
@@ -164,7 +184,7 @@ func (u *UniswapPriceFetcher) Fetch(
 		}
 
 		// Parse the sqrtPriceX96 from the result.
-		sqrtPriceX96, err := u.parseSqrtPriceX96(result.Result)
+		sqrtPriceX96, err := u.ParseSqrtPriceX96(result.Result)
 		if err != nil {
 			u.logger.Error(
 				"failed to parse sqrt price x96",
@@ -195,50 +215,40 @@ func (u *UniswapPriceFetcher) Fetch(
 	return types.NewPriceResponse(resolved, unResolved)
 }
 
-// getPool returns the uniswap pool for the given ticker. This will unmarshal the metadata
+// GetPool returns the uniswap pool for the given ticker. This will unmarshal the metadata
 // and validate the pool config which contains all required information to query the pool.
 // The pool is then returned after querying the ethereum network.
-func (u *UniswapPriceFetcher) getPool(
+func (u *UniswapV3PriceFetcher) GetPool(
 	ticker mmtypes.Ticker,
 ) (PoolConfig, error) {
-	var cfg PoolConfig
-	if err := json.Unmarshal([]byte(ticker.Metadata_JSON), &cfg); err != nil {
-		return cfg, fmt.Errorf("failed to unmarshal pool config: %w", err)
-	}
-	if err := cfg.ValidateBasic(); err != nil {
-		return cfg, fmt.Errorf("invalid pool config: %w", err)
+	if pool, ok := u.poolCache[ticker]; ok {
+		return pool, nil
 	}
 
+	var cfg PoolConfig
+	if err := json.Unmarshal([]byte(ticker.Metadata_JSON), &cfg); err != nil {
+		return cfg, fmt.Errorf("failed to unmarshal pool config on ticker: %w", err)
+	}
+	if err := cfg.ValidateBasic(); err != nil {
+		return cfg, fmt.Errorf("invalid ticker pool config: %w", err)
+	}
+
+	u.poolCache[ticker] = cfg
 	return cfg, nil
 }
 
-// createBatchElement creates a batch element for the given ticker and pool. This will be utilized
-// to batch the calls to the ethereum network to retrieve all pricing information.
-func (u *UniswapPriceFetcher) createBatchElement(
-	pool PoolConfig,
-) rpc.BatchElem {
-	var result string
-	return rpc.BatchElem{
-		Method: "eth_call",
-		Args: []interface{}{
-			map[string]interface{}{
-				"to":   common.HexToAddress(pool.Address),
-				"data": hexutil.Bytes(u.payload),
-			},
-			"latest", // latest signifies the latest block.
-		},
-		Result: &result,
-	}
-}
-
-// parseSqrtPriceX96 parses the sqrtPriceX96 from the result of the batch call. The sqrtPriceX96
+// ParseSqrtPriceX96 parses the sqrtPriceX96 from the result of the batch call. The sqrtPriceX96
 // is the square root of the price of the pool. This is the raw, unscaled price.
-func (u *UniswapPriceFetcher) parseSqrtPriceX96(
+func (u *UniswapV3PriceFetcher) ParseSqrtPriceX96(
 	result interface{},
 ) (*big.Int, error) {
 	r, ok := result.(*string)
 	if !ok {
 		return nil, fmt.Errorf("expected result to be a string, got %T", result)
+	}
+
+	if r == nil {
+		return nil, fmt.Errorf("result is nil")
 	}
 
 	bz, err := hexutil.Decode(*r)

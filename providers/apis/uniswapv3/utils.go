@@ -1,6 +1,7 @@
-package uniswap
+package uniswapv3
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -10,8 +11,8 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
-// Name is the name of the Uniswap API.
-const Name = "uniswap_api"
+// Name is the name of the Uniswap V3 API.
+const Name = "uniswapv3_api"
 
 // PoolConfig is the configuration for a Uniswap V3 pool. This is specific to each pair of tokens.
 type PoolConfig struct {
@@ -19,10 +20,10 @@ type PoolConfig struct {
 	Address string `json:"address"`
 	// BaseDecimals is the number of decimals for the base token. This should be derived from the
 	// token contract.
-	BaseDecimals int `json:"base_decimals"`
+	BaseDecimals int64 `json:"base_decimals"`
 	// QuoteDecimals is the number of decimals for the quote token. This should be derived from the
 	// token contract.
-	QuoteDecimals int `json:"quote_decimals"`
+	QuoteDecimals int64 `json:"quote_decimals"`
 	// Invert is utilized to invert the price of a pool's reserves. This may be required for certain
 	// pools as the price is derived based on the sorted order of the ERC20 addresses of the tokens
 	// in the pool.
@@ -46,11 +47,20 @@ func (pc *PoolConfig) ValidateBasic() error {
 	return nil
 }
 
+// ToJSON converts the pool configuration to JSON.
+func (pc *PoolConfig) ToJSON() string {
+	b, err := json.Marshal(pc)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
+}
+
 var (
 	// DefaultAPIConfig is the default configuration for the Uniswap API.
 	DefaultAPIConfig = config.APIConfig{
 		Name:             Name,
-		Atomic:           false,
+		Atomic:           true,
 		Enabled:          true,
 		Timeout:          1000 * time.Millisecond,
 		Interval:         2000 * time.Millisecond,

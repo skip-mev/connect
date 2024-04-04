@@ -19,6 +19,14 @@ func Min[V int | int64 | uint64 | int32 | uint32](vals ...V) V {
 	return minimum
 }
 
+// Abs returns the absolute value of a given number.
+func Abs[V int | int32 | int64](val V) V {
+	if val < 0 {
+		return -val
+	}
+	return val
+}
+
 // Float64StringToBigInt converts a float64 string to a big.Int.
 func Float64StringToBigInt(s string, decimals uint64) (*big.Int, error) {
 	bigFloat := new(big.Float)

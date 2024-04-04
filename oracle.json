@@ -3,16 +3,16 @@
   "maxPriceAge": 120000000000,
   "providers": [
     {
-      "name": "uniswap_api",
+      "name": "uniswapv3_api",
       "api": {
         "enabled": true,
         "timeout": 1000000000,
         "interval": 2000000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
-        "atomic": false,
+        "atomic": true,
         "url": "https://eth.public-rpc.com/",
-        "name": "uniswap_api"
+        "name": "uniswapv3_api"
       },
       "webSocket": {
         "enabled": false,

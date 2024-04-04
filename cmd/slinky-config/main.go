@@ -18,7 +18,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
-	"github.com/skip-mev/slinky/providers/apis/uniswap"
+	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -90,7 +90,7 @@ var (
 		coingecko.Name:     coingecko.DefaultMarketConfig,
 		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
 		krakenapi.Name:     krakenapi.DefaultMarketConfig,
-		uniswap.Name:       uniswap.DefaultMarketConfig,
+		uniswapv3.Name:     uniswapv3.DefaultMarketConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
@@ -153,8 +153,8 @@ var (
 			// 	Type: types.ConfigType,
 			// },
 			{
-				Name: uniswap.Name,
-				API:  uniswap.DefaultAPIConfig,
+				Name: uniswapv3.Name,
+				API:  uniswapv3.DefaultAPIConfig,
 				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//

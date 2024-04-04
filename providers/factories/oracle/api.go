@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/skip-mev/slinky/providers/apis/kraken"
-	"github.com/skip-mev/slinky/providers/apis/uniswap"
+	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
 
 	"go.uber.org/zap"
 
@@ -67,14 +67,14 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
 	case kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
-	case uniswap.Name:
-		var ethClient uniswap.EVMClient
-		ethClient, err = uniswap.NewGoEthereumClientImpl(cfg.API.URL)
+	case uniswapv3.Name:
+		var ethClient uniswapv3.EVMClient
+		ethClient, err = uniswapv3.NewGoEthereumClientImpl(cfg.API.URL)
 		if err != nil {
 			return nil, err
 		}
 
-		apiPriceFetcher, err = uniswap.NewUniswapPriceFetcher(logger, metrics, cfg.API, ethClient)
+		apiPriceFetcher, err = uniswapv3.NewUniswapV3PriceFetcher(logger, metrics, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {

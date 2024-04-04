@@ -1,4 +1,4 @@
-package uniswap
+package uniswapv3
 
 import (
 	"context"
@@ -7,6 +7,8 @@ import (
 )
 
 // EVMClient is an interface that abstracts the go-ethereum client.
+//
+//go:generate mockery --name EVMClient
 type EVMClient interface {
 	// BatchCallContext is a batch call to the ethereum network.
 	BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error
