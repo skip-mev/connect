@@ -8,6 +8,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/uniswapv3/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -147,7 +148,7 @@ func TestFetch(t *testing.T) {
 
 			for ticker, result := range tc.expected.Resolved {
 				require.Contains(t, response.Resolved, ticker)
-				verifyPrice(t, result.Value, response.Resolved[ticker].Value)
+				math.VerifyPrice(t, result.Value, response.Resolved[ticker].Value, acceptableDelta)
 			}
 
 			for ticker := range tc.expected.UnResolved {

@@ -2,7 +2,6 @@ package uniswapv3_test
 
 import (
 	"fmt"
-	"math/big"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/rpc"
@@ -39,24 +38,6 @@ var (
 		QuoteDecimals: 6,
 		Invert:        true,
 	}
-	eth_usdc_cfg = uniswapv3.PoolConfig{
-		Address:       "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640",
-		BaseDecimals:  18,
-		QuoteDecimals: 6,
-		Invert:        true,
-	}
-	mog_eth_cfg = uniswapv3.PoolConfig{
-		Address:       "0x7832310Cd0de39c4cE0A635F34d9a4B5b47fd434",
-		BaseDecimals:  18,
-		QuoteDecimals: 18,
-		Invert:        false,
-	}
-	btc_usdt_cfg = uniswapv3.PoolConfig{
-		Address:       "0x9Db9e0e53058C89e5B94e29621a205198648425B",
-		BaseDecimals:  8,
-		QuoteDecimals: 6,
-		Invert:        false,
-	}
 
 	// Tickers used for testing
 	weth_usdc_ticker = mmtypes.Ticker{
@@ -66,30 +47,6 @@ var (
 		},
 		Decimals:      18,
 		Metadata_JSON: weth_usdc_cfg.ToJSON(),
-	}
-	eth_usdc_ticker = mmtypes.Ticker{
-		CurrencyPair: pkgtypes.CurrencyPair{
-			Base:  "ETH",
-			Quote: "USDC",
-		},
-		Decimals:      18,
-		Metadata_JSON: eth_usdc_cfg.ToJSON(),
-	}
-	mog_eth_ticker = mmtypes.Ticker{
-		CurrencyPair: pkgtypes.CurrencyPair{
-			Base:  "MOG",
-			Quote: "ETH",
-		},
-		Decimals:      18,
-		Metadata_JSON: mog_eth_cfg.ToJSON(),
-	}
-	btc_usdt_ticker = mmtypes.Ticker{
-		CurrencyPair: pkgtypes.CurrencyPair{
-			Base:  "BTC",
-			Quote: "USDT",
-		},
-		Decimals:      8,
-		Metadata_JSON: btc_usdt_cfg.ToJSON(),
 	}
 )
 
@@ -159,42 +116,4 @@ func createEVMClientWithResponse(
 	}
 
 	return c
-}
-
-// verifyPrice verifies that the expected price matches the actual price within an acceptable delta.
-func verifyPrice(t *testing.T, expected, actual *big.Int) {
-	t.Helper()
-
-	zero := big.NewInt(0)
-	if expected.Cmp(zero) == 0 {
-		require.Equal(t, zero, actual)
-		return
-	}
-
-	var diff *big.Float
-	if expected.Cmp(actual) > 0 {
-		diff = new(big.Float).Sub(new(big.Float).SetInt(expected), new(big.Float).SetInt(actual))
-	} else {
-		diff = new(big.Float).Sub(new(big.Float).SetInt(actual), new(big.Float).SetInt(expected))
-	}
-
-	scaledDiff := new(big.Float).Quo(diff, new(big.Float).SetInt(expected))
-	delta, _ := scaledDiff.Float64()
-	t.Logf("expected price: %s; actual price: %s; diff %s", expected.String(), actual.String(), diff.String())
-	t.Logf("acceptable delta: %.25f; actual delta: %.25f", acceptableDelta, delta)
-
-	switch {
-	case delta == 0:
-		// If the difference between the expected and actual price is 0, the prices match.
-		// No need for a delta comparison.
-		return
-	case delta <= acceptableDelta:
-		// If the difference between the expected and actual price is within the acceptable delta,
-		// the prices match.
-		return
-	default:
-		// If the difference between the expected and actual price is greater than the acceptable delta,
-		// the prices do not match.
-		require.Fail(t, "expected price does not match the actual price; delta is too large")
-	}
 }

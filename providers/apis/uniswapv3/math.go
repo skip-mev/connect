@@ -23,26 +23,16 @@ func ConvertSquareRootX96Price(
 		new(big.Int).Exp(big.NewInt(2), big.NewInt(96), nil),
 	)
 
-	// Divide the sqrtPriceX96 by the fixed-point precision to get the price.
+	// Divide the sqrtPriceX96 by the fixed-point precision.
 	sqrtPriceFloat := new(big.Float).Quo(sqrtPriceX96Float, x96Float)
 
-	// Square the price to get the final result. We multiply the prices here instead of converting
-	// to big.Int to retain precision.
+	// Square the price to get the final result.
 	return new(big.Float).Mul(sqrtPriceFloat, sqrtPriceFloat)
 }
 
-// ScalePrice scales the price to the respective token decimals. There are few different steps
-// that are taken to scale the price:
-//
-//  1. Scale the price based on the difference between the token decimals in the erc20 token contracts.
-//     If the difference is positive we are truncating the price, if the difference is negative we are
-//     adding zeros to the price.
-//  2. Adjust the price based on the difference between the desired precision and the base token decimals.
-//
-// This entire calculation is equvalent to the following:
-//
-// price = ((price / 10^(baseDecimals - quoteDecimals)) * 10^(tickerDecimals)) ^ -1
-// where the ^ -1 is only applied if the configuration specifies to invert the price.
+// ScalePrice scales the price to the desired ticker decimals. The price is first normalized to
+// the token decimals in the erc20 token contracts. The price is then scaled to the desired
+// ticker decimals. The price is inverted if the configuration specifies to do so.
 func ScalePrice(
 	ticker mmtypes.Ticker,
 	cfg PoolConfig,

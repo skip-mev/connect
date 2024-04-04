@@ -30,15 +30,15 @@ var _ types.PriceAPIFetcher = (*UniswapV3PriceFetcher)(nil)
 // To read more about how the price is calculated, see the Uniswap V3 documentation
 // https://blog.uniswap.org/uniswap-v3-math-primer.
 //
-// Additionally, we utilize the eth client's BatchCallContext to batch the calls to the
-// ethereum network as this is more performant than making individual calls or the multi call
-// contract: https://docs.chainstack.com/docs/http-batch-request-vs-multicall-contract#performance-comparison.
+// We utilize the eth client's BatchCallContext to batch the calls to the ethereum network as
+// this is more performant than making individual calls or the multi call contract:
+// https://docs.chainstack.com/docs/http-batch-request-vs-multicall-contract#performance-comparison.
 type UniswapV3PriceFetcher struct {
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 	api     config.APIConfig
 
-	// client is the go ethereum client. This is used to interact with the ethereum network.
+	// client is the EVM client implementation. This is used to interact with the ethereum network.
 	client EVMClient
 	// abi is the uniswap v3 pool abi. This is used to pack the slot0 call to the pool contract
 	// and parse the result.
@@ -107,6 +107,11 @@ func (u *UniswapV3PriceFetcher) Fetch(
 	ctx context.Context,
 	tickers []mmtypes.Ticker,
 ) types.PriceResponse {
+	start := time.Now()
+	defer func() {
+		u.metrics.ObserveProviderResponseLatency(Name, time.Since(start))
+	}()
+
 	var (
 		resolved   = make(types.ResolvedPrices)
 		unResolved = make(types.UnResolvedPrices)
@@ -128,7 +133,7 @@ func (u *UniswapV3PriceFetcher) Fetch(
 				tickers,
 				providertypes.NewErrorWithCode(
 					fmt.Errorf("failed to get pool: %w", err),
-					providertypes.ErrorUnknown,
+					providertypes.ErrorFailedToDecode,
 				),
 			)
 		}
@@ -140,7 +145,7 @@ func (u *UniswapV3PriceFetcher) Fetch(
 			Args: []interface{}{
 				map[string]interface{}{
 					"to":   common.HexToAddress(pool.Address),
-					"data": hexutil.Bytes(u.payload),
+					"data": hexutil.Bytes(u.payload), // slot0 call to the pool contract.
 				},
 				"latest", // latest signifies the latest block.
 			},
@@ -149,7 +154,7 @@ func (u *UniswapV3PriceFetcher) Fetch(
 		pools[i] = pool
 	}
 
-	// Batch call to the ethereum network.
+	// Batch call to the EVM.
 	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
 		u.logger.Error(
 			"failed to batch call to ethereum network for all tickers",
@@ -158,12 +163,11 @@ func (u *UniswapV3PriceFetcher) Fetch(
 
 		return types.NewPriceResponseWithErr(
 			tickers,
-			providertypes.NewErrorWithCode(err, providertypes.ErrorUnknown),
+			providertypes.NewErrorWithCode(err, providertypes.ErrorAPIGeneral),
 		)
 	}
 
 	// Parse the result from the batch call for each ticker.
-	fmt.Println("batchElems is ", batchElems)
 	for i, ticker := range tickers {
 		result := batchElems[i]
 		if result.Error != nil {
@@ -195,7 +199,7 @@ func (u *UniswapV3PriceFetcher) Fetch(
 			unResolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(
 					err,
-					providertypes.ErrorUnknown,
+					providertypes.ErrorFailedToParsePrice,
 				),
 			}
 
@@ -216,8 +220,7 @@ func (u *UniswapV3PriceFetcher) Fetch(
 }
 
 // GetPool returns the uniswap pool for the given ticker. This will unmarshal the metadata
-// and validate the pool config which contains all required information to query the pool.
-// The pool is then returned after querying the ethereum network.
+// and validate the pool config which contains all required information to query the EVM.
 func (u *UniswapV3PriceFetcher) GetPool(
 	ticker mmtypes.Ticker,
 ) (PoolConfig, error) {
@@ -237,8 +240,7 @@ func (u *UniswapV3PriceFetcher) GetPool(
 	return cfg, nil
 }
 
-// ParseSqrtPriceX96 parses the sqrtPriceX96 from the result of the batch call. The sqrtPriceX96
-// is the square root of the price of the pool. This is the raw, unscaled price.
+// ParseSqrtPriceX96 parses the sqrtPriceX96 from the result of the batch call.
 func (u *UniswapV3PriceFetcher) ParseSqrtPriceX96(
 	result interface{},
 ) (*big.Int, error) {
