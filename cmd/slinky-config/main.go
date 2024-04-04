@@ -18,6 +18,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/volatile"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -148,6 +149,11 @@ var (
 			{
 				Name: krakenapi.Name,
 				API:  krakenapi.DefaultAPIConfig,
+				Type: types.ConfigType,
+			},
+			{
+				Name: volatile.Name,
+				API:  volatile.DefaultAPIConfig,
 				Type: types.ConfigType,
 			},
 			// -----------------------------------------------------------	//
