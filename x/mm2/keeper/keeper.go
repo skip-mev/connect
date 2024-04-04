@@ -85,9 +85,9 @@ func (k *Keeper) GetAllMarkets(ctx sdk.Context) (map[string]types.Market, error)
 	return m, nil
 }
 
-// createMarket initializes a new Market.
+// CreateMarket initializes a new Market.
 // The Ticker.String corresponds to a market, and must be unique.
-func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
+func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
@@ -100,9 +100,9 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
-// updateMarket updates a Market.
+// UpdateMarket updates a Market.
 // The Ticker.String corresponds to a market, and exist unique.
-func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
+func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
@@ -125,9 +125,9 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	return k.params.Get(ctx)
 }
 
-// validateState is called after keeper modifications have been made to the market map to verify that
+// ValidateState is called after keeper modifications have been made to the market map to verify that
 // the aggregate of all updates has led to a valid state.
-func (k *Keeper) validateState(ctx sdk.Context, updates []types.Market) error {
+func (k *Keeper) ValidateState(ctx sdk.Context, updates []types.Market) error {
 	for _, market := range updates {
 		if err := k.IsMarketValid(ctx, market); err != nil {
 			return err
