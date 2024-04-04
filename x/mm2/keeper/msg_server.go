@@ -162,11 +162,14 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 		return nil, fmt.Errorf("remove addresses must be a subset of the current market authorities")
 	}
 
+	removeAddresses := make(map[string]struct{})
+	for _, remove := range msg.RemoveAddresses {
+		removeAddresses[remove] = struct{}{}
+	}
+
 	for i, address := range params.MarketAuthorities {
-		for _, remove := range msg.RemoveAddresses {
-			if remove == address {
-				params.MarketAuthorities = slices.Delete(params.MarketAuthorities, i, i+1)
-			}
+		if _, found := removeAddresses[address]; found {
+			params.MarketAuthorities = slices.Delete(params.MarketAuthorities, i, i+1)
 		}
 	}
 
