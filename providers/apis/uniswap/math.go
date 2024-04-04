@@ -8,7 +8,9 @@ import (
 )
 
 // ConvertSquareRootX96Price converts the slot 0 sqrtPriceX96 value to a price. Note that this
-// price is not scaled to the token decimals.
+// price is not scaled to the token decimals. This calculation is equivalent to:
+//
+// price = (sqrtPriceX96 / 2^96) ^ 2
 func ConvertSquareRootX96Price(
 	sqrtPriceX96 *big.Int,
 ) *big.Float {

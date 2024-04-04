@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -16,21 +17,22 @@ const Name = "uniswap_api"
 type PoolConfig struct {
 	// Address is the Uniswap V3 pool address.
 	Address string `json:"address"`
-
-	// BaseDecimals is the number of decimals for the base token. This should be derived from the token contract.
+	// BaseDecimals is the number of decimals for the base token. This should be derived from the
+	// token contract.
 	BaseDecimals int `json:"base_decimals"`
-
-	// QuoteDecimals is the number of decimals for the quote token. This should be derived from the token contract.
+	// QuoteDecimals is the number of decimals for the quote token. This should be derived from the
+	// token contract.
 	QuoteDecimals int `json:"quote_decimals"`
-
-	// Invert is utilized to invert the price of a pool's reserves.
+	// Invert is utilized to invert the price of a pool's reserves. This may be required for certain
+	// pools as the price is derived based on the sorted order of the ERC20 addresses of the tokens
+	// in the pool.
 	Invert bool `json:"invert"`
 }
 
 // ValidateBasic validates the pool configuration.
 func (pc *PoolConfig) ValidateBasic() error {
-	if pc.Address == "" {
-		return fmt.Errorf("pool address cannot be empty")
+	if !common.IsHexAddress(pc.Address) {
+		return fmt.Errorf("pool address is not a valid ethereum address")
 	}
 
 	if pc.BaseDecimals <= 0 {

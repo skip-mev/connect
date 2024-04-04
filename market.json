@@ -7,7 +7,7 @@
       },
       "decimals": 18,
       "min_provider_count": 1,
-      "metadata_JSON": "{\"base_decimals\":18,\"quote_decimals\":6,\"invert\":true,\"address\":\"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2\"}"
+      "metadata_JSON": "{\"base_decimals\":18,\"quote_decimals\":6,\"invert\":true,\"address\":\"0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8\"}"
     }
   },
   "paths": {
@@ -21,13 +21,6 @@
                 "Quote": "USDC"
               },
               "provider": "uniswap_api"
-            },
-            {
-              "currency_pair": {
-                "Base": "WETH",
-                "Quote": "USDC"
-              },
-              "provider": "index_price"
             }
           ]
         }

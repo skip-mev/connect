@@ -68,7 +68,13 @@ func APIQueryHandlerFactory(
 	case kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
 	case uniswap.Name:
-		apiPriceFetcher, err = uniswap.NewUniswapPriceFetcher(logger, metrics, cfg.API)
+		var ethClient uniswap.EVMClient
+		ethClient, err = uniswap.NewGoEthereumClientImpl(cfg.API.URL)
+		if err != nil {
+			return nil, err
+		}
+
+		apiPriceFetcher, err = uniswap.NewUniswapPriceFetcher(logger, metrics, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {

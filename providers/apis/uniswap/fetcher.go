@@ -7,8 +7,11 @@ import (
 	"math/big"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -16,7 +19,6 @@ import (
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 var _ types.PriceAPIFetcher = (*UniswapPriceFetcher)(nil)
@@ -38,11 +40,13 @@ type UniswapPriceFetcher struct {
 	api     config.APIConfig
 
 	// client is the go ethereum client. This is used to interact with the ethereum network.
-	client *ethclient.Client
-
+	client EVMClient
+	// abi is the uniswap v3 pool abi. This is used to pack the slot0 call to the pool contract
+	// and parse the result.
 	abi *abi.ABI
-	// input is the input that will be reused for each batch call.
-	input string
+	// payload is the packed slot0 call to the pool contract. Since the slot0 payload is the same
+	// for all pools, we can reuse this payload for all pools.
+	payload []byte
 }
 
 // NewUniswapPriceFetcher returns a new Uniswap price fetcher.
@@ -50,6 +54,7 @@ func NewUniswapPriceFetcher(
 	logger *zap.Logger,
 	metrics metrics.APIMetrics,
 	api config.APIConfig,
+	client EVMClient,
 ) (*UniswapPriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -71,20 +76,14 @@ func NewUniswapPriceFetcher(
 		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
-	// Dial the ethereum client.
-	client, err := ethclient.Dial(api.URL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to dial ethereum client: %w", err)
-	}
-
-	// Get the ABI for the Uniswap V3 pool contract and pack the input for the batch call.
 	abi, err := uniswappool.UniswapMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get uniswap abi: %w", err)
 	}
-	input, err := abi.Pack("slot0")
+
+	payload, err := abi.Pack("slot0")
 	if err != nil {
-		return nil, fmt.Errorf("failed to pack input: %w", err)
+		return nil, fmt.Errorf("failed to pack slot0: %w", err)
 	}
 
 	return &UniswapPriceFetcher{
@@ -93,7 +92,7 @@ func NewUniswapPriceFetcher(
 		api:     api,
 		client:  client,
 		abi:     abi,
-		input:   string(input),
+		payload: payload,
 	}, nil
 }
 
@@ -132,7 +131,7 @@ func (u *UniswapPriceFetcher) Fetch(
 	}
 
 	// Batch call to the ethereum network.
-	if err := u.client.Client().BatchCallContext(ctx, batchElems); err != nil {
+	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
 		u.logger.Error(
 			"failed to batch call to ethereum network for all tickers",
 			zap.Error(err),
@@ -218,15 +217,17 @@ func (u *UniswapPriceFetcher) getPool(
 func (u *UniswapPriceFetcher) createBatchElement(
 	pool PoolConfig,
 ) rpc.BatchElem {
+	var result string
 	return rpc.BatchElem{
 		Method: "eth_call",
 		Args: []interface{}{
 			map[string]interface{}{
-				"to":   pool.Address,
-				"data": u.input,
+				"to":   common.HexToAddress(pool.Address),
+				"data": hexutil.Bytes(u.payload),
 			},
+			"latest", // latest signifies the latest block.
 		},
-		Result: []interface{}{},
+		Result: &result,
 	}
 }
 
@@ -235,9 +236,19 @@ func (u *UniswapPriceFetcher) createBatchElement(
 func (u *UniswapPriceFetcher) parseSqrtPriceX96(
 	result interface{},
 ) (*big.Int, error) {
-	out, ok := result.([]interface{})
+	r, ok := result.(*string)
 	if !ok {
-		return nil, fmt.Errorf("failed to parse batch result")
+		return nil, fmt.Errorf("expected result to be a string, got %T", result)
+	}
+
+	bz, err := hexutil.Decode(*r)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode hex result: %w", err)
+	}
+
+	out, err := u.abi.Methods["slot0"].Outputs.UnpackValues(bz)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unpack values: %w", err)
 	}
 
 	// Parse the sqrtPriceX96 from the result.
