@@ -145,22 +145,28 @@ var (
 )
 
 func (s *KeeperTestSuite) TestGets() {
-	s.Run("get no tickers", func() {
+	s.Run("get empty market map", func() {
 		got, err := s.keeper.GetAllMarkets(s.ctx)
 		s.Require().NoError(err)
-		s.Require().Equal([]types.Market(nil), got)
+		s.Require().Equal(map[string]types.Market{}, got)
 	})
 
 	s.Run("setup initial markets", func() {
-		s.Require().NoError(s.keeper.CreateMarkets(s.ctx, markets))
+		for _, market := range markets {
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
+		}
 
 		s.Run("unable to set markets again", func() {
-			s.Require().ErrorIs(s.keeper.CreateMarkets(s.ctx, markets), types.NewMarketAlreadyExistsError(types.TickerString(btcusdt.Ticker.String())))
+			for _, market := range markets {
+				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
+			}
 		})
+
+		s.Require().NoError(s.keeper.ValidateState(s.ctx, markets))
 	})
 
 	s.Run("get all tickers", func() {
-		got, err := s.keeper.GetAllMarketsMap(s.ctx)
+		got, err := s.keeper.GetAllMarkets(s.ctx)
 		s.Require().NoError(err)
 
 		s.Require().Equal(len(markets), len(got))
@@ -201,12 +207,13 @@ func (s *KeeperTestSuite) TestInvalidCreate() {
 		},
 	}
 
-	s.Require().Error(s.keeper.CreateMarkets(s.ctx, []types.Market{invalidMarket}))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, invalidMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
 }
 
 func (s *KeeperTestSuite) TestInvalidUpdate() {
 	// create a valid market
-	s.Require().NoError(s.keeper.CreateMarkets(s.ctx, []types.Market{btcusdt}))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
 
 	// invalid market with a normalize pair not in state
 	invalidMarket := btcusdt
@@ -216,20 +223,23 @@ func (s *KeeperTestSuite) TestInvalidUpdate() {
 		NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
 	})
 
-	s.Require().Error(s.keeper.UpdateMarkets(s.ctx, []types.Market{invalidMarket}))
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, invalidMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
 }
 
 func (s *KeeperTestSuite) TestValidUpdate() {
 	// create a valid markets
-	s.Require().NoError(s.keeper.CreateMarkets(s.ctx, []types.Market{btcusdt, ethusdt}))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, ethusdt))
 
 	// valid market with a normalize pair that is in state
-	invalidMarket := btcusdt
-	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
+	validMarket := btcusdt
+	validMarket.ProviderConfigs = append(validMarket.ProviderConfigs, types.ProviderConfig{
 		Name:            "huobi",
 		OffChainTicker:  "btc-usdt",
 		NormalizeByPair: &ethusdt.Ticker.CurrencyPair,
 	})
 
-	s.Require().NoError(s.keeper.UpdateMarkets(s.ctx, []types.Market{invalidMarket}))
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
+	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
 }
