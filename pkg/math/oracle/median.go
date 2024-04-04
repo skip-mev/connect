@@ -180,7 +180,7 @@ func (m *MedianAggregator) CalculateAdjustedPrice(
 		return ScaleDownCurrencyPairPrice(target.Decimals, price)
 	}
 
-	normalizeByMarketPrice, err := m.GetIndexPrice(providerConfig)
+	normalizeByMarketPrice, err := m.GetIndexPrice(*providerConfig.NormalizeByPair)
 	if err != nil {
 		return nil, err
 	}

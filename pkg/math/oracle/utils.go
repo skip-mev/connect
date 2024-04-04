@@ -50,14 +50,10 @@ func (m *MedianAggregator) GetProviderPrice(
 
 // GetIndexPrice returns the aggregated index price.
 func (m *MedianAggregator) GetIndexPrice(
-	providerConfig mmtypes.ProviderConfig,
+	currencyPair slinkytypes.CurrencyPair,
 ) (*big.Int, error) {
-	if providerConfig.NormalizeByPair == nil {
-		return nil, fmt.Errorf("normalize by pair is nil")
-	}
-
 	cache := m.GetAggregatedData()
-	targetTicker, err := m.GetTickerFromCurrencyPair(*providerConfig.NormalizeByPair)
+	targetTicker, err := m.GetTickerFromCurrencyPair(currencyPair)
 	if err != nil {
 		return nil, err
 	}
