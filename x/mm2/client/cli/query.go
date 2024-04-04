@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-
 	"github.com/skip-mev/slinky/x/mm2/types"
 )
 

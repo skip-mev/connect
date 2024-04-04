@@ -50,14 +50,10 @@ func (m *MedianAggregator) GetProviderPrice(
 
 // GetIndexPrice returns the aggregated index price.
 func (m *MedianAggregator) GetIndexPrice(
-	providerConfig mmtypes.ProviderConfig,
+	currencyPair slinkytypes.CurrencyPair,
 ) (*big.Int, error) {
-	if providerConfig.NormalizeByPair == nil {
-		return nil, fmt.Errorf("normalize by pair is nil")
-	}
-
 	cache := m.GetAggregatedData()
-	targetTicker, err := m.GetTickerFromCurrencyPair(*providerConfig.NormalizeByPair)
+	targetTicker, err := m.GetTickerFromCurrencyPair(currencyPair)
 	if err != nil {
 		return nil, err
 	}
@@ -67,12 +63,7 @@ func (m *MedianAggregator) GetIndexPrice(
 		return nil, fmt.Errorf("missing index price for ticker: %s", targetTicker.String())
 	}
 
-	scaledPrice, err := ScaleUpCurrencyPairPrice(targetTicker.Decimals, price)
-	if err != nil {
-		return nil, err
-	}
-
-	return scaledPrice, nil
+	return ScaleUpCurrencyPairPrice(targetTicker.Decimals, price)
 }
 
 // UpdateMarketMap updates the market map for the oracle.

@@ -46,7 +46,7 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	for _, market := range msg.CreateMarkets {
 		err = ms.k.CreateMarket(ctx, market)
 		if err != nil {
-			return nil, fmt.Errorf("unable to create market: %w", err)
+			return nil, err
 		}
 
 		err = ms.k.hooks.AfterMarketCreated(ctx, market)
@@ -162,11 +162,14 @@ func (ms msgServer) RemoveMarketAuthorities(goCtx context.Context, msg *types.Ms
 		return nil, fmt.Errorf("remove addresses must be a subset of the current market authorities")
 	}
 
+	removeAddresses := make(map[string]struct{}, len(msg.RemoveAddresses))
+	for _, remove := range msg.RemoveAddresses {
+		removeAddresses[remove] = struct{}{}
+	}
+
 	for i, address := range params.MarketAuthorities {
-		for _, remove := range msg.RemoveAddresses {
-			if remove == address {
-				params.MarketAuthorities = slices.Delete(params.MarketAuthorities, i, i+1)
-			}
+		if _, found := removeAddresses[address]; found {
+			params.MarketAuthorities = slices.Delete(params.MarketAuthorities, i, i+1)
 		}
 	}
 
