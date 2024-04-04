@@ -10,6 +10,7 @@ import (
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
+	"go.uber.org/zap"
 )
 
 var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
@@ -20,6 +21,9 @@ var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
 type APIHandler struct {
 	// api is the api config for the dYdX market params API.
 	api config.APIConfig
+
+	// logger is the logger for the API handler.
+	logger *zap.Logger
 }
 
 // NewAPIHandler returns a new MarketMap MarketMapAPIDataHandler.
@@ -40,6 +44,7 @@ func NewAPIHandler(
 
 	return &APIHandler{
 		api: api,
+		logger: zap.NewNop(),
 	}, nil
 }
 
@@ -93,7 +98,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Convert the dydx market params to a market map.
-	marketResp, err := ConvertMarketParamsToMarketMap(params)
+	marketResp, err := ConvertMarketParamsToMarketMap(params, h.logger)
 	if err != nil {
 		return types.NewMarketMapResponseWithErr(
 			chains,

@@ -14,6 +14,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"go.uber.org/zap"
 )
 
 func TestConvertMarketParamsToMarketMap(t *testing.T) {
@@ -67,7 +68,7 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resp, err := dydx.ConvertMarketParamsToMarketMap(tc.params)
+			resp, err := dydx.ConvertMarketParamsToMarketMap(tc.params, zap.NewNop())
 			if tc.err {
 				require.Error(t, err)
 			} else {
@@ -422,17 +423,64 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 						ExchangeName: "InvalidExchange",
 						Ticker:       "BTC-USD",
 					},
+					{
+						ExchangeName: "CoinbasePro",
+						Ticker:       "BTC-USD",
+						AdjustByMarket: "USDT-USD",
+					},
 				},
 			},
-			expectedPaths:     mmtypes.Paths{},
-			expectedProviders: mmtypes.Providers{},
-			expectedErr:       true,
+			expectedPaths:     mmtypes.Paths{
+				Paths: []mmtypes.Path{
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:    coinbaseapi.Name,
+								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+								Invert:      false,
+							},
+							{
+								Provider:    mmtypes.IndexPrice,
+								CurrencyPair: constants.USDT_USD.CurrencyPair,
+								Invert:      false,
+							},
+						},
+					},
+					{
+						Operations: []mmtypes.Operation{
+							{
+								Provider:    coinbasews.Name,
+								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+								Invert:      false,
+							},
+							{
+								Provider:    mmtypes.IndexPrice,
+								CurrencyPair: constants.USDT_USD.CurrencyPair,
+								Invert:      false,
+							},
+						},
+					},
+				},
+			},
+			expectedProviders: mmtypes.Providers{
+				Providers: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbaseapi.Name,
+						OffChainTicker: "BTC-USD",
+					},
+					{
+						Name:           coinbasews.Name,
+						OffChainTicker: "BTC-USD",
+					},
+				},
+			},
+			expectedErr:       false,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			paths, providers, err := dydx.ConvertExchangeConfigJSON(tc.ticker, tc.config)
+			paths, providers, err := dydx.ConvertExchangeConfigJSON(tc.ticker, tc.config, zap.NewNop())
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
