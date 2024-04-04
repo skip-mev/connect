@@ -68,22 +68,9 @@ func (k *Keeper) GetMarket(ctx sdk.Context, tickerStr string) (types.Market, err
 	return k.markets.Get(ctx, types.TickerString(tickerStr))
 }
 
-// GetAllMarkets returns the set of Market objects currently stored in state.
-func (k *Keeper) GetAllMarkets(ctx sdk.Context) ([]types.Market, error) {
-	iter, err := k.markets.Iterate(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	markets, err := iter.Values()
-	if err != nil {
-		return nil, err
-	}
-	return markets, err
-}
-
-// GetAllMarketsMap returns the set of Market objects currently stored in state
+// GetAllMarkets returns the set of Market objects currently stored in state
 // as a map[TickerString] -> Markets.
-func (k *Keeper) GetAllMarketsMap(ctx sdk.Context) (map[string]types.Market, error) {
+func (k *Keeper) GetAllMarkets(ctx sdk.Context) (map[string]types.Market, error) {
 	iter, err := k.markets.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -101,9 +88,9 @@ func (k *Keeper) GetAllMarketsMap(ctx sdk.Context) (map[string]types.Market, err
 	return m, nil
 }
 
-// createMarket initializes a new Market.
+// CreateMarket initializes a new Market.
 // The Ticker.String corresponds to a market, and must be unique.
-func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
+func (k *Keeper) CreateMarket(ctx sdk.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
@@ -116,9 +103,9 @@ func (k *Keeper) createMarket(ctx sdk.Context, market types.Market) error {
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
-// updateMarket updates a Market.
+// UpdateMarket updates a Market.
 // The Ticker.String corresponds to a market, and exist unique.
-func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
+func (k *Keeper) UpdateMarket(ctx sdk.Context, market types.Market) error {
 	// Check if Ticker already exists for the provider
 	alreadyExists, err := k.markets.Has(ctx, types.TickerString(market.Ticker.String()))
 	if err != nil {
@@ -131,38 +118,6 @@ func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
 }
 
-// CreateMarkets sets the market data for a given set of markets and validates the state  It also
-// sets the LastUpdated field to the current block height.
-func (k *Keeper) CreateMarkets(ctx sdk.Context, markets []types.Market) error {
-	for _, market := range markets {
-		if err := k.createMarket(ctx, market); err != nil {
-			return err
-		}
-	}
-
-	if err := k.validateState(ctx, markets); err != nil {
-		return err
-	}
-
-	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
-}
-
-// UpdateMarkets updates the market data for a given set of markets and validates the state  It also
-// sets the LastUpdated field to the current block height.
-func (k *Keeper) UpdateMarkets(ctx sdk.Context, markets []types.Market) error {
-	for _, market := range markets {
-		if err := k.updateMarket(ctx, market); err != nil {
-			return err
-		}
-	}
-
-	if err := k.validateState(ctx, markets); err != nil {
-		return err
-	}
-
-	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
-}
-
 // SetParams sets the x/marketmap module's parameters.
 func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) error {
 	return k.params.Set(ctx, params)
@@ -173,9 +128,9 @@ func (k *Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	return k.params.Get(ctx)
 }
 
-// validateState is called after keeper modifications have been made to the market map to verify that
+// ValidateState is called after keeper modifications have been made to the market map to verify that
 // the aggregate of all updates has led to a valid state.
-func (k *Keeper) validateState(ctx sdk.Context, updates []types.Market) error {
+func (k *Keeper) ValidateState(ctx sdk.Context, updates []types.Market) error {
 	for _, market := range updates {
 		// check that all paths already exist in the keeper store:
 		for _, providerConfig := range market.ProviderConfigs {
