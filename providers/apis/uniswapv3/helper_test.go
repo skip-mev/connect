@@ -1,7 +1,6 @@
 package uniswapv3_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/rpc"
@@ -99,7 +98,6 @@ func createEVMClientWithResponse(
 		c.On("BatchCallContext", mock.Anything, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 			elems, ok := args.Get(1).([]rpc.BatchElem)
 			require.True(t, ok)
-			fmt.Println(elems)
 
 			require.True(t, ok)
 			require.Equal(t, len(elems), len(responses))
@@ -110,8 +108,6 @@ func createEVMClientWithResponse(
 				elem.Error = errs[i]
 				elems[i] = elem
 			}
-
-			fmt.Println(elems)
 		})
 	}
 

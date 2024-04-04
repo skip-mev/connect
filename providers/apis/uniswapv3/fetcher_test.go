@@ -212,7 +212,6 @@ func TestParseSqrtPriceX96(t *testing.T) {
 
 	t.Run("result is nil", func(t *testing.T) {
 		_, err := fetcher.ParseSqrtPriceX96(nil)
-		fmt.Println(err)
 		require.Error(t, err)
 	})
 
@@ -223,7 +222,6 @@ func TestParseSqrtPriceX96(t *testing.T) {
 
 	t.Run("result is a empty string pointer", func(t *testing.T) {
 		_, err := fetcher.ParseSqrtPriceX96(new(string))
-		fmt.Println(err)
 		require.Error(t, err)
 	})
 
