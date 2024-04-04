@@ -59,12 +59,28 @@ func NewAPIPriceFetcher(
 	market oracletypes.ProviderMarketMap,
 	config config.APIConfig,
 	logger *zap.Logger,
+	opts ...Option,
 ) (*APIPriceFetcher, error) {
+	// use a multi-client if multiple endpoints are provided
+	if len(config.Endpoints) > 0 {
+		if len(config.Endpoints) > 1 {
+			opts = append(opts, WithSolanaClient(
+				NewMultiJSONRPCClientFromEndpoints(
+					config.Endpoints,
+					logger.With(zap.String("raydium_multi_client", Name)),
+				),
+			))
+		} else {
+			config.URL = config.Endpoints[0].URL
+		}
+	}
+
 	return NewAPIPriceFetcherWithClient(
 		market,
 		config,
 		rpc.New(config.URL),
 		logger,
+		opts...,
 	)
 }
 
@@ -76,6 +92,7 @@ func NewAPIPriceFetcherWithClient(
 	config config.APIConfig,
 	client SolanaJSONRPCClient,
 	logger *zap.Logger,
+	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	if err := config.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
@@ -113,13 +130,19 @@ func NewAPIPriceFetcherWithClient(
 		metadataPerTicker[ticker.String()] = metadata
 	}
 
-	return &APIPriceFetcher{
+	pf := &APIPriceFetcher{
 		markets:           markets,
 		config:            config,
 		client:            client,
 		metaDataPerTicker: metadataPerTicker,
 		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
-	}, nil
+	}
+
+	for _, opt := range opts {
+		opt(pf)
+	}
+
+	return pf, nil
 }
 
 // FetchPrices fetches prices from the solana JSON-RPC API for the given currency-pairs. Specifically
