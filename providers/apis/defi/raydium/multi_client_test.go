@@ -7,13 +7,14 @@ import (
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
 )
 
-// TestMultiJSONRPCClient tests the MultiJSONRPCClient
+// TestMultiJSONRPCClient tests the MultiJSONRPCClient.
 func TestMultiJSONRPCClient(t *testing.T) {
 	client1 := mocks.NewSolanaJSONRPCClient(t)
 	client2 := mocks.NewSolanaJSONRPCClient(t)
@@ -22,7 +23,7 @@ func TestMultiJSONRPCClient(t *testing.T) {
 
 	// test adherence to the context
 	t.Run("test adherence to context", func(t *testing.T) {
-		accounts := []solana.PublicKey{solana.PublicKey{}}
+		accounts := []solana.PublicKey{{}}
 		opts := &rpc.GetMultipleAccountsOpts{}
 
 		ctx, cancel := context.WithCancel(context.Background())
@@ -40,10 +41,10 @@ func TestMultiJSONRPCClient(t *testing.T) {
 
 	// test correct aggregation of responses
 	t.Run("test correct aggregation of responses", func(t *testing.T) {
-		accounts := []solana.PublicKey{solana.PublicKey{}}
+		accounts := []solana.PublicKey{{}}
 		opts := &rpc.GetMultipleAccountsOpts{}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 		defer cancel()
 
 		// mocks
@@ -59,14 +60,14 @@ func TestMultiJSONRPCClient(t *testing.T) {
 				Context: rpc.Context{
 					Slot: 2,
 				},
-			},	
+			},
 		}, nil)
 		client3.On("GetMultipleAccountsWithOpts", ctx, accounts, opts).Return(&rpc.GetMultipleAccountsResult{
 			RPCContext: rpc.RPCContext{
 				Context: rpc.Context{
 					Slot: 3,
 				},
-			},	
+			},
 		}, nil)
 
 		resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)

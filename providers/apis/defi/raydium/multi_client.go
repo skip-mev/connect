@@ -1,17 +1,19 @@
 package raydium
 
 import (
-	"sync"
 	"context"
-	"go.uber.org/zap"
+	"fmt"
+	"sync"
+
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"fmt"
+	"go.uber.org/zap"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 )
 
 // MultiJSONRPCClient is an implementation of the SolanaJSONRPCClient interface that delegates
-// requests to multiple underlying clients, and aggregates over all provided responses
+// requests to multiple underlying clients, and aggregates over all provided responses.
 type MultiJSONRPCClient struct {
 	// underlying clients
 	clients []SolanaJSONRPCClient
@@ -27,7 +29,7 @@ func NewMultiJSONRPCClient(clients []SolanaJSONRPCClient, logger *zap.Logger) *M
 	}
 }
 
-// NewMultiJSONRPCClientFromEndpoints creates a new MultiJSONRPCClient from a list of endpoints
+// NewMultiJSONRPCClientFromEndpoints creates a new MultiJSONRPCClient from a list of endpoints.
 func NewMultiJSONRPCClientFromEndpoints(endpoints []oracleconfig.Endpoint, logger *zap.Logger) *MultiJSONRPCClient {
 	clients := make([]SolanaJSONRPCClient, len(endpoints))
 	for i := range endpoints {
@@ -62,8 +64,8 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 			responsesCh <- resp
 		}(c.clients[i])
 	}
-	
-	// close the channel once all responses are received, or the context is cancelled 
+
+	// close the channel once all responses are received, or the context is cancelled
 	go func() {
 		select {
 		case <-ctx.Done():
@@ -82,7 +84,7 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	return filterAccountsResponses(responses)
 }
 
-// filterAccountsResponses chooses the rpc response with the highest slot number
+// filterAccountsResponses chooses the rpc response with the highest slot number.
 func filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.GetMultipleAccountsResult, error) {
 	var (
 		maxSlot uint64
@@ -103,7 +105,7 @@ func filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.G
 	return maxResp, nil
 }
 
-// channelForWaitGroup returns a channel that is closed when a waitgroup is done
+// channelForWaitGroup returns a channel that is closed when a waitgroup is done.
 func channelForWaitGroup(wg *sync.WaitGroup) chan struct{} {
 	ch := make(chan struct{})
 	go func() {

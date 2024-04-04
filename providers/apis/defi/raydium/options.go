@@ -9,4 +9,3 @@ func WithSolanaClient(client SolanaJSONRPCClient) Option {
 		f.client = client
 	}
 }
-

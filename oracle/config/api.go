@@ -41,7 +41,7 @@ type APIConfig struct {
 }
 
 // Endpoint holds all data necessary for an API provider to connect to a given endpoint
-// i.e URL, headers, authentication, etc
+// i.e URL, headers, authentication, etc.
 type Endpoint struct {
 	// URL is the URL that is used to fetch data from the API.
 	URL string `json:"url"`
