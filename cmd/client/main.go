@@ -31,6 +31,7 @@ var (
 
 			// Set up a connection to the server.
 			url := fmt.Sprintf("%s:%s", host, port)
+			//nolint:staticcheck // https://linear.app/skip/issue/BLO-1076/migrate-from-grpcdial-to-creating-clients
 			conn, err := grpc.Dial(url, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("did not connect: %v", err)

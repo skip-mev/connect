@@ -25,7 +25,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	s.Require().NotNil(resp)
 
 	// query the market map
-	mm, err := s.keeper.GetAllMarketsMap(s.ctx)
+	mm, err := s.keeper.GetAllMarkets(s.ctx)
 	s.Require().NoError(err)
 	s.Require().Equal(types.MarketMap{Markets: mm}, types.MarketMap{
 		Markets: map[string]types.Market{
@@ -116,7 +116,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 	s.Require().NotNil(createResp)
 
 	// query the market map
-	mm, err := s.keeper.GetAllMarketsMap(s.ctx)
+	mm, err := s.keeper.GetAllMarkets(s.ctx)
 	s.Require().NoError(err)
 	s.Require().Equal(types.MarketMap{Markets: mm}, types.MarketMap{
 		Markets: map[string]types.Market{
