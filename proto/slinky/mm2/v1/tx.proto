@@ -1,0 +1,80 @@
+syntax = "proto3";
+package slinky.mm2.v1;
+
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "amino/amino.proto";
+import "slinky/mm2/v1/market.proto";
+import "slinky/mm2/v1/params.proto";
+
+option go_package = "github.com/skip-mev/slinky/x/mm2/types";
+
+// Msg is the message service for the x/marketmap module.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // CreateMarkets creates markets from the given message.
+  rpc CreateMarkets(MsgCreateMarkets) returns (MsgCreateMarketsResponse);
+
+  // UpdateMarkets updates markets from the given message.
+  rpc UpdateMarkets(MsgUpdateMarkets) returns (MsgUpdateMarketsResponse);
+
+  // Params defines a method for updating the x/marketmap module parameters.
+  rpc Params(MsgParams) returns (MsgParamsResponse);
+}
+
+// MsgCreateMarkets defines a message carrying a payload for creating markets in
+// the x/marketmap module.
+message MsgCreateMarkets {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "slinky/x/marketmap/MsgCreateMarkets";
+
+  option (gogoproto.equal) = false;
+
+  // Authority is the signer of this transaction.  This authority must be
+  // authorized by the module to execute the message.
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // CreateMarkets is the list of all markets to be created for the given
+  // transaction.
+  repeated Market create_markets = 2 [ (gogoproto.nullable) = false ];
+}
+
+// MsgUpdateMarketMapResponse is the response message for MsgUpdateMarketMap.
+message MsgCreateMarketsResponse {}
+
+// MsgUpdateMarkets defines a message carrying a payload for updating the
+// x/marketmap module.
+message MsgUpdateMarkets {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "slinky/x/marketmap/MsgUpdateMarkets";
+
+  option (gogoproto.equal) = false;
+
+  // Authority is the signer of this transaction.  This authority must be
+  // authorized by the module to execute the message.
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // UpdateMarkets is the list of all markets to be updated for the given
+  // transaction.
+  repeated Market update_markets = 2 [ (gogoproto.nullable) = false ];
+}
+
+// MsgUpdateMarketsResponse is the response message for MsgUpdateMarkets.
+message MsgUpdateMarketsResponse {}
+
+// MsgParams defines the Msg/Params request type. It contains the
+// new parameters for the x/marketmap module.
+message MsgParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // Params defines the new parameters for the x/marketmap module.
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  // Authority defines the authority that is updating the x/marketmap module
+  // parameters.
+  string authority = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgParamsResponse defines the Msg/Params response type.
+message MsgParamsResponse {}
