@@ -33,6 +33,68 @@ const (
 	SOLVaultAddress  = "8BnEgHoWFysVcuFFX7QztDmzuH8r5ZFvyP3sYwn1XTh1"
 )
 
+func TestTickerMetadataValidateBasic(t *testing.T) {
+	tcs := []struct{
+		name string
+		raydium.TickerMetadata
+		expFail bool
+	}{
+		{
+			name: "invalid base token vault address",
+			TickerMetadata: raydium.TickerMetadata{
+				BaseTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: "",
+					TokenDecimals: 6,
+				},
+				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals: 6,
+				},
+			},
+			expFail: true,
+		},
+		{
+			name: "invalid quote token vault address",
+			TickerMetadata: raydium.TickerMetadata{
+				BaseTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals: 6,
+				},
+				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: "",
+					TokenDecimals: 6,
+				},
+			},
+			expFail: true,
+		},
+		{
+			name: "valid",
+			TickerMetadata: raydium.TickerMetadata{
+				BaseTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals: 6,
+				},
+				QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+					TokenVaultAddress: USDCVaultAddress,
+					TokenDecimals: 6,
+				},
+			},
+			expFail: false,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.TickerMetadata.ValidateBasic()
+			if tc.expFail {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 // Test Provider init.
 func TestProviderInit(t *testing.T) {
 	t.Run("config fails validate basic", func(t *testing.T) {
@@ -83,6 +145,8 @@ func TestProviderInit(t *testing.T) {
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
+			URL: 			"https://api.raydium.io",
+			Name: 		   raydium.Name + "a",
 		}
 		market := oracletypes.ProviderMarketMap{
 			Name: raydium.Name + "a",
@@ -93,7 +157,7 @@ func TestProviderInit(t *testing.T) {
 			cfg,
 			zap.NewNop(),
 		)
-		require.Error(t, err, fmt.Sprintf("config.Name is not %s", raydium.Name))
+		require.Equal(t, err.Error(), fmt.Sprintf("configured name is incorrect; expected: %s, got: %s", raydium.Name, raydium.Name+"a"))
 
 		cfg = oracleconfig.APIConfig{
 			Enabled:          true,
@@ -101,10 +165,11 @@ func TestProviderInit(t *testing.T) {
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			Name:             raydium.Name + "a",
+			URL: 			"https://api.raydium.io",
+			Name: 		   raydium.Name,
 		}
 		market = oracletypes.ProviderMarketMap{
-			Name: raydium.Name,
+			Name: raydium.Name + "a",
 		}
 
 		_, err = raydium.NewAPIPriceFetcher(
@@ -112,7 +177,7 @@ func TestProviderInit(t *testing.T) {
 			cfg,
 			zap.NewNop(),
 		)
-		require.Error(t, err, fmt.Sprintf("market.Name is not %s", raydium.Name))
+		require.Equal(t, err.Error(), fmt.Sprintf("market config name is incorrect; expected: %s, got: %s", raydium.Name, raydium.Name+"a"))
 	})
 
 	t.Run("api not enabled", func(t *testing.T) {
@@ -153,7 +218,9 @@ func TestProviderInit(t *testing.T) {
 					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
 					Decimals:         8,
 					MinProviderCount: 1,
-					Metadata_JSON:    "{}",
+					Metadata_JSON:    `{
+						"base_token_vault": ["base_token_vault_address"]
+					}`,
 				}: {
 					OffChainTicker: "BTC/USDC",
 					Name:           raydium.Name,
@@ -164,7 +231,9 @@ func TestProviderInit(t *testing.T) {
 					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
 					Decimals:         8,
 					MinProviderCount: 1,
-					Metadata_JSON:    "{}",
+					Metadata_JSON:    `{
+						"base_token_vault": ["base_token_vault_address"]
+					}`,
 				},
 			},
 		}
@@ -175,7 +244,57 @@ func TestProviderInit(t *testing.T) {
 			zap.NewNop(),
 		)
 		t.Log(err)
-		require.True(t, strings.Contains(err.Error(), "metadata for ticker BTC/USDC is invalid"))
+		require.True(t, strings.Contains(err.Error(), fmt.Sprintf("error unmarshalling metadata for ticker %s", slinkytypes.NewCurrencyPair("BTC", "USDC"))))
+	})
+
+	t.Run("invalid metadata json in config", func(t *testing.T) {
+		cfg := oracleconfig.APIConfig{
+			Enabled:          true,
+			MaxQueries:       2,
+			Interval:         1 * time.Second,
+			Timeout:          2 * time.Second,
+			ReconnectTimeout: 2 * time.Second,
+			Name:             raydium.Name,
+			URL:              "https://raydium.io",
+		}
+
+		bz, err := json.Marshal(raydium.TickerMetadata{
+			BaseTokenVault: raydium.AMMTokenVaultMetadata{
+				TokenVaultAddress: "abc",
+			},
+		})
+		require.NoError(t, err)
+
+		market := oracletypes.ProviderMarketMap{
+			Name: raydium.Name,
+			TickerConfigs: oracletypes.TickerToProviderConfig{
+				mmtypes.Ticker{
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+					Decimals:         8,
+					MinProviderCount: 1,
+					Metadata_JSON:    string(bz),
+				}: {
+					OffChainTicker: "BTC/USDC",
+					Name:           raydium.Name,
+				},
+			},
+			OffChainMap: map[string]mmtypes.Ticker{
+				"BTC/USDC": {
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
+					Decimals:         8,
+					MinProviderCount: 1,
+					Metadata_JSON:    string(bz),
+				},
+			},
+		}
+
+		_, err = raydium.NewAPIPriceFetcher(
+			market,
+			cfg,
+			zap.NewNop(),
+		)
+		t.Log(err)
+		require.True(t, strings.Contains(err.Error(), fmt.Sprintf("metadata for ticker %s is invalid", slinkytypes.NewCurrencyPair("BTC", "USDC"))))
 	})
 
 	t.Run("correctly unmarshals metadata json for ticker", func(t *testing.T) {
@@ -321,10 +440,56 @@ func TestProviderFetch(t *testing.T) {
 		}
 	})
 
+	t.Run("failing accounts query", func(t *testing.T) {
+		ctx := context.Background()
+		err := fmt.Errorf("error")
+	
+		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
+		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
+		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
+		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
+			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk,
+		}, &rpc.GetMultipleAccountsOpts{
+			Commitment: rpc.CommitmentFinalized,
+		}).Return(
+			&rpc.GetMultipleAccountsResult{}, err,
+		).Once()
+
+		resp := pf.Fetch(ctx, tickers[:2])
+		// expect a failed response
+		require.Equal(t, len(resp.Resolved), 0)
+		require.Equal(t, len(resp.UnResolved), 2)
+
+		for _, result := range resp.UnResolved {
+			require.True(t, strings.Contains(result.Error(), raydium.SolanaJSONRPCError(err).Error()))
+		}
+	})
+
+	t.Run("unexpected ticker in query", func(t *testing.T) {
+		ctx := context.Background()
+
+		resp := pf.Fetch(ctx, []mmtypes.Ticker{
+			{
+				CurrencyPair:     slinkytypes.NewCurrencyPair("MOG", "TIA"),
+			},
+		})
+		// expect a failed response
+		require.Equal(t, len(resp.Resolved), 0)
+		require.Equal(t, len(resp.UnResolved), 1)
+
+		for _, result := range resp.UnResolved {
+			t.Log(result.Error())
+			require.True(t, strings.Contains(result.Error(), raydium.NoRaydiumMetadataForTickerError("MOG/TIA").Error()))
+		}
+	})
+
 	t.Run("nil accounts are handled gracefully (skipped + added to unresolved)", func(t *testing.T) {
 		ctx := context.Background()
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+		mogVaultPk := solana.MustPublicKeyFromBase58(MOGVaultAddress)
+		solVaultPk := solana.MustPublicKeyFromBase58(SOLVaultAddress)
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
 		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
 
@@ -342,8 +507,15 @@ func TestProviderFetch(t *testing.T) {
 		}
 		usdtTokenVaultMetadata.MarshalWithEncoder(usdcEnc)
 
+		solVaultBz := new(bytes.Buffer)
+		solEnc := bin.NewBinEncoder(solVaultBz)
+		solTokenVaultMetadata := token.Account{
+			Amount: 1e9,
+		}
+		solTokenVaultMetadata.MarshalWithEncoder(solEnc)
+
 		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
-			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk,
+			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk, mogVaultPk, solVaultPk,  
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
 		}).Return(
@@ -361,19 +533,54 @@ func TestProviderFetch(t *testing.T) {
 					{
 						Data: rpc.DataBytesOrJSONFromBytes(usdtVaultBz.Bytes()),
 					},
+					{
+						Data: rpc.DataBytesOrJSONFromBytes(solVaultBz.Bytes()),
+					},
+					nil,
 				},
 			}, nil,
 		)
 
-		resp := pf.Fetch(ctx, tickers[:2])
-		t.Log(resp)
+		resp := pf.Fetch(ctx, tickers[:3])
+
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 1)
-		require.Equal(t, len(resp.UnResolved), 1)
+		require.Equal(t, len(resp.UnResolved), 2)
 
 		require.True(t, strings.Contains(resp.UnResolved[tickers[0]].Error(), "solana json-rpc error"))
 		result := resp.Resolved[tickers[1]]
 		require.Equal(t, result.Value.Uint64(), uint64(3e8))
+	})
+
+	t.Run("incorrectly encoded accounts are handled gracefully", func(t *testing.T) {
+		ctx := context.Background()
+		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
+		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
+
+		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
+			btcVaultPk, usdcVaultPk,  
+		}, &rpc.GetMultipleAccountsOpts{
+			Commitment: rpc.CommitmentFinalized,
+		}).Return(
+			&rpc.GetMultipleAccountsResult{
+				Value: []*rpc.Account{
+					{
+						Data: rpc.DataBytesOrJSONFromBytes([]byte{1,2,3}), // btc/usdc shld be unresolved
+					},
+					{
+						Data: nil,
+					},
+				},
+			}, nil,
+		)
+
+		resp := pf.Fetch(ctx, tickers[:1])
+
+		// expect a failed response
+		require.Equal(t, len(resp.Resolved), 0)
+		require.Equal(t, len(resp.UnResolved), 1)
+
+		require.True(t, strings.Contains(resp.UnResolved[tickers[0]].Error(), "solana json-rpc error"))
 	})
 }
 
