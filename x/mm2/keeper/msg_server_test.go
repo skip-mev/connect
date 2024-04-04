@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/skip-mev/chaintestutil/sample"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/mm2/keeper"
@@ -13,7 +14,7 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 
 	// create initial markets
 	msg := &types.MsgCreateMarkets{
-		Authority: s.authority.String(),
+		Authority: s.marketAuthorities[1],
 		CreateMarkets: []types.Market{
 			btcusdt,
 			usdtusd,
@@ -104,7 +105,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 
 	// create initial markets
 	createMsg := &types.MsgCreateMarkets{
-		Authority: s.authority.String(),
+		Authority: s.marketAuthorities[0],
 		CreateMarkets: []types.Market{
 			btcusdt,
 			usdtusd,
@@ -156,7 +157,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 		tickerUpdate.Ticker.Decimals = 1
 
 		msg := &types.MsgUpdateMarkets{
-			Authority: s.authority.String(),
+			Authority: s.marketAuthorities[2],
 			UpdateMarkets: []types.Market{
 				tickerUpdate,
 			},
@@ -235,7 +236,8 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
 			Params: types.Params{
-				MarketAuthorities: []string{types.DefaultMarketAuthority},
+				MarketAuthorities: []string{types.DefaultMarketAuthority, sample.Address(r)},
+				Admin:             sample.Address(r),
 			},
 		}
 		resp, err := msgServer.Params(s.ctx, msg)
@@ -245,5 +247,82 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		params, err := s.keeper.GetParams(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(msg.Params, params)
+	})
+}
+
+func (s *KeeperTestSuite) TestMsgServerRemoveMarketAuthorities() {
+	msgServer := keeper.NewMsgServer(s.keeper)
+
+	s.Run("unable to process nil request", func() {
+		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, nil)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("unable to process for invalid authority", func() {
+		msg := &types.MsgRemoveMarketAuthorities{
+			Admin: "invalid",
+		}
+		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+	})
+
+	s.Run("accepts a req that removes one authority", func() {
+		msg := &types.MsgRemoveMarketAuthorities{
+			Admin:           s.admin,
+			RemoveAddresses: []string{s.marketAuthorities[0]},
+		}
+		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// check new authorities
+		params, err := s.keeper.GetParams(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal(s.marketAuthorities[1:], params.MarketAuthorities)
+
+		// reset
+		s.Require().NoError(s.keeper.SetParams(s.ctx, types.Params{
+			MarketAuthorities: s.marketAuthorities,
+			Admin:             s.admin,
+		}))
+	})
+
+	s.Run("accepts a req that removes multiple authorities", func() {
+		msg := &types.MsgRemoveMarketAuthorities{
+			Admin:           s.admin,
+			RemoveAddresses: []string{s.marketAuthorities[0], s.marketAuthorities[2]},
+		}
+		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, msg)
+		s.Require().NoError(err)
+		s.Require().NotNil(resp)
+
+		// check new authorities
+		params, err := s.keeper.GetParams(s.ctx)
+		s.Require().NoError(err)
+		s.Require().Equal([]string{s.marketAuthorities[1]}, params.MarketAuthorities)
+
+		// reset
+		s.Require().NoError(s.keeper.SetParams(s.ctx, types.Params{
+			MarketAuthorities: s.marketAuthorities,
+			Admin:             s.admin,
+		}))
+	})
+
+	s.Run("unable to accept a req that removes more authorities than exist in state", func() {
+		msg := &types.MsgRemoveMarketAuthorities{
+			Admin:           s.admin,
+			RemoveAddresses: []string{sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r), sample.Address(r)},
+		}
+		resp, err := msgServer.RemoveMarketAuthorities(s.ctx, msg)
+		s.Require().Error(err)
+		s.Require().Nil(resp)
+
+		// reset
+		s.Require().NoError(s.keeper.SetParams(s.ctx, types.Params{
+			MarketAuthorities: s.marketAuthorities,
+			Admin:             s.admin,
+		}))
 	})
 }

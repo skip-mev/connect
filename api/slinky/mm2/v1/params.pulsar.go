@@ -61,12 +61,14 @@ func (x *_Params_1_list) IsValid() bool {
 var (
 	md_Params                    protoreflect.MessageDescriptor
 	fd_Params_market_authorities protoreflect.FieldDescriptor
+	fd_Params_admin              protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_slinky_mm2_v1_params_proto_init()
 	md_Params = File_slinky_mm2_v1_params_proto.Messages().ByName("Params")
 	fd_Params_market_authorities = md_Params.Fields().ByName("market_authorities")
+	fd_Params_admin = md_Params.Fields().ByName("admin")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -140,6 +142,12 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.Admin != "" {
+		value := protoreflect.ValueOfString(x.Admin)
+		if !f(fd_Params_admin, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -157,6 +165,8 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "slinky.mm2.v1.Params.market_authorities":
 		return len(x.MarketAuthorities) != 0
+	case "slinky.mm2.v1.Params.admin":
+		return x.Admin != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
@@ -175,6 +185,8 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "slinky.mm2.v1.Params.market_authorities":
 		x.MarketAuthorities = nil
+	case "slinky.mm2.v1.Params.admin":
+		x.Admin = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
@@ -197,6 +209,9 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 		}
 		listValue := &_Params_1_list{list: &x.MarketAuthorities}
 		return protoreflect.ValueOfList(listValue)
+	case "slinky.mm2.v1.Params.admin":
+		value := x.Admin
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
@@ -221,6 +236,8 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 		lv := value.List()
 		clv := lv.(*_Params_1_list)
 		x.MarketAuthorities = *clv.list
+	case "slinky.mm2.v1.Params.admin":
+		x.Admin = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
@@ -247,6 +264,8 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 		}
 		value := &_Params_1_list{list: &x.MarketAuthorities}
 		return protoreflect.ValueOfList(value)
+	case "slinky.mm2.v1.Params.admin":
+		panic(fmt.Errorf("field admin of message slinky.mm2.v1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
@@ -263,6 +282,8 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 	case "slinky.mm2.v1.Params.market_authorities":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Params_1_list{list: &list})
+	case "slinky.mm2.v1.Params.admin":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
@@ -338,6 +359,10 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		l = len(x.Admin)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -366,6 +391,13 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Admin) > 0 {
+			i -= len(x.Admin)
+			copy(dAtA[i:], x.Admin)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Admin)))
+			i--
+			dAtA[i] = 0x12
 		}
 		if len(x.MarketAuthorities) > 0 {
 			for iNdEx := len(x.MarketAuthorities) - 1; iNdEx >= 0; iNdEx-- {
@@ -457,6 +489,38 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				}
 				x.MarketAuthorities = append(x.MarketAuthorities, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Admin = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -514,6 +578,9 @@ type Params struct {
 	// MarketAuthorities is the list of authority accounts that are able to
 	// control updating the marketmap.
 	MarketAuthorities []string `protobuf:"bytes,1,rep,name=market_authorities,json=marketAuthorities,proto3" json:"market_authorities,omitempty"`
+	// Admin is an address that can remove addresses from the MarketAuthorities
+	// list. Only governance can add to the MarketAuthorities or change the Admin.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -543,26 +610,35 @@ func (x *Params) GetMarketAuthorities() []string {
 	return nil
 }
 
+func (x *Params) GetAdmin() string {
+	if x != nil {
+		return x.Admin
+	}
+	return ""
+}
+
 var File_slinky_mm2_v1_params_proto protoreflect.FileDescriptor
 
 var file_slinky_mm2_v1_params_proto_rawDesc = []byte{
 	0x0a, 0x1a, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x6d, 0x32, 0x2f, 0x76, 0x31, 0x2f,
 	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x73, 0x6c,
-	0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31, 0x22, 0x37, 0x0a, 0x06, 0x50,
+	0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31, 0x22, 0x4d, 0x0a, 0x06, 0x50,
 	0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x2d, 0x0a, 0x12, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x5f,
 	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
 	0x09, 0x52, 0x11, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
-	0x74, 0x69, 0x65, 0x73, 0x42, 0x9c, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69,
-	0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61,
-	0x6d, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x24, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x2f, 0x6d, 0x6d, 0x32, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x6d, 0x32, 0x76, 0x31, 0xa2,
-	0x02, 0x03, 0x53, 0x4d, 0x58, 0xaa, 0x02, 0x0d, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4d,
-	0x6d, 0x32, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d,
-	0x6d, 0x32, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d,
-	0x6d, 0x32, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x0f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x3a, 0x3a, 0x4d, 0x6d, 0x32, 0x3a,
-	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x69, 0x65, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x42, 0x9c, 0x01, 0x0a, 0x11, 0x63,
+	0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x6d, 0x32, 0x2e, 0x76, 0x31,
+	0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x24, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x6d, 0x32, 0x2f, 0x76, 0x31, 0x3b,
+	0x6d, 0x6d, 0x32, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x4d, 0x58, 0xaa, 0x02, 0x0d, 0x53, 0x6c,
+	0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4d, 0x6d, 0x32, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x53, 0x6c,
+	0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x6d, 0x32, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x53, 0x6c,
+	0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x6d, 0x32, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
+	0x3a, 0x3a, 0x4d, 0x6d, 0x32, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (

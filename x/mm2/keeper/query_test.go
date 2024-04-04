@@ -34,6 +34,7 @@ func (s *KeeperTestSuite) TestMarketMap() {
 		expectedMarketMap := types.MarketMap{
 			Markets: make(map[string]types.Market),
 		}
+
 		for _, market := range markets {
 			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
 			expectedMarketMap.Markets[market.Ticker.String()] = market
