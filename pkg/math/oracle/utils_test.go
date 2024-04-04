@@ -59,12 +59,7 @@ func TestGetProviderPrice(t *testing.T) {
 		_, err = m.GetProviderPrice(ticker, providerConfig)
 		require.Error(t, err)
 
-		providerConfig = mmtypes.ProviderConfig{
-			Name:            coinbase.Name,
-			NormalizeByPair: &constants.BITCOIN_USD.CurrencyPair,
-		}
-
-		_, err = m.GetIndexPrice(providerConfig)
+		_, err = m.GetIndexPrice(constants.BITCOIN_USD.CurrencyPair)
 		require.Error(t, err)
 	})
 
@@ -87,12 +82,7 @@ func TestGetProviderPrice(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
 
-		providerConfig = mmtypes.ProviderConfig{
-			Name:            coinbase.Name,
-			NormalizeByPair: &constants.BITCOIN_USD.CurrencyPair,
-		}
-
-		_, err = m.GetIndexPrice(providerConfig)
+		_, err = m.GetIndexPrice(constants.BITCOIN_USD.CurrencyPair)
 		require.Error(t, err)
 	})
 
@@ -117,12 +107,7 @@ func TestGetProviderPrice(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
 
-		// Attempt to retrieve the provider.
-		providerCfg := mmtypes.ProviderConfig{
-			Name:            coinbase.Name,
-			NormalizeByPair: &BTC_USD.CurrencyPair,
-		}
-		price, err = m.GetIndexPrice(providerCfg)
+		price, err = m.GetIndexPrice(BTC_USD.CurrencyPair)
 		require.NoError(t, err)
 		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
 	})
