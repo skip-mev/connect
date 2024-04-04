@@ -29,6 +29,7 @@ type APIHandler struct {
 // NewAPIHandler returns a new MarketMap MarketMapAPIDataHandler.
 func NewAPIHandler(
 	api config.APIConfig,
+	logger *zap.Logger,
 ) (types.MarketMapAPIDataHandler, error) {
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
@@ -44,7 +45,7 @@ func NewAPIHandler(
 
 	return &APIHandler{
 		api: api,
-		logger: zap.NewNop(),
+		logger: logger,
 	}, nil
 }
 
