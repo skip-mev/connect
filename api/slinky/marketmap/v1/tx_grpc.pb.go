@@ -21,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Msg_CreateMarkets_FullMethodName           = "/slinky.marketmap.v1.Msg/CreateMarkets"
 	Msg_UpdateMarkets_FullMethodName           = "/slinky.marketmap.v1.Msg/UpdateMarkets"
-	Msg_Params_FullMethodName                  = "/slinky.marketmap.v1.Msg/Params"
+	Msg_UpdateParams_FullMethodName            = "/slinky.marketmap.v1.Msg/UpdateParams"
 	Msg_RemoveMarketAuthorities_FullMethodName = "/slinky.marketmap.v1.Msg/RemoveMarketAuthorities"
 )
 
@@ -33,8 +33,9 @@ type MsgClient interface {
 	CreateMarkets(ctx context.Context, in *MsgCreateMarkets, opts ...grpc.CallOption) (*MsgCreateMarketsResponse, error)
 	// UpdateMarkets updates markets from the given message.
 	UpdateMarkets(ctx context.Context, in *MsgUpdateMarkets, opts ...grpc.CallOption) (*MsgUpdateMarketsResponse, error)
-	// Params defines a method for updating the x/marketmap module parameters.
-	Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error)
+	// UpdateParams defines a method for updating the x/marketmap module
+	// parameters.
+	UpdateParams(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error)
 	// RemoveMarketAuthorities defines a method for removing market authorities
 	// from the x/marketmap module. the signer must be the admin.
 	RemoveMarketAuthorities(ctx context.Context, in *MsgRemoveMarketAuthorities, opts ...grpc.CallOption) (*MsgRemoveMarketAuthoritiesResponse, error)
@@ -66,9 +67,9 @@ func (c *msgClient) UpdateMarkets(ctx context.Context, in *MsgUpdateMarkets, opt
 	return out, nil
 }
 
-func (c *msgClient) Params(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error) {
+func (c *msgClient) UpdateParams(ctx context.Context, in *MsgParams, opts ...grpc.CallOption) (*MsgParamsResponse, error) {
 	out := new(MsgParamsResponse)
-	err := c.cc.Invoke(ctx, Msg_Params_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Msg_UpdateParams_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +93,9 @@ type MsgServer interface {
 	CreateMarkets(context.Context, *MsgCreateMarkets) (*MsgCreateMarketsResponse, error)
 	// UpdateMarkets updates markets from the given message.
 	UpdateMarkets(context.Context, *MsgUpdateMarkets) (*MsgUpdateMarketsResponse, error)
-	// Params defines a method for updating the x/marketmap module parameters.
-	Params(context.Context, *MsgParams) (*MsgParamsResponse, error)
+	// UpdateParams defines a method for updating the x/marketmap module
+	// parameters.
+	UpdateParams(context.Context, *MsgParams) (*MsgParamsResponse, error)
 	// RemoveMarketAuthorities defines a method for removing market authorities
 	// from the x/marketmap module. the signer must be the admin.
 	RemoveMarketAuthorities(context.Context, *MsgRemoveMarketAuthorities) (*MsgRemoveMarketAuthoritiesResponse, error)
@@ -110,8 +112,8 @@ func (UnimplementedMsgServer) CreateMarkets(context.Context, *MsgCreateMarkets) 
 func (UnimplementedMsgServer) UpdateMarkets(context.Context, *MsgUpdateMarkets) (*MsgUpdateMarketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMarkets not implemented")
 }
-func (UnimplementedMsgServer) Params(context.Context, *MsgParams) (*MsgParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+func (UnimplementedMsgServer) UpdateParams(context.Context, *MsgParams) (*MsgParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
 }
 func (UnimplementedMsgServer) RemoveMarketAuthorities(context.Context, *MsgRemoveMarketAuthorities) (*MsgRemoveMarketAuthoritiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveMarketAuthorities not implemented")
@@ -165,20 +167,20 @@ func _Msg_UpdateMarkets_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).Params(ctx, in)
+		return srv.(MsgServer).UpdateParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_Params_FullMethodName,
+		FullMethod: Msg_UpdateParams_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Params(ctx, req.(*MsgParams))
+		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -217,8 +219,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_UpdateMarkets_Handler,
 		},
 		{
-			MethodName: "Params",
-			Handler:    _Msg_Params_Handler,
+			MethodName: "UpdateParams",
+			Handler:    _Msg_UpdateParams_Handler,
 		},
 		{
 			MethodName: "RemoveMarketAuthorities",
