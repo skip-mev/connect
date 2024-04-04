@@ -103,7 +103,7 @@ func (s *KeeperTestSuite) TestInitExportGenesisValid() {
 			s.keeper.InitGenesis(s.ctx, *gs)
 		})
 
-		gotMarkets, err := s.keeper.GetAllMarketsMap(s.ctx)
+		gotMarkets, err := s.keeper.GetAllMarkets(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(gs.MarketMap.Markets, gotMarkets)
 
