@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -23,7 +25,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 const (

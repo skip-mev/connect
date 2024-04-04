@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
-	"go.uber.org/zap"
 )
 
 var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
@@ -44,7 +45,7 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		api: api,
+		api:    api,
 		logger: logger,
 	}, nil
 }

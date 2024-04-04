@@ -5,6 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -14,7 +16,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"go.uber.org/zap"
 )
 
 func TestConvertMarketParamsToMarketMap(t *testing.T) {
@@ -424,39 +425,39 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 						Ticker:       "BTC-USD",
 					},
 					{
-						ExchangeName: "CoinbasePro",
-						Ticker:       "BTC-USD",
+						ExchangeName:   "CoinbasePro",
+						Ticker:         "BTC-USD",
 						AdjustByMarket: "USDT-USD",
 					},
 				},
 			},
-			expectedPaths:     mmtypes.Paths{
+			expectedPaths: mmtypes.Paths{
 				Paths: []mmtypes.Path{
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:    coinbaseapi.Name,
+								Provider:     coinbaseapi.Name,
 								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:      false,
+								Invert:       false,
 							},
 							{
-								Provider:    mmtypes.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								CurrencyPair: constants.USDT_USD.CurrencyPair,
-								Invert:      false,
+								Invert:       false,
 							},
 						},
 					},
 					{
 						Operations: []mmtypes.Operation{
 							{
-								Provider:    coinbasews.Name,
+								Provider:     coinbasews.Name,
 								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:      false,
+								Invert:       false,
 							},
 							{
-								Provider:    mmtypes.IndexPrice,
+								Provider:     mmtypes.IndexPrice,
 								CurrencyPair: constants.USDT_USD.CurrencyPair,
-								Invert:      false,
+								Invert:       false,
 							},
 						},
 					},
@@ -474,7 +475,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedErr:       false,
+			expectedErr: false,
 		},
 	}
 
