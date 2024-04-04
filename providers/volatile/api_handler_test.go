@@ -16,6 +16,7 @@ var (
 )
 
 func setupTest(t *testing.T) types.PriceAPIDataHandler {
+	t.Helper()
 	ttpc := make(map[mmtypes.Ticker]mmtypes.ProviderConfig)
 	ttpc[ticker1] = mmtypes.ProviderConfig{
 		Name:           volatile.Name,
