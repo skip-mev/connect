@@ -48,7 +48,7 @@ func APIQueryHandlerFactory(
 	}
 
 	var (
-		apiPriceFetcher types.APIPriceFetcher
+		apiPriceFetcher types.PriceAPIFetcher
 		apiDataHandler  types.PriceAPIDataHandler
 	)
 
