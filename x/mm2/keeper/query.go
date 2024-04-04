@@ -27,7 +27,7 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRe
 	// unwrap the context
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	markets, err := q.k.GetAllMarketsMap(ctx)
+	markets, err := q.k.GetAllMarkets(ctx)
 	if err != nil {
 		return nil, err
 	}
