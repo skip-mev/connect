@@ -101,13 +101,12 @@ func runOracle() error {
 		return fmt.Errorf("failed to read oracle config file: %w", err)
 	}
 
-	marketCfg, err := types.ReadMarketMapFromFile(marketCfgPath)
-	if err != nil {
-		return fmt.Errorf("failed to read market config file: %s", err.Error())
-	}
-
-	if err := marketCfg.ValidateBasic(); err != nil {
-		return fmt.Errorf("market config is invalid: %w", err)
+	var marketCfg mmtypes.MarketMap
+	if marketCfgPath != "" {
+		marketCfg, err = types.ReadMarketConfigFromFile(marketCfgPath)
+		if err != nil {
+			return fmt.Errorf("failed to read market config file: %w", err)
+		}
 	}
 
 	var logger *zap.Logger
