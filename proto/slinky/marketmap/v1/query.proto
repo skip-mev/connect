@@ -60,7 +60,7 @@ message MarketMapResponse {
 message MarketRequest {
   // CurrencyPair is the currency pair associated with the market being
   // requested.
-  slinky.types.v1.CurrencyPair currency_pair = 3
+  slinky.types.v1.CurrencyPair currency_pair = 1
       [ (gogoproto.nullable) = false ];
 }
 
