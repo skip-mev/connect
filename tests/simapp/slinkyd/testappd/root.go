@@ -135,6 +135,8 @@ func NewRootCmd() *cobra.Command {
 // return cmtcfg.DefaultConfig if no custom configuration is required for the application.
 func initCometBFTConfig() *cmtcfg.Config {
 	cfg := cmtcfg.DefaultConfig()
+	cfg.Instrumentation.Prometheus = true
+	cfg.Instrumentation.PrometheusListenAddr = "0.0.0.0:26660"
 
 	// these values put a higher strain on node memory
 	// cfg.P2P.MaxNumInboundPeers = 100
