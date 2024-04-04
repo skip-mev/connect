@@ -25,6 +25,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.5
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.4.12
+	github.com/gagliardetto/binary v0.7.7
 	github.com/gagliardetto/solana-go v1.9.3
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0
@@ -43,7 +44,7 @@ require (
 	github.com/vektra/mockery/v2 v2.42.1
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
-	golang.org/x/net v0.22.0
+	golang.org/x/net v0.23.0
 	golang.org/x/sync v0.6.0
 	golang.org/x/vuln v1.0.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20240304212257-790db918fca8
@@ -143,7 +144,6 @@ require (
 	github.com/firefart/nonamedreturns v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
-	github.com/gagliardetto/binary v0.7.7 // indirect
 	github.com/gagliardetto/treeout v0.1.4 // indirect
 	github.com/getsentry/sentry-go v0.27.0 // indirect
 	github.com/ghostiam/protogetter v0.3.5 // indirect
