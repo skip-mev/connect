@@ -17,7 +17,7 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	}
 
 	for _, market := range gs.MarketMap.Markets {
-		if err := k.createMarket(ctx, market); err != nil {
+		if err := k.CreateMarket(ctx, market); err != nil {
 			panic(err)
 		}
 	}
@@ -37,7 +37,7 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 
 // ExportGenesis retrieves the genesis from state.
 func (k *Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
-	markets, err := k.GetAllMarketsMap(ctx)
+	markets, err := k.GetAllMarkets(ctx)
 	if err != nil {
 		panic(err)
 	}
