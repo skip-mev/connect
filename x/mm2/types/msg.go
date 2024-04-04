@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -18,6 +19,10 @@ func (m *MsgCreateMarkets) ValidateBasic() error {
 		return err
 	}
 
+	if len(m.CreateMarkets) == 0 {
+		return fmt.Errorf("no markets to create")
+	}
+
 	for _, market := range m.CreateMarkets {
 		if err := market.ValidateBasic(); err != nil {
 			return err
@@ -33,6 +38,10 @@ func (m *MsgUpdateMarkets) ValidateBasic() error {
 	// validate signer address
 	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
 		return err
+	}
+
+	if len(m.UpdateMarkets) == 0 {
+		return fmt.Errorf("no markets to update")
 	}
 
 	for _, market := range m.UpdateMarkets {
