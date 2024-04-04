@@ -8043,7 +8043,7 @@
           ]
         },
         {
-          "operations": 0[
+          "operations": [
             {
               "currency_pair": {
                 "Base": "USDT",

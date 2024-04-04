@@ -54,6 +54,45 @@ func TestMin(t *testing.T) {
 	}
 }
 
+func TestAbs(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		val      int
+		expected int
+	}{
+		{
+			name:     "positive",
+			val:      1,
+			expected: 1,
+		},
+		{
+			name:     "negative",
+			val:      -1,
+			expected: 1,
+		},
+		{
+			name:     "zero",
+			val:      0,
+			expected: 0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := math.Abs(tc.val)
+			if got != tc.expected {
+				t.Errorf("expected %d, got %d", tc.expected, got)
+			}
+		})
+	}
+}
+
 func TestFloat64StringToBigInt(t *testing.T) {
 	testCases := []struct {
 		name     string

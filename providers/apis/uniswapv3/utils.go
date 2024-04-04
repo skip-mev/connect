@@ -7,8 +7,6 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 // Name is the name of the Uniswap V3 API.
@@ -67,13 +65,5 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              "https://eth.public-rpc.com/",
-	}
-
-	// DefaultMarketConfig is the default market configuration for Uniswap.
-	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.WETH_USDC: {
-			Name:           Name,
-			OffChainTicker: "WETH/USDC",
-		},
 	}
 )
