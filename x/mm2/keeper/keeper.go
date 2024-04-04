@@ -65,22 +65,9 @@ func (k *Keeper) GetMarket(ctx sdk.Context, tickerStr string) (types.Market, err
 	return k.markets.Get(ctx, types.TickerString(tickerStr))
 }
 
-// GetAllMarkets returns the set of Market objects currently stored in state.
-func (k *Keeper) GetAllMarkets(ctx sdk.Context) ([]types.Market, error) {
-	iter, err := k.markets.Iterate(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	markets, err := iter.Values()
-	if err != nil {
-		return nil, err
-	}
-	return markets, err
-}
-
-// GetAllMarketsMap returns the set of Market objects currently stored in state
+// GetAllMarkets returns the set of Market objects currently stored in state
 // as a map[TickerString] -> Markets.
-func (k *Keeper) GetAllMarketsMap(ctx sdk.Context) (map[string]types.Market, error) {
+func (k *Keeper) GetAllMarkets(ctx sdk.Context) (map[string]types.Market, error) {
 	iter, err := k.markets.Iterate(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -126,38 +113,6 @@ func (k *Keeper) updateMarket(ctx sdk.Context, market types.Market) error {
 	}
 	// Create the config
 	return k.markets.Set(ctx, types.TickerString(market.Ticker.String()), market)
-}
-
-// CreateMarkets sets the market data for a given set of markets and validates the state  It also
-// sets the LastUpdated field to the current block height.
-func (k *Keeper) CreateMarkets(ctx sdk.Context, markets []types.Market) error {
-	for _, market := range markets {
-		if err := k.createMarket(ctx, market); err != nil {
-			return err
-		}
-	}
-
-	if err := k.validateState(ctx, markets); err != nil {
-		return err
-	}
-
-	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
-}
-
-// UpdateMarkets updates the market data for a given set of markets and validates the state  It also
-// sets the LastUpdated field to the current block height.
-func (k *Keeper) UpdateMarkets(ctx sdk.Context, markets []types.Market) error {
-	for _, market := range markets {
-		if err := k.updateMarket(ctx, market); err != nil {
-			return err
-		}
-	}
-
-	if err := k.validateState(ctx, markets); err != nil {
-		return err
-	}
-
-	return k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
 // SetParams sets the x/marketmap module's parameters.
