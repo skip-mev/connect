@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	url = "https://api.raydium.io/v2/main/pairs"
+	url              = "https://api.raydium.io/v2/main/pairs"
 	solanaNodeEnvVar = "SOLANA_NODE"
 )
 
