@@ -24,11 +24,11 @@ const (
 	solanaNodeEnvVar = "SOLANA_NODE"
 )
 
-var node string
+var nodes []string
 
 func init() {
-	node = os.Getenv(solanaNodeEnvVar)
-	if node == "" {
+	nodes = strings.Split(os.Getenv(solanaNodeEnvVar), ",")
+	if len(nodes) == 0 {
 		panic("SOLANA_NODE environment variable not set")
 	}
 }
@@ -58,7 +58,6 @@ func main() {
 					Interval:         500 * time.Millisecond,
 					ReconnectTimeout: 5 * time.Second,
 					MaxQueries:       100,
-					URL:              node,
 					Name:             raydium.Name,
 					Atomic:           true,
 				},
@@ -72,6 +71,13 @@ func main() {
 			Enabled:                 true,
 			PrometheusServerAddress: "localhost:8081",
 		},
+	}
+
+	// update endpoints
+	for _, node := range nodes {
+		cfg.Providers[0].API.Endpoints = append(cfg.Providers[0].API.Endpoints, config.Endpoint{
+			URL: node,
+		})
 	}
 
 	// write the oracle config to oracle.json
@@ -131,7 +137,7 @@ func getTickerMetadata() ([]TickerMetadata, error) {
 		accounts = append(accounts, solana.MustPublicKeyFromBase58(amm))
 	}
 
-	client := rpc.New(node)
+	client := rpc.New(nodes[0])
 
 	// get amm infos
 	infos, err := client.GetMultipleAccounts(context.Background(), accounts...)
