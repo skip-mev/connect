@@ -41,13 +41,16 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	}
 
 	// create markets
-	for _, createMarket := range msg.CreateMarkets {
-		err = ms.k.CreateMarket(ctx, createMarket)
+	for _, market := range msg.CreateMarkets {
+		err = ms.k.CreateMarket(ctx, market)
 		if err != nil {
 			return nil, err
 		}
 
-		// TODO hooks
+		err = ms.k.hooks.AfterMarketCreated(ctx, market)
+		if err != nil {
+			return nil, fmt.Errorf("unable to run create market hook: %w", err)
+		}
 
 		// TODO events
 	}
@@ -83,10 +86,13 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 	for _, market := range msg.UpdateMarkets {
 		err = ms.k.UpdateMarket(ctx, market)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unable to update market: %w", err)
 		}
 
-		// TODO hooks
+		err = ms.k.hooks.AfterMarketUpdated(ctx, market)
+		if err != nil {
+			return nil, fmt.Errorf("unable to run update market hook: %w", err)
+		}
 
 		// TODO events
 	}

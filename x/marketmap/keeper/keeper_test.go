@@ -56,7 +56,7 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	params := types.NewParams(s.authority.String(), 10)
 	s.Require().NoError(k.SetParams(s.ctx, params))
 
-	s.oracleKeeper = oraclekeeper.NewKeeper(oracleSS, encCfg.Codec, k, s.authority)
+	s.oracleKeeper = oraclekeeper.NewKeeper(oracleSS, encCfg.Codec, nil, s.authority)
 	s.hooks = types.MultiMarketMapHooks{
 		s.oracleKeeper.Hooks(),
 	}

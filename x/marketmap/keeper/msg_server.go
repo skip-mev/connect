@@ -47,7 +47,7 @@ func (ms msgServer) UpdateMarketMap(goCtx context.Context, msg *types.MsgUpdateM
 			return nil, err
 		}
 
-		err = ms.k.hooks.AfterMarketCreated(ctx, market.Ticker)
+		err = ms.k.hooks.LegacyAfterMarketCreated(ctx, market.Ticker)
 		if err != nil {
 			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
 		}
