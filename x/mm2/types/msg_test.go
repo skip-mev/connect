@@ -35,6 +35,13 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			false,
 		},
 		{
+			"if there are no creates -  fail",
+			types.MsgCreateMarkets{
+				Authority: sample.Address(sample.Rand()),
+			},
+			false,
+		},
+		{
 			"invalid ticker (0 decimals) - fail",
 			types.MsgCreateMarkets{
 				Authority: sample.Address(sample.Rand()),
@@ -157,6 +164,13 @@ func TestValidateBasicMsgUpdateMarket(t *testing.T) {
 			"if the Authority is not an acc-address - fail",
 			types.MsgUpdateMarkets{
 				Authority: "invalid",
+			},
+			false,
+		},
+		{
+			"if there are no creates -  fail",
+			types.MsgUpdateMarkets{
+				Authority: sample.Address(sample.Rand()),
 			},
 			false,
 		},
