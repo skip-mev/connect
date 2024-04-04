@@ -67,12 +67,7 @@ func (m *MedianAggregator) GetIndexPrice(
 		return nil, fmt.Errorf("missing index price for ticker: %s", targetTicker.String())
 	}
 
-	scaledPrice, err := ScaleUpCurrencyPairPrice(targetTicker.Decimals, price)
-	if err != nil {
-		return nil, err
-	}
-
-	return scaledPrice, nil
+	return ScaleUpCurrencyPairPrice(targetTicker.Decimals, price)
 }
 
 // UpdateMarketMap updates the market map for the oracle.
