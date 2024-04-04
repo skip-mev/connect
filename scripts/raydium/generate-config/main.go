@@ -20,12 +20,18 @@ import (
 )
 
 const (
-	node = "https://solana-mainnet.rpc.extrnode.com/5feba049-2dff-4cd5-89a1-15f67018ad47"
+	url = "https://api.raydium.io/v2/main/pairs"
+	solanaNodeEnvVar = "SOLANA_NODE"
 )
 
-const (
-	url = "https://api.raydium.io/v2/main/pairs"
-)
+var node string
+
+func init() {
+	node = os.Getenv(solanaNodeEnvVar)
+	if node == "" {
+		panic("SOLANA_NODE environment variable not set")
+	}
+}
 
 type TickerMetadata struct {
 	cp             slinkytypes.CurrencyPair
