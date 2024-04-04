@@ -55,7 +55,6 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 			}
 
 			// Write the market map to the configured path.
-			o.logger.Info("writing updated market map", zap.String("file", o.writeTo))
 			if err := o.WriteMarketMap(); err != nil {
 				o.logger.Error("failed to write market map", zap.Error(err))
 			}
