@@ -107,7 +107,7 @@ func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.
 	}
 
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger.With(zap.String("api_data_handler", cfg.Name)),
+		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
 		config:  cfg,
 		metrics: metrics,
 		fetcher: fetcher,
