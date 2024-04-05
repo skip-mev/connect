@@ -78,11 +78,7 @@ func TestAbs(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
 			got := math.Abs(tc.val)
 			if got != tc.expected {
 				t.Errorf("expected %d, got %d", tc.expected, got)
