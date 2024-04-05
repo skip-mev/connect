@@ -198,15 +198,18 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 			},
 		},
 		Paths: map[string]mmtypes.Paths{
-			ticker.String(): {Paths: []mmtypes.Path{
-				{Operations: []mmtypes.Operation{
-					{
-						CurrencyPair: ticker.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					},
-				}}},
-			}},
+			ticker.String(): {
+				Paths: []mmtypes.Path{
+					{Operations: []mmtypes.Operation{
+						{
+							CurrencyPair: ticker.CurrencyPair,
+							Invert:       false,
+							Provider:     static.Name,
+						},
+					}},
+				},
+			},
+		},
 	}
 
 	oracle := GetOracleSideCar(node)
