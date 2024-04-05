@@ -1,6 +1,8 @@
 package keeper_test
 
 import (
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/marketmap/types"
@@ -142,7 +144,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
 			Params: types.NewParams(
-				types.DefaultMarketAuthority,
+				authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				0,
 			),
 		}
@@ -164,7 +166,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
 			Params: types.NewParams(
-				types.DefaultMarketAuthority,
+				authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 				11,
 			),
 		}
