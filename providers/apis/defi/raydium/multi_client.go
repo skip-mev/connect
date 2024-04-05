@@ -67,12 +67,8 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 
 	// close the channel once all responses are received, or the context is cancelled
 	go func() {
-		select {
-		case <-ctx.Done():
-			c.logger.Error("context cancelled")
-		case <-channelForWaitGroup(&wg):
-		}
-		close(responsesCh)
+		defer close(responsesCh)
+		wg.Wait()
 	}()
 
 	responses := make([]*rpc.GetMultipleAccountsResult, 0, len(c.clients))
@@ -103,14 +99,4 @@ func filterAccountsResponses(responses []*rpc.GetMultipleAccountsResult) (*rpc.G
 	}
 
 	return maxResp, nil
-}
-
-// channelForWaitGroup returns a channel that is closed when a waitgroup is done.
-func channelForWaitGroup(wg *sync.WaitGroup) chan struct{} {
-	ch := make(chan struct{})
-	go func() {
-		wg.Wait()
-		close(ch)
-	}()
-	return ch
 }

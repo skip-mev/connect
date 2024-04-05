@@ -306,7 +306,7 @@ func TestProviderInit(t *testing.T) {
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
 			Name:             raydium.Name,
-			Endpoints: 	  []oracleconfig.Endpoint{
+			Endpoints: []oracleconfig.Endpoint{
 				{
 					URL: "https://raydium.io",
 				},
