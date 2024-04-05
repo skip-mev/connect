@@ -27,7 +27,6 @@ func ProviderTickersFromMarketMap(
 	// Iterate through every single market and its provider configurations to find the
 	// provider configurations that match the provider name.
 	for _, market := range marketMap.Markets {
-		ticker := market.Ticker
 		for _, cfg := range market.ProviderConfigs {
 			if cfg.Name != name {
 				continue
@@ -38,7 +37,6 @@ func ProviderTickersFromMarketMap(
 
 			providerTicker := NewProviderTicker(
 				cfg.Name,
-				ticker.String(),
 				cfg.OffChainTicker,
 				cfg.Metadata_JSON,
 				DefaultTickerDecimals,
@@ -74,20 +72,19 @@ func (spt *SimpleProviderTicker) ValidateBasic() error {
 // utilized by providers to configure the tickers they will be providing data for.
 type TickersToProviderTickers map[mmtypes.Ticker]SimpleProviderTicker
 
-// MustToProviderTickers converts the map of tickers to provider tickers to a list of provider tickers.
+// MustToProviderTickers converts the map to a list of provider tickers.
 func (tpt *TickersToProviderTickers) MustToProviderTickers() []ProviderTicker {
 	var providerTickers []ProviderTicker
 
-	for ticker, simpleProviderTicker := range *tpt {
+	for _, simpleProviderTicker := range *tpt {
 		if err := simpleProviderTicker.ValidateBasic(); err != nil {
 			panic(err)
 		}
 
 		providerTicker := NewProviderTicker(
 			simpleProviderTicker.Name,
-			ticker.String(),
-			simpleProviderTicker.JSON,
 			simpleProviderTicker.OffChainTicker,
+			simpleProviderTicker.JSON,
 			DefaultTickerDecimals,
 		)
 		providerTickers = append(providerTickers, providerTicker)

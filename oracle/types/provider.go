@@ -8,15 +8,13 @@ import (
 // is scaled to before being sent for aggregation.
 const DefaultTickerDecimals = 18
 
-// ProviderTicker is the interface for the ticker that provider's utilize/return.
 type (
+	// ProviderTicker is the interface for the ticker that provider's utilize/return.
 	ProviderTicker interface {
 		fmt.Stringer
 
 		// Provider returns the provider for the ticker.
 		Provider() string
-		// OnChainTicker returns the on-chain representation for the ticker.
-		OnChainTicker() string
 		// OffChainTicker returns the off-chain representation for the ticker.
 		OffChainTicker() string
 		// Decimals returns the number of decimals for the ticker.
@@ -26,9 +24,10 @@ type (
 	}
 
 	// DefaultProviderTicker is a basic implementation of the ProviderTicker interface.
+	// Provider's that utilize this implementation should be able to easily configure
+	// custom json data for their tickers.
 	DefaultProviderTicker struct {
 		provider string
-		onChain  string
 		offChain string
 		decimals uint64
 		json     string
@@ -42,15 +41,11 @@ type (
 
 // NewProviderTicker returns a new provider ticker.
 func NewProviderTicker(
-	provider,
-	onChain,
-	offChain,
-	json string,
+	provider, offChain, json string,
 	decimals uint64,
 ) ProviderTicker {
 	return DefaultProviderTicker{
 		provider: provider,
-		onChain:  onChain,
 		offChain: offChain,
 		json:     json,
 		decimals: decimals,
@@ -60,11 +55,6 @@ func NewProviderTicker(
 // Provider returns the provider for the ticker.
 func (t DefaultProviderTicker) Provider() string {
 	return t.provider
-}
-
-// OnChainTicker returns the on-chain representation for the ticker.
-func (t DefaultProviderTicker) OnChainTicker() string {
-	return t.onChain
 }
 
 // OffChainTicker returns the off-chain representation for the ticker.
@@ -85,11 +75,11 @@ func (t DefaultProviderTicker) JSON() string {
 // String returns the string representation of the provider ticker.
 func (t DefaultProviderTicker) String() string {
 	return fmt.Sprintf(
-		"provider: %s, on-chain-ticker: %s, off-chain-ticker: %s, decimals: %d",
+		"provider: %s, off-chain-ticker: %s, decimals: %d, json: %s",
 		t.provider,
-		t.onChain,
 		t.offChain,
 		t.decimals,
+		t.json,
 	)
 }
 
