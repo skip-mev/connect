@@ -327,7 +327,7 @@ func init() {
 		"solana-node-endpoint",
 		"",
 		nil,
-		"The HTTP endpoints of the solana node endpoint the raydium provider will be configured to use, notice, if multiple are given they must be comma delimited",
+		"The HTTP endpoints of the solana node endpoint the raydium provider will be configured to use. If multiple are given they must be comma delimited",
 	)
 }
 
