@@ -95,9 +95,9 @@ func NewNopAPIMetrics() APIMetrics {
 	return &noOpAPIMetricsImpl{}
 }
 
-func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode)         {}
-func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)             {}
-func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration) {}
+func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode) {}
+func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)                      {}
+func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration)          {}
 
 // AddProviderResponse increments the number of requests by provider and status.
 func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err providertypes.ErrorCode) {
