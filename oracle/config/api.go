@@ -62,7 +62,7 @@ func (c *APIConfig) ValidateBasic() error {
 	}
 
 	if len(c.URL) == 0 && len(c.Endpoints) == 0 {
-		return fmt.Errorf("provider url cannot be empty")
+		return fmt.Errorf("provider url and endpoints cannot be empty")
 	}
 
 	if len(c.Name) == 0 {

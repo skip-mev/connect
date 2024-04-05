@@ -75,7 +75,7 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 		close(responsesCh)
 	}()
 
-	responses := make([]*rpc.GetMultipleAccountsResult, 0)
+	responses := make([]*rpc.GetMultipleAccountsResult, 0, len(c.clients))
 	for resp := range responsesCh {
 		responses = append(responses, resp)
 	}
