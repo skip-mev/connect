@@ -172,7 +172,7 @@ func TestGetPool(t *testing.T) {
 			Address: "0x1234",
 		}
 		ticker := mmtypes.Ticker{
-			Metadata_JSON: expected.ToJSON(),
+			Metadata_JSON: expected.MustToJSON(),
 		}
 		_, err := fetcher.GetPool(ticker)
 		require.Error(t, err)
@@ -194,7 +194,7 @@ func TestGetPool(t *testing.T) {
 			Invert:        true,
 		}
 		ticker := mmtypes.Ticker{
-			Metadata_JSON: expected.ToJSON(),
+			Metadata_JSON: expected.MustToJSON(),
 		}
 		pool, err := fetcher.GetPool(ticker)
 		require.NoError(t, err)

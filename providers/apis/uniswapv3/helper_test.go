@@ -45,7 +45,7 @@ var (
 			Quote: "USDC",
 		},
 		Decimals:      18,
-		Metadata_JSON: weth_usdc_cfg.ToJSON(),
+		Metadata_JSON: weth_usdc_cfg.MustToJSON(),
 	}
 )
 

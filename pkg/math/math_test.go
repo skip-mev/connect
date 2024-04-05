@@ -55,8 +55,6 @@ func TestMin(t *testing.T) {
 }
 
 func TestAbs(t *testing.T) {
-	t.Parallel()
-
 	testCases := []struct {
 		name     string
 		val      int

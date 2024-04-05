@@ -2,6 +2,8 @@ package math
 
 import (
 	"math/big"
+
+	"golang.org/x/exp/constraints"
 )
 
 // Min returns the minimum of two values.
@@ -20,7 +22,7 @@ func Min[V int | int64 | uint64 | int32 | uint32](vals ...V) V {
 }
 
 // Abs returns the absolute value of a given number.
-func Abs[V int | int32 | int64](val V) V {
+func Abs[V constraints.Signed](val V) V {
 	if val < 0 {
 		return -val
 	}
