@@ -2,7 +2,6 @@ package geckoterminal_test
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 	"testing"
 	"time"
@@ -11,54 +10,52 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var popcat = mmtypes.NewTicker("POPCAT", "USD", 8, 1)
+var (
+	mog_usd  = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.MOG_USD)
+	pepe_usd = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.PEPE_USD)
+)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		url         string
 		expectedErr bool
 	}{
 		{
+			name:        "empty",
+			cps:         []types.ProviderTicker{},
+			url:         "",
+			expectedErr: true,
+		},
+		{
 			name: "valid",
-			cps: []mmtypes.Ticker{
-				constants.MOG_USD,
+			cps: []types.ProviderTicker{
+				mog_usd,
 			},
 			url:         "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",
 			expectedErr: false,
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
+			cps: []types.ProviderTicker{
+				mog_usd,
+				pepe_usd,
 			},
 			url:         "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/0xaaee1a9723aadb7afa2810263653a34ba2c21c7a,0x6982508145454Ce325dDbE47a25d4ec3d2311933",
-			expectedErr: true,
-		},
-		{
-			name: "unknown currency",
-			cps: []mmtypes.Ticker{
-				popcat,
-			},
-			url:         "",
-			expectedErr: true,
+			expectedErr: false,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(geckoterminal.Name, geckoterminal.DefaultETHMarketConfig)
-			require.NoError(t, err)
-
-			h, err := geckoterminal.NewAPIHandler(marketConfig, geckoterminal.DefaultETHAPIConfig)
+			h, err := geckoterminal.NewAPIHandler(geckoterminal.DefaultETHAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -75,14 +72,14 @@ func TestCreateURL(t *testing.T) {
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cps      []mmtypes.Ticker
+		cps      []types.ProviderTicker
 		response *http.Response
 		expected types.PriceResponse
 	}{
 		{
 			name: "valid",
-			cps: []mmtypes.Ticker{
-				constants.MOG_USD,
+			cps: []types.ProviderTicker{
+				mog_usd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -101,8 +98,8 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.MOG_USD: {
-						Value: big.NewInt(957896146138),
+					mog_usd: {
+						Value: math.Float64ToBigFloat(0.000000957896146138212, types.DefaultTickerDecimals),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -110,7 +107,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "malformed response",
-			cps:  []mmtypes.Ticker{constants.MOG_USD},
+			cps: []types.ProviderTicker{
+				mog_usd,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -129,7 +128,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: providertypes.UnresolvedResult{
+					mog_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -138,7 +137,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "unable to parse float",
-			cps:  []mmtypes.Ticker{constants.MOG_USD},
+			cps: []types.ProviderTicker{
+				mog_usd,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -157,7 +158,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: providertypes.UnresolvedResult{
+					mog_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -166,7 +167,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "incorrect attribute",
-			cps:  []mmtypes.Ticker{constants.MOG_USD},
+			cps: []types.ProviderTicker{
+				mog_usd,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -185,7 +188,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: providertypes.UnresolvedResult{
+					mog_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -194,7 +197,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "unable to parse json",
-			cps:  []mmtypes.Ticker{constants.MOG_USD},
+			cps: []types.ProviderTicker{
+				mog_usd,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`
 toms obvious but not minimal language
@@ -203,7 +208,7 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.MOG_USD: providertypes.UnresolvedResult{
+					mog_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -212,9 +217,9 @@ toms obvious but not minimal language
 		},
 		{
 			name: "multiple currency pairs to parse response for",
-			cps: []mmtypes.Ticker{
-				constants.MOG_USD,
-				constants.PEPE_USD,
+			cps: []types.ProviderTicker{
+				mog_usd,
+				pepe_usd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -234,11 +239,11 @@ toms obvious but not minimal language
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.MOG_USD: {
-						Value: big.NewInt(657896146138),
+					mog_usd: {
+						Value: math.Float64ToBigFloat(0.000000657896146138212, types.DefaultTickerDecimals),
 					},
-					constants.PEPE_USD: {
-						Value: big.NewInt(957896146138),
+					pepe_usd: {
+						Value: math.Float64ToBigFloat(0.000000957896146138212, types.DefaultTickerDecimals),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -248,10 +253,11 @@ toms obvious but not minimal language
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(geckoterminal.Name, geckoterminal.DefaultETHMarketConfig)
+			h, err := geckoterminal.NewAPIHandler(geckoterminal.DefaultETHAPIConfig)
 			require.NoError(t, err)
 
-			h, err := geckoterminal.NewAPIHandler(marketConfig, geckoterminal.DefaultETHAPIConfig)
+			// Update the cache since it is assumed that createURL is executed before ParseResponse.
+			_, err = h.CreateURL(tc.cps)
 			require.NoError(t, err)
 
 			now := time.Now()
@@ -263,7 +269,7 @@ toms obvious but not minimal language
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value, r.Value)
+				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
 				require.True(t, r.Timestamp.After(now))
 			}
 

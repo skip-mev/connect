@@ -2,11 +2,11 @@ package coinbase_test
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/stretchr/testify/require"
@@ -15,39 +15,39 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+var (
+	btc_usd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	eth_usd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		url         string
 		expectedErr bool
 	}{
 		{
+			name:        "empty",
+			cps:         []types.ProviderTicker{},
+			url:         "",
+			expectedErr: true,
+		},
+		{
 			name: "valid",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
+			cps: []types.ProviderTicker{
+				btc_usd,
 			},
 			url:         "https://api.coinbase.com/v2/prices/BTC-USD/spot",
 			expectedErr: false,
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-			},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "unknown currency",
-			cps: []mmtypes.Ticker{
-				mogusd,
+			cps: []types.ProviderTicker{
+				btc_usd,
+				eth_usd,
 			},
 			url:         "",
 			expectedErr: true,
@@ -56,10 +56,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			h, err := coinbase.NewAPIHandler(marketConfig, coinbase.DefaultAPIConfig)
+			h, err := coinbase.NewAPIHandler(coinbase.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -76,14 +73,14 @@ func TestCreateURL(t *testing.T) {
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cps      []mmtypes.Ticker
+		cps      []types.ProviderTicker
 		response *http.Response
 		expected types.PriceResponse
 	}{
 		{
 			name: "valid",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
+			cps: []types.ProviderTicker{
+				btc_usd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -97,8 +94,8 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.BITCOIN_USD: {
-						Value: big.NewInt(102025000000),
+					btc_usd: {
+						Value: math.Float64ToBigFloat(1020.25, types.DefaultTickerDecimals),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -106,7 +103,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "malformed response",
-			cps:  []mmtypes.Ticker{constants.BITCOIN_USD},
+			cps: []types.ProviderTicker{
+				btc_usd,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -120,7 +119,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+					btc_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -128,7 +127,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "unable to parse float",
-			cps:  []mmtypes.Ticker{constants.BITCOIN_USD},
+			cps: []types.ProviderTicker{
+				btc_usd,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`
 {
@@ -142,7 +143,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+					btc_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -150,7 +151,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "unable to parse json",
-			cps:  []mmtypes.Ticker{constants.BITCOIN_USD},
+			cps:  []types.ProviderTicker{btc_usd},
 			response: testutils.CreateResponseFromJSON(
 				`
 toms obvious but not minimal language
@@ -159,36 +160,8 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+					btc_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
-					},
-				},
-			),
-		},
-		{
-			name: "multiple currency pairs to parse response for",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"data": {
-		"amount": "1020.25",
-		"currency": "USD"
-	}
-}
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{},
-				types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("multiple cps"), providertypes.ErrorAPIGeneral),
-					},
-					constants.ETHEREUM_USD: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("multiple cps"), providertypes.ErrorAPIGeneral),
 					},
 				},
 			),
@@ -197,10 +170,7 @@ toms obvious but not minimal language
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			h, err := coinbase.NewAPIHandler(marketConfig, coinbase.DefaultAPIConfig)
+			h, err := coinbase.NewAPIHandler(coinbase.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			now := time.Now()
@@ -212,7 +182,7 @@ toms obvious but not minimal language
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value, r.Value)
+				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
 				require.True(t, r.Timestamp.After(now))
 			}
 
