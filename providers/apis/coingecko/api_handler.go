@@ -11,32 +11,20 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
 // APIHandler implements the PriceAPIDataHandler interface for CoinGecko.
 type APIHandler struct {
-	// marketCfg is the config for the CoinGecko API.
-	market types.ProviderMarketMap
 	// apiCfg is the config for the CoinGecko API.
 	api config.APIConfig
 }
 
 // NewAPIHandler returns a new CoinGecko PriceAPIDataHandler.
 func NewAPIHandler(
-	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
-	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
-	}
-
-	if market.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
-	}
-
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
@@ -50,8 +38,7 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		market: market,
-		api:    api,
+		api: api,
 	}, nil
 }
 
@@ -59,7 +46,7 @@ func NewAPIHandler(
 // given tickers. The CoinGecko API supports fetching spot prices for multiple tickers
 // in a single request.
 func (h *APIHandler) CreateURL(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) (string, error) {
 	// Create a list of base currencies and quote currencies.
 	bases, quotes, err := h.getUniqueBaseAndQuoteDenoms(tickers)
@@ -81,7 +68,7 @@ func (h *APIHandler) CreateURL(
 // out the responses that are not expected. Note that the response will only return
 // a response for the inputted tickers.
 func (h *APIHandler) ParseResponse(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 	resp *http.Response,
 ) types.PriceResponse {
 	// Parse the response.
@@ -96,19 +83,20 @@ func (h *APIHandler) ParseResponse(
 	)
 
 	// Filter out the responses that are not expected.
+	providerTickers := types.NewProviderTickers(tickers...)
 	for base, quotes := range result {
 		for quote, price := range quotes {
 			// The ticker is represented as base/quote.
 			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			ticker, ok := h.market.OffChainMap[offChainTicker]
+			ticker, ok := providerTickers.FromOffChain(offChainTicker)
 			if !ok {
 				continue
 			}
 
 			// Resolve the price.
-			price := math.Float64ToBigInt(price, ticker.Decimals)
+			price := math.Float64ToBigInt(price, ticker.Decimals())
 			resolved[ticker] = types.NewPriceResult(price, time.Now())
 		}
 	}

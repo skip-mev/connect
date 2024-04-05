@@ -1,7 +1,7 @@
 package constants
 
 import (
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
