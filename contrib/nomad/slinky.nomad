@@ -10,6 +10,10 @@ job "slinky-dev" {
 
     network {
       mode = "bridge"
+
+      port "sidecar_metrics" {
+        to = -1
+      }
     }
 
     service {
@@ -30,15 +34,31 @@ job "slinky-dev" {
 
     service {
       name = "slinky-sidecar-dev-metrics-service"
+      port = "sidecar_metrics"
+
+      tags = ["metrics", "logs.promtail=true"]
+    }
+
+    service {
+      name = "slinky-sidecar-dev-metrics-internal-service"
       port = "8002"
 
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                local_path_port = 8002
+                protocol        = "http"
+                listener_port   = "sidecar_metrics"
+              }
+            }
+          }
+        }
       }
 
       tags = [
-        "metrics",
-        "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
         "traefik.http.routers.slinky-sidecar-dev-metrics-service.rule=Host(`slinky-sidecar-dev-metrics.skip.money`)",
@@ -66,7 +86,7 @@ job "slinky-dev" {
       driver = "docker"
 
       config {
-        image = "[[ .sidecar_image ]]"
+        image      = "[[ .sidecar_image ]]"
         force_pull = true
         entrypoint = ["slinky", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json"]
       }
@@ -84,6 +104,14 @@ job "slinky-dev" {
 
     network {
       mode = "bridge"
+
+      port "chain_metrics" {
+        to = -1
+      }
+
+      port "app_metrics" {
+        to = -1
+      }
     }
 
     service {
@@ -114,7 +142,7 @@ job "slinky-dev" {
       port = "1317"
 
       connect {
-          sidecar_service {}
+        sidecar_service {}
       }
 
       tags = [
@@ -127,15 +155,31 @@ job "slinky-dev" {
 
     service {
       name = "slinky-simapp-dev-chain-metrics-service"
+      port = "chain_metrics"
+
+      tags = ["metrics", "logs.promtail=true"]
+    }
+
+    service {
+      name = "slinky-simapp-dev-chain-metrics-internal-service"
       port = "26660"
 
       connect {
-          sidecar_service {}
+        sidecar_service {
+          proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                local_path_port = 26660
+                protocol        = "http"
+                listener_port   = "chain_metrics"
+              }
+            }
+          }
+        }
       }
 
       tags = [
-        "metrics",
-        "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
         "traefik.http.routers.slinky-simapp-dev-chain-metrics-service.rule=Host(`slinky-simapp-dev-chain-metrics.skip.money`)",
@@ -145,15 +189,31 @@ job "slinky-dev" {
 
     service {
       name = "slinky-simapp-dev-app-metrics-service"
+      port = "app_metrics"
+
+      tags = ["metrics", "logs.promtail=true"]
+    }
+
+    service {
+      name = "slinky-simapp-dev-app-metrics-internal-service"
       port = "8001"
 
       connect {
-          sidecar_service {}
+        sidecar_service {
+          proxy {
+            expose {
+              path {
+                path            = "/metrics"
+                local_path_port = 8001
+                protocol        = "http"
+                listener_port   = "app_metrics"
+              }
+            }
+          }
+        }
       }
 
       tags = [
-        "metrics",
-        "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
         "traefik.http.routers.slinky-simapp-dev-app-metrics-service.rule=Host(`slinky-simapp-dev-app-metrics.skip.money`)",
