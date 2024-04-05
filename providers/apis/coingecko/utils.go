@@ -8,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // NOTE: All documentation for this file can be located on the CoinGecko
@@ -109,7 +110,7 @@ type (
 // from a list of tickers. Note that this function will only return the denoms
 // that are configured for the handler. If any of the tickers are not configured,
 // they will not be fetched.
-func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []types.ProviderTicker) (string, string, error) {
+func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []mmtypes.Ticker) (string, string, error) {
 	if len(tickers) == 0 {
 		return "", "", fmt.Errorf("no tickers specified")
 	}
@@ -124,8 +125,13 @@ func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []types.ProviderTicker)
 	// Iterate through every currency pair and add the base and quote to the
 	// unique bases and quotes list as long as they are supported.
 	for _, ticker := range tickers {
+		market, ok := h.market.TickerConfigs[ticker]
+		if !ok {
+			return "", "", fmt.Errorf("ticker %s is not supported", ticker.String())
+		}
+
 		// Split the market ticker into the base and quote currencies.
-		split := strings.Split(ticker.OffChainTicker(), TickerSeparator)
+		split := strings.Split(market.OffChainTicker, TickerSeparator)
 		if len(split) != 2 {
 			return "", "", fmt.Errorf("ticker %s is not formatted correctly", ticker.String())
 		}

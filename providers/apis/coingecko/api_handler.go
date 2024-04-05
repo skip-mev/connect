@@ -1,162 +1,128 @@
 package coingecko
 
 import (
+	"encoding/json"
 	"fmt"
-	"strings"
+	"net/http"
 	"time"
 
+	providertypes "github.com/skip-mev/slinky/providers/types"
+
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// NOTE: All documentation for this file can be located on the CoinGecko
-// API documentation: https://www.coingecko.com/api/documentation. The CoinGecko
-// API can be configured to be API based or not.
+var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
-const (
-	// Name is the name of the Coingecko provider.
-	Name = "coingecko_api"
+// APIHandler implements the PriceAPIDataHandler interface for CoinGecko.
+type APIHandler struct {
+	// marketCfg is the config for the CoinGecko API.
+	market types.ProviderMarketMap
+	// apiCfg is the config for the CoinGecko API.
+	api config.APIConfig
+}
 
-	// URL is the base URL for the CoinGecko API. This URL does not require
-	// an API key but may be rate limited.
-	URL = "https://api.coingecko.com/api/v3"
-
-	// PairPriceEndpoint is the URL used to fetch the price of a list of currency
-	// pairs. The ids are the base currencies and the vs_currencies are the quote
-	// currencies. Note that the IDs and vs_currencies are comma separated but are
-	// not 1:1 in their representation.
-	PairPriceEndpoint = "/simple/price?ids=%s&vs_currencies=%s"
-
-	// Precision is the precision of the price returned by the CoinGecko API. All
-	// results are returned with 18 decimal places and are expected to be converted
-	// to the appropriate precision by the parser.
-	Precision = "&precision=18"
-
-	// TickerSeparator is the formatter of the ticker that is used to fetch the price
-	// of a currency pair. The first currency is the base currency and the second
-	// currency is the quote currency.
-	TickerSeparator = "/"
-)
-
-var (
-	// DefaultAPIConfig is the default configuration for the CoinGecko API.
-	DefaultAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         15 * time.Second, // Coingecko has a very low rate limit.
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		URL:              URL,
+// NewAPIHandler returns a new CoinGecko PriceAPIDataHandler.
+func NewAPIHandler(
+	market types.ProviderMarketMap,
+	api config.APIConfig,
+) (types.PriceAPIDataHandler, error) {
+	if err := market.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
 	}
 
-	// DefaultMarketConfig is the default market configuration for CoinGecko.
-	DefaultMarketConfig = types.TickerToProviderConfig{
-		constants.ATOM_USD: {
-			Name:           Name,
-			OffChainTicker: "cosmos/usd",
-		},
-		constants.BITCOIN_USD: {
-			Name:           Name,
-			OffChainTicker: "bitcoin/usd",
-		},
-		constants.CELESTIA_USD: {
-			Name:           Name,
-			OffChainTicker: "celestia/usd",
-		},
-		constants.DYDX_USD: {
-			Name:           Name,
-			OffChainTicker: "dydx-chain/usd",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			Name:           Name,
-			OffChainTicker: "ethereum/btc",
-		},
-		constants.ETHEREUM_USD: {
-			Name:           Name,
-			OffChainTicker: "ethereum/usd",
-		},
-		constants.OSMOSIS_USD: {
-			Name:           Name,
-			OffChainTicker: "osmosis/usd",
-		},
-		constants.SOLANA_USD: {
-			Name:           Name,
-			OffChainTicker: "solana/usd",
-		},
-	}
-)
-
-type (
-	// CoinGeckoResponse is the response returned by the CoinGecko API. The response
-	// format looks like the following:
-	// {
-	// 		"bitcoin": {
-	// 			"usd": 43808.30302432908,
-	// 			"btc": 1
-	// 		},
-	// 		"ethereum": {
-	// 			"usd": 2240.4139379890357,
-	//			"btc": 0.05113686971792297
-	// 		}
-	// 	}
-	CoinGeckoResponse map[string]map[string]float64 //nolint
-)
-
-// getUniqueBaseAndQuoteDenoms returns a list of unique base and quote denoms
-// from a list of tickers. Note that this function will only return the denoms
-// that are configured for the handler. If any of the tickers are not configured,
-// they will not be fetched.
-func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []mmtypes.Ticker) (string, string, error) {
-	if len(tickers) == 0 {
-		return "", "", fmt.Errorf("no tickers specified")
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
 	}
 
-	// Create a map of unique base and quote denoms.
-	seenBases := make(map[string]struct{})
-	bases := make([]string, 0)
+	if api.Name != Name {
+		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
+	}
 
-	seenQuotes := make(map[string]struct{})
-	quotes := make([]string, 0)
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", Name)
+	}
 
-	// Iterate through every currency pair and add the base and quote to the
-	// unique bases and quotes list as long as they are supported.
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config for %s: %w", Name, err)
+	}
+
+	return &APIHandler{
+		market: market,
+		api:    api,
+	}, nil
+}
+
+// CreateURL returns the URL that is used to fetch data from the CoinGecko API for the
+// given tickers. The CoinGecko API supports fetching spot prices for multiple tickers
+// in a single request.
+func (h *APIHandler) CreateURL(
+	tickers []mmtypes.Ticker,
+) (string, error) {
+	// Create a list of base currencies and quote currencies.
+	bases, quotes, err := h.getUniqueBaseAndQuoteDenoms(tickers)
+	if err != nil {
+		return "", err
+	}
+
+	// This creates the endpoint that needs to be requested regardless of whether
+	// an API key is set.
+	pricesEndPoint := fmt.Sprintf(PairPriceEndpoint, bases, quotes)
+	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)
+
+	// Otherwise, we just return the base url with the endpoint.
+	return fmt.Sprintf("%s%s", h.api.URL, finalEndpoint), nil
+}
+
+// ParseResponse parses the response from the CoinGecko API. The response is expected
+// to match every base currency with every quote currency. As such, we need to filter
+// out the responses that are not expected. Note that the response will only return
+// a response for the inputted tickers.
+func (h *APIHandler) ParseResponse(
+	tickers []mmtypes.Ticker,
+	resp *http.Response,
+) types.PriceResponse {
+	// Parse the response.
+	var result CoinGeckoResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode))
+	}
+
+	var (
+		resolved   = make(types.ResolvedPrices)
+		unresolved = make(types.UnResolvedPrices)
+	)
+
+	// Filter out the responses that are not expected.
+	for base, quotes := range result {
+		for quote, price := range quotes {
+			// The ticker is represented as base/quote.
+			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
+
+			// If the ticker is not configured, we skip it.
+			ticker, ok := h.market.OffChainMap[offChainTicker]
+			if !ok {
+				continue
+			}
+
+			// Resolve the price.
+			price := math.Float64ToBigInt(price, ticker.Decimals)
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
+		}
+	}
+
+	// Add all expected tickers that did not return a response to the unresolved
+	// map.
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker]
-		if !ok {
-			return "", "", fmt.Errorf("ticker %s is not supported", ticker.String())
-		}
-
-		// Split the market ticker into the base and quote currencies.
-		split := strings.Split(market.OffChainTicker, TickerSeparator)
-		if len(split) != 2 {
-			return "", "", fmt.Errorf("ticker %s is not formatted correctly", ticker.String())
-		}
-
-		base := split[0]
-		if _, ok := seenBases[base]; !ok {
-			seenBases[base] = struct{}{}
-			bases = append(bases, base)
-		}
-
-		quote := split[1]
-		if _, ok := seenQuotes[quote]; !ok {
-			seenQuotes[quote] = struct{}{}
-			quotes = append(quotes, quote)
+		if _, resolvedOk := resolved[ticker]; !resolvedOk {
+			err := fmt.Errorf("no response")
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorNoResponse),
+			}
 		}
 	}
 
-	// If there are no bases or quotes, then none of the tickers are supported.
-	if len(bases) == 0 {
-		return "", "", fmt.Errorf("none of the base currencies are supported")
-	}
-
-	if len(quotes) == 0 {
-		return "", "", fmt.Errorf("none of the quote currencies are supported")
-	}
-
-	return strings.Join(bases, ","), strings.Join(quotes, ","), nil
+	return types.NewPriceResponse(resolved, unresolved)
 }
