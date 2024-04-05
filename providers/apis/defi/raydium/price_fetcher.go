@@ -178,6 +178,9 @@ func (pf *APIPriceFetcher) Fetch(
 	// We assume that the solana JSON-RPC response returns all accounts in the order
 	// that they were queried, there is not a very good way to handle if this order is incorrect
 	// or verify that the order is correct, as there is no way to correlate account data <> address
+	ctx, cancel := context.WithTimeout(ctx, pf.config.Timeout)
+	defer cancel()
+
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
 		Commitment: rpc.CommitmentFinalized,
 		// TODO(nikhil): Keep track of latest height queried as well?
