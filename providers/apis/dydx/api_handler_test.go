@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/base/testutils"
@@ -23,7 +24,7 @@ var chains = []types.Chain{
 }
 
 func TestCreateURL(t *testing.T) {
-	handler, err := dydx.NewAPIHandler(dydx.DefaultAPIConfig)
+	handler, err := dydx.NewAPIHandler(dydx.DefaultAPIConfig, zap.NewNop())
 	require.NoError(t, err)
 
 	t.Run("multiple chains", func(t *testing.T) {
@@ -118,7 +119,7 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := dydx.NewAPIHandler(dydx.DefaultAPIConfig)
+			handler, err := dydx.NewAPIHandler(dydx.DefaultAPIConfig, zap.NewNop())
 			require.NoError(t, err)
 
 			resp := handler.ParseResponse(tc.chains, tc.resp())

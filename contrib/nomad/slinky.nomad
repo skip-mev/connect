@@ -23,8 +23,8 @@ job "slinky-dev" {
       tags = [
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-sidecar-dev-http-service.rule=Host(`slinky-sidecar-dev-http.skip-internal.money`)",
-        "traefik.http.routers.slinky-sidecar-dev-http-service.entrypoints=internal",
+        "traefik.http.routers.slinky-sidecar-dev-http-service.rule=Host(`slinky-sidecar-dev-http.skip.money`)",
+        "traefik.http.routers.slinky-sidecar-dev-http-service.entrypoints=http",
       ]
     }
 
@@ -41,8 +41,8 @@ job "slinky-dev" {
         "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-sidecar-dev-metrics-service.rule=Host(`slinky-sidecar-dev-metrics.skip-internal.money`)",
-        "traefik.http.routers.slinky-sidecar-dev-metrics-service.entrypoints=internal",
+        "traefik.http.routers.slinky-sidecar-dev-metrics-service.rule=Host(`slinky-sidecar-dev-metrics.skip.money`)",
+        "traefik.http.routers.slinky-sidecar-dev-metrics-service.entrypoints=http",
       ]
     }
 
@@ -67,6 +67,7 @@ job "slinky-dev" {
 
       config {
         image = "[[ .sidecar_image ]]"
+        force_pull = true
         entrypoint = ["slinky", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json"]
       }
 
@@ -125,6 +126,24 @@ job "slinky-dev" {
     }
 
     service {
+      name = "slinky-simapp-dev-chain-metrics-service"
+      port = "26660"
+
+      connect {
+          sidecar_service {}
+      }
+
+      tags = [
+        "metrics",
+        "logs.promtail=true",
+        "traefik.enable=true",
+        "traefik.consulcatalog.connect=true",
+        "traefik.http.routers.slinky-simapp-dev-chain-metrics-service.rule=Host(`slinky-simapp-dev-chain-metrics.skip.money`)",
+        "traefik.http.routers.slinky-simapp-dev-chain-metrics-service.entrypoints=http",
+      ]
+    }
+
+    service {
       name = "slinky-simapp-dev-app-metrics-service"
       port = "8001"
 
@@ -137,8 +156,8 @@ job "slinky-dev" {
         "logs.promtail=true",
         "traefik.enable=true",
         "traefik.consulcatalog.connect=true",
-        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.rule=Host(`slinky-simapp-dev-app-metrics.skip-internal.money`)",
-        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.entrypoints=internal",
+        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.rule=Host(`slinky-simapp-dev-app-metrics.skip.money`)",
+        "traefik.http.routers.slinky-simapp-dev-app-metrics-service.entrypoints=http",
       ]
     }
 
@@ -161,6 +180,7 @@ job "slinky-dev" {
 
       config {
         image      = "[[ .chain_image ]]"
+        force_pull = true
         entrypoint = ["sh", "-c", "/tmp/init.sh"]
         volumes    = ["local/tmp/init.sh:/tmp/init.sh"]
       }
@@ -196,6 +216,7 @@ sed -i 's\oracle:8080\localhost:8080\g' /src/slinky/tests/.slinkyd/config/app.to
 
       config {
         image      = "[[ .chain_image ]]"
+        force_pull = true
         entrypoint = ["make", "start-app"]
       }
 

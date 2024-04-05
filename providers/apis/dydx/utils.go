@@ -6,12 +6,15 @@ import (
 	"strings"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/volatile"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -55,23 +58,24 @@ var DefaultAPIConfig = config.APIConfig{
 //
 // ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
 var ProviderMapping = map[string][]string{
-	"Binance":     {binance.Name},
-	"BinanceUS":   {binance.Name},
-	"Bitfinex":    {bitfinex.Name},
-	"Kraken":      {kraken.Name}, // We only support the API since the WebSocket has different pairs.
-	"Gate":        {gate.Name},
-	"Bitstamp":    {bitstamp.Name},
-	"Bybit":       {bybit.Name},
-	"CryptoCom":   {cryptodotcom.Name},
-	"Huobi":       {huobi.Name},
-	"Kucoin":      {kucoin.Name},
-	"Okx":         {okx.Name},
-	"Mexc":        {mexc.Name},
-	"CoinbasePro": {coinbaseapi.Name, coinbasews.Name}, // We support both the API and WebSocket.
+	"Binance":              {binance.Name},
+	"BinanceUS":            {binance.Name},
+	"Bitfinex":             {bitfinex.Name},
+	"Kraken":               {kraken.Name}, // We only support the API since the WebSocket has different pairs.
+	"Gate":                 {gate.Name},
+	"Bitstamp":             {bitstamp.Name},
+	"Bybit":                {bybit.Name},
+	"CryptoCom":            {cryptodotcom.Name},
+	"Huobi":                {huobi.Name},
+	"Kucoin":               {kucoin.Name},
+	"Okx":                  {okx.Name},
+	"Mexc":                 {mexc.Name},
+	"CoinbasePro":          {coinbaseapi.Name, coinbasews.Name}, // We support both the API and WebSocket.
+	"TestVolatileExchange": {volatile.Name},
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
-func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsResponse) (mmtypes.GetMarketMapResponse, error) {
+func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsResponse, logger *zap.Logger) (mmtypes.GetMarketMapResponse, error) {
 	marketMap := mmtypes.MarketMap{
 		Tickers:         make(map[string]mmtypes.Ticker),
 		Providers:       make(map[string]mmtypes.Providers),
@@ -82,6 +86,7 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 	for _, market := range params.MarketParams {
 		ticker, err := CreateTickerFromMarket(market)
 		if err != nil {
+			logger.Error("failed to create ticker from market", zap.Error(err))
 			return mmtypes.GetMarketMapResponse{}, err
 		}
 
@@ -91,7 +96,7 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 		}
 
 		// Convert the exchange config JSON to a set of paths and providers.
-		tickerPaths, tickerProviders, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
+		tickerPaths, tickerProviders, err := ConvertExchangeConfigJSON(ticker, exchangeConfigJSON, logger)
 		if err != nil {
 			return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to convert exchange config json for %s: %w", ticker.String(), err)
 		}
@@ -103,6 +108,7 @@ func ConvertMarketParamsToMarketMap(params dydxtypes.QueryAllMarketParamsRespons
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {
+		logger.Error("failed to validate market map", zap.Error(err))
 		return mmtypes.GetMarketMapResponse{}, fmt.Errorf("failed to validate market map: %w", err)
 	}
 
@@ -148,6 +154,7 @@ func CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtypes.Ticker, error
 func ConvertExchangeConfigJSON(
 	ticker mmtypes.Ticker,
 	config dydxtypes.ExchangeConfigJson,
+	logger *zap.Logger,
 ) (mmtypes.Paths, mmtypes.Providers, error) {
 	var (
 		paths     []mmtypes.Path
@@ -165,7 +172,9 @@ func ConvertExchangeConfigJSON(
 		// This means we have seen an exchange that slinky cannot support.
 		exchangeNames, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
-			return mmtypes.Paths{}, mmtypes.Providers{}, fmt.Errorf("unsupported exchange: %s", cfg.ExchangeName)
+			// ignore unsupported exchanges
+			logger.Error("unsupported exchange", zap.String("exchange", cfg.ExchangeName))
+			continue
 		}
 
 		var (
