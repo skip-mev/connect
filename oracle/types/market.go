@@ -63,3 +63,46 @@ func (tpt *TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
 
 	return providerTickers
 }
+
+// MustToProviderTickersMap converts the ticker -> provider ticker map to a map of
+// ticker.String() -> provider ticker. This is mostly used for testing purposes.
+func (tpt *TickersToProviderTickers) MustToProviderTickersMap() map[string]ProviderTicker {
+	providerTickers := make(map[string]ProviderTicker)
+
+	for ticker, simpleProviderTicker := range *tpt {
+		if err := simpleProviderTicker.ValidateBasic(); err != nil {
+			panic(err)
+		}
+
+		providerTicker := NewProviderTicker(
+			simpleProviderTicker.Name,
+			simpleProviderTicker.OffChainTicker,
+			simpleProviderTicker.JSON,
+			DefaultTickerDecimals,
+		)
+		providerTickers[ticker.String()] = providerTicker
+	}
+
+	return providerTickers
+}
+
+// GetProviderTicker returns the provider ticker for the given ticker. This function
+// is mostly used for testing purposes.
+func (tpt *TickersToProviderTickers) MustGetProviderTicker(ticker mmtypes.Ticker) ProviderTicker {
+	simpleProviderTicker, ok := (*tpt)[ticker]
+	if !ok {
+		panic(fmt.Sprintf("ticker %s not found", ticker))
+	}
+
+	if err := simpleProviderTicker.ValidateBasic(); err != nil {
+		panic(err)
+	}
+
+	providerTicker := NewProviderTicker(
+		simpleProviderTicker.Name,
+		simpleProviderTicker.OffChainTicker,
+		simpleProviderTicker.JSON,
+		DefaultTickerDecimals,
+	)
+	return providerTicker
+}

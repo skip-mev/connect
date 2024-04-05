@@ -2,7 +2,6 @@ package binance_test
 
 import (
 	"fmt"
-	"math/big"
 	"net/http"
 	"testing"
 	"time"
@@ -11,54 +10,52 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-var mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+var (
+	btc_usdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	eth_usdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+)
 
 func TestCreateURL(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		url         string
 		expectedErr bool
 	}{
 		{
+			name:        "empty",
+			cps:         []types.ProviderTicker{},
+			url:         "",
+			expectedErr: true,
+		},
+		{
 			name: "valid single",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
 		},
 		{
 			name: "valid multiple",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
+				eth_usdt,
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
 			expectedErr: false,
-		},
-		{
-			name: "unknown currency",
-			cps: []mmtypes.Ticker{
-				mogusd,
-			},
-			url:         "",
-			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultNonUSMarketConfig)
-			require.NoError(t, err)
-
-			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)
+			h, err := binance.NewAPIHandler(binance.DefaultNonUSAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -75,43 +72,38 @@ func TestCreateURL(t *testing.T) {
 func TestCreateURL_US(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		url         string
 		expectedErr bool
 	}{
 		{
+			name:        "empty",
+			cps:         []types.ProviderTicker{},
+			url:         "",
+			expectedErr: true,
+		},
+		{
 			name: "valid single",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
 		},
 		{
 			name: "valid multiple",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
+				eth_usdt,
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
 			expectedErr: false,
-		},
-		{
-			name: "unknown currency",
-			cps: []mmtypes.Ticker{
-				mogusd,
-			},
-			url:         "",
-			expectedErr: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSMarketConfig)
-			require.NoError(t, err)
-
-			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultUSAPIConfig)
+			h, err := binance.NewAPIHandler(binance.DefaultUSAPIConfig)
 			require.NoError(t, err)
 
 			url, err := h.CreateURL(tc.cps)
@@ -128,20 +120,22 @@ func TestCreateURL_US(t *testing.T) {
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cps      []mmtypes.Ticker
+		cps      []types.ProviderTicker
 		response *http.Response
 		expected types.PriceResponse
 	}{
 		{
 			name: "valid single",
-			cps:  []mmtypes.Ticker{constants.BITCOIN_USDT},
+			cps: []types.ProviderTicker{
+				btc_usdt,
+			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"}]`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.BITCOIN_USDT: {
-						Value: big.NewInt(4670703000000),
+					btc_usdt: {
+						Value: math.Float64ToBigFloat(46707.03, types.DefaultTickerDecimals),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -149,46 +143,29 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "valid multiple",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
+				eth_usdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"ETHUSDT","price":"297.50000000"}]`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.BITCOIN_USDT: {
-						Value: big.NewInt(4670703000000),
+					btc_usdt: {
+						Value: math.Float64ToBigFloat(46707.03, types.DefaultTickerDecimals),
 					},
-					constants.ETHEREUM_USDT: {
-						Value: big.NewInt(29750000000),
+					eth_usdt: {
+						Value: math.Float64ToBigFloat(297.5, types.DefaultTickerDecimals),
 					},
 				},
 				types.UnResolvedPrices{},
 			),
 		},
 		{
-			name: "unsupported currency",
-			cps: []mmtypes.Ticker{
-				mogusd,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`[{"symbol":"MOGUSDT","price":"46707.03000000"}]`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{},
-				types.UnResolvedPrices{
-					mogusd: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
-					},
-				},
-			),
-		},
-		{
 			name: "bad response",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`shout out my label thats me`,
@@ -196,7 +173,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+					btc_usdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -204,8 +181,8 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "bad price response",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"$46707.03000000"}]`,
@@ -213,7 +190,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+					btc_usdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -221,9 +198,9 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "no response",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
+			cps: []types.ProviderTicker{
+				btc_usdt,
+				eth_usdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[]`,
@@ -231,10 +208,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+					btc_usdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
-					constants.ETHEREUM_USDT: providertypes.UnresolvedResult{
+					eth_usdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -244,10 +221,11 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSMarketConfig)
+			h, err := binance.NewAPIHandler(binance.DefaultNonUSAPIConfig)
 			require.NoError(t, err)
 
-			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)
+			// Update the cache since it is assumed that createURL is executed before ParseResponse.
+			_, err = h.CreateURL(tc.cps)
 			require.NoError(t, err)
 
 			now := time.Now()
@@ -259,7 +237,7 @@ func TestParseResponse(t *testing.T) {
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value, r.Value)
+				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
 				require.True(t, r.Timestamp.After(now))
 			}
 
