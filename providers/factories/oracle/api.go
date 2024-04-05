@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/skip-mev/slinky/providers/apis/kraken"
-	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
-
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -16,9 +13,12 @@ import (
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
+	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	"github.com/skip-mev/slinky/providers/static"
+	"github.com/skip-mev/slinky/providers/volatile"
 )
 
 // APIQueryHandlerFactory returns a sample implementation of the API query handler factory.
@@ -77,6 +77,13 @@ func APIQueryHandlerFactory(
 		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, metrics, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
+		if err != nil {
+			return nil, err
+		}
+
+		requestHandler = static.NewStaticMockClient()
+	case volatile.Name:
+		apiDataHandler, err = volatile.NewAPIHandler(marketMap)
 		if err != nil {
 			return nil, err
 		}
