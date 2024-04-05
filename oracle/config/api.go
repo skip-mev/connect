@@ -36,6 +36,12 @@ type APIConfig struct {
 	// Endpoints is a list of endpoints that the provider can query.
 	Endpoints []Endpoint `json:"endpoints"`
 
+	// BatchSize is the maximum number of IDs that the provider can query in a single
+	// request. This parameter must be 0 for atomic providers. Otherwise, the effective 
+	// value will be max(1, BatchSize). Notice, if numCPs > batchSize * maxQueries then 
+	// some currency-pairs may not be fetched each interval.
+	BatchSize int `json:"batchSize"`
+
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`
 }
@@ -67,6 +73,10 @@ func (c *APIConfig) ValidateBasic() error {
 
 	if len(c.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
+	}
+
+	if c.BatchSize > 0 && c.Atomic {
+		return fmt.Errorf("batch size cannot be set for atomic providers")
 	}
 
 	return nil
