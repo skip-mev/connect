@@ -48,15 +48,6 @@ update-local-configs: build
 	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE} --raydium-enabled ${DEFI_ORACLE_ENABLED} \
 		--solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
-generate-defi-configs:
-	@echo "Generating defi configs..."
-	@go run ./scripts/raydium/generate-config/main.go
-
-run-defi-providers: build generate-defi-configs
-	@echo "Running defi providers..."
-	@./build/slinky --oracle-config-path ./oracle.json --market-config-path ./market.json
-
-
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
