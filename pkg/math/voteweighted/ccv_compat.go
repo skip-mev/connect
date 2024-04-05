@@ -11,8 +11,10 @@ import (
 	ccvtypes "github.com/cosmos/interchain-security/v5/x/ccv/consumer/types"
 )
 
-var _ ValidatorStore = CCVConsumerCompatKeeper{}
-var _ stakingtypes.ValidatorI = CCVCompat{}
+var (
+	_ ValidatorStore          = CCVConsumerCompatKeeper{}
+	_ stakingtypes.ValidatorI = CCVCompat{}
+)
 
 // CCVCompat is used for compatibility between stakingtypes.ValidatorI and CrossChainValidator.
 type CCVCompat struct {
