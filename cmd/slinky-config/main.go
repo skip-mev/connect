@@ -38,7 +38,7 @@ import (
 )
 
 const (
-	// raydiumPairsFixture is the path to the fixture file containing all raydium markets
+	// raydiumPairsFixture is the path to the fixture file containing all raydium markets.
 	raydiumPairsFixture = "./cmd/slinky-config/fixtures/raydium_pairs.json"
 )
 
@@ -87,10 +87,10 @@ var (
 	// maxPriceAge is the maximum age of a price that the oracle will accept.
 	maxPriceAge time.Duration
 
-	// raydium-enabled determine whether or not the raydium defi provider will be configured
+	// raydium-enabled determine whether or not the raydium defi provider will be configured.
 	raydiumEnabled bool
 
-	// solana node url is the solana node that the raydium provider will connect to
+	// solana node url is the solana node that the raydium provider will connect to.
 	solanaNodeURLs string
 
 	// ProviderToMarkets defines a map of provider names to their respective market
