@@ -24,7 +24,7 @@ var _ Oracle = (*OracleImpl)(nil)
 type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
-	GetPrices() types.AggregatorPrices
+	GetPrices() types.TickerPrices
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -204,7 +204,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 		return
 	}
 
-	timeFilteredPrices := make(types.AggregatorPrices)
+	timeFilteredPrices := make(types.TickerPrices)
 	for pair, result := range prices {
 		// If the price is older than the maxCacheAge, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
@@ -227,7 +227,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 			zap.String("price", result.Value.String()),
 			zap.Duration("diff", diff),
 		)
-		timeFilteredPrices[pair.OffChainTicker()] = result.Value
+		timeFilteredPrices[pair] = result.Value
 	}
 
 	o.logger.Info("provider returned prices",
@@ -255,7 +255,7 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *OracleImpl) GetPrices() types.AggregatorPrices {
+func (o *OracleImpl) GetPrices() types.TickerPrices {
 	prices := o.priceAggregator.GetAggregatedData()
 	return prices
 }

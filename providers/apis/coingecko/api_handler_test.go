@@ -1,288 +1,116 @@
-package coingecko_test
+package coingecko
 
 import (
+	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
-	"testing"
 	"time"
 
 	providertypes "github.com/skip-mev/slinky/providers/types"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/providers/apis/coingecko"
-	"github.com/skip-mev/slinky/providers/base/testutils"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/slinky/pkg/math"
 )
 
-var (
-	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
-	btcmog = mmtypes.NewTicker("BTC", "MOG", 8, 1)
-)
+var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 
-func TestCreateURL(t *testing.T) {
-	testCases := []struct {
-		name        string
-		cps         []mmtypes.Ticker
-		url         string
-		expectedErr bool
-	}{
-		{
-			name: "single valid currency pair",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-			},
-			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
-			expectedErr: false,
-		},
-		{
-			name: "multiple valid currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-			},
-			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&precision=18",
-			expectedErr: false,
-		},
-		{
-			name: "multiple valid currency pairs with multiple quotes",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-				constants.ETHEREUM_BITCOIN,
-			},
-			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,btc&precision=18",
-			expectedErr: false,
-		},
-		{
-			name: "no supported bases",
-			cps: []mmtypes.Ticker{
-				mogusd,
-			},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "no supported quotes",
-			cps: []mmtypes.Ticker{
-				btcmog,
-			},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "some supported and non-supported currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				mogusd,
-			},
-			url:         "",
-			expectedErr: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coingecko.Name, coingecko.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			h, err := coingecko.NewAPIHandler(marketConfig, coingecko.DefaultAPIConfig)
-			require.NoError(t, err)
-
-			url, err := h.CreateURL(tc.cps)
-			if tc.expectedErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tc.url, url)
-			}
-		})
-	}
+// APIHandler implements the PriceAPIDataHandler interface for CoinGecko.
+type APIHandler struct {
+	// apiCfg is the config for the CoinGecko API.
+	api config.APIConfig
 }
 
-func TestParseResponse(t *testing.T) {
-	testCases := []struct {
-		name     string
-		cps      []mmtypes.Ticker
-		response *http.Response
-		expected types.PriceResponse
-	}{
-		{
-			name: "single valid currency pair",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"bitcoin": {
-		"usd": 1020.25
-	}
-}
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{
-					constants.BITCOIN_USD: {
-						Value: big.NewInt(102025000000),
-					},
-				},
-				types.UnResolvedPrices{},
-			),
-		},
-		{
-			name: "single valid currency pair that did not get a price response",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"bitcoin": {
-		"btc" : 1
-	}
-}
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{},
-				types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("currency pair BITCOIN-USD did not get a response"), providertypes.ErrorWebSocketGeneral),
-					},
-				},
-			),
-		},
-		{
-			name: "bad response",
-			cps: []mmtypes.Ticker{
-				btcmog,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-shout out my label thats me
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{},
-				types.UnResolvedPrices{
-					btcmog: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("json error"), providertypes.ErrorWebSocketGeneral),
-					},
-				},
-			),
-		},
-		{
-			name: "bad price response",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"bitcoin": {
-		"usd": "$1020.25"
-	}
-}
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{},
-				types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorWebSocketGeneral),
-					},
-				},
-			),
-		},
-		{
-			name: "multiple bases with single quotes",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"bitcoin": {
-		"usd": 1020.25
-	},
-	"ethereum": {
-		"usd": 1020
-	}
-}
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{
-					constants.BITCOIN_USD: {
-						Value: big.NewInt(102025000000),
-					},
-					constants.ETHEREUM_USD: {
-						Value: big.NewInt(102000000000),
-					},
-				},
-				types.UnResolvedPrices{},
-			),
-		},
-		{
-			name: "single base with multiple quotes",
-			cps: []mmtypes.Ticker{
-				constants.ETHEREUM_USD,
-				constants.ETHEREUM_BITCOIN,
-			},
-			response: testutils.CreateResponseFromJSON(
-				`
-{
-	"ethereum": {
-		"usd": 1020.25,
-		"btc": 1
-	}
-}
-	`,
-			),
-			expected: types.NewPriceResponse(
-				types.ResolvedPrices{
-					constants.ETHEREUM_USD: {
-						Value: big.NewInt(102025000000),
-					},
-					constants.ETHEREUM_BITCOIN: {
-						Value: big.NewInt(100000000),
-					},
-				},
-				types.UnResolvedPrices{},
-			),
-		},
+// NewAPIHandler returns a new CoinGecko PriceAPIDataHandler.
+func NewAPIHandler(
+	api config.APIConfig,
+) (types.PriceAPIDataHandler, error) {
+	if api.Name != Name {
+		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coingecko.Name, coingecko.DefaultMarketConfig)
-			require.NoError(t, err)
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", Name)
+	}
 
-			h, err := coingecko.NewAPIHandler(marketConfig, coingecko.DefaultAPIConfig)
-			require.NoError(t, err)
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config for %s: %w", Name, err)
+	}
 
-			now := time.Now()
-			resp := h.ParseResponse(tc.cps, tc.response)
+	return &APIHandler{
+		api: api,
+	}, nil
+}
 
-			require.Len(t, resp.Resolved, len(tc.expected.Resolved))
-			require.Len(t, resp.UnResolved, len(tc.expected.UnResolved))
+// CreateURL returns the URL that is used to fetch data from the CoinGecko API for the
+// given tickers. The CoinGecko API supports fetching spot prices for multiple tickers
+// in a single request.
+func (h *APIHandler) CreateURL(
+	tickers []types.ProviderTicker,
+) (string, error) {
+	// Create a list of base currencies and quote currencies.
+	bases, quotes, err := h.getUniqueBaseAndQuoteDenoms(tickers)
+	if err != nil {
+		return "", err
+	}
 
-			for cp, result := range tc.expected.Resolved {
-				require.Contains(t, resp.Resolved, cp)
-				r := resp.Resolved[cp]
-				require.Equal(t, result.Value, r.Value)
-				require.True(t, r.Timestamp.After(now))
+	// This creates the endpoint that needs to be requested regardless of whether
+	// an API key is set.
+	pricesEndPoint := fmt.Sprintf(PairPriceEndpoint, bases, quotes)
+	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)
+
+	// Otherwise, we just return the base url with the endpoint.
+	return fmt.Sprintf("%s%s", h.api.URL, finalEndpoint), nil
+}
+
+// ParseResponse parses the response from the CoinGecko API. The response is expected
+// to match every base currency with every quote currency. As such, we need to filter
+// out the responses that are not expected. Note that the response will only return
+// a response for the inputted tickers.
+func (h *APIHandler) ParseResponse(
+	tickers []types.ProviderTicker,
+	resp *http.Response,
+) types.PriceResponse {
+	// Parse the response.
+	var result CoinGeckoResponse
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return types.NewPriceResponseWithErr(tickers, providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode))
+	}
+
+	var (
+		resolved   = make(types.ResolvedPrices)
+		unresolved = make(types.UnResolvedPrices)
+	)
+
+	// Filter out the responses that are not expected.
+	providerTickers := types.NewProviderTickers(tickers...)
+	for base, quotes := range result {
+		for quote, price := range quotes {
+			// The ticker is represented as base/quote.
+			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
+
+			// If the ticker is not configured, we skip it.
+			ticker, ok := providerTickers.FromOffChain(offChainTicker)
+			if !ok {
+				continue
 			}
 
-			for cp := range tc.expected.UnResolved {
-				require.Contains(t, resp.UnResolved, cp)
-				require.Error(t, resp.UnResolved[cp])
-			}
-		})
+			// Resolve the price.
+			price := math.Float64ToBigInt(price, ticker.Decimals())
+			resolved[ticker] = types.NewPriceResult(price, time.Now())
+		}
 	}
+
+	// Add all expected tickers that did not return a response to the unresolved
+	// map.
+	for _, ticker := range tickers {
+		if _, resolvedOk := resolved[ticker]; !resolvedOk {
+			err := fmt.Errorf("no response")
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorNoResponse),
+			}
+		}
+	}
+
+	return types.NewPriceResponse(resolved, unresolved)
 }

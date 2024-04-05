@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
@@ -19,14 +20,25 @@ var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 // for more information about the Kraken API, refer to the following link:
 // https://docs.kraken.com/rest/
 type APIHandler struct {
+	// market is the config for the Kraken API.
+	market types.ProviderMarketMap
 	// api is the config for the Kraken API.
 	api config.APIConfig
 }
 
 // NewAPIHandler returns a new Kraken PriceAPIDataHandler.
 func NewAPIHandler(
+	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
+	if err := market.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
+	}
+
+	if market.Name != Name {
+		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
+	}
+
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
@@ -40,18 +52,24 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		api: api,
+		market: market,
+		api:    api,
 	}, nil
 }
 
 // CreateURL returns the URL that is used to fetch data from the Kraken API for the
 // given tickers.
 func (h *APIHandler) CreateURL(
-	tickers []types.ProviderTicker,
+	tickers []mmtypes.Ticker,
 ) (string, error) {
 	var tickerStrings string
 	for _, ticker := range tickers {
-		tickerStrings += fmt.Sprintf("%s%s", ticker.OffChainTicker(), Separator)
+		market, ok := h.market.TickerConfigs[ticker]
+		if !ok {
+			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
+		}
+
+		tickerStrings += fmt.Sprintf("%s%s", market.OffChainTicker, Separator)
 	}
 
 	if len(tickerStrings) == 0 {
@@ -67,7 +85,7 @@ func (h *APIHandler) CreateURL(
 // ParseResponse parses the response from the Kraken API and returns a GetResponse. Each
 // of the tickers supplied will get a response or an error.
 func (h *APIHandler) ParseResponse(
-	tickers []types.ProviderTicker,
+	tickers []mmtypes.Ticker,
 	resp *http.Response,
 ) types.PriceResponse {
 	// Parse the response into a ResponseBody.
@@ -98,16 +116,15 @@ func (h *APIHandler) ParseResponse(
 		)
 	}
 
-	providerTickers := types.NewProviderTickers(tickers...)
 	for pair, resultTicker := range result.Tickers {
 		resultTicker.pair = pair
 
-		ticker, ok := providerTickers.FromOffChain(pair)
+		ticker, ok := h.market.OffChainMap[pair]
 		if !ok {
 			continue
 		}
 
-		price, err := math.Float64StringToBigInt(resultTicker.LastPrice(), ticker.Decimals())
+		price, err := math.Float64StringToBigInt(resultTicker.LastPrice(), ticker.Decimals)
 		if err != nil {
 			wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", resultTicker.LastPrice(), err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
