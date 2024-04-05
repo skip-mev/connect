@@ -24,7 +24,7 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 		return err
 	}
 
-	// Set tthe main context for the provider orchestrator.
+	// Set the main context for the provider orchestrator.
 	ctx, _ = o.setMainCtx(ctx)
 
 	// Start all of the price providers.
