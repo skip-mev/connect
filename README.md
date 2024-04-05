@@ -101,14 +101,18 @@ To test these numbers yourself, spin up the the oracle server following the inst
 
 ## DEFI
 
-- Defi providers are currently an experimental feature, to generate local configs to run the defi providers locally, run
+* Defi providers are currently an experimental feature, to generate local configs to run the defi providers locally, run
+
 ```bash
 $ DEFI_PROVIDERS_ENABLED=true SOLANA_NODE_ENDPOINT=<SOLANA_NODE>  make update-local-configs
 ```
+
 Then, to run
+
 ```bash
 $ make run-oracle-server
 ```
+
 ## Future Work
 
 The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).
