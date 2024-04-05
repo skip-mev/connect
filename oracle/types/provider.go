@@ -36,8 +36,7 @@ type (
 
 	// ProviderTickers is a type alias for a list of provider tickers.
 	ProviderTickers struct {
-		tickers []ProviderTicker
-		cache   map[string]ProviderTicker
+		cache map[string]ProviderTicker
 	}
 )
 
@@ -45,16 +44,16 @@ type (
 func NewProviderTicker(
 	provider,
 	onChain,
-	json,
-	offChain string,
+	offChain,
+	json string,
 	decimals uint64,
 ) ProviderTicker {
 	return DefaultProviderTicker{
 		provider: provider,
 		onChain:  onChain,
 		offChain: offChain,
-		decimals: decimals,
 		json:     json,
+		decimals: decimals,
 	}
 }
 

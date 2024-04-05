@@ -39,11 +39,10 @@ func ProviderTickersFromMarketMap(
 			providerTicker := NewProviderTicker(
 				cfg.Name,
 				ticker.String(),
-				cfg.Metadata_JSON,
 				cfg.OffChainTicker,
+				cfg.Metadata_JSON,
 				DefaultTickerDecimals,
 			)
-
 			providerTickers = append(providerTickers, providerTicker)
 			seenOffChainTickers[cfg.OffChainTicker] = struct{}{}
 		}
