@@ -362,7 +362,7 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 				},
 			},
 			Paths: mmtypes.Paths{Paths: []mmtypes.Path{
-				mmtypes.Path{Operations: []mmtypes.Operation{
+				{Operations: []mmtypes.Operation{
 					{
 						CurrencyPair: cp,
 						Invert:       false,
