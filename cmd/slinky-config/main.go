@@ -91,7 +91,7 @@ var (
 	raydiumEnabled bool
 
 	// solana node url is the solana node that the raydium provider will connect to
-	solanaNodeURL string
+	solanaNodeURLs string
 
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
@@ -323,11 +323,11 @@ func init() {
 		"whether or not to enable raydium support",
 	)
 	rootCmd.Flags().StringVarP(
-		&solanaNodeURL,
+		&solanaNodeURLs,
 		"solana-node-endpoint",
 		"",
 		"",
-		"The HTTP endpoint of the solana node endpoint the raydium provider will be configured to use",
+		"The HTTP endpoints of the solana node endpoint the raydium provider will be configured to use, notice, if multiple are given they must be comma delimited",
 	)
 }
 
@@ -375,7 +375,13 @@ func createOracleConfig() error {
 	// add raydium provider to the list of providers if enabled
 	if raydiumEnabled {
 		cfg := raydium.DefaultAPIConfig
-		cfg.URL = solanaNodeURL
+		nodes := strings.Split(solanaNodeURLs, ",")
+
+		for _, node := range nodes {
+			cfg.Endpoints = append(cfg.Endpoints, config.Endpoint{
+				URL: node,
+			})
+		}
 
 		LocalOracleConfig.Providers = append(LocalOracleConfig.Providers, config.ProviderConfig{
 			Name: raydium.Name,
