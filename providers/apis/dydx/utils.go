@@ -14,6 +14,7 @@ import (
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
+	"github.com/skip-mev/slinky/providers/volatile"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -57,19 +58,20 @@ var DefaultAPIConfig = config.APIConfig{
 //
 // ref: https://github.com/dydxprotocol/v4-chain/blob/main/protocol/daemons/pricefeed/client/constants/exchange_common/exchange_id.go
 var ProviderMapping = map[string][]string{
-	"Binance":     {binance.Name},
-	"BinanceUS":   {binance.Name},
-	"Bitfinex":    {bitfinex.Name},
-	"Kraken":      {kraken.Name}, // We only support the API since the WebSocket has different pairs.
-	"Gate":        {gate.Name},
-	"Bitstamp":    {bitstamp.Name},
-	"Bybit":       {bybit.Name},
-	"CryptoCom":   {cryptodotcom.Name},
-	"Huobi":       {huobi.Name},
-	"Kucoin":      {kucoin.Name},
-	"Okx":         {okx.Name},
-	"Mexc":        {mexc.Name},
-	"CoinbasePro": {coinbaseapi.Name, coinbasews.Name}, // We support both the API and WebSocket.
+	"Binance":              {binance.Name},
+	"BinanceUS":            {binance.Name},
+	"Bitfinex":             {bitfinex.Name},
+	"Kraken":               {kraken.Name}, // We only support the API since the WebSocket has different pairs.
+	"Gate":                 {gate.Name},
+	"Bitstamp":             {bitstamp.Name},
+	"Bybit":                {bybit.Name},
+	"CryptoCom":            {cryptodotcom.Name},
+	"Huobi":                {huobi.Name},
+	"Kucoin":               {kucoin.Name},
+	"Okx":                  {okx.Name},
+	"Mexc":                 {mexc.Name},
+	"CoinbasePro":          {coinbaseapi.Name, coinbasews.Name}, // We support both the API and WebSocket.
+	"TestVolatileExchange": {volatile.Name},
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.

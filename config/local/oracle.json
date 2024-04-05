@@ -1,5 +1,5 @@
 {
-  "updateInterval": 1500000000,
+  "updateInterval": 500000000,
   "maxPriceAge": 120000000000,
   "providers": [
     {
@@ -133,6 +133,36 @@
         "atomic": true,
         "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
         "name": "kraken_api"
+      },
+      "webSocket": {
+        "enabled": false,
+        "maxBufferSize": 0,
+        "reconnectionTimeout": 0,
+        "wss": "",
+        "name": "",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 0,
+        "enableCompression": false,
+        "readTimeout": 0,
+        "writeTimeout": 0,
+        "pingInterval": 0,
+        "maxReadErrorCount": 0,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "volatile-exchange-provider",
+      "api": {
+        "enabled": true,
+        "timeout": 500000000,
+        "interval": 500000000,
+        "reconnectTimeout": 500000000,
+        "maxQueries": 1,
+        "atomic": false,
+        "url": "volatile-exchange-provider",
+        "name": "volatile-exchange-provider"
       },
       "webSocket": {
         "enabled": false,
