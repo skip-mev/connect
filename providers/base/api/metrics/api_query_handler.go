@@ -9,6 +9,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
 const (
@@ -26,7 +27,7 @@ const (
 type APIMetrics interface {
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
 	// This increments the number of responses by provider, id (i.e. currency pair), and status.
-	AddProviderResponse(providerName, id string, status Status)
+	AddProviderResponse(providerName, id string, status providertypes.ErrorCode)
 
 	// AddHTTPStatusCode increments the number of responses by provider and status.
 	// This is used to track the number of responses by provider and status.
@@ -94,16 +95,23 @@ func NewNopAPIMetrics() APIMetrics {
 	return &noOpAPIMetricsImpl{}
 }
 
-func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ Status)         {}
+func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode)         {}
 func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)             {}
 func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration) {}
 
 // AddProviderResponse increments the number of requests by provider and status.
-func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, status Status) {
+func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err providertypes.ErrorCode) {
+	var status string
+	if err.Error() == nil {
+		status = "success"
+	} else {
+		status = err.Error().Error()
+	}
+
 	m.apiResponseStatusPerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
 		providermetrics.IDLabel:       id,
-		StatusLabel:                   status.String(),
+		StatusLabel:                   status,
 	},
 	).Add(1)
 }
