@@ -18,6 +18,8 @@ GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
+DEFI_PROVIDERS_ENABLED ?= false
+SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
@@ -43,7 +45,8 @@ run-prom-client:
 
 update-local-configs: build
 	@echo "Updating local config..."
-	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE} --raydium-enabled ${DEFI_ORACLE_ENABLED} \
+		--solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."

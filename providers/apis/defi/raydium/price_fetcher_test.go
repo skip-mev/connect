@@ -443,7 +443,6 @@ func TestProviderFetch(t *testing.T) {
 	t.Run("failing accounts query", func(t *testing.T) {
 		ctx := context.Background()
 		err := fmt.Errorf("error")
-
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
