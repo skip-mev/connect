@@ -54,11 +54,7 @@ func (h *APIHandler) CreateURL(
 	if len(tickers) != 1 {
 		return "", fmt.Errorf("expected 1 ticker, got %d", len(tickers))
 	}
-
-	// Ensure that the base and quote currencies are supported by the Coinbase API and
-	// are configured for the handler.
-	ticker := tickers[0]
-	return fmt.Sprintf(h.api.URL, ticker.OffChainTicker()), nil
+	return fmt.Sprintf(h.api.URL, tickers[0].GetOffChainTicker()), nil
 }
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns
@@ -88,7 +84,7 @@ func (h *APIHandler) ParseResponse(
 
 	// Convert the float64 price into a big.Int.
 	ticker := tickers[0]
-	price, err := math.Float64StringToBigFloat(result.Data.Amount, ticker.Decimals())
+	price, err := math.Float64StringToBigFloat(result.Data.Amount, ticker.GetDecimals())
 	if err != nil {
 		return types.NewPriceResponseWithErr(
 			tickers,
