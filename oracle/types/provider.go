@@ -33,7 +33,7 @@ type (
 		json     string
 	}
 
-	// ProviderTickers is a type alias for a list of provider tickers.
+	// ProviderTickers is helper struct to manage a list of provider tickers.
 	ProviderTickers struct {
 		cache map[string]ProviderTicker
 	}

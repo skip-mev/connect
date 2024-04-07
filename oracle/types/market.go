@@ -3,7 +3,6 @@ package types
 import (
 	"fmt"
 
-	"github.com/skip-mev/slinky/pkg/json"
 	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
@@ -49,45 +48,18 @@ func ProviderTickersFromMarketMap(
 	return providerTickers, nil
 }
 
-// SimpleProviderTicker is a simple representation of a provider ticker. Provider's
-// can utilize this to easily configure custom tickers.
-type SimpleProviderTicker struct {
-	Name           string
-	OffChainTicker string
-	JSON           string
-}
-
-// ValidateBasic validates the simple provider ticker.
-func (spt *SimpleProviderTicker) ValidateBasic() error {
-	if spt.Name == "" {
-		return fmt.Errorf("name cannot be empty")
-	}
-	if spt.OffChainTicker == "" {
-		return fmt.Errorf("off-chain ticker cannot be empty")
-	}
-	return json.IsValid([]byte(spt.JSON))
-}
-
 // TickersToProviderTickers is a map of tickers to provider tickers. This should be
 // utilized by providers to configure the tickers they will be providing data for.
-type TickersToProviderTickers map[mmtypes.Ticker]SimpleProviderTicker
+type TickersToProviderTickers map[mmtypes.Ticker]DefaultProviderTicker
 
-// MustToProviderTickers converts the map to a list of provider tickers.
-func (tpt *TickersToProviderTickers) MustToProviderTickers() []ProviderTicker {
-	var providerTickers []ProviderTicker
+// ToProviderTickers converts the map to a list of provider tickers.
+func (tpt *TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
+	var providerTickers = make([]ProviderTicker, len(*tpt))
 
-	for _, simpleProviderTicker := range *tpt {
-		if err := simpleProviderTicker.ValidateBasic(); err != nil {
-			panic(err)
-		}
-
-		providerTicker := NewProviderTicker(
-			simpleProviderTicker.Name,
-			simpleProviderTicker.OffChainTicker,
-			simpleProviderTicker.JSON,
-			DefaultTickerDecimals,
-		)
-		providerTickers = append(providerTickers, providerTicker)
+	i := 0
+	for _, ticker := range *tpt {
+		providerTickers[i] = ticker
+		i++
 	}
 
 	return providerTickers
