@@ -196,3 +196,48 @@ func TestBigFloatToBigInt(t *testing.T) {
 		})
 	}
 }
+
+func TestFloat64StringToBigFloat(t *testing.T) {
+	testCases := []struct {
+		name     string
+		in       string
+		decimals uint64
+		out      *big.Float
+		err      bool
+	}{
+		{
+			name:     "zero",
+			in:       "0",
+			decimals: 6,
+			out:      big.NewFloat(0),
+			err:      false,
+		},
+		{
+			name:     "1",
+			in:       "1",
+			decimals: 6,
+			out:      big.NewFloat(1e6),
+			err:      false,
+		},
+		{
+			name: "value that has more 0s than decimals",
+			in:   "0.0000000000000001", // 1e-16
+			// 1e-16 * 1e6 = 1e-10
+			decimals: 6,
+			out:      big.NewFloat(1e-10),
+			err:      false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.in, func(t *testing.T) {
+			out, err := math.Float64StringToBigFloat(tc.in, tc.decimals)
+			if tc.err {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.out.SetPrec(uint(20)), out.SetPrec(uint(20)))
+			}
+		})
+	}
+}
