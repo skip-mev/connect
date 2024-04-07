@@ -125,7 +125,7 @@ func (h *APIHandler) getUniqueBaseAndQuoteDenoms(tickers []types.ProviderTicker)
 	// unique bases and quotes list as long as they are supported.
 	for _, ticker := range tickers {
 		// Split the market ticker into the base and quote currencies.
-		split := strings.Split(ticker.OffChainTicker(), TickerSeparator)
+		split := strings.Split(ticker.GetOffChainTicker(), TickerSeparator)
 		if len(split) != 2 {
 			return "", "", fmt.Errorf("ticker %s is not formatted correctly", ticker.String())
 		}

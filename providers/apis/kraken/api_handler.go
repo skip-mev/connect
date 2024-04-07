@@ -54,7 +54,7 @@ func (h *APIHandler) CreateURL(
 ) (string, error) {
 	var tickerStrings string
 	for _, ticker := range tickers {
-		tickerStrings += fmt.Sprintf("%s%s", ticker.OffChainTicker(), Separator)
+		tickerStrings += fmt.Sprintf("%s%s", ticker.GetOffChainTicker(), Separator)
 		h.cache.Add(ticker)
 	}
 
@@ -110,7 +110,7 @@ func (h *APIHandler) ParseResponse(
 			continue
 		}
 
-		price, err := math.Float64StringToBigFloat(resultTicker.LastPrice(), ticker.Decimals())
+		price, err := math.Float64StringToBigFloat(resultTicker.LastPrice(), ticker.GetDecimals())
 		if err != nil {
 			wErr := fmt.Errorf(
 				"failed to convert price %s to big.Int: %w",

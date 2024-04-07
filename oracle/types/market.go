@@ -67,20 +67,9 @@ func (tpt *TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
 // MustGetProviderTicker returns the provider ticker for the given x/marketmap ticker.
 // This function is mostly used for testing.
 func (tpt *TickersToProviderTickers) MustGetProviderTicker(ticker mmtypes.Ticker) ProviderTicker {
-	simpleProviderTicker, ok := (*tpt)[ticker]
+	providerTicker, ok := (*tpt)[ticker]
 	if !ok {
 		panic(fmt.Sprintf("ticker %s not found", ticker))
 	}
-
-	if err := simpleProviderTicker.ValidateBasic(); err != nil {
-		panic(err)
-	}
-
-	providerTicker := NewProviderTicker(
-		simpleProviderTicker.Name,
-		simpleProviderTicker.OffChainTicker,
-		simpleProviderTicker.JSON,
-		DefaultTickerDecimals,
-	)
 	return providerTicker
 }
