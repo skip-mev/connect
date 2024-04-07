@@ -66,6 +66,21 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 	apiHandler APIDataHandler[K, V],
 	metrics metrics.APIMetrics,
 ) (APIQueryHandler[K, V], error) {
+	priceFetcher, err := NewRestAPIFetcher(requestHandler, apiHandler, metrics, cfg, logger)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create price fetcher: %w", err)
+	}
+
+	return NewAPIQueryHandlerWithPriceFetcher(logger, cfg, priceFetcher, metrics)
+}
+
+// NewAPIQueryHandlerWithPriceFetcher creates a new APIQueryHandler with a custom price fetcher.
+func NewAPIQueryHandlerWithPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue](
+	logger *zap.Logger,
+	cfg config.APIConfig,
+	fetcher APIFetcher[K, V],
+	metrics metrics.APIMetrics,
+) (APIQueryHandler[K, V], error) {
 	if err := cfg.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid provider config: %w", err)
 	}
@@ -81,12 +96,6 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 	if metrics == nil {
 		return nil, fmt.Errorf("no metrics specified for api query handler")
 	}
-
-	fetcher, err := NewRestAPIFetcher(requestHandler, apiHandler, metrics, cfg, logger)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create api fetcher: %w", err)
-	}
-
 	return &APIQueryHandlerImpl[K, V]{
 		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
 		config:  cfg,
