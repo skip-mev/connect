@@ -48,6 +48,17 @@ func APIQueryHandlerFactory(
 		Timeout:   cfg.API.Timeout,
 	}
 
+	// validate that batch-size (if required) * cfg.API.MaxQueries will handle all
+	// tickers
+	if !cfg.API.Atomic {
+		if batchSize := math.Max(1, cfg.API.BatchSize); len(tickers) > batchSize*cfg.API.MaxQueries {
+			return nil, fmt.Errorf(
+				"number of tickers to fetch for: %d is greater than the batch-size (%d) * max-queries (%d)",
+				len(tickers), batchSize, cfg.API.MaxQueries,
+			)
+		}
+	}
+
 	var (
 		apiPriceFetcher types.PriceAPIFetcher
 		apiDataHandler  types.PriceAPIDataHandler

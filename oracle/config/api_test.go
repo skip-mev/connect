@@ -144,7 +144,7 @@ func TestAPIConfig(t *testing.T) {
 				MaxQueries:       1,
 				Name:             "test",
 				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
-				BatchSize:        1,	
+				BatchSize:        1,
 			},
 			expectedErr: false,
 		},

@@ -32,6 +32,8 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 
 // APIFetcher is an interface that encapsulates fetching data from a provider. This interface
 // is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
+//
+//go:generate mockery --name APIFetcher --output ./mocks/ --case underscore
 type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	// Fetch fetches data from the API for the given IDs. The response is returned as a map of IDs to
 	// their respective responses. The request should respect the context timeout and cancel the request
@@ -153,9 +155,38 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
 	} else {
-		for i := 0; i < len(ids); i++ {
-			id := ids[i]
-			tasks = append(tasks, h.subTask(ctx, []K{id}, responseCh))
+		// Calculate the batch size based on the configuration.
+		batchSize := math.Max(1, h.config.BatchSize)
+
+		// determine the number of queries we need to make based on the batch size.
+		threads := (len(ids) / batchSize) + 1
+		if threads > limit {
+			err := fmt.Errorf(
+				"number of threads %d needed to query ids %d exceeds limit %d",
+				threads, len(ids), limit,
+			)
+
+			// write an error response to the response channel and return.
+			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
+				ids,
+				providertypes.NewErrorWithCode(
+					err,
+					providertypes.ErrorAPIGeneral,
+				),
+			))
+
+			h.logger.Error("failed to query ids", zap.Error(err))
+			// signal to the parent that a fatal error occurred
+			return
+		}
+
+		for i := 0; i < threads; i++ {
+			// Calculate the start and end indices for the batch.
+			start := i * batchSize
+			end := math.Min(len(ids), (i+1)*batchSize)
+
+			// Create a new task for the batch.
+			tasks = append(tasks, h.subTask(ctx, ids[start:end], responseCh))
 		}
 	}
 

@@ -23,6 +23,7 @@ import (
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	mockmetrics "github.com/skip-mev/slinky/providers/base/api/metrics/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -640,6 +641,154 @@ func TestAPIQueryHandler(t *testing.T) {
 			require.Equal(t, len(expectedResponses.UnResolved), len(unResolved))
 		})
 	}
+}
+
+func TestAPIQueryHandlerWithBatchSize(t *testing.T) {
+	cfg = config.APIConfig{
+		Enabled:          true,
+		Timeout:          500 * time.Millisecond,
+		Interval:         250 * time.Millisecond,
+		ReconnectTimeout: 250 * time.Millisecond,
+		MaxQueries:       3,
+		BatchSize:        2,
+		URL:              constantURL,
+		Name:             "handler1",
+	}
+
+	pf := mocks.NewAPIFetcher[mmtypes.Ticker, *big.Int](t)
+
+	handler, err := handlers.NewAPIQueryHandlerWithFetcher(
+		zap.NewNop(),
+		cfg,
+		pf,
+		metrics.NewNopAPIMetrics(),
+	)
+	require.NoError(t, err)
+
+	t.Run("Query with batch-size correctly batches requests", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		// create response channel
+		responseCh := make(chan providertypes.GetResponse[mmtypes.Ticker, *big.Int], 3)
+
+		// mock 3 executions to price-fetcher
+		queriedTickers := map[string]bool{
+			"BTC/USD":  false,
+			"BTC1/USD": false,
+			"BTC2/USD": false,
+			"BTC3/USD": false,
+			"BTC4/USD": false,
+		}
+		pf.On("Fetch", mock.Anything, mock.Anything).Return(providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](nil, nil)).Run(func(args mock.Arguments) {
+			// expect 2 executions w/ 2 arguments and 1 with 1 argument
+			tickers := args.Get(1).([]mmtypes.Ticker)
+
+			if !(len(tickers) == 1 || len(tickers) == 2) {
+				t.Errorf("unexpected number of arguments: %d", len(args))
+			}
+			// mark tickers as queried
+			for _, ticker := range tickers {
+				if _, ok := queriedTickers[ticker.String()]; !ok {
+					t.Errorf("unexpected ticker queried: %s", ticker.String())
+				}
+
+				queriedTickers[ticker.String()] = true
+			}
+		})
+
+		// query
+		done := make(chan struct{})
+		go func() {
+			handler.Query(ctx, []mmtypes.Ticker{
+				mmtypes.NewTicker("BTC", "USD", 8, 0),
+				mmtypes.NewTicker("BTC1", "USD", 8, 0),
+				mmtypes.NewTicker("BTC2", "USD", 8, 0),
+				mmtypes.NewTicker("BTC3", "USD", 8, 0),
+				mmtypes.NewTicker("BTC4", "USD", 8, 0),
+			}, responseCh)
+			close(done)
+		}()
+
+		// wait for response
+		numResponses := 0
+		for range responseCh {
+			numResponses++
+			if numResponses == 3 {
+				break
+			}
+		}
+
+		// close the handler
+		cancel()
+		select {
+		case <-done:
+		case <-time.After(3 * time.Second):
+			t.Fatal("handler did not close")
+		}
+
+		// assert
+		for ticker, queried := range queriedTickers {
+			if !queried {
+				t.Errorf("ticker not queried: %s", ticker)
+			}
+		}
+	})
+
+	t.Run("Query with incorrect batch-size, error handled gracefully", func(t *testing.T) {
+		cfg = config.APIConfig{
+			Enabled:          true,
+			Timeout:          500 * time.Millisecond,
+			Interval:         250 * time.Millisecond,
+			ReconnectTimeout: 250 * time.Millisecond,
+			MaxQueries:       1,
+			BatchSize:        2,
+			URL:              constantURL,
+			Name:             "handler1",
+		}
+
+		pf := mocks.NewAPIFetcher[mmtypes.Ticker, *big.Int](t)
+
+		handler, err := handlers.NewAPIQueryHandlerWithFetcher(
+			zap.NewNop(),
+			cfg,
+			pf,
+			metrics.NewNopAPIMetrics(),
+		)
+		require.NoError(t, err)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+		responseCh := make(chan providertypes.GetResponse[mmtypes.Ticker, *big.Int], 1)
+
+		go func() {
+			handler.Query(ctx, []mmtypes.Ticker{
+				mmtypes.NewTicker("BTC", "USD", 8, 0),
+				mmtypes.NewTicker("BTC1", "USD", 8, 0),
+				mmtypes.NewTicker("BTC2", "USD", 8, 0),
+				mmtypes.NewTicker("BTC3", "USD", 8, 0),
+				mmtypes.NewTicker("BTC4", "USD", 8, 0),
+			}, responseCh)
+			close(responseCh)
+		}()
+
+		// wait for response
+		var response providertypes.GetResponse[mmtypes.Ticker, *big.Int]
+		select {
+		case response = <-responseCh:
+		case <-ctx.Done():
+			t.Fatal("handler did not close")
+		}
+
+		// assert
+		require.NotNil(t, response)
+		require.Equal(t, 5, len(response.UnResolved))
+
+		for _, unresolved := range response.UnResolved {
+			require.Equal(t, unresolved.Code(), providertypes.ErrorAPIGeneral)
+			require.Equal(t, unresolved.Error(), fmt.Sprintf("number of threads %d needed to query ids %d exceeds limit %d", 3, 5, 1))
+		}
+	})
 }
 
 func newRateLimitResponse() *http.Response {

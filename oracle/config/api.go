@@ -37,8 +37,8 @@ type APIConfig struct {
 	Endpoints []Endpoint `json:"endpoints"`
 
 	// BatchSize is the maximum number of IDs that the provider can query in a single
-	// request. This parameter must be 0 for atomic providers. Otherwise, the effective 
-	// value will be max(1, BatchSize). Notice, if numCPs > batchSize * maxQueries then 
+	// request. This parameter must be 0 for atomic providers. Otherwise, the effective
+	// value will be max(1, BatchSize). Notice, if numCPs > batchSize * maxQueries then
 	// some currency-pairs may not be fetched each interval.
 	BatchSize int `json:"batchSize"`
 
