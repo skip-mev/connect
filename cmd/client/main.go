@@ -31,7 +31,7 @@ var (
 
 			// Set up a connection to the server.
 			url := fmt.Sprintf("%s:%s", host, port)
-			conn, err := grpc.Dial(url, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+			conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
 			if err != nil {
 				log.Fatalf("did not connect: %v", err)
 			}

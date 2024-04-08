@@ -33,8 +33,18 @@ type APIConfig struct {
 	// URL is the URL that is used to fetch data from the API.
 	URL string `json:"url"`
 
+	// Endpoints is a list of endpoints that the provider can query.
+	Endpoints []Endpoint `json:"endpoints"`
+
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`
+}
+
+// Endpoint holds all data necessary for an API provider to connect to a given endpoint
+// i.e URL, headers, authentication, etc.
+type Endpoint struct {
+	// URL is the URL that is used to fetch data from the API.
+	URL string `json:"url"`
 }
 
 // ValidateBasic performs basic validation of the API config.
@@ -51,8 +61,8 @@ func (c *APIConfig) ValidateBasic() error {
 		return fmt.Errorf("provider interval, timeout and reconnect timeout must be strictly positive")
 	}
 
-	if len(c.URL) == 0 {
-		return fmt.Errorf("provider url cannot be empty")
+	if len(c.URL) == 0 && len(c.Endpoints) == 0 {
+		return fmt.Errorf("provider url and endpoints cannot be empty")
 	}
 
 	if len(c.Name) == 0 {
