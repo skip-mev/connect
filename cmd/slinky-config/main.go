@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -12,9 +13,11 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	raydium "github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
@@ -32,13 +35,10 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	raydium "github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"io"
 )
 
 const (
-	// raydiumPairsFixture is the path to the fixture file containing all raydium markets
+	// raydiumPairsFixture is the path to the fixture file containing all raydium markets.
 	raydiumPairsFixture = "./cmd/slinky-config/fixtures/raydium_pairs.json"
 )
 
@@ -87,11 +87,11 @@ var (
 	// maxPriceAge is the maximum age of a price that the oracle will accept.
 	maxPriceAge time.Duration
 
-	// raydium-enabled determine whether or not the raydium defi provider will be configured
+	// raydium-enabled determine whether or not the raydium defi provider will be configured.
 	raydiumEnabled bool
 
-	// solana node url is the solana node that the raydium provider will connect to
-	solanaNodeURL string
+	// solana node url is the solana node that the raydium provider will connect to.
+	solanaNodeURLs []string
 
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
@@ -322,12 +322,12 @@ func init() {
 		false,
 		"whether or not to enable raydium support",
 	)
-	rootCmd.Flags().StringVarP(
-		&solanaNodeURL,
+	rootCmd.Flags().StringSliceVarP(
+		&solanaNodeURLs,
 		"solana-node-endpoint",
 		"",
-		"",
-		"The HTTP endpoint of the solana node endpoint the raydium provider will be configured to use",
+		nil,
+		"The HTTP endpoints of the solana node endpoint the raydium provider will be configured to use. If multiple are given they must be comma delimited",
 	)
 }
 
@@ -375,7 +375,12 @@ func createOracleConfig() error {
 	// add raydium provider to the list of providers if enabled
 	if raydiumEnabled {
 		cfg := raydium.DefaultAPIConfig
-		cfg.URL = solanaNodeURL
+
+		for _, node := range solanaNodeURLs {
+			cfg.Endpoints = append(cfg.Endpoints, config.Endpoint{
+				URL: node,
+			})
+		}
 
 		LocalOracleConfig.Providers = append(LocalOracleConfig.Providers, config.ProviderConfig{
 			Name: raydium.Name,
@@ -564,13 +569,13 @@ func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.P
 	providerToMarkets[raydium.Name] = make(map[mmtypes.Ticker]mmtypes.ProviderConfig)
 	for _, pair := range raydiumPairs {
 		providerToMarkets[raydium.Name][mmtypes.Ticker{
-			CurrencyPair: pair.Cp,
-			Decimals: 18,
+			CurrencyPair:     pair.Cp,
+			Decimals:         18,
 			MinProviderCount: 1,
-			Enabled: true,
-			Metadata_JSON: marshalToJSONString(pair.TickerMetaData),
+			Enabled:          true,
+			Metadata_JSON:    marshalToJSONString(pair.TickerMetaData),
 		}] = mmtypes.ProviderConfig{
-			Name: raydium.Name,
+			Name:           raydium.Name,
 			OffChainTicker: pair.Cp.String(),
 		}
 	}
