@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -680,6 +681,7 @@ func TestAPIQueryHandlerWithBatchSize(t *testing.T) {
 			"BTC3/USD": false,
 			"BTC4/USD": false,
 		}
+		mtx := sync.Mutex{}
 		pf.On("Fetch", mock.Anything, mock.Anything).Return(providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](nil, nil)).Run(func(args mock.Arguments) {
 			// expect 2 executions w/ 2 arguments and 1 with 1 argument
 			tickers := args.Get(1).([]mmtypes.Ticker)
@@ -689,11 +691,13 @@ func TestAPIQueryHandlerWithBatchSize(t *testing.T) {
 			}
 			// mark tickers as queried
 			for _, ticker := range tickers {
+				mtx.Lock()
 				if _, ok := queriedTickers[ticker.String()]; !ok {
 					t.Errorf("unexpected ticker queried: %s", ticker.String())
 				}
 
 				queriedTickers[ticker.String()] = true
+				mtx.Unlock()
 			}
 		})
 

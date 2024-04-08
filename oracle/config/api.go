@@ -21,9 +21,8 @@ type APIConfig struct {
 	// reconnecting to the API.
 	ReconnectTimeout time.Duration `json:"reconnectTimeout"`
 
-	// MaxQueries is the maximum number of queries that the provider will make
-	// within the interval. If the provider makes more queries than this, it will
-	// stop making queries until the next interval.
+	// MaxQueries is the maximum number of concurrent queries that the provider will make
+	// within the interval.
 	MaxQueries int `json:"maxQueries"`
 
 	// Atomic is a flag that indicates whether the provider can fulfill its queries

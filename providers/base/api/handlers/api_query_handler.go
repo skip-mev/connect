@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	gomath "math"
 	"strings"
 	"time"
 
@@ -159,9 +160,9 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		batchSize := math.Max(1, h.config.BatchSize)
 
 		// determine the number of queries we need to make based on the batch size.
-		threads := (len(ids) / batchSize) + 1
+		threads := int(gomath.Ceil(float64(len(ids)) / float64(batchSize)))
 
-		// update limit in accordance, we want to avoid unnecessary go routines
+		// update limit in accordance with # of threads necessary, we want to avoid unnecessary go routines
 		// if the number of threads (tasks) is less than the limit.
 		limit = math.Min(limit, threads)
 
