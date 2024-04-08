@@ -107,7 +107,7 @@ func (h *WebSocketHandler) parseTickerMessage(
 
 	// Parse the price update.
 	priceStr := resp.TickerData.VolumeWeightedAveragePrice[TodayPriceIndex]
-	price, err := math.Float64StringToBigFloat(priceStr, ticker.GetDecimals())
+	price, err := math.Float64StringToBigFloat(priceStr)
 	if err != nil {
 		wErr := fmt.Errorf("failed to parse price %s: %w", priceStr, err)
 		unResolved[ticker] = providertypes.UnresolvedResult{

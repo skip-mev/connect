@@ -59,7 +59,7 @@ func TestHandleMessage(t *testing.T) {
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
 					btc_usd: {
-						Value: big.NewFloat(10000e18),
+						Value: big.NewFloat(10000.00),
 					},
 				},
 			},
@@ -199,7 +199,7 @@ func TestHandleMessage(t *testing.T) {
 
 			for cp, result := range tc.resp.Resolved {
 				require.Contains(t, resp.Resolved, cp)
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), resp.Resolved[cp].Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), resp.Resolved[cp].Value.SetPrec(18))
 			}
 
 			for cp := range tc.resp.UnResolved {

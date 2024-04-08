@@ -40,7 +40,7 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 		}
 
 		// Attempt to parse the price.
-		if price, err := math.Float64StringToBigFloat(instrument.LatestTradePrice, ticker.GetDecimals()); err != nil {
+		if price, err := math.Float64StringToBigFloat(instrument.LatestTradePrice); err != nil {
 			wErr := fmt.Errorf("failed to parse price %s:"+" %w", instrument.LatestTradePrice, err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),

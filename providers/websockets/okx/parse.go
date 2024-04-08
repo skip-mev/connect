@@ -90,10 +90,10 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 			continue
 		}
 
-		// Convert the price to a big.Int.
-		price, err := math.Float64StringToBigFloat(instrument.IndexPrice, ticker.GetDecimals())
+		// Convert the price to a big.Float.
+		price, err := math.Float64StringToBigFloat(instrument.IndexPrice)
 		if err != nil {
-			wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+			wErr := fmt.Errorf("failed to convert price to big.Float: %w", err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 			}

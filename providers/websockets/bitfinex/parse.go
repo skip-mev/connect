@@ -3,6 +3,7 @@ package bitfinex
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"time"
 
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -10,7 +11,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -119,8 +119,8 @@ func (h *WebSocketHandler) handleStream(
 	}
 
 	lastPrice := dataArr[6]
-	// Convert the price to a big int.
-	price := math.Float64ToBigFloat(lastPrice.(float64), ticker.GetDecimals())
+	// Convert the price to a big Float.
+	price := big.NewFloat(lastPrice.(float64))
 	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 
 	return types.NewPriceResponse(resolved, unResolved), nil

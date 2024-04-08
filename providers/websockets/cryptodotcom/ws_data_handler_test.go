@@ -138,7 +138,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: types.NewPriceResult(big.NewFloat(42069e18), time.Now()),
+					btc_usd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{},
 			},
@@ -203,9 +203,9 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: types.NewPriceResult(big.NewFloat(42069e18), time.Now()),
-					eth_usd: types.NewPriceResult(big.NewFloat(2000e18), time.Now()),
-					sol_usd: types.NewPriceResult(big.NewFloat(1000e18), time.Now()),
+					btc_usd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
+					eth_usd: types.NewPriceResult(big.NewFloat(2000.00), time.Now()),
+					sol_usd: types.NewPriceResult(big.NewFloat(1000.00), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{},
 			},
@@ -240,7 +240,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: types.NewPriceResult(big.NewFloat(42069e18), time.Now()),
+					btc_usd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{
 					sol_usd: providertypes.UnresolvedResult{
@@ -277,7 +277,7 @@ func TestHandleMessage(t *testing.T) {
 
 			for cp, result := range tc.resp.Resolved {
 				require.Contains(t, resp.Resolved, cp)
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), resp.Resolved[cp].Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), resp.Resolved[cp].Value.SetPrec(18))
 			}
 
 			for cp := range tc.resp.UnResolved {
