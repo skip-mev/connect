@@ -8,7 +8,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
@@ -32,7 +31,6 @@ func WebSocketQueryHandlerFactory(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	wsMetrics wsmetrics.WebSocketMetrics,
-	marketMap types.ProviderMarketMap,
 ) (types.PriceWebSocketQueryHandler, error) {
 	err := cfg.ValidateBasic()
 	if err != nil {
@@ -41,10 +39,8 @@ func WebSocketQueryHandlerFactory(
 
 	// Create the underlying client that can be utilized by websocket providers that need to
 	// interact with an API.
-	tickers := marketMap.GetTickers()
-	maxCons := math.Min(len(tickers), cfg.API.MaxQueries)
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: maxCons},
+		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries},
 		Timeout:   cfg.API.Timeout,
 	}
 
@@ -56,24 +52,24 @@ func WebSocketQueryHandlerFactory(
 
 	switch cfg.Name {
 	case bitfinex.Name:
-		wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case bitstamp.Name:
-		wsDataHandler, err = bitstamp.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = bitstamp.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case bybit.Name:
-		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = bybit.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case coinbasews.Name:
-		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = coinbasews.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case cryptodotcom.Name:
-		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = cryptodotcom.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case gate.Name:
-		wsDataHandler, err = gate.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = gate.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case huobi.Name:
-		wsDataHandler, err = huobi.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = huobi.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case kraken.Name:
-		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = kraken.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case kucoin.Name:
 		// Create the KuCoin websocket data handler.
-		wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = kucoin.NewWebSocketDataHandler(logger, cfg.WebSocket)
 		if err != nil {
 			return nil, err
 		}
@@ -93,9 +89,9 @@ func WebSocketQueryHandlerFactory(
 			wshandlers.WithPreDialHook(kucoin.PreDialHook(cfg.API, requestHandler)),
 		)
 	case mexc.Name:
-		wsDataHandler, err = mexc.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = mexc.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case okx.Name:
-		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, marketMap, cfg.WebSocket)
+		wsDataHandler, err = okx.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

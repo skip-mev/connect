@@ -19,7 +19,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		amplitude     float64
 		offset        float64
 		frequency     float64
-		expectedPrice *big.Int
+		expectedPrice *big.Float
 	}{
 		{
 			name:          "test cosinePhase 0",
@@ -27,7 +27,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(195),
+			expectedPrice: big.NewFloat(195),
 		},
 		{
 			name:          "test cosinePhase .25",
@@ -35,7 +35,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(5),
+			expectedPrice: big.NewFloat(5.000000000000004),
 		},
 		{
 			name:          "test cosinePhase .26",
@@ -43,7 +43,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(5),
+			expectedPrice: big.NewFloat(5.749103375124606),
 		},
 		{
 			name:          "test cosinePhase .5",
@@ -51,7 +51,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(195),
+			expectedPrice: big.NewFloat(195),
 		},
 		{
 			name:          "test cosinePhase .51",
@@ -59,7 +59,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(5),
+			expectedPrice: big.NewFloat(5.749103375124606),
 		},
 		{
 			name:          "test cosinePhase .80",
@@ -67,7 +67,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(176),
+			expectedPrice: big.NewFloat(176.85661446561997),
 		},
 		{
 			name:          "test cosinePhase .99",
@@ -75,7 +75,7 @@ func TestGetVolatilePrice(t *testing.T) {
 			amplitude:     float64(0.95),
 			offset:        float64(100),
 			frequency:     float64(1),
-			expectedPrice: big.NewInt(5),
+			expectedPrice: big.NewFloat(5.749103375124606),
 		},
 	}
 	for _, tc := range testCases {
