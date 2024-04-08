@@ -4,10 +4,6 @@ import (
 	"fmt"
 )
 
-// DefaultTickerDecimals is the number of decimal places every single price
-// is scaled to before being sent for aggregation.
-const DefaultTickerDecimals = 18
-
 type (
 	// ProviderTicker is the interface for the ticker that provider's utilize/return.
 	ProviderTicker interface {
@@ -17,8 +13,6 @@ type (
 		Provider() string
 		// OffChainTicker returns the off-chain representation for the ticker.
 		OffChainTicker() string
-		// Decimals returns the number of decimals for the ticker.
-		Decimals() uint64
 		// JSON returns additional JSON data for the ticker.
 		JSON() string
 	}
@@ -29,11 +23,10 @@ type (
 	DefaultProviderTicker struct {
 		provider string
 		offChain string
-		decimals uint64
 		json     string
 	}
 
-	// ProviderTickers is helper struct to manage a list of provider tickers.
+	// ProviderTickers is a helper struct to manage a list of provider tickers.
 	ProviderTickers struct {
 		cache map[string]ProviderTicker
 	}
@@ -42,13 +35,11 @@ type (
 // NewProviderTicker returns a new provider ticker.
 func NewProviderTicker(
 	provider, offChain, json string,
-	decimals uint64,
 ) ProviderTicker {
 	return DefaultProviderTicker{
 		provider: provider,
 		offChain: offChain,
 		json:     json,
-		decimals: decimals,
 	}
 }
 
@@ -62,11 +53,6 @@ func (t DefaultProviderTicker) OffChainTicker() string {
 	return t.offChain
 }
 
-// Decimals returns the number of decimals for the ticker.
-func (t DefaultProviderTicker) Decimals() uint64 {
-	return t.decimals
-}
-
 // JSON returns additional JSON data for the ticker.
 func (t DefaultProviderTicker) JSON() string {
 	return t.json
@@ -75,10 +61,9 @@ func (t DefaultProviderTicker) JSON() string {
 // String returns the string representation of the provider ticker.
 func (t DefaultProviderTicker) String() string {
 	return fmt.Sprintf(
-		"provider: %s, off-chain-ticker: %s, decimals: %d, json: %s",
+		"provider: %s, off-chain-ticker: %s, json: %s",
 		t.provider,
 		t.offChain,
-		t.decimals,
 		t.json,
 	)
 }
