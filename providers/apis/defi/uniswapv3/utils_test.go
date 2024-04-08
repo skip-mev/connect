@@ -3,7 +3,7 @@ package uniswapv3_test
 import (
 	"testing"
 
-	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/stretchr/testify/require"
 )
 

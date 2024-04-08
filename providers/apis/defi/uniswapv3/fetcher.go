@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	uniswappool "github.com/skip-mev/slinky/providers/apis/uniswapv3/pool"
+	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -83,7 +83,7 @@ func NewPriceFetcher(
 		return nil, fmt.Errorf("failed to get uniswap abi: %w", err)
 	}
 
-	payload, err := abi.Pack("slot0")
+	payload, err := abi.Pack(ContractMethod)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack slot0: %w", err)
 	}
@@ -258,7 +258,7 @@ func (u *PriceFetcher) ParseSqrtPriceX96(
 		return nil, fmt.Errorf("failed to decode hex result: %w", err)
 	}
 
-	out, err := u.abi.Methods["slot0"].Outputs.UnpackValues(bz)
+	out, err := u.abi.Methods[ContractMethod].Outputs.UnpackValues(bz)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unpack values: %w", err)
 	}

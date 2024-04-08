@@ -5,8 +5,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/rpc"
 	pkgtypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
-	"github.com/skip-mev/slinky/providers/apis/uniswapv3/mocks"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/mock"

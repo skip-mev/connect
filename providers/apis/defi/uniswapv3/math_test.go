@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/skip-mev/slinky/providers/apis/uniswapv3"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/require"
 )

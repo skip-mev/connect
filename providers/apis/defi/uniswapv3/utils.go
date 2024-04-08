@@ -9,8 +9,13 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
-// Name is the name of the Uniswap V3 API.
-const Name = "uniswapv3_api"
+const (
+	// Name is the name of the Uniswap V3 API.
+	Name = "uniswapv3_api"
+
+	// ContractMethod is the contract method to call for the Uniswap V3 API.
+	ContractMethod = "slot0"
+)
 
 // PoolConfig is the configuration for a Uniswap V3 pool. This is specific to each pair of tokens.
 type PoolConfig struct {
