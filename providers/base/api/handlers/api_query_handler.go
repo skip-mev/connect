@@ -178,15 +178,15 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 
 	// Block each task until the wait group has capacity to accept a new response.
 	index := 0
-	interval := time.NewTicker(h.config.Interval)
-	defer interval.Stop()
+	ticker, close := tickerWithImmediateFirstTick(h.config.Interval)
+	defer close()
 MainLoop:
 	for {
 		select {
 		case <-ctx.Done():
 			h.logger.Debug("context cancelled, stopping queries")
 			break MainLoop
-		case <-interval.C:
+		case <-ticker:
 			// spin up limit number of tasks
 			for i := 0; i < limit; i++ {
 				wg.Go(tasks[index%len(tasks)])
@@ -203,6 +203,26 @@ MainLoop:
 		h.logger.Error("error querying ids", zap.Error(err))
 	}
 	h.logger.Debug("all api sub-tasks completed")
+}
+
+// tickerWithImmediateFirstTick creates a ticker that sends an initial tick immediately, and then ticks
+// at the specified interval.
+func tickerWithImmediateFirstTick(d time.Duration) (<-chan struct{}, func()) {
+	ticker := time.NewTicker(d)
+	ch := make(chan struct{}, 1) // non-blocking first writes to channel
+
+	// Send an initial tick immediately.
+	ch <- struct{}{}
+	go func() {
+		for range ticker.C { // send ticks at the specified interval
+			ch <- struct{}{}
+		}
+		close(ch)
+	}()
+
+	return ch, func() {
+		ticker.Stop()
+	}
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
