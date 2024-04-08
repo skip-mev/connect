@@ -58,6 +58,11 @@ func (tpt *TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
 
 	i := 0
 	for _, ticker := range *tpt {
+		// If the ticker does not have a set number of decimals, set it to the default.
+		if ticker.Decimals == 0 {
+			ticker.Decimals = DefaultTickerDecimals
+		}
+
 		providerTickers[i] = ticker
 		i++
 	}
@@ -73,6 +78,9 @@ func (tpt *TickersToProviderTickers) MustGetProviderTicker(ticker mmtypes.Ticker
 		panic(fmt.Sprintf("ticker %s not found", ticker))
 	}
 
-	providerTicker.Decimals = DefaultTickerDecimals
+	// If the ticker does not have a set number of decimals, set it to the default.
+	if providerTicker.Decimals == 0 {
+		providerTicker.Decimals = DefaultTickerDecimals
+	}
 	return providerTicker
 }

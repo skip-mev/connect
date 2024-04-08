@@ -95,7 +95,7 @@ func (h *APIHandler) ParseResponse(
 			offChainTicker := fmt.Sprintf("%s%s%s", base, TickerSeparator, quote)
 
 			// If the ticker is not configured, we skip it.
-			ticker, ok := h.cache.FromOffChain(offChainTicker)
+			ticker, ok := h.cache.FromOffChainTicker(offChainTicker)
 			if !ok {
 				continue
 			}

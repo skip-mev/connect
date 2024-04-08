@@ -93,7 +93,7 @@ func (h *APIHandler) ParseResponse(
 
 	for _, data := range result {
 		// Filter out the responses that are not expected.
-		ticker, ok := h.cache.FromOffChain(data.Symbol)
+		ticker, ok := h.cache.FromOffChainTicker(data.Symbol)
 		if !ok {
 			continue
 		}

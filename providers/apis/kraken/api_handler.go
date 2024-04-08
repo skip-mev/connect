@@ -105,7 +105,7 @@ func (h *APIHandler) ParseResponse(
 
 	for pair, resultTicker := range result.Tickers {
 		resultTicker.pair = pair
-		ticker, ok := h.cache.FromOffChain(pair)
+		ticker, ok := h.cache.FromOffChainTicker(pair)
 		if !ok {
 			continue
 		}
