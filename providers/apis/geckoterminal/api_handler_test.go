@@ -2,6 +2,7 @@ package geckoterminal_test
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 	"testing"
 	"time"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -99,7 +99,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					mog_usd: {
-						Value: math.Float64ToBigFloat(0.000000957896146138212, types.DefaultTickerDecimals),
+						Value: big.NewFloat(0.000000957896146138212),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -240,10 +240,10 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					mog_usd: {
-						Value: math.Float64ToBigFloat(0.000000657896146138212, types.DefaultTickerDecimals),
+						Value: big.NewFloat(0.000000657896146138212),
 					},
 					pepe_usd: {
-						Value: math.Float64ToBigFloat(0.000000957896146138212, types.DefaultTickerDecimals),
+						Value: big.NewFloat(0.000000957896146138212),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -269,7 +269,7 @@ toms obvious but not minimal language
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18))
 				require.True(t, r.Timestamp.After(now))
 			}
 

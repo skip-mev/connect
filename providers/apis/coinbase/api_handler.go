@@ -82,9 +82,9 @@ func (h *APIHandler) ParseResponse(
 		)
 	}
 
-	// Convert the float64 price into a big.Int.
+	// Convert the float64 price into a big.Float.
 	ticker := tickers[0]
-	price, err := math.Float64StringToBigFloat(result.Data.Amount, ticker.GetDecimals())
+	price, err := math.Float64StringToBigFloat(result.Data.Amount)
 	if err != nil {
 		return types.NewPriceResponseWithErr(
 			tickers,

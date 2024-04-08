@@ -2,6 +2,7 @@ package binance_test
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 	"testing"
 	"time"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -135,7 +135,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usdt: {
-						Value: math.Float64ToBigFloat(46707.03, types.DefaultTickerDecimals),
+						Value: big.NewFloat(46707.03),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -153,10 +153,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usdt: {
-						Value: math.Float64ToBigFloat(46707.03, types.DefaultTickerDecimals),
+						Value: big.NewFloat(46707.03),
 					},
 					eth_usdt: {
-						Value: math.Float64ToBigFloat(297.5, types.DefaultTickerDecimals),
+						Value: big.NewFloat(297.5),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -237,7 +237,7 @@ func TestParseResponse(t *testing.T) {
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18))
 				require.True(t, r.Timestamp.After(now))
 			}
 

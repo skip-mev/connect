@@ -2,6 +2,7 @@ package kraken_test
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 	"testing"
 	"time"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -89,7 +89,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usd: {
-						Value: math.Float64ToBigFloat(64587.4, types.DefaultTickerDecimals),
+						Value: big.NewFloat(64587.4),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -107,10 +107,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usd: {
-						Value: math.Float64ToBigFloat(64547.2, types.DefaultTickerDecimals),
+						Value: big.NewFloat(64547.2),
 					},
 					eth_usd: {
-						Value: math.Float64ToBigFloat(3338.08, types.DefaultTickerDecimals),
+						Value: big.NewFloat(3338.08),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -191,7 +191,7 @@ func TestParseResponse(t *testing.T) {
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18))
 				require.True(t, r.Timestamp.After(now))
 			}
 

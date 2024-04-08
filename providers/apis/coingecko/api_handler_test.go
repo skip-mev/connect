@@ -2,11 +2,11 @@ package coingecko_test
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/stretchr/testify/require"
@@ -99,7 +99,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usd: {
-						Value: math.Float64ToBigFloat(1020.25, types.DefaultTickerDecimals),
+						Value: big.NewFloat(1020.25),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -191,10 +191,10 @@ shout out my label thats me
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usd: {
-						Value: math.Float64ToBigFloat(1020.25, types.DefaultTickerDecimals),
+						Value: big.NewFloat(1020.25),
 					},
 					eth_usd: {
-						Value: math.Float64ToBigFloat(1020, types.DefaultTickerDecimals),
+						Value: big.NewFloat(1020),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -219,10 +219,10 @@ shout out my label thats me
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					eth_usd: {
-						Value: math.Float64ToBigFloat(1020.25, types.DefaultTickerDecimals),
+						Value: big.NewFloat(1020.25),
 					},
 					eth_btc: {
-						Value: math.Float64ToBigFloat(1, types.DefaultTickerDecimals),
+						Value: big.NewFloat(1),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -248,7 +248,7 @@ shout out my label thats me
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18))
 				require.True(t, r.Timestamp.After(now))
 			}
 
