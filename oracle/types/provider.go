@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"sync"
 )
 
 type (
@@ -26,8 +27,10 @@ type (
 		JSON           string
 	}
 
-	// ProviderTickers is a helper struct to manage a list of provider tickers.
+	// ProviderTickers is a thread safe helper struct to manage a list of provider tickers.
 	ProviderTickers struct {
+		mut sync.Mutex
+
 		cache map[string]ProviderTicker
 	}
 )
@@ -80,17 +83,26 @@ func NewProviderTickers(tickers ...ProviderTicker) ProviderTickers {
 }
 
 // FromOffChainTicker returns the provider ticker from the off-chain ticker.
-func (t ProviderTickers) FromOffChainTicker(offChain string) (ProviderTicker, bool) {
+func (t *ProviderTickers) FromOffChainTicker(offChain string) (ProviderTicker, bool) {
+	t.mut.Lock()
+	defer t.mut.Unlock()
+
 	ticker, ok := t.cache[offChain]
 	return ticker, ok
 }
 
 // Add adds a provider ticker to the list of provider tickers.
 func (t *ProviderTickers) Add(ticker ProviderTicker) {
+	t.mut.Lock()
+	defer t.mut.Unlock()
+
 	t.cache[ticker.GetOffChainTicker()] = ticker
 }
 
 // Reset resets the provider tickers.
 func (t *ProviderTickers) Reset() {
+	t.mut.Lock()
+	defer t.mut.Unlock()
+
 	t.cache = make(map[string]ProviderTicker)
 }
