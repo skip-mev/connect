@@ -1,6 +1,7 @@
 package math
 
 import (
+	"fmt"
 	"math/big"
 )
 
@@ -50,4 +51,25 @@ func BigFloatToBigInt(f *big.Float, decimals uint64) *big.Int {
 	f.Int(result) // store converted number in result
 
 	return result
+}
+
+// Float64StringToBigFloat converts a float64 string to a big.Float.
+func Float64StringToBigFloat(s string) (*big.Float, error) {
+	bigFloat := new(big.Float)
+	_, ok := bigFloat.SetString(s)
+	if !ok {
+		return nil, fmt.Errorf("failed to set big.Float from string: %s", s)
+	}
+	return bigFloat, nil
+}
+
+// ScaleBigFloat scales a big.Float by the given decimals.
+func ScaleBigFloat(f *big.Float, decimals uint64) *big.Float {
+	bigFloat := new(big.Float)
+	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	bigFloat.SetInt(factor)
+
+	f.Mul(f, bigFloat)
+
+	return f
 }

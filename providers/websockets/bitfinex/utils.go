@@ -36,7 +36,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	DefaultMarketConfig = types.TickersToProviderTickers{
 		constants.BITCOIN_USD: {
 			Name:           Name,
 			OffChainTicker: "BTCUSD",

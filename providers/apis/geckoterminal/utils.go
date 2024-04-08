@@ -24,10 +24,6 @@ const (
 	// ExpectedResponseType is the expected attribute name for the response type in the
 	// GeckoTerminal API response.
 	ExpectedResponseType = "simple_token_price"
-
-	// MaxNumberOfTickers is the maximum number of tickers that can be queried in a single
-	// request to the GeckoTerminal API.
-	MaxNumberOfTickers = 1
 )
 
 var (
@@ -38,7 +34,7 @@ var (
 		Atomic:           false,
 		Enabled:          true,
 		Timeout:          500 * time.Millisecond,
-		Interval:         5 * time.Second,
+		Interval:         20 * time.Second,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              ETH_URL,
@@ -46,7 +42,7 @@ var (
 
 	// DefaultETHMarketConfig is the default market configuration for tokens on
 	// Ethereum mainnet.
-	DefaultETHMarketConfig = types.TickerToProviderConfig{
+	DefaultETHMarketConfig = types.TickersToProviderTickers{
 		constants.MOG_USD: {
 			Name:           Name,
 			OffChainTicker: "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",

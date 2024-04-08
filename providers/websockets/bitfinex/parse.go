@@ -3,6 +3,7 @@ package bitfinex
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"time"
 
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -10,7 +11,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -119,8 +119,8 @@ func (h *WebSocketHandler) handleStream(
 	}
 
 	lastPrice := dataArr[6]
-	// Convert the price to a big int.
-	price := math.Float64ToBigInt(lastPrice.(float64), ticker.Decimals)
+	// Convert the price to a big Float.
+	price := big.NewFloat(lastPrice.(float64))
 	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 
 	return types.NewPriceResponse(resolved, unResolved), nil
@@ -128,7 +128,7 @@ func (h *WebSocketHandler) handleStream(
 
 // updateChannelMap updates the internal map for the given channelID and ticker.
 func (h *WebSocketHandler) updateChannelMap(channelID int, offChainTicker string) error {
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	ticker, ok := h.cache.FromOffChainTicker(offChainTicker)
 	if !ok {
 		return fmt.Errorf("unknown ticker %s", offChainTicker)
 	}

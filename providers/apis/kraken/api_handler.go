@@ -11,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
@@ -20,25 +19,16 @@ var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 // for more information about the Kraken API, refer to the following link:
 // https://docs.kraken.com/rest/
 type APIHandler struct {
-	// market is the config for the Kraken API.
-	market types.ProviderMarketMap
 	// api is the config for the Kraken API.
 	api config.APIConfig
+	// cache maintains the latest set of tickers seen by the handler.
+	cache types.ProviderTickers
 }
 
 // NewAPIHandler returns a new Kraken PriceAPIDataHandler.
 func NewAPIHandler(
-	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
-	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
-	}
-
-	if market.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
-	}
-
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
@@ -52,24 +42,20 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		market: market,
-		api:    api,
+		api:   api,
+		cache: types.NewProviderTickers(),
 	}, nil
 }
 
 // CreateURL returns the URL that is used to fetch data from the Kraken API for the
 // given tickers.
 func (h *APIHandler) CreateURL(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) (string, error) {
 	var tickerStrings string
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker]
-		if !ok {
-			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
-		}
-
-		tickerStrings += fmt.Sprintf("%s%s", market.OffChainTicker, Separator)
+		tickerStrings += fmt.Sprintf("%s%s", ticker.GetOffChainTicker(), Separator)
+		h.cache.Add(ticker)
 	}
 
 	if len(tickerStrings) == 0 {
@@ -85,13 +71,14 @@ func (h *APIHandler) CreateURL(
 // ParseResponse parses the response from the Kraken API and returns a GetResponse. Each
 // of the tickers supplied will get a response or an error.
 func (h *APIHandler) ParseResponse(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 	resp *http.Response,
 ) types.PriceResponse {
 	// Parse the response into a ResponseBody.
 	result, err := Decode(resp)
 	if err != nil {
-		return types.NewPriceResponseWithErr(tickers,
+		return types.NewPriceResponseWithErr(
+			tickers,
 			providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode),
 		)
 	}
@@ -118,22 +105,29 @@ func (h *APIHandler) ParseResponse(
 
 	for pair, resultTicker := range result.Tickers {
 		resultTicker.pair = pair
-
-		ticker, ok := h.market.OffChainMap[pair]
+		ticker, ok := h.cache.FromOffChainTicker(pair)
 		if !ok {
 			continue
 		}
 
-		price, err := math.Float64StringToBigInt(resultTicker.LastPrice(), ticker.Decimals)
+		price, err := math.Float64StringToBigFloat(resultTicker.LastPrice())
 		if err != nil {
-			wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", resultTicker.LastPrice(), err)
+			wErr := fmt.Errorf(
+				"failed to convert price %s to big.Float: %w",
+				resultTicker.LastPrice(),
+				err,
+			)
+
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
+				ErrorWithCode: providertypes.NewErrorWithCode(
+					wErr,
+					providertypes.ErrorFailedToParsePrice,
+				),
 			}
 			continue
 		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	}
 
 	// Add currency pairs that received no response to the unresolved map.
@@ -143,7 +137,10 @@ func (h *APIHandler) ParseResponse(
 
 		if !resolvedOk && !unresolvedOk {
 			unresolved[ticker] = providertypes.UnresolvedResult{
-				ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorNoResponse),
+				ErrorWithCode: providertypes.NewErrorWithCode(
+					fmt.Errorf("no response"),
+					providertypes.ErrorNoResponse,
+				),
 			}
 		}
 	}

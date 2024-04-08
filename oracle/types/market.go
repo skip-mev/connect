@@ -52,14 +52,24 @@ func ProviderTickersFromMarketMap(
 type TickersToProviderTickers map[mmtypes.Ticker]DefaultProviderTicker
 
 // ToProviderTickers converts the map to a list of provider tickers.
-func (tpt *TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
-	var providerTickers = make([]ProviderTicker, len(*tpt))
+func (tpt TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
+	var providerTickers = make([]ProviderTicker, len(tpt))
 
 	i := 0
-	for _, ticker := range *tpt {
+	for _, ticker := range tpt {
 		providerTickers[i] = ticker
 		i++
 	}
 
 	return providerTickers
+}
+
+// MustGetProviderTicker returns the provider ticker for the given x/marketmap ticker.
+// This function is mostly used for testing.
+func (tpt TickersToProviderTickers) MustGetProviderTicker(ticker mmtypes.Ticker) ProviderTicker {
+	providerTicker, ok := (tpt)[ticker]
+	if !ok {
+		panic(fmt.Sprintf("ticker %s not found", ticker))
+	}
+	return providerTicker
 }

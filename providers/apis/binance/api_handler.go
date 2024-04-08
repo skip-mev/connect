@@ -12,7 +12,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
@@ -21,25 +20,16 @@ var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
 // for more information about the Binance API, refer to the following link:
 // https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#public-api-endpoints
 type APIHandler struct {
-	// market is the config for the Binance API.
-	market types.ProviderMarketMap
 	// api is the config for the Binance API.
 	api config.APIConfig
+	// cache maintains the latest set of tickers seen by the handler.
+	cache types.ProviderTickers
 }
 
 // NewAPIHandler returns a new Binance PriceAPIDataHandler.
 func NewAPIHandler(
-	market types.ProviderMarketMap,
 	api config.APIConfig,
 ) (types.PriceAPIDataHandler, error) {
-	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
-	}
-
-	if market.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
-	}
-
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
@@ -53,24 +43,20 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		market: market,
-		api:    api,
+		api:   api,
+		cache: types.NewProviderTickers(),
 	}, nil
 }
 
 // CreateURL returns the URL that is used to fetch data from the Binance API for the
 // given tickers.
 func (h *APIHandler) CreateURL(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) (string, error) {
 	var tickerStrings string
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker]
-		if !ok {
-			return "", fmt.Errorf("ticker %s not found in market config", ticker.String())
-		}
-
-		tickerStrings += fmt.Sprintf("%s%s%s%s", Quotation, market.OffChainTicker, Quotation, Separator)
+		tickerStrings += fmt.Sprintf("%s%s%s%s", Quotation, ticker.GetOffChainTicker(), Quotation, Separator)
+		h.cache.Add(ticker)
 	}
 
 	if len(tickerStrings) == 0 {
@@ -88,13 +74,14 @@ func (h *APIHandler) CreateURL(
 // ParseResponse parses the response from the Binance API and returns a GetResponse. Each
 // of the tickers supplied will get a response or an error.
 func (h *APIHandler) ParseResponse(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 	resp *http.Response,
 ) types.PriceResponse {
 	// Parse the response into a BinanceResponse.
 	result, err := Decode(resp)
 	if err != nil {
-		return types.NewPriceResponseWithErr(tickers,
+		return types.NewPriceResponseWithErr(
+			tickers,
 			providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToDecode),
 		)
 	}
@@ -106,21 +93,21 @@ func (h *APIHandler) ParseResponse(
 
 	for _, data := range result {
 		// Filter out the responses that are not expected.
-		ticker, ok := h.market.OffChainMap[data.Symbol]
+		ticker, ok := h.cache.FromOffChainTicker(data.Symbol)
 		if !ok {
 			continue
 		}
 
-		price, err := math.Float64StringToBigInt(data.Price, ticker.Decimals)
+		price, err := math.Float64StringToBigFloat(data.Price)
 		if err != nil {
-			wErr := fmt.Errorf("failed to convert price %s to big.Int: %w", data.Price, err)
+			wErr := fmt.Errorf("failed to convert price %s to big.Float: %w", data.Price, err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 			}
 			continue
 		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	}
 
 	// Add currency pairs that received no response to the unresolved map.
