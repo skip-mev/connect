@@ -160,25 +160,10 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 
 		// determine the number of queries we need to make based on the batch size.
 		threads := (len(ids) / batchSize) + 1
-		if threads > limit {
-			err := fmt.Errorf(
-				"number of threads %d needed to query ids %d exceeds limit %d",
-				threads, len(ids), limit,
-			)
 
-			// write an error response to the response channel and return.
-			h.writeResponse(ctx, responseCh, providertypes.NewGetResponseWithErr[K, V](
-				ids,
-				providertypes.NewErrorWithCode(
-					err,
-					providertypes.ErrorAPIGeneral,
-				),
-			))
-
-			h.logger.Error("failed to query ids", zap.Error(err))
-			// signal to the parent that a fatal error occurred
-			return
-		}
+		// update limit in accordance, we want to avoid unnecessary go routines
+		// if the number of threads (tasks) is less than the limit.
+		limit = math.Min(limit, threads)
 
 		for i := 0; i < threads; i++ {
 			// Calculate the start and end indices for the batch.
@@ -192,20 +177,22 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 
 	// Block each task until the wait group has capacity to accept a new response.
 	index := 0
+	interval := time.NewTicker(h.config.Interval)
+	defer interval.Stop()
 MainLoop:
 	for {
 		select {
 		case <-ctx.Done():
 			h.logger.Debug("context cancelled, stopping queries")
 			break MainLoop
-		default:
-			wg.Go(tasks[index])
-			index++
-			index %= len(tasks)
+		case <-interval.C:
+			// spin up limit number of tasks
+			for i := 0; i < limit; i++ {
+				wg.Go(tasks[index % len(tasks)])
+				index++
+			}
 
-			// Sleep for a bit to prevent the loop from spinning too fast.
-			h.logger.Debug("sleeping", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
-			time.Sleep(h.config.Interval)
+			h.logger.Debug("interval complete", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
 		}
 	}
 
