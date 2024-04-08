@@ -79,8 +79,8 @@ func NewProviderTickers(tickers ...ProviderTicker) ProviderTickers {
 	}
 }
 
-// FromOffChain returns the provider ticker from the off-chain ticker.
-func (t ProviderTickers) FromOffChain(offChain string) (ProviderTicker, bool) {
+// FromOffChainTicker returns the provider ticker from the off-chain ticker.
+func (t ProviderTickers) FromOffChainTicker(offChain string) (ProviderTicker, bool) {
 	ticker, ok := t.cache[offChain]
 	return ticker, ok
 }

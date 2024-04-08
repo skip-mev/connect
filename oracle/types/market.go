@@ -57,6 +57,11 @@ func (tpt *TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
 
 	i := 0
 	for _, ticker := range *tpt {
+		// If the ticker does not have a set number of decimals, set it to the default.
+		if ticker.Decimals == 0 {
+			ticker.Decimals = DefaultTickerDecimals
+		}
+
 		providerTickers[i] = ticker
 		i++
 	}

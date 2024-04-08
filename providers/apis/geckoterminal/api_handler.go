@@ -97,7 +97,7 @@ func (h *APIHandler) ParseResponse(
 	// Filter out the responses that are not expected.
 	attributes := data.Attributes
 	for address, price := range attributes.TokenPrices {
-		ticker, ok := h.cache.FromOffChain(address)
+		ticker, ok := h.cache.FromOffChainTicker(address)
 		if !ok {
 			err := fmt.Errorf("no ticker for address %s", address)
 			return types.NewPriceResponseWithErr(
