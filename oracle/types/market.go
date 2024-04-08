@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
@@ -47,12 +48,12 @@ func ProviderTickersFromMarketMap(
 	return providerTickers, nil
 }
 
-// TickersToProviderTickers is a map of tickers to provider tickers. This should be
+// CurrencyPairsToProviderTickers is a map of tickers to provider tickers. This should be
 // utilized by providers to configure the tickers they will be providing data for.
-type TickersToProviderTickers map[mmtypes.Ticker]DefaultProviderTicker
+type CurrencyPairsToProviderTickers map[pkgtypes.CurrencyPair]DefaultProviderTicker
 
 // ToProviderTickers converts the map to a list of provider tickers.
-func (tpt TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
+func (tpt CurrencyPairsToProviderTickers) ToProviderTickers() []ProviderTicker {
 	var providerTickers = make([]ProviderTicker, len(tpt))
 
 	i := 0
@@ -64,12 +65,12 @@ func (tpt TickersToProviderTickers) ToProviderTickers() []ProviderTicker {
 	return providerTickers
 }
 
-// MustGetProviderTicker returns the provider ticker for the given x/marketmap ticker.
+// MustGetProviderTicker returns the provider ticker for the given currency pair.
 // This function is mostly used for testing.
-func (tpt TickersToProviderTickers) MustGetProviderTicker(ticker mmtypes.Ticker) ProviderTicker {
-	providerTicker, ok := (tpt)[ticker]
+func (tpt CurrencyPairsToProviderTickers) MustGetProviderTicker(cp pkgtypes.CurrencyPair) ProviderTicker {
+	providerTicker, ok := tpt[cp]
 	if !ok {
-		panic(fmt.Sprintf("ticker %s not found", ticker))
+		panic(fmt.Sprintf("currency pair %s not found", cp.String()))
 	}
 	return providerTicker
 }

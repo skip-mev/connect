@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gagliardetto/solana-go"
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -14,6 +15,25 @@ const (
 	// NormalizedTokenAmountExponent.
 	NormalizedTokenAmountExponent = 18
 )
+
+// updateMetaDataCache unmarshals the metadata JSON for each ticker and adds it to the
+// metadata map.
+func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (TickerMetadata, error) {
+	if metadata, ok := pf.metaDataPerTicker[ticker.GetJSON()]; ok {
+		return metadata, nil
+	}
+
+	metadata, err := unmarshalMetadataJSON(ticker.GetJSON())
+	if err != nil {
+		return TickerMetadata{}, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
+	}
+	if err := metadata.ValidateBasic(); err != nil {
+		return TickerMetadata{}, fmt.Errorf("metadata for ticker %s is invalid: %w", ticker.String(), err)
+	}
+	pf.metaDataPerTicker[ticker.GetJSON()] = metadata
+
+	return metadata, nil
+}
 
 // TickerMetadata represents the metadata associated with a ticker's corresponding
 // raydium pool.

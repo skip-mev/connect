@@ -17,11 +17,9 @@ import (
 	"go.uber.org/zap"
 
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	oracletypes "github.com/skip-mev/slinky/oracle/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (
@@ -104,38 +102,11 @@ func TestProviderInit(t *testing.T) {
 		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			oracletypes.ProviderMarketMap{},
 			cfg,
 			zap.NewNop(),
 		)
 
 		require.True(t, strings.Contains(err.Error(), "config for raydium is invalid"))
-	})
-
-	t.Run("market config fails validate basic", func(t *testing.T) {
-		// valid config
-		cfg := oracleconfig.APIConfig{
-			Enabled:          false,
-			MaxQueries:       2,
-			Interval:         1 * time.Second,
-			Timeout:          2 * time.Second,
-			ReconnectTimeout: 2 * time.Second,
-		}
-		market := oracletypes.ProviderMarketMap{
-			Name: raydium.Name,
-			OffChainMap: map[string]mmtypes.Ticker{
-				"BTC/USDC": {
-					CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USDC"),
-				},
-			},
-		}
-
-		_, err := raydium.NewAPIPriceFetcher(
-			market,
-			cfg,
-			zap.NewNop(),
-		)
-		require.True(t, strings.Contains(err.Error(), "market config for raydium is invalid"))
 	})
 
 	t.Run("incorrect provider name", func(t *testing.T) {
@@ -148,36 +119,12 @@ func TestProviderInit(t *testing.T) {
 			URL:              "https://api.raydium.io",
 			Name:             raydium.Name + "a",
 		}
-		market := oracletypes.ProviderMarketMap{
-			Name: raydium.Name + "a",
-		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			market,
 			cfg,
 			zap.NewNop(),
 		)
 		require.Equal(t, err.Error(), fmt.Sprintf("configured name is incorrect; expected: %s, got: %s", raydium.Name, raydium.Name+"a"))
-
-		cfg = oracleconfig.APIConfig{
-			Enabled:          true,
-			MaxQueries:       2,
-			Interval:         1 * time.Second,
-			Timeout:          2 * time.Second,
-			ReconnectTimeout: 2 * time.Second,
-			URL:              "https://api.raydium.io",
-			Name:             raydium.Name,
-		}
-		market = oracletypes.ProviderMarketMap{
-			Name: raydium.Name + "a",
-		}
-
-		_, err = raydium.NewAPIPriceFetcher(
-			market,
-			cfg,
-			zap.NewNop(),
-		)
-		require.Equal(t, err.Error(), fmt.Sprintf("market config name is incorrect; expected: %s, got: %s", raydium.Name, raydium.Name+"a"))
 	})
 
 	t.Run("api not enabled", func(t *testing.T) {
@@ -189,172 +136,12 @@ func TestProviderInit(t *testing.T) {
 			ReconnectTimeout: 2 * time.Second,
 			Name:             raydium.Name,
 		}
-		market := oracletypes.ProviderMarketMap{
-			Name: raydium.Name,
-		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			market,
 			cfg,
 			zap.NewNop(),
 		)
 		require.Error(t, err, "config is not enabled")
-	})
-
-	t.Run("unmarshalling metadata json for tickers fails", func(t *testing.T) {
-		cfg := oracleconfig.APIConfig{
-			Enabled:          true,
-			MaxQueries:       2,
-			Interval:         1 * time.Second,
-			Timeout:          2 * time.Second,
-			ReconnectTimeout: 2 * time.Second,
-			Name:             raydium.Name,
-			URL:              "https://raydium.io",
-		}
-		market := oracletypes.ProviderMarketMap{
-			Name: raydium.Name,
-			TickerConfigs: oracletypes.TickerToProviderConfig{
-				mmtypes.Ticker{
-					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals:         8,
-					MinProviderCount: 1,
-					Metadata_JSON: `{
-						"base_token_vault": ["base_token_vault_address"]
-					}`,
-				}: {
-					OffChainTicker: "BTC/USDC",
-					Name:           raydium.Name,
-				},
-			},
-			OffChainMap: map[string]mmtypes.Ticker{
-				"BTC/USDC": {
-					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals:         8,
-					MinProviderCount: 1,
-					Metadata_JSON: `{
-						"base_token_vault": ["base_token_vault_address"]
-					}`,
-				},
-			},
-		}
-
-		_, err := raydium.NewAPIPriceFetcher(
-			market,
-			cfg,
-			zap.NewNop(),
-		)
-		t.Log(err)
-		require.True(t, strings.Contains(err.Error(), fmt.Sprintf("error unmarshalling metadata for ticker %s", slinkytypes.NewCurrencyPair("BTC", "USDC"))))
-	})
-
-	t.Run("invalid metadata json in config", func(t *testing.T) {
-		cfg := oracleconfig.APIConfig{
-			Enabled:          true,
-			MaxQueries:       2,
-			Interval:         1 * time.Second,
-			Timeout:          2 * time.Second,
-			ReconnectTimeout: 2 * time.Second,
-			Name:             raydium.Name,
-			URL:              "https://raydium.io",
-		}
-
-		bz, err := json.Marshal(raydium.TickerMetadata{
-			BaseTokenVault: raydium.AMMTokenVaultMetadata{
-				TokenVaultAddress: "abc",
-			},
-		})
-		require.NoError(t, err)
-
-		market := oracletypes.ProviderMarketMap{
-			Name: raydium.Name,
-			TickerConfigs: oracletypes.TickerToProviderConfig{
-				mmtypes.Ticker{
-					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals:         8,
-					MinProviderCount: 1,
-					Metadata_JSON:    string(bz),
-				}: {
-					OffChainTicker: "BTC/USDC",
-					Name:           raydium.Name,
-				},
-			},
-			OffChainMap: map[string]mmtypes.Ticker{
-				"BTC/USDC": {
-					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals:         8,
-					MinProviderCount: 1,
-					Metadata_JSON:    string(bz),
-				},
-			},
-		}
-
-		_, err = raydium.NewAPIPriceFetcher(
-			market,
-			cfg,
-			zap.NewNop(),
-		)
-		t.Log(err)
-		require.True(t, strings.Contains(err.Error(), fmt.Sprintf("metadata for ticker %s is invalid", slinkytypes.NewCurrencyPair("BTC", "USDC"))))
-	})
-
-	t.Run("correctly unmarshals metadata json for ticker", func(t *testing.T) {
-		cfg := oracleconfig.APIConfig{
-			Enabled:          true,
-			MaxQueries:       2,
-			Interval:         1 * time.Second,
-			Timeout:          2 * time.Second,
-			ReconnectTimeout: 2 * time.Second,
-			Name:             raydium.Name,
-			URL:              "https://raydium.io",
-		}
-		market := oracletypes.ProviderMarketMap{
-			Name: raydium.Name,
-			TickerConfigs: oracletypes.TickerToProviderConfig{
-				mmtypes.Ticker{
-					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals:         8,
-					MinProviderCount: 1,
-					Metadata_JSON: `{
-						"base_token_vault": {
-							"token_vault_address": "` + USDCVaultAddress + `",
-							"token_vault_decimals": 6
-						},
-						"quote_token_vault": {
-							"token_vault_address": "` + BTCVaultAddress + `",
-							"token_vault_decimals": 8
-						}
-					}`,
-				}: {
-					OffChainTicker: "BTC/USDC",
-					Name:           raydium.Name,
-				},
-			},
-			OffChainMap: map[string]mmtypes.Ticker{
-				"BTC/USDC": {
-					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-					Decimals:         8,
-					MinProviderCount: 1,
-					Metadata_JSON: `{
-						"base_token_vault": {
-							"token_vault_address": "` + USDCVaultAddress + `",
-							"token_vault_decimals": 6
-						},
-						"quote_token_vault": {
-							"token_vault_address": "` + BTCVaultAddress + `",
-							"token_vault_decimals": 8
-						}
-					}`,
-				},
-			},
-		}
-
-		_, err := raydium.NewAPIPriceFetcher(
-			market,
-			cfg,
-			zap.NewNop(),
-		)
-		t.Log(err)
-		require.NoError(t, err)
 	})
 }
 
@@ -391,29 +178,26 @@ func TestProviderFetch(t *testing.T) {
 		},
 	}
 
-	tickers := []mmtypes.Ticker{
+	tickers := []types.DefaultProviderTicker{
 		{
-			CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USDC"),
-			Decimals:         8,
-			MinProviderCount: 1,
-			Metadata_JSON:    marshalDataToJSON(btcUSDCMetadata),
+			Name:           raydium.Name,
+			OffChainTicker: "BTC/USDC",
+			JSON:           marshalDataToJSON(btcUSDCMetadata),
 		},
 		{
-			CurrencyPair:     slinkytypes.NewCurrencyPair("ETH", "USDT"),
-			Decimals:         8,
-			MinProviderCount: 1,
-			Metadata_JSON:    marshalDataToJSON(ethUSDTMetadata),
+			Name:           raydium.Name,
+			OffChainTicker: "ETH/USDT",
+			JSON:           marshalDataToJSON(ethUSDTMetadata),
 		},
 		{
-			CurrencyPair:     slinkytypes.NewCurrencyPair("MOG", "SOL"),
-			Decimals:         18,
-			MinProviderCount: 1,
-			Metadata_JSON:    marshalDataToJSON(mogSOLMetadata),
+			Name:           raydium.Name,
+			OffChainTicker: "MOG/SOL",
+			JSON:           marshalDataToJSON(mogSOLMetadata),
 		},
 	}
 
 	client := mocks.NewSolanaJSONRPCClient(t)
-	pf, err := newPriceFetcherFromTickers(tickers, client)
+	pf, err := newPriceFetcher(client)
 	require.NoError(t, err)
 
 	t.Run("accounts resp returns len(tickers) * 2 accounts", func(t *testing.T) {
@@ -430,7 +214,8 @@ func TestProviderFetch(t *testing.T) {
 			&rpc.GetMultipleAccountsResult{}, nil,
 		).Once()
 
-		resp := pf.Fetch(ctx, tickers[:2])
+		ts := defaultTickersToProviderTickers(tickers[:2])
+		resp := pf.Fetch(ctx, ts)
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 0)
 		require.Equal(t, len(resp.UnResolved), 2)
@@ -456,7 +241,8 @@ func TestProviderFetch(t *testing.T) {
 			&rpc.GetMultipleAccountsResult{}, err,
 		).Once()
 
-		resp := pf.Fetch(ctx, tickers[:2])
+		ts := defaultTickersToProviderTickers(tickers[:2])
+		resp := pf.Fetch(ctx, ts)
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 0)
 		require.Equal(t, len(resp.UnResolved), 2)
@@ -469,10 +255,13 @@ func TestProviderFetch(t *testing.T) {
 	t.Run("unexpected ticker in query", func(t *testing.T) {
 		ctx := context.Background()
 
-		resp := pf.Fetch(ctx, []mmtypes.Ticker{
-			{
-				CurrencyPair: slinkytypes.NewCurrencyPair("MOG", "TIA"),
-			},
+		mog_tia := types.DefaultProviderTicker{
+			Name:           raydium.Name,
+			OffChainTicker: "MOG/TIA",
+			JSON:           "{}",
+		}
+		resp := pf.Fetch(ctx, []types.ProviderTicker{
+			mog_tia,
 		})
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 0)
@@ -541,7 +330,8 @@ func TestProviderFetch(t *testing.T) {
 			}, nil,
 		)
 
-		resp := pf.Fetch(ctx, tickers[:3])
+		ts := defaultTickersToProviderTickers(tickers[:3])
+		resp := pf.Fetch(ctx, ts)
 
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 1)
@@ -549,7 +339,7 @@ func TestProviderFetch(t *testing.T) {
 
 		require.True(t, strings.Contains(resp.UnResolved[tickers[0]].Error(), "solana json-rpc error"))
 		result := resp.Resolved[tickers[1]]
-		require.Equal(t, result.Value.Uint64(), uint64(3e8))
+		require.Equal(t, result.Value.SetPrec(18), uint64(3e8))
 	})
 
 	t.Run("incorrectly encoded accounts are handled gracefully", func(t *testing.T) {
@@ -574,7 +364,8 @@ func TestProviderFetch(t *testing.T) {
 			}, nil,
 		)
 
-		resp := pf.Fetch(ctx, tickers[:1])
+		ts := defaultTickersToProviderTickers(tickers[:1])
+		resp := pf.Fetch(ctx, ts)
 
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 0)
@@ -592,7 +383,7 @@ func marshalDataToJSON(obj interface{}) string {
 	return string(data)
 }
 
-func newPriceFetcherFromTickers(tickers []mmtypes.Ticker, client *mocks.SolanaJSONRPCClient) (*raydium.APIPriceFetcher, error) {
+func newPriceFetcher(client *mocks.SolanaJSONRPCClient) (*raydium.APIPriceFetcher, error) {
 	cfg := oracleconfig.APIConfig{
 		Enabled:          true,
 		MaxQueries:       2,
@@ -602,24 +393,18 @@ func newPriceFetcherFromTickers(tickers []mmtypes.Ticker, client *mocks.SolanaJS
 		Name:             raydium.Name,
 		URL:              "https://raydium.io",
 	}
-	market := oracletypes.ProviderMarketMap{
-		Name:          raydium.Name,
-		TickerConfigs: make(oracletypes.TickerToProviderConfig),
-		OffChainMap:   make(map[string]mmtypes.Ticker),
-	}
-
-	for _, ticker := range tickers {
-		market.TickerConfigs[ticker] = mmtypes.ProviderConfig{
-			Name:           raydium.Name,
-			OffChainTicker: ticker.String(),
-		}
-		market.OffChainMap[ticker.String()] = ticker
-	}
 
 	return raydium.NewAPIPriceFetcherWithClient(
-		market,
 		cfg,
 		client,
 		zap.NewExample(),
 	)
+}
+
+func defaultTickersToProviderTickers(tickers []types.DefaultProviderTicker) []types.ProviderTicker {
+	providerTickers := make([]types.ProviderTicker, len(tickers))
+	for i, ticker := range tickers {
+		providerTickers[i] = ticker
+	}
+	return providerTickers
 }

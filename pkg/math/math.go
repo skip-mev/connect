@@ -3,6 +3,7 @@ package math
 import (
 	"fmt"
 	"math/big"
+	"sort"
 )
 
 // Min returns the minimum of two values.
@@ -72,4 +73,42 @@ func ScaleBigFloat(f *big.Float, decimals uint64) *big.Float {
 	f.Mul(f, bigFloat)
 
 	return f
+}
+
+// SortBigFloats is a stable slices sort for an array of big.Floats.
+func SortBigFloats(values []*big.Float) {
+	// Sort the values.
+	sort.SliceStable(values, func(i, j int) bool {
+		switch values[i].Cmp(values[j]) {
+		case -1:
+			return true
+		case 1:
+			return false
+		default:
+			return true
+		}
+	})
+}
+
+// CalculateMedian calculates the median from a list of big.Float. Returns an
+// average if the number of values is even.
+func CalculateMedian(values []*big.Float) *big.Float {
+	if len(values) == 0 {
+		return nil
+	}
+	SortBigFloats(values)
+
+	middleIndex := len(values) / 2
+
+	// Calculate the median.
+	numValues := len(values)
+	var median *big.Float
+	if numValues%2 == 0 { // even
+		median = new(big.Float).Add(values[middleIndex-1], values[middleIndex])
+		median = median.Quo(median, new(big.Float).SetUint64(2))
+	} else { // odd
+		median = values[middleIndex]
+	}
+
+	return median
 }

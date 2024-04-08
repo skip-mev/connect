@@ -35,7 +35,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Gate.io.
-	DefaultMarketConfig = types.TickersToProviderTickers{
+	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "ARB_USDT",

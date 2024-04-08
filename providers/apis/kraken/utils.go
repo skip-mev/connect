@@ -40,7 +40,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.
-	DefaultMarketConfig = types.TickersToProviderTickers{
+	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.APE_USDT: {
 			Name:           Name,
 			OffChainTicker: "APEUSDT",

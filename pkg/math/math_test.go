@@ -271,3 +271,119 @@ func TestScaleBigFloat(t *testing.T) {
 		})
 	}
 }
+
+func TestCalculateMedian(t *testing.T) {
+	testCases := []struct {
+		name     string
+		values   []*big.Float
+		expected *big.Float
+	}{
+		{
+			name:     "do nothing for nil slice",
+			values:   nil,
+			expected: nil,
+		},
+		{
+			name: "calculate median for even number of values",
+			values: []*big.Float{
+				big.NewFloat(-2),
+				big.NewFloat(0),
+				big.NewFloat(10),
+				big.NewFloat(100),
+			},
+			expected: big.NewFloat(5),
+		},
+		{
+			name: "calculate median for odd number of values",
+			values: []*big.Float{
+				big.NewFloat(10),
+				big.NewFloat(-2),
+				big.NewFloat(100),
+				big.NewFloat(0),
+				big.NewFloat(0),
+			},
+			expected: big.NewFloat(0),
+		},
+		{
+			"calculates median for even number of values with decimals",
+			[]*big.Float{
+				big.NewFloat(-2),
+				big.NewFloat(0),
+				big.NewFloat(0),
+				big.NewFloat(1),
+				big.NewFloat(10),
+				big.NewFloat(100),
+			},
+			big.NewFloat(0.5),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.expected, math.CalculateMedian(tc.values))
+		})
+	}
+}
+
+func TestSortBigInts(t *testing.T) {
+	testCases := []struct {
+		name     string
+		values   []*big.Float
+		expected []*big.Float
+	}{
+		{
+			name: "do nothing for nil slice",
+		},
+		{
+			name: "sort a slice",
+			values: []*big.Float{
+				big.NewFloat(10),
+				big.NewFloat(-2),
+				big.NewFloat(100),
+				big.NewFloat(0),
+				big.NewFloat(0),
+			},
+			expected: []*big.Float{
+				big.NewFloat(-2),
+				big.NewFloat(0),
+				big.NewFloat(0),
+				big.NewFloat(10),
+				big.NewFloat(100),
+			},
+		},
+		{
+			name: "do nothing for same values",
+			values: []*big.Float{
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(-2),
+				big.NewFloat(100),
+				big.NewFloat(0),
+				big.NewFloat(0),
+			},
+			expected: []*big.Float{
+				big.NewFloat(-2),
+				big.NewFloat(0),
+				big.NewFloat(0),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(10),
+				big.NewFloat(100),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			math.SortBigFloats(tc.values)
+			require.Equal(t, tc.expected, tc.values)
+		})
+	}
+}

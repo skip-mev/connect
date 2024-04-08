@@ -57,10 +57,11 @@ func (m *Market) ValidateBasic() error {
 		}
 
 		// check for duplicate providers
-		if _, seen := seenProviders[providerConfig.Name]; seen {
-			return fmt.Errorf("duplicate provider found: %s", providerConfig.Name)
+		key := providerConfig.Name + providerConfig.OffChainTicker
+		if _, seen := seenProviders[key]; seen {
+			return fmt.Errorf("duplicate (provider, off-chain-ticker) found: %s", key)
 		}
-		seenProviders[providerConfig.Name] = struct{}{}
+		seenProviders[key] = struct{}{}
 
 	}
 

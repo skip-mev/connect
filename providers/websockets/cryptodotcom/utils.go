@@ -42,7 +42,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for Crypto.com.
-	DefaultMarketConfig = types.TickersToProviderTickers{
+	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.ATOM_USD: {
 			Name:           Name,
 			OffChainTicker: "ATOMUSD-PERP",

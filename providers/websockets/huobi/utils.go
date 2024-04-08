@@ -40,7 +40,7 @@ var (
 	}
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.
-	DefaultMarketConfig = types.TickersToProviderTickers{
+	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.ARBITRUM_USDT: {
 			Name:           Name,
 			OffChainTicker: "arbusdt",

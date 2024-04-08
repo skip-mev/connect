@@ -81,7 +81,7 @@ var (
 
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
-	ProviderToMarkets = map[string]types.TickerToProviderConfig{
+	ProviderToMarkets = map[string]types.CurrencyPairsToProviderTickers{
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//

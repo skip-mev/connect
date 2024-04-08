@@ -110,7 +110,7 @@ func (h *WebSocketHandler) HandleMessage(
 func (h *WebSocketHandler) CreateMessages(
 	tickers []types.ProviderTicker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
-	instruments := make([]string, 0)
+	instruments := make([]string, 0) 
 
 	for _, ticker := range tickers {
 		instruments = append(instruments, ticker.GetOffChainTicker())

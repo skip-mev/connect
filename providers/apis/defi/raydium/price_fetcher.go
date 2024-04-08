@@ -13,11 +13,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ oracletypes.PriceAPIFetcher = (*APIPriceFetcher)(nil)
@@ -37,9 +36,6 @@ type SolanaJSONRPCClient interface {
 // APIPriceFetcher is responsible for interacting with the solana API and querying information
 // about the price of a given currency pair.
 type APIPriceFetcher struct {
-	// market represents the ticker configurations for this provider.
-	market oracletypes.ProviderMarketMap
-
 	// config is the APIConfiguration for this provider
 	config config.APIConfig
 
@@ -56,12 +52,10 @@ type APIPriceFetcher struct {
 // NewAPIPriceFetcher returns a new APIPriceFetcher. This method constructs the
 // default solana JSON-RPC client in accordance with the config's URL param.
 func NewAPIPriceFetcher(
-	market oracletypes.ProviderMarketMap,
 	config config.APIConfig,
 	logger *zap.Logger,
 ) (*APIPriceFetcher, error) {
 	return NewAPIPriceFetcherWithClient(
-		market,
 		config,
 		rpc.New(config.URL),
 		logger,
@@ -72,7 +66,6 @@ func NewAPIPriceFetcher(
 // that the given market + config are valid, otherwise a nil implementation + an error
 // will be returned.
 func NewAPIPriceFetcherWithClient(
-	market oracletypes.ProviderMarketMap,
 	config config.APIConfig,
 	client SolanaJSONRPCClient,
 	logger *zap.Logger,
@@ -81,17 +74,9 @@ func NewAPIPriceFetcherWithClient(
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
 	}
 
-	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("market config for raydium is invalid: %w", err)
-	}
-
 	// check fields of config
 	if config.Name != Name {
 		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, config.Name)
-	}
-
-	if market.Name != Name {
-		return nil, fmt.Errorf("market config name is incorrect; expected: %s, got: %s", Name, market.Name)
 	}
 
 	if !config.Enabled {
@@ -99,25 +84,10 @@ func NewAPIPriceFetcherWithClient(
 	}
 
 	// generate metadata per ticker
-	metadataPerTicker := make(map[string]TickerMetadata)
-	for _, ticker := range market.OffChainMap {
-		metadata, err := unmarshalMetadataJSON(ticker.Metadata_JSON)
-		if err != nil {
-			return nil, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
-		}
-
-		if err := metadata.ValidateBasic(); err != nil {
-			return nil, fmt.Errorf("metadata for ticker %s is invalid: %w", ticker.String(), err)
-		}
-
-		metadataPerTicker[ticker.String()] = metadata
-	}
-
 	return &APIPriceFetcher{
-		market:            market,
 		config:            config,
 		client:            client,
-		metaDataPerTicker: metadataPerTicker,
+		metaDataPerTicker: make(map[string]TickerMetadata),
 		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
 	}, nil
 }
@@ -129,16 +99,16 @@ func NewAPIPriceFetcherWithClient(
 //   - Calculate the price as quote / base, and scale by ticker.Decimals
 func (pf *APIPriceFetcher) Fetch(
 	ctx context.Context,
-	tickers []mmtypes.Ticker,
-) providertypes.GetResponse[mmtypes.Ticker, *big.Int] {
+	tickers []types.ProviderTicker,
+) types.PriceResponse {
 	// get the acounts to query in order of the tickers given
 	expectedNumAccounts := len(tickers) * 2
 	accounts := make([]solana.PublicKey, expectedNumAccounts)
 
 	for i, ticker := range tickers {
-		metadata, ok := pf.metaDataPerTicker[ticker.String()]
-		if !ok {
-			return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
+		metadata, err := pf.updateMetaDataCache(ticker)
+		if err != nil {
+			return types.NewPriceResponseWithErr(
 				tickers,
 				providertypes.NewErrorWithCode(
 					NoRaydiumMetadataForTickerError(ticker.String()),
@@ -160,7 +130,7 @@ func (pf *APIPriceFetcher) Fetch(
 		// TODO(nikhil): Keep track of latest height queried as well?
 	})
 	if err != nil {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
+		return types.NewPriceResponseWithErr(
 			tickers,
 			providertypes.NewErrorWithCode(
 				SolanaJSONRPCError(err),
@@ -171,7 +141,7 @@ func (pf *APIPriceFetcher) Fetch(
 
 	// expect a base / quote vault account for each ticker queried
 	if len(accountsResp.Value) != expectedNumAccounts {
-		return providertypes.NewGetResponseWithErr[mmtypes.Ticker, *big.Int](
+		return types.NewPriceResponseWithErr(
 			tickers,
 			providertypes.NewErrorWithCode(
 				SolanaJSONRPCError(fmt.Errorf("expected %d accounts, got %d", expectedNumAccounts, len(accountsResp.Value))),
@@ -216,7 +186,7 @@ func (pf *APIPriceFetcher) Fetch(
 		pf.logger.Debug("balances", zap.String("base", baseTokenBalance.String()), zap.String("quote", quoteTokenBalance.String()))
 
 		// calculate the price
-		price := calculatePrice(baseTokenBalance, quoteTokenBalance, ticker.Decimals)
+		price := calculatePrice(baseTokenBalance, quoteTokenBalance)
 
 		// return the price
 		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now())
@@ -247,10 +217,10 @@ func getScaledTokenBalance(account *rpc.Account, tokenDecimals uint64) (*big.Int
 	return oraclemath.ScaleUpCurrencyPairPrice(tokenDecimals, balance)
 }
 
-func calculatePrice(baseTokenBalance, quoteTokenBalance *big.Int, decimals uint64) *big.Int {
+func calculatePrice(baseTokenBalance, quoteTokenBalance *big.Int) *big.Float {
 	// calculate the price as quote / base
-	price := new(big.Float).Quo(new(big.Float).SetInt(quoteTokenBalance), new(big.Float).SetInt(baseTokenBalance))
-
-	// scale by the ticker decimals
-	return math.BigFloatToBigInt(price, decimals)
+	return new(big.Float).Quo(
+		new(big.Float).SetInt(quoteTokenBalance),
+		new(big.Float).SetInt(baseTokenBalance),
+	)
 }
