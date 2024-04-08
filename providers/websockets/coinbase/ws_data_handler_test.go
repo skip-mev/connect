@@ -16,12 +16,12 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/coinbase"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	logger = zap.NewExample()
-	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+	btc_usd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	eth_usd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	logger  = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -58,8 +58,8 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					constants.BITCOIN_USD: {
-						Value: big.NewInt(1000000000000),
+					btc_usd: {
+						Value: big.NewFloat(10000e18),
 					},
 				},
 			},
@@ -106,7 +106,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+					btc_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to convert price to big int"), providertypes.ErrorUnknown),
 					},
 				},
@@ -133,7 +133,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USD: providertypes.UnresolvedResult{
+					btc_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("received out of order ticker response message"), providertypes.ErrorUnknown),
 					},
 				},
@@ -171,10 +171,11 @@ func TestHandleMessage(t *testing.T) {
 		},
 	}
 
-	marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
+	wsHandler, err := coinbase.NewWebSocketDataHandler(logger, coinbase.DefaultWebSocketConfig)
 	require.NoError(t, err)
 
-	wsHandler, err := coinbase.NewWebSocketDataHandler(logger, marketConfig, coinbase.DefaultWebSocketConfig)
+	// Update the cache since it is assumed that CreateMessages is executed before anything else.
+	_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usd, eth_usd})
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -198,7 +199,7 @@ func TestHandleMessage(t *testing.T) {
 
 			for cp, result := range tc.resp.Resolved {
 				require.Contains(t, resp.Resolved, cp)
-				require.Equal(t, result.Value, resp.Resolved[cp].Value)
+				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), resp.Resolved[cp].Value.SetPrec(types.DefaultTickerDecimals))
 			}
 
 			for cp := range tc.resp.UnResolved {
@@ -212,13 +213,13 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessages(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs to subscribe to",
-			cps:  []mmtypes.Ticker{},
+			cps:  []types.ProviderTicker{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -226,8 +227,8 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "one currency pair to subscribe to",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
+			cps: []types.ProviderTicker{
+				btc_usd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
@@ -249,9 +250,9 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs to subscribe to",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
+			cps: []types.ProviderTicker{
+				btc_usd,
+				eth_usd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := coinbase.SubscribeRequestMessage{
@@ -272,26 +273,11 @@ func TestCreateMessages(t *testing.T) {
 			},
 			expectedErr: false,
 		},
-		{
-			name: "multiple currency pairs to subscribe to with one not supported",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-				mogusd,
-			},
-			expected: func() []handlers.WebsocketEncodedMessage {
-				return nil
-			},
-			expectedErr: true,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			wsHandler, err := coinbase.NewWebSocketDataHandler(logger, marketConfig, coinbase.DefaultWebSocketConfig)
+			wsHandler, err := coinbase.NewWebSocketDataHandler(logger, coinbase.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

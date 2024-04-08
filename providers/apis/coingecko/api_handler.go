@@ -103,7 +103,7 @@ func (h *APIHandler) ParseResponse(
 			// Resolve the price.
 			resolved[ticker] = types.NewPriceResult(
 				math.Float64ToBigFloat(price, ticker.GetDecimals()),
-				time.Now(),
+				time.Now().UTC(),
 			)
 		}
 	}

@@ -21,7 +21,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		unResolved = make(types.UnResolvedPrices)
 	)
 
-	ticker, ok := h.market.OffChainMap[msg.Data.Symbol]
+	ticker, ok := h.cache.FromOffChainTicker(msg.Data.Symbol)
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("unknown ticker %s", msg.Data.Symbol)
@@ -37,7 +37,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	}
 
 	// Convert the price.
-	price, err := math.Float64StringToBigInt(msg.Data.Price, ticker.Decimals)
+	price, err := math.Float64StringToBigFloat(msg.Data.Price, ticker.GetDecimals())
 	if err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),

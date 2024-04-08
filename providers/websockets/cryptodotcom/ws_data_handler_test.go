@@ -16,12 +16,13 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	logger = zap.NewExample()
-	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+	btc_usd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	eth_usd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	sol_usd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.SOLANA_USD)
+	logger  = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -137,7 +138,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					constants.BITCOIN_USD: types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
+					btc_usd: types.NewPriceResult(big.NewFloat(42069e18), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{},
 			},
@@ -202,9 +203,9 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					constants.BITCOIN_USD:  types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
-					constants.ETHEREUM_USD: types.NewPriceResult(big.NewInt(200000000000), time.Now()),
-					constants.SOLANA_USD:   types.NewPriceResult(big.NewInt(100000000000), time.Now()),
+					btc_usd: types.NewPriceResult(big.NewFloat(42069e18), time.Now()),
+					eth_usd: types.NewPriceResult(big.NewFloat(2000e18), time.Now()),
+					sol_usd: types.NewPriceResult(big.NewFloat(1000e18), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{},
 			},
@@ -239,10 +240,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					constants.BITCOIN_USD: types.NewPriceResult(big.NewInt(4206900000000), time.Now()),
+					btc_usd: types.NewPriceResult(big.NewFloat(42069e18), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{
-					constants.SOLANA_USD: providertypes.UnresolvedResult{
+					sol_usd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price $42,069.00: invalid syntax"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -256,10 +257,11 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultMarketConfig)
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, cryptodotcom.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, marketConfig, cryptodotcom.DefaultWebSocketConfig)
+			// Update the cache since it is assumed that CreateMessages is executed before anything else.
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usd, eth_usd, sol_usd})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -275,7 +277,7 @@ func TestHandleMessage(t *testing.T) {
 
 			for cp, result := range tc.resp.Resolved {
 				require.Contains(t, resp.Resolved, cp)
-				require.Equal(t, result.Value, resp.Resolved[cp].Value)
+				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), resp.Resolved[cp].Value.SetPrec(types.DefaultTickerDecimals))
 			}
 
 			for cp := range tc.resp.UnResolved {
@@ -289,20 +291,20 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		msg         cryptodotcom.InstrumentRequestMessage
 		expectedErr bool
 	}{
 		{
 			name:        "no currency pairs",
-			cps:         []mmtypes.Ticker{},
+			cps:         []types.ProviderTicker{},
 			msg:         cryptodotcom.InstrumentRequestMessage{},
 			expectedErr: true,
 		},
 		{
 			name: "one currency pair",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
+			cps: []types.ProviderTicker{
+				btc_usd,
 			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
@@ -314,10 +316,10 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				constants.ETHEREUM_USD,
-				constants.SOLANA_USD,
+			cps: []types.ProviderTicker{
+				btc_usd,
+				eth_usd,
+				sol_usd,
 			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
@@ -331,28 +333,11 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
-		{
-			name: "one found and one not found",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USD,
-				mogusd,
-			},
-			msg: cryptodotcom.InstrumentRequestMessage{
-				Method: "subscribe",
-				Params: cryptodotcom.InstrumentParams{
-					Channels: []string{"ticker.BTCUSD-PERP"},
-				},
-			},
-			expectedErr: true,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(cryptodotcom.Name, cryptodotcom.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, marketConfig, cryptodotcom.DefaultWebSocketConfig)
+			wsHandler, err := cryptodotcom.NewWebSocketDataHandler(logger, cryptodotcom.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

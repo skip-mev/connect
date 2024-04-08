@@ -94,7 +94,7 @@ func (h *APIHandler) ParseResponse(
 
 	return types.NewPriceResponse(
 		types.ResolvedPrices{
-			ticker: types.NewPriceResult(price, time.Now()),
+			ticker: types.NewPriceResult(price, time.Now().UTC()),
 		},
 		nil,
 	)

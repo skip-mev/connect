@@ -120,7 +120,7 @@ func (h *WebSocketHandler) handleStream(
 
 	lastPrice := dataArr[6]
 	// Convert the price to a big int.
-	price := math.Float64ToBigInt(lastPrice.(float64), ticker.Decimals)
+	price := math.Float64ToBigFloat(lastPrice.(float64), ticker.GetDecimals())
 	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 
 	return types.NewPriceResponse(resolved, unResolved), nil
@@ -128,7 +128,7 @@ func (h *WebSocketHandler) handleStream(
 
 // updateChannelMap updates the internal map for the given channelID and ticker.
 func (h *WebSocketHandler) updateChannelMap(channelID int, offChainTicker string) error {
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	ticker, ok := h.cache.FromOffChainTicker(offChainTicker)
 	if !ok {
 		return fmt.Errorf("unknown ticker %s", offChainTicker)
 	}

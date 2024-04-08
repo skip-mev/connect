@@ -39,7 +39,7 @@ var (
 	}
 
 	// DefaultMarketConfig returns the default market config for bitstamp.
-	DefaultMarketConfig = types.TickerToProviderConfig{
+	DefaultMarketConfig = types.TickersToProviderTickers{
 		constants.AVAX_USD: {
 			Name:           Name,
 			OffChainTicker: "avaxusd",

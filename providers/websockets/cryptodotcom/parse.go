@@ -33,16 +33,15 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 	for _, instrument := range instruments {
 		// If we don't have a mapping for the instrument, return an error. This is likely a configuration
 		// error.
-		ticker, ok := h.market.OffChainMap[instrument.Name]
+		ticker, ok := h.cache.FromOffChainTicker(instrument.Name)
 		if !ok {
 			h.logger.Error("failed to find currency pair for instrument", zap.String("instrument", instrument.Name))
 			continue
 		}
 
 		// Attempt to parse the price.
-		if price, err := math.Float64StringToBigInt(instrument.LatestTradePrice, ticker.Decimals); err != nil {
-			wErr := fmt.Errorf("failed to parse price %s:"+
-				" %w", instrument.LatestTradePrice, err)
+		if price, err := math.Float64StringToBigFloat(instrument.LatestTradePrice, ticker.GetDecimals()); err != nil {
+			wErr := fmt.Errorf("failed to parse price %s:"+" %w", instrument.LatestTradePrice, err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 			}

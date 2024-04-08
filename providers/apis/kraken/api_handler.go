@@ -127,7 +127,7 @@ func (h *APIHandler) ParseResponse(
 			continue
 		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	}
 
 	// Add currency pairs that received no response to the unresolved map.
