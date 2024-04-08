@@ -222,9 +222,9 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 
 	// Update the metrics.
 	for id := range response.Resolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.Success)
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), providertypes.OK)
 	}
-	for id, err := range response.UnResolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.StatusFromError(err))
+	for id, unresolvedResult := range response.UnResolved {
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), unresolvedResult.Code())
 	}
 }

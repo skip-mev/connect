@@ -105,11 +105,6 @@ To test these numbers yourself, spin up the the oracle server following the inst
 
 ```bash
 $ DEFI_PROVIDERS_ENABLED=true SOLANA_NODE_ENDPOINT=<SOLANA_NODE>  make update-local-configs
-```
-
-Then, to run
-
-```bash
 $ make run-oracle-server
 ```
 
