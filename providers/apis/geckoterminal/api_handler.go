@@ -107,9 +107,9 @@ func (h *APIHandler) ParseResponse(
 		}
 
 		// Convert the price to a big.Float.
-		price, err := math.Float64StringToBigFloat(price, ticker.GetDecimals())
+		price, err := math.Float64StringToBigFloat(price)
 		if err != nil {
-			wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+			wErr := fmt.Errorf("failed to convert price to big.Float: %w", err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(
 					wErr,

@@ -3,6 +3,7 @@ package coingecko
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 )
 
 var _ types.PriceAPIDataHandler = (*APIHandler)(nil)
@@ -102,7 +102,7 @@ func (h *APIHandler) ParseResponse(
 
 			// Resolve the price.
 			resolved[ticker] = types.NewPriceResult(
-				math.Float64ToBigFloat(price, ticker.GetDecimals()),
+				big.NewFloat(price),
 				time.Now(),
 			)
 		}

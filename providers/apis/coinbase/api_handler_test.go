@@ -2,11 +2,11 @@ package coinbase_test
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 
 	"github.com/stretchr/testify/require"
@@ -95,7 +95,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btc_usd: {
-						Value: math.Float64ToBigFloat(1020.25, types.DefaultTickerDecimals),
+						Value: big.NewFloat(1020.25),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -182,7 +182,7 @@ toms obvious but not minimal language
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value.SetPrec(types.DefaultTickerDecimals), r.Value.SetPrec(types.DefaultTickerDecimals))
+				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18))
 				require.True(t, r.Timestamp.After(now))
 			}
 

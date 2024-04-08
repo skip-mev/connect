@@ -110,10 +110,10 @@ func (h *APIHandler) ParseResponse(
 			continue
 		}
 
-		price, err := math.Float64StringToBigFloat(resultTicker.LastPrice(), ticker.GetDecimals())
+		price, err := math.Float64StringToBigFloat(resultTicker.LastPrice())
 		if err != nil {
 			wErr := fmt.Errorf(
-				"failed to convert price %s to big.Int: %w",
+				"failed to convert price %s to big.Float: %w",
 				resultTicker.LastPrice(),
 				err,
 			)

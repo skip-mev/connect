@@ -54,22 +54,13 @@ func BigFloatToBigInt(f *big.Float, decimals uint64) *big.Int {
 }
 
 // Float64StringToBigFloat converts a float64 string to a big.Float.
-func Float64StringToBigFloat(s string, decimals uint64) (*big.Float, error) {
+func Float64StringToBigFloat(s string) (*big.Float, error) {
 	bigFloat := new(big.Float)
 	_, ok := bigFloat.SetString(s)
 	if !ok {
 		return nil, fmt.Errorf("failed to set big.Float from string: %s", s)
 	}
-
-	return ScaleBigFloat(bigFloat, decimals), nil
-}
-
-// Float64ToBigFloat converts a float64 to a big.Float.
-func Float64ToBigFloat(val float64, decimals uint64) *big.Float {
-	bigVal := new(big.Float)
-	bigVal.SetFloat64(val)
-
-	return ScaleBigFloat(bigVal, decimals)
+	return bigFloat, nil
 }
 
 // ScaleBigFloat scales a big.Float by the given decimals.
