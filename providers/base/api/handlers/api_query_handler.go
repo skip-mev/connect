@@ -188,7 +188,7 @@ MainLoop:
 		case <-interval.C:
 			// spin up limit number of tasks
 			for i := 0; i < limit; i++ {
-				wg.Go(tasks[index % len(tasks)])
+				wg.Go(tasks[index%len(tasks)])
 				index++
 			}
 
