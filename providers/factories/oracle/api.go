@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -89,6 +91,15 @@ func APIQueryHandlerFactory(
 		}
 
 		requestHandler = static.NewStaticMockClient()
+	case raydium.Name:
+		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
+			marketMap,
+			cfg.API,
+			logger,
+		)
+		if err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
