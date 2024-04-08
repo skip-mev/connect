@@ -241,3 +241,74 @@ func TestFloat64StringToBigFloat(t *testing.T) {
 		})
 	}
 }
+
+func TestFloat64ToBigFloat(t *testing.T) {
+	testCases := []struct {
+		name     string
+		in       float64
+		decimals uint64
+		out      *big.Float
+	}{
+		{
+			name:     "zero",
+			in:       0,
+			decimals: 6,
+			out:      big.NewFloat(0),
+		},
+		{
+			name: "1",
+
+			in:       1,
+			decimals: 6,
+			out:      big.NewFloat(1e6),
+		},
+		{
+			name:     "value that has more 0s than decimals",
+			in:       112e-16,
+			decimals: 6,
+			out:      big.NewFloat(112e-10),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			out := math.Float64ToBigFloat(tc.in, tc.decimals)
+			require.Equal(t, tc.out.SetPrec(uint(20)), out.SetPrec(uint(20)))
+		})
+	}
+}
+
+func TestScaleBigFloat(t *testing.T) {
+	testCases := []struct {
+		name     string
+		in       *big.Float
+		decimals uint64
+		out      *big.Float
+	}{
+		{
+			name:     "zero",
+			in:       big.NewFloat(0),
+			decimals: 6,
+			out:      big.NewFloat(0),
+		},
+		{
+			name:     "1",
+			in:       big.NewFloat(1),
+			decimals: 6,
+			out:      big.NewFloat(1e6),
+		},
+		{
+			name:     "value that has more 0s than decimals",
+			in:       big.NewFloat(1e-16),
+			decimals: 6,
+			out:      big.NewFloat(1e-10),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			out := math.ScaleBigFloat(tc.in, tc.decimals)
+			require.Equal(t, tc.out.SetPrec(uint(20)), out.SetPrec(uint(20)))
+		})
+	}
+}
