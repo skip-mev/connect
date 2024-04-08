@@ -191,8 +191,7 @@ func TestParseResponse(t *testing.T) {
 			for cp, result := range tc.expected.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				r := resp.Resolved[cp]
-				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18
-					))
+				require.Equal(t, result.Value.SetPrec(18), r.Value.SetPrec(18))
 				require.True(t, r.Timestamp.After(now))
 			}
 

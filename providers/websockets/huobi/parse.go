@@ -2,12 +2,12 @@ package huobi
 
 import (
 	"fmt"
+	"math/big"
 	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
@@ -41,13 +41,13 @@ func (h *WebSocketHandler) parseTickerStream(stream TickerStream) (types.PriceRe
 			fmt.Errorf("incorrectly formatted stream: %v", stream)
 	}
 
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	ticker, ok := h.cache.FromOffChainTicker(offChainTicker)
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved),
 			fmt.Errorf("received stream for unknown channel %s", stream.Channel)
 	}
 
-	price := math.Float64ToBigInt(stream.Tick.LastPrice, ticker.Decimals)
+	price := big.NewFloat(stream.Tick.LastPrice)
 	resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 
 	return types.NewPriceResponse(resolved, unresolved), nil

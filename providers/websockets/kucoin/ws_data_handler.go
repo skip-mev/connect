@@ -9,7 +9,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
@@ -19,28 +18,19 @@ var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// market is the config for the KuCoin API.
-	market types.ProviderMarketMap
 	// ws is the config for the KuCoin websocket.
 	ws config.WebSocketConfig
 	// sequences is a map of currency pair to sequence number.
-	sequences map[mmtypes.Ticker]int64
+	sequences map[types.ProviderTicker]int64
+	// cache maintains the latest set of tickers seen by the handler.
+	cache types.ProviderTickers
 }
 
 // NewWebSocketDataHandler returns a new Kucoin PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	market types.ProviderMarketMap,
 	ws config.WebSocketConfig,
 ) (types.PriceWebSocketDataHandler, error) {
-	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
-	}
-
-	if market.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
-	}
-
 	if ws.Name != Name {
 		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, ws.Name)
 	}
@@ -55,9 +45,9 @@ func NewWebSocketDataHandler(
 
 	return &WebSocketHandler{
 		logger:    logger,
-		market:    market,
 		ws:        ws,
-		sequences: make(map[mmtypes.Ticker]int64),
+		sequences: make(map[types.ProviderTicker]int64),
+		cache:     types.NewProviderTickers(),
 	}, nil
 }
 
@@ -120,17 +110,13 @@ func (h *WebSocketHandler) HandleMessage(
 // KuCoin websocket API. The subscribe messages are created based on the currency pairs
 // that are configured for the provider.
 func (h *WebSocketHandler) CreateMessages(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker]
-		if !ok {
-			return nil, fmt.Errorf("ticker not found in market configs %s", ticker.String())
-		}
-
-		instruments = append(instruments, market.OffChainTicker)
+		instruments = append(instruments, ticker.GetOffChainTicker())
+		h.cache.Add(ticker)
 	}
 
 	return NewSubscribeRequestMessage(instruments)
@@ -149,8 +135,8 @@ func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessa
 func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
 	return &WebSocketHandler{
 		logger:    h.logger,
-		market:    h.market,
 		ws:        h.ws,
-		sequences: make(map[mmtypes.Ticker]int64),
+		sequences: make(map[types.ProviderTicker]int64),
+		cache:     types.NewProviderTickers(),
 	}
 }

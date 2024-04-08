@@ -24,7 +24,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	)
 
 	// Determine if the ticker is valid.
-	ticker, ok := h.market.OffChainMap[msg.Ticker]
+	ticker, ok := h.cache.FromOffChainTicker(msg.Ticker)
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("got response for an unsupported market %s", msg.Ticker)
@@ -50,8 +50,8 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
-	// Convert the price to a big int.
-	price, err := math.Float64StringToBigInt(msg.Price, ticker.Decimals)
+	// Convert the price to a big Float.
+	price, err := math.Float64StringToBigFloat(msg.Price)
 	if err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),

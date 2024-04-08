@@ -120,7 +120,7 @@ func (h *APIHandler) ParseResponse(
 			continue
 		}
 
-		resolved[ticker] = types.NewPriceResult(price, time.Now())
+		resolved[ticker] = types.NewPriceResult(price, time.Now().UTC())
 	}
 
 	// Add all expected tickers that did not return a response to the unresolved
