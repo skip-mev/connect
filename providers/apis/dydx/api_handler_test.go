@@ -24,7 +24,7 @@ var chains = []types.Chain{
 }
 
 func TestCreateURL(t *testing.T) {
-	handler, err := dydx.NewAPIHandler(dydx.DefaultAPIConfig, zap.NewNop())
+	handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
 	require.NoError(t, err)
 
 	t.Run("multiple chains", func(t *testing.T) {
@@ -119,7 +119,7 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			handler, err := dydx.NewAPIHandler(dydx.DefaultAPIConfig, zap.NewNop())
+			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
 			require.NoError(t, err)
 
 			resp := handler.ParseResponse(tc.chains, tc.resp())

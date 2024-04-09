@@ -140,9 +140,9 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 		Decimals: 8,
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[mmtypes.Ticker]*big.Int{
-		cp1: big.NewInt(100),
-		cp2: big.NewInt(200),
+	s.mockOracle.On("GetPrices").Return(map[string]*big.Float{
+		cp1.String(): big.NewFloat(100),
+		cp2.String(): big.NewFloat(200),
 	})
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)

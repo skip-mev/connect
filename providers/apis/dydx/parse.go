@@ -41,7 +41,7 @@ var ProviderMapping = map[string]string{
 	"Kucoin":               kucoin.Name,
 	"Okx":                  okx.Name,
 	"Mexc":                 mexc.Name,
-	"CoinbasePro":          coinbase.Name, // We support both the API and WebSocket.
+	"CoinbasePro":          coinbase.Name,
 	"TestVolatileExchange": volatile.Name,
 }
 
@@ -62,7 +62,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 				zap.Error(err),
 			)
 
-			continue
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to create ticker from market: %w", err)
 		}
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
@@ -73,11 +73,11 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 				zap.Error(err),
 			)
 
-			continue
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to unmarshal exchange json config: %w", err)
 		}
 
 		// Convert the exchange config JSON to a set of paths and providers.
-		providers, err := h.ConvertExchangeConfigJSON(ticker, exchangeConfigJSON)
+		providers, err := h.ConvertExchangeConfigJSON(exchangeConfigJSON)
 		if err != nil {
 			h.logger.Error(
 				"failed to convert exchange config json",
@@ -85,7 +85,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 				zap.Error(err),
 			)
 
-			continue
+			return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to convert exchange config json: %w", err)
 		}
 
 		marketMap.Markets[ticker.String()] = mmtypes.Market{
@@ -95,7 +95,6 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 	}
 
 	if err := marketMap.ValidateBasic(); err != nil {
-		h.logger.Error("failed to validate market map", zap.Error(err))
 		return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to validate market map: %w", err)
 	}
 
@@ -139,7 +138,6 @@ func (h *APIHandler) CreateCurrencyPairFromPair(pair string) (slinkytypes.Curren
 // from a dYdX market. These paths represent the different ways to convert a currency
 // pair using the dYdX market.
 func (h *APIHandler) ConvertExchangeConfigJSON(
-	ticker mmtypes.Ticker,
 	config dydxtypes.ExchangeConfigJson,
 ) ([]mmtypes.ProviderConfig, error) {
 	var (
@@ -159,9 +157,9 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		if !ok {
 			// ignore unsupported exchanges
 			h.logger.Error(
-				"unsupported exchange",
+				"skipping unsupported exchange",
 				zap.String("exchange", cfg.ExchangeName),
-				zap.String("ticker", ticker.String()),
+				zap.String("ticker", cfg.Ticker),
 			)
 
 			continue
@@ -180,6 +178,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 					err,
 				)
 			}
+
 			normalizeByPair = &temp
 		}
 
@@ -198,19 +197,14 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
 func ConvertDenomByProvider(denom string, exchange string) string {
-	provider, ok := ProviderMapping[exchange]
-	if !ok {
-		return denom
-	}
-
 	switch {
-	case provider == mexc.Name:
+	case exchange == mexc.Name:
 		if strings.Contains(denom, "_") {
 			return strings.ReplaceAll(denom, "_", "")
 		}
 
 		return denom
-	case provider == bitstamp.Name:
+	case exchange == bitstamp.Name:
 		if strings.Contains(denom, "/") {
 			return strings.ToLower(strings.ReplaceAll(denom, "/", ""))
 		}

@@ -40,7 +40,7 @@ func MarketMapProviderFactory(
 
 	switch cfg.Name {
 	case dydx.Name:
-		apiDataHandler, err = dydx.NewAPIHandler(cfg.API, logger)
+		apiDataHandler, err = dydx.NewAPIHandler(logger, cfg.API)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
 		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
