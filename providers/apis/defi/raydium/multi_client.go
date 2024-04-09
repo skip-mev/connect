@@ -15,11 +15,6 @@ import (
 	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
 )
 
-const (
-	// authenticationHeaderField is the header field used to store api-key for authentication.
-	authenticationHeaderField = "X-Api-Key"
-)
-
 // MultiJSONRPCClient is an implementation of the SolanaJSONRPCClient interface that delegates
 // requests to multiple underlying clients, and aggregates over all provided responses.
 type MultiJSONRPCClient struct {
@@ -57,7 +52,7 @@ func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClie
 	// if authentication is enabled
 	if endpoint.Authentication.Enabled {
 		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{
-			authenticationHeaderField: endpoint.Authentication.HTTPHeaderAPIKey,
+			endpoint.Authentication.APIKeyHeader: endpoint.Authentication.APIKey,
 		}, http.DefaultTransport)
 
 		client := rpc.NewWithCustomRPCClient(jsonrpc.NewClientWithOpts(endpoint.URL, &jsonrpc.RPCClientOpts{

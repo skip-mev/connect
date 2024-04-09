@@ -73,7 +73,10 @@ type Authentication struct {
 	Enabled bool `json:"enabled"`
 
 	// HTTPHeaderAPIKey is the API-key that will be set under the X-Api-Key header
-	HTTPHeaderAPIKey string `json:"httpHeaderAPIKey"`
+	APIKey string `json:"apiKey"`
+
+	// APIKeyHeader is the header that will be used to set the API key.
+	APIKeyHeader string `json:"apiKeyHeader"`
 }
 
 // ValidateBasic performs basic validation of the API authentication.
@@ -82,8 +85,12 @@ func (a Authentication) ValidateBasic() error {
 		return nil
 	}
 
-	if len(a.HTTPHeaderAPIKey) == 0 {
+	if len(a.APIKey) == 0 {
 		return fmt.Errorf("authentication http header api key cannot be empty")
+	}
+
+	if len(a.APIKeyHeader) == 0 {
+		return fmt.Errorf("authentication api key header cannot be empty")
 	}
 
 	return nil
