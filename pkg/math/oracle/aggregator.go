@@ -4,6 +4,7 @@ import (
 	"maps"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
