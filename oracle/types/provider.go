@@ -63,12 +63,7 @@ func (t DefaultProviderTicker) GetJSON() string {
 
 // String returns the string representation of the provider ticker.
 func (t DefaultProviderTicker) String() string {
-	return fmt.Sprintf(
-		"provider: %s, off-chain-ticker: %s, json: %s",
-		t.Name,
-		t.OffChainTicker,
-		t.JSON,
-	)
+	return t.OffChainTicker
 }
 
 // NewProviderTickers returns a new list of provider tickers.

@@ -19,10 +19,10 @@ import (
 // These are defined in the market map configuration.
 type MedianAggregator struct {
 	*aggregator.DataAggregator[string, types.AggregatorPrices]
-	logger       *zap.Logger
-	cfg          mmtypes.MarketMap
-	metrics      oraclemetrics.Metrics
-	scaledPrices types.AggregatorPrices
+	logger      *zap.Logger
+	cfg         mmtypes.MarketMap
+	metrics     oraclemetrics.Metrics
+	indexPrices types.AggregatorPrices
 }
 
 // NewMedianAggregator returns a new Median aggregator.
@@ -49,7 +49,7 @@ func NewMedianAggregator(
 		cfg:            cfg,
 		metrics:        metrics,
 		DataAggregator: aggregator.NewDataAggregator[string, types.AggregatorPrices](),
-		scaledPrices:   make(types.AggregatorPrices),
+		indexPrices:    make(types.AggregatorPrices),
 	}, nil
 }
 
@@ -98,7 +98,7 @@ func (m *MedianAggregator) AggregateData() {
 		m.logger.Info(
 			"calculated median price",
 			zap.String("target_ticker", ticker),
-			
+
 			zap.String("unscaled_price", indexPrices[target.String()].String()),
 			zap.String("scaled_price", scaledPrices[target.String()].String()),
 			zap.Any("converted_prices", convertedPrices),

@@ -11,7 +11,6 @@ import (
 
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
-	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 )
 
@@ -52,7 +51,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator *oraclemath.MedianAggregator
+	priceAggregator types.PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics oraclemetrics.Metrics
@@ -252,6 +251,6 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 
 // GetPrices returns the aggregate prices from the oracle.
 func (o *OracleImpl) GetPrices() types.AggregatorPrices {
-	prices := o.priceAggregator.GetScaledPrices()
+	prices := o.priceAggregator.GetAggregatedData()
 	return prices
 }

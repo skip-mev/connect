@@ -96,7 +96,7 @@ func TestGetIndexPrice(t *testing.T) {
 		prices := types.AggregatorPrices{
 			constants.BITCOIN_USD.String(): big.NewFloat(100),
 		}
-		agg.SetAggregatedData(prices)
+		agg.SetIndexPrices(prices)
 
 		price, err := agg.GetIndexPrice(constants.BITCOIN_USD)
 		require.NoError(t, err)

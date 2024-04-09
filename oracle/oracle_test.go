@@ -12,10 +12,9 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
@@ -60,7 +59,7 @@ type OracleTestSuite struct {
 	logger *zap.Logger
 
 	// Oracle config
-	currencyPairs []mmtypes.Ticker
+	currencyPairs []types.ProviderTicker
 }
 
 func TestOracleSuite(t *testing.T) {
@@ -71,10 +70,10 @@ func (s *OracleTestSuite) SetupTest() {
 	s.random = rand.New(rand.NewSource(time.Now().UnixNano()))
 	s.logger = zap.NewExample()
 
-	s.currencyPairs = []mmtypes.Ticker{
-		constants.BITCOIN_USD,
-		constants.ETHEREUM_USD,
-		constants.ATOM_USD,
+	s.currencyPairs = []types.ProviderTicker{
+		types.NewProviderTicker("test", "BTC/USD", "{}"),
+		types.NewProviderTicker("test", "ETH/USD", "{}"),
+		types.NewProviderTicker("test", "ATOM/USD", "{}"),
 	}
 }
 
@@ -96,7 +95,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -115,7 +114,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider1 := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider1 := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -124,7 +123,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 					200*time.Millisecond,
 				)
 
-				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					time.Second,
 					s.currencyPairs,
@@ -153,6 +152,7 @@ func (s *OracleTestSuite) TestStopWithContextCancel() {
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
+				oracle.WithAggregateFunction(median.ComputeMedian()),
 			)
 			s.Require().NoError(err)
 
@@ -194,7 +194,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -214,7 +214,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider1 := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider1 := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -223,7 +223,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 					200*time.Millisecond,
 				)
 
-				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					time.Second,
 					s.currencyPairs,
@@ -253,6 +253,7 @@ func (s *OracleTestSuite) TestStopWithContextDeadline() {
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
+				oracle.WithAggregateFunction(median.ComputeMedian()),
 			)
 			s.Require().NoError(err)
 
@@ -282,7 +283,7 @@ func (s *OracleTestSuite) TestStop() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -302,7 +303,7 @@ func (s *OracleTestSuite) TestStop() {
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider1 := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider1 := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -311,7 +312,7 @@ func (s *OracleTestSuite) TestStop() {
 					200*time.Millisecond,
 				)
 
-				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					time.Second,
 					s.currencyPairs,
@@ -341,6 +342,7 @@ func (s *OracleTestSuite) TestStop() {
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
+				oracle.WithAggregateFunction(median.ComputeMedian()),
 			)
 			s.Require().NoError(err)
 

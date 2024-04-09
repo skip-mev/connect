@@ -2,7 +2,6 @@ package oracle
 
 import (
 	"fmt"
-	"maps"
 	"math/big"
 
 	"github.com/skip-mev/slinky/oracle/types"
@@ -33,7 +32,7 @@ func (m *MedianAggregator) GetProviderPrice(
 func (m *MedianAggregator) GetIndexPrice(
 	cp pkgtypes.CurrencyPair,
 ) (*big.Float, error) {
-	price, ok := m.GetAggregatedData()[cp.String()]
+	price, ok := m.GetIndexPrices()[cp.String()]
 	if !ok {
 		return nil, fmt.Errorf("missing index price for ticker: %s", cp)
 	}
@@ -62,20 +61,22 @@ func (m *MedianAggregator) GetMarketMap() *mmtypes.MarketMap {
 func (m *MedianAggregator) SetPrices(
 	indexPrices, scaledPrices types.AggregatorPrices,
 ) {
-	m.Lock()
-	m.scaledPrices = scaledPrices
-	m.Unlock()
-
-	m.DataAggregator.SetAggregatedData(indexPrices)
+	m.SetIndexPrices(indexPrices)
+	m.DataAggregator.SetAggregatedData(scaledPrices)
 }
 
-// GetScaledPrices returns the scaled prices for the oracle.
-func (m *MedianAggregator) GetScaledPrices() types.AggregatorPrices {
+// GetIndexPrices returns the index prices for the oracle.
+func (m *MedianAggregator) GetIndexPrices() types.AggregatorPrices {
 	m.Lock()
 	defer m.Unlock()
 
-	cpy := make(types.AggregatorPrices)
-	maps.Copy(cpy, m.scaledPrices)
+	return m.indexPrices
+}
 
-	return cpy
+// SetIndexPrices sets the index prices for the oracle.
+func (m *MedianAggregator) SetIndexPrices(indexPrices types.AggregatorPrices) {
+	m.Lock()
+	defer m.Unlock()
+
+	m.indexPrices = indexPrices
 }

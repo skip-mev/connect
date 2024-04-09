@@ -20,17 +20,17 @@ import (
 func TestAggregateData(t *testing.T) {
 	testCases := []struct {
 		name           string
-		malleate       func(aggregator types.PriceAggregator)
+		malleate       func(aggregator *oracle.MedianAggregator)
 		expectedPrices types.AggregatorPrices
 	}{
 		{
 			name:           "no data",
-			malleate:       func(types.PriceAggregator) {},
+			malleate:       func(*oracle.MedianAggregator) {},
 			expectedPrices: types.AggregatorPrices{},
 		},
 		{
 			name: "coinbase direct feed for BTC/USD - fail since it does not have enough providers",
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD": big.NewFloat(70_000),
 				}
@@ -40,7 +40,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD - fail since index price does not exist",
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD":  big.NewFloat(70_000),
 					"BTC-USDT": big.NewFloat(70_000),
@@ -56,7 +56,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase direct feed, coinbase adjusted feed, binance adjusted feed for BTC/USD with index prices - success",
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD":  big.NewFloat(70_000),
 					"BTC-USDT": big.NewFloat(70_000),
@@ -71,7 +71,7 @@ func TestAggregateData(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.1),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrices: types.AggregatorPrices{
 				BTC_USD.String(): big.NewFloat(75_900), // median of 70_000, 75_900, 77_000
@@ -79,7 +79,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase USDT direct, coinbase USDC/USDT inverted, binance direct feeds for USDT/USD - success",
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"USDT-USD":  big.NewFloat(1.1),
 					"USDC-USDT": big.NewFloat(1.1),
@@ -97,7 +97,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase USDT direct, binance USDT/USD direct feeds for USDT/USD - success (average of two prices)",
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"USDT-USD": big.NewFloat(1.1),
 				}
@@ -114,7 +114,7 @@ func TestAggregateData(t *testing.T) {
 		},
 		{
 			name: "coinbase USDT direct, kucoin BTC/USDT inverted, index BTC/USD direct feeds for USDT/USD - success",
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"USDT-USD": big.NewFloat(1.0),
 				}
@@ -128,7 +128,7 @@ func TestAggregateData(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					BTC_USD.String(): big.NewFloat(77_000),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrices: types.AggregatorPrices{
 				USDT_USD.String(): big.NewFloat(1.05), // average of 1.1, 1.0
@@ -142,13 +142,13 @@ func TestAggregateData(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
-			tc.malleate(m.DataAggregator)
+			tc.malleate(m)
 
 			// Aggregate the data.
 			m.AggregateData()
 
 			// Ensure that the aggregated data is as expected.
-			result := m.DataAggregator.GetAggregatedData()
+			result := m.GetIndexPrices()
 			require.Equal(t, len(tc.expectedPrices), len(result))
 			for ticker, price := range result {
 				expectedPrice, ok := tc.expectedPrices[ticker]
@@ -164,14 +164,14 @@ func TestCalculateConvertedPrices(t *testing.T) {
 		name           string
 		target         mmtypes.Ticker
 		cfgs           []mmtypes.ProviderConfig
-		malleate       func(aggregator types.PriceAggregator)
+		malleate       func(aggregator *oracle.MedianAggregator)
 		expectedPrices []*big.Float
 	}{
 		{
 			name:           "no conversion cfgs",
 			target:         BTC_USD,
 			cfgs:           []mmtypes.ProviderConfig{},
-			malleate:       func(types.PriceAggregator) {},
+			malleate:       func(*oracle.MedianAggregator) {},
 			expectedPrices: make([]*big.Float, 0),
 		},
 		{
@@ -183,7 +183,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					OffChainTicker: "BTC-USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD": big.NewFloat(70_000),
 				}
@@ -204,7 +204,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USDT": big.NewFloat(70_000),
 				}
@@ -213,7 +213,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.1),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrices: []*big.Float{big.NewFloat(77_000)},
 		},
@@ -231,7 +231,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USDT": big.NewFloat(70_000),
 				}
@@ -240,7 +240,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.BITCOIN_USD.String(): big.NewFloat(77_000),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrices: []*big.Float{big.NewFloat(1.1)},
 		},
@@ -254,7 +254,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					Invert:         true,
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"USDC-USDT": big.NewFloat(1.1),
 				}
@@ -275,7 +275,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					OffChainTicker: "BTC-USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD": big.NewFloat(70_000),
 				}
@@ -312,7 +312,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 					},
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USDT": big.NewFloat(70_000),
 				}
@@ -326,7 +326,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.1),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrices: []*big.Float{
 				big.NewFloat(77_000),
@@ -341,7 +341,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
-			tc.malleate(m.DataAggregator)
+			tc.malleate(m)
 
 			// Calculate the converted prices.
 			prices := m.CalculateConvertedPrices(tc.target, tc.cfgs)
@@ -364,7 +364,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 		name          string
 		target        mmtypes.Ticker
 		cfg           mmtypes.ProviderConfig
-		malleate      func(aggregator types.PriceAggregator)
+		malleate      func(aggregator *oracle.MedianAggregator)
 		expectedPrice *big.Float
 		expectedErr   bool
 	}{
@@ -372,7 +372,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			name:          "empty cfg",
 			target:        BTC_USD,
 			cfg:           mmtypes.ProviderConfig{},
-			malleate:      func(types.PriceAggregator) {},
+			malleate:      func(*oracle.MedianAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
@@ -383,7 +383,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				Name:           coinbase.Name,
 				OffChainTicker: "BTC-USD",
 			},
-			malleate:      func(types.PriceAggregator) {},
+			malleate:      func(*oracle.MedianAggregator) {},
 			expectedPrice: nil,
 			expectedErr:   true,
 		},
@@ -394,7 +394,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				Name:           coinbase.Name,
 				OffChainTicker: "BTC-USD",
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD": big.NewFloat(70_000),
 				}
@@ -414,7 +414,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC_USDT": big.NewFloat(70_000),
 				}
@@ -434,7 +434,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USDT": big.NewFloat(70_000),
 				}
@@ -443,7 +443,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.0),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrice: big.NewFloat(70_000),
 			expectedErr:   false,
@@ -460,7 +460,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USDT": big.NewFloat(70_000),
 				}
@@ -469,7 +469,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.BITCOIN_USD.String(): big.NewFloat(77_000),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrice: big.NewFloat(1.1),
 			expectedErr:   false,
@@ -482,7 +482,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				OffChainTicker: "USDT-USDC",
 				Invert:         true,
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"USDT-USDC": big.NewFloat(1.1),
 				}
@@ -502,7 +502,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"ETH-USDT": big.NewFloat(4_000),
 				}
@@ -511,7 +511,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.1),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrice: big.NewFloat(4_400),
 			expectedErr:   false,
@@ -528,7 +528,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"ETH-USDT": big.NewFloat(4_100),
 				}
@@ -537,7 +537,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.ETHEREUM_USD.String(): big.NewFloat(4_000),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrice: big.NewFloat(0.9756097561),
 			expectedErr:   false,
@@ -553,7 +553,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"PEPEUSDT": big.NewFloat(0.00000831846),
 				}
@@ -562,7 +562,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.1),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrice: big.NewFloat(0.000009150306),
 			expectedErr:   false,
@@ -574,7 +574,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				Name:           coinbase.Name,
 				OffChainTicker: "BTC-USD",
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USD": big.NewFloat(0.1e-18),
 				}
@@ -594,7 +594,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 					Quote: "USD",
 				},
 			},
-			malleate: func(aggregator types.PriceAggregator) {
+			malleate: func(aggregator *oracle.MedianAggregator) {
 				prices := types.AggregatorPrices{
 					"BTC-USDT": big.NewFloat(0.1e-18),
 				}
@@ -603,7 +603,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 				indexPrices := types.AggregatorPrices{
 					constants.USDT_USD.String(): big.NewFloat(1.0),
 				}
-				aggregator.SetAggregatedData(indexPrices)
+				aggregator.SetIndexPrices(indexPrices)
 			},
 			expectedPrice: big.NewFloat(0.1e-18),
 			expectedErr:   false,
@@ -616,7 +616,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the price aggregator with relevant data.
-			tc.malleate(m.DataAggregator)
+			tc.malleate(m)
 
 			// Calculate the adjusted price.
 			price, err := m.CalculateAdjustedPrice(tc.target, tc.cfg)
