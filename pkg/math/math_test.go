@@ -124,9 +124,7 @@ func TestMax(t *testing.T) {
 			t.Parallel()
 
 			got := math.Max(tc.vals...)
-			if got != tc.expected {
-				t.Errorf("expected %d, got %d", tc.expected, got)
-			}
+			require.Equal(t, tc.expected, got)
 		})
 	}
 }

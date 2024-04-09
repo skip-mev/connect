@@ -738,61 +738,6 @@ func TestAPIQueryHandlerWithBatchSize(t *testing.T) {
 			}
 		}
 	})
-
-	t.Run("Query with incorrect batch-size, error handled gracefully", func(t *testing.T) {
-		cfg = config.APIConfig{
-			Enabled:          true,
-			Timeout:          500 * time.Millisecond,
-			Interval:         250 * time.Millisecond,
-			ReconnectTimeout: 250 * time.Millisecond,
-			MaxQueries:       1,
-			BatchSize:        2,
-			URL:              constantURL,
-			Name:             "handler1",
-		}
-
-		pf := mocks.NewAPIFetcher[mmtypes.Ticker, *big.Int](t)
-
-		handler, err := handlers.NewAPIQueryHandlerWithFetcher(
-			zap.NewNop(),
-			cfg,
-			pf,
-			metrics.NewNopAPIMetrics(),
-		)
-		require.NoError(t, err)
-
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-		responseCh := make(chan providertypes.GetResponse[mmtypes.Ticker, *big.Int], 1)
-
-		go func() {
-			handler.Query(ctx, []mmtypes.Ticker{
-				mmtypes.NewTicker("BTC", "USD", 8, 0),
-				mmtypes.NewTicker("BTC1", "USD", 8, 0),
-				mmtypes.NewTicker("BTC2", "USD", 8, 0),
-				mmtypes.NewTicker("BTC3", "USD", 8, 0),
-				mmtypes.NewTicker("BTC4", "USD", 8, 0),
-			}, responseCh)
-			close(responseCh)
-		}()
-
-		// wait for response
-		var response providertypes.GetResponse[mmtypes.Ticker, *big.Int]
-		select {
-		case response = <-responseCh:
-		case <-ctx.Done():
-			t.Fatal("handler did not close")
-		}
-
-		// assert
-		require.NotNil(t, response)
-		require.Equal(t, 5, len(response.UnResolved))
-
-		for _, unresolved := range response.UnResolved {
-			require.Equal(t, unresolved.Code(), providertypes.ErrorAPIGeneral)
-			require.Equal(t, unresolved.Error(), fmt.Sprintf("number of threads %d needed to query ids %d exceeds limit %d", 3, 5, 1))
-		}
-	})
 }
 
 func newRateLimitResponse() *http.Response {

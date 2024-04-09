@@ -174,12 +174,13 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 			// Create a new task for the batch.
 			tasks = append(tasks, h.subTask(ctx, ids[start:end], responseCh))
 		}
+		h.logger.Debug("created sub-tasks", zap.Int("threads", threads), zap.Int("limit", limit), zap.Int("batch_size", batchSize))
 	}
 
 	// Block each task until the wait group has capacity to accept a new response.
 	index := 0
-	ticker, close := tickerWithImmediateFirstTick(h.config.Interval)
-	defer close()
+	ticker, stop := tickerWithImmediateFirstTick(h.config.Interval)
+	defer stop()
 MainLoop:
 	for {
 		select {
@@ -209,11 +210,11 @@ MainLoop:
 // at the specified interval.
 func tickerWithImmediateFirstTick(d time.Duration) (<-chan struct{}, func()) {
 	ticker := time.NewTicker(d)
-	ch := make(chan struct{}, 1) // non-blocking first writes to channel
+	ch := make(chan struct{})
 
 	// Send an initial tick immediately.
-	ch <- struct{}{}
 	go func() {
+		ch <- struct{}{}
 		for range ticker.C { // send ticks at the specified interval
 			ch <- struct{}{}
 		}
