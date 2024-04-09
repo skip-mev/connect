@@ -3,8 +3,6 @@ package simapp
 import (
 	"time"
 
-	"google.golang.org/protobuf/types/known/durationpb"
-
 	runtimev1alpha1 "cosmossdk.io/api/cosmos/app/runtime/v1alpha1"
 	appv1alpha1 "cosmossdk.io/api/cosmos/app/v1alpha1"
 	authmodulev1 "cosmossdk.io/api/cosmos/auth/module/v1"
@@ -24,6 +22,7 @@ import (
 	upgrademodulev1 "cosmossdk.io/api/cosmos/upgrade/module/v1"
 	vestingmodulev1 "cosmossdk.io/api/cosmos/vesting/module/v1"
 	"cosmossdk.io/depinject"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	alertmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
 	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
