@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	btc_usdt = gate.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt = gate.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	logger   = zap.NewExample()
+	btcusdt = gate.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = gate.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	logger  = zap.NewExample()
 )
 
 func TestHandlerMessage(t *testing.T) {
@@ -100,7 +100,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(1.00),
 					},
 				},
@@ -202,7 +202,7 @@ func TestHandlerMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usdt, eth_usdt})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -247,7 +247,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := gate.SubscribeRequest{
@@ -270,8 +270,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := gate.SubscribeRequest{

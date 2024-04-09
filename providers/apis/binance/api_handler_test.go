@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	btc_usdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	btcusdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = binance.DefaultNonUSMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
 )
 
 func TestCreateURL(t *testing.T) {
@@ -37,7 +37,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
@@ -45,8 +45,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			url:         "https://api.binance.com/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
 			expectedErr: false,
@@ -85,7 +85,7 @@ func TestCreateURL_US(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
 			expectedErr: false,
@@ -93,8 +93,8 @@ func TestCreateURL_US(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
 			expectedErr: false,
@@ -127,14 +127,14 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"}]`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(46707.03),
 					},
 				},
@@ -144,18 +144,18 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"46707.03000000"},{"symbol":"ETHUSDT","price":"297.50000000"}]`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(46707.03),
 					},
-					eth_usdt: {
+					ethusdt: {
 						Value: big.NewFloat(297.5),
 					},
 				},
@@ -165,7 +165,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad response",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`shout out my label thats me`,
@@ -173,7 +173,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -182,7 +182,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad price response",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[{"symbol":"BTCUSDT","price":"$46707.03000000"}]`,
@@ -190,7 +190,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -199,8 +199,8 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "no response",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[]`,
@@ -208,10 +208,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
-					eth_usdt: providertypes.UnresolvedResult{
+					ethusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},

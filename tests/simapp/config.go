@@ -45,9 +45,9 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/slashing"     // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
 
-	_ "github.com/skip-mev/slinky/x/incentives"       // import for side-effects
-	_ "github.com/skip-mev/slinky/x/marketmap/module" // import for side-effects
-	_ "github.com/skip-mev/slinky/x/oracle"           // import for side-effects
+	_ "github.com/skip-mev/slinky/x/incentives" // import for side-effects
+	_ "github.com/skip-mev/slinky/x/mm2"        // import for side-effects
+	_ "github.com/skip-mev/slinky/x/oracle"     // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
 	circuittypes "cosmossdk.io/x/circuit/types"
@@ -70,11 +70,11 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
+	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/mm2/module/v1"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
-	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/mm2/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 

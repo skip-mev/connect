@@ -7,11 +7,12 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestFetch(t *testing.T) {
@@ -52,7 +53,7 @@ func TestFetch(t *testing.T) {
 		{
 			name: "fails to make a batch call",
 			tickers: []types.ProviderTicker{
-				weth_usdc_ticker,
+				wethusdcTicker,
 			},
 			client: func() uniswapv3.EVMClient {
 				return createEVMClientWithResponse(t, fmt.Errorf("failed to make a batch call"), nil, nil)
@@ -60,14 +61,14 @@ func TestFetch(t *testing.T) {
 			expected: types.PriceResponse{
 				Resolved: map[types.ProviderTicker]providertypes.ResolvedResult[*big.Float]{},
 				UnResolved: map[types.ProviderTicker]providertypes.UnresolvedResult{
-					weth_usdc_ticker: {},
+					wethusdcTicker: {},
 				},
 			},
 		},
 		{
 			name: "batch request has an error for a single ticker",
 			tickers: []types.ProviderTicker{
-				weth_usdc_ticker,
+				wethusdcTicker,
 			},
 			client: func() uniswapv3.EVMClient {
 				batchErrors := []error{
@@ -81,14 +82,14 @@ func TestFetch(t *testing.T) {
 			expected: types.PriceResponse{
 				Resolved: map[types.ProviderTicker]providertypes.ResolvedResult[*big.Float]{},
 				UnResolved: map[types.ProviderTicker]providertypes.UnresolvedResult{
-					weth_usdc_ticker: {},
+					wethusdcTicker: {},
 				},
 			},
 		},
 		{
 			name: "batch request returns a result that cannot be parsed",
 			tickers: []types.ProviderTicker{
-				weth_usdc_ticker,
+				wethusdcTicker,
 			},
 			client: func() uniswapv3.EVMClient {
 				batchErrors := []error{
@@ -102,14 +103,14 @@ func TestFetch(t *testing.T) {
 			expected: types.PriceResponse{
 				Resolved: map[types.ProviderTicker]providertypes.ResolvedResult[*big.Float]{},
 				UnResolved: map[types.ProviderTicker]providertypes.UnresolvedResult{
-					weth_usdc_ticker: {},
+					wethusdcTicker: {},
 				},
 			},
 		},
 		{
 			name: "weth/usdc mainnet result",
 			tickers: []types.ProviderTicker{
-				weth_usdc_ticker,
+				wethusdcTicker,
 			},
 			client: func() uniswapv3.EVMClient {
 				batchErrors := []error{
@@ -122,7 +123,7 @@ func TestFetch(t *testing.T) {
 			},
 			expected: types.PriceResponse{
 				Resolved: map[types.ProviderTicker]providertypes.ResolvedResult[*big.Float]{
-					weth_usdc_ticker: {
+					wethusdcTicker: {
 						Value: big.NewFloat(3313.131879703878971626114658316303),
 					},
 				},

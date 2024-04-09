@@ -19,10 +19,10 @@ import (
 )
 
 var (
-	btc_usd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	eth_usd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	sol_usd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.SOLANA_USD)
-	logger  = zap.NewExample()
+	btcusd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	solusd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.SOLANA_USD)
+	logger = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -138,7 +138,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
+					btcusd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{},
 			},
@@ -203,9 +203,9 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
-					eth_usd: types.NewPriceResult(big.NewFloat(2000.00), time.Now()),
-					sol_usd: types.NewPriceResult(big.NewFloat(1000.00), time.Now()),
+					btcusd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
+					ethusd: types.NewPriceResult(big.NewFloat(2000.00), time.Now()),
+					solusd: types.NewPriceResult(big.NewFloat(1000.00), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{},
 			},
@@ -240,10 +240,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
+					btcusd: types.NewPriceResult(big.NewFloat(42069.00), time.Now()),
 				},
 				UnResolved: types.UnResolvedPrices{
-					sol_usd: providertypes.UnresolvedResult{
+					solusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price $42,069.00: invalid syntax"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -261,7 +261,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usd, eth_usd, sol_usd})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusd, ethusd, solusd})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -304,7 +304,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",
@@ -317,9 +317,9 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
-				sol_usd,
+				btcusd,
+				ethusd,
+				solusd,
 			},
 			msg: cryptodotcom.InstrumentRequestMessage{
 				Method: "subscribe",

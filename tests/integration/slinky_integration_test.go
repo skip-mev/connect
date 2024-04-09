@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/skip-mev/slinky/x/incentives"
-	marketmapmodule "github.com/skip-mev/slinky/x/marketmap/module"
+	marketmapmodule "github.com/skip-mev/slinky/x/mm2"
 	"github.com/skip-mev/slinky/x/sla"
 
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"

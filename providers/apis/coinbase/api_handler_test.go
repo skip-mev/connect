@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	btc_usd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	eth_usd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	btcusd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd = coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
 )
 
 func TestCreateURL(t *testing.T) {
@@ -38,7 +38,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			url:         "https://api.coinbase.com/v2/prices/BTC-USD/spot",
 			expectedErr: false,
@@ -46,8 +46,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			url:         "",
 			expectedErr: true,
@@ -80,7 +80,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -94,7 +94,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(1020.25),
 					},
 				},
@@ -104,7 +104,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "malformed response",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -119,7 +119,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -128,7 +128,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "unable to parse float",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -143,7 +143,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -151,7 +151,7 @@ func TestParseResponse(t *testing.T) {
 		},
 		{
 			name: "unable to parse json",
-			cps:  []types.ProviderTicker{btc_usd},
+			cps:  []types.ProviderTicker{btcusd},
 			response: testutils.CreateResponseFromJSON(
 				`
 toms obvious but not minimal language
@@ -160,7 +160,7 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
 				},

@@ -185,7 +185,11 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Ticker: types.Ticker(constants.BITCOIN_USD),
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
 						ProviderConfigs: []types.ProviderConfig{
 							{
 								Name:            coinbase.Name,
@@ -205,7 +209,11 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Ticker: types.Ticker(constants.BITCOIN_USD),
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
 						ProviderConfigs: []types.ProviderConfig{
 							{
 								Name:           "",
@@ -224,7 +232,11 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Ticker:          types.Ticker(constants.BITCOIN_USD),
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
 						ProviderConfigs: []types.ProviderConfig{},
 					},
 				},
@@ -236,7 +248,11 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			marketMap: types.MarketMap{
 				Markets: map[string]types.Market{
 					constants.BITCOIN_USD.String(): {
-						Ticker: types.Ticker(constants.BITCOIN_USD),
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
 						ProviderConfigs: []types.ProviderConfig{
 							{
 								Name:           coinbase.Name,

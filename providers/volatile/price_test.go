@@ -24,7 +24,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase 0",
 			tp:            func() time.Time { return time.Unix(0, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(195),
@@ -32,7 +32,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase .25",
 			tp:            func() time.Time { return time.Unix(25*dailySeconds/100, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(5.000000000000004),
@@ -40,7 +40,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase .26",
 			tp:            func() time.Time { return time.Unix(26*dailySeconds/100, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(5.749103375124606),
@@ -48,7 +48,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase .5",
 			tp:            func() time.Time { return time.Unix(50*dailySeconds/100, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(195),
@@ -56,7 +56,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase .51",
 			tp:            func() time.Time { return time.Unix(51*dailySeconds/100, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(5.749103375124606),
@@ -64,7 +64,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase .80",
 			tp:            func() time.Time { return time.Unix(80*dailySeconds/100, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(176.85661446561997),
@@ -72,7 +72,7 @@ func TestGetVolatilePrice(t *testing.T) {
 		{
 			name:          "test cosinePhase .99",
 			tp:            func() time.Time { return time.Unix(99*dailySeconds/100, 0) },
-			amplitude:     float64(0.95),
+			amplitude:     0.95,
 			offset:        float64(100),
 			frequency:     float64(1),
 			expectedPrice: big.NewFloat(5.749103375124606),

@@ -256,13 +256,13 @@ func TestProviderFetch(t *testing.T) {
 	t.Run("unexpected ticker in query", func(t *testing.T) {
 		ctx := context.Background()
 
-		mog_tia := types.DefaultProviderTicker{
+		mogtia := types.DefaultProviderTicker{
 			Name:           raydium.Name,
 			OffChainTicker: "MOG/TIA",
 			JSON:           "{}",
 		}
 		resp := pf.Fetch(ctx, []types.ProviderTicker{
-			mog_tia,
+			mogtia,
 		})
 		// expect a failed response
 		require.Equal(t, len(resp.Resolved), 0)

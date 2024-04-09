@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	btc_usd    = bitfinex.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	eth_usd    = bitfinex.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	btcusd     = bitfinex.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd     = bitfinex.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
 	channelBTC = 111
 	logger     = zap.NewExample()
 )
@@ -81,7 +81,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(1.0),
 					},
 				},
@@ -156,7 +156,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usd, eth_usd})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusd, ethusd})
 			require.NoError(t, err)
 
 			if tc.preRun() != nil {
@@ -206,7 +206,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := bitfinex.SubscribeMessage{
@@ -225,8 +225,8 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := bitfinex.SubscribeMessage{

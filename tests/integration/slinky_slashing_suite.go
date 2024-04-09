@@ -6,6 +6,8 @@ import (
 	"math/big"
 	"strings"
 
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -1164,17 +1166,25 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			// update first validator's oracle to submit incorrect Prices
 			nodes := s.chain.Nodes()
 
+			btcusdTicker := mmtypes.Ticker{
+				CurrencyPair:     constants.BITCOIN_USD,
+				Decimals:         8,
+				MinProviderCount: 1,
+				Enabled:          false,
+				Metadata_JSON:    `{"price": 150.0}`,
+			}
+
 			// update the first node to report incorrect Prices (too high)
-			s.Require().NoError(UpdateNodePrices(nodes[0], constants.BITCOIN_USD, 152))
+			s.Require().NoError(UpdateNodePrices(nodes[0], btcusdTicker, 152))
 
 			// update the second node to report incorrect Prices (too low)
-			s.Require().NoError(UpdateNodePrices(nodes[1], constants.BITCOIN_USD, 148))
+			s.Require().NoError(UpdateNodePrices(nodes[1], btcusdTicker, 148))
 
 			// update the third node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[2], constants.BITCOIN_USD, honestPrice))
+			s.Require().NoError(UpdateNodePrices(nodes[2], btcusdTicker, float64(honestPrice)))
 
 			// update the fourth node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[3], constants.BITCOIN_USD, honestPrice))
+			s.Require().NoError(UpdateNodePrices(nodes[3], btcusdTicker, float64(honestPrice)))
 		})
 
 		validatorsPreSlash, err := QueryValidators(s.chain)

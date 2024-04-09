@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	mog_usd  = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.MOG_USD)
-	pepe_usd = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.PEPE_USD)
+	mogusd  = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.MOG_USD)
+	pepeusd = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.PEPE_USD)
 )
 
 func TestCreateURL(t *testing.T) {
@@ -31,7 +31,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid",
 			cps: []types.ProviderTicker{
-				mog_usd,
+				mogusd,
 			},
 			url:         "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",
 			expectedErr: false,
@@ -39,8 +39,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []types.ProviderTicker{
-				mog_usd,
-				pepe_usd,
+				mogusd,
+				pepeusd,
 			},
 			url:         "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/0xaaee1a9723aadb7afa2810263653a34ba2c21c7a,0x6982508145454Ce325dDbE47a25d4ec3d2311933",
 			expectedErr: false,
@@ -73,7 +73,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid",
 			cps: []types.ProviderTicker{
-				mog_usd,
+				mogusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -92,7 +92,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					mog_usd: {
+					mogusd: {
 						Value: big.NewFloat(0.000000957896146138212),
 					},
 				},
@@ -102,7 +102,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "malformed response",
 			cps: []types.ProviderTicker{
-				mog_usd,
+				mogusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -122,7 +122,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					mog_usd: providertypes.UnresolvedResult{
+					mogusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -132,7 +132,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "unable to parse float",
 			cps: []types.ProviderTicker{
-				mog_usd,
+				mogusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -152,7 +152,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					mog_usd: providertypes.UnresolvedResult{
+					mogusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -162,7 +162,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "incorrect attribute",
 			cps: []types.ProviderTicker{
-				mog_usd,
+				mogusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -182,7 +182,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					mog_usd: providertypes.UnresolvedResult{
+					mogusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -192,7 +192,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "unable to parse json",
 			cps: []types.ProviderTicker{
-				mog_usd,
+				mogusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -202,7 +202,7 @@ toms obvious but not minimal language
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					mog_usd: providertypes.UnresolvedResult{
+					mogusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(
 							fmt.Errorf("bad format"), providertypes.ErrorAPIGeneral),
 					},
@@ -212,8 +212,8 @@ toms obvious but not minimal language
 		{
 			name: "multiple currency pairs to parse response for",
 			cps: []types.ProviderTicker{
-				mog_usd,
-				pepe_usd,
+				mogusd,
+				pepeusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -233,10 +233,10 @@ toms obvious but not minimal language
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					mog_usd: {
+					mogusd: {
 						Value: big.NewFloat(0.000000657896146138212),
 					},
-					pepe_usd: {
+					pepeusd: {
 						Value: big.NewFloat(0.000000957896146138212),
 					},
 				},

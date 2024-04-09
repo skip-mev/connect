@@ -186,7 +186,6 @@ func (_Uniswap *UniswapTransactorRaw) Transact(opts *bind.TransactOpts, method s
 func (_Uniswap *UniswapCaller) Factory(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "factory")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -194,7 +193,6 @@ func (_Uniswap *UniswapCaller) Factory(opts *bind.CallOpts) (common.Address, err
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Factory is a free data retrieval call binding the contract method 0xc45a0155.
@@ -217,7 +215,6 @@ func (_Uniswap *UniswapCallerSession) Factory() (common.Address, error) {
 func (_Uniswap *UniswapCaller) Fee(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "fee")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -225,7 +222,6 @@ func (_Uniswap *UniswapCaller) Fee(opts *bind.CallOpts) (*big.Int, error) {
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Fee is a free data retrieval call binding the contract method 0xddca3f43.
@@ -248,7 +244,6 @@ func (_Uniswap *UniswapCallerSession) Fee() (*big.Int, error) {
 func (_Uniswap *UniswapCaller) FeeGrowthGlobal0X128(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "feeGrowthGlobal0X128")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -256,7 +251,6 @@ func (_Uniswap *UniswapCaller) FeeGrowthGlobal0X128(opts *bind.CallOpts) (*big.I
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // FeeGrowthGlobal0X128 is a free data retrieval call binding the contract method 0xf3058399.
@@ -279,7 +273,6 @@ func (_Uniswap *UniswapCallerSession) FeeGrowthGlobal0X128() (*big.Int, error) {
 func (_Uniswap *UniswapCaller) FeeGrowthGlobal1X128(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "feeGrowthGlobal1X128")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -287,7 +280,6 @@ func (_Uniswap *UniswapCaller) FeeGrowthGlobal1X128(opts *bind.CallOpts) (*big.I
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // FeeGrowthGlobal1X128 is a free data retrieval call binding the contract method 0x46141319.
@@ -310,7 +302,6 @@ func (_Uniswap *UniswapCallerSession) FeeGrowthGlobal1X128() (*big.Int, error) {
 func (_Uniswap *UniswapCaller) Liquidity(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "liquidity")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -318,7 +309,6 @@ func (_Uniswap *UniswapCaller) Liquidity(opts *bind.CallOpts) (*big.Int, error) 
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // Liquidity is a free data retrieval call binding the contract method 0x1a686502.
@@ -341,7 +331,6 @@ func (_Uniswap *UniswapCallerSession) Liquidity() (*big.Int, error) {
 func (_Uniswap *UniswapCaller) MaxLiquidityPerTick(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "maxLiquidityPerTick")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -349,7 +338,6 @@ func (_Uniswap *UniswapCaller) MaxLiquidityPerTick(opts *bind.CallOpts) (*big.In
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // MaxLiquidityPerTick is a free data retrieval call binding the contract method 0x70cf754a.
@@ -374,7 +362,8 @@ func (_Uniswap *UniswapCaller) Observations(opts *bind.CallOpts, arg0 *big.Int) 
 	TickCumulative                    *big.Int
 	SecondsPerLiquidityCumulativeX128 *big.Int
 	Initialized                       bool
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "observations", arg0)
 
@@ -394,7 +383,6 @@ func (_Uniswap *UniswapCaller) Observations(opts *bind.CallOpts, arg0 *big.Int) 
 	outstruct.Initialized = *abi.ConvertType(out[3], new(bool)).(*bool)
 
 	return *outstruct, err
-
 }
 
 // Observations is a free data retrieval call binding the contract method 0x252c09d7.
@@ -405,7 +393,8 @@ func (_Uniswap *UniswapSession) Observations(arg0 *big.Int) (struct {
 	TickCumulative                    *big.Int
 	SecondsPerLiquidityCumulativeX128 *big.Int
 	Initialized                       bool
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Observations(&_Uniswap.CallOpts, arg0)
 }
 
@@ -417,7 +406,8 @@ func (_Uniswap *UniswapCallerSession) Observations(arg0 *big.Int) (struct {
 	TickCumulative                    *big.Int
 	SecondsPerLiquidityCumulativeX128 *big.Int
 	Initialized                       bool
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Observations(&_Uniswap.CallOpts, arg0)
 }
 
@@ -427,7 +417,8 @@ func (_Uniswap *UniswapCallerSession) Observations(arg0 *big.Int) (struct {
 func (_Uniswap *UniswapCaller) Observe(opts *bind.CallOpts, secondsAgos []uint32) (struct {
 	TickCumulatives                    []*big.Int
 	SecondsPerLiquidityCumulativeX128s []*big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "observe", secondsAgos)
 
@@ -443,7 +434,6 @@ func (_Uniswap *UniswapCaller) Observe(opts *bind.CallOpts, secondsAgos []uint32
 	outstruct.SecondsPerLiquidityCumulativeX128s = *abi.ConvertType(out[1], new([]*big.Int)).(*[]*big.Int)
 
 	return *outstruct, err
-
 }
 
 // Observe is a free data retrieval call binding the contract method 0x883bdbfd.
@@ -452,7 +442,8 @@ func (_Uniswap *UniswapCaller) Observe(opts *bind.CallOpts, secondsAgos []uint32
 func (_Uniswap *UniswapSession) Observe(secondsAgos []uint32) (struct {
 	TickCumulatives                    []*big.Int
 	SecondsPerLiquidityCumulativeX128s []*big.Int
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Observe(&_Uniswap.CallOpts, secondsAgos)
 }
 
@@ -462,7 +453,8 @@ func (_Uniswap *UniswapSession) Observe(secondsAgos []uint32) (struct {
 func (_Uniswap *UniswapCallerSession) Observe(secondsAgos []uint32) (struct {
 	TickCumulatives                    []*big.Int
 	SecondsPerLiquidityCumulativeX128s []*big.Int
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Observe(&_Uniswap.CallOpts, secondsAgos)
 }
 
@@ -475,7 +467,8 @@ func (_Uniswap *UniswapCaller) Positions(opts *bind.CallOpts, arg0 [32]byte) (st
 	FeeGrowthInside1LastX128 *big.Int
 	TokensOwed0              *big.Int
 	TokensOwed1              *big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "positions", arg0)
 
@@ -497,7 +490,6 @@ func (_Uniswap *UniswapCaller) Positions(opts *bind.CallOpts, arg0 [32]byte) (st
 	outstruct.TokensOwed1 = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
-
 }
 
 // Positions is a free data retrieval call binding the contract method 0x514ea4bf.
@@ -509,7 +501,8 @@ func (_Uniswap *UniswapSession) Positions(arg0 [32]byte) (struct {
 	FeeGrowthInside1LastX128 *big.Int
 	TokensOwed0              *big.Int
 	TokensOwed1              *big.Int
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Positions(&_Uniswap.CallOpts, arg0)
 }
 
@@ -522,7 +515,8 @@ func (_Uniswap *UniswapCallerSession) Positions(arg0 [32]byte) (struct {
 	FeeGrowthInside1LastX128 *big.Int
 	TokensOwed0              *big.Int
 	TokensOwed1              *big.Int
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Positions(&_Uniswap.CallOpts, arg0)
 }
 
@@ -532,7 +526,8 @@ func (_Uniswap *UniswapCallerSession) Positions(arg0 [32]byte) (struct {
 func (_Uniswap *UniswapCaller) ProtocolFees(opts *bind.CallOpts) (struct {
 	Token0 *big.Int
 	Token1 *big.Int
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "protocolFees")
 
@@ -548,7 +543,6 @@ func (_Uniswap *UniswapCaller) ProtocolFees(opts *bind.CallOpts) (struct {
 	outstruct.Token1 = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
-
 }
 
 // ProtocolFees is a free data retrieval call binding the contract method 0x1ad8b03b.
@@ -557,7 +551,8 @@ func (_Uniswap *UniswapCaller) ProtocolFees(opts *bind.CallOpts) (struct {
 func (_Uniswap *UniswapSession) ProtocolFees() (struct {
 	Token0 *big.Int
 	Token1 *big.Int
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.ProtocolFees(&_Uniswap.CallOpts)
 }
 
@@ -567,7 +562,8 @@ func (_Uniswap *UniswapSession) ProtocolFees() (struct {
 func (_Uniswap *UniswapCallerSession) ProtocolFees() (struct {
 	Token0 *big.Int
 	Token1 *big.Int
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.ProtocolFees(&_Uniswap.CallOpts)
 }
 
@@ -582,7 +578,8 @@ func (_Uniswap *UniswapCaller) Slot0(opts *bind.CallOpts) (struct {
 	ObservationCardinalityNext uint16
 	FeeProtocol                uint8
 	Unlocked                   bool
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "slot0")
 
@@ -608,7 +605,6 @@ func (_Uniswap *UniswapCaller) Slot0(opts *bind.CallOpts) (struct {
 	outstruct.Unlocked = *abi.ConvertType(out[6], new(bool)).(*bool)
 
 	return *outstruct, err
-
 }
 
 // Slot0 is a free data retrieval call binding the contract method 0x3850c7bd.
@@ -622,7 +618,8 @@ func (_Uniswap *UniswapSession) Slot0() (struct {
 	ObservationCardinalityNext uint16
 	FeeProtocol                uint8
 	Unlocked                   bool
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Slot0(&_Uniswap.CallOpts)
 }
 
@@ -637,7 +634,8 @@ func (_Uniswap *UniswapCallerSession) Slot0() (struct {
 	ObservationCardinalityNext uint16
 	FeeProtocol                uint8
 	Unlocked                   bool
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Slot0(&_Uniswap.CallOpts)
 }
 
@@ -648,7 +646,8 @@ func (_Uniswap *UniswapCaller) SnapshotCumulativesInside(opts *bind.CallOpts, ti
 	TickCumulativeInside          *big.Int
 	SecondsPerLiquidityInsideX128 *big.Int
 	SecondsInside                 uint32
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "snapshotCumulativesInside", tickLower, tickUpper)
 
@@ -666,7 +665,6 @@ func (_Uniswap *UniswapCaller) SnapshotCumulativesInside(opts *bind.CallOpts, ti
 	outstruct.SecondsInside = *abi.ConvertType(out[2], new(uint32)).(*uint32)
 
 	return *outstruct, err
-
 }
 
 // SnapshotCumulativesInside is a free data retrieval call binding the contract method 0xa38807f2.
@@ -676,7 +674,8 @@ func (_Uniswap *UniswapSession) SnapshotCumulativesInside(tickLower *big.Int, ti
 	TickCumulativeInside          *big.Int
 	SecondsPerLiquidityInsideX128 *big.Int
 	SecondsInside                 uint32
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.SnapshotCumulativesInside(&_Uniswap.CallOpts, tickLower, tickUpper)
 }
 
@@ -687,7 +686,8 @@ func (_Uniswap *UniswapCallerSession) SnapshotCumulativesInside(tickLower *big.I
 	TickCumulativeInside          *big.Int
 	SecondsPerLiquidityInsideX128 *big.Int
 	SecondsInside                 uint32
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.SnapshotCumulativesInside(&_Uniswap.CallOpts, tickLower, tickUpper)
 }
 
@@ -697,7 +697,6 @@ func (_Uniswap *UniswapCallerSession) SnapshotCumulativesInside(tickLower *big.I
 func (_Uniswap *UniswapCaller) TickBitmap(opts *bind.CallOpts, arg0 int16) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "tickBitmap", arg0)
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -705,7 +704,6 @@ func (_Uniswap *UniswapCaller) TickBitmap(opts *bind.CallOpts, arg0 int16) (*big
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // TickBitmap is a free data retrieval call binding the contract method 0x5339c296.
@@ -728,7 +726,6 @@ func (_Uniswap *UniswapCallerSession) TickBitmap(arg0 int16) (*big.Int, error) {
 func (_Uniswap *UniswapCaller) TickSpacing(opts *bind.CallOpts) (*big.Int, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "tickSpacing")
-
 	if err != nil {
 		return *new(*big.Int), err
 	}
@@ -736,7 +733,6 @@ func (_Uniswap *UniswapCaller) TickSpacing(opts *bind.CallOpts) (*big.Int, error
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 
 	return out0, err
-
 }
 
 // TickSpacing is a free data retrieval call binding the contract method 0xd0c93a7c.
@@ -765,7 +761,8 @@ func (_Uniswap *UniswapCaller) Ticks(opts *bind.CallOpts, arg0 *big.Int) (struct
 	SecondsPerLiquidityOutsideX128 *big.Int
 	SecondsOutside                 uint32
 	Initialized                    bool
-}, error) {
+}, error,
+) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "ticks", arg0)
 
@@ -793,7 +790,6 @@ func (_Uniswap *UniswapCaller) Ticks(opts *bind.CallOpts, arg0 *big.Int) (struct
 	outstruct.Initialized = *abi.ConvertType(out[7], new(bool)).(*bool)
 
 	return *outstruct, err
-
 }
 
 // Ticks is a free data retrieval call binding the contract method 0xf30dba93.
@@ -808,7 +804,8 @@ func (_Uniswap *UniswapSession) Ticks(arg0 *big.Int) (struct {
 	SecondsPerLiquidityOutsideX128 *big.Int
 	SecondsOutside                 uint32
 	Initialized                    bool
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Ticks(&_Uniswap.CallOpts, arg0)
 }
 
@@ -824,7 +821,8 @@ func (_Uniswap *UniswapCallerSession) Ticks(arg0 *big.Int) (struct {
 	SecondsPerLiquidityOutsideX128 *big.Int
 	SecondsOutside                 uint32
 	Initialized                    bool
-}, error) {
+}, error,
+) {
 	return _Uniswap.Contract.Ticks(&_Uniswap.CallOpts, arg0)
 }
 
@@ -834,7 +832,6 @@ func (_Uniswap *UniswapCallerSession) Ticks(arg0 *big.Int) (struct {
 func (_Uniswap *UniswapCaller) Token0(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "token0")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -842,7 +839,6 @@ func (_Uniswap *UniswapCaller) Token0(opts *bind.CallOpts) (common.Address, erro
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Token0 is a free data retrieval call binding the contract method 0x0dfe1681.
@@ -865,7 +861,6 @@ func (_Uniswap *UniswapCallerSession) Token0() (common.Address, error) {
 func (_Uniswap *UniswapCaller) Token1(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
 	err := _Uniswap.contract.Call(opts, &out, "token1")
-
 	if err != nil {
 		return *new(common.Address), err
 	}
@@ -873,7 +868,6 @@ func (_Uniswap *UniswapCaller) Token1(opts *bind.CallOpts) (common.Address, erro
 	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
-
 }
 
 // Token1 is a free data retrieval call binding the contract method 0xd21220a7.
@@ -1161,7 +1155,6 @@ type UniswapBurn struct {
 //
 // Solidity: event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)
 func (_Uniswap *UniswapFilterer) FilterBurn(opts *bind.FilterOpts, owner []common.Address, tickLower []*big.Int, tickUpper []*big.Int) (*UniswapBurnIterator, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -1186,7 +1179,6 @@ func (_Uniswap *UniswapFilterer) FilterBurn(opts *bind.FilterOpts, owner []commo
 //
 // Solidity: event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)
 func (_Uniswap *UniswapFilterer) WatchBurn(opts *bind.WatchOpts, sink chan<- *UniswapBurn, owner []common.Address, tickLower []*big.Int, tickUpper []*big.Int) (event.Subscription, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -1326,7 +1318,6 @@ type UniswapCollect struct {
 //
 // Solidity: event Collect(address indexed owner, address recipient, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount0, uint128 amount1)
 func (_Uniswap *UniswapFilterer) FilterCollect(opts *bind.FilterOpts, owner []common.Address, tickLower []*big.Int, tickUpper []*big.Int) (*UniswapCollectIterator, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -1352,7 +1343,6 @@ func (_Uniswap *UniswapFilterer) FilterCollect(opts *bind.FilterOpts, owner []co
 //
 // Solidity: event Collect(address indexed owner, address recipient, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount0, uint128 amount1)
 func (_Uniswap *UniswapFilterer) WatchCollect(opts *bind.WatchOpts, sink chan<- *UniswapCollect, owner []common.Address, tickLower []*big.Int, tickUpper []*big.Int) (event.Subscription, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -1491,7 +1481,6 @@ type UniswapCollectProtocol struct {
 //
 // Solidity: event CollectProtocol(address indexed sender, address indexed recipient, uint128 amount0, uint128 amount1)
 func (_Uniswap *UniswapFilterer) FilterCollectProtocol(opts *bind.FilterOpts, sender []common.Address, recipient []common.Address) (*UniswapCollectProtocolIterator, error) {
-
 	var senderRule []interface{}
 	for _, senderItem := range sender {
 		senderRule = append(senderRule, senderItem)
@@ -1512,7 +1501,6 @@ func (_Uniswap *UniswapFilterer) FilterCollectProtocol(opts *bind.FilterOpts, se
 //
 // Solidity: event CollectProtocol(address indexed sender, address indexed recipient, uint128 amount0, uint128 amount1)
 func (_Uniswap *UniswapFilterer) WatchCollectProtocol(opts *bind.WatchOpts, sink chan<- *UniswapCollectProtocol, sender []common.Address, recipient []common.Address) (event.Subscription, error) {
-
 	var senderRule []interface{}
 	for _, senderItem := range sender {
 		senderRule = append(senderRule, senderItem)
@@ -1648,7 +1636,6 @@ type UniswapFlash struct {
 //
 // Solidity: event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)
 func (_Uniswap *UniswapFilterer) FilterFlash(opts *bind.FilterOpts, sender []common.Address, recipient []common.Address) (*UniswapFlashIterator, error) {
-
 	var senderRule []interface{}
 	for _, senderItem := range sender {
 		senderRule = append(senderRule, senderItem)
@@ -1669,7 +1656,6 @@ func (_Uniswap *UniswapFilterer) FilterFlash(opts *bind.FilterOpts, sender []com
 //
 // Solidity: event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1)
 func (_Uniswap *UniswapFilterer) WatchFlash(opts *bind.WatchOpts, sink chan<- *UniswapFlash, sender []common.Address, recipient []common.Address) (event.Subscription, error) {
-
 	var senderRule []interface{}
 	for _, senderItem := range sender {
 		senderRule = append(senderRule, senderItem)
@@ -1801,7 +1787,6 @@ type UniswapIncreaseObservationCardinalityNext struct {
 //
 // Solidity: event IncreaseObservationCardinalityNext(uint16 observationCardinalityNextOld, uint16 observationCardinalityNextNew)
 func (_Uniswap *UniswapFilterer) FilterIncreaseObservationCardinalityNext(opts *bind.FilterOpts) (*UniswapIncreaseObservationCardinalityNextIterator, error) {
-
 	logs, sub, err := _Uniswap.contract.FilterLogs(opts, "IncreaseObservationCardinalityNext")
 	if err != nil {
 		return nil, err
@@ -1813,7 +1798,6 @@ func (_Uniswap *UniswapFilterer) FilterIncreaseObservationCardinalityNext(opts *
 //
 // Solidity: event IncreaseObservationCardinalityNext(uint16 observationCardinalityNextOld, uint16 observationCardinalityNextNew)
 func (_Uniswap *UniswapFilterer) WatchIncreaseObservationCardinalityNext(opts *bind.WatchOpts, sink chan<- *UniswapIncreaseObservationCardinalityNext) (event.Subscription, error) {
-
 	logs, sub, err := _Uniswap.contract.WatchLogs(opts, "IncreaseObservationCardinalityNext")
 	if err != nil {
 		return nil, err
@@ -1936,7 +1920,6 @@ type UniswapInitialize struct {
 //
 // Solidity: event Initialize(uint160 sqrtPriceX96, int24 tick)
 func (_Uniswap *UniswapFilterer) FilterInitialize(opts *bind.FilterOpts) (*UniswapInitializeIterator, error) {
-
 	logs, sub, err := _Uniswap.contract.FilterLogs(opts, "Initialize")
 	if err != nil {
 		return nil, err
@@ -1948,7 +1931,6 @@ func (_Uniswap *UniswapFilterer) FilterInitialize(opts *bind.FilterOpts) (*Unisw
 //
 // Solidity: event Initialize(uint160 sqrtPriceX96, int24 tick)
 func (_Uniswap *UniswapFilterer) WatchInitialize(opts *bind.WatchOpts, sink chan<- *UniswapInitialize) (event.Subscription, error) {
-
 	logs, sub, err := _Uniswap.contract.WatchLogs(opts, "Initialize")
 	if err != nil {
 		return nil, err
@@ -2076,7 +2058,6 @@ type UniswapMint struct {
 //
 // Solidity: event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)
 func (_Uniswap *UniswapFilterer) FilterMint(opts *bind.FilterOpts, owner []common.Address, tickLower []*big.Int, tickUpper []*big.Int) (*UniswapMintIterator, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -2101,7 +2082,6 @@ func (_Uniswap *UniswapFilterer) FilterMint(opts *bind.FilterOpts, owner []commo
 //
 // Solidity: event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)
 func (_Uniswap *UniswapFilterer) WatchMint(opts *bind.WatchOpts, sink chan<- *UniswapMint, owner []common.Address, tickLower []*big.Int, tickUpper []*big.Int) (event.Subscription, error) {
-
 	var ownerRule []interface{}
 	for _, ownerItem := range owner {
 		ownerRule = append(ownerRule, ownerItem)
@@ -2239,7 +2219,6 @@ type UniswapSetFeeProtocol struct {
 //
 // Solidity: event SetFeeProtocol(uint8 feeProtocol0Old, uint8 feeProtocol1Old, uint8 feeProtocol0New, uint8 feeProtocol1New)
 func (_Uniswap *UniswapFilterer) FilterSetFeeProtocol(opts *bind.FilterOpts) (*UniswapSetFeeProtocolIterator, error) {
-
 	logs, sub, err := _Uniswap.contract.FilterLogs(opts, "SetFeeProtocol")
 	if err != nil {
 		return nil, err
@@ -2251,7 +2230,6 @@ func (_Uniswap *UniswapFilterer) FilterSetFeeProtocol(opts *bind.FilterOpts) (*U
 //
 // Solidity: event SetFeeProtocol(uint8 feeProtocol0Old, uint8 feeProtocol1Old, uint8 feeProtocol0New, uint8 feeProtocol1New)
 func (_Uniswap *UniswapFilterer) WatchSetFeeProtocol(opts *bind.WatchOpts, sink chan<- *UniswapSetFeeProtocol) (event.Subscription, error) {
-
 	logs, sub, err := _Uniswap.contract.WatchLogs(opts, "SetFeeProtocol")
 	if err != nil {
 		return nil, err
@@ -2379,7 +2357,6 @@ type UniswapSwap struct {
 //
 // Solidity: event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)
 func (_Uniswap *UniswapFilterer) FilterSwap(opts *bind.FilterOpts, sender []common.Address, recipient []common.Address) (*UniswapSwapIterator, error) {
-
 	var senderRule []interface{}
 	for _, senderItem := range sender {
 		senderRule = append(senderRule, senderItem)
@@ -2400,7 +2377,6 @@ func (_Uniswap *UniswapFilterer) FilterSwap(opts *bind.FilterOpts, sender []comm
 //
 // Solidity: event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)
 func (_Uniswap *UniswapFilterer) WatchSwap(opts *bind.WatchOpts, sink chan<- *UniswapSwap, sender []common.Address, recipient []common.Address) (event.Subscription, error) {
-
 	var senderRule []interface{}
 	for _, senderItem := range sender {
 		senderRule = append(senderRule, senderItem)

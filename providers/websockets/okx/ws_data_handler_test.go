@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	btc_usdt = okx.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt = okx.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	logger   = zap.NewExample()
+	btcusdt = okx.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = okx.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	logger  = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -77,7 +77,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(1.0),
 					},
 				},
@@ -113,10 +113,10 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(1.0),
 					},
-					eth_usdt: {
+					ethusdt: {
 						Value: big.NewFloat(2.0),
 					},
 				},
@@ -294,7 +294,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usdt, eth_usdt})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -339,7 +339,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{
@@ -362,8 +362,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := okx.SubscribeRequestMessage{

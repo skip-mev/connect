@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	btc_usdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	atom_usdc = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ATOM_USDC)
-	logger    = zap.NewExample()
+	btcusdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	atomusdc = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ATOM_USDC)
+	logger   = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -71,7 +71,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(10000.00),
 					},
 				},
@@ -101,7 +101,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid channel"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -119,7 +119,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid price"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -137,7 +137,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usdt, eth_usdt, atom_usdc})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt, atomusdc})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -180,7 +180,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "single currency pair",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8"]}`
@@ -191,9 +191,9 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
-				atom_usdc,
+				btcusdt,
+				ethusdt,
+				atomusdc,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8","spot@public.miniTicker.v3.api@ETHUSDT@UTC+8","spot@public.miniTicker.v3.api@ATOMUSDC@UTC+8"]}`

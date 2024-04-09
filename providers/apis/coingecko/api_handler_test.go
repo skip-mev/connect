@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	btc_usd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	eth_usd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	eth_btc = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_BITCOIN)
+	btcusd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	ethbtc = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_BITCOIN)
 )
 
 func TestCreateURL(t *testing.T) {
@@ -33,7 +33,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "single valid currency pair",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&precision=18",
 			expectedErr: false,
@@ -41,8 +41,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple valid currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&precision=18",
 			expectedErr: false,
@@ -50,9 +50,9 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "multiple valid currency pairs with multiple quotes",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
-				eth_btc,
+				btcusd,
+				ethusd,
+				ethbtc,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,btc&precision=18",
 			expectedErr: false,
@@ -85,7 +85,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "single valid currency pair",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -98,7 +98,7 @@ func TestParseResponse(t *testing.T) {
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(1020.25),
 					},
 				},
@@ -108,7 +108,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "single valid currency pair that did not get a price response",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -122,7 +122,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("currency pair BITCOIN-USD did not get a response"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -131,7 +131,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad response",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -141,7 +141,7 @@ shout out my label thats me
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("json error"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -150,7 +150,7 @@ shout out my label thats me
 		{
 			name: "bad price response",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -164,7 +164,7 @@ shout out my label thats me
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -173,8 +173,8 @@ shout out my label thats me
 		{
 			name: "multiple bases with single quotes",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -190,10 +190,10 @@ shout out my label thats me
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(1020.25),
 					},
-					eth_usd: {
+					ethusd: {
 						Value: big.NewFloat(1020),
 					},
 				},
@@ -203,8 +203,8 @@ shout out my label thats me
 		{
 			name: "single base with multiple quotes",
 			cps: []types.ProviderTicker{
-				eth_usd,
-				eth_btc,
+				ethusd,
+				ethbtc,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -218,10 +218,10 @@ shout out my label thats me
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					eth_usd: {
+					ethusd: {
 						Value: big.NewFloat(1020.25),
 					},
-					eth_btc: {
+					ethbtc: {
 						Value: big.NewFloat(1),
 					},
 				},

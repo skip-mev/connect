@@ -96,7 +96,7 @@ type (
 
 	// AggregatorPrices is a type alias for a map of off-chain ticker to the price. It is
 	// critical to note that the aggregator tracks prices indexed by off-chain tickers. When
-	// a final price is calculated (after aggregation), it is indexed by the cannonical on-chain
+	// a final price is calculated (after aggregation), it is indexed by the canonical on-chain
 	// ticker.
 	AggregatorPrices = map[string]*big.Float
 

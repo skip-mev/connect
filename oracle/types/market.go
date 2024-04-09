@@ -55,7 +55,7 @@ type CurrencyPairsToProviderTickers map[pkgtypes.CurrencyPair]DefaultProviderTic
 
 // ToProviderTickers converts the map to a list of provider tickers.
 func (tpt CurrencyPairsToProviderTickers) ToProviderTickers() []ProviderTicker {
-	var providerTickers = make([]ProviderTicker, len(tpt))
+	providerTickers := make([]ProviderTicker, len(tpt))
 
 	i := 0
 	for _, ticker := range tpt {
