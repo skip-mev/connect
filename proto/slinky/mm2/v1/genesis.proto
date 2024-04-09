@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "slinky/mm2/v1/market.proto";
 import "slinky/mm2/v1/params.proto";
 
-option go_package = "github.com/skip-mev/slinky/x/mm2/types";
+option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
 // GenesisState defines the x/marketmap module's genesis state.
 message GenesisState {

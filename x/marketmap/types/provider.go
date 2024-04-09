@@ -2,23 +2,9 @@ package types
 
 import (
 	"fmt"
+
+	"github.com/skip-mev/slinky/pkg/json"
 )
-
-const (
-	MaxProviderNameFieldLength   = 128
-	MaxProviderTickerFieldLength = 256
-)
-
-// ValidateBasic performs basic validation on Providers.
-func (p *Providers) ValidateBasic() error {
-	for _, provider := range p.Providers {
-		if err := provider.ValidateBasic(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
 
 // ValidateBasic performs basic validation on a ProviderConfig.
 func (pc *ProviderConfig) ValidateBasic() error {
@@ -26,38 +12,55 @@ func (pc *ProviderConfig) ValidateBasic() error {
 		return fmt.Errorf("provider name must not be empty")
 	}
 
-	if len(pc.Name) > MaxProviderNameFieldLength {
-		return fmt.Errorf("provider length is longer than maximum length of %d", MaxProviderNameFieldLength)
-	}
-
 	if len(pc.OffChainTicker) == 0 {
 		return fmt.Errorf("provider offchain ticker must not be empty")
 	}
 
-	if len(pc.OffChainTicker) > MaxProviderTickerFieldLength {
-		return fmt.Errorf("provider offchain ticker is longer than maximum length of %d", MaxProviderTickerFieldLength)
+	// NormalizeByPair is allowed to be empty
+	if pc.NormalizeByPair != nil {
+		if err := pc.NormalizeByPair.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	if len(pc.Metadata_JSON) > MaxMetadataJSONFieldLength {
+		return fmt.Errorf("metadata json field is longer than maximum length of %d", MaxMetadataJSONFieldLength)
+	}
+
+	if err := json.IsValid([]byte(pc.Metadata_JSON)); err != nil {
+		return fmt.Errorf("invalid provider config metadata json: %w", err)
 	}
 
 	return nil
 }
 
-// Equal returns true iff the Providers is equal to the given Providers.
-func (p *Providers) Equal(other Providers) bool {
-	if len(p.Providers) != len(other.Providers) {
+// Equal returns true iff the ProviderConfig is equal to the given ProviderConfig.
+func (pc *ProviderConfig) Equal(other ProviderConfig) bool {
+	if pc.Name != other.Name {
 		return false
 	}
 
-	for i, provider := range p.Providers {
-		if !provider.Equal(other.Providers[i]) {
+	if pc.OffChainTicker != other.OffChainTicker {
+		return false
+	}
+
+	if pc.Invert != other.Invert {
+		return false
+	}
+
+	if pc.NormalizeByPair == nil {
+		if other.NormalizeByPair != nil {
+			return false
+		}
+	} else {
+		if other.NormalizeByPair == nil {
+			return false
+		}
+
+		if !pc.NormalizeByPair.Equal(*other.NormalizeByPair) {
 			return false
 		}
 	}
 
-	return true
-}
-
-// Equal returns true iff the ProviderConfig is equal to the given ProviderConfig.
-func (pc *ProviderConfig) Equal(other ProviderConfig) bool {
-	return pc.Name == other.Name &&
-		pc.OffChainTicker == other.OffChainTicker
+	return pc.Metadata_JSON == other.Metadata_JSON
 }

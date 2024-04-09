@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: slinky/mm2/v1/tx.proto
+// source: slinky/marketmap/v1/tx.proto
 
 package mm2v1
 
@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Msg_CreateMarkets_FullMethodName           = "/slinky.mm2.v1.Msg/CreateMarkets"
-	Msg_UpdateMarkets_FullMethodName           = "/slinky.mm2.v1.Msg/UpdateMarkets"
-	Msg_Params_FullMethodName                  = "/slinky.mm2.v1.Msg/Params"
-	Msg_RemoveMarketAuthorities_FullMethodName = "/slinky.mm2.v1.Msg/RemoveMarketAuthorities"
+	Msg_CreateMarkets_FullMethodName           = "/slinky.marketmap.v1.Msg/CreateMarkets"
+	Msg_UpdateMarkets_FullMethodName           = "/slinky.marketmap.v1.Msg/UpdateMarkets"
+	Msg_Params_FullMethodName                  = "/slinky.marketmap.v1.Msg/Params"
+	Msg_RemoveMarketAuthorities_FullMethodName = "/slinky.marketmap.v1.Msg/RemoveMarketAuthorities"
 )
 
 // MsgClient is the client API for Msg service.
@@ -205,7 +205,7 @@ func _Msg_RemoveMarketAuthorities_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Msg_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "slinky.mm2.v1.Msg",
+	ServiceName: "slinky.marketmap.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -226,5 +226,5 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "slinky/mm2/v1/tx.proto",
+	Metadata: "slinky/marketmap/v1/tx.proto",
 }

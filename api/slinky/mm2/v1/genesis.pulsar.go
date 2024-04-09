@@ -126,17 +126,17 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.GenesisState.market_map":
+	case "slinky.marketmap.v1.GenesisState.market_map":
 		return x.MarketMap != nil
-	case "slinky.mm2.v1.GenesisState.last_updated":
+	case "slinky.marketmap.v1.GenesisState.last_updated":
 		return x.LastUpdated != uint64(0)
-	case "slinky.mm2.v1.GenesisState.params":
+	case "slinky.marketmap.v1.GenesisState.params":
 		return x.Params != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.GenesisState"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GenesisState"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.GenesisState does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.GenesisState does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -148,17 +148,17 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.GenesisState.market_map":
+	case "slinky.marketmap.v1.GenesisState.market_map":
 		x.MarketMap = nil
-	case "slinky.mm2.v1.GenesisState.last_updated":
+	case "slinky.marketmap.v1.GenesisState.last_updated":
 		x.LastUpdated = uint64(0)
-	case "slinky.mm2.v1.GenesisState.params":
+	case "slinky.marketmap.v1.GenesisState.params":
 		x.Params = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.GenesisState"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GenesisState"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.GenesisState does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.GenesisState does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -170,20 +170,20 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.mm2.v1.GenesisState.market_map":
+	case "slinky.marketmap.v1.GenesisState.market_map":
 		value := x.MarketMap
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "slinky.mm2.v1.GenesisState.last_updated":
+	case "slinky.marketmap.v1.GenesisState.last_updated":
 		value := x.LastUpdated
 		return protoreflect.ValueOfUint64(value)
-	case "slinky.mm2.v1.GenesisState.params":
+	case "slinky.marketmap.v1.GenesisState.params":
 		value := x.Params
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.GenesisState"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GenesisState"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.GenesisState does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.GenesisState does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -199,17 +199,17 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.GenesisState.market_map":
+	case "slinky.marketmap.v1.GenesisState.market_map":
 		x.MarketMap = value.Message().Interface().(*MarketMap)
-	case "slinky.mm2.v1.GenesisState.last_updated":
+	case "slinky.marketmap.v1.GenesisState.last_updated":
 		x.LastUpdated = value.Uint()
-	case "slinky.mm2.v1.GenesisState.params":
+	case "slinky.marketmap.v1.GenesisState.params":
 		x.Params = value.Message().Interface().(*Params)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.GenesisState"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GenesisState"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.GenesisState does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.GenesisState does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -225,23 +225,23 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.GenesisState.market_map":
+	case "slinky.marketmap.v1.GenesisState.market_map":
 		if x.MarketMap == nil {
 			x.MarketMap = new(MarketMap)
 		}
 		return protoreflect.ValueOfMessage(x.MarketMap.ProtoReflect())
-	case "slinky.mm2.v1.GenesisState.params":
+	case "slinky.marketmap.v1.GenesisState.params":
 		if x.Params == nil {
 			x.Params = new(Params)
 		}
 		return protoreflect.ValueOfMessage(x.Params.ProtoReflect())
-	case "slinky.mm2.v1.GenesisState.last_updated":
-		panic(fmt.Errorf("field last_updated of message slinky.mm2.v1.GenesisState is not mutable"))
+	case "slinky.marketmap.v1.GenesisState.last_updated":
+		panic(fmt.Errorf("field last_updated of message slinky.marketmap.v1.GenesisState is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.GenesisState"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GenesisState"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.GenesisState does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.GenesisState does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -250,19 +250,19 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.GenesisState.market_map":
+	case "slinky.marketmap.v1.GenesisState.market_map":
 		m := new(MarketMap)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "slinky.mm2.v1.GenesisState.last_updated":
+	case "slinky.marketmap.v1.GenesisState.last_updated":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "slinky.mm2.v1.GenesisState.params":
+	case "slinky.marketmap.v1.GenesisState.params":
 		m := new(Params)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.GenesisState"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.GenesisState"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.GenesisState does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.GenesisState does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -272,7 +272,7 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 func (x *fastReflection_GenesisState) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.mm2.v1.GenesisState", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.GenesisState", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -579,7 +579,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 // versions:
 // 	protoc-gen-go v1.27.0
 // 	protoc        (unknown)
-// source: slinky/mm2/v1/genesis.proto
+// source: slinky/marketmap/v1/genesis.proto
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
@@ -694,13 +694,13 @@ func file_slinky_mm2_v1_genesis_proto_rawDescGZIP() []byte {
 
 var file_slinky_mm2_v1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_slinky_mm2_v1_genesis_proto_goTypes = []interface{}{
-	(*GenesisState)(nil), // 0: slinky.mm2.v1.GenesisState
-	(*MarketMap)(nil),    // 1: slinky.mm2.v1.MarketMap
-	(*Params)(nil),       // 2: slinky.mm2.v1.Params
+	(*GenesisState)(nil), // 0: slinky.marketmap.v1.GenesisState
+	(*MarketMap)(nil),    // 1: slinky.marketmap.v1.MarketMap
+	(*Params)(nil),       // 2: slinky.marketmap.v1.Params
 }
 var file_slinky_mm2_v1_genesis_proto_depIdxs = []int32{
-	1, // 0: slinky.mm2.v1.GenesisState.market_map:type_name -> slinky.mm2.v1.MarketMap
-	2, // 1: slinky.mm2.v1.GenesisState.params:type_name -> slinky.mm2.v1.Params
+	1, // 0: slinky.marketmap.v1.GenesisState.market_map:type_name -> slinky.marketmap.v1.MarketMap
+	2, // 1: slinky.marketmap.v1.GenesisState.params:type_name -> slinky.marketmap.v1.Params
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

@@ -163,15 +163,15 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Params.market_authorities":
+	case "slinky.marketmap.v1.Params.market_authorities":
 		return len(x.MarketAuthorities) != 0
-	case "slinky.mm2.v1.Params.admin":
+	case "slinky.marketmap.v1.Params.admin":
 		return x.Admin != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Params does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Params does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -183,15 +183,15 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Params.market_authorities":
+	case "slinky.marketmap.v1.Params.market_authorities":
 		x.MarketAuthorities = nil
-	case "slinky.mm2.v1.Params.admin":
+	case "slinky.marketmap.v1.Params.admin":
 		x.Admin = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Params does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Params does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -203,20 +203,20 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.mm2.v1.Params.market_authorities":
+	case "slinky.marketmap.v1.Params.market_authorities":
 		if len(x.MarketAuthorities) == 0 {
 			return protoreflect.ValueOfList(&_Params_1_list{})
 		}
 		listValue := &_Params_1_list{list: &x.MarketAuthorities}
 		return protoreflect.ValueOfList(listValue)
-	case "slinky.mm2.v1.Params.admin":
+	case "slinky.marketmap.v1.Params.admin":
 		value := x.Admin
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Params does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Params does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -232,17 +232,17 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Params.market_authorities":
+	case "slinky.marketmap.v1.Params.market_authorities":
 		lv := value.List()
 		clv := lv.(*_Params_1_list)
 		x.MarketAuthorities = *clv.list
-	case "slinky.mm2.v1.Params.admin":
+	case "slinky.marketmap.v1.Params.admin":
 		x.Admin = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Params does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Params does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -258,19 +258,19 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Params.market_authorities":
+	case "slinky.marketmap.v1.Params.market_authorities":
 		if x.MarketAuthorities == nil {
 			x.MarketAuthorities = []string{}
 		}
 		value := &_Params_1_list{list: &x.MarketAuthorities}
 		return protoreflect.ValueOfList(value)
-	case "slinky.mm2.v1.Params.admin":
-		panic(fmt.Errorf("field admin of message slinky.mm2.v1.Params is not mutable"))
+	case "slinky.marketmap.v1.Params.admin":
+		panic(fmt.Errorf("field admin of message slinky.marketmap.v1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Params does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Params does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -279,16 +279,16 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Params.market_authorities":
+	case "slinky.marketmap.v1.Params.market_authorities":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Params_1_list{list: &list})
-	case "slinky.mm2.v1.Params.admin":
+	case "slinky.marketmap.v1.Params.admin":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Params"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Params does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Params does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -298,7 +298,7 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 func (x *fastReflection_Params) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.mm2.v1.Params", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Params", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -560,7 +560,7 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 // versions:
 // 	protoc-gen-go v1.27.0
 // 	protoc        (unknown)
-// source: slinky/mm2/v1/params.proto
+// source: slinky/marketmap/v1/params.proto
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
@@ -655,7 +655,7 @@ func file_slinky_mm2_v1_params_proto_rawDescGZIP() []byte {
 
 var file_slinky_mm2_v1_params_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_slinky_mm2_v1_params_proto_goTypes = []interface{}{
-	(*Params)(nil), // 0: slinky.mm2.v1.Params
+	(*Params)(nil), // 0: slinky.marketmap.v1.Params
 }
 var file_slinky_mm2_v1_params_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

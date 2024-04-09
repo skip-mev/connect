@@ -1,1 +1,346 @@
 package types_test
+
+import (
+	"testing"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/x/marketmap/types"
+)
+
+var (
+	btcusdt = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "btc-usdt",
+			},
+		},
+	}
+
+	btcusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "btc-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+		},
+	}
+
+	usdtusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDT",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdt-usd",
+			},
+		},
+	}
+
+	usdcusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDC",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdc-usd",
+			},
+		},
+	}
+
+	ethusdt = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "ETHEREUM",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "eth-usdt",
+			},
+		},
+	}
+
+	ethusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "ETHEREUM",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 3,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "eth-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+			{
+				Name:            "binance",
+				OffChainTicker:  "eth-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+			{
+				Name:            "mexc",
+				OffChainTicker:  "eth-usdt",
+				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+		},
+	}
+
+	markets = map[string]types.Market{
+		btcusdt.Ticker.String(): btcusdt,
+		btcusd.Ticker.String():  btcusd,
+		usdtusd.Ticker.String(): usdtusd,
+		usdcusd.Ticker.String(): usdcusd,
+		ethusdt.Ticker.String(): ethusdt,
+		ethusd.Ticker.String():  ethusd,
+	}
+)
+
+func TestMarketMapValidateBasic(t *testing.T) {
+	testCases := []struct {
+		name      string
+		marketMap types.MarketMap
+		expectErr bool
+	}{
+		{
+			name:      "valid empty",
+			marketMap: types.MarketMap{},
+			expectErr: false,
+		},
+		{
+			name: "valid map",
+			marketMap: types.MarketMap{
+				Markets: markets,
+			},
+			expectErr: false,
+		},
+		{
+			name: "market with no ticker",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           coinbase.Name,
+								OffChainTicker: "BTC-USD",
+							},
+						},
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "empty market",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "provider config includes a ticker that is not supported",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:            coinbase.Name,
+								OffChainTicker:  "btc-usd",
+								NormalizeByPair: &slinkytypes.CurrencyPair{Base: "not", Quote: "real"},
+								Invert:          false,
+								Metadata_JSON:   "",
+							},
+						},
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "empty provider name",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "",
+								OffChainTicker: "btc-usd",
+								Invert:         false,
+								Metadata_JSON:  "",
+							},
+						},
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "no provider configs",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{},
+					},
+				},
+			},
+			expectErr: true,
+		},
+		{
+			name: "valid single provider",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           coinbase.Name,
+								OffChainTicker: "BTC-USD",
+							},
+						},
+					},
+				},
+			},
+			expectErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.marketMap.ValidateBasic()
+			if tc.expectErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMarketMapEqual(t *testing.T) {
+	cases := []struct {
+		name      string
+		marketMap types.MarketMap
+		other     types.MarketMap
+		expect    bool
+	}{
+		{
+			name:      "empty market map",
+			marketMap: types.MarketMap{},
+			other:     types.MarketMap{},
+			expect:    true,
+		},
+		{
+			name: "same market map",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			expect: true,
+		},
+		{
+			name: "different tickers",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					btcusdt.Ticker.String(): btcusdt,
+				},
+			},
+			expect: false,
+		},
+		{
+			name: "different providers",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): ethusdt,
+				},
+			},
+			other: types.MarketMap{
+				Markets: map[string]types.Market{
+					ethusdt.Ticker.String(): {
+						Ticker:          ethusdt.Ticker,
+						ProviderConfigs: btcusdt.ProviderConfigs,
+					},
+				},
+			},
+			expect: false,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.expect, tc.marketMap.Equal(tc.other))
+		})
+	}
+}

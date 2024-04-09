@@ -13,20 +13,14 @@ const (
 )
 
 var (
-	// TickersPrefix is the key prefix for Tickers.
-	TickersPrefix = collections.NewPrefix(0)
-
-	// PathsPrefix is the key prefix for Paths.
-	PathsPrefix = collections.NewPrefix(1)
-
-	// ProvidersPrefix is the key prefix for Providers.
-	ProvidersPrefix = collections.NewPrefix(2)
-
 	// LastUpdatedPrefix is the key prefix for the lastUpdated height.
-	LastUpdatedPrefix = collections.NewPrefix(3)
+	LastUpdatedPrefix = collections.NewPrefix(1)
+
+	// MarketsPrefix is the key prefix for Markets.
+	MarketsPrefix = collections.NewPrefix(2)
 
 	// ParamsPrefix is the key prefix of the module Params.
-	ParamsPrefix = collections.NewPrefix(4)
+	ParamsPrefix = collections.NewPrefix(3)
 
 	// TickersCodec is the collections.KeyCodec value used for the markets map.
 	TickersCodec = codec.NewStringKeyCodec[TickerString]()

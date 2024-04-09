@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: slinky/mm2/v1/query.proto
+// source: slinky/marketmap/v1/query.proto
 
 package mm2v1
 
@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_MarketMap_FullMethodName   = "/slinky.mm2.v1.Query/MarketMap"
-	Query_Market_FullMethodName      = "/slinky.mm2.v1.Query/Market"
-	Query_LastUpdated_FullMethodName = "/slinky.mm2.v1.Query/LastUpdated"
-	Query_Params_FullMethodName      = "/slinky.mm2.v1.Query/Params"
+	Query_MarketMap_FullMethodName   = "/slinky.marketmap.v1.Query/MarketMap"
+	Query_Market_FullMethodName      = "/slinky.marketmap.v1.Query/Market"
+	Query_LastUpdated_FullMethodName = "/slinky.marketmap.v1.Query/LastUpdated"
+	Query_Params_FullMethodName      = "/slinky.marketmap.v1.Query/Params"
 )
 
 // QueryClient is the client API for Query service.
@@ -207,7 +207,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Query_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "slinky.mm2.v1.Query",
+	ServiceName: "slinky.marketmap.v1.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -228,5 +228,5 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "slinky/mm2/v1/query.proto",
+	Metadata: "slinky/marketmap/v1/query.proto",
 }

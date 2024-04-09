@@ -171,15 +171,15 @@ func (x *fastReflection_Market) Range(f func(protoreflect.FieldDescriptor, proto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Market) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Market.ticker":
+	case "slinky.marketmap.v1.Market.ticker":
 		return x.Ticker != nil
-	case "slinky.mm2.v1.Market.provider_configs":
+	case "slinky.marketmap.v1.Market.provider_configs":
 		return len(x.ProviderConfigs) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Market"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Market does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -191,15 +191,15 @@ func (x *fastReflection_Market) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Market) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Market.ticker":
+	case "slinky.marketmap.v1.Market.ticker":
 		x.Ticker = nil
-	case "slinky.mm2.v1.Market.provider_configs":
+	case "slinky.marketmap.v1.Market.provider_configs":
 		x.ProviderConfigs = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Market"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Market does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -211,10 +211,10 @@ func (x *fastReflection_Market) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Market) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.mm2.v1.Market.ticker":
+	case "slinky.marketmap.v1.Market.ticker":
 		value := x.Ticker
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "slinky.mm2.v1.Market.provider_configs":
+	case "slinky.marketmap.v1.Market.provider_configs":
 		if len(x.ProviderConfigs) == 0 {
 			return protoreflect.ValueOfList(&_Market_2_list{})
 		}
@@ -222,9 +222,9 @@ func (x *fastReflection_Market) Get(descriptor protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Market"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Market does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -240,17 +240,17 @@ func (x *fastReflection_Market) Get(descriptor protoreflect.FieldDescriptor) pro
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Market) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Market.ticker":
+	case "slinky.marketmap.v1.Market.ticker":
 		x.Ticker = value.Message().Interface().(*Ticker)
-	case "slinky.mm2.v1.Market.provider_configs":
+	case "slinky.marketmap.v1.Market.provider_configs":
 		lv := value.List()
 		clv := lv.(*_Market_2_list)
 		x.ProviderConfigs = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Market"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Market does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -266,12 +266,12 @@ func (x *fastReflection_Market) Set(fd protoreflect.FieldDescriptor, value proto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Market) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Market.ticker":
+	case "slinky.marketmap.v1.Market.ticker":
 		if x.Ticker == nil {
 			x.Ticker = new(Ticker)
 		}
 		return protoreflect.ValueOfMessage(x.Ticker.ProtoReflect())
-	case "slinky.mm2.v1.Market.provider_configs":
+	case "slinky.marketmap.v1.Market.provider_configs":
 		if x.ProviderConfigs == nil {
 			x.ProviderConfigs = []*ProviderConfig{}
 		}
@@ -279,9 +279,9 @@ func (x *fastReflection_Market) Mutable(fd protoreflect.FieldDescriptor) protore
 		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Market"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Market does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -290,17 +290,17 @@ func (x *fastReflection_Market) Mutable(fd protoreflect.FieldDescriptor) protore
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Market) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Market.ticker":
+	case "slinky.marketmap.v1.Market.ticker":
 		m := new(Ticker)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "slinky.mm2.v1.Market.provider_configs":
+	case "slinky.marketmap.v1.Market.provider_configs":
 		list := []*ProviderConfig{}
 		return protoreflect.ValueOfList(&_Market_2_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Market"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Market does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -310,7 +310,7 @@ func (x *fastReflection_Market) NewField(fd protoreflect.FieldDescriptor) protor
 func (x *fastReflection_Market) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.mm2.v1.Market", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Market", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -717,21 +717,21 @@ func (x *fastReflection_Ticker) Range(f func(protoreflect.FieldDescriptor, proto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Ticker) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Ticker.currency_pair":
+	case "slinky.marketmap.v1.Ticker.currency_pair":
 		return x.CurrencyPair != nil
-	case "slinky.mm2.v1.Ticker.decimals":
+	case "slinky.marketmap.v1.Ticker.decimals":
 		return x.Decimals != uint64(0)
-	case "slinky.mm2.v1.Ticker.min_provider_count":
+	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		return x.MinProviderCount != uint64(0)
-	case "slinky.mm2.v1.Ticker.enabled":
+	case "slinky.marketmap.v1.Ticker.enabled":
 		return x.Enabled != false
-	case "slinky.mm2.v1.Ticker.metadata_JSON":
+	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		return x.Metadata_JSON != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Ticker"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Ticker"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Ticker does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Ticker does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -743,21 +743,21 @@ func (x *fastReflection_Ticker) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Ticker) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Ticker.currency_pair":
+	case "slinky.marketmap.v1.Ticker.currency_pair":
 		x.CurrencyPair = nil
-	case "slinky.mm2.v1.Ticker.decimals":
+	case "slinky.marketmap.v1.Ticker.decimals":
 		x.Decimals = uint64(0)
-	case "slinky.mm2.v1.Ticker.min_provider_count":
+	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		x.MinProviderCount = uint64(0)
-	case "slinky.mm2.v1.Ticker.enabled":
+	case "slinky.marketmap.v1.Ticker.enabled":
 		x.Enabled = false
-	case "slinky.mm2.v1.Ticker.metadata_JSON":
+	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		x.Metadata_JSON = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Ticker"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Ticker"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Ticker does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Ticker does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -769,26 +769,26 @@ func (x *fastReflection_Ticker) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Ticker) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.mm2.v1.Ticker.currency_pair":
+	case "slinky.marketmap.v1.Ticker.currency_pair":
 		value := x.CurrencyPair
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "slinky.mm2.v1.Ticker.decimals":
+	case "slinky.marketmap.v1.Ticker.decimals":
 		value := x.Decimals
 		return protoreflect.ValueOfUint64(value)
-	case "slinky.mm2.v1.Ticker.min_provider_count":
+	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		value := x.MinProviderCount
 		return protoreflect.ValueOfUint64(value)
-	case "slinky.mm2.v1.Ticker.enabled":
+	case "slinky.marketmap.v1.Ticker.enabled":
 		value := x.Enabled
 		return protoreflect.ValueOfBool(value)
-	case "slinky.mm2.v1.Ticker.metadata_JSON":
+	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		value := x.Metadata_JSON
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Ticker"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Ticker"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Ticker does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Ticker does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -804,21 +804,21 @@ func (x *fastReflection_Ticker) Get(descriptor protoreflect.FieldDescriptor) pro
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Ticker) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Ticker.currency_pair":
+	case "slinky.marketmap.v1.Ticker.currency_pair":
 		x.CurrencyPair = value.Message().Interface().(*v1.CurrencyPair)
-	case "slinky.mm2.v1.Ticker.decimals":
+	case "slinky.marketmap.v1.Ticker.decimals":
 		x.Decimals = value.Uint()
-	case "slinky.mm2.v1.Ticker.min_provider_count":
+	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		x.MinProviderCount = value.Uint()
-	case "slinky.mm2.v1.Ticker.enabled":
+	case "slinky.marketmap.v1.Ticker.enabled":
 		x.Enabled = value.Bool()
-	case "slinky.mm2.v1.Ticker.metadata_JSON":
+	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		x.Metadata_JSON = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Ticker"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Ticker"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Ticker does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Ticker does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -834,24 +834,24 @@ func (x *fastReflection_Ticker) Set(fd protoreflect.FieldDescriptor, value proto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Ticker) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Ticker.currency_pair":
+	case "slinky.marketmap.v1.Ticker.currency_pair":
 		if x.CurrencyPair == nil {
 			x.CurrencyPair = new(v1.CurrencyPair)
 		}
 		return protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
-	case "slinky.mm2.v1.Ticker.decimals":
-		panic(fmt.Errorf("field decimals of message slinky.mm2.v1.Ticker is not mutable"))
-	case "slinky.mm2.v1.Ticker.min_provider_count":
-		panic(fmt.Errorf("field min_provider_count of message slinky.mm2.v1.Ticker is not mutable"))
-	case "slinky.mm2.v1.Ticker.enabled":
-		panic(fmt.Errorf("field enabled of message slinky.mm2.v1.Ticker is not mutable"))
-	case "slinky.mm2.v1.Ticker.metadata_JSON":
-		panic(fmt.Errorf("field metadata_JSON of message slinky.mm2.v1.Ticker is not mutable"))
+	case "slinky.marketmap.v1.Ticker.decimals":
+		panic(fmt.Errorf("field decimals of message slinky.marketmap.v1.Ticker is not mutable"))
+	case "slinky.marketmap.v1.Ticker.min_provider_count":
+		panic(fmt.Errorf("field min_provider_count of message slinky.marketmap.v1.Ticker is not mutable"))
+	case "slinky.marketmap.v1.Ticker.enabled":
+		panic(fmt.Errorf("field enabled of message slinky.marketmap.v1.Ticker is not mutable"))
+	case "slinky.marketmap.v1.Ticker.metadata_JSON":
+		panic(fmt.Errorf("field metadata_JSON of message slinky.marketmap.v1.Ticker is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Ticker"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Ticker"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Ticker does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Ticker does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -860,22 +860,22 @@ func (x *fastReflection_Ticker) Mutable(fd protoreflect.FieldDescriptor) protore
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Ticker) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.Ticker.currency_pair":
+	case "slinky.marketmap.v1.Ticker.currency_pair":
 		m := new(v1.CurrencyPair)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "slinky.mm2.v1.Ticker.decimals":
+	case "slinky.marketmap.v1.Ticker.decimals":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "slinky.mm2.v1.Ticker.min_provider_count":
+	case "slinky.marketmap.v1.Ticker.min_provider_count":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "slinky.mm2.v1.Ticker.enabled":
+	case "slinky.marketmap.v1.Ticker.enabled":
 		return protoreflect.ValueOfBool(false)
-	case "slinky.mm2.v1.Ticker.metadata_JSON":
+	case "slinky.marketmap.v1.Ticker.metadata_JSON":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.Ticker"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Ticker"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.Ticker does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.Ticker does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -885,7 +885,7 @@ func (x *fastReflection_Ticker) NewField(fd protoreflect.FieldDescriptor) protor
 func (x *fastReflection_Ticker) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.mm2.v1.Ticker", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Ticker", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1366,21 +1366,21 @@ func (x *fastReflection_ProviderConfig) Range(f func(protoreflect.FieldDescripto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_ProviderConfig) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.ProviderConfig.name":
+	case "slinky.marketmap.v1.ProviderConfig.name":
 		return x.Name != ""
-	case "slinky.mm2.v1.ProviderConfig.off_chain_ticker":
+	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		return x.OffChainTicker != ""
-	case "slinky.mm2.v1.ProviderConfig.normalize_by_pair":
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
 		return x.NormalizeByPair != nil
-	case "slinky.mm2.v1.ProviderConfig.invert":
+	case "slinky.marketmap.v1.ProviderConfig.invert":
 		return x.Invert != false
-	case "slinky.mm2.v1.ProviderConfig.metadata_JSON":
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
 		return x.Metadata_JSON != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.ProviderConfig"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.ProviderConfig does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.ProviderConfig does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1392,21 +1392,21 @@ func (x *fastReflection_ProviderConfig) Has(fd protoreflect.FieldDescriptor) boo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_ProviderConfig) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.ProviderConfig.name":
+	case "slinky.marketmap.v1.ProviderConfig.name":
 		x.Name = ""
-	case "slinky.mm2.v1.ProviderConfig.off_chain_ticker":
+	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		x.OffChainTicker = ""
-	case "slinky.mm2.v1.ProviderConfig.normalize_by_pair":
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
 		x.NormalizeByPair = nil
-	case "slinky.mm2.v1.ProviderConfig.invert":
+	case "slinky.marketmap.v1.ProviderConfig.invert":
 		x.Invert = false
-	case "slinky.mm2.v1.ProviderConfig.metadata_JSON":
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
 		x.Metadata_JSON = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.ProviderConfig"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.ProviderConfig does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.ProviderConfig does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1418,26 +1418,26 @@ func (x *fastReflection_ProviderConfig) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_ProviderConfig) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.mm2.v1.ProviderConfig.name":
+	case "slinky.marketmap.v1.ProviderConfig.name":
 		value := x.Name
 		return protoreflect.ValueOfString(value)
-	case "slinky.mm2.v1.ProviderConfig.off_chain_ticker":
+	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		value := x.OffChainTicker
 		return protoreflect.ValueOfString(value)
-	case "slinky.mm2.v1.ProviderConfig.normalize_by_pair":
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
 		value := x.NormalizeByPair
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "slinky.mm2.v1.ProviderConfig.invert":
+	case "slinky.marketmap.v1.ProviderConfig.invert":
 		value := x.Invert
 		return protoreflect.ValueOfBool(value)
-	case "slinky.mm2.v1.ProviderConfig.metadata_JSON":
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
 		value := x.Metadata_JSON
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.ProviderConfig"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.ProviderConfig does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.ProviderConfig does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1453,21 +1453,21 @@ func (x *fastReflection_ProviderConfig) Get(descriptor protoreflect.FieldDescrip
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_ProviderConfig) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.ProviderConfig.name":
+	case "slinky.marketmap.v1.ProviderConfig.name":
 		x.Name = value.Interface().(string)
-	case "slinky.mm2.v1.ProviderConfig.off_chain_ticker":
+	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		x.OffChainTicker = value.Interface().(string)
-	case "slinky.mm2.v1.ProviderConfig.normalize_by_pair":
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
 		x.NormalizeByPair = value.Message().Interface().(*v1.CurrencyPair)
-	case "slinky.mm2.v1.ProviderConfig.invert":
+	case "slinky.marketmap.v1.ProviderConfig.invert":
 		x.Invert = value.Bool()
-	case "slinky.mm2.v1.ProviderConfig.metadata_JSON":
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
 		x.Metadata_JSON = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.ProviderConfig"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.ProviderConfig does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.ProviderConfig does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1483,24 +1483,24 @@ func (x *fastReflection_ProviderConfig) Set(fd protoreflect.FieldDescriptor, val
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_ProviderConfig) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.ProviderConfig.normalize_by_pair":
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
 		if x.NormalizeByPair == nil {
 			x.NormalizeByPair = new(v1.CurrencyPair)
 		}
 		return protoreflect.ValueOfMessage(x.NormalizeByPair.ProtoReflect())
-	case "slinky.mm2.v1.ProviderConfig.name":
-		panic(fmt.Errorf("field name of message slinky.mm2.v1.ProviderConfig is not mutable"))
-	case "slinky.mm2.v1.ProviderConfig.off_chain_ticker":
-		panic(fmt.Errorf("field off_chain_ticker of message slinky.mm2.v1.ProviderConfig is not mutable"))
-	case "slinky.mm2.v1.ProviderConfig.invert":
-		panic(fmt.Errorf("field invert of message slinky.mm2.v1.ProviderConfig is not mutable"))
-	case "slinky.mm2.v1.ProviderConfig.metadata_JSON":
-		panic(fmt.Errorf("field metadata_JSON of message slinky.mm2.v1.ProviderConfig is not mutable"))
+	case "slinky.marketmap.v1.ProviderConfig.name":
+		panic(fmt.Errorf("field name of message slinky.marketmap.v1.ProviderConfig is not mutable"))
+	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
+		panic(fmt.Errorf("field off_chain_ticker of message slinky.marketmap.v1.ProviderConfig is not mutable"))
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		panic(fmt.Errorf("field invert of message slinky.marketmap.v1.ProviderConfig is not mutable"))
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
+		panic(fmt.Errorf("field metadata_JSON of message slinky.marketmap.v1.ProviderConfig is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.ProviderConfig"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.ProviderConfig does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.ProviderConfig does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1509,22 +1509,22 @@ func (x *fastReflection_ProviderConfig) Mutable(fd protoreflect.FieldDescriptor)
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_ProviderConfig) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.ProviderConfig.name":
+	case "slinky.marketmap.v1.ProviderConfig.name":
 		return protoreflect.ValueOfString("")
-	case "slinky.mm2.v1.ProviderConfig.off_chain_ticker":
+	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		return protoreflect.ValueOfString("")
-	case "slinky.mm2.v1.ProviderConfig.normalize_by_pair":
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
 		m := new(v1.CurrencyPair)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "slinky.mm2.v1.ProviderConfig.invert":
+	case "slinky.marketmap.v1.ProviderConfig.invert":
 		return protoreflect.ValueOfBool(false)
-	case "slinky.mm2.v1.ProviderConfig.metadata_JSON":
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.ProviderConfig"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.ProviderConfig does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.ProviderConfig does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1534,7 +1534,7 @@ func (x *fastReflection_ProviderConfig) NewField(fd protoreflect.FieldDescriptor
 func (x *fastReflection_ProviderConfig) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.mm2.v1.ProviderConfig", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.ProviderConfig", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2105,13 +2105,13 @@ func (x *fastReflection_MarketMap) Range(f func(protoreflect.FieldDescriptor, pr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MarketMap) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.MarketMap.markets":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		return len(x.Markets) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.MarketMap does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.MarketMap does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2123,13 +2123,13 @@ func (x *fastReflection_MarketMap) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MarketMap) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.MarketMap.markets":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		x.Markets = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.MarketMap does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.MarketMap does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2141,7 +2141,7 @@ func (x *fastReflection_MarketMap) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MarketMap) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.mm2.v1.MarketMap.markets":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		if len(x.Markets) == 0 {
 			return protoreflect.ValueOfMap(&_MarketMap_1_map{})
 		}
@@ -2149,9 +2149,9 @@ func (x *fastReflection_MarketMap) Get(descriptor protoreflect.FieldDescriptor) 
 		return protoreflect.ValueOfMap(mapValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.MarketMap does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.MarketMap does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2167,15 +2167,15 @@ func (x *fastReflection_MarketMap) Get(descriptor protoreflect.FieldDescriptor) 
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MarketMap) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.MarketMap.markets":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		mv := value.Map()
 		cmv := mv.(*_MarketMap_1_map)
 		x.Markets = *cmv.m
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.MarketMap does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.MarketMap does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2191,7 +2191,7 @@ func (x *fastReflection_MarketMap) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MarketMap) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.MarketMap.markets":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		if x.Markets == nil {
 			x.Markets = make(map[string]*Market)
 		}
@@ -2199,9 +2199,9 @@ func (x *fastReflection_MarketMap) Mutable(fd protoreflect.FieldDescriptor) prot
 		return protoreflect.ValueOfMap(value)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.MarketMap does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.MarketMap does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2210,14 +2210,14 @@ func (x *fastReflection_MarketMap) Mutable(fd protoreflect.FieldDescriptor) prot
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MarketMap) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.mm2.v1.MarketMap.markets":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		m := make(map[string]*Market)
 		return protoreflect.ValueOfMap(&_MarketMap_1_map{m: &m})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.mm2.v1.MarketMap"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
 		}
-		panic(fmt.Errorf("message slinky.mm2.v1.MarketMap does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message slinky.marketmap.v1.MarketMap does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2227,7 +2227,7 @@ func (x *fastReflection_MarketMap) NewField(fd protoreflect.FieldDescriptor) pro
 func (x *fastReflection_MarketMap) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.mm2.v1.MarketMap", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.MarketMap", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2604,7 +2604,7 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 // versions:
 // 	protoc-gen-go v1.27.0
 // 	protoc        (unknown)
-// source: slinky/mm2/v1/market.proto
+// source: slinky/marketmap/v1/market.proto
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
@@ -2943,20 +2943,20 @@ func file_slinky_mm2_v1_market_proto_rawDescGZIP() []byte {
 
 var file_slinky_mm2_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_slinky_mm2_v1_market_proto_goTypes = []interface{}{
-	(*Market)(nil),          // 0: slinky.mm2.v1.Market
-	(*Ticker)(nil),          // 1: slinky.mm2.v1.Ticker
-	(*ProviderConfig)(nil),  // 2: slinky.mm2.v1.ProviderConfig
-	(*MarketMap)(nil),       // 3: slinky.mm2.v1.MarketMap
-	nil,                     // 4: slinky.mm2.v1.MarketMap.MarketsEntry
+	(*Market)(nil),          // 0: slinky.marketmap.v1.Market
+	(*Ticker)(nil),          // 1: slinky.marketmap.v1.Ticker
+	(*ProviderConfig)(nil),  // 2: slinky.marketmap.v1.ProviderConfig
+	(*MarketMap)(nil),       // 3: slinky.marketmap.v1.MarketMap
+	nil,                     // 4: slinky.marketmap.v1.MarketMap.MarketsEntry
 	(*v1.CurrencyPair)(nil), // 5: slinky.types.v1.CurrencyPair
 }
 var file_slinky_mm2_v1_market_proto_depIdxs = []int32{
-	1, // 0: slinky.mm2.v1.Market.ticker:type_name -> slinky.mm2.v1.Ticker
-	2, // 1: slinky.mm2.v1.Market.provider_configs:type_name -> slinky.mm2.v1.ProviderConfig
-	5, // 2: slinky.mm2.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	5, // 3: slinky.mm2.v1.ProviderConfig.normalize_by_pair:type_name -> slinky.types.v1.CurrencyPair
-	4, // 4: slinky.mm2.v1.MarketMap.markets:type_name -> slinky.mm2.v1.MarketMap.MarketsEntry
-	0, // 5: slinky.mm2.v1.MarketMap.MarketsEntry.value:type_name -> slinky.mm2.v1.Market
+	1, // 0: slinky.marketmap.v1.Market.ticker:type_name -> slinky.marketmap.v1.Ticker
+	2, // 1: slinky.marketmap.v1.Market.provider_configs:type_name -> slinky.marketmap.v1.ProviderConfig
+	5, // 2: slinky.marketmap.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	5, // 3: slinky.marketmap.v1.ProviderConfig.normalize_by_pair:type_name -> slinky.types.v1.CurrencyPair
+	4, // 4: slinky.marketmap.v1.MarketMap.markets:type_name -> slinky.marketmap.v1.MarketMap.MarketsEntry
+	0, // 5: slinky.marketmap.v1.MarketMap.MarketsEntry.value:type_name -> slinky.marketmap.v1.Market
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name

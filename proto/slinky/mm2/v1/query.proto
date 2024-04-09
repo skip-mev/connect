@@ -7,31 +7,31 @@ import "slinky/types/v1/currency_pair.proto";
 import "slinky/mm2/v1/market.proto";
 import "slinky/mm2/v1/params.proto";
 
-option go_package = "github.com/skip-mev/slinky/x/mm2/types";
+option go_package = "github.com/skip-mev/slinky/x/marketmap/types";
 
 // Query is the query service for the x/marketmap module.
 service Query {
   // MarketMap returns the full market map stored in the x/marketmap
   // module.
   rpc MarketMap(MarketMapRequest) returns (MarketMapResponse) {
-    option (google.api.http).get = "/slinky/mm2/v1/marketmap";
+    option (google.api.http).get = "/slinky/marketmap/v1/marketmap";
   }
 
   // Market returns a market stored in the x/marketmap
   // module.
   rpc Market(MarketRequest) returns (MarketResponse) {
-    option (google.api.http).get = "/slinky/mm2/v1/market";
+    option (google.api.http).get = "/slinky/marketmap/v1/market";
   }
 
   // LastUpdated returns the last height the market map was updated at.
   rpc LastUpdated(LastUpdatedRequest) returns (LastUpdatedResponse) {
-    option (google.api.http).get = "/slinky/mm2/v1/last_updated";
+    option (google.api.http).get = "/slinky/marketmap/v1/last_updated";
   }
 
   // Params returns the current x/marketmap module parameters.
   rpc Params(ParamsRequest) returns (ParamsResponse) {
     option (google.api.http) = {
-      get : "/slinky/mm2/v1/params"
+      get : "/slinky/marketmap/v1/params"
     };
   }
 }
