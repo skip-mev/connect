@@ -6,8 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
@@ -19,6 +17,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -184,29 +183,14 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 	})
 
 	marketConfig := mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			ticker.String(): ticker,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			ticker.String(): {
-				Providers: []mmtypes.ProviderConfig{
+				Ticker: ticker,
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:           static.Name,
 						OffChainTicker: fmt.Sprintf("%d", price),
 					},
-				},
-			},
-		},
-		Paths: map[string]mmtypes.Paths{
-			ticker.String(): {
-				Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{
-						{
-							CurrencyPair: ticker.CurrencyPair,
-							Invert:       false,
-							Provider:     static.Name,
-						},
-					}},
 				},
 			},
 		},
