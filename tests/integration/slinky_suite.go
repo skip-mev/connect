@@ -283,6 +283,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 							{
 								Name:           static.Name,
 								OffChainTicker: "1140",
+								Metadata_JSON:  `{"price": 1.1}`,
 							},
 						},
 					},
@@ -508,6 +509,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -520,6 +522,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -532,6 +535,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1142",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -577,10 +581,10 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		s.Require().NoError(err)
 
 		// query for the given currency pair
-		for i, cp := range cps {
+		for _, cp := range cps {
 			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
 			s.Require().NoError(err)
-			s.Require().Equal(int64(1140+i), resp.Price.Int64())
+			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
 	})
 
@@ -616,6 +620,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -628,6 +633,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},

@@ -104,13 +104,13 @@ func (h *APIHandler) ParseResponse(
 	if market.ChainId != chain.ChainID {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
-				fmt.Errorf("expected chain name %s, got %s", chain.ChainID, market.ChainId),
+				fmt.Errorf("expected chain id %s, got %s", chain.ChainID, market.ChainId),
 				providertypes.ErrorInvalidChainID,
 			),
 		)
 	}
 
 	resolved := make(types.ResolvedMarketMap)
-	resolved[chain] = types.NewMarketMapResult(&market, time.Now())
+	resolved[chain] = types.NewMarketMapResult(&market, time.Now().UTC())
 	return types.NewMarketMapResponse(resolved, nil)
 }

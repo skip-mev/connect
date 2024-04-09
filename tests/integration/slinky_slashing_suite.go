@@ -6,8 +6,6 @@ import (
 	"math/big"
 	"strings"
 
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -24,6 +22,7 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+  mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const validatorStake = 5000000000000

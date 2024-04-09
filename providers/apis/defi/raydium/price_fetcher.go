@@ -227,7 +227,7 @@ func (pf *APIPriceFetcher) Fetch(
 		)
 
 		// return the price
-		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now())
+		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now().UTC())
 	}
 
 	return oracletypes.NewPriceResponse(resolved, unresolved)

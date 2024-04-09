@@ -28,9 +28,8 @@ func ConvertSquareRootX96Price(
 	return new(big.Float).Mul(sqrtPriceFloat, sqrtPriceFloat)
 }
 
-// ScalePrice scales the price to the desired ticker decimals. The price is first normalized to
-// the token decimals in the erc20 token contracts. The price is then scaled to the desired
-// ticker decimals. The price is inverted if the configuration specifies to do so.
+// ScalePrice scales the price to the desired ticker decimals. The price is normalized to
+// the token decimals in the erc20 token contracts.
 func ScalePrice(
 	cfg PoolConfig,
 	price *big.Float,

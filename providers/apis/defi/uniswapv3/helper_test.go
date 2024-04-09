@@ -11,12 +11,10 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 var (
 	logger, _ = zap.NewDevelopment()
-	m         = metrics.NewNopAPIMetrics()
 
 	// PoolConfigs used for testing.
 	wethusdcCfg = uniswapv3.PoolConfig{
@@ -38,7 +36,6 @@ func createPriceFetcher(
 	client := mocks.NewEVMClient(t)
 	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
-		m,
 		uniswapv3.DefaultAPIConfig,
 		client,
 	)
@@ -55,7 +52,6 @@ func createPriceFetcherWithClient(
 
 	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
-		m,
 		uniswapv3.DefaultAPIConfig,
 		client,
 	)

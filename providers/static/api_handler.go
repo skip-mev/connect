@@ -48,7 +48,7 @@ func (s *MockAPIHandler) ParseResponse(
 		if err := metaData.FromJSON(ticker.GetJSON()); err == nil {
 			resolved[ticker] = types.NewPriceResult(
 				big.NewFloat(metaData.Price),
-				time.Now(),
+				time.Now().UTC(),
 			)
 		} else {
 			unresolved[ticker] = providertypes.UnresolvedResult{
