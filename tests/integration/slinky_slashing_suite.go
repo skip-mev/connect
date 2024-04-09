@@ -1171,7 +1171,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 				Decimals:         8,
 				MinProviderCount: 1,
 				Enabled:          false,
-				Metadata_JSON:    "",
+				Metadata_JSON:    `{"price": 150.0}`,
 			}
 
 			// update the first node to report incorrect Prices (too high)
@@ -1181,10 +1181,10 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			s.Require().NoError(UpdateNodePrices(nodes[1], btcusdTicker, 148))
 
 			// update the third node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[2], btcusdTicker, honestPrice))
+			s.Require().NoError(UpdateNodePrices(nodes[2], btcusdTicker, float64(honestPrice)))
 
 			// update the fourth node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[3], btcusdTicker, honestPrice))
+			s.Require().NoError(UpdateNodePrices(nodes[3], btcusdTicker, float64(honestPrice)))
 		})
 
 		validatorsPreSlash, err := QueryValidators(s.chain)
