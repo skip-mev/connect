@@ -44,11 +44,9 @@ var (
 	// Ethereum mainnet.
 	DefaultETHMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.MOG_USD: {
-			Name:           Name,
 			OffChainTicker: "0xaaee1a9723aadb7afa2810263653a34ba2c21c7a",
 		},
 		constants.PEPE_USD: {
-			Name:           Name,
 			OffChainTicker: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
 		},
 	}

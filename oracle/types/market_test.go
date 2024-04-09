@@ -55,7 +55,6 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 			},
 			expected: []types.ProviderTicker{
 				types.NewProviderTicker(
-					"test",
 					"BTC/USDT",
 					"{}",
 				),
@@ -120,7 +119,6 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 			},
 			expected: []types.ProviderTicker{
 				types.NewProviderTicker(
-					"test",
 					"ETH/USDT",
 					"{}",
 				),

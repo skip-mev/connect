@@ -41,39 +41,30 @@ var (
 	// DefaultMarketConfig returns the default market config for bitstamp.
 	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.AVAX_USD: {
-			Name:           Name,
 			OffChainTicker: "avaxusd",
 		},
 		constants.BITCOIN_USD: {
-			Name:           Name,
 			OffChainTicker: "btcusd",
 		},
 		constants.BITCOIN_USDC: {
-			Name:           Name,
 			OffChainTicker: "btcusdc",
 		},
 		constants.BITCOIN_USDT: {
-			Name:           Name,
 			OffChainTicker: "btcusdt",
 		},
 		constants.ETHEREUM_BITCOIN: {
-			Name:           Name,
 			OffChainTicker: "ethbtc",
 		},
 		constants.ETHEREUM_USD: {
-			Name:           Name,
 			OffChainTicker: "ethusd",
 		},
 		constants.SOLANA_USD: {
-			Name:           Name,
 			OffChainTicker: "solusd",
 		},
 		constants.USDC_USDT: {
-			Name:           Name,
 			OffChainTicker: "usdcusdt",
 		},
 		constants.USDT_USD: {
-			Name:           Name,
 			OffChainTicker: "usdtusd",
 		},
 	}

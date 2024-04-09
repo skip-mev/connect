@@ -55,35 +55,27 @@ var (
 	// DefaultMarketConfig is the default market configuration for CoinGecko.
 	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.ATOM_USD: {
-			Name:           Name,
 			OffChainTicker: "cosmos/usd",
 		},
 		constants.BITCOIN_USD: {
-			Name:           Name,
 			OffChainTicker: "bitcoin/usd",
 		},
 		constants.CELESTIA_USD: {
-			Name:           Name,
 			OffChainTicker: "celestia/usd",
 		},
 		constants.DYDX_USD: {
-			Name:           Name,
 			OffChainTicker: "dydx-chain/usd",
 		},
 		constants.ETHEREUM_BITCOIN: {
-			Name:           Name,
 			OffChainTicker: "ethereum/btc",
 		},
 		constants.ETHEREUM_USD: {
-			Name:           Name,
 			OffChainTicker: "ethereum/usd",
 		},
 		constants.OSMOSIS_USD: {
-			Name:           Name,
 			OffChainTicker: "osmosis/usd",
 		},
 		constants.SOLANA_USD: {
-			Name:           Name,
 			OffChainTicker: "solana/usd",
 		},
 	}
