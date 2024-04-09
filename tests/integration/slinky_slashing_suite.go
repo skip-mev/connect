@@ -3,9 +3,10 @@ package integration
 import (
 	"context"
 	"fmt"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"math/big"
 	"strings"
+
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
