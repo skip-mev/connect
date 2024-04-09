@@ -2,6 +2,8 @@ package math
 
 import (
 	"math/big"
+
+	"golang.org/x/exp/constraints"
 )
 
 // Min returns the minimum of two values.
@@ -17,6 +19,29 @@ func Min[V int | int64 | uint64 | int32 | uint32](vals ...V) V {
 		}
 	}
 	return minimum
+}
+
+// Abs returns the absolute value of a given number.
+func Abs[V constraints.Signed](val V) V {
+	if val < 0 {
+		return -val
+	}
+	return val
+}
+
+// Max returns the maximum of two values.
+func Max[V int | int64 | uint64 | int32 | uint32](vals ...V) V {
+	if len(vals) == 0 {
+		panic("cannot find maximum of empty slice")
+	}
+
+	maximum := vals[0]
+	for _, val := range vals[1:] {
+		if val > maximum {
+			maximum = val
+		}
+	}
+	return maximum
 }
 
 // Float64StringToBigInt converts a float64 string to a big.Int.

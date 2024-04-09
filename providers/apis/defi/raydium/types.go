@@ -3,9 +3,10 @@ package raydium
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gagliardetto/solana-go"
-	"time"
+
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 )
 
@@ -75,14 +76,13 @@ func SolanaJSONRPCError(err error) error {
 	return fmt.Errorf("solana json-rpc error: %s", err.Error())
 }
 
-var (
-	DefaultAPIConfig = oracleconfig.APIConfig{
-		Enabled: true,
-		Name:    Name,
-		Timeout:          500 * time.Millisecond,
-		Interval:         100 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries: 	  10,
-		Atomic: 		 true,
-	}
-)
+var DefaultAPIConfig = oracleconfig.APIConfig{
+	Enabled:          true,
+	Name:             Name,
+	Timeout:          500 * time.Millisecond,
+	Interval:         500 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       10,
+	Atomic:           false,
+	BatchSize:        50, // maximal # of accounts in getMultipleAccounts query is 100
+}
