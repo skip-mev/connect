@@ -103,5 +103,6 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         500 * time.Millisecond,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       10,
-	Atomic:           true,
+	Atomic:           false,
+	BatchSize:        50, // maximal # of accounts in getMultipleAccounts query is 100
 }

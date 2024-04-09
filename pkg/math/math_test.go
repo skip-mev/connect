@@ -78,11 +78,53 @@ func TestAbs(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
 			got := math.Abs(tc.val)
-			if got != tc.expected {
-				t.Errorf("expected %d, got %d", tc.expected, got)
-			}
+			require.Equal(t, tc.expected, got)
+		})
+	}
+}
+
+func TestMax(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		vals     []int
+		expected int
+	}{
+		{
+			name:     "one value",
+			vals:     []int{1},
+			expected: 1,
+		},
+		{
+			name:     "two values",
+			vals:     []int{1, 2},
+			expected: 2,
+		},
+		{
+			name:     "three values",
+			vals:     []int{1, 2, 3},
+			expected: 3,
+		},
+		{
+			name:     "five values, negative",
+			vals:     []int{1, 2, 3, 4, -5},
+			expected: 4,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := math.Max(tc.vals...)
+			require.Equal(t, tc.expected, got)
 		})
 	}
 }

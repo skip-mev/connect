@@ -119,6 +119,35 @@ func TestAPIConfig(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "bad config with atomic + batch-size",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
+				Atomic:           true,
+				BatchSize:        1,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "good config with batchSize",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
+				BatchSize:        1,
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
