@@ -5,7 +5,7 @@ package mocks
 import (
 	mock "github.com/stretchr/testify/mock"
 
-	mm2types "github.com/skip-mev/slinky/x/marketmap/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )
@@ -16,22 +16,22 @@ type MarketMapKeeper struct {
 }
 
 // GetMarket provides a mock function with given fields: ctx, tickerStr
-func (_m *MarketMapKeeper) GetMarket(ctx types.Context, tickerStr string) (mm2types.Market, error) {
+func (_m *MarketMapKeeper) GetMarket(ctx types.Context, tickerStr string) (marketmaptypes.Market, error) {
 	ret := _m.Called(ctx, tickerStr)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetMarket")
 	}
 
-	var r0 mm2types.Market
+	var r0 marketmaptypes.Market
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, string) (mm2types.Market, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, string) (marketmaptypes.Market, error)); ok {
 		return rf(ctx, tickerStr)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, string) mm2types.Market); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, string) marketmaptypes.Market); ok {
 		r0 = rf(ctx, tickerStr)
 	} else {
-		r0 = ret.Get(0).(mm2types.Market)
+		r0 = ret.Get(0).(marketmaptypes.Market)
 	}
 
 	if rf, ok := ret.Get(1).(func(types.Context, string) error); ok {
