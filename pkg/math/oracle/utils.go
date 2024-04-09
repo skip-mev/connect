@@ -2,6 +2,7 @@ package oracle
 
 import (
 	"fmt"
+	"maps"
 	"math/big"
 
 	"github.com/skip-mev/slinky/oracle/types"
@@ -14,7 +15,11 @@ import (
 func (m *MedianAggregator) GetProviderPrice(
 	cfg mmtypes.ProviderConfig,
 ) (*big.Float, error) {
-	cache := m.GetDataByProvider(cfg.Name)
+	cache, ok := m.providerPrices[cfg.Name]
+	if !ok {
+		return nil, fmt.Errorf("missing provider prices for provider: %s", cfg.Name)
+	}
+
 	price, ok := cache[cfg.OffChainTicker]
 	if !ok {
 		return nil, fmt.Errorf("missing %s price for ticker: %s", cfg.Name, cfg.OffChainTicker)
@@ -32,7 +37,7 @@ func (m *MedianAggregator) GetProviderPrice(
 func (m *MedianAggregator) GetIndexPrice(
 	cp pkgtypes.CurrencyPair,
 ) (*big.Float, error) {
-	price, ok := m.GetIndexPrices()[cp.String()]
+	price, ok := m.indexPrices[cp.String()]
 	if !ok {
 		return nil, fmt.Errorf("missing index price for ticker: %s", cp)
 	}
@@ -40,43 +45,39 @@ func (m *MedianAggregator) GetIndexPrice(
 	return price, nil
 }
 
+// SetIndexPrice sets the index price for the given currency pair.
+func (m *MedianAggregator) SetIndexPrices(
+	prices types.AggregatorPrices,
+) {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	m.indexPrices = prices
+}
+
+// GetIndexPrices returns the index prices the aggregator has.
+func (m *MedianAggregator) GetIndexPrices() types.AggregatorPrices {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	cpy := make(types.AggregatorPrices)
+	maps.Copy(cpy, m.indexPrices)
+
+	return cpy
+}
+
 // UpdateMarketMap updates the market map for the oracle.
 func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
-	m.Lock()
-	defer m.Unlock()
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 
 	m.cfg = marketMap
 }
 
 // GetMarketMap returns the market map for the oracle.
 func (m *MedianAggregator) GetMarketMap() *mmtypes.MarketMap {
-	m.Lock()
-	defer m.Unlock()
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 
 	return &m.cfg
-}
-
-// SetPrices sets the prices for the oracle. These are the scaled prices that can be consumed
-// by external providers as well as the unscaled index prices.
-func (m *MedianAggregator) SetPrices(
-	indexPrices, scaledPrices types.AggregatorPrices,
-) {
-	m.SetIndexPrices(indexPrices)
-	m.DataAggregator.SetAggregatedData(scaledPrices)
-}
-
-// GetIndexPrices returns the index prices for the oracle.
-func (m *MedianAggregator) GetIndexPrices() types.AggregatorPrices {
-	m.Lock()
-	defer m.Unlock()
-
-	return m.indexPrices
-}
-
-// SetIndexPrices sets the index prices for the oracle.
-func (m *MedianAggregator) SetIndexPrices(indexPrices types.AggregatorPrices) {
-	m.Lock()
-	defer m.Unlock()
-
-	m.indexPrices = indexPrices
 }
