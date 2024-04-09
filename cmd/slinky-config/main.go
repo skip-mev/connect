@@ -375,7 +375,6 @@ func createOracleConfig() error {
 	// add raydium provider to the list of providers if enabled
 	if raydiumEnabled {
 		cfg := raydium.DefaultAPIConfig
-
 		for _, node := range solanaNodeURLs {
 			cfg.Endpoints = append(cfg.Endpoints, config.Endpoint{
 				URL: node,
