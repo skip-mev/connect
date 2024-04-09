@@ -166,9 +166,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		}
 
 		// Determine if the exchange needs to have an normalizeByPair.
-		var (
-			normalizeByPair *slinkytypes.CurrencyPair
-		)
+		var normalizeByPair *slinkytypes.CurrencyPair
 		if len(cfg.AdjustByMarket) > 0 {
 			temp, err := h.CreateCurrencyPairFromPair(cfg.AdjustByMarket)
 			if err != nil {

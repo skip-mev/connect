@@ -29,12 +29,6 @@ func TestCreateURL(t *testing.T) {
 		expectedErr bool
 	}{
 		{
-			name:        "empty",
-			cps:         []types.ProviderTicker{},
-			url:         "",
-			expectedErr: true,
-		},
-		{
 			name: "valid",
 			cps: []types.ProviderTicker{
 				mog_usd,

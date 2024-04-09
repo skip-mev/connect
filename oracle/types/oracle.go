@@ -94,11 +94,15 @@ type (
 	// BTC/USD, ETH/USD, etc. to their respective prices.
 	TickerPrices = map[ProviderTicker]*big.Float
 
-	// AggregatorPrices is a type alias for a map of off-chain ticker to the price.
+	// AggregatorPrices is a type alias for a map of off-chain ticker to the price. It is
+	// critical to note that the aggregator tracks prices indexed by off-chain tickers. When
+	// a final price is calculated (after aggregation), it is indexed by the cannonical on-chain
+	// ticker.
 	AggregatorPrices = map[string]*big.Float
 
 	// PriceAggregator is a type alias for the price aggregator. This is responsible for
-	// aggregating the resolved prices from the price providers.
+	// aggregating the resolved prices from the price providers. This maps the
+	// provider -> off-chain-ticker -> price.
 	PriceAggregator = aggregator.Aggregator[string, AggregatorPrices]
 
 	// PriceAggregationFn is a type alias for the price aggregation function. This function

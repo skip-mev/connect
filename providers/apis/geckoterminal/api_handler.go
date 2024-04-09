@@ -51,10 +51,6 @@ func NewAPIHandler(
 func (h *APIHandler) CreateURL(
 	tickers []types.ProviderTicker,
 ) (string, error) {
-	if len(tickers) == 0 {
-		return "", fmt.Errorf("no tickers provided")
-	}
-
 	addresses := make([]string, len(tickers))
 	for i, ticker := range tickers {
 		addresses[i] = ticker.GetOffChainTicker()

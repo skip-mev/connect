@@ -52,11 +52,9 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 // this will update the provider's query handler and the provider's market map.
 func (o *ProviderOrchestrator) UpdateProviderState(tickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
-	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))
 
-	provider.Update(
-		base.WithNewIDs[types.ProviderTicker, *big.Float](tickers),
-	)
+	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))
+	provider.Update(base.WithNewIDs[types.ProviderTicker, *big.Float](tickers))
 
 	switch {
 	case len(tickers) == 0:

@@ -21,6 +21,7 @@ func ProviderTickersFromMarketMap(
 		// Track all of the tickers that the provider will be providing data for.
 		providerTickers = make([]ProviderTicker, 0)
 		// Maintain a set of off-chain tickers that have been seen to avoid duplicates.
+		// Notably, the side-car provider enforces a uniquness constraint for off-chain tickers.
 		seenOffChainTickers = make(map[string]struct{})
 	)
 

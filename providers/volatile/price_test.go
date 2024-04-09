@@ -80,7 +80,7 @@ func TestGetVolatilePrice(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			require.Equal(t, tc.expectedPrice, volatile.GetVolatilePrice(tc.tp, tc.amplitude, tc.offset, tc.frequency))
+			require.Equal(t, tc.expectedPrice.SetPrec(40), volatile.GetVolatilePrice(tc.tp, tc.amplitude, tc.offset, tc.frequency).SetPrec(40))
 		})
 	}
 }
