@@ -31,6 +31,21 @@ func Abs[V constraints.Signed](val V) V {
 	return val
 }
 
+// Max returns the maximum of two values.
+func Max[V int | int64 | uint64 | int32 | uint32](vals ...V) V {
+	if len(vals) == 0 {
+		panic("cannot find maximum of empty slice")
+	}
+
+	maximum := vals[0]
+	for _, val := range vals[1:] {
+		if val > maximum {
+			maximum = val
+		}
+	}
+	return maximum
+}
+
 // Float64StringToBigInt converts a float64 string to a big.Int.
 func Float64StringToBigInt(s string, decimals uint64) (*big.Int, error) {
 	bigFloat := new(big.Float)
