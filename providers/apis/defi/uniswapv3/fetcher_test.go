@@ -7,11 +7,12 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestFetch(t *testing.T) {

@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	btcusdt   = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	ethusdt   = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	atom_usdc = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ATOM_USDC)
-	logger    = zap.NewExample()
+	btcusdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	atomusdc = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ATOM_USDC)
+	logger   = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -137,7 +137,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt, atom_usdc})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt, atomusdc})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -193,7 +193,7 @@ func TestCreateMessages(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 				ethusdt,
-				atom_usdc,
+				atomusdc,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8","spot@public.miniTicker.v3.api@ETHUSDT@UTC+8","spot@public.miniTicker.v3.api@ATOMUSDC@UTC+8"]}`

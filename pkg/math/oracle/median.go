@@ -134,7 +134,7 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 	convertedPrices := make([]*big.Float, 0, len(providers))
 	for _, cfg := range providers {
 		// Calculate the converted price.
-		adjustedPrice, err := m.CalculateAdjustedPrice(target, cfg)
+		adjustedPrice, err := m.CalculateAdjustedPrice(cfg)
 		if err != nil {
 			m.logger.Debug(
 				"failed to calculate converted price",
@@ -174,7 +174,6 @@ func (m *MedianAggregator) CalculateConvertedPrices(
 // to adjust the price by the index price of the asset. If the index price is not available, we
 // return an error.
 func (m *MedianAggregator) CalculateAdjustedPrice(
-	target mmtypes.Ticker,
 	cfg mmtypes.ProviderConfig,
 ) (*big.Float, error) {
 	price, err := m.GetProviderPrice(cfg)

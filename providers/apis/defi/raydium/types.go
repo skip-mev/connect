@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gagliardetto/solana-go"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 )

@@ -436,13 +436,11 @@ func createMarketMap() error {
 		return nil
 	}
 
-	var (
-		// Tickers defines a map of tickers to their respective ticker configurations. This
-		// contains all of the tickers that are supported by the oracle.
-		marketMap = mmtypes.MarketMap{
-			Markets: make(map[string]mmtypes.Market),
-		}
-	)
+	// Tickers defines a map of tickers to their respective ticker configurations. This
+	// contains all of the tickers that are supported by the oracle.
+	marketMap := mmtypes.MarketMap{
+		Markets: make(map[string]mmtypes.Market),
+	}
 
 	// if raydium is enabled, configure the raydium markets based on the local raydium_pairs fixture
 	if raydiumEnabled {

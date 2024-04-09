@@ -141,7 +141,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 	config dydxtypes.ExchangeConfigJson,
 ) ([]mmtypes.ProviderConfig, error) {
 	var (
-		providers []mmtypes.ProviderConfig
+		providers = make([]mmtypes.ProviderConfig, 0, len(config.Exchanges))
 		seen      = make(map[dydxtypes.ExchangeMarketConfigJson]struct{})
 	)
 
