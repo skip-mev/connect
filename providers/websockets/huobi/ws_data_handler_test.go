@@ -88,7 +88,7 @@ func TestHandlerMessage(t *testing.T) {
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
 					btcusdt: {
-						Value: big.NewFloat(1e18),
+						Value: big.NewFloat(1),
 					},
 				},
 				types.UnResolvedPrices{},

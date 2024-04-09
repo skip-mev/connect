@@ -619,7 +619,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			tc.malleate(m)
 
 			// Calculate the adjusted price.
-			price, err := m.CalculateAdjustedPrice(tc.target, tc.cfg)
+			price, err := m.CalculateAdjustedPrice(tc.cfg)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
