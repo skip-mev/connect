@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -154,6 +153,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 
 	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
 		MarketAuthorities: []string{s.user.FormattedAddress()},
+		Admin:             s.user.FormattedAddress(),
 	})
 	s.Require().NoError(err, resp)
 }
@@ -233,10 +233,10 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
-	eth_usdc := constants.ETHEREUM_USDC
+	ethusdc := constants.ETHEREUM_USDC
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
-		eth_usdc,
+		ethusdc,
 	}...))
 
 	cc, close, err := GetChainGRPC(s.chain)
@@ -244,7 +244,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 
 	defer close()
 
-	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), eth_usdc.CurrencyPair)
+	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), ethusdc)
 	s.Require().NoError(err)
 
 	zero := big.NewInt(0)
@@ -272,27 +272,20 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 			})
 
 			marketConfig := mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					eth_usdc.String(): eth_usdc,
-				},
-				Providers: map[string]mmtypes.Providers{
-					eth_usdc.String(): {
-						Providers: []mmtypes.ProviderConfig{
+				Markets: map[string]mmtypes.Market{
+					ethusdc.String(): {
+						Ticker: mmtypes.Ticker{
+							CurrencyPair:     ethusdc,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           static.Name,
 								OffChainTicker: "1140",
 							},
 						},
 					},
-				},
-				Paths: map[string]mmtypes.Paths{
-					eth_usdc.String(): {Paths: []mmtypes.Path{
-						{Operations: []mmtypes.Operation{{
-							CurrencyPair: eth_usdc.CurrencyPair,
-							Invert:       false,
-							Provider:     static.Name,
-						}}},
-					}},
 				},
 			}
 
@@ -325,7 +318,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 		// query for the given currency pair
-		resp, _, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height)
+		resp, _, err := QueryCurrencyPair(s.chain, ethusdc, height)
 		s.Require().NoError(err)
 		s.Require().Equal(resp.Price.Int64(), int64(1140))
 	})
@@ -358,10 +351,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height-1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdc, height-1)
 		s.Require().NoError(err)
 
-		_, newNonce, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height)
+		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdc, height)
 		s.Require().NoError(err)
 
 		// expect update for height
@@ -399,10 +392,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height-1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdc, height-1)
 		s.Require().NoError(err)
 
-		_, newNonce, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height)
+		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdc, height)
 		s.Require().NoError(err)
 
 		// expect update for height
@@ -436,10 +429,10 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		})
 		s.Require().NoError(err)
 
-		_, oldNonce, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height-1)
+		_, oldNonce, err := QueryCurrencyPair(s.chain, ethusdc, height-1)
 		s.Require().NoError(err)
 
-		_, newNonce, err := QueryCurrencyPair(s.chain, eth_usdc.CurrencyPair, height)
+		_, newNonce, err := QueryCurrencyPair(s.chain, ethusdc, height)
 		s.Require().NoError(err)
 
 		// expect no update for the height
@@ -453,15 +446,15 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
-	eth_usdc := constants.ETHEREUM_USDC
-	eth_usdt := constants.ETHEREUM_USDT
-	eth_usd := constants.ETHEREUM_USD
+	ethusdc := constants.ETHEREUM_USDC
+	ethusdt := constants.ETHEREUM_USDT
+	ethusd := constants.ETHEREUM_USD
 
 	// add multiple currency pairs
 	cps := []slinkytypes.CurrencyPair{
-		eth_usdc.CurrencyPair,
-		eth_usdt.CurrencyPair,
-		eth_usd.CurrencyPair,
+		ethusdc,
+		ethusdt,
+		ethusd,
 	}
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
@@ -473,13 +466,13 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 	// get the currency pair ids
 	ctx := context.Background()
-	id1, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), eth_usdc.CurrencyPair)
+	id1, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdc)
 	s.Require().NoError(err)
 
-	id2, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), eth_usdt.CurrencyPair)
+	id2, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusdt)
 	s.Require().NoError(err)
 
-	id3, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), eth_usd.CurrencyPair)
+	id3, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), ethusd)
 	s.Require().NoError(err)
 
 	zero := big.NewInt(0)
@@ -505,59 +498,43 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		marketConfig := mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
-				eth_usdc.String(): eth_usdc,
-				eth_usdt.String(): eth_usdt,
-				eth_usd.String():  eth_usd,
-			},
-			Providers: map[string]mmtypes.Providers{
-				eth_usdc.String(): {
-					Providers: []mmtypes.ProviderConfig{
+			Markets: map[string]mmtypes.Market{
+				ethusdc.String(): {
+					Ticker: mmtypes.Ticker{
+						CurrencyPair:     ethusdc,
+						Decimals:         8,
+						MinProviderCount: 1,
+					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
 						},
 					},
 				},
-				eth_usdt.String(): {
-					Providers: []mmtypes.ProviderConfig{
+				ethusdt.String(): {
+					Ticker: mmtypes.Ticker{
+						CurrencyPair:     ethusdt,
+						Decimals:         8,
+						MinProviderCount: 1,
+					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
 						},
 					},
 				},
-				eth_usd.String(): {
-					Providers: []mmtypes.ProviderConfig{
+				ethusd.String(): {
+					Ticker: mmtypes.Ticker{
+						CurrencyPair:     ethusd,
+						Decimals:         8,
+						MinProviderCount: 1,
+					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1142",
 						},
 					},
 				},
-			},
-			Paths: map[string]mmtypes.Paths{
-				eth_usdc.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdc.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-				eth_usdt.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdt.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-				eth_usd.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usd.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
 			},
 		}
 
@@ -629,43 +606,31 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		})
 
 		marketConfig := mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
-				eth_usdc.String(): eth_usdc,
-				eth_usdt.String(): eth_usdt,
-			},
-			Providers: map[string]mmtypes.Providers{
-				eth_usdc.String(): {
-					Providers: []mmtypes.ProviderConfig{
+			Markets: map[string]mmtypes.Market{
+				ethusdc.String(): {
+					Ticker: mmtypes.Ticker{
+						CurrencyPair:     ethusdc,
+						Decimals:         8,
+						MinProviderCount: 1,
+					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
 						},
 					},
 				},
-				eth_usdt.String(): {
-					Providers: []mmtypes.ProviderConfig{
+				ethusdt.String(): {
+					Ticker: mmtypes.Ticker{
+						CurrencyPair:     eth_usdt,
+						Decimals:         8,
+						MinProviderCount: 1,
+					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
 						},
 					},
 				},
-			},
-			Paths: map[string]mmtypes.Paths{
-				eth_usdc.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdc.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
-				eth_usdt.String(): {Paths: []mmtypes.Path{
-					{Operations: []mmtypes.Operation{{
-						CurrencyPair: eth_usdt.CurrencyPair,
-						Invert:       false,
-						Provider:     static.Name,
-					}}},
-				}},
 			},
 		}
 
