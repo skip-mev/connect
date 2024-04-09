@@ -10,7 +10,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
@@ -79,7 +79,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Parse the response body into a market map object.
-	var market mmtypes.GetMarketMapResponse
+	var market mmtypes.MarketMapResponse
 	if err := json.NewDecoder(resp.Body).Decode(&market); err != nil {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
@@ -104,7 +104,7 @@ func (h *APIHandler) ParseResponse(
 	if market.ChainId != chain.ChainID {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
-				fmt.Errorf("expected chain id %s, got %s", chain.ChainID, market.ChainId),
+				fmt.Errorf("expected chain name %s, got %s", chain.ChainID, market.ChainId),
 				providertypes.ErrorInvalidChainID,
 			),
 		)

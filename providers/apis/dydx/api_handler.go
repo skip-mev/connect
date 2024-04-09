@@ -100,7 +100,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Convert the dydx market params to a market map.
-	marketResp, err := ConvertMarketParamsToMarketMap(params, h.logger)
+	marketResp, err := h.ConvertMarketParamsToMarketMap(params)
 	if err != nil {
 		return types.NewMarketMapResponseWithErr(
 			chains,
