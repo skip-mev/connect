@@ -38,7 +38,7 @@ type SolanaJSONRPCClient interface {
 // about the price of a given currency pair.
 type APIPriceFetcher struct {
 	// market represents the ticker configurations for this provider.
-	market oracletypes.ProviderMarketMap
+	markets oracletypes.ProviderMarketMap
 
 	// config is the APIConfiguration for this provider
 	config config.APIConfig
@@ -59,12 +59,28 @@ func NewAPIPriceFetcher(
 	market oracletypes.ProviderMarketMap,
 	config config.APIConfig,
 	logger *zap.Logger,
+	opts ...Option,
 ) (*APIPriceFetcher, error) {
+	// use a multi-client if multiple endpoints are provided
+	if len(config.Endpoints) > 0 {
+		if len(config.Endpoints) > 1 {
+			opts = append(opts, WithSolanaClient(
+				NewMultiJSONRPCClientFromEndpoints(
+					config.Endpoints,
+					logger.With(zap.String("raydium_multi_client", Name)),
+				),
+			))
+		} else {
+			config.URL = config.Endpoints[0].URL
+		}
+	}
+
 	return NewAPIPriceFetcherWithClient(
 		market,
 		config,
 		rpc.New(config.URL),
 		logger,
+		opts...,
 	)
 }
 
@@ -72,16 +88,17 @@ func NewAPIPriceFetcher(
 // that the given market + config are valid, otherwise a nil implementation + an error
 // will be returned.
 func NewAPIPriceFetcherWithClient(
-	market oracletypes.ProviderMarketMap,
+	markets oracletypes.ProviderMarketMap,
 	config config.APIConfig,
 	client SolanaJSONRPCClient,
 	logger *zap.Logger,
+	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	if err := config.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
 	}
 
-	if err := market.ValidateBasic(); err != nil {
+	if err := markets.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("market config for raydium is invalid: %w", err)
 	}
 
@@ -90,8 +107,8 @@ func NewAPIPriceFetcherWithClient(
 		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, config.Name)
 	}
 
-	if market.Name != Name {
-		return nil, fmt.Errorf("market config name is incorrect; expected: %s, got: %s", Name, market.Name)
+	if markets.Name != Name {
+		return nil, fmt.Errorf("market config name is incorrect; expected: %s, got: %s", Name, markets.Name)
 	}
 
 	if !config.Enabled {
@@ -100,7 +117,7 @@ func NewAPIPriceFetcherWithClient(
 
 	// generate metadata per ticker
 	metadataPerTicker := make(map[string]TickerMetadata)
-	for _, ticker := range market.OffChainMap {
+	for _, ticker := range markets.OffChainMap {
 		metadata, err := unmarshalMetadataJSON(ticker.Metadata_JSON)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
@@ -113,13 +130,19 @@ func NewAPIPriceFetcherWithClient(
 		metadataPerTicker[ticker.String()] = metadata
 	}
 
-	return &APIPriceFetcher{
-		market:            market,
+	pf := &APIPriceFetcher{
+		markets:           markets,
 		config:            config,
 		client:            client,
 		metaDataPerTicker: metadataPerTicker,
 		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
-	}, nil
+	}
+
+	for _, opt := range opts {
+		opt(pf)
+	}
+
+	return pf, nil
 }
 
 // FetchPrices fetches prices from the solana JSON-RPC API for the given currency-pairs. Specifically
@@ -155,6 +178,9 @@ func (pf *APIPriceFetcher) Fetch(
 	// We assume that the solana JSON-RPC response returns all accounts in the order
 	// that they were queried, there is not a very good way to handle if this order is incorrect
 	// or verify that the order is correct, as there is no way to correlate account data <> address
+	ctx, cancel := context.WithTimeout(ctx, pf.config.Timeout)
+	defer cancel()
+
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
 		Commitment: rpc.CommitmentFinalized,
 		// TODO(nikhil): Keep track of latest height queried as well?

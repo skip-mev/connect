@@ -83,7 +83,7 @@ func TestAPIConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with no url",
+			name: "bad config with no url / endpoint",
 			config: config.APIConfig{
 				Enabled:          true,
 				Timeout:          time.Second,
@@ -105,6 +105,19 @@ func TestAPIConfig(t *testing.T) {
 				URL:        "http://test.com",
 			},
 			expectedErr: true,
+		},
+		{
+			name: "good config with endpoints instead of url",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
+			},
+			expectedErr: false,
 		},
 	}
 

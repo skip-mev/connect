@@ -3,8 +3,11 @@ package raydium
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gagliardetto/solana-go"
+
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 )
 
 const (
@@ -71,4 +74,14 @@ func NoRaydiumMetadataForTickerError(ticker string) error {
 // SolanaJSONRPCError is returned when there is an error querying the solana JSON-RPC client.
 func SolanaJSONRPCError(err error) error {
 	return fmt.Errorf("solana json-rpc error: %s", err.Error())
+}
+
+var DefaultAPIConfig = oracleconfig.APIConfig{
+	Enabled:          true,
+	Name:             Name,
+	Timeout:          500 * time.Millisecond,
+	Interval:         500 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       10,
+	Atomic:           true,
 }
