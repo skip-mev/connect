@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-// ReadMarketConfigFromFile reads a market map configuration from a file at the given path.
-func ReadMarketConfigFromFile(path string) (MarketMap, error) {
+// ReadMarketMapFromFile reads a market map configuration from a file at the given path.
+func ReadMarketMapFromFile(path string) (MarketMap, error) {
 	// Initialize the struct to hold the configuration
 	var config MarketMap
 
