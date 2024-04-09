@@ -86,13 +86,10 @@ var (
 	updateInterval time.Duration
 	// maxPriceAge is the maximum age of a price that the oracle will accept.
 	maxPriceAge time.Duration
-
 	// raydium-enabled determine whether or not the raydium defi provider will be configured.
 	raydiumEnabled bool
-
 	// solana node url is the solana node that the raydium provider will connect to.
 	solanaNodeURLs []string
-
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
 	ProviderToMarkets = map[string]types.CurrencyPairsToProviderTickers{
@@ -516,7 +513,7 @@ type TickerMetaData struct {
 	TickerMetaData raydium.TickerMetadata   `json:"ticker_metadata"`
 }
 
-func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.ProviderConfig) map[string]map[mmtypes.Ticker]mmtypes.ProviderConfig {
+func addRaydiumMarkets(providerToMarkets map[string]types.CurrencyPairsToProviderTickers) map[string]types.CurrencyPairsToProviderTickers {
 	// read the raydium_pairs fixture
 	if !raydiumEnabled {
 		return providerToMarkets
@@ -543,17 +540,12 @@ func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.P
 	}
 
 	// add the raydium markets to the provider to markets map
-	providerToMarkets[raydium.Name] = make(map[mmtypes.Ticker]mmtypes.ProviderConfig)
+	providerToMarkets[raydium.Name] = make(types.CurrencyPairsToProviderTickers)
 	for _, pair := range raydiumPairs {
-		providerToMarkets[raydium.Name][mmtypes.Ticker{
-			CurrencyPair:     pair.Cp,
-			Decimals:         18,
-			MinProviderCount: 1,
-			Enabled:          true,
-			Metadata_JSON:    marshalToJSONString(pair.TickerMetaData),
-		}] = mmtypes.ProviderConfig{
+		providerToMarkets[raydium.Name][pair.Cp] = types.DefaultProviderTicker{
 			Name:           raydium.Name,
 			OffChainTicker: pair.Cp.String(),
+			JSON:           marshalToJSONString(pair.TickerMetaData),
 		}
 	}
 
