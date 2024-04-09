@@ -8,6 +8,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -149,7 +150,7 @@ func TestAggregateData(t *testing.T) {
 			result := m.DataAggregator.GetAggregatedData()
 			require.Equal(t, len(tc.expectedPrices), len(result))
 			for ticker, price := range result {
-				verifyPrice(t, tc.expectedPrices[ticker], price)
+				math.VerifyPrice(t, tc.expectedPrices[ticker], price, acceptableDelta)
 			}
 		})
 	}
@@ -445,7 +446,7 @@ func TestCalculateConvertedPrices(t *testing.T) {
 
 			// Ensure that the prices are as expected.
 			for i, price := range prices {
-				verifyPrice(t, tc.expectedPrices[i], price)
+				math.VerifyPrice(t, tc.expectedPrices[i], price, acceptableDelta)
 			}
 		})
 	}
@@ -922,7 +923,7 @@ func TestCalculateAdjustedPrice(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			verifyPrice(t, tc.expectedPrice, price)
+			math.VerifyPrice(t, tc.expectedPrice, price, acceptableDelta)
 		})
 	}
 }
