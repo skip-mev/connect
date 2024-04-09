@@ -621,7 +621,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				},
 				ethusdt.String(): {
 					Ticker: mmtypes.Ticker{
-						CurrencyPair:     eth_usdt,
+						CurrencyPair:     ethusdt,
 						Decimals:         8,
 						MinProviderCount: 1,
 					}, ProviderConfigs: []mmtypes.ProviderConfig{

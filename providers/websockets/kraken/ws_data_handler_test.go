@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	btc_usd = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	eth_usd = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	logger  = zap.NewExample()
+	btcusd = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	logger = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -35,7 +35,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(42596.41907000),
 					},
 				},
@@ -197,7 +197,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = handler.CreateMessages([]types.ProviderTicker{btc_usd, eth_usd})
+			_, err = handler.CreateMessages([]types.ProviderTicker{btcusd, ethusd})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := handler.HandleMessage(tc.msg())
@@ -245,7 +245,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "single currency pair",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{
@@ -266,8 +266,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kraken.SubscribeRequestMessage{

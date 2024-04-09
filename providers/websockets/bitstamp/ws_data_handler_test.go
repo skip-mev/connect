@@ -17,9 +17,9 @@ import (
 )
 
 var (
-	btc_usd = bitstamp.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	eth_usd = bitstamp.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	logger  = zap.NewExample()
+	btcusd = bitstamp.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd = bitstamp.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	logger = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -79,7 +79,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(100000.00),
 					},
 				},
@@ -129,7 +129,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("error"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -147,7 +147,7 @@ func TestHandleMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usd, eth_usd})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusd, ethusd})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -198,7 +198,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{
@@ -210,8 +210,8 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return []handlers.WebsocketEncodedMessage{

@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	btc_usd  = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	btc_usdt = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	eth_usd  = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	btcusd  = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	btcusdt = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	ethusd  = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
 )
 
 func TestCreateURL(t *testing.T) {
@@ -39,7 +39,7 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			url:         "https://api.kraken.com/0/public/Ticker?pair=XBTUSDT",
 			expectedErr: false,
@@ -47,8 +47,8 @@ func TestCreateURL(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			url:         "https://api.kraken.com/0/public/Ticker?pair=XBTUSDT,ETHUSDT",
 			expectedErr: false,
@@ -81,14 +81,14 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid single",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`{"error":[],"result":{"XXBTZUSD":{"a":["64587.50000","2","2.000"],"b":["64587.40000","11","11.000"],"c":["64587.40000","0.01026127"],"v":["5866.14264484","6251.33408493"],"p":["64487.45123","64670.54770"],"t":[56819,62596],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(64587.4),
 					},
 				},
@@ -98,18 +98,18 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "valid multiple",
 			cps: []types.ProviderTicker{
-				btc_usd,
-				eth_usd,
+				btcusd,
+				ethusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`{"error":[],"result":{"XETHZUSD":{"a":["3338.95000","1","1.000"],"b":["3338.94000","246","246.000"],"c":["3338.08000","0.00702654"],"v":["33234.61736920","35692.20596751"],"p":["3310.12909","3324.16514"],"t":[25646,28278],"l":["3200.17000","3200.17000"],"h":["3547.76000","3547.76000"],"o":"3518.43000"},"XXBTZUSD":{"a":["64547.20000","4","4.000"],"b":["64547.10000","15","15.000"],"c":["64547.20000","0.00013362"],"v":["5869.92462186","6253.84063618"],"p":["64487.50403","64670.01016"],"t":[56856,62595],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usd: {
+					btcusd: {
 						Value: big.NewFloat(64547.2),
 					},
-					eth_usd: {
+					ethusd: {
 						Value: big.NewFloat(3338.08),
 					},
 				},
@@ -119,7 +119,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad response",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`shout out my label that's me`,
@@ -127,7 +127,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -136,7 +136,7 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "bad price response",
 			cps: []types.ProviderTicker{
-				btc_usd,
+				btcusd,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`{"error":[],"result":{"XXBTZUSD":{"a":["$64587.50000","2","2.000"],"b":["$64587.40000","11","11.000"],"c":["$64587.40000","0.01026127"],"v":["5866.14264484","6251.33408493"],"p":["64487.45123","64670.54770"],"t":[56819,62596],"l":["62356.50000","62356.50000"],"h":["68075.00000","68075.00000"],"o":"67600.00000"}}}`,
@@ -144,7 +144,7 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usd: providertypes.UnresolvedResult{
+					btcusd: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid syntax"), providertypes.ErrorAPIGeneral),
 					},
 				},
@@ -153,8 +153,8 @@ func TestParseResponse(t *testing.T) {
 		{
 			name: "no response",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`[]`,
@@ -162,10 +162,10 @@ func TestParseResponse(t *testing.T) {
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},
 				types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
-					eth_usdt: providertypes.UnresolvedResult{
+					ethusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no response"), providertypes.ErrorAPIGeneral),
 					},
 				},

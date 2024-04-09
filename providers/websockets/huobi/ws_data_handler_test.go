@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	btc_usdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	logger   = zap.NewExample()
+	btcusdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	logger  = zap.NewExample()
 )
 
 func TestHandlerMessage(t *testing.T) {
@@ -87,7 +87,7 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(1e18),
 					},
 				},
@@ -247,7 +247,7 @@ func TestHandlerMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Update the cache since it is assumed that CreateMessages is executed before anything else.
-			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btc_usdt, eth_usdt})
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -292,7 +292,7 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg, err := huobi.NewSubscriptionRequest("btcusdt")
@@ -305,8 +305,8 @@ func TestCreateMessage(t *testing.T) {
 		{
 			name: "two currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				bz1, err := huobi.NewSubscriptionRequest("btcusdt")

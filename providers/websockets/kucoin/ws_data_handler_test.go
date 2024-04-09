@@ -19,9 +19,9 @@ import (
 )
 
 var (
-	btc_usdt = kucoin.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	eth_usdt = kucoin.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	logger   = zap.NewExample()
+	btcusdt = kucoin.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = kucoin.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	logger  = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -119,7 +119,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					btc_usdt: {
+					btcusdt: {
 						Value: big.NewFloat(0.1),
 					},
 				},
@@ -145,7 +145,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("error"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -171,7 +171,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("received out of order ticker response message"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -213,7 +213,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					btc_usdt: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse price %s", "failed to parse float64 string to big int: invalid"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -265,7 +265,7 @@ func TestHandleMessage(t *testing.T) {
 	require.NoError(t, err)
 
 	// Update the cache since it is assumed that CreateMessages is executed before anything else.
-	_, err = handler.CreateMessages([]types.ProviderTicker{btc_usdt, eth_usdt})
+	_, err = handler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt})
 	require.NoError(t, err)
 
 	for _, tc := range testCases {
@@ -321,7 +321,7 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "one currency pair",
 			cps: []types.ProviderTicker{
-				btc_usdt,
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kucoin.SubscribeRequestMessage{
@@ -345,8 +345,8 @@ func TestCreateMessages(t *testing.T) {
 		{
 			name: "multiple currency pairs",
 			cps: []types.ProviderTicker{
-				btc_usdt,
-				eth_usdt,
+				btcusdt,
+				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := kucoin.SubscribeRequestMessage{
