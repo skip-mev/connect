@@ -38,7 +38,7 @@ func TestFetch(t *testing.T) {
 		{
 			name: "fails to retrieve pool for an empty ticker",
 			tickers: []types.ProviderTicker{
-				types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", ""),
+				types.NewProviderTicker("WETH/USDC", ""),
 			},
 			client: func() uniswapv3.EVMClient {
 				return mocks.NewEVMClient(t)
@@ -46,7 +46,7 @@ func TestFetch(t *testing.T) {
 			expected: types.PriceResponse{
 				Resolved: map[types.ProviderTicker]providertypes.ResolvedResult[*big.Float]{},
 				UnResolved: map[types.ProviderTicker]providertypes.UnresolvedResult{
-					types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", ""): {},
+					types.NewProviderTicker("WETH/USDC", ""): {},
 				},
 			},
 		},
@@ -156,7 +156,7 @@ func TestGetPool(t *testing.T) {
 	fetcher := createPriceFetcher(t)
 
 	t.Run("ticker is empty", func(t *testing.T) {
-		ticker := types.NewProviderTicker(uniswapv3.Name, "", "")
+		ticker := types.NewProviderTicker("", "")
 		_, err := fetcher.GetPool(ticker)
 		require.Error(t, err)
 	})
@@ -165,13 +165,13 @@ func TestGetPool(t *testing.T) {
 		expected := uniswapv3.PoolConfig{
 			Address: "0x1234",
 		}
-		ticker := types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", expected.MustToJSON())
+		ticker := types.NewProviderTicker("WETH/USDC", expected.MustToJSON())
 		_, err := fetcher.GetPool(ticker)
 		require.Error(t, err)
 	})
 
 	t.Run("ticker is not json formatted", func(t *testing.T) {
-		ticker := types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", "not json, something else")
+		ticker := types.NewProviderTicker("WETH/USDC", "not json, something else")
 		_, err := fetcher.GetPool(ticker)
 		require.Error(t, err)
 	})
@@ -183,7 +183,7 @@ func TestGetPool(t *testing.T) {
 			QuoteDecimals: 6,
 			Invert:        true,
 		}
-		ticker := types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", expected.MustToJSON())
+		ticker := types.NewProviderTicker("WETH/USDC", expected.MustToJSON())
 		pool, err := fetcher.GetPool(ticker)
 		require.NoError(t, err)
 		require.Equal(t, expected, pool)

@@ -38,23 +38,18 @@ var (
 	// DefaultMarketConfig is the default market configuration for BitFinex.
 	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.BITCOIN_USD: {
-			Name:           Name,
 			OffChainTicker: "BTCUSD",
 		},
 		constants.CELESTIA_USD: {
-			Name:           Name,
 			OffChainTicker: "TIAUSD",
 		},
 		constants.ETHEREUM_BITCOIN: {
-			Name:           Name,
 			OffChainTicker: "ETHBTC",
 		},
 		constants.ETHEREUM_USD: {
-			Name:           Name,
 			OffChainTicker: "ETHUSD",
 		},
 		constants.SOLANA_USD: {
-			Name:           Name,
 			OffChainTicker: "SOLUSD",
 		},
 	}

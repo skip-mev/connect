@@ -42,207 +42,156 @@ var (
 	// DefaultMarketConfig is the default market configuration for Kraken.
 	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.APE_USDT: {
-			Name:           Name,
 			OffChainTicker: "APEUSDT",
 		},
 		constants.APTOS_USD: {
-			Name:           Name,
 			OffChainTicker: "APTUSD",
 		},
 		constants.ARBITRUM_USD: {
-			Name:           Name,
 			OffChainTicker: "ARBUSD",
 		},
 		constants.ATOM_USDT: {
-			Name:           Name,
 			OffChainTicker: "ATOMUSDT",
 		},
 		constants.ATOM_USD: {
-			Name:           Name,
 			OffChainTicker: "ATOMUSD",
 		},
 		constants.AVAX_USDT: {
-			Name:           Name,
 			OffChainTicker: "AVAXUSDT",
 		},
 		constants.AVAX_USD: {
-			Name:           Name,
 			OffChainTicker: "AVAXUSD",
 		},
 		constants.BCH_USDT: {
-			Name:           Name,
 			OffChainTicker: "BCHUSDT",
 		},
 		constants.BCH_USD: {
-			Name:           Name,
 			OffChainTicker: "BCHUSD",
 		},
 		constants.BITCOIN_USDC: {
-			Name:           Name,
 			OffChainTicker: "XBTUSDC",
 		},
 		constants.BITCOIN_USD: {
-			Name:           Name,
 			OffChainTicker: "XXBTZUSD",
 		},
 		constants.BITCOIN_USDT: {
-			Name:           Name,
 			OffChainTicker: "XBTUSDT",
 		},
 		constants.CARDANO_USDT: {
-			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
 		constants.CARDANO_USD: {
-			Name:           Name,
 			OffChainTicker: "ADAUSD",
 		},
 		constants.CHAINLINK_USDT: {
-			Name:           Name,
 			OffChainTicker: "LINKUSDT",
 		},
 		constants.CHAINLINK_USD: {
-			Name:           Name,
 			OffChainTicker: "LINKUSD",
 		},
 		constants.COMPOUND_USD: {
-			Name:           Name,
 			OffChainTicker: "COMPUSD",
 		},
 		constants.CURVE_USD: {
-			Name:           Name,
 			OffChainTicker: "CRVUSD",
 		},
 		constants.DOGE_USDT: {
-			Name:           Name,
 			OffChainTicker: "XDGUSDT",
 		},
 		constants.DOGE_USD: {
-			Name:           Name,
 			OffChainTicker: "XDGUSD",
 		},
 		constants.DYDX_USD: {
-			Name:           Name,
 			OffChainTicker: "DYDXUSD",
 		},
 		constants.ETC_USD: {
-			Name:           Name,
 			OffChainTicker: "ETCUSD",
 		},
 		constants.ETHEREUM_BITCOIN: {
-			Name:           Name,
 			OffChainTicker: "XETHXXBT",
 		},
 		constants.ETHEREUM_USDC: {
-			Name:           Name,
 			OffChainTicker: "ETHUSDC",
 		},
 		constants.ETHEREUM_USDT: {
-			Name:           Name,
 			OffChainTicker: "ETHUSDT",
 		},
 		constants.ETHEREUM_USD: {
-			Name:           Name,
 			OffChainTicker: "XETHZUSD",
 		},
 		constants.FILECOIN_USD: {
-			Name:           Name,
 			OffChainTicker: "FILUSD",
 		},
 		constants.LIDO_USD: {
-			Name:           Name,
 			OffChainTicker: "LDOUSD",
 		},
 		constants.LITECOIN_USDT: {
-			Name:           Name,
 			OffChainTicker: "LTCUSDT",
 		},
 		constants.LITECOIN_USD: {
-			Name:           Name,
 			OffChainTicker: "XLTCZUSD",
 		},
 		constants.MAKER_USD: {
-			Name:           Name,
 			OffChainTicker: "MKRUSD",
 		},
 		constants.NEAR_USD: {
-			Name:           Name,
 			OffChainTicker: "NEARUSD",
 		},
 		constants.OPTIMISM_USD: {
-			Name:           Name,
 			OffChainTicker: "OPUSD",
 		},
 		constants.PEPE_USD: {
-			Name:           Name,
 			OffChainTicker: "PEPEUSD",
 		},
 		constants.POLKADOT_USDT: {
-			Name:           Name,
 			OffChainTicker: "DOTUSDT",
 		},
 		constants.POLKADOT_USD: {
-			Name:           Name,
 			OffChainTicker: "DOTUSD",
 		},
 		constants.POLYGON_USDT: {
-			Name:           Name,
 			OffChainTicker: "MATICUSDT",
 		},
 		constants.POLYGON_USD: {
-			Name:           Name,
 			OffChainTicker: "MATICUSD",
 		},
 		constants.RIPPLE_USDT: {
-			Name:           Name,
 			OffChainTicker: "XRPUSDT",
 		},
 		constants.RIPPLE_USD: {
-			Name:           Name,
 			OffChainTicker: "XXRPZUSD",
 		},
 		constants.SEI_USD: {
-			Name:           Name,
 			OffChainTicker: "SEIUSD",
 		},
 		constants.SHIBA_USDT: {
-			Name:           Name,
 			OffChainTicker: "SHIBUSDT",
 		},
 		constants.SHIBA_USD: {
-			Name:           Name,
 			OffChainTicker: "SHIBUSD",
 		},
 		constants.SOLANA_USDT: {
-			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
 		constants.SOLANA_USD: {
-			Name:           Name,
 			OffChainTicker: "SOLUSD",
 		},
 		constants.STELLAR_USD: {
-			Name:           Name,
 			OffChainTicker: "XXLMZUSD",
 		},
 		constants.SUI_USD: {
-			Name:           Name,
 			OffChainTicker: "SUIUSD",
 		},
 		constants.TRON_USD: {
-			Name:           Name,
 			OffChainTicker: "TRXUSD",
 		},
 		constants.UNISWAP_USD: {
-			Name:           Name,
 			OffChainTicker: "UNIUSD",
 		},
 		constants.USDC_USDT: {
-			Name:           Name,
 			OffChainTicker: "USDCUSDT",
 		},
 		constants.USDT_USD: {
-			Name:           Name,
 			OffChainTicker: "USDTZUSD",
 		},
 	}

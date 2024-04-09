@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	ticker1 = types.NewProviderTicker("volatile-exchange-url", "foo/bar", "{}")
-	ticker2 = types.NewProviderTicker("volatile-exchange-url", "foo/baz", "{}")
+	ticker1 = types.NewProviderTicker("foo/bar", "{}")
+	ticker2 = types.NewProviderTicker("foo/baz", "{}")
 )
 
 func setupTest(t *testing.T) types.PriceAPIDataHandler {

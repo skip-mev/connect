@@ -52,167 +52,126 @@ var (
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.
 	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
 		constants.APE_USDT: {
-			Name:           Name,
 			OffChainTicker: "APEUSDT",
 		},
 		constants.APTOS_USDT: {
-			Name:           Name,
 			OffChainTicker: "APTUSDT",
 		},
 		constants.ARBITRUM_USDT: {
-			Name:           Name,
 			OffChainTicker: "ARBUSDT",
 		},
 		constants.ATOM_USDC: {
-			Name:           Name,
 			OffChainTicker: "ATOMUSDC",
 		},
 		constants.ATOM_USDT: {
-			Name:           Name,
 			OffChainTicker: "ATOMUSDT",
 		},
 		constants.AVAX_USDC: {
-			Name:           Name,
 			OffChainTicker: "AVAXUSDC",
 		},
 		constants.AVAX_USDT: {
-			Name:           Name,
 			OffChainTicker: "AVAXUSDT",
 		},
 		constants.BCH_USDT: {
-			Name:           Name,
 			OffChainTicker: "BCHUSDT",
 		},
 		constants.BITCOIN_USDC: {
-			Name:           Name,
 			OffChainTicker: "BTCUSDC",
 		},
 		constants.BITCOIN_USDT: {
-			Name:           Name,
 			OffChainTicker: "BTCUSDT",
 		},
 		constants.BLUR_USDT: {
-			Name:           Name,
 			OffChainTicker: "BLURUSDT",
 		},
 		constants.CARDANO_USDC: {
-			Name:           Name,
 			OffChainTicker: "ADAUSDC",
 		},
 		constants.CARDANO_USDT: {
-			Name:           Name,
 			OffChainTicker: "ADAUSDT",
 		},
 		constants.CHAINLINK_USDT: {
-			Name:           Name,
 			OffChainTicker: "LINKUSDT",
 		},
 		constants.COMPOUND_USDT: {
-			Name:           Name,
 			OffChainTicker: "COMPUSDT",
 		},
 		constants.CURVE_USDT: {
-			Name:           Name,
 			OffChainTicker: "CRVUSDT",
 		},
 		constants.DOGE_USDT: {
-			Name:           Name,
 			OffChainTicker: "DOGEUSDT",
 		},
 		constants.DYDX_USDT: {
-			Name:           Name,
 			OffChainTicker: "DYDXUSDT",
 		},
 		constants.ETC_USDT: {
-			Name:           Name,
 			OffChainTicker: "ETCUSDT",
 		},
 		constants.ETHEREUM_BITCOIN: {
-			Name:           Name,
 			OffChainTicker: "ETHBTC",
 		},
 		constants.ETHEREUM_USDC: {
-			Name:           Name,
 			OffChainTicker: "ETHUSDC",
 		},
 		constants.ETHEREUM_USDT: {
-			Name:           Name,
 			OffChainTicker: "ETHUSDT",
 		},
 		constants.FILECOIN_USDT: {
-			Name:           Name,
 			OffChainTicker: "FILUSDT",
 		},
 		constants.LIDO_USDT: {
-			Name:           Name,
 			OffChainTicker: "LDOUSDT",
 		},
 		constants.LITECOIN_USDT: {
-			Name:           Name,
 			OffChainTicker: "LTCUSDT",
 		},
 		constants.MAKER_USDT: {
-			Name:           Name,
 			OffChainTicker: "MKRUSDT",
 		},
 		constants.POLKADOT_USDT: {
-			Name:           Name,
 			OffChainTicker: "DOTUSDT",
 		},
 		constants.NEAR_USDT: {
-			Name:           Name,
 			OffChainTicker: "NEARUSDT",
 		},
 		constants.OPTIMISM_USDT: {
-			Name:           Name,
 			OffChainTicker: "OPUSDT",
 		},
 		constants.PEPE_USDT: {
-			Name:           Name,
 			OffChainTicker: "PEPEUSDT",
 		},
 		constants.POLYGON_USDT: {
-			Name:           Name,
 			OffChainTicker: "MATICUSDT",
 		},
 		constants.RIPPLE_USDT: {
-			Name:           Name,
 			OffChainTicker: "XRPUSDT",
 		},
 		constants.SEI_USDT: {
-			Name:           Name,
 			OffChainTicker: "SEIUSDT",
 		},
 		constants.SHIBA_USDT: {
-			Name:           Name,
 			OffChainTicker: "SHIBUSDT",
 		},
 		constants.SOLANA_USDC: {
-			Name:           Name,
 			OffChainTicker: "SOLUSDC",
 		},
 		constants.SOLANA_USDT: {
-			Name:           Name,
 			OffChainTicker: "SOLUSDT",
 		},
 		constants.STELLAR_USDT: {
-			Name:           Name,
 			OffChainTicker: "XLMUSDT",
 		},
 		constants.SUI_USDT: {
-			Name:           Name,
 			OffChainTicker: "SUIUSDT",
 		},
 		constants.TRON_USDT: {
-			Name:           Name,
 			OffChainTicker: "TRXUSDT",
 		},
 		constants.USDC_USDT: {
-			Name:           Name,
 			OffChainTicker: "USDCUSDT",
 		},
 		constants.WORLD_USDT: {
-			Name:           Name,
 			OffChainTicker: "WLDUSDT",
 		},
 	}

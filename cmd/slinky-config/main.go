@@ -449,7 +449,7 @@ func createMarketMap() error {
 
 	// Iterate through all of the provider ticker configurations and update the
 	// tickers and tickers to providers maps.
-	for _, providerConfig := range ProviderToMarkets {
+	for provider, providerConfig := range ProviderToMarkets {
 		for cp, config := range providerConfig {
 			ticker := mmtypes.Ticker{
 				CurrencyPair:     cp,
@@ -467,7 +467,7 @@ func createMarketMap() error {
 
 			market := marketMap.Markets[ticker.String()]
 			market.ProviderConfigs = append(market.ProviderConfigs, mmtypes.ProviderConfig{
-				Name:           config.Name,
+				Name:           provider,
 				OffChainTicker: config.OffChainTicker,
 				Metadata_JSON:  config.JSON,
 			})
@@ -541,7 +541,6 @@ func addRaydiumMarkets(providerToMarkets map[string]types.CurrencyPairsToProvide
 	providerToMarkets[raydium.Name] = make(types.CurrencyPairsToProviderTickers)
 	for _, pair := range raydiumPairs {
 		providerToMarkets[raydium.Name][pair.Cp] = types.DefaultProviderTicker{
-			Name:           raydium.Name,
 			OffChainTicker: pair.Cp.String(),
 			JSON:           marshalToJSONString(pair.TickerMetaData),
 		}

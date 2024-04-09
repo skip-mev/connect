@@ -25,7 +25,7 @@ var (
 	}
 
 	// Tickers used for testing.
-	wethusdcTicker = types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", wethusdcCfg.MustToJSON())
+	wethusdcTicker = types.NewProviderTicker("WETH/USDC", wethusdcCfg.MustToJSON())
 )
 
 func createPriceFetcher(

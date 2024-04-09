@@ -163,8 +163,8 @@ var (
 					Decimals:         8,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig.MustGetProviderConfig(constants.BITCOIN_USD),
-					okx.DefaultMarketConfig.MustGetProviderConfig(constants.BITCOIN_USD),
+					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.BITCOIN_USD),
+					okx.DefaultMarketConfig.MustGetProviderConfig(okx.Name, constants.BITCOIN_USD),
 				},
 			},
 			constants.ETHEREUM_USD.String(): {
@@ -174,8 +174,8 @@ var (
 					Decimals:         8,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig.MustGetProviderConfig(constants.ETHEREUM_USD),
-					okx.DefaultMarketConfig.MustGetProviderConfig(constants.ETHEREUM_USD),
+					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
+					okx.DefaultMarketConfig.MustGetProviderConfig(okx.Name, constants.ETHEREUM_USD),
 				},
 			},
 		},

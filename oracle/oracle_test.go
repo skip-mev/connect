@@ -66,8 +66,8 @@ func (s *OracleTestSuite) SetupTest() {
 	s.logger = zap.NewExample()
 
 	s.currencyPairs = []types.ProviderTicker{
-		types.NewProviderTicker("test", "BTC/USD", "{}"),
-		types.NewProviderTicker("test", "ETH/USD", "{}"),
-		types.NewProviderTicker("test", "ATOM/USD", "{}"),
+		types.NewProviderTicker("BTC/USD", "{}"),
+		types.NewProviderTicker("ETH/USD", "{}"),
+		types.NewProviderTicker("ATOM/USD", "{}"),
 	}
 }

@@ -37,7 +37,6 @@ func ProviderTickersFromMarketMap(
 			}
 
 			providerTicker := NewProviderTicker(
-				cfg.Name,
 				cfg.OffChainTicker,
 				cfg.Metadata_JSON,
 			)
@@ -78,10 +77,10 @@ func (tpt CurrencyPairsToProviderTickers) MustGetProviderTicker(cp pkgtypes.Curr
 
 // MustGetProviderConfig returns the provider config for the given currency pair.
 // This function is mostly used for testing.
-func (tpt CurrencyPairsToProviderTickers) MustGetProviderConfig(cp pkgtypes.CurrencyPair) mmtypes.ProviderConfig {
+func (tpt CurrencyPairsToProviderTickers) MustGetProviderConfig(name string, cp pkgtypes.CurrencyPair) mmtypes.ProviderConfig {
 	providerTicker := tpt.MustGetProviderTicker(cp)
 	return mmtypes.ProviderConfig{
-		Name:           providerTicker.GetProvider(),
+		Name:           name,
 		OffChainTicker: providerTicker.GetOffChainTicker(),
 		Metadata_JSON:  providerTicker.GetJSON(),
 	}

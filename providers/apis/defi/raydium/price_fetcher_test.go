@@ -182,17 +182,14 @@ func TestProviderFetch(t *testing.T) {
 
 	tickers := []types.DefaultProviderTicker{
 		{
-			Name:           raydium.Name,
 			OffChainTicker: "BTC/USDC",
 			JSON:           marshalDataToJSON(btcUSDCMetadata),
 		},
 		{
-			Name:           raydium.Name,
 			OffChainTicker: "ETH/USDT",
 			JSON:           marshalDataToJSON(ethUSDTMetadata),
 		},
 		{
-			Name:           raydium.Name,
 			OffChainTicker: "MOG/SOL",
 			JSON:           marshalDataToJSON(mogSOLMetadata),
 		},
@@ -257,7 +254,6 @@ func TestProviderFetch(t *testing.T) {
 		ctx := context.Background()
 
 		mogtia := types.DefaultProviderTicker{
-			Name:           raydium.Name,
 			OffChainTicker: "MOG/TIA",
 			JSON:           "{}",
 		}

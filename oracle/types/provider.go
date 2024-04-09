@@ -10,8 +10,6 @@ type (
 	ProviderTicker interface {
 		fmt.Stringer
 
-		// GetProvider returns the provider for the ticker.
-		GetProvider() string
 		// GetOffChainTicker returns the off-chain representation for the ticker.
 		GetOffChainTicker() string
 		// GetJSON returns additional JSON data for the ticker.
@@ -22,7 +20,6 @@ type (
 	// Provider's that utilize this implementation should be able to easily configure
 	// custom json data for their tickers.
 	DefaultProviderTicker struct {
-		Name           string
 		OffChainTicker string
 		JSON           string
 	}
@@ -37,18 +34,12 @@ type (
 
 // NewProviderTicker returns a new provider ticker.
 func NewProviderTicker(
-	provider, offChain, json string,
+	offChain, json string,
 ) ProviderTicker {
 	return DefaultProviderTicker{
-		Name:           provider,
 		OffChainTicker: offChain,
 		JSON:           json,
 	}
-}
-
-// Provider returns the provider for the ticker.
-func (t DefaultProviderTicker) GetProvider() string {
-	return t.Name
 }
 
 // OffChainTicker returns the off-chain representation for the ticker.
