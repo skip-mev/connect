@@ -211,7 +211,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 						Operations: []mmtypes.Operation{
 							{
 								Provider:     coinbaseapi.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+								CurrencyPair: constants.BITCOIN_USD,
 								Invert:       false,
 							},
 						},
@@ -220,7 +220,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 						Operations: []mmtypes.Operation{
 							{
 								Provider:     coinbasews.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
+								CurrencyPair: constants.BITCOIN_USD,
 								Invert:       false,
 							},
 						},

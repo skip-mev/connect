@@ -5,10 +5,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 )
 
 // Option is a function that can be used to configure an Oracle.
@@ -65,21 +65,8 @@ func WithMetricsConfig(config config.MetricsConfig) Option {
 	}
 }
 
-// WithAggregateFunction sets the aggregate function on the Oracle.
-func WithAggregateFunction(fn types.PriceAggregationFn) Option {
-	return func(o *OracleImpl) {
-		if fn == nil {
-			panic("cannot set aggregate function on nil aggregator")
-		}
-
-		o.priceAggregator = aggregator.NewDataAggregator(
-			aggregator.WithAggregateFn(fn),
-		)
-	}
-}
-
 // WithDataAggregator sets the data aggregator on the Oracle.
-func WithDataAggregator(agg types.PriceAggregator) Option {
+func WithDataAggregator(agg *oraclemath.MedianAggregator) Option {
 	return func(o *OracleImpl) {
 		if agg == nil {
 			panic("cannot set nil aggregator")

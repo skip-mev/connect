@@ -17,12 +17,11 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
-	"github.com/skip-mev/slinky/oracle/types"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -104,7 +103,7 @@ func runOracle() error {
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
-		marketCfg, err = types.ReadMarketConfigFromFile(marketCfgPath)
+		marketCfg, err = mmtypes.ReadMarketConfigFromFile(marketCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read market config file: %s", err.Error())
 		}

@@ -35,29 +35,29 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
-			result, ok := response[chain]
-			if !ok {
-				o.logger.Debug("market map provider response missing chain", zap.Any("chain", chain))
-				continue
-			}
+			// result, ok := response[chain]
+			// if !ok {
+			// 	o.logger.Debug("market map provider response missing chain", zap.Any("chain", chain))
+			// 	continue
+			// }
 
-			// Update the orchestrator with the latest market map iff the market map has changed.
-			updated := result.Value.MarketMap
-			if o.marketMap.Equal(updated) {
-				o.logger.Debug("market map has not changed")
-				continue
-			}
+			// // Update the orchestrator with the latest market map iff the market map has changed.
+			// updated := result.Value.MarketMap
+			// if o.marketMap.Equal(updated) {
+			// 	o.logger.Debug("market map has not changed")
+			// 	continue
+			// }
 
-			o.logger.Info("updating orchestrator with new market map")
-			if err := o.UpdateWithMarketMap(updated); err != nil {
-				o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
-				continue
-			}
+			// o.logger.Info("updating orchestrator with new market map")
+			// if err := o.UpdateWithMarketMap(updated); err != nil {
+			// 	o.logger.Error("failed to update orchestrator with new market map", zap.Error(err))
+			// 	continue
+			// }
 
-			// Write the market map to the configured path.
-			if err := o.WriteMarketMap(); err != nil {
-				o.logger.Error("failed to write market map", zap.Error(err))
-			}
+			// // Write the market map to the configured path.
+			// if err := o.WriteMarketMap(); err != nil {
+			// 	o.logger.Error("failed to write market map", zap.Error(err))
+			// }
 		}
 	}
 }

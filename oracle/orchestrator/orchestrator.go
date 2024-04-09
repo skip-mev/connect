@@ -13,7 +13,7 @@ import (
 	providermetrics "github.com/skip-mev/slinky/providers/base/metrics"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // ProviderOrchestrator is a stateful orchestrator that is responsible for maintaining

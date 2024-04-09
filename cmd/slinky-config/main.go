@@ -31,7 +31,7 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -400,57 +400,37 @@ func createMarketMap() error {
 	var (
 		// Tickers defines a map of tickers to their respective ticker configurations. This
 		// contains all of the tickers that are supported by the oracle.
-		tickers = make(map[string]mmtypes.Ticker)
-		// TickersToProviders defines a map of tickers to their respective providers. This
-		// contains all of the providers that are supported per ticker.
-		tickersToProviders = make(map[string]mmtypes.Providers)
-		tickersToPaths     = make(map[string]mmtypes.Paths)
+		marketMap = mmtypes.MarketMap{
+			Markets: make(map[string]mmtypes.Market),
+		}
 	)
 
 	// Iterate through all of the provider ticker configurations and update the
 	// tickers and tickers to providers maps.
-	for name, providerConfig := range ProviderToMarkets {
-		for ticker, config := range providerConfig {
-			tickerStr := ticker.String()
-
-			// Add the ticker to the tickers map iff the ticker does not already exist. If the
-			// ticker already exists, ensure that the ticker configuration is the same.
-			if t, ok := tickers[tickerStr]; !ok {
-				tickers[tickerStr] = ticker
-			} else if t != ticker {
-				return fmt.Errorf("ticker %s already exists with different configuration for provider %s", tickerStr, name)
+	for _, providerConfig := range ProviderToMarkets {
+		for cp, config := range providerConfig {
+			ticker := mmtypes.Ticker{
+				CurrencyPair:     cp,
+				Decimals:         18,
+				MinProviderCount: 1,
 			}
 
-			// Instantiate the providers for a given ticker.
-			if _, ok := tickersToProviders[tickerStr]; !ok {
-				tickersToProviders[tickerStr] = mmtypes.Providers{}
+			// Add the ticker to the tickers map iff the ticker does not already exist.
+			if _, ok := marketMap.Markets[ticker.String()]; !ok {
+				marketMap.Markets[ticker.String()] = mmtypes.Market{
+					Ticker:          ticker,
+					ProviderConfigs: make([]mmtypes.ProviderConfig, 0),
+				}
 			}
 
-			// Add the provider to the tickers to providers map.
-			providers := tickersToProviders[tickerStr].Providers
-			providers = append(providers, config)
-			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
-
-			if _, ok := tickersToPaths[tickerStr]; !ok {
-				tickersToPaths[tickerStr] = mmtypes.Paths{}
-			}
-			paths := tickersToPaths[tickerStr].Paths
-			paths = append(paths, mmtypes.Path{Operations: []mmtypes.Operation{
-				{
-					CurrencyPair: ticker.CurrencyPair,
-					Invert:       false,
-					Provider:     config.Name,
-				},
-			}})
-			tickersToPaths[tickerStr] = mmtypes.Paths{Paths: paths}
+			market := marketMap.Markets[ticker.String()]
+			market.ProviderConfigs = append(market.ProviderConfigs, mmtypes.ProviderConfig{
+				Name:           config.Name,
+				OffChainTicker: config.OffChainTicker,
+				Metadata_JSON:  config.JSON,
+			})
+			marketMap.Markets[ticker.String()] = market
 		}
-	}
-
-	// Create a new market map from the provider to market map.
-	marketMap := mmtypes.MarketMap{
-		Tickers:   tickers,
-		Providers: tickersToProviders,
-		Paths:     tickersToPaths,
 	}
 
 	// Validate the market map.

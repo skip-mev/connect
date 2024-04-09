@@ -7,8 +7,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
-	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 // UpdateWithMarketMap updates the orchestrator's market map and updates the providers'
@@ -25,7 +24,7 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 
 	// Iterate over all of the existing providers and update their market maps.
 	for name, state := range o.providers {
-		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(name, marketMap)
+		providerMarketMap, err := types.ProviderTickersFromMarketMap(name, marketMap)
 		if err != nil {
 			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
 			return err
@@ -51,35 +50,13 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 
 // UpdateProviderState updates the provider's state based on the market map. Specifically,
 // this will update the provider's query handler and the provider's market map.
-func (o *ProviderOrchestrator) UpdateProviderState(marketMap types.ProviderMarketMap, state ProviderState) (ProviderState, error) {
+func (o *ProviderOrchestrator) UpdateProviderState(tickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
-	tickers := marketMap.GetTickers()
 	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))
 
-	switch provider.Type() {
-	case providertypes.API:
-		// Create and update the API query handler.
-		handler, err := o.createAPIQueryHandler(state.Cfg, marketMap)
-		if err != nil {
-			return state, err
-		}
-
-		provider.Update(
-			base.WithNewAPIHandler(handler),
-			base.WithNewIDs[mmtypes.Ticker, *big.Int](marketMap.GetTickers()),
-		)
-	case providertypes.WebSockets:
-		// Create and update the WebSocket query handler.
-		handler, err := o.createWebSocketQueryHandler(state.Cfg, marketMap)
-		if err != nil {
-			return state, err
-		}
-
-		provider.Update(
-			base.WithNewWebSocketHandler(handler),
-			base.WithNewIDs[mmtypes.Ticker, *big.Int](marketMap.GetTickers()),
-		)
-	}
+	provider.Update(
+		base.WithNewIDs[types.ProviderTicker, *big.Float](tickers),
+	)
 
 	switch {
 	case len(tickers) == 0:
