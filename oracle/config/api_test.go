@@ -179,7 +179,7 @@ func TestAPIConfig(t *testing.T) {
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							APIKey:  "test",
+							APIKey: "test",
 						},
 					},
 				},
@@ -200,13 +200,13 @@ func TestAPIConfig(t *testing.T) {
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							APIKeyHeader:  "test",
+							APIKeyHeader: "test",
 						},
 					},
 				},
 				BatchSize: 1,
 			},
-			expectedErr: true,	
+			expectedErr: true,
 		},
 		{
 			name: "good config with valid endpoint",

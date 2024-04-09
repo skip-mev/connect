@@ -81,7 +81,7 @@ func (a Authentication) Enabled() bool {
 }
 
 // ValidateBasic performs basic validation of the API authentication. Specifically, the APIKey + APIKeyHeader
-// must be set atomically
+// must be set atomically.
 func (a Authentication) ValidateBasic() error {
 	if a.APIKey != "" && a.APIKeyHeader == "" {
 		return fmt.Errorf("api key header cannot be empty when api key is set")
