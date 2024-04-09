@@ -3,13 +3,21 @@ package raydium
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
+	"github.com/gagliardetto/solana-go/rpc/jsonrpc"
 	"go.uber.org/zap"
 
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
+)
+
+const (
+	// authenticationHeaderField is the header field used to store api-key for authentication.
+	authenticationHeaderField = "X-Api-Key"
 )
 
 // MultiJSONRPCClient is an implementation of the SolanaJSONRPCClient interface that delegates
@@ -30,13 +38,38 @@ func NewMultiJSONRPCClient(clients []SolanaJSONRPCClient, logger *zap.Logger) *M
 }
 
 // NewMultiJSONRPCClientFromEndpoints creates a new MultiJSONRPCClient from a list of endpoints.
-func NewMultiJSONRPCClientFromEndpoints(endpoints []oracleconfig.Endpoint, logger *zap.Logger) *MultiJSONRPCClient {
+func NewMultiJSONRPCClientFromEndpoints(endpoints []oracleconfig.Endpoint, logger *zap.Logger) (*MultiJSONRPCClient, error) {
 	clients := make([]SolanaJSONRPCClient, len(endpoints))
+
+	var err error
 	for i := range endpoints {
-		client := rpc.New(endpoints[i].URL)
-		clients[i] = client
+		clients[i], err = solanaClientFromEndpoint(endpoints[i])
+		if err != nil {
+			return nil, fmt.Errorf("failed to create solana client from endpoint: %w", err)
+		}
 	}
-	return NewMultiJSONRPCClient(clients, logger)
+
+	return NewMultiJSONRPCClient(clients, logger), nil
+}
+
+// solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
+func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClient, error) {
+	// if authentication is enabled
+	if endpoint.Authentication.Enabled {
+		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{
+			authenticationHeaderField: endpoint.Authentication.HTTPHeaderAPIKey,
+		}, http.DefaultTransport)
+
+		client := rpc.NewWithCustomRPCClient(jsonrpc.NewClientWithOpts(endpoint.URL, &jsonrpc.RPCClientOpts{
+			HTTPClient: &http.Client{
+				Transport: transport,
+			},
+		}))
+
+		return client, nil
+	} else {
+		return rpc.New(endpoint.URL), nil
+	}
 }
 
 // GetMultipleAccountsWithOpts delegates the request to all underlying clients and applies a filter

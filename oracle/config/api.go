@@ -50,6 +50,43 @@ type APIConfig struct {
 type Endpoint struct {
 	// URL is the URL that is used to fetch data from the API.
 	URL string `json:"url"`
+
+	// Authentication  is used to meta-data related to authentication for the API's
+	// endpoint.
+	Authentication Authentication `json:"authentication"`
+}
+
+// ValidateBasic performs basic validation of the API endpoint.
+func (e Endpoint) ValidateBasic() error {
+	if len(e.URL) == 0 {
+		return fmt.Errorf("endpoint url cannot be empty")
+	}
+
+	return e.Authentication.ValidateBasic()
+}
+
+// Authentication holds all data necessary for an API provider to authenticate with an
+// endpoint.
+type Authentication struct {
+	// Enabled is a flag that indicates whether the provider should authenticate with
+	// the endpoint.
+	Enabled bool `json:"enabled"`
+
+	// HTTPHeaderAPIKey is the API-key that will be set under the X-Api-Key header
+	HTTPHeaderAPIKey string `json:"httpHeaderAPIKey"`
+}
+
+// ValidateBasic performs basic validation of the API authentication.
+func (a Authentication) ValidateBasic() error {
+	if !a.Enabled {
+		return nil
+	}
+
+	if len(a.HTTPHeaderAPIKey) == 0 {
+		return fmt.Errorf("authentication http header api key cannot be empty")
+	}
+
+	return nil
 }
 
 // ValidateBasic performs basic validation of the API config.
@@ -76,6 +113,12 @@ func (c *APIConfig) ValidateBasic() error {
 
 	if c.BatchSize > 0 && c.Atomic {
 		return fmt.Errorf("batch size cannot be set for atomic providers")
+	}
+
+	for _, e := range c.Endpoints {
+		if err := e.ValidateBasic(); err != nil {
+			return err
+		}
 	}
 
 	return nil

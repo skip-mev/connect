@@ -148,6 +148,49 @@ func TestAPIConfig(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "bad config with invalid endpoint",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{
+					{
+						URL: "http://test.com",
+						Authentication: config.Authentication{
+							Enabled: true,
+						},
+					},
+				},
+				BatchSize:        1,	
+			},
+			expectedErr: true,
+		},
+		{
+			name: "good config with valid endpoint",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{
+					{
+						URL: "http://test.com",
+						Authentication: config.Authentication{
+							Enabled: true,
+							HTTPHeaderAPIKey: "test",
+						},
+					},
+				},
+				BatchSize:        1,	
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
