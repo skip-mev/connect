@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
 	"github.com/stretchr/testify/require"
+
+	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
 )
 
 func TestRoundTripperWithHeaders(t *testing.T) {
@@ -24,7 +25,7 @@ func TestRoundTripperWithHeaders(t *testing.T) {
 		Transport: rtWithHeaders,
 	}
 
-	req, err := http.NewRequest("GET", "http://test.com", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://test.com", nil)
 	require.NoError(t, err)
 
 	// Make the request

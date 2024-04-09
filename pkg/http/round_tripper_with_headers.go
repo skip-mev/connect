@@ -10,7 +10,7 @@ type RoundTripperWithHeaders struct {
 	headers map[string]string
 
 	// Next is the next round tripper in the chain.
-	next    http.RoundTripper
+	next http.RoundTripper
 }
 
 // NewRoundTripperWithHeaders creates a new RoundTripperWithHeaders.

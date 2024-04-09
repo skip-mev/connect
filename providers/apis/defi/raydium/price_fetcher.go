@@ -67,7 +67,7 @@ func NewAPIPriceFetcher(
 			client, err := NewMultiJSONRPCClientFromEndpoints(
 				config.Endpoints,
 				logger.With(zap.String("raydium_multi_client", Name)),
-			) 
+			)
 			if err != nil {
 				return nil, fmt.Errorf("error creating multi-client: %w", err)
 			}

@@ -67,9 +67,8 @@ func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClie
 		}))
 
 		return client, nil
-	} else {
-		return rpc.New(endpoint.URL), nil
 	}
+	return rpc.New(endpoint.URL), nil
 }
 
 // GetMultipleAccountsWithOpts delegates the request to all underlying clients and applies a filter

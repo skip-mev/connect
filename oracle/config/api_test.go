@@ -157,7 +157,7 @@ func TestAPIConfig(t *testing.T) {
 				ReconnectTimeout: time.Second,
 				MaxQueries:       1,
 				Name:             "test",
-				Endpoints:        []config.Endpoint{
+				Endpoints: []config.Endpoint{
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
@@ -165,7 +165,7 @@ func TestAPIConfig(t *testing.T) {
 						},
 					},
 				},
-				BatchSize:        1,	
+				BatchSize: 1,
 			},
 			expectedErr: true,
 		},
@@ -178,16 +178,16 @@ func TestAPIConfig(t *testing.T) {
 				ReconnectTimeout: time.Second,
 				MaxQueries:       1,
 				Name:             "test",
-				Endpoints:        []config.Endpoint{
+				Endpoints: []config.Endpoint{
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							Enabled: true,
+							Enabled:          true,
 							HTTPHeaderAPIKey: "test",
 						},
 					},
 				},
-				BatchSize:        1,	
+				BatchSize: 1,
 			},
 			expectedErr: false,
 		},
