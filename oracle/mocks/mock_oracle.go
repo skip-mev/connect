@@ -20,6 +20,10 @@ type Oracle struct {
 func (_m *Oracle) GetLastSyncTime() time.Time {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for GetLastSyncTime")
+	}
+
 	var r0 time.Time
 	if rf, ok := ret.Get(0).(func() time.Time); ok {
 		r0 = rf()
@@ -33,6 +37,10 @@ func (_m *Oracle) GetLastSyncTime() time.Time {
 // GetPrices provides a mock function with given fields:
 func (_m *Oracle) GetPrices() map[string]*big.Float {
 	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPrices")
+	}
 
 	var r0 map[string]*big.Float
 	if rf, ok := ret.Get(0).(func() map[string]*big.Float); ok {
@@ -50,6 +58,10 @@ func (_m *Oracle) GetPrices() map[string]*big.Float {
 func (_m *Oracle) IsRunning() bool {
 	ret := _m.Called()
 
+	if len(ret) == 0 {
+		panic("no return value specified for IsRunning")
+	}
+
 	var r0 bool
 	if rf, ok := ret.Get(0).(func() bool); ok {
 		r0 = rf()
@@ -63,6 +75,10 @@ func (_m *Oracle) IsRunning() bool {
 // Start provides a mock function with given fields: ctx
 func (_m *Oracle) Start(ctx context.Context) error {
 	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Start")
+	}
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context) error); ok {

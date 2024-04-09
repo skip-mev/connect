@@ -19,7 +19,7 @@ func NewQueryServer(k *Keeper) types.QueryServer {
 }
 
 // MarketMap returns the full MarketMap and associated information stored in the x/marketmap module.
-func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.GetMarketMapRequest) (*types.GetMarketMapResponse, error) {
+func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.MarketMapRequest) (*types.MarketMapResponse, error) {
 	if req == nil {
 		return nil, fmt.Errorf("request cannot be nil")
 	}
@@ -27,38 +27,59 @@ func (q queryServerImpl) MarketMap(goCtx context.Context, req *types.GetMarketMa
 	// unwrap the context
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	tickers, err := q.k.GetAllTickersMap(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	paths, err := q.k.GetAllPathsMap(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	providers, err := q.k.GetAllProvidersMap(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	params, err := q.k.GetParams(ctx)
+	markets, err := q.k.GetAllMarkets(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	lastUpdated, err := q.k.GetLastUpdated(ctx)
-	return &types.GetMarketMapResponse{
+	return &types.MarketMapResponse{
 			MarketMap: types.MarketMap{
-				Tickers:   tickers,
-				Paths:     paths,
-				Providers: providers,
+				Markets: markets,
 			},
+
 			LastUpdated: lastUpdated,
-			Version:     params.Version,
 			ChainId:     ctx.ChainID(),
 		},
 		err
+}
+
+// Market returns the requested market stored in the x/marketmap module.
+func (q queryServerImpl) Market(goCtx context.Context, req *types.MarketRequest) (*types.MarketResponse, error) {
+	if req == nil {
+		return nil, fmt.Errorf("request cannot be nil")
+	}
+
+	if err := req.CurrencyPair.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	// unwrap the context
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	market, err := q.k.GetMarket(ctx, req.CurrencyPair.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MarketResponse{Market: market}, nil
+}
+
+// LastUpdated returns the last height the marketmap was updated in the x/marketmap module.
+func (q queryServerImpl) LastUpdated(goCtx context.Context, req *types.LastUpdatedRequest) (*types.LastUpdatedResponse, error) {
+	if req == nil {
+		return nil, fmt.Errorf("request cannot be nil")
+	}
+
+	// unwrap the context
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	lastUpdated, err := q.k.lastUpdated.Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.LastUpdatedResponse{LastUpdated: lastUpdated}, nil
 }
 
 // Params returns the parameters stored in the x/marketmap module.
@@ -76,21 +97,4 @@ func (q queryServerImpl) Params(goCtx context.Context, req *types.ParamsRequest)
 	}
 
 	return &types.ParamsResponse{Params: params}, nil
-}
-
-// LastUpdated returns the last height the marketmap was updated in the x/marketmap module.
-func (q queryServerImpl) LastUpdated(goCtx context.Context, req *types.GetLastUpdatedRequest) (*types.GetLastUpdatedResponse, error) {
-	if req == nil {
-		return nil, fmt.Errorf("request cannot be nil")
-	}
-
-	// unwrap the context
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	lastUpdated, err := q.k.lastUpdated.Get(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.GetLastUpdatedResponse{LastUpdated: lastUpdated}, nil
 }

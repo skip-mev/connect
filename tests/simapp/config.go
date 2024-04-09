@@ -3,8 +3,6 @@ package simapp
 import (
 	"time"
 
-	"google.golang.org/protobuf/types/known/durationpb"
-
 	runtimev1alpha1 "cosmossdk.io/api/cosmos/app/runtime/v1alpha1"
 	appv1alpha1 "cosmossdk.io/api/cosmos/app/v1alpha1"
 	authmodulev1 "cosmossdk.io/api/cosmos/auth/module/v1"
@@ -24,6 +22,7 @@ import (
 	upgrademodulev1 "cosmossdk.io/api/cosmos/upgrade/module/v1"
 	vestingmodulev1 "cosmossdk.io/api/cosmos/vesting/module/v1"
 	"cosmossdk.io/depinject"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	alertmodulev1 "github.com/skip-mev/slinky/api/slinky/alerts/module/v1"
 	incentivesmodulev1 "github.com/skip-mev/slinky/api/slinky/incentives/module/v1"
@@ -46,7 +45,7 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/staking"      // import for side-effects
 
 	_ "github.com/skip-mev/slinky/x/incentives" // import for side-effects
-	_ "github.com/skip-mev/slinky/x/mm2"        // import for side-effects
+	_ "github.com/skip-mev/slinky/x/marketmap"  // import for side-effects
 	_ "github.com/skip-mev/slinky/x/oracle"     // import for side-effects
 
 	"cosmossdk.io/core/appconfig"
@@ -70,11 +69,11 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/mm2/module/v1"
+	marketmapmodulev1 "github.com/skip-mev/slinky/api/slinky/marketmap/module/v1"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	"github.com/skip-mev/slinky/x/alerts/types/strategies"
 	incentivetypes "github.com/skip-mev/slinky/x/incentives/types"
-	marketmaptypes "github.com/skip-mev/slinky/x/mm2/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 

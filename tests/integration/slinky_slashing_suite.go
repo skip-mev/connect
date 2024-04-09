@@ -6,8 +6,6 @@ import (
 	"math/big"
 	"strings"
 
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
-
 	"cosmossdk.io/math"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -22,6 +20,7 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 

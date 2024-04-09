@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	marketmaptypes "github.com/skip-mev/slinky/x/mm2/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
 )

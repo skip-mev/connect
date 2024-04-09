@@ -4,10 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/skip-mev/slinky/x/incentives"
-	marketmapmodule "github.com/skip-mev/slinky/x/mm2"
-	"github.com/skip-mev/slinky/x/sla"
-
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -19,7 +15,10 @@ import (
 
 	"github.com/skip-mev/slinky/tests/integration"
 	"github.com/skip-mev/slinky/x/alerts"
+	"github.com/skip-mev/slinky/x/incentives"
+	marketmapmodule "github.com/skip-mev/slinky/x/marketmap"
 	"github.com/skip-mev/slinky/x/oracle"
+	"github.com/skip-mev/slinky/x/sla"
 )
 
 var (

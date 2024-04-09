@@ -14,7 +14,7 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestUpdateWithMarketMap(t *testing.T) {

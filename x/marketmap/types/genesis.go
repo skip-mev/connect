@@ -26,9 +26,7 @@ func (gs *GenesisState) ValidateBasic() error {
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
 		MarketMap: MarketMap{
-			Tickers:   make(map[string]Ticker),
-			Paths:     make(map[string]Paths),
-			Providers: make(map[string]Providers),
+			Markets: make(map[string]Market),
 		},
 		LastUpdated: 0,
 		Params:      DefaultParams(),

@@ -9,7 +9,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestGetProviderPrice(t *testing.T) {

@@ -18,7 +18,7 @@ import (
 	"github.com/spf13/cobra"
 
 	oraclemodulev1 "github.com/skip-mev/slinky/api/slinky/oracle/module/v1"
-	marketmaptypes "github.com/skip-mev/slinky/x/mm2/types"
+	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/skip-mev/slinky/x/oracle/client/cli"
 	"github.com/skip-mev/slinky/x/oracle/keeper"
 	"github.com/skip-mev/slinky/x/oracle/types"
