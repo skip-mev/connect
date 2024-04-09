@@ -97,7 +97,7 @@
       "api": {
         "enabled": true,
         "timeout": 500000000,
-        "interval": 5000000000,
+        "interval": 20000000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": false,
