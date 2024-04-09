@@ -316,10 +316,8 @@ func createOracleConfig() error {
 	if strings.ToLower(chain) == constants.DYDX {
 		// Filter out the providers that are not supported by the dYdX chain.
 		validProviders := make(map[string]struct{})
-		for _, providers := range dydx.ProviderMapping {
-			for _, provider := range providers {
-				validProviders[provider] = struct{}{}
-			}
+		for _, slinkyProvider := range dydx.ProviderMapping {
+			validProviders[slinkyProvider] = struct{}{}
 		}
 
 		ps := make([]config.ProviderConfig, 0)
