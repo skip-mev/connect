@@ -282,7 +282,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           static.Name,
-								OffChainTicker: "1140",
+								OffChainTicker: ethusdc.String(),
 								Metadata_JSON:  `{"price": 1.1}`,
 							},
 						},
@@ -508,7 +508,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
-							OffChainTicker: "1140",
+							OffChainTicker: ethusdc.String(),
 							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
@@ -521,7 +521,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
-							OffChainTicker: "1141",
+							OffChainTicker: ethusdt.String(),
 							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
@@ -534,7 +534,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
-							OffChainTicker: "1142",
+							OffChainTicker: ethusd.String(),
 							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
@@ -619,7 +619,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
-							OffChainTicker: "1140",
+							OffChainTicker: ethusdc.String(),
 							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
@@ -632,7 +632,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
-							OffChainTicker: "1141",
+							OffChainTicker: ethusdt.String(),
 							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
