@@ -68,10 +68,6 @@ func (e Endpoint) ValidateBasic() error {
 // Authentication holds all data necessary for an API provider to authenticate with an
 // endpoint.
 type Authentication struct {
-	// Enabled is a flag that indicates whether the provider should authenticate with
-	// the endpoint.
-	Enabled bool `json:"enabled"`
-
 	// HTTPHeaderAPIKey is the API-key that will be set under the X-Api-Key header
 	APIKey string `json:"apiKey"`
 
@@ -79,18 +75,20 @@ type Authentication struct {
 	APIKeyHeader string `json:"apiKeyHeader"`
 }
 
-// ValidateBasic performs basic validation of the API authentication.
+// Enabled returns true if the authentication is enabled.
+func (a Authentication) Enabled() bool {
+	return a.APIKey != "" && a.APIKeyHeader != ""
+}
+
+// ValidateBasic performs basic validation of the API authentication. Specifically, the APIKey + APIKeyHeader
+// must be set atomically
 func (a Authentication) ValidateBasic() error {
-	if !a.Enabled {
-		return nil
+	if a.APIKey != "" && a.APIKeyHeader == "" {
+		return fmt.Errorf("api key header cannot be empty when api key is set")
 	}
 
-	if len(a.APIKey) == 0 {
-		return fmt.Errorf("authentication http header api key cannot be empty")
-	}
-
-	if len(a.APIKeyHeader) == 0 {
-		return fmt.Errorf("authentication api key header cannot be empty")
+	if a.APIKey == "" && a.APIKeyHeader != "" {
+		return fmt.Errorf("api key cannot be empty when api key header is set")
 	}
 
 	return nil

@@ -41,7 +41,6 @@ func TestMultiJSONRPCClient(t *testing.T) {
 				{
 					URL: "http://localhost:8899/",
 					Authentication: oracleconfig.Authentication{
-						Enabled:      true,
 						APIKey:       "test",
 						APIKeyHeader: "X-API-Key",
 					},

@@ -55,7 +55,7 @@ func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClie
 	}
 
 	// if authentication is enabled
-	if endpoint.Authentication.Enabled {
+	if endpoint.Authentication.Enabled() {
 		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{
 			endpoint.Authentication.APIKeyHeader: endpoint.Authentication.APIKey,
 		}, http.DefaultTransport)

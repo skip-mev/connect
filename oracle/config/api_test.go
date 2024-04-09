@@ -167,27 +167,6 @@ func TestAPIConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with invalid endpoint authentication (API key missing)",
-			config: config.APIConfig{
-				Enabled:          true,
-				Timeout:          time.Second,
-				Interval:         time.Second,
-				ReconnectTimeout: time.Second,
-				MaxQueries:       1,
-				Name:             "test",
-				Endpoints: []config.Endpoint{
-					{
-						URL: "http://test.com",
-						Authentication: config.Authentication{
-							Enabled: true,
-						},
-					},
-				},
-				BatchSize: 1,
-			},
-			expectedErr: true,
-		},
-		{
 			name: "bad config with invalid endpoint authentication (HTTP header field missing)",
 			config: config.APIConfig{
 				Enabled:          true,
@@ -200,7 +179,6 @@ func TestAPIConfig(t *testing.T) {
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							Enabled: true,
 							APIKey:  "test",
 						},
 					},
@@ -208,6 +186,27 @@ func TestAPIConfig(t *testing.T) {
 				BatchSize: 1,
 			},
 			expectedErr: true,
+		},
+		{
+			name: "bad config with invalid endpoint authentication (API-key field missing)",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "http://test.com",
+						Authentication: config.Authentication{
+							APIKeyHeader:  "test",
+						},
+					},
+				},
+				BatchSize: 1,
+			},
+			expectedErr: true,	
 		},
 		{
 			name: "good config with valid endpoint",
@@ -222,7 +221,6 @@ func TestAPIConfig(t *testing.T) {
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							Enabled:      true,
 							APIKey:       "test",
 							APIKeyHeader: "X-API-KEY",
 						},
