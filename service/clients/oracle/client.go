@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -111,10 +112,6 @@ func (c *GRPCClient) Start(ctx context.Context) error {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	if c.blockingDial {
-		opts = append(opts, grpc.WithBlock())
-	}
-
 	// dial the client, but defer to context closure, if necessary
 	var (
 		conn *grpc.ClientConn
@@ -123,7 +120,17 @@ func (c *GRPCClient) Start(ctx context.Context) error {
 	)
 	go func() {
 		defer close(done)
-		conn, err = grpc.DialContext(ctx, c.addr, opts...)
+		conn, err = grpc.NewClient(c.addr, opts...)
+
+		// attempt to connect + wait for change in connection state
+		if c.blockingDial {
+			// connect
+			conn.Connect()
+
+			if err == nil {
+				conn.WaitForStateChange(ctx, connectivity.Ready)
+			}
+		}
 	}()
 
 	// wait for either the context to close or the dial to complete

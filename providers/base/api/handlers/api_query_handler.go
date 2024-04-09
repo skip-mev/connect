@@ -66,16 +66,21 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 	apiHandler APIDataHandler[K, V],
 	metrics metrics.APIMetrics,
 ) (APIQueryHandler[K, V], error) {
-	priceFetcher, err := NewRestAPIFetcher(requestHandler, apiHandler, metrics, cfg, logger)
+	fetcher, err := NewRestAPIFetcher(requestHandler, apiHandler, metrics, cfg, logger)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create price fetcher: %w", err)
+		return nil, fmt.Errorf("failed to create api fetcher: %w", err)
 	}
 
-	return NewAPIQueryHandlerWithPriceFetcher(logger, cfg, priceFetcher, metrics)
+	return &APIQueryHandlerImpl[K, V]{
+		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
+		config:  cfg,
+		metrics: metrics,
+		fetcher: fetcher,
+	}, nil
 }
 
-// NewAPIQueryHandlerWithPriceFetcher creates a new APIQueryHandler with a custom price fetcher.
-func NewAPIQueryHandlerWithPriceFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue](
+// NewAPIQueryHandlerWithFetcher creates a new APIQueryHandler with a custom api fetcher.
+func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue](
 	logger *zap.Logger,
 	cfg config.APIConfig,
 	fetcher APIFetcher[K, V],
@@ -96,6 +101,11 @@ func NewAPIQueryHandlerWithPriceFetcher[K providertypes.ResponseKey, V providert
 	if metrics == nil {
 		return nil, fmt.Errorf("no metrics specified for api query handler")
 	}
+
+	if fetcher == nil {
+		return nil, fmt.Errorf("no fetcher specified for api query handler")
+	}
+
 	return &APIQueryHandlerImpl[K, V]{
 		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
 		config:  cfg,
@@ -222,9 +232,9 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 
 	// Update the metrics.
 	for id := range response.Resolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.Success)
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), providertypes.OK)
 	}
-	for id, err := range response.UnResolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), metrics.StatusFromError(err))
+	for id, unresolvedResult := range response.UnResolved {
+		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), unresolvedResult.Code())
 	}
 }
