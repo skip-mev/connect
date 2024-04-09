@@ -53,7 +53,7 @@ func (v *APIHandler) ParseResponse(tickers []types.ProviderTicker, _ *http.Respo
 
 	volatilePrice := GetVolatilePrice(time.Now, Amplitude, Offset, Frequency)
 	for _, ticker := range tickers {
-		resolved[ticker] = types.NewPriceResult(volatilePrice, time.Now())
+		resolved[ticker] = types.NewPriceResult(volatilePrice, time.Now().UTC())
 	}
 
 	return types.NewPriceResponse(resolved, unresolved)

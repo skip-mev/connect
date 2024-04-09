@@ -3,26 +3,36 @@ package oracle
 import (
 	"fmt"
 	"math/big"
+	"sync"
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
 	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
+var _ types.PriceAggregator = &MedianAggregator{}
+
 // MedianAggregator is an aggregator that calculates the median price for each ticker,
 // resolved from a predefined set of conversion markets. A conversion market is a set of
 // markets that can be used to convert the prices of a set of tickers to a common ticker.
 // These are defined in the market map configuration.
 type MedianAggregator struct {
-	*aggregator.DataAggregator[string, types.AggregatorPrices]
-	logger      *zap.Logger
-	cfg         mmtypes.MarketMap
-	metrics     oraclemetrics.Metrics
+	mtx     sync.Mutex
+	logger  *zap.Logger
+	cfg     mmtypes.MarketMap
+	metrics oraclemetrics.Metrics
+
+	// indexPrices cache the median prices for each ticker. These are unscaled prices.
 	indexPrices types.AggregatorPrices
+	// scaledPrices cache the scaled prices for each ticker. These are the prices that can be
+	// consumed by external providers.
+	scaledPrices types.AggregatorPrices
+	// providerPrices cache the unscaled prices for each provider. These are indexed by
+	// provider -> offChainTicker -> price.
+	providerPrices types.AggregatedProviderPrices
 }
 
 // NewMedianAggregator returns a new Median aggregator.
@@ -48,8 +58,9 @@ func NewMedianAggregator(
 		logger:         logger,
 		cfg:            cfg,
 		metrics:        metrics,
-		DataAggregator: aggregator.NewDataAggregator[string, types.AggregatorPrices](),
 		indexPrices:    make(types.AggregatorPrices),
+		scaledPrices:   make(types.AggregatorPrices),
+		providerPrices: make(types.AggregatedProviderPrices),
 	}, nil
 }
 
@@ -63,11 +74,13 @@ func NewMedianAggregator(
 //
 // The index price cache contains the previously calculated median prices.
 func (m *MedianAggregator) AggregateData() {
-	cfg := m.GetMarketMap()
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
 	indexPrices := make(types.AggregatorPrices)
 	scaledPrices := make(types.AggregatorPrices)
 
-	for ticker, market := range cfg.Markets {
+	for ticker, market := range m.cfg.Markets {
 		// Get the converted prices for set of convertable markets.
 		// ex. BTC/USDT * Index USDT/USD = BTC/USD
 		//     BTC/USDC * Index USDC/USD = BTC/USD
@@ -110,8 +123,9 @@ func (m *MedianAggregator) AggregateData() {
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
-	m.SetPrices(indexPrices, scaledPrices)
 	m.logger.Info("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
+	m.indexPrices = indexPrices
+	m.scaledPrices = scaledPrices
 }
 
 // CalculateConvertedPrices calculates the converted prices for a given set of paths and target ticker.

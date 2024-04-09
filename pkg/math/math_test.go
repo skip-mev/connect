@@ -250,9 +250,15 @@ func TestFloat64StringToBigFloat(t *testing.T) {
 			err:  false,
 		},
 		{
-			name: "value that has more 0s than decimals",
+			name: "value has a lot of 0s",
 			in:   "0.0000000000000001", // 1e-16
 			out:  big.NewFloat(1e-16),
+			err:  false,
+		},
+		{
+			name: "value is very large",
+			in:   "420420420420420.420420420",
+			out:  big.NewFloat(420420420420420.420420420),
 			err:  false,
 		},
 	}
@@ -264,7 +270,7 @@ func TestFloat64StringToBigFloat(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, tc.out.SetPrec(uint(20)), out.SetPrec(uint(20)))
+				require.Equal(t, tc.out.SetPrec(uint(40)), out.SetPrec(uint(40)))
 			}
 		})
 	}
@@ -295,12 +301,18 @@ func TestScaleBigFloat(t *testing.T) {
 			decimals: 6,
 			out:      big.NewFloat(1e-10),
 		},
+		{
+			name:     "value is very large",
+			in:       big.NewFloat(420420420420420.420420420),
+			decimals: 6,
+			out:      big.NewFloat(420420420420420.420420420e6),
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			out := math.ScaleBigFloat(tc.in, tc.decimals)
-			require.Equal(t, tc.out.SetPrec(uint(20)), out.SetPrec(uint(20)))
+			require.Equal(t, tc.out.SetPrec(uint(40)), out.SetPrec(uint(40)))
 		})
 	}
 }

@@ -72,7 +72,7 @@ func APIQueryHandlerFactory(
 			return nil, err
 		}
 
-		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, metrics, cfg.API, ethClient)
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler = static.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()

@@ -80,23 +80,8 @@ func TestGetVolatilePrice(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		var tolerance = big.NewFloat(0.0001)
-
-		check := cmp.Comparer(func(x, y *big.Float) bool {
-			diff := big.NewFloat(0)
-			diff.Sub(x, y)
-			diff.Abs(diff)
-			mean := big.NewFloat(0)
-			mean.Add(x, y)
-			mean.Quo(mean, big.NewFloat(2.0))
-
-			value := diff.Quo(diff, mean)
-			c := value.Cmp(tolerance)
-			return c != 1
-		})
-
 		t.Run(tc.name, func(t *testing.T) {
-			require.True(t, cmp.Equal(tc.expectedPrice, volatile.GetVolatilePrice(tc.tp, tc.amplitude, tc.offset, tc.frequency), check))
+			require.Equal(t, tc.expectedPrice.SetPrec(40), volatile.GetVolatilePrice(tc.tp, tc.amplitude, tc.offset, tc.frequency).SetPrec(40))
 		})
 	}
 }
