@@ -180,7 +180,7 @@ func (p *Provider[K, V]) recv(ctx context.Context) {
 
 			// Log and record all the unresolved data.
 			for id, result := range unResolved {
-				p.logger.Debug(
+				p.logger.Error(
 					"failed to fetch data",
 					zap.Any("id", id),
 					zap.Error(fmt.Errorf("%s", result.Error())),
