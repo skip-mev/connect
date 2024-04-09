@@ -9,10 +9,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/median"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 )
 
@@ -24,7 +22,7 @@ var _ Oracle = (*OracleImpl)(nil)
 type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
-	GetPrices() types.TickerPrices
+	GetPrices() types.AggregatorPrices
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -76,12 +74,9 @@ type OracleImpl struct { //nolint
 // price across all providers.
 func New(opts ...Option) (*OracleImpl, error) {
 	o := &OracleImpl{
-		closer:  ssync.NewCloser(),
-		logger:  zap.NewNop(),
-		metrics: oraclemetrics.NewNopMetrics(),
-		priceAggregator: types.NewPriceAggregator(
-			aggregator.WithAggregateFn(median.ComputeMedian()),
-		),
+		closer:         ssync.NewCloser(),
+		logger:         zap.NewNop(),
+		metrics:        oraclemetrics.NewNopMetrics(),
 		updateInterval: 1 * time.Second,
 		maxCacheAge:    time.Minute, // default max cache age is 1 minute
 	}
@@ -204,7 +199,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 		return
 	}
 
-	timeFilteredPrices := make(types.TickerPrices)
+	timeFilteredPrices := make(types.AggregatorPrices)
 	for pair, result := range prices {
 		// If the price is older than the maxCacheAge, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
@@ -227,7 +222,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 			zap.String("price", result.Value.String()),
 			zap.Duration("diff", diff),
 		)
-		timeFilteredPrices[pair] = result.Value
+		timeFilteredPrices[pair.GetOffChainTicker()] = result.Value
 	}
 
 	o.logger.Info("provider returned prices",
@@ -255,7 +250,7 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *OracleImpl) GetPrices() types.TickerPrices {
+func (o *OracleImpl) GetPrices() types.AggregatorPrices {
 	prices := o.priceAggregator.GetAggregatedData()
 	return prices
 }

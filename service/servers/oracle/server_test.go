@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/skip-mev/slinky/oracle/mocks"
+	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	client "github.com/skip-mev/slinky/service/clients/oracle"
 	"github.com/skip-mev/slinky/service/metrics"
@@ -140,9 +141,9 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 		Decimals: 8,
 	}
 
-	s.mockOracle.On("GetPrices").Return(map[mmtypes.Ticker]*big.Int{
-		cp1: big.NewInt(100),
-		cp2: big.NewInt(200),
+	s.mockOracle.On("GetPrices").Return(types.AggregatorPrices{
+		cp1.String(): big.NewFloat(100.1),
+		cp2.String(): big.NewFloat(200.1),
 	})
 	ts := time.Now()
 	s.mockOracle.On("GetLastSyncTime").Return(ts)

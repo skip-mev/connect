@@ -11,24 +11,24 @@ import (
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math/median"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func (s *OracleTestSuite) TestProviders() {
 	testCases := []struct {
 		name           string
 		factory        types.PriceProviderFactoryI
-		expectedPrices types.TickerPrices
+		expectedPrices types.AggregatorPrices
 	}{
 		{
 			name: "1 provider with no prices",
 			factory: func(
 				config.OracleConfig,
 			) ([]types.PriceProviderI, error) {
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -40,7 +40,7 @@ func (s *OracleTestSuite) TestProviders() {
 				providers := []types.PriceProviderI{provider}
 				return providers, nil
 			},
-			expectedPrices: types.TickerPrices{},
+			expectedPrices: types.AggregatorPrices{},
 		},
 		{
 			name: "1 provider with prices",
@@ -49,13 +49,13 @@ func (s *OracleTestSuite) TestProviders() {
 			) ([]types.PriceProviderI, error) {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
-						Value:     big.NewInt(100),
+						Value:     big.NewFloat(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
+				responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -67,8 +67,8 @@ func (s *OracleTestSuite) TestProviders() {
 				providers := []types.PriceProviderI{provider}
 				return providers, nil
 			},
-			expectedPrices: types.TickerPrices{
-				s.currencyPairs[0]: big.NewInt(100),
+			expectedPrices: types.AggregatorPrices{
+				s.currencyPairs[0].String(): big.NewFloat(100),
 			},
 		},
 		{
@@ -78,13 +78,13 @@ func (s *OracleTestSuite) TestProviders() {
 			) ([]types.PriceProviderI, error) {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
-						Value:     big.NewInt(100),
+						Value:     big.NewFloat(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
+				responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -95,13 +95,13 @@ func (s *OracleTestSuite) TestProviders() {
 
 				resolved2 := types.ResolvedPrices{
 					s.currencyPairs[0]: {
-						Value:     big.NewInt(200),
+						Value:     big.NewFloat(200),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response2 := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved2, nil)
-				responses2 := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response2}
-				provider2 := testutils.CreateWebSocketProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				response2 := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved2, nil)
+				responses2 := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response2}
+				provider2 := testutils.CreateWebSocketProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					time.Second*2,
 					s.currencyPairs,
@@ -113,8 +113,8 @@ func (s *OracleTestSuite) TestProviders() {
 				providers := []types.PriceProviderI{provider, provider2}
 				return providers, nil
 			},
-			expectedPrices: types.TickerPrices{
-				s.currencyPairs[0]: big.NewInt(150),
+			expectedPrices: types.AggregatorPrices{
+				s.currencyPairs[0].String(): big.NewFloat(150),
 			},
 		},
 		{
@@ -124,13 +124,13 @@ func (s *OracleTestSuite) TestProviders() {
 			) ([]types.PriceProviderI, error) {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
-						Value:     big.NewInt(100),
+						Value:     big.NewFloat(100),
 						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
+				responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -142,8 +142,8 @@ func (s *OracleTestSuite) TestProviders() {
 				providers := []types.PriceProviderI{provider, s.noStartProvider("provider2")}
 				return providers, nil
 			},
-			expectedPrices: types.TickerPrices{
-				s.currencyPairs[0]: big.NewInt(100),
+			expectedPrices: types.AggregatorPrices{
+				s.currencyPairs[0].String(): big.NewFloat(100),
 			},
 		},
 		{
@@ -153,13 +153,13 @@ func (s *OracleTestSuite) TestProviders() {
 			) ([]types.PriceProviderI, error) {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
-						Value:     big.NewInt(100),
+						Value:     big.NewFloat(100),
 						Timestamp: time.Date(1738, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				}
-				response := providertypes.NewGetResponse[mmtypes.Ticker, *big.Int](resolved, nil)
-				responses := []providertypes.GetResponse[mmtypes.Ticker, *big.Int]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[mmtypes.Ticker, *big.Int](
+				response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
+				responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
+				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
 					providerCfg1,
@@ -171,7 +171,7 @@ func (s *OracleTestSuite) TestProviders() {
 				providers := []types.PriceProviderI{provider}
 				return providers, nil
 			},
-			expectedPrices: types.TickerPrices{},
+			expectedPrices: types.AggregatorPrices{},
 		},
 	}
 
@@ -197,6 +197,7 @@ func (s *OracleTestSuite) TestProviders() {
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
+				oracle.WithAggregateFunction(median.ComputeMedian()),
 			)
 			s.Require().NoError(err)
 
@@ -234,7 +235,7 @@ func (s *OracleTestSuite) TestProviders() {
 }
 
 func (s *OracleTestSuite) noStartProvider(name string) types.PriceProviderI {
-	provider := providermocks.NewProvider[mmtypes.Ticker, *big.Int](s.T())
+	provider := providermocks.NewProvider[types.ProviderTicker, *big.Float](s.T())
 
 	provider.On("Name").Return(name).Maybe()
 	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz start")).Maybe()

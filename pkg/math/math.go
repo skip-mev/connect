@@ -1,7 +1,9 @@
 package math
 
 import (
+	"fmt"
 	"math/big"
+	"sort"
 
 	"golang.org/x/exp/constraints"
 )
@@ -75,4 +77,80 @@ func BigFloatToBigInt(f *big.Float, decimals uint64) *big.Int {
 	f.Int(result) // store converted number in result
 
 	return result
+}
+
+// Float64StringToBigFloat converts a float64 string to a big.Float.
+func Float64StringToBigFloat(s string) (*big.Float, error) {
+	bigFloat := new(big.Float)
+	_, ok := bigFloat.SetString(s)
+	if !ok {
+		return nil, fmt.Errorf("failed to set big.Float from string: %s", s)
+	}
+	return bigFloat, nil
+}
+
+// ScaleBigFloat scales a big.Float by the given decimals.
+func ScaleBigFloat(f *big.Float, decimals uint64) *big.Float {
+	bigFloat := new(big.Float)
+	factor := big.NewInt(1).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)
+	bigFloat.SetInt(factor)
+
+	f.Mul(f, bigFloat)
+
+	return f
+}
+
+// SortBigFloats is a stable slices sort for an array of big.Floats.
+func SortBigFloats(values []*big.Float) {
+	// Sort the values.
+	sort.SliceStable(values, func(i, j int) bool {
+		switch values[i].Cmp(values[j]) {
+		case -1:
+			return true
+		case 1:
+			return false
+		default:
+			return true
+		}
+	})
+}
+
+// CalculateMedian calculates the median from a list of big.Float. Returns an
+// average if the number of values is even.
+func CalculateMedian(values []*big.Float) *big.Float {
+	if len(values) == 0 {
+		return nil
+	}
+	SortBigFloats(values)
+
+	middleIndex := len(values) / 2
+
+	// Calculate the median.
+	numValues := len(values)
+	var median *big.Float
+	if numValues%2 == 0 { // even
+		median = new(big.Float).Add(values[middleIndex-1], values[middleIndex])
+		median = median.Quo(median, new(big.Float).SetUint64(2))
+	} else { // odd
+		median = values[middleIndex]
+	}
+
+	return median
+}
+
+// GetScalingFactor returns the scaling factor for the price based on the difference between
+// the token decimals in the erc20 token contracts or similar.
+func GetScalingFactor(
+	first, second int64,
+) *big.Float {
+	// Determine the scaling factor for the price.
+	decimalDiff := first - second
+	exp := new(big.Float).SetInt(
+		new(big.Int).Exp(big.NewInt(10), big.NewInt(Abs(decimalDiff)), nil),
+	)
+
+	if decimalDiff > 0 {
+		return exp
+	}
+	return new(big.Float).Quo(big.NewFloat(1), exp)
 }

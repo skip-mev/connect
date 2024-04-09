@@ -15,7 +15,6 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestInit(t *testing.T) {
@@ -63,20 +62,45 @@ func TestInit(t *testing.T) {
 		state := o.GetProviderState()
 		require.Equal(t, len(state), len(oracleCfg.Providers))
 
-		expectedTickers := []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}
-
 		coinbaseState, ok := state[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, false, coinbaseState)
+		checkProviderState(
+			t,
+			[]oracletypes.ProviderTicker{
+				coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD),
+				coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD),
+			},
+			coinbase.Name,
+			providertypes.API,
+			false,
+			coinbaseState,
+		)
 
 		okxState, ok := state[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, false, okxState)
+		checkProviderState(
+			t,
+			[]oracletypes.ProviderTicker{
+				okx.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD),
+				okx.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD),
+			},
+			okx.Name,
+			providertypes.WebSockets,
+			false,
+			okxState,
+		)
 
 		// Ensure that the provider that is not supported by the marketmap is not enabled.
 		binanceState, ok := state[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
+		checkProviderState(
+			t,
+			nil,
+			binance.Name,
+			providertypes.API,
+			false,
+			binanceState,
+		)
 	})
 
 	t.Run("errors when the API query handler factory is not set", func(t *testing.T) {

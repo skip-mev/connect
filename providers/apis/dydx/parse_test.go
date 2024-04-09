@@ -7,13 +7,12 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
-	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
+	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
@@ -22,18 +21,15 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 	testCases := []struct {
 		name     string
 		params   dydxtypes.QueryAllMarketParamsResponse
-		expected mmtypes.GetMarketMapResponse
+		expected mmtypes.MarketMapResponse
 		err      bool
 	}{
 		{
 			name:   "empty market params",
 			params: dydxtypes.QueryAllMarketParamsResponse{},
-			expected: mmtypes.GetMarketMapResponse{
+			expected: mmtypes.MarketMapResponse{
 				MarketMap: mmtypes.MarketMap{
-					Tickers:         make(map[string]mmtypes.Ticker),
-					Providers:       make(map[string]mmtypes.Providers),
-					Paths:           make(map[string]mmtypes.Paths),
-					AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,
+					Markets: make(map[string]mmtypes.Market),
 				},
 			},
 			err: false,
@@ -69,28 +65,27 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			resp, err := dydx.ConvertMarketParamsToMarketMap(tc.params, zap.NewNop())
+			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
+			require.NoError(t, err)
+
+			resp, err := handler.ConvertMarketParamsToMarketMap(tc.params)
 			if tc.err {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, len(tc.expected.MarketMap.Tickers), len(resp.MarketMap.Tickers))
-				require.Equal(t, tc.expected.MarketMap.Tickers, resp.MarketMap.Tickers)
-
-				require.Equal(t, len(tc.expected.MarketMap.Providers), len(resp.MarketMap.Providers))
-				require.Equal(t, tc.expected.MarketMap.Providers, resp.MarketMap.Providers)
-
-				require.Equal(t, len(tc.expected.MarketMap.Paths), len(resp.MarketMap.Paths))
-				require.Equal(t, tc.expected.MarketMap.Paths, resp.MarketMap.Paths)
+				require.Equal(t, tc.expected, resp)
 			}
 		})
 	}
 }
 
 func TestCreateCurrencyPairFromMarket(t *testing.T) {
+	handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
+	require.NoError(t, err)
+
 	t.Run("good ticker", func(t *testing.T) {
 		pair := "BTC-USD"
-		cp, err := dydx.CreateCurrencyPairFromPair(pair)
+		cp, err := handler.CreateCurrencyPairFromPair(pair)
 		require.NoError(t, err)
 		require.Equal(t, cp.Base, "BTC")
 		require.Equal(t, cp.Quote, "USD")
@@ -98,13 +93,13 @@ func TestCreateCurrencyPairFromMarket(t *testing.T) {
 
 	t.Run("bad ticker", func(t *testing.T) {
 		pair := "BTCUSD"
-		_, err := dydx.CreateCurrencyPairFromPair(pair)
+		_, err := handler.CreateCurrencyPairFromPair(pair)
 		require.Error(t, err)
 	})
 
 	t.Run("lower casing still corrects", func(t *testing.T) {
 		pair := "btc-usd"
-		cp, err := dydx.CreateCurrencyPairFromPair(pair)
+		cp, err := handler.CreateCurrencyPairFromPair(pair)
 		require.NoError(t, err)
 		require.Equal(t, cp.Base, "BTC")
 		require.Equal(t, cp.Quote, "USD")
@@ -166,7 +161,10 @@ func TestCreateTickerFromMarket(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			ticker, err := dydx.CreateTickerFromMarket(tc.market)
+			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
+			require.NoError(t, err)
+
+			ticker, err := handler.CreateTickerFromMarket(tc.market)
 			if tc.err {
 				require.Error(t, err)
 			} else {
@@ -180,19 +178,12 @@ func TestCreateTickerFromMarket(t *testing.T) {
 func TestConvertExchangeConfigJSON(t *testing.T) {
 	testCases := []struct {
 		name              string
-		ticker            mmtypes.Ticker
 		config            dydxtypes.ExchangeConfigJson
-		expectedPaths     mmtypes.Paths
-		expectedProviders mmtypes.Providers
+		expectedProviders []mmtypes.ProviderConfig
 		expectedErr       bool
 	}{
 		{
 			name: "handles duplicate configs",
-			ticker: mmtypes.Ticker{
-				CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
-				Decimals:         8,
-				MinProviderCount: 3,
-			},
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -205,45 +196,16 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedPaths: mmtypes.Paths{
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbaseapi.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbasews.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-				},
-			},
-			expectedProviders: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           coinbaseapi.Name,
-						OffChainTicker: "BTC-USD",
-					},
-					{
-						Name:           coinbasews.Name,
-						OffChainTicker: "BTC-USD",
-					},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           coinbaseapi.Name,
+					OffChainTicker: "BTC-USD",
 				},
 			},
 			expectedErr: false,
 		},
 		{
-			name:   "single direct path with no inversion",
-			ticker: constants.BITCOIN_USD,
+			name: "single direct path with no inversion",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -252,45 +214,16 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedPaths: mmtypes.Paths{
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbaseapi.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbasews.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-				},
-			},
-			expectedProviders: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           coinbaseapi.Name,
-						OffChainTicker: "BTC-USD",
-					},
-					{
-						Name:           coinbasews.Name,
-						OffChainTicker: "BTC-USD",
-					},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           coinbaseapi.Name,
+					OffChainTicker: "BTC-USD",
 				},
 			},
 			expectedErr: false,
 		},
 		{
-			name:   "single direct path with inversion",
-			ticker: constants.USDT_USD,
+			name: "single direct path with inversion",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -300,32 +233,17 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedPaths: mmtypes.Paths{
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     okx.Name,
-								CurrencyPair: constants.USDT_USD.CurrencyPair,
-								Invert:       true,
-							},
-						},
-					},
-				},
-			},
-			expectedProviders: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           okx.Name,
-						OffChainTicker: "USDC-USDT",
-					},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           okx.Name,
+					OffChainTicker: "USDC-USDT",
+					Invert:         true,
 				},
 			},
 			expectedErr: false,
 		},
 		{
-			name:   "single indirect path with an adjustable market",
-			ticker: constants.BITCOIN_USD,
+			name: "single indirect path with an adjustable market",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -335,37 +253,20 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedPaths: mmtypes.Paths{
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     okx.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: constants.USDT_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-				},
-			},
-			expectedProviders: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           okx.Name,
-						OffChainTicker: "BTC-USDT",
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           okx.Name,
+					OffChainTicker: "BTC-USDT",
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "USDT",
+						Quote: "USD",
 					},
 				},
 			},
 			expectedErr: false,
 		},
 		{
-			name:   "single indirect path with an adjustable market and inversion that does not match the ticker",
-			ticker: constants.USDT_USD,
+			name: "single indirect path with an adjustable market and inversion that does not match the ticker",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -376,32 +277,21 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedPaths: mmtypes.Paths{
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kucoin.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       true,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           kucoin.Name,
+					OffChainTicker: "BTC-USDT",
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "BTC",
+						Quote: "USD",
 					},
+					Invert: true,
 				},
-			},
-			expectedProviders: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{},
 			},
 			expectedErr: false,
 		},
 		{
-			name:   "invalid adjust by market",
-			ticker: constants.BITCOIN_USD,
+			name: "invalid adjust by market",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -411,13 +301,11 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedPaths:     mmtypes.Paths{},
-			expectedProviders: mmtypes.Providers{},
+			expectedProviders: []mmtypes.ProviderConfig{},
 			expectedErr:       true,
 		},
 		{
-			name:   "invalid exchange name",
-			ticker: constants.BITCOIN_USD,
+			name: "invalid exchange name - should ignore",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
 					{
@@ -425,53 +313,37 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 						Ticker:       "BTC-USD",
 					},
 					{
-						ExchangeName:   "CoinbasePro",
-						Ticker:         "BTC-USD",
+						ExchangeName: "CoinbasePro",
+						Ticker:       "BTC-USD",
+					},
+				},
+			},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           coinbaseapi.Name,
+					OffChainTicker: "BTC-USD",
+				},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "exchange that includes a denom that needs to be converted",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName:   "Mexc",
+						Ticker:         "ETH_USDT",
 						AdjustByMarket: "USDT-USD",
 					},
 				},
 			},
-			expectedPaths: mmtypes.Paths{
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbaseapi.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: constants.USDT_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbasews.Name,
-								CurrencyPair: constants.BITCOIN_USD.CurrencyPair,
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: constants.USDT_USD.CurrencyPair,
-								Invert:       false,
-							},
-						},
-					},
-				},
-			},
-			expectedProviders: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           coinbaseapi.Name,
-						OffChainTicker: "BTC-USD",
-					},
-					{
-						Name:           coinbasews.Name,
-						OffChainTicker: "BTC-USD",
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           mexc.Name,
+					OffChainTicker: "ETHUSDT",
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "USDT",
+						Quote: "USD",
 					},
 				},
 			},
@@ -481,19 +353,18 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			paths, providers, err := dydx.ConvertExchangeConfigJSON(tc.ticker, tc.config, zap.NewNop())
+			handler, err := dydx.NewAPIHandler(zap.NewNop(), dydx.DefaultAPIConfig)
+			require.NoError(t, err)
+
+			providers, err := handler.ConvertExchangeConfigJSON(tc.config)
 			if tc.expectedErr {
 				require.Error(t, err)
 				return
 			}
 
-			require.Equal(t, len(tc.expectedPaths.Paths), len(paths.Paths))
-			require.Equal(t, len(tc.expectedProviders.Providers), len(providers.Providers))
+			require.Equal(t, len(tc.expectedProviders), len(providers))
 
-			if len(tc.expectedPaths.Paths) > 0 {
-				require.Equal(t, tc.expectedPaths, paths)
-			}
-			if len(tc.expectedProviders.Providers) > 0 {
+			if len(tc.expectedProviders) > 0 {
 				require.Equal(t, tc.expectedProviders, providers)
 			}
 		})

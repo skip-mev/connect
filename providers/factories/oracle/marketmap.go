@@ -40,7 +40,7 @@ func MarketMapProviderFactory(
 
 	switch cfg.Name {
 	case dydx.Name:
-		apiDataHandler, err = dydx.NewAPIHandler(cfg.API, logger)
+		apiDataHandler, err = dydx.NewAPIHandler(logger, cfg.API)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
 		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
@@ -65,11 +65,11 @@ func MarketMapProviderFactory(
 	}
 
 	return types.NewMarketMapProvider(
-		base.WithName[types.Chain, *mmtypes.GetMarketMapResponse](cfg.Name),
-		base.WithLogger[types.Chain, *mmtypes.GetMarketMapResponse](logger),
+		base.WithName[types.Chain, *mmtypes.MarketMapResponse](cfg.Name),
+		base.WithLogger[types.Chain, *mmtypes.MarketMapResponse](logger),
 		base.WithAPIQueryHandler(queryHandler),
-		base.WithAPIConfig[types.Chain, *mmtypes.GetMarketMapResponse](cfg.API),
-		base.WithMetrics[types.Chain, *mmtypes.GetMarketMapResponse](providerMetrics),
-		base.WithIDs[types.Chain, *mmtypes.GetMarketMapResponse](ids),
+		base.WithAPIConfig[types.Chain, *mmtypes.MarketMapResponse](cfg.API),
+		base.WithMetrics[types.Chain, *mmtypes.MarketMapResponse](providerMetrics),
+		base.WithIDs[types.Chain, *mmtypes.MarketMapResponse](ids),
 	)
 }
