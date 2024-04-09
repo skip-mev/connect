@@ -54,11 +54,27 @@ type APIPriceFetcher struct {
 func NewAPIPriceFetcher(
 	config config.APIConfig,
 	logger *zap.Logger,
+	opts ...Option,
 ) (*APIPriceFetcher, error) {
+	// use a multi-client if multiple endpoints are provided
+	if len(config.Endpoints) > 0 {
+		if len(config.Endpoints) > 1 {
+			opts = append(opts, WithSolanaClient(
+				NewMultiJSONRPCClientFromEndpoints(
+					config.Endpoints,
+					logger.With(zap.String("raydium_multi_client", Name)),
+				),
+			))
+		} else {
+			config.URL = config.Endpoints[0].URL
+		}
+	}
+
 	return NewAPIPriceFetcherWithClient(
 		config,
 		rpc.New(config.URL),
 		logger,
+		opts...,
 	)
 }
 
@@ -69,6 +85,7 @@ func NewAPIPriceFetcherWithClient(
 	config config.APIConfig,
 	client SolanaJSONRPCClient,
 	logger *zap.Logger,
+	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	if err := config.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
@@ -89,7 +106,13 @@ func NewAPIPriceFetcherWithClient(
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
 		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
-	}, nil
+	}
+
+	for _, opt := range opts {
+		opt(pf)
+	}
+
+	return pf, nil
 }
 
 // FetchPrices fetches prices from the solana JSON-RPC API for the given currency-pairs. Specifically
@@ -125,6 +148,9 @@ func (pf *APIPriceFetcher) Fetch(
 	// We assume that the solana JSON-RPC response returns all accounts in the order
 	// that they were queried, there is not a very good way to handle if this order is incorrect
 	// or verify that the order is correct, as there is no way to correlate account data <> address
+	ctx, cancel := context.WithTimeout(ctx, pf.config.Timeout)
+	defer cancel()
+
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
 		Commitment: rpc.CommitmentFinalized,
 		// TODO(nikhil): Keep track of latest height queried as well?

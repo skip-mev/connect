@@ -13,6 +13,7 @@ import (
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/programs/token"
 	"github.com/gagliardetto/solana-go/rpc"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
@@ -206,7 +207,7 @@ func TestProviderFetch(t *testing.T) {
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
 		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
-		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
+		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
 			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
@@ -228,12 +229,11 @@ func TestProviderFetch(t *testing.T) {
 	t.Run("failing accounts query", func(t *testing.T) {
 		ctx := context.Background()
 		err := fmt.Errorf("error")
-
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
 		ethVaultPk := solana.MustPublicKeyFromBase58(ETHVaultAddress)
 		usdtVaultPk := solana.MustPublicKeyFromBase58(USDTVaultAddress)
-		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
+		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
 			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
@@ -303,7 +303,7 @@ func TestProviderFetch(t *testing.T) {
 		}
 		solTokenVaultMetadata.MarshalWithEncoder(solEnc)
 
-		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
+		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
 			btcVaultPk, usdcVaultPk, ethVaultPk, usdtVaultPk, mogVaultPk, solVaultPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,
@@ -347,7 +347,7 @@ func TestProviderFetch(t *testing.T) {
 		btcVaultPk := solana.MustPublicKeyFromBase58(BTCVaultAddress)
 		usdcVaultPk := solana.MustPublicKeyFromBase58(USDCVaultAddress)
 
-		client.On("GetMultipleAccountsWithOpts", ctx, []solana.PublicKey{
+		client.On("GetMultipleAccountsWithOpts", mock.Anything, []solana.PublicKey{
 			btcVaultPk, usdcVaultPk,
 		}, &rpc.GetMultipleAccountsOpts{
 			Commitment: rpc.CommitmentFinalized,

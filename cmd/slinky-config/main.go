@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -12,9 +13,11 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	raydium "github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
@@ -32,6 +35,11 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+)
+
+const (
+	// raydiumPairsFixture is the path to the fixture file containing all raydium markets.
+	raydiumPairsFixture = "./cmd/slinky-config/fixtures/raydium_pairs.json"
 )
 
 var (
@@ -78,6 +86,12 @@ var (
 	updateInterval time.Duration
 	// maxPriceAge is the maximum age of a price that the oracle will accept.
 	maxPriceAge time.Duration
+
+	// raydium-enabled determine whether or not the raydium defi provider will be configured.
+	raydiumEnabled bool
+
+	// solana node url is the solana node that the raydium provider will connect to.
+	solanaNodeURLs []string
 
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
@@ -301,6 +315,20 @@ func init() {
 		2*time.Minute,
 		"Maximum age of a price that the oracle will accept. This should be set to the maximum age desired by the chain.",
 	)
+	rootCmd.Flags().BoolVarP(
+		&raydiumEnabled,
+		"raydium-enabled",
+		"",
+		false,
+		"whether or not to enable raydium support",
+	)
+	rootCmd.Flags().StringSliceVarP(
+		&solanaNodeURLs,
+		"solana-node-endpoint",
+		"",
+		nil,
+		"The HTTP endpoints of the solana node endpoint the raydium provider will be configured to use. If multiple are given they must be comma delimited",
+	)
 }
 
 // main executes a simple script that encodes the local config file to the local
@@ -340,6 +368,22 @@ func createOracleConfig() error {
 			Type: mmclienttypes.ConfigType,
 		})
 		LocalOracleConfig.Providers = ps
+	}
+
+	// add raydium provider to the list of providers if enabled
+	if raydiumEnabled {
+		cfg := raydium.DefaultAPIConfig
+		for _, node := range solanaNodeURLs {
+			cfg.Endpoints = append(cfg.Endpoints, config.Endpoint{
+				URL: node,
+			})
+		}
+
+		LocalOracleConfig.Providers = append(LocalOracleConfig.Providers, config.ProviderConfig{
+			Name: raydium.Name,
+			API:  cfg,
+			Type: types.ConfigType,
+		})
 	}
 
 	// Set the host and port for the oracle.
@@ -403,6 +447,11 @@ func createMarketMap() error {
 		}
 	)
 
+	// if raydium is enabled, configure the raydium markets based on the local raydium_pairs fixture
+	if raydiumEnabled {
+		ProviderToMarkets = addRaydiumMarkets(ProviderToMarkets)
+	}
+
 	// Iterate through all of the provider ticker configurations and update the
 	// tickers and tickers to providers maps.
 	for _, providerConfig := range ProviderToMarkets {
@@ -460,4 +509,61 @@ func createMarketMap() error {
 
 	fmt.Fprintf(os.Stdout, "successfully created market config file at %s\n", marketCfgPath)
 	return nil
+}
+
+type TickerMetaData struct {
+	Cp             slinkytypes.CurrencyPair `json:"currency_pair"`
+	TickerMetaData raydium.TickerMetadata   `json:"ticker_metadata"`
+}
+
+func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.ProviderConfig) map[string]map[mmtypes.Ticker]mmtypes.ProviderConfig {
+	// read the raydium_pairs fixture
+	if !raydiumEnabled {
+		return providerToMarkets
+	}
+
+	// read the raydium_pairs fixture
+	file, err := os.Open(raydiumPairsFixture)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error reading raydium_pairs fixture: %v\n", err)
+		return providerToMarkets
+	}
+	defer file.Close()
+
+	bz, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error reading raydium_pairs fixture: %v\n", err)
+		return providerToMarkets
+	}
+
+	var raydiumPairs []TickerMetaData
+	if err := json.Unmarshal(bz, &raydiumPairs); err != nil {
+		fmt.Fprintf(os.Stderr, "error unmarshalling raydium_pairs fixture: %v\n", err)
+		return providerToMarkets
+	}
+
+	// add the raydium markets to the provider to markets map
+	providerToMarkets[raydium.Name] = make(map[mmtypes.Ticker]mmtypes.ProviderConfig)
+	for _, pair := range raydiumPairs {
+		providerToMarkets[raydium.Name][mmtypes.Ticker{
+			CurrencyPair:     pair.Cp,
+			Decimals:         18,
+			MinProviderCount: 1,
+			Enabled:          true,
+			Metadata_JSON:    marshalToJSONString(pair.TickerMetaData),
+		}] = mmtypes.ProviderConfig{
+			Name:           raydium.Name,
+			OffChainTicker: pair.Cp.String(),
+		}
+	}
+
+	return providerToMarkets
+}
+
+func marshalToJSONString(obj interface{}) string {
+	bz, err := json.Marshal(obj)
+	if err != nil {
+		panic(err)
+	}
+	return string(bz)
 }
