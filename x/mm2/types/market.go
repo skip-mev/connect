@@ -12,6 +12,7 @@ import (
 //	   markets are supported by the market map.
 //	2. Ensure that each provider config has a valid corresponding ticker.
 func (mm *MarketMap) ValidateBasic() error {
+	uniqueOffChainTickers := make(map[string]string)
 	for _, market := range mm.Markets {
 		if err := market.ValidateBasic(); err != nil {
 			return err
@@ -22,6 +23,16 @@ func (mm *MarketMap) ValidateBasic() error {
 				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
 					return fmt.Errorf("provider's (%s) pair for normalization (%s) was not found in the marketmap", providerConfig.Name, providerConfig.NormalizeByPair.String())
 				}
+			}
+
+			// Each off-chain ticker should have a unique json representation if it is not empty.
+			key := providerConfig.Name + providerConfig.OffChainTicker
+			if metadata, found := uniqueOffChainTickers[key]; found {
+				if metadata != providerConfig.Metadata_JSON {
+					return fmt.Errorf("duplicate off-chain ticker for a provider was found with different metadata: %s", key)
+				}
+			} else {
+				uniqueOffChainTickers[key] = providerConfig.Metadata_JSON
 			}
 		}
 	}

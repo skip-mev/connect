@@ -24,14 +24,14 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 
 	// Iterate over all of the existing providers and update their market maps.
 	for name, state := range o.providers {
-		providerMarketMap, err := types.ProviderTickersFromMarketMap(name, marketMap)
+		providerTickers, err := types.ProviderTickersFromMarketMap(name, marketMap)
 		if err != nil {
 			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
 			return err
 		}
 
 		// Update the provider's state.
-		updatedState, err := o.UpdateProviderState(providerMarketMap, state)
+		updatedState, err := o.UpdateProviderState(providerTickers, state)
 		if err != nil {
 			o.logger.Error("failed to update provider state", zap.String("provider", name), zap.Error(err))
 			return err
@@ -50,16 +50,16 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 
 // UpdateProviderState updates the provider's state based on the market map. Specifically,
 // this will update the provider's query handler and the provider's market map.
-func (o *ProviderOrchestrator) UpdateProviderState(tickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
+func (o *ProviderOrchestrator) UpdateProviderState(providerTickers []types.ProviderTicker, state ProviderState) (ProviderState, error) {
 	provider := state.Provider
 
 	o.logger.Info("updating provider state", zap.String("provider_state", provider.Name()))
-	provider.Update(base.WithNewIDs[types.ProviderTicker, *big.Float](tickers))
+	provider.Update(base.WithNewIDs[types.ProviderTicker, *big.Float](providerTickers))
 
 	switch {
-	case len(tickers) == 0:
+	case len(providerTickers) == 0:
 		provider.Stop()
-	case len(tickers) > 0 && !provider.IsRunning():
+	case len(providerTickers) > 0 && !provider.IsRunning():
 		o.wg.Add(1)
 		go func() {
 			defer o.wg.Done()

@@ -103,7 +103,7 @@ func runOracle() error {
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
-		marketCfg, err = mmtypes.ReadMarketConfigFromFile(marketCfgPath)
+		marketCfg, err = mmtypes.ReadMarketMapFromFile(marketCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read market config file: %s", err.Error())
 		}

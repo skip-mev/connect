@@ -264,6 +264,79 @@ func TestMarketMapValidateBasic(t *testing.T) {
 			},
 			expectErr: false,
 		},
+		{
+			name: "duplicate tickers seen across markets, same provider is valid",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           coinbase.Name,
+								OffChainTicker: "BTC-USD",
+							},
+						},
+					},
+					constants.USDT_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.USDT_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:            coinbase.Name,
+								OffChainTicker:  "BTC-USD",
+								Invert:          true,
+								NormalizeByPair: &constants.BITCOIN_USD,
+							},
+						},
+					},
+				},
+			},
+			expectErr: false,
+		},
+		{
+			name: "duplicate tickers seen across markets with different metadata, same provider is not valid",
+			marketMap: types.MarketMap{
+				Markets: map[string]types.Market{
+					constants.BITCOIN_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.BITCOIN_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           coinbase.Name,
+								OffChainTicker: "BTC-USD",
+							},
+						},
+					},
+					constants.USDT_USD.String(): {
+						Ticker: types.Ticker{
+							CurrencyPair:     constants.USDT_USD,
+							Decimals:         8,
+							MinProviderCount: 1,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:            coinbase.Name,
+								OffChainTicker:  "BTC-USD",
+								Invert:          true,
+								NormalizeByPair: &constants.BITCOIN_USD,
+								Metadata_JSON:   `{"key": "value"}`,
+							},
+						},
+					},
+				},
+			},
+			expectErr: true,
+		},
 	}
 
 	for _, tc := range testCases {

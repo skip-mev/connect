@@ -344,7 +344,11 @@ func TestCalculateConvertedPrices(t *testing.T) {
 			tc.malleate(m)
 
 			// Calculate the converted prices.
-			prices := m.CalculateConvertedPrices(tc.target, tc.cfgs)
+			market := mmtypes.Market{
+				Ticker:          tc.target,
+				ProviderConfigs: tc.cfgs,
+			}
+			prices := m.CalculateConvertedPrices(market)
 			require.Len(t, prices, len(tc.expectedPrices))
 			if len(tc.expectedPrices) == 0 {
 				require.Empty(t, prices)
