@@ -200,8 +200,8 @@ func TestAPIConfig(t *testing.T) {
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							Enabled:          true,
-							APIKey: "test",
+							Enabled: true,
+							APIKey:  "test",
 						},
 					},
 				},
@@ -222,8 +222,8 @@ func TestAPIConfig(t *testing.T) {
 					{
 						URL: "http://test.com",
 						Authentication: config.Authentication{
-							Enabled:          true,
-							APIKey: "test",
+							Enabled:      true,
+							APIKey:       "test",
 							APIKeyHeader: "X-API-KEY",
 						},
 					},

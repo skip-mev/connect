@@ -49,6 +49,11 @@ func NewMultiJSONRPCClientFromEndpoints(endpoints []oracleconfig.Endpoint, logge
 
 // solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
 func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClient, error) {
+	// fail if the endpoint is invalid
+	if err := endpoint.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
+	}
+
 	// if authentication is enabled
 	if endpoint.Authentication.Enabled {
 		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{
