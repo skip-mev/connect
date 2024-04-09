@@ -4,26 +4,13 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/rpc"
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-)
-
-const (
-	// precision is the precision used for big.Float calculations. Specifically
-	// this is used to ensure that float values are the same within a certain
-	// precision.
-	precision = 30
-
-	// acceptableDelta is the acceptable difference between the expected and actual price.
-	// In this case, we use a delta of 1e-8. This means we will accept any price that is
-	// within 1e-8 of the expected price.
-	acceptableDelta = 1e-8
 )
 
 var (
@@ -39,14 +26,7 @@ var (
 	}
 
 	// Tickers used for testing.
-	weth_usdc_ticker = mmtypes.Ticker{ //nolint
-		CurrencyPair: pkgtypes.CurrencyPair{
-			Base:  "WETH",
-			Quote: "USDC",
-		},
-		Decimals:      18,
-		Metadata_JSON: weth_usdc_cfg.MustToJSON(),
-	}
+	weth_usdc_ticker = types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", weth_usdc_cfg.MustToJSON())
 )
 
 func createPriceFetcher(

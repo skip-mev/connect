@@ -122,3 +122,20 @@ func CalculateMedian(values []*big.Float) *big.Float {
 
 	return median
 }
+
+// GetScalingFactor returns the scaling factor for the price based on the difference between
+// the token decimals in the erc20 token contracts or similar.
+func GetScalingFactor(
+	first, second int64,
+) *big.Float {
+	// Determine the scaling factor for the price.
+	decimalDiff := first - second
+	exp := new(big.Float).SetInt(
+		new(big.Int).Exp(big.NewInt(10), big.NewInt(Abs(decimalDiff)), nil),
+	)
+
+	if decimalDiff > 0 {
+		return exp
+	}
+	return new(big.Float).Quo(big.NewFloat(1), exp)
+}

@@ -420,3 +420,35 @@ func TestSortBigInts(t *testing.T) {
 		})
 	}
 }
+
+func TestGetScalingFactor(t *testing.T) {
+	t.Run("base and quote decimals for erc20 tokens are the same", func(t *testing.T) {
+		actual := math.GetScalingFactor(
+			18,
+			18,
+		)
+
+		expected := big.NewFloat(1)
+		require.Equal(t, expected.SetPrec(40), actual.SetPrec(40))
+	})
+
+	t.Run("base decimals are greater than quote decimals for erc20 tokens", func(t *testing.T) {
+		actual := math.GetScalingFactor(
+			18,
+			6,
+		)
+
+		expected := big.NewFloat(1e12)
+		require.Equal(t, expected.SetPrec(40), actual.SetPrec(40))
+	})
+
+	t.Run("quote decimals are greater than base decimals for erc20 tokens", func(t *testing.T) {
+		actual := math.GetScalingFactor(
+			6,
+			18,
+		)
+
+		expected := big.NewFloat(1e-12)
+		require.Equal(t, expected.SetPrec(40), actual.SetPrec(40))
+	})
+}

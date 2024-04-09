@@ -18,7 +18,6 @@ import (
 	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIFetcher = (*PriceFetcher)(nil)
@@ -48,7 +47,7 @@ type PriceFetcher struct {
 	payload []byte
 	// poolCache is a cache of the tickers to pool configs. This is used to avoid unmarshalling
 	// the metadata for each ticker.
-	poolCache map[mmtypes.Ticker]PoolConfig
+	poolCache map[types.ProviderTicker]PoolConfig
 }
 
 // NewPriceFetcher returns a new Uniswap V3 price fetcher.
@@ -95,7 +94,7 @@ func NewPriceFetcher(
 		client:    client,
 		abi:       abi,
 		payload:   payload,
-		poolCache: make(map[mmtypes.Ticker]PoolConfig),
+		poolCache: make(map[types.ProviderTicker]PoolConfig),
 	}, nil
 }
 
@@ -105,7 +104,7 @@ func NewPriceFetcher(
 // contract, specifically the sqrtPriceX96 value.
 func (u *PriceFetcher) Fetch(
 	ctx context.Context,
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) types.PriceResponse {
 	start := time.Now()
 	defer func() {
@@ -210,9 +209,8 @@ func (u *PriceFetcher) Fetch(
 		price := ConvertSquareRootX96Price(sqrtPriceX96)
 
 		// Scale the price to the respective token decimals.
-		scaledPrice := ScalePrice(ticker, pools[i], price)
-		intPrice, _ := scaledPrice.Int(nil)
-		resolved[ticker] = types.NewPriceResult(intPrice, time.Now())
+		scaledPrice := ScalePrice(pools[i], price)
+		resolved[ticker] = types.NewPriceResult(scaledPrice, time.Now())
 	}
 
 	// Add the price to the resolved prices.
@@ -222,14 +220,14 @@ func (u *PriceFetcher) Fetch(
 // GetPool returns the uniswap pool for the given ticker. This will unmarshal the metadata
 // and validate the pool config which contains all required information to query the EVM.
 func (u *PriceFetcher) GetPool(
-	ticker mmtypes.Ticker,
+	ticker types.ProviderTicker,
 ) (PoolConfig, error) {
 	if pool, ok := u.poolCache[ticker]; ok {
 		return pool, nil
 	}
 
 	var cfg PoolConfig
-	if err := json.Unmarshal([]byte(ticker.Metadata_JSON), &cfg); err != nil {
+	if err := json.Unmarshal([]byte(ticker.GetJSON()), &cfg); err != nil {
 		return cfg, fmt.Errorf("failed to unmarshal pool config on ticker: %w", err)
 	}
 	if err := cfg.ValidateBasic(); err != nil {

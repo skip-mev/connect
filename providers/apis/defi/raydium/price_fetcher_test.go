@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"strings"
 	"testing"
 	"time"
@@ -339,7 +340,7 @@ func TestProviderFetch(t *testing.T) {
 
 		require.True(t, strings.Contains(resp.UnResolved[tickers[0]].Error(), "solana json-rpc error"))
 		result := resp.Resolved[tickers[1]]
-		require.Equal(t, result.Value.SetPrec(18), uint64(3e8))
+		require.Equal(t, result.Value.SetPrec(30), big.NewFloat(3e-12).SetPrec(30))
 	})
 
 	t.Run("incorrectly encoded accounts are handled gracefully", func(t *testing.T) {

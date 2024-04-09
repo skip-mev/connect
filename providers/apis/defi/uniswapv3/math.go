@@ -4,8 +4,6 @@ import (
 	"math/big"
 
 	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // ConvertSquareRootX96Price converts the slot 0 sqrtPriceX96 value to a price. Note that this
@@ -34,43 +32,19 @@ func ConvertSquareRootX96Price(
 // the token decimals in the erc20 token contracts. The price is then scaled to the desired
 // ticker decimals. The price is inverted if the configuration specifies to do so.
 func ScalePrice(
-	ticker mmtypes.Ticker,
 	cfg PoolConfig,
 	price *big.Float,
 ) *big.Float {
 	// Adjust the price based on the difference between the token decimals in the erc20 token contracts.
-	erc20ScalingFactor := GetScalingFactor(
+	erc20ScalingFactor := math.GetScalingFactor(
 		cfg.BaseDecimals,
 		cfg.QuoteDecimals,
 	)
 
 	// Invert the price if the configuration specifies to do so.
-	var scaledERC20AdjustedPrice *big.Float
 	if cfg.Invert {
-		scaledERC20AdjustedPrice = new(big.Float).Quo(price, erc20ScalingFactor)
-		scaledERC20AdjustedPrice = new(big.Float).Quo(big.NewFloat(1), scaledERC20AdjustedPrice)
-	} else {
-		scaledERC20AdjustedPrice = new(big.Float).Mul(price, erc20ScalingFactor)
+		scaledERC20AdjustedPrice := new(big.Float).Quo(price, erc20ScalingFactor)
+		return new(big.Float).Quo(big.NewFloat(1), scaledERC20AdjustedPrice)
 	}
-
-	one := new(big.Float).SetInt(oracle.ScaledOne(ticker.Decimals))
-	return new(big.Float).Mul(scaledERC20AdjustedPrice, one)
-}
-
-// GetScalingFactor returns the scaling factor for the price based on the difference between
-// the token decimals in the erc20 token contracts. Please read over the Uniswap V3 math primer
-// for more information on how this is utilized.
-func GetScalingFactor(
-	first, second int64,
-) *big.Float {
-	// Determine the scaling factor for the price.
-	decimalDiff := first - second
-	exp := new(big.Float).SetInt(
-		new(big.Int).Exp(big.NewInt(10), big.NewInt(math.Abs(decimalDiff)), nil),
-	)
-
-	if decimalDiff > 0 {
-		return exp
-	}
-	return new(big.Float).Quo(big.NewFloat(1), exp)
+	return new(big.Float).Mul(price, erc20ScalingFactor)
 }

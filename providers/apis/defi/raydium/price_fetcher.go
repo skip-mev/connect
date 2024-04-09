@@ -13,9 +13,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/types"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
-	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
+	"github.com/skip-mev/slinky/pkg/math"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -101,7 +100,7 @@ func NewAPIPriceFetcherWithClient(
 	}
 
 	// generate metadata per ticker
-	return &APIPriceFetcher{
+	pf := &APIPriceFetcher{
 		config:            config,
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
@@ -122,8 +121,8 @@ func NewAPIPriceFetcherWithClient(
 //   - Calculate the price as quote / base, and scale by ticker.Decimals
 func (pf *APIPriceFetcher) Fetch(
 	ctx context.Context,
-	tickers []types.ProviderTicker,
-) types.PriceResponse {
+	tickers []oracletypes.ProviderTicker,
+) oracletypes.PriceResponse {
 	// get the acounts to query in order of the tickers given
 	expectedNumAccounts := len(tickers) * 2
 	accounts := make([]solana.PublicKey, expectedNumAccounts)
@@ -131,7 +130,7 @@ func (pf *APIPriceFetcher) Fetch(
 	for i, ticker := range tickers {
 		metadata, err := pf.updateMetaDataCache(ticker)
 		if err != nil {
-			return types.NewPriceResponseWithErr(
+			return oracletypes.NewPriceResponseWithErr(
 				tickers,
 				providertypes.NewErrorWithCode(
 					NoRaydiumMetadataForTickerError(ticker.String()),
@@ -156,7 +155,7 @@ func (pf *APIPriceFetcher) Fetch(
 		// TODO(nikhil): Keep track of latest height queried as well?
 	})
 	if err != nil {
-		return types.NewPriceResponseWithErr(
+		return oracletypes.NewPriceResponseWithErr(
 			tickers,
 			providertypes.NewErrorWithCode(
 				SolanaJSONRPCError(err),
@@ -167,7 +166,7 @@ func (pf *APIPriceFetcher) Fetch(
 
 	// expect a base / quote vault account for each ticker queried
 	if len(accountsResp.Value) != expectedNumAccounts {
-		return types.NewPriceResponseWithErr(
+		return oracletypes.NewPriceResponseWithErr(
 			tickers,
 			providertypes.NewErrorWithCode(
 				SolanaJSONRPCError(fmt.Errorf("expected %d accounts, got %d", expectedNumAccounts, len(accountsResp.Value))),
@@ -185,7 +184,7 @@ func (pf *APIPriceFetcher) Fetch(
 		metadata := pf.metaDataPerTicker[ticker.String()]
 
 		// parse the token balances
-		baseTokenBalance, err := getScaledTokenBalance(baseAccount, metadata.BaseTokenVault.TokenDecimals)
+		baseTokenBalance, err := getScaledTokenBalance(baseAccount)
 		if err != nil {
 			pf.logger.Debug("error getting base token balance", zap.Error(err))
 			unresolved[ticker] = providertypes.UnresolvedResult{
@@ -197,7 +196,7 @@ func (pf *APIPriceFetcher) Fetch(
 			continue
 		}
 
-		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount, metadata.QuoteTokenVault.TokenDecimals)
+		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount)
 		if err != nil {
 			pf.logger.Debug("error getting quote token balance", zap.Error(err))
 			unresolved[ticker] = providertypes.UnresolvedResult{
@@ -209,10 +208,23 @@ func (pf *APIPriceFetcher) Fetch(
 			continue
 		}
 
-		pf.logger.Debug("balances", zap.String("base", baseTokenBalance.String()), zap.String("quote", quoteTokenBalance.String()))
+		pf.logger.Debug(
+			"unscaled balances",
+			zap.String("base", baseTokenBalance.String()),
+			zap.String("quote", quoteTokenBalance.String()),
+		)
 
 		// calculate the price
-		price := calculatePrice(baseTokenBalance, quoteTokenBalance)
+		price := calculatePrice(
+			baseTokenBalance, quoteTokenBalance,
+			metadata.BaseTokenVault.TokenDecimals, metadata.QuoteTokenVault.TokenDecimals,
+		)
+
+		pf.logger.Debug(
+			"scaled price",
+			zap.String("ticker", ticker.String()),
+			zap.String("price", price.String()),
+		)
 
 		// return the price
 		resolved[ticker] = oracletypes.NewPriceResult(price, time.Now())
@@ -221,7 +233,7 @@ func (pf *APIPriceFetcher) Fetch(
 	return oracletypes.NewPriceResponse(resolved, unresolved)
 }
 
-func getScaledTokenBalance(account *rpc.Account, tokenDecimals uint64) (*big.Int, error) {
+func getScaledTokenBalance(account *rpc.Account) (*big.Int, error) {
 	// if the account is nil, return error
 	if account == nil {
 		return nil, fmt.Errorf("account is nil")
@@ -240,13 +252,20 @@ func getScaledTokenBalance(account *rpc.Account, tokenDecimals uint64) (*big.Int
 
 	// get the token balance + scale by decimals
 	balance := new(big.Int).SetUint64(tokenAccount.Amount)
-	return oraclemath.ScaleUpCurrencyPairPrice(tokenDecimals, balance)
+	return balance, nil
 }
 
-func calculatePrice(baseTokenBalance, quoteTokenBalance *big.Int) *big.Float {
+func calculatePrice(
+	baseTokenBalance, quoteTokenBalance *big.Int,
+	baseTokenDecimals, quoteTokenDecimals uint64,
+) *big.Float {
+	scalingFactor := math.GetScalingFactor(int64(baseTokenDecimals), int64(quoteTokenDecimals))
+
 	// calculate the price as quote / base
-	return new(big.Float).Quo(
+	quo := new(big.Float).Quo(
 		new(big.Float).SetInt(quoteTokenBalance),
 		new(big.Float).SetInt(baseTokenBalance),
 	)
+
+	return new(big.Float).Mul(quo, scalingFactor)
 }

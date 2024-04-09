@@ -128,7 +128,7 @@ var (
 	NewPriceAPIQueryHandler = apihandlers.NewAPIQueryHandler[ProviderTicker, *big.Float]
 
 	// NewPriceAPIQueryHandlerWithFetcher is a function alias for the new API query handler with fetcher.
-	NewPriceAPIQueryHandlerWithFetcher = apihandlers.NewAPIQueryHandlerWithFetcher[mmtypes.Ticker, *big.Int]
+	NewPriceAPIQueryHandlerWithFetcher = apihandlers.NewAPIQueryHandlerWithFetcher[ProviderTicker, *big.Float]
 
 	// NewPriceWebSocketQueryHandler is a function alias for the new web socket query handler meant to be
 	// used by the price providers.
