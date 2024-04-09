@@ -20,7 +20,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -1167,10 +1166,10 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 			nodes := s.chain.Nodes()
 
 			btcusdTicker := mmtypes.Ticker{
-				CurrencyPair:     constants.BITCOIN_USD,
+				CurrencyPair:     cp,
 				Decimals:         8,
 				MinProviderCount: 1,
-				Enabled:          false,
+				Enabled:          true,
 				Metadata_JSON:    `{"price": 150.0}`,
 			}
 
