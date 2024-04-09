@@ -74,3 +74,14 @@ func (tpt CurrencyPairsToProviderTickers) MustGetProviderTicker(cp pkgtypes.Curr
 	}
 	return providerTicker
 }
+
+// MustGetProviderConfig returns the provider config for the given currency pair.
+// This function is mostly used for testing.
+func (tpt CurrencyPairsToProviderTickers) MustGetProviderConfig(cp pkgtypes.CurrencyPair) mmtypes.ProviderConfig {
+	providerTicker := tpt.MustGetProviderTicker(cp)
+	return mmtypes.ProviderConfig{
+		Name:           providerTicker.GetProvider(),
+		OffChainTicker: providerTicker.GetOffChainTicker(),
+		Metadata_JSON:  providerTicker.GetJSON(),
+	}
+}

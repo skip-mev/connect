@@ -23,7 +23,7 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var (
@@ -155,21 +155,27 @@ var (
 
 	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			constants.BITCOIN_USD.String():  constants.BITCOIN_USD,
-			constants.ETHEREUM_USD.String(): constants.ETHEREUM_USD,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			constants.BITCOIN_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
-					okx.DefaultMarketConfig[constants.BITCOIN_USD],
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     constants.BITCOIN_USD,
+					MinProviderCount: 1,
+					Decimals:         8,
+				},
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig.MustGetProviderConfig(constants.BITCOIN_USD),
+					okx.DefaultMarketConfig.MustGetProviderConfig(constants.BITCOIN_USD),
 				},
 			},
 			constants.ETHEREUM_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
-					okx.DefaultMarketConfig[constants.ETHEREUM_USD],
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     constants.ETHEREUM_USD,
+					MinProviderCount: 1,
+					Decimals:         8,
+				},
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					coinbase.DefaultMarketConfig.MustGetProviderConfig(constants.ETHEREUM_USD),
+					okx.DefaultMarketConfig.MustGetProviderConfig(constants.ETHEREUM_USD),
 				},
 			},
 		},
@@ -178,7 +184,7 @@ var (
 
 func checkProviderState(
 	t *testing.T,
-	expectedTickers []mmtypes.Ticker,
+	expectedTickers []oracletypes.ProviderTicker,
 	expectedName string,
 	expectedType providertypes.ProviderType,
 	isRunning bool,
@@ -193,7 +199,7 @@ func checkProviderState(
 
 	ids := provider.GetIDs()
 	require.Equal(t, len(expectedTickers), len(ids))
-	seenTickers := make(map[mmtypes.Ticker]bool)
+	seenTickers := make(map[oracletypes.ProviderTicker]bool)
 	for _, id := range ids {
 		seenTickers[id] = true
 	}
@@ -214,11 +220,11 @@ func checkProviderState(
 func createTestMarketMapProvider(
 	t *testing.T,
 	ids []mmclienttypes.Chain,
-) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse], *mmclienttypes.MarketMapProvider) {
+) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.MarketMapResponse], *mmclienttypes.MarketMapProvider) {
 	t.Helper()
 
 	// Create a market map api handler.
-	handler := mocks.NewAPIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](
+	handler := mocks.NewAPIDataHandler[mmclienttypes.Chain, *mmtypes.MarketMapResponse](
 		t,
 	)
 
@@ -234,20 +240,20 @@ func createTestMarketMapProvider(
 	var provider *mmclienttypes.MarketMapProvider
 	if len(ids) != 0 {
 		provider, err = mmclienttypes.NewMarketMapProvider(
-			base.WithName[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.Name),
-			base.WithLogger[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](logger),
+			base.WithName[mmclienttypes.Chain, *mmtypes.MarketMapResponse](mockMapperCfg.Name),
+			base.WithLogger[mmclienttypes.Chain, *mmtypes.MarketMapResponse](logger),
 			base.WithAPIQueryHandler(queryHandler),
-			base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.API),
-			base.WithMetrics[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
-			base.WithIDs[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](ids),
+			base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.MarketMapResponse](mockMapperCfg.API),
+			base.WithMetrics[mmclienttypes.Chain, *mmtypes.MarketMapResponse](providermetrics.NewNopProviderMetrics()),
+			base.WithIDs[mmclienttypes.Chain, *mmtypes.MarketMapResponse](ids),
 		)
 	} else {
 		provider, err = mmclienttypes.NewMarketMapProvider(
-			base.WithName[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.Name),
-			base.WithLogger[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](logger),
+			base.WithName[mmclienttypes.Chain, *mmtypes.MarketMapResponse](mockMapperCfg.Name),
+			base.WithLogger[mmclienttypes.Chain, *mmtypes.MarketMapResponse](logger),
 			base.WithAPIQueryHandler(queryHandler),
-			base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](mockMapperCfg.API),
-			base.WithMetrics[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse](providermetrics.NewNopProviderMetrics()),
+			base.WithAPIConfig[mmclienttypes.Chain, *mmtypes.MarketMapResponse](mockMapperCfg.API),
+			base.WithMetrics[mmclienttypes.Chain, *mmtypes.MarketMapResponse](providermetrics.NewNopProviderMetrics()),
 		)
 	}
 	require.NoError(t, err)
@@ -258,7 +264,7 @@ func createTestMarketMapProvider(
 func marketMapperFactory(
 	t *testing.T,
 	ids []mmclienttypes.Chain,
-) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.GetMarketMapResponse], mmclienttypes.MarketMapFactory) {
+) (*mocks.APIDataHandler[mmclienttypes.Chain, *mmtypes.MarketMapResponse], mmclienttypes.MarketMapFactory) {
 	t.Helper()
 
 	handler, provider := createTestMarketMapProvider(

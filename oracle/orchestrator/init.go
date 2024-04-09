@@ -30,6 +30,12 @@ func (o *ProviderOrchestrator) Init() error {
 		}
 
 		if err != nil {
+			o.logger.Error(
+				"failed to initialize provider",
+				zap.String("provider", cfg.Name),
+				zap.Error(err),
+			)
+
 			return fmt.Errorf("failed to initialize %s provider: %w", cfg.Name, err)
 		}
 	}
