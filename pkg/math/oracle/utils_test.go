@@ -8,6 +8,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -171,6 +172,6 @@ func TestGetProviderPrice(t *testing.T) {
 		price, err := m.GetProviderPrice(operation)
 		require.NoError(t, err)
 		expectedPrice := createPrice(0.000025, oracle.ScaledDecimals)
-		verifyPrice(t, expectedPrice, price)
+		math.VerifyPrice(t, expectedPrice, price, acceptableDelta)
 	})
 }
