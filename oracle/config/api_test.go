@@ -167,7 +167,7 @@ func TestAPIConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with invalid endpoint",
+			name: "bad config with invalid endpoint authentication (API key missing)",
 			config: config.APIConfig{
 				Enabled:          true,
 				Timeout:          time.Second,
@@ -188,7 +188,7 @@ func TestAPIConfig(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name: "bad config with invalid endpoint (HTTP header field missing)",
+			name: "bad config with invalid endpoint authentication (HTTP header field missing)",
 			config: config.APIConfig{
 				Enabled:          true,
 				Timeout:          time.Second,

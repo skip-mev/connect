@@ -51,8 +51,8 @@ type Endpoint struct {
 	// URL is the URL that is used to fetch data from the API.
 	URL string `json:"url"`
 
-	// Authentication  is used to meta-data related to authentication for the API's
-	// endpoint.
+	// Authentication holds all data necessary for an API provider to authenticate with
+	// an endpoint.
 	Authentication Authentication `json:"authentication"`
 }
 
