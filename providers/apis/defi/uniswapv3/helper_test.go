@@ -19,7 +19,7 @@ var (
 	m         = metrics.NewNopAPIMetrics()
 
 	// PoolConfigs used for testing.
-	weth_usdc_cfg = uniswapv3.PoolConfig{ //nolint
+	wethusdcCfg = uniswapv3.PoolConfig{
 		Address:       "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
 		BaseDecimals:  18,
 		QuoteDecimals: 6,
@@ -27,7 +27,7 @@ var (
 	}
 
 	// Tickers used for testing.
-	weth_usdc_ticker = types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", weth_usdc_cfg.MustToJSON())
+	wethusdcTicker = types.NewProviderTicker(uniswapv3.Name, "WETH/USDC", wethusdcCfg.MustToJSON())
 )
 
 func createPriceFetcher(

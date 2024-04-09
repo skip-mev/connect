@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	btcusd  = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	ethusd  = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	eth_btc = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_BITCOIN)
+	btcusd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
+	ethusd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	ethbtc = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_BITCOIN)
 )
 
 func TestCreateURL(t *testing.T) {
@@ -52,7 +52,7 @@ func TestCreateURL(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusd,
 				ethusd,
-				eth_btc,
+				ethbtc,
 			},
 			url:         "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,btc&precision=18",
 			expectedErr: false,
@@ -204,7 +204,7 @@ shout out my label thats me
 			name: "single base with multiple quotes",
 			cps: []types.ProviderTicker{
 				ethusd,
-				eth_btc,
+				ethbtc,
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
@@ -221,7 +221,7 @@ shout out my label thats me
 					ethusd: {
 						Value: big.NewFloat(1020.25),
 					},
-					eth_btc: {
+					ethbtc: {
 						Value: big.NewFloat(1),
 					},
 				},
