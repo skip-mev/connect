@@ -161,7 +161,7 @@ func QueryValidators(chain *cosmos.CosmosChain) ([]stakingtypes.Validator, error
 }
 
 // UpdateNodePrices updates the price reported for a given ticker, from a specified node
-func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64) error {
+func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price float64) error {
 	if err := StopOracle(node); err != nil {
 		return err
 	}
@@ -189,7 +189,8 @@ func UpdateNodePrices(node *cosmos.ChainNode, ticker mmtypes.Ticker, price int64
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:           static.Name,
-						OffChainTicker: fmt.Sprintf("%d", price),
+						OffChainTicker: ticker.String(),
+						Metadata_JSON:  fmt.Sprintf(`{"price": %f}`, price),
 					},
 				},
 			},
