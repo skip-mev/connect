@@ -1,5 +1,5 @@
 syntax = "proto3";
-package slinky.mm2.v1;
+package slinky.marketmap.v1;
 
 import "gogoproto/gogo.proto";
 import "slinky/mm2/v1/market.proto";

@@ -7,7 +7,7 @@ import (
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/testutil"
-	"github.com/skip-mev/slinky/x/mm2/types"
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestProviderConfigValidateBasic(t *testing.T) {

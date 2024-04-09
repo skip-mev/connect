@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
-	mm2types "github.com/skip-mev/slinky/x/mm2/types"
+	mm2types "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // Hooks is a wrapper struct around Keeper.

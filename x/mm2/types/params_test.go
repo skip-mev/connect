@@ -6,7 +6,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/x/mm2/types"
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestValidateBasic(t *testing.T) {

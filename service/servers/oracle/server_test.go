@@ -21,7 +21,7 @@ import (
 	"github.com/skip-mev/slinky/service/metrics"
 	server "github.com/skip-mev/slinky/service/servers/oracle"
 	stypes "github.com/skip-mev/slinky/service/servers/oracle/types"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 const (

@@ -3,7 +3,7 @@ package integration
 import (
 	"context"
 	"fmt"
-	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"math/big"
 	"strings"
 

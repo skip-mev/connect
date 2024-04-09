@@ -72,8 +72,8 @@ import (
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
 	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
-	marketmapmodule "github.com/skip-mev/slinky/x/mm2"
-	marketmapkeeper "github.com/skip-mev/slinky/x/mm2/keeper"
+	marketmapmodule "github.com/skip-mev/slinky/x/marketmap"
+	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )

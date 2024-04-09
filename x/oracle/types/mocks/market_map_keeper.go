@@ -5,7 +5,7 @@ package mocks
 import (
 	mock "github.com/stretchr/testify/mock"
 
-	mm2types "github.com/skip-mev/slinky/x/mm2/types"
+	mm2types "github.com/skip-mev/slinky/x/marketmap/types"
 
 	types "github.com/cosmos/cosmos-sdk/types"
 )

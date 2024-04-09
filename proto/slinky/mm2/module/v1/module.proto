@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package slinky.mm2.module.v1;
+package slinky.marketmap.module.v1;
 
 import "cosmos/app/v1alpha1/module.proto";
 

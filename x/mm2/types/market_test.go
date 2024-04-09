@@ -9,7 +9,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/x/mm2/types"
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
