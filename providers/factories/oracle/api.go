@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
@@ -12,6 +14,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -46,9 +49,14 @@ func APIQueryHandlerFactory(
 	}
 
 	var (
-		apiDataHandler types.PriceAPIDataHandler
-		requestHandler apihandlers.RequestHandler
+		apiPriceFetcher types.PriceAPIFetcher
+		apiDataHandler  types.PriceAPIDataHandler
 	)
+
+	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
+	if err != nil {
+		return nil, err
+	}
 
 	switch cfg.Name {
 	case binance.Name:
@@ -61,6 +69,14 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
 	case kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
+	case uniswapv3.Name:
+		var ethClient uniswapv3.EVMClient
+		ethClient, err = uniswapv3.NewGoEthereumClientImpl(cfg.API.URL)
+		if err != nil {
+			return nil, err
+		}
+
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, metrics, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {
@@ -75,6 +91,15 @@ func APIQueryHandlerFactory(
 		}
 
 		requestHandler = static.NewStaticMockClient()
+	case raydium.Name:
+		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
+			marketMap,
+			cfg.API,
+			logger,
+		)
+		if err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
@@ -82,20 +107,25 @@ func APIQueryHandlerFactory(
 		return nil, err
 	}
 
-	// If a custom request handler is not provided, create a new default one.
-	if requestHandler == nil {
-		requestHandler, err = apihandlers.NewRequestHandlerImpl(client)
+	// if no apiPriceFetcher has been created yet, create a default REST API price fetcher.
+	if apiPriceFetcher == nil {
+		apiPriceFetcher, err = apihandlers.NewRestAPIFetcher(
+			requestHandler,
+			apiDataHandler,
+			metrics,
+			cfg.API,
+			logger,
+		)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
-	return types.NewPriceAPIQueryHandler(
+	return types.NewPriceAPIQueryHandlerWithFetcher(
 		logger,
 		cfg.API,
-		requestHandler,
-		apiDataHandler,
+		apiPriceFetcher,
 		metrics,
 	)
 }
