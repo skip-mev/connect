@@ -22,7 +22,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -153,8 +153,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	s.user = users[0]
 
 	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
-		MarketAuthority: s.user.FormattedAddress(),
-		Version:         0,
+		MarketAuthorities: []string{s.user.FormattedAddress()},
 	})
 	s.Require().NoError(err, resp)
 }
@@ -237,7 +236,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	eth_usdc := constants.ETHEREUM_USDC
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
-		eth_usdc.CurrencyPair,
+		eth_usdc,
 	}...))
 
 	cc, close, err := GetChainGRPC(s.chain)
