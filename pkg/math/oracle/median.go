@@ -28,7 +28,7 @@ type MedianAggregator struct {
 	// indexPrices cache the median prices for each ticker. These are unscaled prices.
 	indexPrices types.AggregatorPrices
 	// scaledPrices cache the scaled prices for each ticker. These are the prices that can be
-	// consumed by external providers.
+	// consumed by consumers.
 	scaledPrices types.AggregatorPrices
 	// providerPrices cache the unscaled prices for each provider. These are indexed by
 	// provider -> offChainTicker -> price.
