@@ -278,6 +278,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 							CurrencyPair:     ethusdc,
 							Decimals:         8,
 							MinProviderCount: 1,
+							Metadata_JSON:    `{"price": 1.1}`,
 						},
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
@@ -508,6 +509,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -520,6 +522,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -532,6 +535,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1142",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -616,6 +620,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1140",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
@@ -628,6 +633,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						{
 							Name:           static.Name,
 							OffChainTicker: "1141",
+							Metadata_JSON:  `{"price": 1.1}`,
 						},
 					},
 				},
