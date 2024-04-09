@@ -321,7 +321,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		// query for the given currency pair
 		resp, _, err := QueryCurrencyPair(s.chain, ethusdc, height)
 		s.Require().NoError(err)
-		s.Require().Equal(resp.Price.Int64(), int64(1140))
+		s.Require().Equal(resp.Price.Int64(), int64(110000000))
 	})
 
 	s.Run("single oracle down, price updates", func() {
