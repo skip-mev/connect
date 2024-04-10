@@ -129,7 +129,7 @@ func runOracle() error {
 	)
 
 	metrics := oraclemetrics.NewMetricsFromConfig(cfg.Metrics)
-	aggregator, err := oraclemath.NewMedianAggregator(
+	aggregator, err := oraclemath.NewIndexPriceAggregator(
 		logger,
 		marketCfg,
 		metrics,
