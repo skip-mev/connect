@@ -98,21 +98,3 @@ To test these numbers yourself, spin up the the oracle server following the inst
 * [Data Provider Queries](./providers/base/metrics/README.md#usage): Provides general insight into how often price feeds are updated by status (success/failure), provider (binance, coinbase, etc.), price feed (BTC/USD, ETH/USD), and provider type (api/websocket).
 * [Websocket Performance Queries](./providers/base/websocket/metrics/README.md#usage): Provides insight into how often websocket providers are successfully updating their data. This is a combination of metrics related to the underlying connection as well as the data handler which is responsible for processing the data received from the Websocket connection.
 * [API Performance Queries](./providers/base/api/metrics/README.md#usage): Provides insight into how often API providers are successfully updating their data.
-
-## DEFI
-
-* Defi providers are currently an experimental feature, to generate local configs to run the defi providers locally, run
-
-```bash
-$ DEFI_PROVIDERS_ENABLED=true SOLANA_NODE_ENDPOINT=<SOLANA_NODE>  make update-local-configs
-```
-
-Then, to run
-
-```bash
-$ make run-oracle-server
-```
-
-## Future Work
-
-The oracle side car is a combination of the oracle and provider packages. This is being moved to a [separate repository](https://github.com/skip-mev/slinky-sidecar).

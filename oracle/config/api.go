@@ -21,9 +21,8 @@ type APIConfig struct {
 	// reconnecting to the API.
 	ReconnectTimeout time.Duration `json:"reconnectTimeout"`
 
-	// MaxQueries is the maximum number of queries that the provider will make
-	// within the interval. If the provider makes more queries than this, it will
-	// stop making queries until the next interval.
+	// MaxQueries is the maximum number of concurrent queries that the provider will make
+	// within the interval.
 	MaxQueries int `json:"maxQueries"`
 
 	// Atomic is a flag that indicates whether the provider can fulfill its queries
@@ -36,6 +35,12 @@ type APIConfig struct {
 	// Endpoints is a list of endpoints that the provider can query.
 	Endpoints []Endpoint `json:"endpoints"`
 
+	// BatchSize is the maximum number of IDs that the provider can query in a single
+	// request. This parameter must be 0 for atomic providers. Otherwise, the effective
+	// value will be max(1, BatchSize). Notice, if numCPs > batchSize * maxQueries then
+	// some currency-pairs may not be fetched each interval.
+	BatchSize int `json:"batchSize"`
+
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`
 }
@@ -45,6 +50,48 @@ type APIConfig struct {
 type Endpoint struct {
 	// URL is the URL that is used to fetch data from the API.
 	URL string `json:"url"`
+
+	// Authentication holds all data necessary for an API provider to authenticate with
+	// an endpoint.
+	Authentication Authentication `json:"authentication"`
+}
+
+// ValidateBasic performs basic validation of the API endpoint.
+func (e Endpoint) ValidateBasic() error {
+	if len(e.URL) == 0 {
+		return fmt.Errorf("endpoint url cannot be empty")
+	}
+
+	return e.Authentication.ValidateBasic()
+}
+
+// Authentication holds all data necessary for an API provider to authenticate with an
+// endpoint.
+type Authentication struct {
+	// HTTPHeaderAPIKey is the API-key that will be set under the X-Api-Key header
+	APIKey string `json:"apiKey"`
+
+	// APIKeyHeader is the header that will be used to set the API key.
+	APIKeyHeader string `json:"apiKeyHeader"`
+}
+
+// Enabled returns true if the authentication is enabled.
+func (a Authentication) Enabled() bool {
+	return a.APIKey != "" && a.APIKeyHeader != ""
+}
+
+// ValidateBasic performs basic validation of the API authentication. Specifically, the APIKey + APIKeyHeader
+// must be set atomically.
+func (a Authentication) ValidateBasic() error {
+	if a.APIKey != "" && a.APIKeyHeader == "" {
+		return fmt.Errorf("api key header cannot be empty when api key is set")
+	}
+
+	if a.APIKey == "" && a.APIKeyHeader != "" {
+		return fmt.Errorf("api key cannot be empty when api key header is set")
+	}
+
+	return nil
 }
 
 // ValidateBasic performs basic validation of the API config.
@@ -67,6 +114,16 @@ func (c *APIConfig) ValidateBasic() error {
 
 	if len(c.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
+	}
+
+	if c.BatchSize > 0 && c.Atomic {
+		return fmt.Errorf("batch size cannot be set for atomic providers")
+	}
+
+	for _, e := range c.Endpoints {
+		if err := e.ValidateBasic(); err != nil {
+			return err
+		}
 	}
 
 	return nil
