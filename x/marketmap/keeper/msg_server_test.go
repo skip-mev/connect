@@ -209,7 +209,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 	msgServer := keeper.NewMsgServer(s.keeper)
 
 	s.Run("unable to process nil request", func() {
-		resp, err := msgServer.Params(s.ctx, nil)
+		resp, err := msgServer.UpdateParams(s.ctx, nil)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
@@ -218,7 +218,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: "invalid",
 		}
-		resp, err := msgServer.Params(s.ctx, msg)
+		resp, err := msgServer.UpdateParams(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
@@ -227,7 +227,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: sdk.AccAddress("invalid").String(),
 		}
-		resp, err := msgServer.Params(s.ctx, msg)
+		resp, err := msgServer.UpdateParams(s.ctx, msg)
 		s.Require().Error(err)
 		s.Require().Nil(resp)
 	})
@@ -240,7 +240,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 				Admin:             sample.Address(r),
 			},
 		}
-		resp, err := msgServer.Params(s.ctx, msg)
+		resp, err := msgServer.UpdateParams(s.ctx, msg)
 		s.Require().NoError(err)
 		s.Require().NotNil(resp)
 

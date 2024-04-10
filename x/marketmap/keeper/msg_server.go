@@ -123,8 +123,8 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 	return &types.MsgUpdateMarketsResponse{}, ms.k.SetLastUpdated(ctx, uint64(ctx.BlockHeight()))
 }
 
-// Params updates the x/marketmap module's Params.
-func (ms msgServer) Params(goCtx context.Context, msg *types.MsgParams) (*types.MsgParamsResponse, error) {
+// UpdateParams updates the x/marketmap module's Params.
+func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgParams) (*types.MsgParamsResponse, error) {
 	if msg == nil {
 		return nil, fmt.Errorf("unable to process nil msg")
 	}
