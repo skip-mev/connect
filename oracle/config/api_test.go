@@ -119,6 +119,116 @@ func TestAPIConfig(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "bad config with atomic + batch-size",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
+				Atomic:           true,
+				BatchSize:        1,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "good config with batchSize",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
+				BatchSize:        1,
+			},
+			expectedErr: false,
+		},
+		{
+			name: "bad config with invalid endpoint (no url)",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "",
+					},
+				},
+				BatchSize: 1,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with invalid endpoint authentication (HTTP header field missing)",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "http://test.com",
+						Authentication: config.Authentication{
+							APIKey: "test",
+						},
+					},
+				},
+				BatchSize: 1,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "bad config with invalid endpoint authentication (API-key field missing)",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "http://test.com",
+						Authentication: config.Authentication{
+							APIKeyHeader: "test",
+						},
+					},
+				},
+				BatchSize: 1,
+			},
+			expectedErr: true,
+		},
+		{
+			name: "good config with valid endpoint",
+			config: config.APIConfig{
+				Enabled:          true,
+				Timeout:          time.Second,
+				Interval:         time.Second,
+				ReconnectTimeout: time.Second,
+				MaxQueries:       1,
+				Name:             "test",
+				Endpoints: []config.Endpoint{
+					{
+						URL: "http://test.com",
+						Authentication: config.Authentication{
+							APIKey:       "test",
+							APIKeyHeader: "X-API-KEY",
+						},
+					},
+				},
+				BatchSize: 1,
+			},
+		},
 	}
 
 	for _, tc := range testCases {
