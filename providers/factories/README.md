@@ -7,3 +7,4 @@ Factories are used to create an underlying set of data providers that will be ut
 ## Supported Provider Factories
 
 * **Price Feed Factory**: This factory is used to construct a set of API and Websocket oracle price feed providers that fetch price data from various sources.
+* **Market Map Factory**: This factory is used to construct a set of API oracle market providers that fetch market data from market map providers - providers that are responsible for determining the markets the oracle should be fetching prices for.

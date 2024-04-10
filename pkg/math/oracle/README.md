@@ -1,11 +1,12 @@
-# Oracle Price Aggregator
+# Index Price Aggregator
 
 ## Overview
 
-The aggregator defined in this package is used to convert a set of price feeds into a common set of prices. The prices used in aggregation contain 
+The price aggregator defined in this package is used to convert a set of price feeds into a common set of prices. The prices used in aggregation contain:
 
 * the most recent prices fetched by each provider.
 * `index` prices which are the previous aggregated prices.
+* `scaled` prices which are effectively the index price but with a common decimal precision (as determined by the market map).
 
 Each of the prices provided are safe to use as they are already filtered by the oracle - specifically each price is within the `MaxPriceAge` window.
 
@@ -17,7 +18,6 @@ The MarketMap contains:
 
 * `Tickers` - the list of tickers that we care about.
 * `Providers` - each ticker maps to a list of providers that fetch prices for that ticker.
-* `Paths` - each ticker maps to a set of paths that are used to calculate the price of that ticker. Each path is a set of operations that define how to convert a given provider price to the desired ticker price. These are either direct conversions or indirect conversions that use the `index` price.
 
 > Say that the oracle is configured to fetch prices for the following feeds:
 >
@@ -28,153 +28,99 @@ The MarketMap contains:
 Using the example above, a sample market map might look like the following (assume we have correctly configured the providers):
 
 ```golang
-marketmap = mmtypes.MarketMap{
-    Tickers: map[string]mmtypes.Ticker{
-        BTC_USD.String():   BTC_USD,
-        ETH_USD.String():   ETH_USD,
-        USDT_USD.String():  USDT_USD,
-    },
-    Paths: map[string]mmtypes.Paths{
-        BTC_USD.String(): {
-            Paths: []mmtypes.Path{
-                {
-                    // COINBASE BTC/USD = BTC/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: BTC_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     coinbase.Name,
-                        },
-                    },
+	marketmap = mmtypes.MarketMap{
+		Markets: map[string]mmtypes.Market{
+			BTC_USD.String(): {
+                Ticker: mmtypes.Ticker{
+                    CurrencyPair:     constants.BITCOIN_USD,
+                    Decimals:         8,
+                    MinProviderCount: 3,
                 },
-                {
-                    // COINBASE BTC/USDT * INDEX USDT/USD = BTC/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: BTC_USDT.CurrencyPair,
-                            Invert:       false,
-                            Provider:     coinbase.Name,
-                        },
-                        {
-                            CurrencyPair: USDT_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     oracle.IndexPrice,
-                        },
-                    },
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "BTC-USD",
+					},
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "BTC-USDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
+						},
+					},
+					{
+						Name:           binance.Name,
+						OffChainTicker: "BTCUSDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
+						},
+					},
+				},
+			},
+			ETH_USD.String(): {
+                Ticker: mmtypes.Ticker{
+                    CurrencyPair:     constants.ETHEREUM_USD,
+                    Decimals:         11,
+                    MinProviderCount: 3,
                 },
-                {
-                    // BINANCE BTC/USDT * INDEX USDT/USD = BTC/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: BTC_USDT.CurrencyPair,
-                            Invert:       false,
-                            Provider:     binance.Name,
-                        },
-                        {
-                            CurrencyPair: USDT_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     oracle.IndexPrice,
-                        },
-                    },
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "ETH-USD",
+					},
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "ETH-USDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
+						},
+					},
+					{
+						Name:           binance.Name,
+						OffChainTicker: "ETHUSDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
+						},
+					},
+				},
+			},
+			USDT_USD.String(): {
+                Ticker: mmtypes.Ticker{
+                    CurrencyPair:     constants.USDT_USD,
+                    Decimals:         6,
+                    MinProviderCount: 2,
                 },
-            },
-        },
-        ETH_USD.String(): {
-            Paths: []mmtypes.Path{
-                {
-                    // COINBASE ETH/USD = ETH/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: ETH_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     coinbase.Name,
-                        },
-                    },
-                },
-                {
-                    // COINBASE ETH/USDT * INDEX USDT/USD = ETH/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: ETH_USDT.CurrencyPair,
-                            Invert:       false,
-                            Provider:     coinbase.Name,
-                        },
-                        {
-                            CurrencyPair: USDT_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     oracle.IndexPrice,
-                        },
-                    },
-                },
-                {
-                    // BINANCE ETH/USDT * INDEX USDT/USD = ETH/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: ETH_USDT.CurrencyPair,
-                            Invert:       false,
-                            Provider:     binance.Name,
-                        },
-                        {
-                            CurrencyPair: USDT_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     oracle.IndexPrice,
-                        },
-                    },
-                },
-            },
-        },
-        USDT_USD.String(): {
-            Paths: []mmtypes.Path{
-                {
-                    // COINBASE USDT/USD = USDT/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: USDT_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     coinbase.Name,
-                        },
-                    },
-                },
-                {
-                    // COINBASE USDC/USDT ^ -1 = USDT/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: USDC_USDT.CurrencyPair,
-                            Invert:       true,
-                            Provider:     coinbase.Name,
-                        },
-                    },
-                },
-                {
-                    // BINANCE USDT/USD = USDT/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: USDT_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     binance.Name,
-                        },
-                    },
-                },
-
-                {
-                    // KUCOIN BTC/USDT ^-1 * INDEX BTC/USD = USDT/USD
-                    Operations: []mmtypes.Operation{
-                        {
-                            CurrencyPair: BTC_USDT.CurrencyPair,
-                            Invert:       true,
-                            Provider:     kucoin.Name,
-                        },
-                        {
-                            CurrencyPair: BTC_USD.CurrencyPair,
-                            Invert:       false,
-                            Provider:     oracle.IndexPrice,
-                        },
-                    },
-                },
-            },
-        },
-    },
-}
+				ProviderConfigs: []mmtypes.ProviderConfig{
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "USDT-USD",
+					},
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "USDC-USDT",
+						Invert:         true,
+					},
+					{
+						Name:           binance.Name,
+						OffChainTicker: "USDTUSD",
+					},
+					{
+						Name:           kucoin.Name,
+						OffChainTicker: "BTC-USDT",
+						Invert:         true,
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "BTC",
+							Quote: "USD",
+						},
+					},
+				},
+			},
+		},
+	}
 ```
 
 From the above market map, we can see that the following paths are used to calculate the price of each ticker:
@@ -196,20 +142,13 @@ From the above market map, we can see that the following paths are used to calcu
 A few important considerations:
 
 1. Each ticker (BTC/USD, ETH/USD, USDT/USD) can have a configured `MinimumProviderCount` which is the minimum number of providers that are required to calculate the price of the ticker.
-2. Each path that is not a direct conversion (e.g. BTC/USD) must configure the second operation to utilize the `index` price i.e. [`IndexPrice`](./median.go).
+2. Each path that is not a direct conversion (e.g. BTC/USD) must configure the second operation to utilize the `index` price i.e. of a primary ticker i.e. market.
 
 ## Aggregation
 
 ### Precision
 
-As a given path is being traversed, we convert each price to a common decimal precision - [`ScaledDecimals`](./math.go) - in order to correctly multiply & invert. We choose 36 decimal precision as the common precision - primarily to retain the maximum precision possible. The conversion is done as follows:
-
-* BITCOIN/USDT: 8 -> 36
-* BITCOIN/USDC: 8 -> 36
-* ETHEREUM/USDT: 18 -> 36
-* ETHEREUM/USDC: 18 -> 36
-* USDT/USD: 6 -> 36
-* USDC/USD: 6 -> 36
+Precision is retained as much as possible in the aggregator. Each price included by each provider is converted to the maximum amount of precision that is possible for the price (and what big.Float is capable of handling). The index prices are always big.Floats with minimal precision lost between conversions, scaling, and aggregation.
 
 ### Example Aggregation
 

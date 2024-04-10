@@ -5,7 +5,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -13,30 +12,16 @@ import (
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	"github.com/skip-mev/slinky/providers/types/factory"
 )
 
 // ConfigType is the type of the API/WebSocket configuration.
 const ConfigType = "price_provider"
 
 type (
-	// PriceProviderFactory is a type alias for the price provider factory. This
-	// specifically only returns price providers that implement the provider interface
-	// and the additional base provider methods.
-	PriceProviderFactory = factory.BaseProviderFactory[ProviderTicker, *big.Float]
-
-	// PriceProviderFactory is a type alias for the price provider factory. This
-	// specifically only returns price providers that implement the provider interface.
-	PriceProviderFactoryI = factory.ProviderFactory[ProviderTicker, *big.Float]
-
 	// PriceProvider is a type alias for the base price provider. This specifically
 	// implements the provider interface for the price provider along with the
 	// additional base provider methods.
 	PriceProvider = base.Provider[ProviderTicker, *big.Float]
-
-	// PriceProviderI is a type alias for the price provider. This specifically
-	// implements the provider interface for the price provider.
-	PriceProviderI = providertypes.Provider[ProviderTicker, *big.Float]
 
 	// PriceAPIQueryHandlerFactory is a type alias for the price API query handler factory.
 	// This is responsible for creating the API query handler for the price provider.
@@ -90,28 +75,8 @@ type (
 	// UnResolvedPrices is a type alias for the unresolved prices.
 	UnResolvedPrices = map[ProviderTicker]providertypes.UnresolvedResult
 
-	// TickerPrices is a type alias for the map of prices. This is a map of tickers i.e.
-	// BTC/USD, ETH/USD, etc. to their respective prices.
-	TickerPrices = map[ProviderTicker]*big.Float
-
-	// AggregatorPrices is a type alias for a map of off-chain ticker to the price. It is
-	// critical to note that the aggregator tracks prices indexed by off-chain tickers. When
-	// a final price is calculated (after aggregation), it is indexed by the canonical on-chain
-	// ticker.
-	AggregatorPrices = map[string]*big.Float
-
-	// PriceAggregator is a type alias for the price aggregator. This is responsible for
-	// aggregating the resolved prices from the price providers. This maps the
-	// provider -> off-chain-ticker -> price.
-	PriceAggregator = aggregator.Aggregator[string, AggregatorPrices]
-
-	// PriceAggregationFn is a type alias for the price aggregation function. This function
-	// is used to aggregate the resolved prices from the price providers.
-	PriceAggregationFn = aggregator.AggregateFn[string, AggregatorPrices]
-
-	// AggregatedProviderPrices is a type alias for the aggregated provider prices. This is
-	// a map of provider names to their respective ticker prices.
-	AggregatedProviderPrices = aggregator.AggregatedProviderData[string, AggregatorPrices]
+	// Prices is a type alias for a map of ticker to a price.
+	Prices = map[string]*big.Float
 )
 
 var (
@@ -137,7 +102,4 @@ var (
 	// NewPriceWebSocketQueryHandler is a function alias for the new web socket query handler meant to be
 	// used by the price providers.
 	NewPriceWebSocketQueryHandler = wshandlers.NewWebSocketQueryHandler[ProviderTicker, *big.Float]
-
-	// NewPriceAggregator is a function alias for the new price aggregator.
-	NewPriceAggregator = aggregator.NewDataAggregator[string, AggregatorPrices]
 )

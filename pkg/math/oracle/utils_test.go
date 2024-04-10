@@ -14,7 +14,7 @@ import (
 
 func TestGetProviderPrice(t *testing.T) {
 	t.Run("provider does not exist in the cache", func(t *testing.T) {
-		agg, err := oracle.NewMedianAggregator(logger, marketmap, nil)
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
 		cfg := mmtypes.ProviderConfig{
@@ -26,34 +26,34 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("provider exists in the cache but does not have the desired CP", func(t *testing.T) {
-		agg, err := oracle.NewMedianAggregator(logger, marketmap, nil)
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
 		cfg := mmtypes.ProviderConfig{
 			Name:           "test",
 			OffChainTicker: "BTC/USD",
 		}
-		prices := types.AggregatorPrices{
+		prices := types.Prices{
 			"BTC/USDT": big.NewFloat(100),
 		}
-		agg.SetProviderData("test", prices)
+		agg.SetProviderPrices("test", prices)
 
 		_, err = agg.GetProviderPrice(cfg)
 		require.Error(t, err)
 	})
 
 	t.Run("provider exists in the cache and has the desired CP", func(t *testing.T) {
-		agg, err := oracle.NewMedianAggregator(logger, marketmap, nil)
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
 		cfg := mmtypes.ProviderConfig{
 			Name:           "test",
 			OffChainTicker: "BTC/USD",
 		}
-		prices := types.AggregatorPrices{
+		prices := types.Prices{
 			"BTC/USD": big.NewFloat(100),
 		}
-		agg.SetProviderData("test", prices)
+		agg.SetProviderPrices("test", prices)
 
 		price, err := agg.GetProviderPrice(cfg)
 		require.NoError(t, err)
@@ -61,7 +61,7 @@ func TestGetProviderPrice(t *testing.T) {
 	})
 
 	t.Run("provider exists in the cache and has the desired CP, invert is true", func(t *testing.T) {
-		agg, err := oracle.NewMedianAggregator(logger, marketmap, nil)
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
 		cfg := mmtypes.ProviderConfig{
@@ -69,10 +69,10 @@ func TestGetProviderPrice(t *testing.T) {
 			OffChainTicker: "BTC/USD",
 			Invert:         true,
 		}
-		prices := types.AggregatorPrices{
+		prices := types.Prices{
 			"BTC/USD": big.NewFloat(100),
 		}
-		agg.SetProviderData("test", prices)
+		agg.SetProviderPrices("test", prices)
 
 		price, err := agg.GetProviderPrice(cfg)
 		require.NoError(t, err)
@@ -82,7 +82,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 func TestGetIndexPrice(t *testing.T) {
 	t.Run("has no index prices", func(t *testing.T) {
-		agg, err := oracle.NewMedianAggregator(logger, marketmap, nil)
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
 		_, err = agg.GetIndexPrice(constants.ETHEREUM_USD)
@@ -90,10 +90,10 @@ func TestGetIndexPrice(t *testing.T) {
 	})
 
 	t.Run("has index prices", func(t *testing.T) {
-		agg, err := oracle.NewMedianAggregator(logger, marketmap, nil)
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		prices := types.AggregatorPrices{
+		prices := types.Prices{
 			constants.BITCOIN_USD.String(): big.NewFloat(100),
 		}
 		agg.SetIndexPrices(prices)
