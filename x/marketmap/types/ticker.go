@@ -15,7 +15,7 @@ const (
 	// DefaultMinProviderCount is the minimum number of providers required for a
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
-	// MaxMetadataJSONFieldLength is the maximum length of the MetadataJSON field.
+	// MaxMetadataJSONFieldLength is the maximum length of the MetadataJSON field (in bytes).
 	MaxMetadataJSONFieldLength = 16384
 )
 

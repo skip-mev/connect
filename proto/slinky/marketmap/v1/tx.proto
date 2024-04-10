@@ -20,8 +20,9 @@ service Msg {
   // UpdateMarkets updates markets from the given message.
   rpc UpdateMarkets(MsgUpdateMarkets) returns (MsgUpdateMarketsResponse);
 
-  // Params defines a method for updating the x/marketmap module parameters.
-  rpc Params(MsgParams) returns (MsgParamsResponse);
+  // UpdateParams defines a method for updating the x/marketmap module
+  // parameters.
+  rpc UpdateParams(MsgParams) returns (MsgParamsResponse);
 
   // RemoveMarketAuthorities defines a method for removing market authorities
   // from the x/marketmap module. the signer must be the admin.

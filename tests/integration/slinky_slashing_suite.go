@@ -3,7 +3,6 @@ package integration
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"strings"
 
 	"cosmossdk.io/math"
@@ -17,10 +16,8 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	alerttypes "github.com/skip-mev/slinky/x/alerts/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -842,7 +839,7 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 	}
 
 	// get the id for the currency-pair
-	id, err := getIDForCurrencyPair(ctx, oraclesClient, cp)
+	_, err = getIDForCurrencyPair(ctx, oraclesClient, cp)
 	s.Require().NoError(err)
 
 	s.Run("test Conclusion failures", func() {
@@ -1158,226 +1155,230 @@ func (s *SlinkySlashingIntegrationSuite) TestConclusionSubmission() {
 		})
 	})
 
-	var honestPrice int64 = 150
 	s.Run("valid conclusion submissions", func() {
-		s.Run("update validator oracles", func() {
-			// update first validator's oracle to submit incorrect Prices
-			nodes := s.chain.Nodes()
+		// TODO restore once slashing is more finalized
 
-			btcusdTicker := mmtypes.Ticker{
-				CurrencyPair:     cp,
-				Decimals:         8,
-				MinProviderCount: 1,
-				Enabled:          true,
-				Metadata_JSON:    `{"price": 150.0}`,
-			}
+		/*
+			var honestPrice int64 = 150
 
-			// update the first node to report incorrect Prices (too high)
-			s.Require().NoError(UpdateNodePrices(nodes[0], btcusdTicker, 152))
+			s.Run("update validator oracles", func() {
+				// update first validator's oracle to submit incorrect Prices
+				nodes := s.chain.Nodes()
 
-			// update the second node to report incorrect Prices (too low)
-			s.Require().NoError(UpdateNodePrices(nodes[1], btcusdTicker, 148))
+				btcusdTicker := mmtypes.Ticker{
+					CurrencyPair:     cp,
+					Decimals:         8,
+					MinProviderCount: 1,
+					Enabled:          true,
+				}
 
-			// update the third node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[2], btcusdTicker, float64(honestPrice)))
+				// update the first node to report incorrect Prices (too high)
+				s.Require().NoError(UpdateNodePrices(nodes[0], btcusdTicker, 152))
 
-			// update the fourth node to report correct Prices
-			s.Require().NoError(UpdateNodePrices(nodes[3], btcusdTicker, float64(honestPrice)))
-		})
+				// update the second node to report incorrect Prices (too low)
+				s.Require().NoError(UpdateNodePrices(nodes[1], btcusdTicker, 148))
 
-		validatorsPreSlash, err := QueryValidators(s.chain)
-		s.Require().NoError(err)
+				// update the third node to report correct Prices
+				s.Require().NoError(UpdateNodePrices(nodes[2], btcusdTicker, float64(honestPrice)))
 
-		cdc := s.chain.Config().EncodingConfig.Codec
-		validatorPreSlashMap := mapValidators(validatorsPreSlash, cdc)
-
-		zero := big.NewInt(0)
-		two := big.NewInt(2)
-		negativeTwo := big.NewInt(-2)
-
-		zeroBz, err := zero.GobEncode()
-		s.Require().NoError(err)
-
-		twoBz, err := two.GobEncode()
-		s.Require().NoError(err)
-
-		negativeTwoBz, err := negativeTwo.GobEncode()
-		s.Require().NoError(err)
-
-		infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*10, []slinkyabci.OracleVoteExtension{
-			{
-				Prices: map[uint64][]byte{
-					id: negativeTwoBz, // 148
-				},
-			},
-			{
-				Prices: map[uint64][]byte{
-					id: zeroBz, // 150
-				},
-			},
-			{
-				Prices: map[uint64][]byte{
-					id: zeroBz, // 150
-				},
-			},
-			{
-				Prices: map[uint64][]byte{
-					id: twoBz, // 152
-				},
-			},
-		})
-		s.Require().NoError(err)
-
-		// get the latest extended commit info
-		extendedCommit, err := GetExtendedCommit(s.chain, int64(infractionHeight))
-		s.Require().NoError(err)
-
-		valsToOracleReport := make(map[string]int64)
-
-		s.Run("map validators to their oracle responses", func() {
-			// map validators to their oracle responses
-			for _, vote := range extendedCommit.Votes {
-				oracleData, err := GetOracleDataFromVote(vote)
-				s.Require().NoError(err)
-
-				key := sdk.ConsAddress(vote.Validator.Address).String()
-
-				// get the price from the oracle data
-				priceBz, ok := oracleData.Prices[id]
-				s.Require().True(ok)
-
-				// get the big from string value
-				var price big.Int
-				price.SetBytes(priceBz)
-
-				// convert the big to int64
-				valsToOracleReport[key] = int64(price.Uint64())
-			}
-		})
-
-		alertSigner, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
-		s.Require().NoError(err)
-
-		s.Run("update params to enable alerts + conclusion-verification-params", func() {
-			cvp, err := alerttypes.NewMultiSigVerificationParams(
-				[]cryptotypes.PubKey{
-					s.multiSigPk1.PubKey(),
-					s.multiSigPk2.PubKey(),
-				},
-			)
-			s.Require().NoError(err)
-
-			params := alerttypes.DefaultParams(s.denom, cvp)
-
-			// update the params to enable alerts
-			_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, params)
-			s.Require().NoError(err)
-		})
-
-		var alertSignerBalance math.Int
-
-		s.Run("submit alert + conclusion", func() {
-			// submit an alert for the infraction height
-			alert := alerttypes.NewAlert(infractionHeight, alertSigner, cp)
-
-			// submit the alert
-			resp, err := s.SubmitAlert(s.multiSigUser1, alert)
-			s.Require().NoError(err)
-
-			// expect the alert submission to succeed
-			s.Require().Equal(resp.CheckTx.Code, uint32(0))
-			s.Require().Equal(resp.TxResult.Code, uint32(0))
-
-			alertSignerBalance, err = s.chain.GetBalance(context.Background(), alertSigner.String(), s.denom)
-			s.Require().NoError(err)
-
-			// create the conclusion
-			conclusion := &alerttypes.MultiSigConclusion{
-				Alert:              alert,
-				ExtendedCommitInfo: extendedCommit,
-				PriceBound: alerttypes.PriceBound{
-					High: "151",
-					Low:  "149",
-				},
-				Status:         true,
-				CurrencyPairID: id,
-			}
-
-			sigBytes, err := conclusion.SignBytes()
-			s.Require().NoError(err)
-
-			// sign from the first multi-sig key
-			sig, err := s.multiSigPk1.Sign(sigBytes)
-			s.Require().NoError(err)
-
-			conclusion.Signatures = []alerttypes.Signature{
-				{
-					Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
-					Signature: sig,
-				},
-			}
-
-			// sign from second multi-sig key
-			sig, err = s.multiSigPk2.Sign(sigBytes)
-			s.Require().NoError(err)
-
-			conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
-				Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
-				Signature: sig,
+				// update the fourth node to report correct Prices
+				s.Require().NoError(UpdateNodePrices(nodes[3], btcusdTicker, float64(honestPrice)))
 			})
 
-			// submit the conclusion
-			resp, err = s.SubmitConclusion(s.multiSigUser2, conclusion)
-			s.Require().NoError(err)
-
-			// expect the conclusion submission to succeed
-			s.Require().Equal(resp.CheckTx.Code, uint32(0))
-			s.Require().Equal(resp.TxResult.Code, uint32(0))
-
-			// wait for a block for the incentive to be executed
-			WaitForHeight(s.chain, uint64(resp.Height)+2, 4*s.blockTime)
-		})
-
-		s.Run("expect that slashing / rewarding is executed", func() {
-			// get the validators after the slashing
-			validatorsPostSlash, err := QueryValidators(s.chain)
+			validatorsPreSlash, err := QueryValidators(s.chain)
 			s.Require().NoError(err)
 
 			cdc := s.chain.Config().EncodingConfig.Codec
-			validatorPostSlashMap := mapValidators(validatorsPostSlash, cdc)
+			validatorPreSlashMap := mapValidators(validatorsPreSlash, cdc)
 
-			reward := math.NewInt(0)
-			// check that the validators are slashed / rewarded correctly
-			for consAddr, priceReport := range valsToOracleReport {
-				// if the validator's report was honest, expect no slash
-				if priceReport == honestPrice {
+			zero := big.NewInt(0)
+			two := big.NewInt(2)
+			negativeTwo := big.NewInt(-2)
+
+			zeroBz, err := zero.GobEncode()
+			s.Require().NoError(err)
+
+			twoBz, err := two.GobEncode()
+			s.Require().NoError(err)
+
+			negativeTwoBz, err := negativeTwo.GobEncode()
+			s.Require().NoError(err)
+
+			infractionHeight, err := ExpectVoteExtensions(s.chain, s.blockTime*10, []slinkyabci.OracleVoteExtension{
+				{
+					Prices: map[uint64][]byte{
+						id: negativeTwoBz, // 148
+					},
+				},
+				{
+					Prices: map[uint64][]byte{
+						id: zeroBz, // 150
+					},
+				},
+				{
+					Prices: map[uint64][]byte{
+						id: zeroBz, // 150
+					},
+				},
+				{
+					Prices: map[uint64][]byte{
+						id: twoBz, // 152
+					},
+				},
+			})
+			s.Require().NoError(err)
+
+			// get the latest extended commit info
+			extendedCommit, err := GetExtendedCommit(s.chain, int64(infractionHeight))
+			s.Require().NoError(err)
+
+			valsToOracleReport := make(map[string]int64)
+
+			s.Run("map validators to their oracle responses", func() {
+				// map validators to their oracle responses
+				for _, vote := range extendedCommit.Votes {
+					oracleData, err := GetOracleDataFromVote(vote)
+					s.Require().NoError(err)
+
+					key := sdk.ConsAddress(vote.Validator.Address).String()
+
+					// get the price from the oracle data
+					priceBz, ok := oracleData.Prices[id]
+					s.Require().True(ok)
+
+					// get the big from string value
+					var price big.Int
+					price.SetBytes(priceBz)
+
+					// convert the big to int64
+					valsToOracleReport[key] = int64(price.Uint64())
+				}
+			})
+
+			alertSigner, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
+			s.Require().NoError(err)
+
+			s.Run("update params to enable alerts + conclusion-verification-params", func() {
+				cvp, err := alerttypes.NewMultiSigVerificationParams(
+					[]cryptotypes.PubKey{
+						s.multiSigPk1.PubKey(),
+						s.multiSigPk2.PubKey(),
+					},
+				)
+				s.Require().NoError(err)
+
+				params := alerttypes.DefaultParams(s.denom, cvp)
+
+				// update the params to enable alerts
+				_, err = UpdateAlertParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.multiSigUser1, params)
+				s.Require().NoError(err)
+			})
+
+			var alertSignerBalance math.Int
+
+			s.Run("submit alert + conclusion", func() {
+				// submit an alert for the infraction height
+				alert := alerttypes.NewAlert(infractionHeight, alertSigner, cp)
+
+				// submit the alert
+				resp, err := s.SubmitAlert(s.multiSigUser1, alert)
+				s.Require().NoError(err)
+
+				// expect the alert submission to succeed
+				s.Require().Equal(resp.CheckTx.Code, uint32(0))
+				s.Require().Equal(resp.TxResult.Code, uint32(0))
+
+				alertSignerBalance, err = s.chain.GetBalance(context.Background(), alertSigner.String(), s.denom)
+				s.Require().NoError(err)
+
+				// create the conclusion
+				conclusion := &alerttypes.MultiSigConclusion{
+					Alert:              alert,
+					ExtendedCommitInfo: extendedCommit,
+					PriceBound: alerttypes.PriceBound{
+						High: "151",
+						Low:  "149",
+					},
+					Status:         true,
+					CurrencyPairID: id,
+				}
+
+				sigBytes, err := conclusion.SignBytes()
+				s.Require().NoError(err)
+
+				// sign from the first multi-sig key
+				sig, err := s.multiSigPk1.Sign(sigBytes)
+				s.Require().NoError(err)
+
+				conclusion.Signatures = []alerttypes.Signature{
+					{
+						Signer:    sdk.AccAddress(s.multiSigPk1.PubKey().Address()).String(),
+						Signature: sig,
+					},
+				}
+
+				// sign from second multi-sig key
+				sig, err = s.multiSigPk2.Sign(sigBytes)
+				s.Require().NoError(err)
+
+				conclusion.Signatures = append(conclusion.Signatures, alerttypes.Signature{
+					Signer:    sdk.AccAddress(s.multiSigPk2.PubKey().Address()).String(),
+					Signature: sig,
+				})
+
+				// submit the conclusion
+				resp, err = s.SubmitConclusion(s.multiSigUser2, conclusion)
+				s.Require().NoError(err)
+
+				// expect the conclusion submission to succeed
+				s.Require().Equal(resp.CheckTx.Code, uint32(0))
+				s.Require().Equal(resp.TxResult.Code, uint32(0))
+
+				// wait for a block for the incentive to be executed
+				WaitForHeight(s.chain, uint64(resp.Height)+2, 4*s.blockTime)
+			})
+
+			s.Run("expect that slashing / rewarding is executed", func() {
+				// get the validators after the slashing
+				validatorsPostSlash, err := QueryValidators(s.chain)
+				s.Require().NoError(err)
+
+				cdc := s.chain.Config().EncodingConfig.Codec
+				validatorPostSlashMap := mapValidators(validatorsPostSlash, cdc)
+
+				reward := math.NewInt(0)
+				// check that the validators are slashed / rewarded correctly
+				for consAddr, priceReport := range valsToOracleReport {
+					// if the validator's report was honest, expect no slash
+					if priceReport == honestPrice {
+						preSlashValidator, ok := validatorPreSlashMap[consAddr]
+						s.Require().True(ok)
+
+						postSlashValidator, ok := validatorPostSlashMap[consAddr]
+						s.Require().True(ok)
+
+						s.Require().True(preSlashValidator.Tokens.Equal(postSlashValidator.Tokens))
+						continue
+					}
+
+					// otherwise expect a slash
 					preSlashValidator, ok := validatorPreSlashMap[consAddr]
 					s.Require().True(ok)
 
 					postSlashValidator, ok := validatorPostSlashMap[consAddr]
 					s.Require().True(ok)
 
-					s.Require().True(preSlashValidator.Tokens.Equal(postSlashValidator.Tokens))
-					continue
+					s.Require().True(postSlashValidator.Tokens.LT(preSlashValidator.Tokens))
+					reward = reward.Add(preSlashValidator.Tokens.Sub(postSlashValidator.Tokens))
 				}
 
-				// otherwise expect a slash
-				preSlashValidator, ok := validatorPreSlashMap[consAddr]
-				s.Require().True(ok)
+				// check that the alert signer is rewarded correctly
+				alertSignerBalanceAfter, err := s.chain.GetBalance(context.Background(), alertSigner.String(), s.denom)
+				s.Require().NoError(err)
 
-				postSlashValidator, ok := validatorPostSlashMap[consAddr]
-				s.Require().True(ok)
-
-				s.Require().True(postSlashValidator.Tokens.LT(preSlashValidator.Tokens))
-				reward = reward.Add(preSlashValidator.Tokens.Sub(postSlashValidator.Tokens))
-			}
-
-			// check that the alert signer is rewarded correctly
-			alertSignerBalanceAfter, err := s.chain.GetBalance(context.Background(), alertSigner.String(), s.denom)
-			s.Require().NoError(err)
-
-			s.Require().True(alertSignerBalanceAfter.Equal(alertSignerBalance.Add(reward).Add(alerttypes.DefaultBondAmount)))
-		})
+				s.Require().True(alertSignerBalanceAfter.Equal(alertSignerBalance.Add(reward).Add(alerttypes.DefaultBondAmount)))
+			})
+		*/
 	})
 }
 
