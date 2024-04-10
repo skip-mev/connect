@@ -18,6 +18,7 @@ import (
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	raydium "github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
@@ -115,6 +116,10 @@ var (
 		kucoin.Name:       kucoin.DefaultMarketConfig,
 		mexc.Name:         mexc.DefaultMarketConfig,
 		okx.Name:          okx.DefaultMarketConfig,
+		// // -----------------------------------------------------------	//
+		// // ---------------------Start Defi Providers-------------------	//
+		// // -----------------------------------------------------------	//
+		uniswapv3.Name: uniswapv3.DefaultETHMarketConfig,
 	}
 
 	// LocalConfig defines a readable config for local development. Any changes to this
@@ -229,6 +234,14 @@ var (
 				Name:      okx.Name,
 				WebSocket: okx.DefaultWebSocketConfig,
 				Type:      types.ConfigType,
+			},
+			// -----------------------------------------------------------	//
+			// ---------------------Start Defi Providers-------------------	//
+			// -----------------------------------------------------------	//
+			{
+				Name: uniswapv3.Name,
+				API:  uniswapv3.DefaultETHAPIConfig,
+				Type: types.ConfigType,
 			},
 		},
 	}
