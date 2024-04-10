@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	gomath "math"
 	"strings"
 	"time"
 
@@ -32,6 +33,8 @@ type APIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseValue]
 
 // APIFetcher is an interface that encapsulates fetching data from a provider. This interface
 // is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
+//
+//go:generate mockery --name APIFetcher --output ./mocks/ --case underscore
 type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
 	// Fetch fetches data from the API for the given IDs. The response is returned as a map of IDs to
 	// their respective responses. The request should respect the context timeout and cancel the request
@@ -153,28 +156,45 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
 	} else {
-		for i := 0; i < len(ids); i++ {
-			id := ids[i]
-			tasks = append(tasks, h.subTask(ctx, []K{id}, responseCh))
+		// Calculate the batch size based on the configuration.
+		batchSize := math.Max(1, h.config.BatchSize)
+
+		// determine the number of queries we need to make based on the batch size.
+		threads := int(gomath.Ceil(float64(len(ids)) / float64(batchSize)))
+
+		// update limit in accordance with # of threads necessary, we want to avoid unnecessary go routines
+		// if the number of threads (tasks) is less than the limit.
+		limit = math.Min(limit, threads)
+
+		for i := 0; i < threads; i++ {
+			// Calculate the start and end indices for the batch.
+			start := i * batchSize
+			end := math.Min(len(ids), (i+1)*batchSize)
+
+			// Create a new task for the batch.
+			tasks = append(tasks, h.subTask(ctx, ids[start:end], responseCh))
 		}
+		h.logger.Debug("created sub-tasks", zap.Int("threads", threads), zap.Int("limit", limit), zap.Int("batch_size", batchSize))
 	}
 
 	// Block each task until the wait group has capacity to accept a new response.
 	index := 0
+	ticker, stop := tickerWithImmediateFirstTick(h.config.Interval)
+	defer stop()
 MainLoop:
 	for {
 		select {
 		case <-ctx.Done():
 			h.logger.Debug("context cancelled, stopping queries")
 			break MainLoop
-		default:
-			wg.Go(tasks[index])
-			index++
-			index %= len(tasks)
+		case <-ticker:
+			// spin up limit number of tasks
+			for i := 0; i < limit; i++ {
+				wg.Go(tasks[index%len(tasks)])
+				index++
+			}
 
-			// Sleep for a bit to prevent the loop from spinning too fast.
-			h.logger.Debug("sleeping", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
-			time.Sleep(h.config.Interval)
+			h.logger.Debug("interval complete", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
 		}
 	}
 
@@ -184,6 +204,26 @@ MainLoop:
 		h.logger.Error("error querying ids", zap.Error(err))
 	}
 	h.logger.Debug("all api sub-tasks completed")
+}
+
+// tickerWithImmediateFirstTick creates a ticker that sends an initial tick immediately, and then ticks
+// at the specified interval.
+func tickerWithImmediateFirstTick(d time.Duration) (<-chan struct{}, func()) {
+	ticker := time.NewTicker(d)
+	ch := make(chan struct{})
+
+	// Send an initial tick immediately.
+	go func() {
+		ch <- struct{}{}
+		for range ticker.C { // send ticks at the specified interval
+			ch <- struct{}{}
+		}
+		close(ch)
+	}()
+
+	return ch, func() {
+		ticker.Stop()
+	}
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
