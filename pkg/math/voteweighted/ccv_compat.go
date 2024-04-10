@@ -3,6 +3,7 @@ package voteweighted
 import (
 	"context"
 	"fmt"
+
 	cmtprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
