@@ -20,18 +20,17 @@ var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
 // by a base provider. This is specifically for fetching market data from the dYdX prices module, which is
 // then translated to a market map.
 type APIHandler struct {
+	logger *zap.Logger
+
 	// api is the api config for the dYdX market params API.
 	api config.APIConfig
-
-	// logger is the logger for the API handler.
-	logger *zap.Logger
 }
 
 // NewAPIHandler returns a new MarketMap MarketMapAPIDataHandler.
 func NewAPIHandler(
-	api config.APIConfig,
 	logger *zap.Logger,
-) (types.MarketMapAPIDataHandler, error) {
+	api config.APIConfig,
+) (*APIHandler, error) {
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
 	}
@@ -68,6 +67,7 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) types.MarketMapResponse {
 	if len(chains) != 1 {
+		h.logger.Error("expected one chain", zap.Any("chains", chains))
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -78,6 +78,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	if resp == nil {
+		h.logger.Error("got nil response from dydx market params API")
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -90,6 +91,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response body into a dydx market params response object.
 	var params dydxtypes.QueryAllMarketParamsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&params); err != nil {
+		h.logger.Error("failed to parse dydx market params response", zap.Error(err))
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -100,8 +102,14 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Convert the dydx market params to a market map.
-	marketResp, err := ConvertMarketParamsToMarketMap(params, h.logger)
+	marketResp, err := h.ConvertMarketParamsToMarketMap(params)
 	if err != nil {
+		h.logger.Error(
+			"failed to convert dydx market params to market map",
+			zap.Any("params", params),
+			zap.Error(err),
+		)
+
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -113,5 +121,7 @@ func (h *APIHandler) ParseResponse(
 
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(&marketResp, time.Now())
+
+	h.logger.Info("successfully resolved market map", zap.Int("markets", len(marketResp.MarketMap.Markets)))
 	return types.NewMarketMapResponse(resolved, nil)
 }

@@ -15,6 +15,579 @@ import (
 	sync "sync"
 )
 
+var _ protoreflect.List = (*_Market_2_list)(nil)
+
+type _Market_2_list struct {
+	list *[]*ProviderConfig
+}
+
+func (x *_Market_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_Market_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_Market_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*ProviderConfig)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_Market_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*ProviderConfig)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_Market_2_list) AppendMutable() protoreflect.Value {
+	v := new(ProviderConfig)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_Market_2_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_Market_2_list) NewElement() protoreflect.Value {
+	v := new(ProviderConfig)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_Market_2_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_Market                  protoreflect.MessageDescriptor
+	fd_Market_ticker           protoreflect.FieldDescriptor
+	fd_Market_provider_configs protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_slinky_marketmap_v1_market_proto_init()
+	md_Market = File_slinky_marketmap_v1_market_proto.Messages().ByName("Market")
+	fd_Market_ticker = md_Market.Fields().ByName("ticker")
+	fd_Market_provider_configs = md_Market.Fields().ByName("provider_configs")
+}
+
+var _ protoreflect.Message = (*fastReflection_Market)(nil)
+
+type fastReflection_Market Market
+
+func (x *Market) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_Market)(x)
+}
+
+func (x *Market) slowProtoReflect() protoreflect.Message {
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_Market_messageType fastReflection_Market_messageType
+var _ protoreflect.MessageType = fastReflection_Market_messageType{}
+
+type fastReflection_Market_messageType struct{}
+
+func (x fastReflection_Market_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_Market)(nil)
+}
+func (x fastReflection_Market_messageType) New() protoreflect.Message {
+	return new(fastReflection_Market)
+}
+func (x fastReflection_Market_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_Market
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_Market) Descriptor() protoreflect.MessageDescriptor {
+	return md_Market
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_Market) Type() protoreflect.MessageType {
+	return _fastReflection_Market_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_Market) New() protoreflect.Message {
+	return new(fastReflection_Market)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_Market) Interface() protoreflect.ProtoMessage {
+	return (*Market)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_Market) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Ticker != nil {
+		value := protoreflect.ValueOfMessage(x.Ticker.ProtoReflect())
+		if !f(fd_Market_ticker, value) {
+			return
+		}
+	}
+	if len(x.ProviderConfigs) != 0 {
+		value := protoreflect.ValueOfList(&_Market_2_list{list: &x.ProviderConfigs})
+		if !f(fd_Market_provider_configs, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_Market) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "slinky.marketmap.v1.Market.ticker":
+		return x.Ticker != nil
+	case "slinky.marketmap.v1.Market.provider_configs":
+		return len(x.ProviderConfigs) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
+		}
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Market) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "slinky.marketmap.v1.Market.ticker":
+		x.Ticker = nil
+	case "slinky.marketmap.v1.Market.provider_configs":
+		x.ProviderConfigs = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
+		}
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_Market) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "slinky.marketmap.v1.Market.ticker":
+		value := x.Ticker
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "slinky.marketmap.v1.Market.provider_configs":
+		if len(x.ProviderConfigs) == 0 {
+			return protoreflect.ValueOfList(&_Market_2_list{})
+		}
+		listValue := &_Market_2_list{list: &x.ProviderConfigs}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
+		}
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Market) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "slinky.marketmap.v1.Market.ticker":
+		x.Ticker = value.Message().Interface().(*Ticker)
+	case "slinky.marketmap.v1.Market.provider_configs":
+		lv := value.List()
+		clv := lv.(*_Market_2_list)
+		x.ProviderConfigs = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
+		}
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Market) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "slinky.marketmap.v1.Market.ticker":
+		if x.Ticker == nil {
+			x.Ticker = new(Ticker)
+		}
+		return protoreflect.ValueOfMessage(x.Ticker.ProtoReflect())
+	case "slinky.marketmap.v1.Market.provider_configs":
+		if x.ProviderConfigs == nil {
+			x.ProviderConfigs = []*ProviderConfig{}
+		}
+		value := &_Market_2_list{list: &x.ProviderConfigs}
+		return protoreflect.ValueOfList(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
+		}
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_Market) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "slinky.marketmap.v1.Market.ticker":
+		m := new(Ticker)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "slinky.marketmap.v1.Market.provider_configs":
+		list := []*ProviderConfig{}
+		return protoreflect.ValueOfList(&_Market_2_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Market"))
+		}
+		panic(fmt.Errorf("message slinky.marketmap.v1.Market does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_Market) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Market", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_Market) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Market) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_Market) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_Market) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*Market)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Ticker != nil {
+			l = options.Size(x.Ticker)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if len(x.ProviderConfigs) > 0 {
+			for _, e := range x.ProviderConfigs {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*Market)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.ProviderConfigs) > 0 {
+			for iNdEx := len(x.ProviderConfigs) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.ProviderConfigs[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x12
+			}
+		}
+		if x.Ticker != nil {
+			encoded, err := options.Marshal(x.Ticker)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*Market)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Market: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Market: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Ticker", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Ticker == nil {
+					x.Ticker = &Ticker{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Ticker); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProviderConfigs", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ProviderConfigs = append(x.ProviderConfigs, &ProviderConfig{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ProviderConfigs[len(x.ProviderConfigs)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 var (
 	md_Ticker                    protoreflect.MessageDescriptor
 	fd_Ticker_currency_pair      protoreflect.FieldDescriptor
@@ -43,7 +616,7 @@ func (x *Ticker) ProtoReflect() protoreflect.Message {
 }
 
 func (x *Ticker) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[0]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -665,9 +1238,12 @@ func (x *fastReflection_Ticker) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_ProviderConfig                  protoreflect.MessageDescriptor
-	fd_ProviderConfig_name             protoreflect.FieldDescriptor
-	fd_ProviderConfig_off_chain_ticker protoreflect.FieldDescriptor
+	md_ProviderConfig                   protoreflect.MessageDescriptor
+	fd_ProviderConfig_name              protoreflect.FieldDescriptor
+	fd_ProviderConfig_off_chain_ticker  protoreflect.FieldDescriptor
+	fd_ProviderConfig_normalize_by_pair protoreflect.FieldDescriptor
+	fd_ProviderConfig_invert            protoreflect.FieldDescriptor
+	fd_ProviderConfig_metadata_JSON     protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -675,6 +1251,9 @@ func init() {
 	md_ProviderConfig = File_slinky_marketmap_v1_market_proto.Messages().ByName("ProviderConfig")
 	fd_ProviderConfig_name = md_ProviderConfig.Fields().ByName("name")
 	fd_ProviderConfig_off_chain_ticker = md_ProviderConfig.Fields().ByName("off_chain_ticker")
+	fd_ProviderConfig_normalize_by_pair = md_ProviderConfig.Fields().ByName("normalize_by_pair")
+	fd_ProviderConfig_invert = md_ProviderConfig.Fields().ByName("invert")
+	fd_ProviderConfig_metadata_JSON = md_ProviderConfig.Fields().ByName("metadata_JSON")
 }
 
 var _ protoreflect.Message = (*fastReflection_ProviderConfig)(nil)
@@ -686,7 +1265,7 @@ func (x *ProviderConfig) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ProviderConfig) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -754,6 +1333,24 @@ func (x *fastReflection_ProviderConfig) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
+	if x.NormalizeByPair != nil {
+		value := protoreflect.ValueOfMessage(x.NormalizeByPair.ProtoReflect())
+		if !f(fd_ProviderConfig_normalize_by_pair, value) {
+			return
+		}
+	}
+	if x.Invert != false {
+		value := protoreflect.ValueOfBool(x.Invert)
+		if !f(fd_ProviderConfig_invert, value) {
+			return
+		}
+	}
+	if x.Metadata_JSON != "" {
+		value := protoreflect.ValueOfString(x.Metadata_JSON)
+		if !f(fd_ProviderConfig_metadata_JSON, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -773,6 +1370,12 @@ func (x *fastReflection_ProviderConfig) Has(fd protoreflect.FieldDescriptor) boo
 		return x.Name != ""
 	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		return x.OffChainTicker != ""
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
+		return x.NormalizeByPair != nil
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		return x.Invert != false
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
+		return x.Metadata_JSON != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
@@ -793,6 +1396,12 @@ func (x *fastReflection_ProviderConfig) Clear(fd protoreflect.FieldDescriptor) {
 		x.Name = ""
 	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		x.OffChainTicker = ""
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
+		x.NormalizeByPair = nil
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		x.Invert = false
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
+		x.Metadata_JSON = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
@@ -814,6 +1423,15 @@ func (x *fastReflection_ProviderConfig) Get(descriptor protoreflect.FieldDescrip
 		return protoreflect.ValueOfString(value)
 	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		value := x.OffChainTicker
+		return protoreflect.ValueOfString(value)
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
+		value := x.NormalizeByPair
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		value := x.Invert
+		return protoreflect.ValueOfBool(value)
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
+		value := x.Metadata_JSON
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -839,6 +1457,12 @@ func (x *fastReflection_ProviderConfig) Set(fd protoreflect.FieldDescriptor, val
 		x.Name = value.Interface().(string)
 	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		x.OffChainTicker = value.Interface().(string)
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
+		x.NormalizeByPair = value.Message().Interface().(*v1.CurrencyPair)
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		x.Invert = value.Bool()
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
+		x.Metadata_JSON = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
@@ -859,10 +1483,19 @@ func (x *fastReflection_ProviderConfig) Set(fd protoreflect.FieldDescriptor, val
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_ProviderConfig) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
+		if x.NormalizeByPair == nil {
+			x.NormalizeByPair = new(v1.CurrencyPair)
+		}
+		return protoreflect.ValueOfMessage(x.NormalizeByPair.ProtoReflect())
 	case "slinky.marketmap.v1.ProviderConfig.name":
 		panic(fmt.Errorf("field name of message slinky.marketmap.v1.ProviderConfig is not mutable"))
 	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
 		panic(fmt.Errorf("field off_chain_ticker of message slinky.marketmap.v1.ProviderConfig is not mutable"))
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		panic(fmt.Errorf("field invert of message slinky.marketmap.v1.ProviderConfig is not mutable"))
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
+		panic(fmt.Errorf("field metadata_JSON of message slinky.marketmap.v1.ProviderConfig is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.ProviderConfig"))
@@ -879,6 +1512,13 @@ func (x *fastReflection_ProviderConfig) NewField(fd protoreflect.FieldDescriptor
 	case "slinky.marketmap.v1.ProviderConfig.name":
 		return protoreflect.ValueOfString("")
 	case "slinky.marketmap.v1.ProviderConfig.off_chain_ticker":
+		return protoreflect.ValueOfString("")
+	case "slinky.marketmap.v1.ProviderConfig.normalize_by_pair":
+		m := new(v1.CurrencyPair)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "slinky.marketmap.v1.ProviderConfig.invert":
+		return protoreflect.ValueOfBool(false)
+	case "slinky.marketmap.v1.ProviderConfig.metadata_JSON":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -957,6 +1597,17 @@ func (x *fastReflection_ProviderConfig) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if x.NormalizeByPair != nil {
+			l = options.Size(x.NormalizeByPair)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Invert {
+			n += 2
+		}
+		l = len(x.Metadata_JSON)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -985,6 +1636,37 @@ func (x *fastReflection_ProviderConfig) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Metadata_JSON) > 0 {
+			i -= len(x.Metadata_JSON)
+			copy(dAtA[i:], x.Metadata_JSON)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Metadata_JSON)))
+			i--
+			dAtA[i] = 0x7a
+		}
+		if x.Invert {
+			i--
+			if x.Invert {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.NormalizeByPair != nil {
+			encoded, err := options.Marshal(x.NormalizeByPair)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x1a
 		}
 		if len(x.OffChainTicker) > 0 {
 			i -= len(x.OffChainTicker)
@@ -1113,469 +1795,9 @@ func (x *fastReflection_ProviderConfig) ProtoMethods() *protoiface.Methods {
 				}
 				x.OffChainTicker = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var _ protoreflect.List = (*_Path_1_list)(nil)
-
-type _Path_1_list struct {
-	list *[]*Operation
-}
-
-func (x *_Path_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Path_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Path_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Operation)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Path_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Operation)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Path_1_list) AppendMutable() protoreflect.Value {
-	v := new(Operation)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Path_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Path_1_list) NewElement() protoreflect.Value {
-	v := new(Operation)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Path_1_list) IsValid() bool {
-	return x.list != nil
-}
-
-var (
-	md_Path            protoreflect.MessageDescriptor
-	fd_Path_operations protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_slinky_marketmap_v1_market_proto_init()
-	md_Path = File_slinky_marketmap_v1_market_proto.Messages().ByName("Path")
-	fd_Path_operations = md_Path.Fields().ByName("operations")
-}
-
-var _ protoreflect.Message = (*fastReflection_Path)(nil)
-
-type fastReflection_Path Path
-
-func (x *Path) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_Path)(x)
-}
-
-func (x *Path) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_Path_messageType fastReflection_Path_messageType
-var _ protoreflect.MessageType = fastReflection_Path_messageType{}
-
-type fastReflection_Path_messageType struct{}
-
-func (x fastReflection_Path_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_Path)(nil)
-}
-func (x fastReflection_Path_messageType) New() protoreflect.Message {
-	return new(fastReflection_Path)
-}
-func (x fastReflection_Path_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_Path
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_Path) Descriptor() protoreflect.MessageDescriptor {
-	return md_Path
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_Path) Type() protoreflect.MessageType {
-	return _fastReflection_Path_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_Path) New() protoreflect.Message {
-	return new(fastReflection_Path)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_Path) Interface() protoreflect.ProtoMessage {
-	return (*Path)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_Path) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Operations) != 0 {
-		value := protoreflect.ValueOfList(&_Path_1_list{list: &x.Operations})
-		if !f(fd_Path_operations, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_Path) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Path.operations":
-		return len(x.Operations) != 0
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Path"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Path does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Path) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Path.operations":
-		x.Operations = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Path"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Path does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_Path) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.Path.operations":
-		if len(x.Operations) == 0 {
-			return protoreflect.ValueOfList(&_Path_1_list{})
-		}
-		listValue := &_Path_1_list{list: &x.Operations}
-		return protoreflect.ValueOfList(listValue)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Path"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Path does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Path) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Path.operations":
-		lv := value.List()
-		clv := lv.(*_Path_1_list)
-		x.Operations = *clv.list
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Path"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Path does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Path) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Path.operations":
-		if x.Operations == nil {
-			x.Operations = []*Operation{}
-		}
-		value := &_Path_1_list{list: &x.Operations}
-		return protoreflect.ValueOfList(value)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Path"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Path does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_Path) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Path.operations":
-		list := []*Operation{}
-		return protoreflect.ValueOfList(&_Path_1_list{list: &list})
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Path"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Path does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_Path) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Path", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_Path) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Path) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_Path) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_Path) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*Path)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if len(x.Operations) > 0 {
-			for _, e := range x.Operations {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*Path)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Operations) > 0 {
-			for iNdEx := len(x.Operations) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Operations[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*Path)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Path: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Path: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
+			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operations", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NormalizeByPair", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -1602,513 +1824,14 @@ func (x *fastReflection_Path) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operations = append(x.Operations, &Operation{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Operations[len(x.Operations)-1]); err != nil {
+				if x.NormalizeByPair == nil {
+					x.NormalizeByPair = &v1.CurrencyPair{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NormalizeByPair); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_Operation               protoreflect.MessageDescriptor
-	fd_Operation_currency_pair protoreflect.FieldDescriptor
-	fd_Operation_invert        protoreflect.FieldDescriptor
-	fd_Operation_provider      protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_slinky_marketmap_v1_market_proto_init()
-	md_Operation = File_slinky_marketmap_v1_market_proto.Messages().ByName("Operation")
-	fd_Operation_currency_pair = md_Operation.Fields().ByName("currency_pair")
-	fd_Operation_invert = md_Operation.Fields().ByName("invert")
-	fd_Operation_provider = md_Operation.Fields().ByName("provider")
-}
-
-var _ protoreflect.Message = (*fastReflection_Operation)(nil)
-
-type fastReflection_Operation Operation
-
-func (x *Operation) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_Operation)(x)
-}
-
-func (x *Operation) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_Operation_messageType fastReflection_Operation_messageType
-var _ protoreflect.MessageType = fastReflection_Operation_messageType{}
-
-type fastReflection_Operation_messageType struct{}
-
-func (x fastReflection_Operation_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_Operation)(nil)
-}
-func (x fastReflection_Operation_messageType) New() protoreflect.Message {
-	return new(fastReflection_Operation)
-}
-func (x fastReflection_Operation_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_Operation
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_Operation) Descriptor() protoreflect.MessageDescriptor {
-	return md_Operation
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_Operation) Type() protoreflect.MessageType {
-	return _fastReflection_Operation_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_Operation) New() protoreflect.Message {
-	return new(fastReflection_Operation)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_Operation) Interface() protoreflect.ProtoMessage {
-	return (*Operation)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_Operation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.CurrencyPair != nil {
-		value := protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
-		if !f(fd_Operation_currency_pair, value) {
-			return
-		}
-	}
-	if x.Invert != false {
-		value := protoreflect.ValueOfBool(x.Invert)
-		if !f(fd_Operation_invert, value) {
-			return
-		}
-	}
-	if x.Provider != "" {
-		value := protoreflect.ValueOfString(x.Provider)
-		if !f(fd_Operation_provider, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_Operation) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.currency_pair":
-		return x.CurrencyPair != nil
-	case "slinky.marketmap.v1.Operation.invert":
-		return x.Invert != false
-	case "slinky.marketmap.v1.Operation.provider":
-		return x.Provider != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Operation"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Operation does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Operation) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.currency_pair":
-		x.CurrencyPair = nil
-	case "slinky.marketmap.v1.Operation.invert":
-		x.Invert = false
-	case "slinky.marketmap.v1.Operation.provider":
-		x.Provider = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Operation"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Operation does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_Operation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.Operation.currency_pair":
-		value := x.CurrencyPair
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "slinky.marketmap.v1.Operation.invert":
-		value := x.Invert
-		return protoreflect.ValueOfBool(value)
-	case "slinky.marketmap.v1.Operation.provider":
-		value := x.Provider
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Operation"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Operation does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Operation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.currency_pair":
-		x.CurrencyPair = value.Message().Interface().(*v1.CurrencyPair)
-	case "slinky.marketmap.v1.Operation.invert":
-		x.Invert = value.Bool()
-	case "slinky.marketmap.v1.Operation.provider":
-		x.Provider = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Operation"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Operation does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Operation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.currency_pair":
-		if x.CurrencyPair == nil {
-			x.CurrencyPair = new(v1.CurrencyPair)
-		}
-		return protoreflect.ValueOfMessage(x.CurrencyPair.ProtoReflect())
-	case "slinky.marketmap.v1.Operation.invert":
-		panic(fmt.Errorf("field invert of message slinky.marketmap.v1.Operation is not mutable"))
-	case "slinky.marketmap.v1.Operation.provider":
-		panic(fmt.Errorf("field provider of message slinky.marketmap.v1.Operation is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Operation"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Operation does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_Operation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Operation.currency_pair":
-		m := new(v1.CurrencyPair)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "slinky.marketmap.v1.Operation.invert":
-		return protoreflect.ValueOfBool(false)
-	case "slinky.marketmap.v1.Operation.provider":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Operation"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Operation does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_Operation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Operation", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_Operation) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Operation) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_Operation) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*Operation)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.CurrencyPair != nil {
-			l = options.Size(x.CurrencyPair)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Invert {
-			n += 2
-		}
-		l = len(x.Provider)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*Operation)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Provider) > 0 {
-			i -= len(x.Provider)
-			copy(dAtA[i:], x.Provider)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Provider)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if x.Invert {
-			i--
-			if x.Invert {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
-			}
-			i--
-			dAtA[i] = 0x10
-		}
-		if x.CurrencyPair != nil {
-			encoded, err := options.Marshal(x.CurrencyPair)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*Operation)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Operation: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Operation: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CurrencyPair", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.CurrencyPair == nil {
-					x.CurrencyPair = &v1.CurrencyPair{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.CurrencyPair); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 2:
+			case 4:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Invert", wireType)
 				}
@@ -2128,9 +1851,9 @@ func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.Invert = bool(v != 0)
-			case 3:
+			case 15:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Provider", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata_JSON", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -2158,995 +1881,7 @@ func (x *fastReflection_Operation) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Provider = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var _ protoreflect.List = (*_Paths_1_list)(nil)
-
-type _Paths_1_list struct {
-	list *[]*Path
-}
-
-func (x *_Paths_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Paths_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Paths_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Path)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Paths_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Path)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Paths_1_list) AppendMutable() protoreflect.Value {
-	v := new(Path)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Paths_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Paths_1_list) NewElement() protoreflect.Value {
-	v := new(Path)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Paths_1_list) IsValid() bool {
-	return x.list != nil
-}
-
-var (
-	md_Paths       protoreflect.MessageDescriptor
-	fd_Paths_paths protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_slinky_marketmap_v1_market_proto_init()
-	md_Paths = File_slinky_marketmap_v1_market_proto.Messages().ByName("Paths")
-	fd_Paths_paths = md_Paths.Fields().ByName("paths")
-}
-
-var _ protoreflect.Message = (*fastReflection_Paths)(nil)
-
-type fastReflection_Paths Paths
-
-func (x *Paths) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_Paths)(x)
-}
-
-func (x *Paths) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_Paths_messageType fastReflection_Paths_messageType
-var _ protoreflect.MessageType = fastReflection_Paths_messageType{}
-
-type fastReflection_Paths_messageType struct{}
-
-func (x fastReflection_Paths_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_Paths)(nil)
-}
-func (x fastReflection_Paths_messageType) New() protoreflect.Message {
-	return new(fastReflection_Paths)
-}
-func (x fastReflection_Paths_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_Paths
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_Paths) Descriptor() protoreflect.MessageDescriptor {
-	return md_Paths
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_Paths) Type() protoreflect.MessageType {
-	return _fastReflection_Paths_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_Paths) New() protoreflect.Message {
-	return new(fastReflection_Paths)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_Paths) Interface() protoreflect.ProtoMessage {
-	return (*Paths)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_Paths) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Paths) != 0 {
-		value := protoreflect.ValueOfList(&_Paths_1_list{list: &x.Paths})
-		if !f(fd_Paths_paths, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_Paths) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Paths.paths":
-		return len(x.Paths) != 0
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Paths"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Paths does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Paths) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Paths.paths":
-		x.Paths = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Paths"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Paths does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_Paths) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.Paths.paths":
-		if len(x.Paths) == 0 {
-			return protoreflect.ValueOfList(&_Paths_1_list{})
-		}
-		listValue := &_Paths_1_list{list: &x.Paths}
-		return protoreflect.ValueOfList(listValue)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Paths"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Paths does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Paths) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Paths.paths":
-		lv := value.List()
-		clv := lv.(*_Paths_1_list)
-		x.Paths = *clv.list
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Paths"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Paths does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Paths) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Paths.paths":
-		if x.Paths == nil {
-			x.Paths = []*Path{}
-		}
-		value := &_Paths_1_list{list: &x.Paths}
-		return protoreflect.ValueOfList(value)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Paths"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Paths does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_Paths) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Paths.paths":
-		list := []*Path{}
-		return protoreflect.ValueOfList(&_Paths_1_list{list: &list})
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Paths"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Paths does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_Paths) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Paths", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_Paths) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Paths) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_Paths) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_Paths) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*Paths)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if len(x.Paths) > 0 {
-			for _, e := range x.Paths {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*Paths)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Paths) > 0 {
-			for iNdEx := len(x.Paths) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Paths[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*Paths)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Paths: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Paths: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Paths = append(x.Paths, &Path{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Paths[len(x.Paths)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var _ protoreflect.List = (*_Providers_1_list)(nil)
-
-type _Providers_1_list struct {
-	list *[]*ProviderConfig
-}
-
-func (x *_Providers_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Providers_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Providers_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ProviderConfig)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Providers_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ProviderConfig)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Providers_1_list) AppendMutable() protoreflect.Value {
-	v := new(ProviderConfig)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Providers_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Providers_1_list) NewElement() protoreflect.Value {
-	v := new(ProviderConfig)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Providers_1_list) IsValid() bool {
-	return x.list != nil
-}
-
-var (
-	md_Providers           protoreflect.MessageDescriptor
-	fd_Providers_providers protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_slinky_marketmap_v1_market_proto_init()
-	md_Providers = File_slinky_marketmap_v1_market_proto.Messages().ByName("Providers")
-	fd_Providers_providers = md_Providers.Fields().ByName("providers")
-}
-
-var _ protoreflect.Message = (*fastReflection_Providers)(nil)
-
-type fastReflection_Providers Providers
-
-func (x *Providers) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_Providers)(x)
-}
-
-func (x *Providers) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_Providers_messageType fastReflection_Providers_messageType
-var _ protoreflect.MessageType = fastReflection_Providers_messageType{}
-
-type fastReflection_Providers_messageType struct{}
-
-func (x fastReflection_Providers_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_Providers)(nil)
-}
-func (x fastReflection_Providers_messageType) New() protoreflect.Message {
-	return new(fastReflection_Providers)
-}
-func (x fastReflection_Providers_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_Providers
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_Providers) Descriptor() protoreflect.MessageDescriptor {
-	return md_Providers
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_Providers) Type() protoreflect.MessageType {
-	return _fastReflection_Providers_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_Providers) New() protoreflect.Message {
-	return new(fastReflection_Providers)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_Providers) Interface() protoreflect.ProtoMessage {
-	return (*Providers)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_Providers) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Providers) != 0 {
-		value := protoreflect.ValueOfList(&_Providers_1_list{list: &x.Providers})
-		if !f(fd_Providers_providers, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_Providers) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Providers.providers":
-		return len(x.Providers) != 0
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Providers"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Providers does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Providers) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Providers.providers":
-		x.Providers = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Providers"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Providers does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_Providers) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.Providers.providers":
-		if len(x.Providers) == 0 {
-			return protoreflect.ValueOfList(&_Providers_1_list{})
-		}
-		listValue := &_Providers_1_list{list: &x.Providers}
-		return protoreflect.ValueOfList(listValue)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Providers"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Providers does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Providers) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Providers.providers":
-		lv := value.List()
-		clv := lv.(*_Providers_1_list)
-		x.Providers = *clv.list
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Providers"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Providers does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Providers) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Providers.providers":
-		if x.Providers == nil {
-			x.Providers = []*ProviderConfig{}
-		}
-		value := &_Providers_1_list{list: &x.Providers}
-		return protoreflect.ValueOfList(value)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Providers"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Providers does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_Providers) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "slinky.marketmap.v1.Providers.providers":
-		list := []*ProviderConfig{}
-		return protoreflect.ValueOfList(&_Providers_1_list{list: &list})
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Providers"))
-		}
-		panic(fmt.Errorf("message slinky.marketmap.v1.Providers does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_Providers) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in slinky.marketmap.v1.Providers", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_Providers) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_Providers) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_Providers) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_Providers) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*Providers)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if len(x.Providers) > 0 {
-			for _, e := range x.Providers {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*Providers)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Providers) > 0 {
-			for iNdEx := len(x.Providers) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Providers[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*Providers)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Providers: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Providers: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Providers", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Providers = append(x.Providers, &ProviderConfig{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Providers[len(x.Providers)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
+				x.Metadata_JSON = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -3186,7 +1921,7 @@ func (x *fastReflection_Providers) ProtoMethods() *protoiface.Methods {
 var _ protoreflect.Map = (*_MarketMap_1_map)(nil)
 
 type _MarketMap_1_map struct {
-	m *map[string]*Ticker
+	m *map[string]*Market
 }
 
 func (x *_MarketMap_1_map) Len() int {
@@ -3248,7 +1983,7 @@ func (x *_MarketMap_1_map) Set(key protoreflect.MapKey, value protoreflect.Value
 	keyUnwrapped := key.String()
 	concreteKey := keyUnwrapped
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Ticker)
+	concreteValue := valueUnwrapped.Interface().(*Market)
 	(*x.m)[concreteKey] = concreteValue
 }
 
@@ -3259,13 +1994,13 @@ func (x *_MarketMap_1_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
 	if ok {
 		return protoreflect.ValueOfMessage(v.ProtoReflect())
 	}
-	newValue := new(Ticker)
+	newValue := new(Market)
 	(*x.m)[concreteKey] = newValue
 	return protoreflect.ValueOfMessage(newValue.ProtoReflect())
 }
 
 func (x *_MarketMap_1_map) NewValue() protoreflect.Value {
-	v := new(Ticker)
+	v := new(Market)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -3273,201 +2008,15 @@ func (x *_MarketMap_1_map) IsValid() bool {
 	return x.m != nil
 }
 
-var _ protoreflect.Map = (*_MarketMap_2_map)(nil)
-
-type _MarketMap_2_map struct {
-	m *map[string]*Paths
-}
-
-func (x *_MarketMap_2_map) Len() int {
-	if x.m == nil {
-		return 0
-	}
-	return len(*x.m)
-}
-
-func (x *_MarketMap_2_map) Range(f func(protoreflect.MapKey, protoreflect.Value) bool) {
-	if x.m == nil {
-		return
-	}
-	for k, v := range *x.m {
-		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfString(k))
-		mapValue := protoreflect.ValueOfMessage(v.ProtoReflect())
-		if !f(mapKey, mapValue) {
-			break
-		}
-	}
-}
-
-func (x *_MarketMap_2_map) Has(key protoreflect.MapKey) bool {
-	if x.m == nil {
-		return false
-	}
-	keyUnwrapped := key.String()
-	concreteValue := keyUnwrapped
-	_, ok := (*x.m)[concreteValue]
-	return ok
-}
-
-func (x *_MarketMap_2_map) Clear(key protoreflect.MapKey) {
-	if x.m == nil {
-		return
-	}
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	delete(*x.m, concreteKey)
-}
-
-func (x *_MarketMap_2_map) Get(key protoreflect.MapKey) protoreflect.Value {
-	if x.m == nil {
-		return protoreflect.Value{}
-	}
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	v, ok := (*x.m)[concreteKey]
-	if !ok {
-		return protoreflect.Value{}
-	}
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_MarketMap_2_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
-	if !key.IsValid() || !value.IsValid() {
-		panic("invalid key or value provided")
-	}
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Paths)
-	(*x.m)[concreteKey] = concreteValue
-}
-
-func (x *_MarketMap_2_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	v, ok := (*x.m)[concreteKey]
-	if ok {
-		return protoreflect.ValueOfMessage(v.ProtoReflect())
-	}
-	newValue := new(Paths)
-	(*x.m)[concreteKey] = newValue
-	return protoreflect.ValueOfMessage(newValue.ProtoReflect())
-}
-
-func (x *_MarketMap_2_map) NewValue() protoreflect.Value {
-	v := new(Paths)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_MarketMap_2_map) IsValid() bool {
-	return x.m != nil
-}
-
-var _ protoreflect.Map = (*_MarketMap_3_map)(nil)
-
-type _MarketMap_3_map struct {
-	m *map[string]*Providers
-}
-
-func (x *_MarketMap_3_map) Len() int {
-	if x.m == nil {
-		return 0
-	}
-	return len(*x.m)
-}
-
-func (x *_MarketMap_3_map) Range(f func(protoreflect.MapKey, protoreflect.Value) bool) {
-	if x.m == nil {
-		return
-	}
-	for k, v := range *x.m {
-		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfString(k))
-		mapValue := protoreflect.ValueOfMessage(v.ProtoReflect())
-		if !f(mapKey, mapValue) {
-			break
-		}
-	}
-}
-
-func (x *_MarketMap_3_map) Has(key protoreflect.MapKey) bool {
-	if x.m == nil {
-		return false
-	}
-	keyUnwrapped := key.String()
-	concreteValue := keyUnwrapped
-	_, ok := (*x.m)[concreteValue]
-	return ok
-}
-
-func (x *_MarketMap_3_map) Clear(key protoreflect.MapKey) {
-	if x.m == nil {
-		return
-	}
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	delete(*x.m, concreteKey)
-}
-
-func (x *_MarketMap_3_map) Get(key protoreflect.MapKey) protoreflect.Value {
-	if x.m == nil {
-		return protoreflect.Value{}
-	}
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	v, ok := (*x.m)[concreteKey]
-	if !ok {
-		return protoreflect.Value{}
-	}
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_MarketMap_3_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
-	if !key.IsValid() || !value.IsValid() {
-		panic("invalid key or value provided")
-	}
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Providers)
-	(*x.m)[concreteKey] = concreteValue
-}
-
-func (x *_MarketMap_3_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
-	keyUnwrapped := key.String()
-	concreteKey := keyUnwrapped
-	v, ok := (*x.m)[concreteKey]
-	if ok {
-		return protoreflect.ValueOfMessage(v.ProtoReflect())
-	}
-	newValue := new(Providers)
-	(*x.m)[concreteKey] = newValue
-	return protoreflect.ValueOfMessage(newValue.ProtoReflect())
-}
-
-func (x *_MarketMap_3_map) NewValue() protoreflect.Value {
-	v := new(Providers)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_MarketMap_3_map) IsValid() bool {
-	return x.m != nil
-}
-
 var (
-	md_MarketMap                  protoreflect.MessageDescriptor
-	fd_MarketMap_tickers          protoreflect.FieldDescriptor
-	fd_MarketMap_paths            protoreflect.FieldDescriptor
-	fd_MarketMap_providers        protoreflect.FieldDescriptor
-	fd_MarketMap_aggregation_type protoreflect.FieldDescriptor
+	md_MarketMap         protoreflect.MessageDescriptor
+	fd_MarketMap_markets protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_slinky_marketmap_v1_market_proto_init()
 	md_MarketMap = File_slinky_marketmap_v1_market_proto.Messages().ByName("MarketMap")
-	fd_MarketMap_tickers = md_MarketMap.Fields().ByName("tickers")
-	fd_MarketMap_paths = md_MarketMap.Fields().ByName("paths")
-	fd_MarketMap_providers = md_MarketMap.Fields().ByName("providers")
-	fd_MarketMap_aggregation_type = md_MarketMap.Fields().ByName("aggregation_type")
+	fd_MarketMap_markets = md_MarketMap.Fields().ByName("markets")
 }
 
 var _ protoreflect.Message = (*fastReflection_MarketMap)(nil)
@@ -3479,7 +2028,7 @@ func (x *MarketMap) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MarketMap) slowProtoReflect() protoreflect.Message {
-	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[6]
+	mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3535,27 +2084,9 @@ func (x *fastReflection_MarketMap) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MarketMap) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Tickers) != 0 {
-		value := protoreflect.ValueOfMap(&_MarketMap_1_map{m: &x.Tickers})
-		if !f(fd_MarketMap_tickers, value) {
-			return
-		}
-	}
-	if len(x.Paths) != 0 {
-		value := protoreflect.ValueOfMap(&_MarketMap_2_map{m: &x.Paths})
-		if !f(fd_MarketMap_paths, value) {
-			return
-		}
-	}
-	if len(x.Providers) != 0 {
-		value := protoreflect.ValueOfMap(&_MarketMap_3_map{m: &x.Providers})
-		if !f(fd_MarketMap_providers, value) {
-			return
-		}
-	}
-	if x.AggregationType != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.AggregationType))
-		if !f(fd_MarketMap_aggregation_type, value) {
+	if len(x.Markets) != 0 {
+		value := protoreflect.ValueOfMap(&_MarketMap_1_map{m: &x.Markets})
+		if !f(fd_MarketMap_markets, value) {
 			return
 		}
 	}
@@ -3574,14 +2105,8 @@ func (x *fastReflection_MarketMap) Range(f func(protoreflect.FieldDescriptor, pr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MarketMap) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.MarketMap.tickers":
-		return len(x.Tickers) != 0
-	case "slinky.marketmap.v1.MarketMap.paths":
-		return len(x.Paths) != 0
-	case "slinky.marketmap.v1.MarketMap.providers":
-		return len(x.Providers) != 0
-	case "slinky.marketmap.v1.MarketMap.aggregation_type":
-		return x.AggregationType != 0
+	case "slinky.marketmap.v1.MarketMap.markets":
+		return len(x.Markets) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
@@ -3598,14 +2123,8 @@ func (x *fastReflection_MarketMap) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MarketMap) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.MarketMap.tickers":
-		x.Tickers = nil
-	case "slinky.marketmap.v1.MarketMap.paths":
-		x.Paths = nil
-	case "slinky.marketmap.v1.MarketMap.providers":
-		x.Providers = nil
-	case "slinky.marketmap.v1.MarketMap.aggregation_type":
-		x.AggregationType = 0
+	case "slinky.marketmap.v1.MarketMap.markets":
+		x.Markets = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
@@ -3622,27 +2141,12 @@ func (x *fastReflection_MarketMap) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MarketMap) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.MarketMap.tickers":
-		if len(x.Tickers) == 0 {
+	case "slinky.marketmap.v1.MarketMap.markets":
+		if len(x.Markets) == 0 {
 			return protoreflect.ValueOfMap(&_MarketMap_1_map{})
 		}
-		mapValue := &_MarketMap_1_map{m: &x.Tickers}
+		mapValue := &_MarketMap_1_map{m: &x.Markets}
 		return protoreflect.ValueOfMap(mapValue)
-	case "slinky.marketmap.v1.MarketMap.paths":
-		if len(x.Paths) == 0 {
-			return protoreflect.ValueOfMap(&_MarketMap_2_map{})
-		}
-		mapValue := &_MarketMap_2_map{m: &x.Paths}
-		return protoreflect.ValueOfMap(mapValue)
-	case "slinky.marketmap.v1.MarketMap.providers":
-		if len(x.Providers) == 0 {
-			return protoreflect.ValueOfMap(&_MarketMap_3_map{})
-		}
-		mapValue := &_MarketMap_3_map{m: &x.Providers}
-		return protoreflect.ValueOfMap(mapValue)
-	case "slinky.marketmap.v1.MarketMap.aggregation_type":
-		value := x.AggregationType
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
@@ -3663,20 +2167,10 @@ func (x *fastReflection_MarketMap) Get(descriptor protoreflect.FieldDescriptor) 
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MarketMap) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.MarketMap.tickers":
+	case "slinky.marketmap.v1.MarketMap.markets":
 		mv := value.Map()
 		cmv := mv.(*_MarketMap_1_map)
-		x.Tickers = *cmv.m
-	case "slinky.marketmap.v1.MarketMap.paths":
-		mv := value.Map()
-		cmv := mv.(*_MarketMap_2_map)
-		x.Paths = *cmv.m
-	case "slinky.marketmap.v1.MarketMap.providers":
-		mv := value.Map()
-		cmv := mv.(*_MarketMap_3_map)
-		x.Providers = *cmv.m
-	case "slinky.marketmap.v1.MarketMap.aggregation_type":
-		x.AggregationType = (AggregationType)(value.Enum())
+		x.Markets = *cmv.m
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
@@ -3697,26 +2191,12 @@ func (x *fastReflection_MarketMap) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MarketMap) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.MarketMap.tickers":
-		if x.Tickers == nil {
-			x.Tickers = make(map[string]*Ticker)
+	case "slinky.marketmap.v1.MarketMap.markets":
+		if x.Markets == nil {
+			x.Markets = make(map[string]*Market)
 		}
-		value := &_MarketMap_1_map{m: &x.Tickers}
+		value := &_MarketMap_1_map{m: &x.Markets}
 		return protoreflect.ValueOfMap(value)
-	case "slinky.marketmap.v1.MarketMap.paths":
-		if x.Paths == nil {
-			x.Paths = make(map[string]*Paths)
-		}
-		value := &_MarketMap_2_map{m: &x.Paths}
-		return protoreflect.ValueOfMap(value)
-	case "slinky.marketmap.v1.MarketMap.providers":
-		if x.Providers == nil {
-			x.Providers = make(map[string]*Providers)
-		}
-		value := &_MarketMap_3_map{m: &x.Providers}
-		return protoreflect.ValueOfMap(value)
-	case "slinky.marketmap.v1.MarketMap.aggregation_type":
-		panic(fmt.Errorf("field aggregation_type of message slinky.marketmap.v1.MarketMap is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
@@ -3730,17 +2210,9 @@ func (x *fastReflection_MarketMap) Mutable(fd protoreflect.FieldDescriptor) prot
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MarketMap) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.MarketMap.tickers":
-		m := make(map[string]*Ticker)
+	case "slinky.marketmap.v1.MarketMap.markets":
+		m := make(map[string]*Market)
 		return protoreflect.ValueOfMap(&_MarketMap_1_map{m: &m})
-	case "slinky.marketmap.v1.MarketMap.paths":
-		m := make(map[string]*Paths)
-		return protoreflect.ValueOfMap(&_MarketMap_2_map{m: &m})
-	case "slinky.marketmap.v1.MarketMap.providers":
-		m := make(map[string]*Providers)
-		return protoreflect.ValueOfMap(&_MarketMap_3_map{m: &m})
-	case "slinky.marketmap.v1.MarketMap.aggregation_type":
-		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.MarketMap"))
@@ -3810,8 +2282,8 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if len(x.Tickers) > 0 {
-			SiZeMaP := func(k string, v *Ticker) {
+		if len(x.Markets) > 0 {
+			SiZeMaP := func(k string, v *Market) {
 				l := 0
 				if v != nil {
 					l = options.Size(v)
@@ -3821,75 +2293,20 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
 			}
 			if options.Deterministic {
-				sortme := make([]string, 0, len(x.Tickers))
-				for k := range x.Tickers {
+				sortme := make([]string, 0, len(x.Markets))
+				for k := range x.Markets {
 					sortme = append(sortme, k)
 				}
 				sort.Strings(sortme)
 				for _, k := range sortme {
-					v := x.Tickers[k]
+					v := x.Markets[k]
 					SiZeMaP(k, v)
 				}
 			} else {
-				for k, v := range x.Tickers {
+				for k, v := range x.Markets {
 					SiZeMaP(k, v)
 				}
 			}
-		}
-		if len(x.Paths) > 0 {
-			SiZeMaP := func(k string, v *Paths) {
-				l := 0
-				if v != nil {
-					l = options.Size(v)
-				}
-				l += 1 + runtime.Sov(uint64(l))
-				mapEntrySize := 1 + len(k) + runtime.Sov(uint64(len(k))) + l
-				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
-			}
-			if options.Deterministic {
-				sortme := make([]string, 0, len(x.Paths))
-				for k := range x.Paths {
-					sortme = append(sortme, k)
-				}
-				sort.Strings(sortme)
-				for _, k := range sortme {
-					v := x.Paths[k]
-					SiZeMaP(k, v)
-				}
-			} else {
-				for k, v := range x.Paths {
-					SiZeMaP(k, v)
-				}
-			}
-		}
-		if len(x.Providers) > 0 {
-			SiZeMaP := func(k string, v *Providers) {
-				l := 0
-				if v != nil {
-					l = options.Size(v)
-				}
-				l += 1 + runtime.Sov(uint64(l))
-				mapEntrySize := 1 + len(k) + runtime.Sov(uint64(len(k))) + l
-				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
-			}
-			if options.Deterministic {
-				sortme := make([]string, 0, len(x.Providers))
-				for k := range x.Providers {
-					sortme = append(sortme, k)
-				}
-				sort.Strings(sortme)
-				for _, k := range sortme {
-					v := x.Providers[k]
-					SiZeMaP(k, v)
-				}
-			} else {
-				for k, v := range x.Providers {
-					SiZeMaP(k, v)
-				}
-			}
-		}
-		if x.AggregationType != 0 {
-			n += 1 + runtime.Sov(uint64(x.AggregationType))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -3920,113 +2337,8 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.AggregationType != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.AggregationType))
-			i--
-			dAtA[i] = 0x20
-		}
-		if len(x.Providers) > 0 {
-			MaRsHaLmAp := func(k string, v *Providers) (protoiface.MarshalOutput, error) {
-				baseI := i
-				encoded, err := options.Marshal(v)
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x12
-				i -= len(k)
-				copy(dAtA[i:], k)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(k)))
-				i--
-				dAtA[i] = 0xa
-				i = runtime.EncodeVarint(dAtA, i, uint64(baseI-i))
-				i--
-				dAtA[i] = 0x1a
-				return protoiface.MarshalOutput{}, nil
-			}
-			if options.Deterministic {
-				keysForProviders := make([]string, 0, len(x.Providers))
-				for k := range x.Providers {
-					keysForProviders = append(keysForProviders, string(k))
-				}
-				sort.Slice(keysForProviders, func(i, j int) bool {
-					return keysForProviders[i] < keysForProviders[j]
-				})
-				for iNdEx := len(keysForProviders) - 1; iNdEx >= 0; iNdEx-- {
-					v := x.Providers[string(keysForProviders[iNdEx])]
-					out, err := MaRsHaLmAp(keysForProviders[iNdEx], v)
-					if err != nil {
-						return out, err
-					}
-				}
-			} else {
-				for k := range x.Providers {
-					v := x.Providers[k]
-					out, err := MaRsHaLmAp(k, v)
-					if err != nil {
-						return out, err
-					}
-				}
-			}
-		}
-		if len(x.Paths) > 0 {
-			MaRsHaLmAp := func(k string, v *Paths) (protoiface.MarshalOutput, error) {
-				baseI := i
-				encoded, err := options.Marshal(v)
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x12
-				i -= len(k)
-				copy(dAtA[i:], k)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(k)))
-				i--
-				dAtA[i] = 0xa
-				i = runtime.EncodeVarint(dAtA, i, uint64(baseI-i))
-				i--
-				dAtA[i] = 0x12
-				return protoiface.MarshalOutput{}, nil
-			}
-			if options.Deterministic {
-				keysForPaths := make([]string, 0, len(x.Paths))
-				for k := range x.Paths {
-					keysForPaths = append(keysForPaths, string(k))
-				}
-				sort.Slice(keysForPaths, func(i, j int) bool {
-					return keysForPaths[i] < keysForPaths[j]
-				})
-				for iNdEx := len(keysForPaths) - 1; iNdEx >= 0; iNdEx-- {
-					v := x.Paths[string(keysForPaths[iNdEx])]
-					out, err := MaRsHaLmAp(keysForPaths[iNdEx], v)
-					if err != nil {
-						return out, err
-					}
-				}
-			} else {
-				for k := range x.Paths {
-					v := x.Paths[k]
-					out, err := MaRsHaLmAp(k, v)
-					if err != nil {
-						return out, err
-					}
-				}
-			}
-		}
-		if len(x.Tickers) > 0 {
-			MaRsHaLmAp := func(k string, v *Ticker) (protoiface.MarshalOutput, error) {
+		if len(x.Markets) > 0 {
+			MaRsHaLmAp := func(k string, v *Market) (protoiface.MarshalOutput, error) {
 				baseI := i
 				encoded, err := options.Marshal(v)
 				if err != nil {
@@ -4051,23 +2363,23 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 				return protoiface.MarshalOutput{}, nil
 			}
 			if options.Deterministic {
-				keysForTickers := make([]string, 0, len(x.Tickers))
-				for k := range x.Tickers {
-					keysForTickers = append(keysForTickers, string(k))
+				keysForMarkets := make([]string, 0, len(x.Markets))
+				for k := range x.Markets {
+					keysForMarkets = append(keysForMarkets, string(k))
 				}
-				sort.Slice(keysForTickers, func(i, j int) bool {
-					return keysForTickers[i] < keysForTickers[j]
+				sort.Slice(keysForMarkets, func(i, j int) bool {
+					return keysForMarkets[i] < keysForMarkets[j]
 				})
-				for iNdEx := len(keysForTickers) - 1; iNdEx >= 0; iNdEx-- {
-					v := x.Tickers[string(keysForTickers[iNdEx])]
-					out, err := MaRsHaLmAp(keysForTickers[iNdEx], v)
+				for iNdEx := len(keysForMarkets) - 1; iNdEx >= 0; iNdEx-- {
+					v := x.Markets[string(keysForMarkets[iNdEx])]
+					out, err := MaRsHaLmAp(keysForMarkets[iNdEx], v)
 					if err != nil {
 						return out, err
 					}
 				}
 			} else {
-				for k := range x.Tickers {
-					v := x.Tickers[k]
+				for k := range x.Markets {
+					v := x.Markets[k]
 					out, err := MaRsHaLmAp(k, v)
 					if err != nil {
 						return out, err
@@ -4126,7 +2438,7 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Tickers", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Markets", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -4153,11 +2465,11 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.Tickers == nil {
-					x.Tickers = make(map[string]*Ticker)
+				if x.Markets == nil {
+					x.Markets = make(map[string]*Market)
 				}
 				var mapkey string
-				var mapvalue *Ticker
+				var mapvalue *Market
 				for iNdEx < postIndex {
 					entryPreIndex := iNdEx
 					var wire uint64
@@ -4231,7 +2543,7 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 						if postmsgIndex > l {
 							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 						}
-						mapvalue = &Ticker{}
+						mapvalue = &Market{}
 						if err := options.Unmarshal(dAtA[iNdEx:postmsgIndex], mapvalue); err != nil {
 							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 						}
@@ -4251,285 +2563,8 @@ func (x *fastReflection_MarketMap) ProtoMethods() *protoiface.Methods {
 						iNdEx += skippy
 					}
 				}
-				x.Tickers[mapkey] = mapvalue
+				x.Markets[mapkey] = mapvalue
 				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Paths", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Paths == nil {
-					x.Paths = make(map[string]*Paths)
-				}
-				var mapkey string
-				var mapvalue *Paths
-				for iNdEx < postIndex {
-					entryPreIndex := iNdEx
-					var wire uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-						}
-						if iNdEx >= l {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						wire |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					fieldNum := int32(wire >> 3)
-					if fieldNum == 1 {
-						var stringLenmapkey uint64
-						for shift := uint(0); ; shift += 7 {
-							if shift >= 64 {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-							}
-							if iNdEx >= l {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-							}
-							b := dAtA[iNdEx]
-							iNdEx++
-							stringLenmapkey |= uint64(b&0x7F) << shift
-							if b < 0x80 {
-								break
-							}
-						}
-						intStringLenmapkey := int(stringLenmapkey)
-						if intStringLenmapkey < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						postStringIndexmapkey := iNdEx + intStringLenmapkey
-						if postStringIndexmapkey < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						if postStringIndexmapkey > l {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-						iNdEx = postStringIndexmapkey
-					} else if fieldNum == 2 {
-						var mapmsglen int
-						for shift := uint(0); ; shift += 7 {
-							if shift >= 64 {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-							}
-							if iNdEx >= l {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-							}
-							b := dAtA[iNdEx]
-							iNdEx++
-							mapmsglen |= int(b&0x7F) << shift
-							if b < 0x80 {
-								break
-							}
-						}
-						if mapmsglen < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						postmsgIndex := iNdEx + mapmsglen
-						if postmsgIndex < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						if postmsgIndex > l {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						mapvalue = &Paths{}
-						if err := options.Unmarshal(dAtA[iNdEx:postmsgIndex], mapvalue); err != nil {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-						}
-						iNdEx = postmsgIndex
-					} else {
-						iNdEx = entryPreIndex
-						skippy, err := runtime.Skip(dAtA[iNdEx:])
-						if err != nil {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-						}
-						if (skippy < 0) || (iNdEx+skippy) < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						if (iNdEx + skippy) > postIndex {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						iNdEx += skippy
-					}
-				}
-				x.Paths[mapkey] = mapvalue
-				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Providers", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Providers == nil {
-					x.Providers = make(map[string]*Providers)
-				}
-				var mapkey string
-				var mapvalue *Providers
-				for iNdEx < postIndex {
-					entryPreIndex := iNdEx
-					var wire uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-						}
-						if iNdEx >= l {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						wire |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					fieldNum := int32(wire >> 3)
-					if fieldNum == 1 {
-						var stringLenmapkey uint64
-						for shift := uint(0); ; shift += 7 {
-							if shift >= 64 {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-							}
-							if iNdEx >= l {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-							}
-							b := dAtA[iNdEx]
-							iNdEx++
-							stringLenmapkey |= uint64(b&0x7F) << shift
-							if b < 0x80 {
-								break
-							}
-						}
-						intStringLenmapkey := int(stringLenmapkey)
-						if intStringLenmapkey < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						postStringIndexmapkey := iNdEx + intStringLenmapkey
-						if postStringIndexmapkey < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						if postStringIndexmapkey > l {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-						iNdEx = postStringIndexmapkey
-					} else if fieldNum == 2 {
-						var mapmsglen int
-						for shift := uint(0); ; shift += 7 {
-							if shift >= 64 {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-							}
-							if iNdEx >= l {
-								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-							}
-							b := dAtA[iNdEx]
-							iNdEx++
-							mapmsglen |= int(b&0x7F) << shift
-							if b < 0x80 {
-								break
-							}
-						}
-						if mapmsglen < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						postmsgIndex := iNdEx + mapmsglen
-						if postmsgIndex < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						if postmsgIndex > l {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						mapvalue = &Providers{}
-						if err := options.Unmarshal(dAtA[iNdEx:postmsgIndex], mapvalue); err != nil {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-						}
-						iNdEx = postmsgIndex
-					} else {
-						iNdEx = entryPreIndex
-						skippy, err := runtime.Skip(dAtA[iNdEx:])
-						if err != nil {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-						}
-						if (skippy < 0) || (iNdEx+skippy) < 0 {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-						}
-						if (iNdEx + skippy) > postIndex {
-							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-						}
-						iNdEx += skippy
-					}
-				}
-				x.Providers[mapkey] = mapvalue
-				iNdEx = postIndex
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AggregationType", wireType)
-				}
-				x.AggregationType = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.AggregationType |= AggregationType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -4578,63 +2613,52 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AggregationType is the type of aggregation that will be used to aggregate the
-// prices of the tickers.
-type AggregationType int32
+// Market encapsulates a Ticker and its provider-specific configuration.
+type Market struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
 
-const (
-	// UNKOWN_AGGREGATION_TYPE is the default value for the aggregation type.
-	AggregationType_UNKNOWN_AGGREGATION_TYPE AggregationType = 0
-	// IndexPriceAggregation is the type of aggregation that will be used to
-	// aggregate the prices of the tickers. Specifically, this converts the prices
-	// either directly or using the index price to a common currency pair.
-	AggregationType_INDEX_PRICE_AGGREGATION AggregationType = 1
-	// StandardMedianAggregation is the type of aggregation that will be used to
-	// aggregate the prices of the tickers. Specifically, this converts the prices
-	// to a common currency pair and then takes the median of the prices. No
-	// conversions are done if the prices are already in the common currency pair.
-	AggregationType_STANDARD_MEDIAN_AGGREGATION AggregationType = 2
-)
+	// Ticker represents a price feed for a given asset pair i.e. BTC/USD. The
+	// price feed is scaled to a number of decimal places and has a minimum number
+	// of providers required to consider the ticker valid.
+	Ticker *Ticker `protobuf:"bytes,1,opt,name=ticker,proto3" json:"ticker,omitempty"`
+	// ProviderConfigs is the list of provider-specific configs for this Market.
+	ProviderConfigs []*ProviderConfig `protobuf:"bytes,2,rep,name=provider_configs,json=providerConfigs,proto3" json:"provider_configs,omitempty"`
+}
 
-// Enum value maps for AggregationType.
-var (
-	AggregationType_name = map[int32]string{
-		0: "UNKNOWN_AGGREGATION_TYPE",
-		1: "INDEX_PRICE_AGGREGATION",
-		2: "STANDARD_MEDIAN_AGGREGATION",
+func (x *Market) Reset() {
+	*x = Market{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
 	}
-	AggregationType_value = map[string]int32{
-		"UNKNOWN_AGGREGATION_TYPE":    0,
-		"INDEX_PRICE_AGGREGATION":     1,
-		"STANDARD_MEDIAN_AGGREGATION": 2,
-	}
-)
-
-func (x AggregationType) Enum() *AggregationType {
-	p := new(AggregationType)
-	*p = x
-	return p
 }
 
-func (x AggregationType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+func (x *Market) String() string {
+	return protoimpl.X.MessageStringOf(x)
 }
 
-func (AggregationType) Descriptor() protoreflect.EnumDescriptor {
-	return file_slinky_marketmap_v1_market_proto_enumTypes[0].Descriptor()
-}
+func (*Market) ProtoMessage() {}
 
-func (AggregationType) Type() protoreflect.EnumType {
-	return &file_slinky_marketmap_v1_market_proto_enumTypes[0]
-}
-
-func (x AggregationType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use AggregationType.Descriptor instead.
-func (AggregationType) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use Market.ProtoReflect.Descriptor instead.
+func (*Market) Descriptor() ([]byte, []int) {
 	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Market) GetTicker() *Ticker {
+	if x != nil {
+		return x.Ticker
+	}
+	return nil
+}
+
+func (x *Market) GetProviderConfigs() []*ProviderConfig {
+	if x != nil {
+		return x.ProviderConfigs
+	}
+	return nil
 }
 
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
@@ -4664,7 +2688,7 @@ type Ticker struct {
 func (x *Ticker) Reset() {
 	*x = Ticker{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[0]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4678,7 +2702,7 @@ func (*Ticker) ProtoMessage() {}
 
 // Deprecated: Use Ticker.ProtoReflect.Descriptor instead.
 func (*Ticker) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{0}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Ticker) GetCurrencyPair() *v1.CurrencyPair {
@@ -4728,12 +2752,23 @@ type ProviderConfig struct {
 	// The off-chain ticker is unique to a given provider and is used to fetch the
 	// price of the ticker from the provider.
 	OffChainTicker string `protobuf:"bytes,2,opt,name=off_chain_ticker,json=offChainTicker,proto3" json:"off_chain_ticker,omitempty"`
+	// NormalizeByPair is the currency pair for this ticker to be normalized by.
+	// For example, if the desired Ticker is BTC/USD, this market could be reached
+	// using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
+	// optional and nullable.
+	NormalizeByPair *v1.CurrencyPair `protobuf:"bytes,3,opt,name=normalize_by_pair,json=normalizeByPair,proto3" json:"normalize_by_pair,omitempty"`
+	// Invert is a boolean indicating if the BASE and QUOTE of the market should
+	// be inverted. i.e. BASE -> QUOTE, QUOTE -> BASE
+	Invert bool `protobuf:"varint,4,opt,name=invert,proto3" json:"invert,omitempty"`
+	// MetadataJSON is a string of JSON that encodes any extra configuration
+	// for the given provider config.
+	Metadata_JSON string `protobuf:"bytes,15,opt,name=metadata_JSON,json=metadataJSON,proto3" json:"metadata_JSON,omitempty"`
 }
 
 func (x *ProviderConfig) Reset() {
 	*x = ProviderConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[1]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4747,7 +2782,7 @@ func (*ProviderConfig) ProtoMessage() {}
 
 // Deprecated: Use ProviderConfig.ProtoReflect.Descriptor instead.
 func (*ProviderConfig) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{1}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ProviderConfig) GetName() string {
@@ -4764,197 +2799,42 @@ func (x *ProviderConfig) GetOffChainTicker() string {
 	return ""
 }
 
-// Path is the list of convertable markets that will be used to convert the
-// prices of a set of tickers to a common ticker.
-type Path struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Operations is an ordered list of operations that will be taken. These must
-	// be topologically sorted to ensure that the conversion is possible i.e. DAG.
-	Operations []*Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
-}
-
-func (x *Path) Reset() {
-	*x = Path{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Path) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Path) ProtoMessage() {}
-
-// Deprecated: Use Path.ProtoReflect.Descriptor instead.
-func (*Path) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Path) GetOperations() []*Operation {
+func (x *ProviderConfig) GetNormalizeByPair() *v1.CurrencyPair {
 	if x != nil {
-		return x.Operations
+		return x.NormalizeByPair
 	}
 	return nil
 }
 
-// Operation represents the operation configuration for a given ticker.
-type Operation struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// CurrencyPair is the on-chain currency pair for this ticker.
-	CurrencyPair *v1.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair,omitempty"`
-	// Invert is a boolean that indicates whether the price of the ticker should
-	// be inverted.
-	Invert bool `protobuf:"varint,2,opt,name=invert,proto3" json:"invert,omitempty"`
-	// Provider is the name of the provider that will be used to fetch the price
-	// of the ticker.
-	Provider string `protobuf:"bytes,3,opt,name=provider,proto3" json:"provider,omitempty"`
-}
-
-func (x *Operation) Reset() {
-	*x = Operation{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Operation) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Operation) ProtoMessage() {}
-
-// Deprecated: Use Operation.ProtoReflect.Descriptor instead.
-func (*Operation) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *Operation) GetCurrencyPair() *v1.CurrencyPair {
-	if x != nil {
-		return x.CurrencyPair
-	}
-	return nil
-}
-
-func (x *Operation) GetInvert() bool {
+func (x *ProviderConfig) GetInvert() bool {
 	if x != nil {
 		return x.Invert
 	}
 	return false
 }
 
-func (x *Operation) GetProvider() string {
+func (x *ProviderConfig) GetMetadata_JSON() string {
 	if x != nil {
-		return x.Provider
+		return x.Metadata_JSON
 	}
 	return ""
 }
 
-type Paths struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Paths is the list of convertable markets that will be used to convert the
-	// prices of a set of tickers to a common ticker.
-	Paths []*Path `protobuf:"bytes,1,rep,name=paths,proto3" json:"paths,omitempty"`
-}
-
-func (x *Paths) Reset() {
-	*x = Paths{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Paths) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Paths) ProtoMessage() {}
-
-// Deprecated: Use Paths.ProtoReflect.Descriptor instead.
-func (*Paths) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *Paths) GetPaths() []*Path {
-	if x != nil {
-		return x.Paths
-	}
-	return nil
-}
-
-type Providers struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Providers is the list of provider configurations for the given ticker.
-	Providers []*ProviderConfig `protobuf:"bytes,1,rep,name=providers,proto3" json:"providers,omitempty"`
-}
-
-func (x *Providers) Reset() {
-	*x = Providers{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Providers) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Providers) ProtoMessage() {}
-
-// Deprecated: Use Providers.ProtoReflect.Descriptor instead.
-func (*Providers) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *Providers) GetProviders() []*ProviderConfig {
-	if x != nil {
-		return x.Providers
-	}
-	return nil
-}
-
+// MarketMap maps ticker strings to their Markets.
 type MarketMap struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Tickers is the full list of tickers and their associated configurations
+	// Markets is the full list of tickers and their associated configurations
 	// to be stored on-chain.
-	Tickers map[string]*Ticker `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Paths is a map from CurrencyPair to all paths that resolve to that pair
-	Paths map[string]*Paths `protobuf:"bytes,2,rep,name=paths,proto3" json:"paths,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Providers is a map from CurrencyPair to each of to provider-specific
-	// configs associated with it.
-	Providers map[string]*Providers `protobuf:"bytes,3,rep,name=providers,proto3" json:"providers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// AggregationType is the type of aggregation that will be used to aggregate
-	// the prices of the tickers.
-	AggregationType AggregationType `protobuf:"varint,4,opt,name=aggregation_type,json=aggregationType,proto3,enum=slinky.marketmap.v1.AggregationType" json:"aggregation_type,omitempty"`
+	Markets map[string]*Market `protobuf:"bytes,1,rep,name=markets,proto3" json:"markets,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *MarketMap) Reset() {
 	*x = MarketMap{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[6]
+		mi := &file_slinky_marketmap_v1_market_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4968,35 +2848,14 @@ func (*MarketMap) ProtoMessage() {}
 
 // Deprecated: Use MarketMap.ProtoReflect.Descriptor instead.
 func (*MarketMap) Descriptor() ([]byte, []int) {
-	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{6}
+	return file_slinky_marketmap_v1_market_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *MarketMap) GetTickers() map[string]*Ticker {
+func (x *MarketMap) GetMarkets() map[string]*Market {
 	if x != nil {
-		return x.Tickers
+		return x.Markets
 	}
 	return nil
-}
-
-func (x *MarketMap) GetPaths() map[string]*Paths {
-	if x != nil {
-		return x.Paths
-	}
-	return nil
-}
-
-func (x *MarketMap) GetProviders() map[string]*Providers {
-	if x != nil {
-		return x.Providers
-	}
-	return nil
-}
-
-func (x *MarketMap) GetAggregationType() AggregationType {
-	if x != nil {
-		return x.AggregationType
-	}
-	return AggregationType_UNKNOWN_AGGREGATION_TYPE
 }
 
 var File_slinky_marketmap_v1_market_proto protoreflect.FileDescriptor
@@ -5009,107 +2868,70 @@ var file_slinky_marketmap_v1_market_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x23, 0x73,
 	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x63,
 	0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0xe5, 0x01, 0x0a, 0x06, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x48, 0x0a,
-	0x0d, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79,
-	0x70, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
-	0x61, 0x69, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72, 0x65,
-	0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d,
-	0x61, 0x6c, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x64, 0x65, 0x63, 0x69, 0x6d,
-	0x61, 0x6c, 0x73, 0x12, 0x2c, 0x0a, 0x12, 0x6d, 0x69, 0x6e, 0x5f, 0x70, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x10, 0x6d, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e,
-	0x74, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x0e, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x6d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x18, 0x0f, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x4a, 0x53, 0x4f, 0x4e,
-	0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x22, 0x4e, 0x0a, 0x0e, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x12, 0x0a, 0x04,
-	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
-	0x12, 0x28, 0x0a, 0x10, 0x6f, 0x66, 0x66, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x5f, 0x74, 0x69,
-	0x63, 0x6b, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x6f, 0x66, 0x66, 0x43,
-	0x68, 0x61, 0x69, 0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x4c, 0x0a, 0x04, 0x50, 0x61,
-	0x74, 0x68, 0x12, 0x44, 0x0a, 0x0a, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e,
-	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x89, 0x01, 0x0a, 0x09, 0x4f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x48, 0x0a, 0x0d, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e,
-	0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e,
-	0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e,
-	0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x42, 0x04, 0xc8, 0xde,
-	0x1f, 0x00, 0x52, 0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72,
-	0x12, 0x16, 0x0a, 0x06, 0x69, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x06, 0x69, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x22, 0x3e, 0x0a, 0x05, 0x50, 0x61, 0x74, 0x68, 0x73, 0x12, 0x35, 0x0a,
-	0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e,
-	0x76, 0x31, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x70,
-	0x61, 0x74, 0x68, 0x73, 0x22, 0x54, 0x0a, 0x09, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x73, 0x12, 0x47, 0x0a, 0x09, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x18, 0x01,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61,
-	0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
-	0x09, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x22, 0xda, 0x04, 0x0a, 0x09, 0x4d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x12, 0x4b, 0x0a, 0x07, 0x74, 0x69, 0x63, 0x6b,
-	0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72,
-	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x74, 0x69,
-	0x63, 0x6b, 0x65, 0x72, 0x73, 0x12, 0x45, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x18, 0x02,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61,
-	0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x4d, 0x61, 0x70, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42,
-	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x12, 0x51, 0x0a, 0x09,
-	0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x2d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
-	0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x2e,
-	0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04,
-	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x12,
-	0x4f, 0x0a, 0x10, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74,
-	0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x41, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52,
-	0x0f, 0x61, 0x67, 0x67, 0x72, 0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x1a, 0x57, 0x0a, 0x0c, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79,
-	0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b,
-	0x65, 0x79, 0x12, 0x31, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a, 0x54, 0x0a, 0x0a, 0x50, 0x61, 0x74,
-	0x68, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x30, 0x0a, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b,
-	0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50,
-	0x61, 0x74, 0x68, 0x73, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a,
-	0x5c, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x73, 0x45, 0x6e, 0x74, 0x72,
-	0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x6b, 0x65, 0x79, 0x12, 0x34, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x74, 0x6f, 0x22, 0xa3, 0x01, 0x0a, 0x06, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x12, 0x39, 0x0a,
+	0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e,
+	0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70,
+	0x2e, 0x76, 0x31, 0x2e, 0x54, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
+	0x52, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x54, 0x0a, 0x10, 0x70, 0x72, 0x6f, 0x76,
+	0x69, 0x64, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x18, 0x02, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
 	0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
-	0x72, 0x73, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x3a, 0x08, 0x98,
-	0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x2a, 0x6d, 0x0a, 0x0f, 0x41, 0x67, 0x67, 0x72, 0x65,
-	0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x18, 0x55, 0x4e,
-	0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x5f, 0x41, 0x47, 0x47, 0x52, 0x45, 0x47, 0x41, 0x54, 0x49, 0x4f,
-	0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x49, 0x4e, 0x44, 0x45,
-	0x58, 0x5f, 0x50, 0x52, 0x49, 0x43, 0x45, 0x5f, 0x41, 0x47, 0x47, 0x52, 0x45, 0x47, 0x41, 0x54,
-	0x49, 0x4f, 0x4e, 0x10, 0x01, 0x12, 0x1f, 0x0a, 0x1b, 0x53, 0x54, 0x41, 0x4e, 0x44, 0x41, 0x52,
-	0x44, 0x5f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x4e, 0x5f, 0x41, 0x47, 0x47, 0x52, 0x45, 0x47, 0x41,
-	0x54, 0x49, 0x4f, 0x4e, 0x10, 0x02, 0x42, 0xc6, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
-	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e,
-	0x76, 0x31, 0x42, 0x0b, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x30, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x6d, 0x61, 0x70, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61,
-	0x70, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x4d, 0x58, 0xaa, 0x02, 0x13, 0x53, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x13, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
-	0x61, 0x70, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x15, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
-	0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0f, 0x70,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x3a, 0x08,
+	0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x22, 0xe5, 0x01, 0x0a, 0x06, 0x54, 0x69, 0x63,
+	0x6b, 0x65, 0x72, 0x12, 0x48, 0x0a, 0x0d, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f,
+	0x70, 0x61, 0x69, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x73, 0x6c, 0x69,
+	0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x75, 0x72,
+	0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
+	0x0c, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x12, 0x1a, 0x0a,
+	0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x08, 0x64, 0x65, 0x63, 0x69, 0x6d, 0x61, 0x6c, 0x73, 0x12, 0x2c, 0x0a, 0x12, 0x6d, 0x69, 0x6e,
+	0x5f, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x6d, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64,
+	0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c,
+	0x65, 0x64, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65,
+	0x64, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x4a, 0x53,
+	0x4f, 0x4e, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0x4a, 0x53, 0x4f, 0x4e, 0x3a, 0x08, 0x98, 0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00,
+	0x22, 0xd6, 0x01, 0x0a, 0x0e, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x28, 0x0a, 0x10, 0x6f, 0x66, 0x66, 0x5f, 0x63,
+	0x68, 0x61, 0x69, 0x6e, 0x5f, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0e, 0x6f, 0x66, 0x66, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x54, 0x69, 0x63, 0x6b, 0x65,
+	0x72, 0x12, 0x49, 0x0a, 0x11, 0x6e, 0x6f, 0x72, 0x6d, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x5f, 0x62,
+	0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x73,
+	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43,
+	0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x52, 0x0f, 0x6e, 0x6f, 0x72,
+	0x6d, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x42, 0x79, 0x50, 0x61, 0x69, 0x72, 0x12, 0x16, 0x0a, 0x06,
+	0x69, 0x6e, 0x76, 0x65, 0x72, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x69, 0x6e,
+	0x76, 0x65, 0x72, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0x4a, 0x53, 0x4f, 0x4e, 0x22, 0xbb, 0x01, 0x0a, 0x09, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x12, 0x4b, 0x0a, 0x07, 0x6d, 0x61, 0x72, 0x6b, 0x65,
+	0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b,
+	0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x4d, 0x61, 0x70, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x73,
+	0x45, 0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x6d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x73, 0x1a, 0x57, 0x0a, 0x0c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x73, 0x45,
+	0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x31, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x3a, 0x08, 0x98,
+	0xa0, 0x1f, 0x00, 0x80, 0xdc, 0x20, 0x00, 0x42, 0xc6, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d, 0x2e,
+	0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70,
+	0x2e, 0x76, 0x31, 0x42, 0x0b, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x50, 0x01, 0x5a, 0x30, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x6d, 0x61, 0x70, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d,
+	0x61, 0x70, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x4d, 0x58, 0xaa, 0x02, 0x13, 0x53, 0x6c, 0x69,
+	0x6e, 0x6b, 0x79, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e, 0x56, 0x31,
+	0xca, 0x02, 0x13, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
+	0x6d, 0x61, 0x70, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1f, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c,
+	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x15, 0x53, 0x6c, 0x69, 0x6e, 0x6b,
+	0x79, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x3a, 0x3a, 0x56, 0x31,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5124,40 +2946,27 @@ func file_slinky_marketmap_v1_market_proto_rawDescGZIP() []byte {
 	return file_slinky_marketmap_v1_market_proto_rawDescData
 }
 
-var file_slinky_marketmap_v1_market_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_slinky_marketmap_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_slinky_marketmap_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_slinky_marketmap_v1_market_proto_goTypes = []interface{}{
-	(AggregationType)(0),    // 0: slinky.marketmap.v1.AggregationType
+	(*Market)(nil),          // 0: slinky.marketmap.v1.Market
 	(*Ticker)(nil),          // 1: slinky.marketmap.v1.Ticker
 	(*ProviderConfig)(nil),  // 2: slinky.marketmap.v1.ProviderConfig
-	(*Path)(nil),            // 3: slinky.marketmap.v1.Path
-	(*Operation)(nil),       // 4: slinky.marketmap.v1.Operation
-	(*Paths)(nil),           // 5: slinky.marketmap.v1.Paths
-	(*Providers)(nil),       // 6: slinky.marketmap.v1.Providers
-	(*MarketMap)(nil),       // 7: slinky.marketmap.v1.MarketMap
-	nil,                     // 8: slinky.marketmap.v1.MarketMap.TickersEntry
-	nil,                     // 9: slinky.marketmap.v1.MarketMap.PathsEntry
-	nil,                     // 10: slinky.marketmap.v1.MarketMap.ProvidersEntry
-	(*v1.CurrencyPair)(nil), // 11: slinky.types.v1.CurrencyPair
+	(*MarketMap)(nil),       // 3: slinky.marketmap.v1.MarketMap
+	nil,                     // 4: slinky.marketmap.v1.MarketMap.MarketsEntry
+	(*v1.CurrencyPair)(nil), // 5: slinky.types.v1.CurrencyPair
 }
 var file_slinky_marketmap_v1_market_proto_depIdxs = []int32{
-	11, // 0: slinky.marketmap.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	4,  // 1: slinky.marketmap.v1.Path.operations:type_name -> slinky.marketmap.v1.Operation
-	11, // 2: slinky.marketmap.v1.Operation.currency_pair:type_name -> slinky.types.v1.CurrencyPair
-	3,  // 3: slinky.marketmap.v1.Paths.paths:type_name -> slinky.marketmap.v1.Path
-	2,  // 4: slinky.marketmap.v1.Providers.providers:type_name -> slinky.marketmap.v1.ProviderConfig
-	8,  // 5: slinky.marketmap.v1.MarketMap.tickers:type_name -> slinky.marketmap.v1.MarketMap.TickersEntry
-	9,  // 6: slinky.marketmap.v1.MarketMap.paths:type_name -> slinky.marketmap.v1.MarketMap.PathsEntry
-	10, // 7: slinky.marketmap.v1.MarketMap.providers:type_name -> slinky.marketmap.v1.MarketMap.ProvidersEntry
-	0,  // 8: slinky.marketmap.v1.MarketMap.aggregation_type:type_name -> slinky.marketmap.v1.AggregationType
-	1,  // 9: slinky.marketmap.v1.MarketMap.TickersEntry.value:type_name -> slinky.marketmap.v1.Ticker
-	5,  // 10: slinky.marketmap.v1.MarketMap.PathsEntry.value:type_name -> slinky.marketmap.v1.Paths
-	6,  // 11: slinky.marketmap.v1.MarketMap.ProvidersEntry.value:type_name -> slinky.marketmap.v1.Providers
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	1, // 0: slinky.marketmap.v1.Market.ticker:type_name -> slinky.marketmap.v1.Ticker
+	2, // 1: slinky.marketmap.v1.Market.provider_configs:type_name -> slinky.marketmap.v1.ProviderConfig
+	5, // 2: slinky.marketmap.v1.Ticker.currency_pair:type_name -> slinky.types.v1.CurrencyPair
+	5, // 3: slinky.marketmap.v1.ProviderConfig.normalize_by_pair:type_name -> slinky.types.v1.CurrencyPair
+	4, // 4: slinky.marketmap.v1.MarketMap.markets:type_name -> slinky.marketmap.v1.MarketMap.MarketsEntry
+	0, // 5: slinky.marketmap.v1.MarketMap.MarketsEntry.value:type_name -> slinky.marketmap.v1.Market
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_slinky_marketmap_v1_market_proto_init() }
@@ -5167,7 +2976,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_slinky_marketmap_v1_market_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Ticker); i {
+			switch v := v.(*Market); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5179,7 +2988,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 			}
 		}
 		file_slinky_marketmap_v1_market_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ProviderConfig); i {
+			switch v := v.(*Ticker); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5191,7 +3000,7 @@ func file_slinky_marketmap_v1_market_proto_init() {
 			}
 		}
 		file_slinky_marketmap_v1_market_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Path); i {
+			switch v := v.(*ProviderConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5203,42 +3012,6 @@ func file_slinky_marketmap_v1_market_proto_init() {
 			}
 		}
 		file_slinky_marketmap_v1_market_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Operation); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Paths); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Providers); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_slinky_marketmap_v1_market_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MarketMap); i {
 			case 0:
 				return &v.state
@@ -5256,14 +3029,13 @@ func file_slinky_marketmap_v1_market_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_slinky_marketmap_v1_market_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   10,
+			NumEnums:      0,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_slinky_marketmap_v1_market_proto_goTypes,
 		DependencyIndexes: file_slinky_marketmap_v1_market_proto_depIdxs,
-		EnumInfos:         file_slinky_marketmap_v1_market_proto_enumTypes,
 		MessageInfos:      file_slinky_marketmap_v1_market_proto_msgTypes,
 	}.Build()
 	File_slinky_marketmap_v1_market_proto = out.File

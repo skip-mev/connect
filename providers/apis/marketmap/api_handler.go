@@ -79,7 +79,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	// Parse the response body into a market map object.
-	var market mmtypes.GetMarketMapResponse
+	var market mmtypes.MarketMapResponse
 	if err := json.NewDecoder(resp.Body).Decode(&market); err != nil {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
@@ -111,6 +111,6 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	resolved := make(types.ResolvedMarketMap)
-	resolved[chain] = types.NewMarketMapResult(&market, time.Now())
+	resolved[chain] = types.NewMarketMapResult(&market, time.Now().UTC())
 	return types.NewMarketMapResponse(resolved, nil)
 }

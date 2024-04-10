@@ -86,16 +86,13 @@ var (
 	updateInterval time.Duration
 	// maxPriceAge is the maximum age of a price that the oracle will accept.
 	maxPriceAge time.Duration
-
 	// raydium-enabled determine whether or not the raydium defi provider will be configured.
 	raydiumEnabled bool
-
 	// solana node url is the solana node that the raydium provider will connect to.
 	solanaNodeURLs []string
-
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
-	ProviderToMarkets = map[string]types.TickerToProviderConfig{
+	ProviderToMarkets = map[string]types.CurrencyPairsToProviderTickers{
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//
@@ -130,7 +127,7 @@ var (
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
 		Metrics:        config.MetricsConfig{},
-		UpdateInterval: 500 * time.Millisecond,
+		UpdateInterval: 250 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
 		Providers: []config.ProviderConfig{
 			// -----------------------------------------------------------	//
@@ -344,10 +341,8 @@ func createOracleConfig() error {
 	if strings.ToLower(chain) == constants.DYDX {
 		// Filter out the providers that are not supported by the dYdX chain.
 		validProviders := make(map[string]struct{})
-		for _, providers := range dydx.ProviderMapping {
-			for _, provider := range providers {
-				validProviders[provider] = struct{}{}
-			}
+		for _, slinkyProvider := range dydx.ProviderMapping {
+			validProviders[slinkyProvider] = struct{}{}
 		}
 
 		ps := make([]config.ProviderConfig, 0)
@@ -441,15 +436,11 @@ func createMarketMap() error {
 		return nil
 	}
 
-	var (
-		// Tickers defines a map of tickers to their respective ticker configurations. This
-		// contains all of the tickers that are supported by the oracle.
-		tickers = make(map[string]mmtypes.Ticker)
-		// TickersToProviders defines a map of tickers to their respective providers. This
-		// contains all of the providers that are supported per ticker.
-		tickersToProviders = make(map[string]mmtypes.Providers)
-		tickersToPaths     = make(map[string]mmtypes.Paths)
-	)
+	// Tickers defines a map of tickers to their respective ticker configurations. This
+	// contains all of the tickers that are supported by the oracle.
+	marketMap := mmtypes.MarketMap{
+		Markets: make(map[string]mmtypes.Market),
+	}
 
 	// if raydium is enabled, configure the raydium markets based on the local raydium_pairs fixture
 	if raydiumEnabled {
@@ -458,48 +449,30 @@ func createMarketMap() error {
 
 	// Iterate through all of the provider ticker configurations and update the
 	// tickers and tickers to providers maps.
-	for name, providerConfig := range ProviderToMarkets {
-		for ticker, config := range providerConfig {
-			tickerStr := ticker.String()
-
-			// Add the ticker to the tickers map iff the ticker does not already exist. If the
-			// ticker already exists, ensure that the ticker configuration is the same.
-			if t, ok := tickers[tickerStr]; !ok {
-				tickers[tickerStr] = ticker
-			} else if t != ticker {
-				return fmt.Errorf("ticker %s already exists with different configuration for provider %s", tickerStr, name)
+	for provider, providerConfig := range ProviderToMarkets {
+		for cp, config := range providerConfig {
+			ticker := mmtypes.Ticker{
+				CurrencyPair:     cp,
+				Decimals:         18,
+				MinProviderCount: 1,
 			}
 
-			// Instantiate the providers for a given ticker.
-			if _, ok := tickersToProviders[tickerStr]; !ok {
-				tickersToProviders[tickerStr] = mmtypes.Providers{}
+			// Add the ticker to the tickers map iff the ticker does not already exist.
+			if _, ok := marketMap.Markets[ticker.String()]; !ok {
+				marketMap.Markets[ticker.String()] = mmtypes.Market{
+					Ticker:          ticker,
+					ProviderConfigs: make([]mmtypes.ProviderConfig, 0),
+				}
 			}
 
-			// Add the provider to the tickers to providers map.
-			providers := tickersToProviders[tickerStr].Providers
-			providers = append(providers, config)
-			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
-
-			if _, ok := tickersToPaths[tickerStr]; !ok {
-				tickersToPaths[tickerStr] = mmtypes.Paths{}
-			}
-			paths := tickersToPaths[tickerStr].Paths
-			paths = append(paths, mmtypes.Path{Operations: []mmtypes.Operation{
-				{
-					CurrencyPair: ticker.CurrencyPair,
-					Invert:       false,
-					Provider:     config.Name,
-				},
-			}})
-			tickersToPaths[tickerStr] = mmtypes.Paths{Paths: paths}
+			market := marketMap.Markets[ticker.String()]
+			market.ProviderConfigs = append(market.ProviderConfigs, mmtypes.ProviderConfig{
+				Name:           provider,
+				OffChainTicker: config.OffChainTicker,
+				Metadata_JSON:  config.JSON,
+			})
+			marketMap.Markets[ticker.String()] = market
 		}
-	}
-
-	// Create a new market map from the provider to market map.
-	marketMap := mmtypes.MarketMap{
-		Tickers:   tickers,
-		Providers: tickersToProviders,
-		Paths:     tickersToPaths,
 	}
 
 	// Validate the market map.
@@ -538,7 +511,7 @@ type TickerMetaData struct {
 	TickerMetaData raydium.TickerMetadata   `json:"ticker_metadata"`
 }
 
-func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.ProviderConfig) map[string]map[mmtypes.Ticker]mmtypes.ProviderConfig {
+func addRaydiumMarkets(providerToMarkets map[string]types.CurrencyPairsToProviderTickers) map[string]types.CurrencyPairsToProviderTickers {
 	// read the raydium_pairs fixture
 	if !raydiumEnabled {
 		return providerToMarkets
@@ -565,17 +538,11 @@ func addRaydiumMarkets(providerToMarkets map[string]map[mmtypes.Ticker]mmtypes.P
 	}
 
 	// add the raydium markets to the provider to markets map
-	providerToMarkets[raydium.Name] = make(map[mmtypes.Ticker]mmtypes.ProviderConfig)
+	providerToMarkets[raydium.Name] = make(types.CurrencyPairsToProviderTickers)
 	for _, pair := range raydiumPairs {
-		providerToMarkets[raydium.Name][mmtypes.Ticker{
-			CurrencyPair:     pair.Cp,
-			Decimals:         18,
-			MinProviderCount: 1,
-			Enabled:          true,
-			Metadata_JSON:    marshalToJSONString(pair.TickerMetaData),
-		}] = mmtypes.ProviderConfig{
-			Name:           raydium.Name,
+		providerToMarkets[raydium.Name][pair.Cp] = types.DefaultProviderTicker{
 			OffChainTicker: pair.Cp.String(),
+			JSON:           marshalToJSONString(pair.TickerMetaData),
 		}
 	}
 

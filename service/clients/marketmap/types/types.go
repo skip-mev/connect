@@ -31,7 +31,7 @@ func (mms Chain) String() string {
 
 type (
 	// MarketMapProvider is a type alias for the market map provider.
-	MarketMapProvider = base.Provider[Chain, *mmtypes.GetMarketMapResponse]
+	MarketMapProvider = base.Provider[Chain, *mmtypes.MarketMapResponse]
 
 	// MarketMapFactory is a type alias for the market map factory.
 	MarketMapFactory = func(
@@ -41,22 +41,17 @@ type (
 		cfg config.ProviderConfig,
 	) (*MarketMapProvider, error)
 
-	// MarketMapAPIQueryHandler is a type alias for the market map API query handler. This
-	// is responsible for querying the market map API and returning the resolved and unresolved
-	// market map data.
-	MarketMapAPIQueryHandler = apihandlers.APIQueryHandler[Chain, *mmtypes.GetMarketMapResponse]
-
 	// MarketMapAPIDataHandler is a type alias for the market map API data handler. This
 	// is responsible for parsing http responses and returning the resolved and unresolved
 	// market map data.
-	MarketMapAPIDataHandler = apihandlers.APIDataHandler[Chain, *mmtypes.GetMarketMapResponse]
+	MarketMapAPIDataHandler = apihandlers.APIDataHandler[Chain, *mmtypes.MarketMapResponse]
 
 	// MarketMapResponse is a type alias for the market map response. This is used to
 	// represent the resolved and unresolved market map data.
-	MarketMapResponse = providertypes.GetResponse[Chain, *mmtypes.GetMarketMapResponse]
+	MarketMapResponse = providertypes.GetResponse[Chain, *mmtypes.MarketMapResponse]
 
 	// MarketMapResult is a type alias for the market map result.
-	MarketMapResult = providertypes.ResolvedResult[*mmtypes.GetMarketMapResponse]
+	MarketMapResult = providertypes.ResolvedResult[*mmtypes.MarketMapResponse]
 
 	// ResolvedMarketMap is a type alias for the resolved market map.
 	ResolvedMarketMap = map[Chain]MarketMapResult
@@ -67,17 +62,17 @@ type (
 
 var (
 	// NewMarketMapResult is a function alias for the new market map result.
-	NewMarketMapResult = providertypes.NewResult[*mmtypes.GetMarketMapResponse]
+	NewMarketMapResult = providertypes.NewResult[*mmtypes.MarketMapResponse]
 
 	// NewMarketMapResponse is a function alias for the new market map response.
-	NewMarketMapResponse = providertypes.NewGetResponse[Chain, *mmtypes.GetMarketMapResponse]
+	NewMarketMapResponse = providertypes.NewGetResponse[Chain, *mmtypes.MarketMapResponse]
 
 	// NewMarketMapResponseWithErr returns a new market map response with an error.
-	NewMarketMapResponseWithErr = providertypes.NewGetResponseWithErr[Chain, *mmtypes.GetMarketMapResponse]
+	NewMarketMapResponseWithErr = providertypes.NewGetResponseWithErr[Chain, *mmtypes.MarketMapResponse]
 
 	// NewMarketMapProvider is a function alias for the new market map provider.
-	NewMarketMapProvider = base.NewProvider[Chain, *mmtypes.GetMarketMapResponse]
+	NewMarketMapProvider = base.NewProvider[Chain, *mmtypes.MarketMapResponse]
 
 	// NewMarketMapAPIQueryHandler is a function alias for the new market map API query handler.
-	NewMarketMapAPIQueryHandler = apihandlers.NewAPIQueryHandler[Chain, *mmtypes.GetMarketMapResponse]
+	NewMarketMapAPIQueryHandler = apihandlers.NewAPIQueryHandler[Chain, *mmtypes.MarketMapResponse]
 )

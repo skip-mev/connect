@@ -3,6 +3,11 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/skip-mev/chaintestutil/sample"
+
+	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -13,9 +18,9 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/x/marketmap/keeper"
 	"github.com/skip-mev/slinky/x/marketmap/types"
-	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
+
+var r = sample.Rand()
 
 type KeeperTestSuite struct {
 	suite.Suite
@@ -23,11 +28,12 @@ type KeeperTestSuite struct {
 	ctx sdk.Context
 
 	// Keeper variables
-	authority    sdk.AccAddress
+	authority         sdk.AccAddress
+	marketAuthorities []string
+	admin             string
+
 	keeper       *keeper.Keeper
 	oracleKeeper oraclekeeper.Keeper
-
-	hooks types.MarketMapHooks
 }
 
 func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
@@ -53,17 +59,24 @@ func (s *KeeperTestSuite) initKeeper() *keeper.Keeper {
 	k := keeper.NewKeeper(mmSS, encCfg.Codec, s.authority)
 	s.Require().NoError(k.SetLastUpdated(s.ctx, uint64(s.ctx.BlockHeight())))
 
-	params := types.NewParams(s.authority.String(), 10)
+	s.admin = sample.Address(r)
+	s.marketAuthorities = []string{sample.Address(r), sample.Address(r), sample.Address(r)}
+
+	params := types.Params{
+		MarketAuthorities: s.marketAuthorities,
+		Admin:             s.admin,
+	}
 	s.Require().NoError(k.SetParams(s.ctx, params))
 
 	s.oracleKeeper = oraclekeeper.NewKeeper(oracleSS, encCfg.Codec, k, s.authority)
-	s.hooks = types.MultiMarketMapHooks{
+	hooks := types.MultiMarketMapHooks{
 		s.oracleKeeper.Hooks(),
 	}
+	k.SetHooks(hooks)
 
-	oracleGenesis := oracletypes.DefaultGenesisState()
-	s.Require().NotPanics(func() { s.oracleKeeper.InitGenesis(s.ctx, *oracleGenesis) })
-	k.SetHooks(s.hooks)
+	s.Require().NotPanics(func() {
+		s.oracleKeeper.InitGenesis(s.ctx, *oracletypes.DefaultGenesisState())
+	})
 
 	return k
 }
@@ -77,33 +90,16 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 var (
-	btcusdt = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "BITCOIN",
-			Quote: "USDT",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	btcusdtPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						Provider: "kucoin",
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "BITCOIN",
-							Quote: "USDT",
-						},
-					},
-				},
+	btcusdt = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
 			},
+			Decimals:         8,
+			MinProviderCount: 1,
 		},
-	}
-
-	btcusdtProviders = types.Providers{
-		Providers: []types.ProviderConfig{
+		ProviderConfigs: []types.ProviderConfig{
 			{
 				Name:           "kucoin",
 				OffChainTicker: "btc-usdt",
@@ -111,33 +107,16 @@ var (
 		},
 	}
 
-	usdtusd = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "USDT",
-			Quote: "USD",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	usdtusdPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						Provider: "kucoin",
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDT",
-							Quote: "USD",
-						},
-					},
-				},
+	usdtusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDT",
+				Quote: "USD",
 			},
+			Decimals:         8,
+			MinProviderCount: 1,
 		},
-	}
-
-	usdtusdProviders = types.Providers{
-		Providers: []types.ProviderConfig{
+		ProviderConfigs: []types.ProviderConfig{
 			{
 				Name:           "kucoin",
 				OffChainTicker: "usdt-usd",
@@ -145,33 +124,16 @@ var (
 		},
 	}
 
-	usdcusd = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "USDC",
-			Quote: "USD",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	usdcusdPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						Provider: "kucoin",
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "USDC",
-							Quote: "USD",
-						},
-					},
-				},
+	usdcusd = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDC",
+				Quote: "USD",
 			},
+			Decimals:         8,
+			MinProviderCount: 1,
 		},
-	}
-
-	usdcusdProviders = types.Providers{
-		Providers: []types.ProviderConfig{
+		ProviderConfigs: []types.ProviderConfig{
 			{
 				Name:           "kucoin",
 				OffChainTicker: "usdc-usd",
@@ -179,33 +141,16 @@ var (
 		},
 	}
 
-	ethusdt = types.Ticker{
-		CurrencyPair: slinkytypes.CurrencyPair{
-			Base:  "ETHEREUM",
-			Quote: "USDT",
-		},
-		Decimals:         8,
-		MinProviderCount: 1,
-	}
-
-	ethusdtPaths = types.Paths{
-		Paths: []types.Path{
-			{
-				Operations: []types.Operation{
-					{
-						Provider: "kucoin",
-						CurrencyPair: slinkytypes.CurrencyPair{
-							Base:  "ETHEREUM",
-							Quote: "USDT",
-						},
-					},
-				},
+	ethusdt = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "ETHEREUM",
+				Quote: "USDT",
 			},
+			Decimals:         8,
+			MinProviderCount: 1,
 		},
-	}
-
-	ethusdtProviders = types.Providers{
-		Providers: []types.ProviderConfig{
+		ProviderConfigs: []types.ProviderConfig{
 			{
 				Name:           "kucoin",
 				OffChainTicker: "eth-usdt",
@@ -213,83 +158,48 @@ var (
 		},
 	}
 
-	tickers = map[string]types.Ticker{
-		btcusdt.String(): btcusdt,
-		usdcusd.String(): usdcusd,
-		usdtusd.String(): usdtusd,
-		ethusdt.String(): ethusdt,
+	markets = []types.Market{
+		btcusdt,
+		usdcusd,
+		usdtusd,
+		ethusdt,
 	}
 
-	paths = map[string]types.Paths{
-		btcusdt.String(): btcusdtPaths,
-		usdcusd.String(): usdcusdPaths,
-		usdtusd.String(): usdtusdPaths,
-		ethusdt.String(): ethusdtPaths,
-	}
-
-	providers = map[string]types.Providers{
-		btcusdt.String(): btcusdtProviders,
-		usdcusd.String(): usdcusdProviders,
-		usdtusd.String(): usdtusdProviders,
-		ethusdt.String(): ethusdtProviders,
-	}
-
-	markets = struct {
-		tickers   map[string]types.Ticker
-		paths     map[string]types.Paths
-		providers map[string]types.Providers
-	}{
-		tickers:   tickers,
-		paths:     paths,
-		providers: providers,
+	marketsMap = map[string]types.Market{
+		btcusdt.Ticker.String(): btcusdt,
+		usdcusd.Ticker.String(): usdcusd,
+		usdtusd.Ticker.String(): usdtusd,
+		ethusdt.Ticker.String(): ethusdt,
 	}
 )
 
 func (s *KeeperTestSuite) TestGets() {
-	s.Run("get no tickers", func() {
-		got, err := s.keeper.GetAllTickers(s.ctx)
+	s.Run("get empty market map", func() {
+		got, err := s.keeper.GetAllMarkets(s.ctx)
 		s.Require().NoError(err)
-		s.Require().Equal([]types.Ticker(nil), got)
+		s.Require().Equal(map[string]types.Market{}, got)
 	})
 
 	s.Run("setup initial markets", func() {
-		for _, ticker := range markets.tickers {
-			marketPaths, ok := markets.paths[ticker.String()]
-			s.Require().True(ok)
-			marketProviders, ok := markets.providers[ticker.String()]
-			s.Require().True(ok)
-			s.Require().NoError(s.keeper.CreateMarket(s.ctx, ticker, marketPaths, marketProviders))
+		for _, market := range markets {
+			s.Require().NoError(s.keeper.CreateMarket(s.ctx, market))
 		}
 
 		s.Run("unable to set markets again", func() {
-			for _, ticker := range markets.tickers {
-				s.Require().ErrorIs(s.keeper.CreateTicker(s.ctx, ticker), types.NewTickerAlreadyExistsError(types.TickerString(ticker.String())))
+			for _, market := range markets {
+				s.Require().ErrorIs(s.keeper.CreateMarket(s.ctx, market), types.NewMarketAlreadyExistsError(types.TickerString(market.Ticker.String())))
 			}
 		})
+
+		s.Require().NoError(s.keeper.ValidateState(s.ctx, markets))
 	})
 
 	s.Run("get all tickers", func() {
-		got, err := s.keeper.GetAllTickersMap(s.ctx)
+		got, err := s.keeper.GetAllMarkets(s.ctx)
 		s.Require().NoError(err)
 
-		s.Require().Equal(len(tickers), len(got))
-		s.Require().Equal(tickers, got)
-	})
-
-	s.Run("get all paths", func() {
-		got, err := s.keeper.GetAllPathsMap(s.ctx)
-		s.Require().NoError(err)
-
-		s.Require().Equal(len(paths), len(got))
-		s.Require().Equal(paths, got)
-	})
-
-	s.Run("get all providers", func() {
-		got, err := s.keeper.GetAllProvidersMap(s.ctx)
-		s.Require().NoError(err)
-
-		s.Require().Equal(len(providers), len(got))
-		s.Require().Equal(providers, got)
+		s.Require().Equal(len(markets), len(got))
+		s.Require().Equal(marketsMap, got)
 	})
 }
 
@@ -304,4 +214,61 @@ func (s *KeeperTestSuite) TestSetParams() {
 		s.Require().NoError(err)
 		s.Require().Equal(params, params2)
 	})
+}
+
+func (s *KeeperTestSuite) TestInvalidCreate() {
+	// invalid market with a normalize pair not in state
+	invalidMarket := types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BITCOIN",
+				Quote: "USDT",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "btc-usdt",
+				NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
+			},
+		},
+	}
+
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, invalidMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
+}
+
+func (s *KeeperTestSuite) TestInvalidUpdate() {
+	// create a valid market
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+
+	// invalid market with a normalize pair not in state
+	invalidMarket := btcusdt
+	invalidMarket.ProviderConfigs = append(invalidMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &slinkytypes.CurrencyPair{Base: "invalid", Quote: "pair"},
+	})
+
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, invalidMarket))
+	s.Require().Error(s.keeper.ValidateState(s.ctx, []types.Market{invalidMarket}))
+}
+
+func (s *KeeperTestSuite) TestValidUpdate() {
+	// create a valid markets
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, btcusdt))
+	s.Require().NoError(s.keeper.CreateMarket(s.ctx, ethusdt))
+
+	// valid market with a normalize pair that is in state
+	validMarket := btcusdt
+	validMarket.ProviderConfigs = append(validMarket.ProviderConfigs, types.ProviderConfig{
+		Name:            "huobi",
+		OffChainTicker:  "btc-usdt",
+		NormalizeByPair: &ethusdt.Ticker.CurrencyPair,
+	})
+
+	s.Require().NoError(s.keeper.UpdateMarket(s.ctx, validMarket))
+	s.Require().NoError(s.keeper.ValidateState(s.ctx, []types.Market{validMarket}))
 }

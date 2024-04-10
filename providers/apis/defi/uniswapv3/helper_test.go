@@ -8,31 +8,16 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	pkgtypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-)
-
-const (
-	// precision is the precision used for big.Float calculations. Specifically
-	// this is used to ensure that float values are the same within a certain
-	// precision.
-	precision = 30
-
-	// acceptableDelta is the acceptable difference between the expected and actual price.
-	// In this case, we use a delta of 1e-8. This means we will accept any price that is
-	// within 1e-8 of the expected price.
-	acceptableDelta = 1e-8
 )
 
 var (
 	logger, _ = zap.NewDevelopment()
-	m         = metrics.NewNopAPIMetrics()
 
 	// PoolConfigs used for testing.
-	weth_usdc_cfg = uniswapv3.PoolConfig{ //nolint
+	wethusdcCfg = uniswapv3.PoolConfig{
 		Address:       "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
 		BaseDecimals:  18,
 		QuoteDecimals: 6,
@@ -40,14 +25,7 @@ var (
 	}
 
 	// Tickers used for testing.
-	weth_usdc_ticker = mmtypes.Ticker{ //nolint
-		CurrencyPair: pkgtypes.CurrencyPair{
-			Base:  "WETH",
-			Quote: "USDC",
-		},
-		Decimals:      18,
-		Metadata_JSON: weth_usdc_cfg.MustToJSON(),
-	}
+	wethusdcTicker = types.NewProviderTicker("WETH/USDC", wethusdcCfg.MustToJSON())
 )
 
 func createPriceFetcher(
@@ -58,7 +36,6 @@ func createPriceFetcher(
 	client := mocks.NewEVMClient(t)
 	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
-		m,
 		uniswapv3.DefaultAPIConfig,
 		client,
 	)
@@ -75,7 +52,6 @@ func createPriceFetcherWithClient(
 
 	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
-		m,
 		uniswapv3.DefaultAPIConfig,
 		client,
 	)

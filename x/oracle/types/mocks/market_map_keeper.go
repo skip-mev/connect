@@ -15,23 +15,23 @@ type MarketMapKeeper struct {
 	mock.Mock
 }
 
-// GetTicker provides a mock function with given fields: ctx, tickerStr
-func (_m *MarketMapKeeper) GetTicker(ctx types.Context, tickerStr string) (marketmaptypes.Ticker, error) {
+// GetMarket provides a mock function with given fields: ctx, tickerStr
+func (_m *MarketMapKeeper) GetMarket(ctx types.Context, tickerStr string) (marketmaptypes.Market, error) {
 	ret := _m.Called(ctx, tickerStr)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetTicker")
+		panic("no return value specified for GetMarket")
 	}
 
-	var r0 marketmaptypes.Ticker
+	var r0 marketmaptypes.Market
 	var r1 error
-	if rf, ok := ret.Get(0).(func(types.Context, string) (marketmaptypes.Ticker, error)); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, string) (marketmaptypes.Market, error)); ok {
 		return rf(ctx, tickerStr)
 	}
-	if rf, ok := ret.Get(0).(func(types.Context, string) marketmaptypes.Ticker); ok {
+	if rf, ok := ret.Get(0).(func(types.Context, string) marketmaptypes.Market); ok {
 		r0 = rf(ctx, tickerStr)
 	} else {
-		r0 = ret.Get(0).(marketmaptypes.Ticker)
+		r0 = ret.Get(0).(marketmaptypes.Market)
 	}
 
 	if rf, ok := ret.Get(1).(func(types.Context, string) error); ok {

@@ -10,6 +10,4 @@ const (
 	AttributeKeyDecimals         = "decimals"
 	AttributeKeyMinProviderCount = "min_provider_count"
 	AttributeKeyMetadata         = "metadata"
-	AttributeKeyProviders        = "providers"
-	AttributeKeyPaths            = "paths"
 )

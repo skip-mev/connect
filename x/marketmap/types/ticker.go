@@ -15,9 +15,7 @@ const (
 	// DefaultMinProviderCount is the minimum number of providers required for a
 	// ticker to be considered valid.
 	DefaultMinProviderCount = 1
-	// MaxPathLength is the maximum length of a path for a ticker conversion.
-	MaxPathLength = 3
-	// MaxMetadataJSONFieldLength is the maximum length of the MetadataJSON field.
+	// MaxMetadataJSONFieldLength is the maximum length of the MetadataJSON field (in bytes).
 	MaxMetadataJSONFieldLength = 16384
 )
 
@@ -58,7 +56,7 @@ func (t *Ticker) ValidateBasic() error {
 	}
 
 	if err := json.IsValid([]byte(t.Metadata_JSON)); err != nil {
-		return fmt.Errorf("invalid JSON metadata; %w", err)
+		return fmt.Errorf("invalid ticker metadata json: %w", err)
 	}
 
 	return nil
