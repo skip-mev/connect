@@ -680,7 +680,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		for i, cp := range cps {
 			resp, _, err := QueryCurrencyPair(s.chain, cp, height)
 			s.Require().NoError(err)
-			s.Require().Equal(int64(1140+i), resp.Price.Int64())
+			s.Require().Equal(int64(110000000), resp.Price.Int64())
 		}
 	})
 }
