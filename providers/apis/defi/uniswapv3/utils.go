@@ -249,16 +249,6 @@ var (
 				Invert:        false,
 			}.MustToJSON(),
 		},
-		constants.LIDO_USDT: {
-			OffChainTicker: constants.LIDO_USDT.String(),
-			JSON: PoolConfig{
-				// REF: https://app.uniswap.org/explore/pools/ethereum/0xd296B77f1CAD3F0eC64Ae00cdbFa749E24b1f9cb
-				Address:       "0xd296B77f1CAD3F0eC64Ae00cdbFa749E24b1f9cb",
-				BaseDecimals:  18,
-				QuoteDecimals: 6,
-				Invert:        false,
-			}.MustToJSON(),
-		},
 		constants.PEPE_ETH: {
 			OffChainTicker: constants.PEPE_ETH.String(),
 			JSON: PoolConfig{
@@ -266,6 +256,16 @@ var (
 				Address:       "0x11950d141EcB863F01007AdD7D1A342041227b58",
 				BaseDecimals:  18,
 				QuoteDecimals: 18,
+				Invert:        false,
+			}.MustToJSON(),
+		},
+		constants.PEPE_USDC: {
+			OffChainTicker: constants.PEPE_USDC.String(),
+			JSON: PoolConfig{
+				// REF: https://app.uniswap.org/explore/pools/ethereum/0xcEE31C846CbF003F4cEB5Bbd234cBA03C6e940C7
+				Address:       "0xcEE31C846CbF003F4cEB5Bbd234cBA03C6e940C7",
+				BaseDecimals:  18,
+				QuoteDecimals: 6,
 				Invert:        false,
 			}.MustToJSON(),
 		},
@@ -296,16 +296,6 @@ var (
 				Address:       "0x7832310Cd0de39c4cE0A635F34d9a4B5b47fd434",
 				BaseDecimals:  18,
 				QuoteDecimals: 18,
-				Invert:        false,
-			}.MustToJSON(),
-		},
-		constants.PEPE_USDC: {
-			OffChainTicker: constants.PEPE_USDC.String(),
-			JSON: PoolConfig{
-				// REF: https://app.uniswap.org/explore/pools/ethereum/0xcEE31C846CbF003F4cEB5Bbd234cBA03C6e940C7
-				Address:       "0xcEE31C846CbF003F4cEB5Bbd234cBA03C6e940C7",
-				BaseDecimals:  18,
-				QuoteDecimals: 6,
 				Invert:        false,
 			}.MustToJSON(),
 		},
@@ -394,16 +384,6 @@ var (
 			JSON: PoolConfig{
 				// REF: https://app.uniswap.org/explore/pools/ethereum/0xf763Bb342eB3d23C02ccB86312422fe0c1c17E94
 				Address:       "0xf763Bb342eB3d23C02ccB86312422fe0c1c17E94",
-				BaseDecimals:  9,
-				QuoteDecimals: 6,
-				Invert:        false,
-			}.MustToJSON(),
-		},
-		constants.WTAO_USDT: {
-			OffChainTicker: constants.WTAO_USDT.String(),
-			JSON: PoolConfig{
-				// REF: https://app.uniswap.org/explore/pools/ethereum/0xFEb6A9de89465dA662Ff16F85b5342B73bD0B455
-				Address:       "0xFEb6A9de89465dA662Ff16F85b5342B73bD0B455",
 				BaseDecimals:  9,
 				QuoteDecimals: 6,
 				Invert:        false,

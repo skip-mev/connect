@@ -315,7 +315,7 @@ func init() {
 		&updateInterval,
 		"update-interval",
 		"",
-		500*time.Millisecond,
+		250*time.Millisecond,
 		"Interval at which the oracle will update the prices. This should be set to the interval desired by the chain.",
 	)
 	rootCmd.Flags().DurationVarP(
