@@ -49,7 +49,7 @@ require (
 	golang.org/x/sync v0.7.0
 	golang.org/x/vuln v1.0.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20240304212257-790db918fca8
-	google.golang.org/grpc v1.63.0
+	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.33.0
 	mvdan.cc/gofumpt v0.6.0
 )
