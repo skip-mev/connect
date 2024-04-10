@@ -12,7 +12,7 @@ import (
 
 // GetProviderPrice returns the relevant provider price. Note that the aggregator's
 // provider data cache stores prices in the form of providerName -> offChainTicker -> price.
-func (m *MedianAggregator) GetProviderPrice(
+func (m *IndexPriceAggregator) GetProviderPrice(
 	cfg mmtypes.ProviderConfig,
 ) (*big.Float, error) {
 	cache, ok := m.providerPrices[cfg.Name]
@@ -34,7 +34,7 @@ func (m *MedianAggregator) GetProviderPrice(
 
 // GetIndexPrice returns the relevant index price. Note that the aggregator's
 // index price cache stores prices in the form of ticker -> price.
-func (m *MedianAggregator) GetIndexPrice(
+func (m *IndexPriceAggregator) GetIndexPrice(
 	cp pkgtypes.CurrencyPair,
 ) (*big.Float, error) {
 	price, ok := m.indexPrices[cp.String()]
@@ -46,8 +46,8 @@ func (m *MedianAggregator) GetIndexPrice(
 }
 
 // SetIndexPrice sets the index price for the given currency pair.
-func (m *MedianAggregator) SetIndexPrices(
-	prices types.AggregatorPrices,
+func (m *IndexPriceAggregator) SetIndexPrices(
+	prices types.Prices,
 ) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
@@ -56,18 +56,18 @@ func (m *MedianAggregator) SetIndexPrices(
 }
 
 // GetIndexPrices returns the index prices the aggregator has.
-func (m *MedianAggregator) GetIndexPrices() types.AggregatorPrices {
+func (m *IndexPriceAggregator) GetIndexPrices() types.Prices {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
-	cpy := make(types.AggregatorPrices)
+	cpy := make(types.Prices)
 	maps.Copy(cpy, m.indexPrices)
 
 	return cpy
 }
 
 // UpdateMarketMap updates the market map for the oracle.
-func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
+func (m *IndexPriceAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
@@ -75,9 +75,42 @@ func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
 }
 
 // GetMarketMap returns the market map for the oracle.
-func (m *MedianAggregator) GetMarketMap() *mmtypes.MarketMap {
+func (m *IndexPriceAggregator) GetMarketMap() *mmtypes.MarketMap {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 
 	return &m.cfg
+}
+
+// SetProviderPrices updates the data aggregator with the given provider and data.
+func (m *IndexPriceAggregator) SetProviderPrices(provider string, data types.Prices) {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	if data == nil {
+		data = make(types.Prices)
+	}
+
+	m.providerPrices[provider] = data
+}
+
+// Reset resets the data aggregator for all providers.
+func (m *IndexPriceAggregator) Reset() {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	m.providerPrices = make(map[string]types.Prices)
+}
+
+// GetPrices returns the aggregated data the aggregator has. Specifically, the
+// prices returned are the scaled prices - where each price is scaled by the
+// respective ticker's decimals.
+func (m *IndexPriceAggregator) GetPrices() types.Prices {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	cpy := make(types.Prices)
+	maps.Copy(cpy, m.scaledPrices)
+
+	return cpy
 }

@@ -76,8 +76,7 @@ $ make stop-oracle
 
 ### Oracle Service Metrics
 
-* metrics relevant to the oracle service's health + operation are [here](./oracle/metrics/README.md)
-* metrics relevant to the operation / health of the oracle's providers are [here](./providers/base/metrics/README.md)
+* metrics relevant to the oracle service's health + operation are [here](./metrics.md)
 
 ### Oracle Application / Network Metrics
 
@@ -92,9 +91,4 @@ $ make stop-oracle
 * ~**60 go routines** are running at any given time.
 * ~**7x** improvement in performance of websocket providers over API providers.
 
-To test these numbers yourself, spin up the the oracle server following the instructions above and then navigate to http://localhost:9090. From here, you can run the prometheus queries defined in the packages below to get insight into the oracle's performance.
-
-* [Oracle Graphs & Queries](./oracle/metrics/README.md#usage): Provides insight into the oracle's performance by provider, price feed, and currency pair. All includes nice visualizations of the oracle's aggregated prices and the individual prices that are aggregated to produce the oracle's aggregated prices.
-* [Data Provider Queries](./providers/base/metrics/README.md#usage): Provides general insight into how often price feeds are updated by status (success/failure), provider (binance, coinbase, etc.), price feed (BTC/USD, ETH/USD), and provider type (api/websocket).
-* [Websocket Performance Queries](./providers/base/websocket/metrics/README.md#usage): Provides insight into how often websocket providers are successfully updating their data. This is a combination of metrics related to the underlying connection as well as the data handler which is responsible for processing the data received from the Websocket connection.
-* [API Performance Queries](./providers/base/api/metrics/README.md#usage): Provides insight into how often API providers are successfully updating their data.
+To test these numbers yourself, spin up the the oracle server following the instructions above and then navigate to http://localhost:9090. From here, you can run the prometheus queries defined in this [readme](./metrics.md) to get insight into the oracle's performance.

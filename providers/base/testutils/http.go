@@ -83,7 +83,7 @@ func CreateAPIProviderWithGetResponses[K providertypes.ResponseKey, V providerty
 	ids []K,
 	responses []providertypes.GetResponse[K, V],
 	timeout time.Duration,
-) providertypes.Provider[K, V] {
+) *base.Provider[K, V] {
 	t.Helper()
 
 	handler := CreateAPIQueryHandlerWithGetResponses[K, V](
@@ -112,7 +112,7 @@ func CreateAPIProviderWithResponseFn[K providertypes.ResponseKey, V providertype
 	cfg config.ProviderConfig,
 	ids []K,
 	fn func(context.Context, chan<- providertypes.GetResponse[K, V]),
-) providertypes.Provider[K, V] {
+) *base.Provider[K, V] {
 	t.Helper()
 
 	handler := CreateAPIQueryHandlerWithResponseFn[K, V](

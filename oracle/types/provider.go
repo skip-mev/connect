@@ -84,11 +84,3 @@ func (t *ProviderTickers) Add(ticker ProviderTicker) {
 
 	t.cache[ticker.GetOffChainTicker()] = ticker
 }
-
-// Reset resets the provider tickers.
-func (t *ProviderTickers) Reset() {
-	t.mut.Lock()
-	defer t.mut.Unlock()
-
-	t.cache = make(map[string]ProviderTicker)
-}

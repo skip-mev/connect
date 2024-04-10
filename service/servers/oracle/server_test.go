@@ -141,7 +141,7 @@ func (s *ServerTestSuite) TestOracleServerPrices() {
 		Decimals: 8,
 	}
 
-	s.mockOracle.On("GetPrices").Return(types.AggregatorPrices{
+	s.mockOracle.On("GetPrices").Return(types.Prices{
 		cp1.String(): big.NewFloat(100.1),
 		cp2.String(): big.NewFloat(200.1),
 	})

@@ -41,11 +41,6 @@ type (
 		cfg config.ProviderConfig,
 	) (*MarketMapProvider, error)
 
-	// MarketMapAPIQueryHandler is a type alias for the market map API query handler. This
-	// is responsible for querying the market map API and returning the resolved and unresolved
-	// market map data.
-	MarketMapAPIQueryHandler = apihandlers.APIQueryHandler[Chain, *mmtypes.MarketMapResponse]
-
 	// MarketMapAPIDataHandler is a type alias for the market map API data handler. This
 	// is responsible for parsing http responses and returning the resolved and unresolved
 	// market map data.

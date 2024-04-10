@@ -2,32 +2,26 @@ package oracle_test
 
 import (
 	"context"
-	"fmt"
 	"math/big"
 	"time"
-
-	"github.com/stretchr/testify/mock"
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/median"
+	mathtestutils "github.com/skip-mev/slinky/pkg/math/testutils"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
 )
 
 func (s *OracleTestSuite) TestProviders() {
 	testCases := []struct {
 		name           string
-		factory        types.PriceProviderFactoryI
-		expectedPrices types.AggregatorPrices
+		factory        func() []*types.PriceProvider
+		expectedPrices types.Prices
 	}{
 		{
 			name: "1 provider with no prices",
-			factory: func(
-				config.OracleConfig,
-			) ([]types.PriceProviderI, error) {
+			factory: func() []*types.PriceProvider {
 				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
 					s.T(),
 					s.logger,
@@ -37,16 +31,14 @@ func (s *OracleTestSuite) TestProviders() {
 					200*time.Millisecond,
 				)
 
-				providers := []types.PriceProviderI{provider}
-				return providers, nil
+				providers := []*types.PriceProvider{provider}
+				return providers
 			},
-			expectedPrices: types.AggregatorPrices{},
+			expectedPrices: types.Prices{},
 		},
 		{
 			name: "1 provider with prices",
-			factory: func(
-				config.OracleConfig,
-			) ([]types.PriceProviderI, error) {
+			factory: func() []*types.PriceProvider {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewFloat(100),
@@ -64,18 +56,16 @@ func (s *OracleTestSuite) TestProviders() {
 					200*time.Millisecond,
 				)
 
-				providers := []types.PriceProviderI{provider}
-				return providers, nil
+				providers := []*types.PriceProvider{provider}
+				return providers
 			},
-			expectedPrices: types.AggregatorPrices{
+			expectedPrices: types.Prices{
 				s.currencyPairs[0].String(): big.NewFloat(100),
 			},
 		},
 		{
 			name: "multiple providers with prices",
-			factory: func(
-				config.OracleConfig,
-			) ([]types.PriceProviderI, error) {
+			factory: func() []*types.PriceProvider {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewFloat(100),
@@ -110,47 +100,16 @@ func (s *OracleTestSuite) TestProviders() {
 					responses2,
 				)
 
-				providers := []types.PriceProviderI{provider, provider2}
-				return providers, nil
+				providers := []*types.PriceProvider{provider, provider2}
+				return providers
 			},
-			expectedPrices: types.AggregatorPrices{
+			expectedPrices: types.Prices{
 				s.currencyPairs[0].String(): big.NewFloat(150),
 			},
 		},
 		{
-			name: "multiple providers with 1 provider erroring on start",
-			factory: func(
-				config.OracleConfig,
-			) ([]types.PriceProviderI, error) {
-				resolved := types.ResolvedPrices{
-					s.currencyPairs[0]: {
-						Value:     big.NewFloat(100),
-						Timestamp: time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
-					},
-				}
-				response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
-				responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
-				provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
-					s.T(),
-					s.logger,
-					providerCfg1,
-					s.currencyPairs,
-					responses,
-					200*time.Millisecond,
-				)
-
-				providers := []types.PriceProviderI{provider, s.noStartProvider("provider2")}
-				return providers, nil
-			},
-			expectedPrices: types.AggregatorPrices{
-				s.currencyPairs[0].String(): big.NewFloat(100),
-			},
-		},
-		{
 			name: "1 provider with stale prices",
-			factory: func(
-				config.OracleConfig,
-			) ([]types.PriceProviderI, error) {
+			factory: func() []*types.PriceProvider {
 				resolved := types.ResolvedPrices{
 					s.currencyPairs[0]: {
 						Value:     big.NewFloat(100),
@@ -168,10 +127,10 @@ func (s *OracleTestSuite) TestProviders() {
 					200*time.Millisecond,
 				)
 
-				providers := []types.PriceProviderI{provider}
-				return providers, nil
+				providers := []*types.PriceProvider{provider}
+				return providers
 			},
-			expectedPrices: types.AggregatorPrices{},
+			expectedPrices: types.Prices{},
 		},
 	}
 
@@ -181,9 +140,7 @@ func (s *OracleTestSuite) TestProviders() {
 				UpdateInterval: 1 * time.Second,
 			}
 
-			providers, err := tc.factory(cfg)
-			s.Require().NoError(err)
-
+			providers := tc.factory()
 			ctx, cancel := context.WithTimeout(context.Background(), 4*cfg.UpdateInterval)
 			defer cancel()
 
@@ -197,7 +154,7 @@ func (s *OracleTestSuite) TestProviders() {
 				oracle.WithUpdateInterval(cfg.UpdateInterval),
 				oracle.WithLogger(s.logger),
 				oracle.WithProviders(providers),
-				oracle.WithAggregateFunction(median.ComputeMedian()),
+				oracle.WithPriceAggregator(mathtestutils.NewMedianAggregator()),
 			)
 			s.Require().NoError(err)
 
@@ -232,16 +189,4 @@ func (s *OracleTestSuite) TestProviders() {
 			}
 		})
 	}
-}
-
-func (s *OracleTestSuite) noStartProvider(name string) types.PriceProviderI {
-	provider := providermocks.NewProvider[types.ProviderTicker, *big.Float](s.T())
-
-	provider.On("Name").Return(name).Maybe()
-	provider.On("Start", mock.Anything).Return(fmt.Errorf("no rizz start")).Maybe()
-	provider.On("GetData").Return(nil).Maybe()
-	provider.On("Type").Return(providertypes.API).Maybe()
-	provider.On("IsRunning").Return(false).Maybe()
-
-	return provider
 }
