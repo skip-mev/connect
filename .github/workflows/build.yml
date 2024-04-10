@@ -87,7 +87,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - uses: supplypike/setup-bin@v3
+      - uses: supplypike/setup-bin@v4
         with:
           uri: 'https://releases.hashicorp.com/levant/0.3.2/levant_0.3.2_linux_amd64.zip'
           name: 'levant'
