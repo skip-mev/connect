@@ -64,11 +64,16 @@ func NewAPIPriceFetcher(
 	// use a multi-client if multiple endpoints are provided
 	if len(config.Endpoints) > 0 {
 		if len(config.Endpoints) > 1 {
+			client, err := NewMultiJSONRPCClientFromEndpoints(
+				config.Endpoints,
+				logger.With(zap.String("raydium_multi_client", Name)),
+			)
+			if err != nil {
+				return nil, fmt.Errorf("error creating multi-client: %w", err)
+			}
+
 			opts = append(opts, WithSolanaClient(
-				NewMultiJSONRPCClientFromEndpoints(
-					config.Endpoints,
-					logger.With(zap.String("raydium_multi_client", Name)),
-				),
+				client,
 			))
 		} else {
 			config.URL = config.Endpoints[0].URL
