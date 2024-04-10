@@ -14,6 +14,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -68,6 +69,14 @@ func APIQueryHandlerFactory(
 		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
 	case kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
+	case uniswapv3.Name:
+		var ethClient uniswapv3.EVMClient
+		ethClient, err = uniswapv3.NewGoEthereumClientImpl(cfg.API.URL)
+		if err != nil {
+			return nil, err
+		}
+
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, metrics, cfg.API, ethClient)
 	case static.Name:
 		apiDataHandler, err = static.NewAPIHandler(marketMap)
 		if err != nil {
@@ -113,7 +122,7 @@ func APIQueryHandlerFactory(
 	}
 
 	// Create the API query handler which encapsulates all of the fetching and parsing logic.
-	return apihandlers.NewAPIQueryHandlerWithPriceFetcher(
+	return types.NewPriceAPIQueryHandlerWithFetcher(
 		logger,
 		cfg.API,
 		apiPriceFetcher,
