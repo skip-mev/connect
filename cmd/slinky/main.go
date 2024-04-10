@@ -155,7 +155,7 @@ func runOracle() error {
 		oracle.WithUpdateInterval(cfg.UpdateInterval),
 		oracle.WithMetrics(metrics),
 		oracle.WithMaxCacheAge(cfg.MaxPriceAge),
-		oracle.WithDataAggregator(aggregator),
+		oracle.WithPriceAggregator(aggregator),
 	}
 
 	// Create the orchestrator and start the orchestrator.
