@@ -111,6 +111,28 @@ func TestProviderInit(t *testing.T) {
 		require.True(t, strings.Contains(err.Error(), "config for raydium is invalid"))
 	})
 
+	t.Run("config has invalid endpoints", func(t *testing.T) {
+		cfg := oracleconfig.APIConfig{
+			Enabled:    true,
+			MaxQueries: 0,
+			Endpoints: []oracleconfig.Endpoint{
+				{
+					URL: "", // invalid url
+				},
+				{
+					URL: "https://raydium.io",
+				},
+			},
+		}
+
+		_, err := raydium.NewAPIPriceFetcher(
+			cfg,
+			zap.NewNop(),
+		)
+
+		require.True(t, strings.Contains(err.Error(), "error creating multi-client"))
+	})
+
 	t.Run("incorrect provider name", func(t *testing.T) {
 		cfg := oracleconfig.APIConfig{
 			Enabled:          true,
