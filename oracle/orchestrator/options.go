@@ -78,7 +78,7 @@ func WithWriteTo(filePath string) Option {
 }
 
 // WithAggregator sets the aggregation function for the provider orchestrator.
-func WithAggregator(fn *oracle.MedianAggregator) Option {
+func WithAggregator(fn *oracle.IndexPriceAggregator) Option {
 	return func(m *ProviderOrchestrator) {
 		if fn == nil {
 			panic("aggregation function cannot be nil")

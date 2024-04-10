@@ -35,14 +35,14 @@ func (h *WebSocketHandler) parseTickerMessage(
 
 	// Get the ticker from the message and market.
 	offChainTicker := tickerSplit[TickerCurrencyPairIndex]
-	ticker, ok := h.market.OffChainMap[offChainTicker]
+	ticker, ok := h.cache.FromOffChainTicker(offChainTicker)
 	if !ok {
 		return types.NewPriceResponse(resolved, unResolved),
 			fmt.Errorf("received unsupported ticker %s", ticker)
 	}
 
 	// Get the price from the message.
-	price, err := math.Float64StringToBigInt(msg.Data.PriceStr, ticker.Decimals)
+	price, err := math.Float64StringToBigFloat(msg.Data.PriceStr)
 	if err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorFailedToParsePrice),

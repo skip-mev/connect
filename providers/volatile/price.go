@@ -22,7 +22,7 @@ var (
 // - cosVal = math.Cos(radians)
 // - radians = (cosinePhase <= 0.5 ? cosinePhase * 4 : cosinePhase * 4 - 1) * π
 // - cosinePhase = (frequency * unix_time(in seconds) / dailySeconds) % 1.
-func GetVolatilePrice(tp TimeProvider, amplitude float64, offset float64, frequency float64) *big.Int {
+func GetVolatilePrice(tp TimeProvider, amplitude float64, offset float64, frequency float64) *big.Float {
 	// The phase is the location of the final price within our repeating price function.
 	// The resulting value is taken mod(1) i.e. it is between 0 and 1 inclusive
 	cosinePhase := math.Mod(
@@ -36,6 +36,5 @@ func GetVolatilePrice(tp TimeProvider, amplitude float64, offset float64, freque
 	}
 	radians *= math.Pi
 	cosVal := math.Cos(radians)
-	price, _ := big.NewFloat(offset * (1 + amplitude*cosVal)).Int(nil)
-	return price
+	return big.NewFloat(offset * (1 + amplitude*cosVal))
 }

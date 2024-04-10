@@ -84,16 +84,16 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 
 	// Iterate through all tickers and add them to the response.
 	for _, instrument := range resp.Data {
-		ticker, ok := h.market.OffChainMap[instrument.ID]
+		ticker, ok := h.cache.FromOffChainTicker(instrument.ID)
 		if !ok {
 			h.logger.Debug("ticker not found for instrument ID", zap.String("instrument_id", instrument.ID))
 			continue
 		}
 
-		// Convert the price to a big.Int.
-		price, err := math.Float64StringToBigInt(instrument.IndexPrice, ticker.Decimals)
+		// Convert the price to a big.Float.
+		price, err := math.Float64StringToBigFloat(instrument.IndexPrice)
 		if err != nil {
-			wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+			wErr := fmt.Errorf("failed to convert price to big.Float: %w", err)
 			unresolved[ticker] = providertypes.UnresolvedResult{
 				ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 			}

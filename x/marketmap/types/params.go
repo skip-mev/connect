@@ -8,31 +8,47 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-const (
-	// DefaultVersion is the default value for the Version Param.
-	DefaultVersion = 0
-)
-
 // DefaultParams returns default marketmap parameters.
 func DefaultParams() Params {
 	return Params{
-		MarketAuthority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		Version:         DefaultVersion,
+		MarketAuthorities: []string{authtypes.NewModuleAddress(govtypes.ModuleName).String()},
+		Admin:             authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	}
 }
 
 // NewParams returns a new Params instance.
-func NewParams(authority string, version uint64) Params {
-	return Params{
-		MarketAuthority: authority,
-		Version:         version,
+func NewParams(authorities []string, admin string) (Params, error) {
+	if authorities == nil {
+		return Params{}, fmt.Errorf("cannot create Params with nil authority")
 	}
+
+	return Params{
+		MarketAuthorities: authorities,
+		Admin:             admin,
+	}, nil
 }
 
 // ValidateBasic performs stateless validation of the Params.
 func (p *Params) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(p.MarketAuthority); err != nil {
-		return fmt.Errorf("invalid market authority string: %w", err)
+	if p.MarketAuthorities == nil {
+		return fmt.Errorf("cannot create Params with empty market authorities")
+	}
+
+	seenAuthorities := make(map[string]struct{}, len(p.MarketAuthorities))
+	for _, authority := range p.MarketAuthorities {
+		if _, seen := seenAuthorities[authority]; seen {
+			return fmt.Errorf("duplicate authority %s found", authority)
+		}
+
+		if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+			return fmt.Errorf("invalid market authority string: %w", err)
+		}
+
+		seenAuthorities[authority] = struct{}{}
+	}
+
+	if _, err := sdk.AccAddressFromBech32(p.Admin); err != nil {
+		return fmt.Errorf("invalid marketmap admin string: %w", err)
 	}
 
 	return nil

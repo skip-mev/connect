@@ -41,7 +41,7 @@ type ProviderOrchestrator struct {
 	// for making requests for the latest market map data.
 	mmProvider *mmclienttypes.MarketMapProvider
 	// aggregator is the price aggregator.
-	aggregator *oracle.MedianAggregator
+	aggregator *oracle.IndexPriceAggregator
 
 	// -------------------Oracle Configuration Fields-------------------//
 	//
@@ -116,11 +116,11 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 }
 
 // GetPriceProviders returns all of the price providers.
-func (o *ProviderOrchestrator) GetPriceProviders() []types.PriceProviderI {
+func (o *ProviderOrchestrator) GetPriceProviders() []*types.PriceProvider {
 	o.mut.Lock()
 	defer o.mut.Unlock()
 
-	providers := make([]types.PriceProviderI, 0, len(o.providers))
+	providers := make([]*types.PriceProvider, 0, len(o.providers))
 	for _, state := range o.providers {
 		providers = append(providers, state.Provider)
 	}

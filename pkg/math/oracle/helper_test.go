@@ -1,12 +1,10 @@
 package oracle_test
 
 import (
-	"math/big"
-
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/pkg/math/oracle"
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
@@ -14,39 +12,30 @@ import (
 )
 
 var (
-	// acceptableDelta is the acceptable difference between the expected and actual price.
-	// In this case, we use a delta of 1e-8. This means we will accept any price that is
-	// within 1e-8 of the expected price.
-	acceptableDelta = 1e-8
-
 	// Create some custom tickers for testing.
 	BTC_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.BITCOIN_USD.CurrencyPair,
-		Decimals:         constants.BITCOIN_USD.Decimals,
+		CurrencyPair:     constants.BITCOIN_USD,
+		Decimals:         8,
 		MinProviderCount: 3,
 	}
-	BTC_USDT = constants.BITCOIN_USDT
 
 	ETH_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.ETHEREUM_USD.CurrencyPair,
-		Decimals:         constants.ETHEREUM_USD.Decimals,
+		CurrencyPair:     constants.ETHEREUM_USD,
+		Decimals:         11,
 		MinProviderCount: 3,
 	}
-	ETH_USDT = constants.ETHEREUM_USDT
 
 	USDT_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.USDT_USD.CurrencyPair,
-		Decimals:         constants.USDT_USD.Decimals,
+		CurrencyPair:     constants.USDT_USD,
+		Decimals:         6,
 		MinProviderCount: 2,
 	}
-	USDC_USDT = constants.USDC_USDT
 
 	PEPE_USD = mmtypes.Ticker{
-		CurrencyPair:     constants.PEPE_USD.CurrencyPair,
-		Decimals:         constants.PEPE_USD.Decimals,
+		CurrencyPair:     constants.PEPE_USD,
+		Decimals:         18,
 		MinProviderCount: 1,
 	}
-	PEPE_USDT = constants.PEPE_USDT
 
 	logger = zap.NewExample()
 
@@ -54,228 +43,97 @@ var (
 	// In particular all of the paths correspond to the desired "index prices" i.e. the
 	// prices we actually want to resolve to.
 	marketmap = mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
-			BTC_USD.String():   BTC_USD,
-			BTC_USDT.String():  BTC_USDT,
-			USDT_USD.String():  USDT_USD,
-			USDC_USDT.String(): USDC_USDT,
-			ETH_USD.String():   ETH_USD,
-			ETH_USDT.String():  ETH_USDT,
-			PEPE_USDT.String(): PEPE_USDT,
-			PEPE_USD.String():  PEPE_USD,
-		},
-		Providers: map[string]mmtypes.Providers{
+		Markets: map[string]mmtypes.Market{
 			BTC_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.BITCOIN_USD],
-				},
-			},
-			BTC_USDT.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.BITCOIN_USDT],
-					binance.DefaultNonUSMarketConfig[constants.BITCOIN_USDT],
-					kucoin.DefaultMarketConfig[constants.BITCOIN_USDT],
-				},
-			},
-			ETH_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.ETHEREUM_USD],
-				},
-			},
-			ETH_USDT.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.ETHEREUM_USDT],
-					binance.DefaultNonUSMarketConfig[constants.ETHEREUM_USDT],
-				},
-			},
-			USDT_USD.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.USDT_USD],
-					binance.DefaultNonUSMarketConfig[constants.USDT_USD],
-				},
-			},
-			USDC_USDT.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig[constants.USDC_USDT],
-				},
-			},
-			PEPE_USDT.String(): {
-				Providers: []mmtypes.ProviderConfig{
-					binance.DefaultNonUSMarketConfig[constants.PEPE_USDT],
-				},
-			},
-		},
-		Paths: map[string]mmtypes.Paths{
-			BTC_USD.String(): {
-				Paths: []mmtypes.Path{
+				Ticker: BTC_USD,
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
-						// COINBASE BTC/USD = BTC/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: BTC_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     coinbase.Name,
-							},
+						Name:           coinbase.Name,
+						OffChainTicker: "BTC-USD",
+					},
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "BTC-USDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
 						},
 					},
 					{
-						// COINBASE BTC/USDT * INDEX USDT/USD = BTC/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
-								Invert:       false,
-								Provider:     coinbase.Name,
-							},
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     mmtypes.IndexPrice,
-							},
-						},
-					},
-					{
-						// BINANCE BTC/USDT * INDEX USDT/USD = BTC/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
-								Invert:       false,
-								Provider:     binance.Name,
-							},
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     mmtypes.IndexPrice,
-							},
+						Name:           binance.Name,
+						OffChainTicker: "BTCUSDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
 						},
 					},
 				},
 			},
 			ETH_USD.String(): {
-				Paths: []mmtypes.Path{
+				Ticker: ETH_USD,
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
-						// COINBASE ETH/USD = ETH/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: ETH_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     coinbase.Name,
-							},
+						Name:           coinbase.Name,
+						OffChainTicker: "ETH-USD",
+					},
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "ETH-USDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
 						},
 					},
 					{
-						// COINBASE ETH/USDT * INDEX USDT/USD = ETH/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: ETH_USDT.CurrencyPair,
-								Invert:       false,
-								Provider:     coinbase.Name,
-							},
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     mmtypes.IndexPrice,
-							},
-						},
-					},
-					{
-						// BINANCE ETH/USDT * INDEX USDT/USD = ETH/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: ETH_USDT.CurrencyPair,
-								Invert:       false,
-								Provider:     binance.Name,
-							},
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     mmtypes.IndexPrice,
-							},
+						Name:           binance.Name,
+						OffChainTicker: "ETHUSDT",
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
 						},
 					},
 				},
 			},
 			USDT_USD.String(): {
-				Paths: []mmtypes.Path{
+				Ticker: USDT_USD,
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
-						// COINBASE USDT/USD = USDT/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     coinbase.Name,
-							},
-						},
+						Name:           coinbase.Name,
+						OffChainTicker: "USDT-USD",
 					},
 					{
-						// COINBASE USDC/USDT ^ -1 = USDT/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: USDC_USDT.CurrencyPair,
-								Invert:       true,
-								Provider:     coinbase.Name,
-							},
-						},
+						Name:           coinbase.Name,
+						OffChainTicker: "USDC-USDT",
+						Invert:         true,
 					},
 					{
-						// BINANCE USDT/USD = USDT/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     binance.Name,
-							},
-						},
+						Name:           binance.Name,
+						OffChainTicker: "USDTUSD",
 					},
-
 					{
-						// Kucoin BTC/USDT ^-1 * INDEX BTC/USD = USDT/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: BTC_USDT.CurrencyPair,
-								Invert:       true,
-								Provider:     kucoin.Name,
-							},
-							{
-								CurrencyPair: BTC_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     mmtypes.IndexPrice,
-							},
+						Name:           kucoin.Name,
+						OffChainTicker: "BTC-USDT",
+						Invert:         true,
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "BTC",
+							Quote: "USD",
 						},
 					},
 				},
 			},
 			PEPE_USD.String(): {
-				Paths: []mmtypes.Path{
+				Ticker: PEPE_USD,
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
-						// BINANCE PEPE/USDT * INDEX USDT/USD = PEPE/USD
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: PEPE_USDT.CurrencyPair,
-								Invert:       false,
-								Provider:     binance.Name,
-							},
-							{
-								CurrencyPair: USDT_USD.CurrencyPair,
-								Invert:       false,
-								Provider:     mmtypes.IndexPrice,
-							},
+						OffChainTicker: "PEPEUSDT",
+						Name:           binance.Name,
+						NormalizeByPair: &pkgtypes.CurrencyPair{
+							Base:  "USDT",
+							Quote: "USD",
 						},
 					},
 				},
 			},
 		},
-		AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,
 	}
 )
-
-// createPrice creates a price with the given number of decimals.
-func createPrice(price float64, decimals uint64) *big.Int {
-	// Convert the price to a big float so we can perform the multiplication.
-	floatPrice := big.NewFloat(price)
-
-	// Scale the price and convert it to a big.Int.
-	one := oracle.ScaledOne(decimals)
-	scaledPrice := new(big.Float).Mul(floatPrice, new(big.Float).SetInt(one))
-	intPrice, _ := scaledPrice.Int(nil)
-	return intPrice
-}

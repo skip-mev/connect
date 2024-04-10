@@ -7,7 +7,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -19,7 +18,7 @@ import (
 )
 
 func TestUpdateWithMarketMap(t *testing.T) {
-	t.Run("bad market map is reject", func(t *testing.T) {
+	t.Run("bad market map is rejected", func(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
 			orchestrator.WithLogger(logger),
@@ -30,7 +29,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		require.NoError(t, o.Init())
 
 		err = o.UpdateWithMarketMap(mmtypes.MarketMap{
-			Tickers: map[string]mmtypes.Ticker{
+			Markets: map[string]mmtypes.Market{
 				"bad": {},
 			},
 		})
@@ -57,14 +56,34 @@ func TestUpdateWithMarketMap(t *testing.T) {
 
 		providers = o.GetProviderState()
 
+		cbTickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
+		require.NoError(t, err)
+
 		// Check the state after the update.
 		coinbaseState, ok := providers[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, coinbase.Name, providertypes.API, false, coinbaseState)
+		checkProviderState(
+			t,
+			cbTickers,
+			coinbase.Name,
+			providertypes.API,
+			false,
+			coinbaseState,
+		)
+
+		okxTickers, err := types.ProviderTickersFromMarketMap(okx.Name, marketMap)
+		require.NoError(t, err)
 
 		okxState, ok := providers[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, okx.Name, providertypes.WebSockets, false, okxState)
+		checkProviderState(
+			t,
+			okxTickers,
+			okx.Name,
+			providertypes.WebSockets,
+			false,
+			okxState,
+		)
 
 		binanceState, ok := providers[binance.Name]
 		require.True(t, ok)
@@ -102,18 +121,45 @@ func TestUpdateWithMarketMap(t *testing.T) {
 		providers = o.GetProviderState()
 		require.Len(t, providers, 3)
 
+		cbTickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
+		require.NoError(t, err)
+
 		// Check the state after the update.
 		coinbaseState, ok := providers[coinbase.Name]
 		require.True(t, ok)
-		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, coinbase.Name, providertypes.API, true, coinbaseState)
+		checkProviderState(
+			t,
+			cbTickers,
+			coinbase.Name,
+			providertypes.API,
+			true,
+			coinbaseState,
+		)
+
+		okxTickers, err := types.ProviderTickersFromMarketMap(okx.Name, marketMap)
+		require.NoError(t, err)
 
 		okxState, ok := providers[okx.Name]
 		require.True(t, ok)
-		checkProviderState(t, []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}, okx.Name, providertypes.WebSockets, true, okxState)
+		checkProviderState(
+			t,
+			okxTickers,
+			okx.Name,
+			providertypes.WebSockets,
+			true,
+			okxState,
+		)
 
 		binanceState, ok := providers[binance.Name]
 		require.True(t, ok)
-		checkProviderState(t, nil, binance.Name, providertypes.API, false, binanceState)
+		checkProviderState(
+			t,
+			nil,
+			binance.Name,
+			providertypes.API,
+			false,
+			binanceState,
+		)
 
 		// Stop the providers.
 		o.Stop()
@@ -214,8 +260,6 @@ func TestUpdateWithMarketMap(t *testing.T) {
 }
 
 func TestUpdateProviderState(t *testing.T) {
-	expectedTickers := []mmtypes.Ticker{constants.BITCOIN_USD, constants.ETHEREUM_USD}
-
 	t.Run("can update a single api provider state with no configuration and non-running", func(t *testing.T) {
 		o, err := orchestrator.NewProviderOrchestrator(
 			oracleCfg,
@@ -226,7 +270,7 @@ func TestUpdateProviderState(t *testing.T) {
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
 
-		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(coinbase.Name, marketMap)
+		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
 
 		providers := o.GetProviderState()
@@ -238,11 +282,11 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state before any modifications are done.
 		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, providerState)
 
-		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
+		updatedState, err := o.UpdateProviderState(tickers, providerState)
 		require.NoError(t, err)
 
 		// Check the state after the update.
-		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, false, updatedState)
+		checkProviderState(t, tickers, coinbase.Name, providertypes.API, false, updatedState)
 	})
 
 	t.Run("can update a single api provider state with no configuration and running", func(t *testing.T) {
@@ -264,7 +308,7 @@ func TestUpdateProviderState(t *testing.T) {
 
 		time.Sleep(500 * time.Millisecond)
 
-		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(coinbase.Name, marketMap)
+		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
 
 		providers := o.GetProviderState()
@@ -276,13 +320,13 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state before any modifications are done.
 		checkProviderState(t, nil, coinbase.Name, providertypes.API, false, providerState)
 
-		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
+		updatedState, err := o.UpdateProviderState(tickers, providerState)
 		require.NoError(t, err)
 
 		time.Sleep(1000 * time.Millisecond)
 
 		// Check the state after the update.
-		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, true, updatedState)
+		checkProviderState(t, tickers, coinbase.Name, providertypes.API, true, updatedState)
 
 		o.Stop()
 		require.Eventually(
@@ -312,13 +356,13 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[coinbase.Name]
 		require.True(t, ok)
 
-		// Check the state before any modifications are done.
-		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, false, providerState)
+		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
+		require.NoError(t, err)
 
-		pMarketMap := types.ProviderMarketMap{
-			Name: coinbase.Name,
-		}
-		updatedState, err := o.UpdateProviderState(pMarketMap, providerState)
+		// Check the state before any modifications are done.
+		checkProviderState(t, tickers, coinbase.Name, providertypes.API, false, providerState)
+
+		updatedState, err := o.UpdateProviderState(nil, providerState)
 		require.NoError(t, err)
 
 		time.Sleep(1000 * time.Millisecond)
@@ -354,13 +398,12 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[coinbase.Name]
 		require.True(t, ok)
 
-		// Check the state before any modifications are done.
-		checkProviderState(t, expectedTickers, coinbase.Name, providertypes.API, true, providerState)
+		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
+		require.NoError(t, err)
 
-		pMarketMap := types.ProviderMarketMap{
-			Name: coinbase.Name,
-		}
-		updatedState, err := o.UpdateProviderState(pMarketMap, providerState)
+		// Check the state before any modifications are done.
+		checkProviderState(t, tickers, coinbase.Name, providertypes.API, true, providerState)
+		updatedState, err := o.UpdateProviderState(nil, providerState)
 		require.NoError(t, err)
 
 		time.Sleep(1000 * time.Millisecond)
@@ -389,7 +432,7 @@ func TestUpdateProviderState(t *testing.T) {
 		require.NoError(t, err)
 		require.NoError(t, o.Init())
 
-		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(okx.Name, marketMap)
+		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
 
 		providers := o.GetProviderState()
@@ -401,11 +444,11 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state before any modifications are done.
 		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, providerState)
 
-		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
+		updatedState, err := o.UpdateProviderState(tickers, providerState)
 		require.NoError(t, err)
 
 		// Check the state after the update.
-		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, false, updatedState)
+		checkProviderState(t, tickers, okx.Name, providertypes.WebSockets, false, updatedState)
 
 		o.Stop()
 		require.Eventually(
@@ -436,7 +479,7 @@ func TestUpdateProviderState(t *testing.T) {
 		}()
 
 		time.Sleep(3 * time.Millisecond)
-		providerMarketMap, err := types.ProviderMarketMapFromMarketMap(okx.Name, marketMap)
+		tickers, err := types.ProviderTickersFromMarketMap(okx.Name, marketMap)
 		require.NoError(t, err)
 
 		providers := o.GetProviderState()
@@ -448,13 +491,13 @@ func TestUpdateProviderState(t *testing.T) {
 		// Check the state before any modifications are done.
 		checkProviderState(t, nil, okx.Name, providertypes.WebSockets, false, providerState)
 
-		updatedState, err := o.UpdateProviderState(providerMarketMap, providerState)
+		updatedState, err := o.UpdateProviderState(tickers, providerState)
 		require.NoError(t, err)
 
 		time.Sleep(3 * time.Millisecond)
 
 		// Check the state after the update.
-		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, true, updatedState)
+		checkProviderState(t, tickers, okx.Name, providertypes.WebSockets, true, updatedState)
 
 		o.Stop()
 		require.Eventually(
@@ -484,13 +527,12 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[okx.Name]
 		require.True(t, ok)
 
-		// Check the state before any modifications are done.
-		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, false, providerState)
+		tickers, err := types.ProviderTickersFromMarketMap(okx.Name, marketMap)
+		require.NoError(t, err)
 
-		pMarketMap := types.ProviderMarketMap{
-			Name: okx.Name,
-		}
-		updatedState, err := o.UpdateProviderState(pMarketMap, providerState)
+		// Check the state before any modifications are done.
+		checkProviderState(t, tickers, okx.Name, providertypes.WebSockets, false, providerState)
+		updatedState, err := o.UpdateProviderState(nil, providerState)
 		require.NoError(t, err)
 
 		time.Sleep(1000 * time.Millisecond)
@@ -534,13 +576,12 @@ func TestUpdateProviderState(t *testing.T) {
 		providerState, ok := providers[okx.Name]
 		require.True(t, ok)
 
-		// Check the state before any modifications are done.
-		checkProviderState(t, expectedTickers, okx.Name, providertypes.WebSockets, true, providerState)
+		tickers, err := types.ProviderTickersFromMarketMap(okx.Name, marketMap)
+		require.NoError(t, err)
 
-		pMarketMap := types.ProviderMarketMap{
-			Name: okx.Name,
-		}
-		updatedState, err := o.UpdateProviderState(pMarketMap, providerState)
+		// Check the state before any modifications are done.
+		checkProviderState(t, tickers, okx.Name, providertypes.WebSockets, true, providerState)
+		updatedState, err := o.UpdateProviderState(nil, providerState)
 		require.NoError(t, err)
 
 		time.Sleep(1000 * time.Millisecond)

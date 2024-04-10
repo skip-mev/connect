@@ -10,7 +10,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // Init initializes the all of the providers that are configured via the oracle config.
@@ -31,6 +30,12 @@ func (o *ProviderOrchestrator) Init() error {
 		}
 
 		if err != nil {
+			o.logger.Error(
+				"failed to initialize provider",
+				zap.String("provider", cfg.Name),
+				zap.Error(err),
+			)
+
 			return fmt.Errorf("failed to initialize %s provider: %w", cfg.Name, err)
 		}
 	}
@@ -42,7 +47,7 @@ func (o *ProviderOrchestrator) Init() error {
 func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) error {
 	// Create the provider market map. This creates the tickers the provider is configured to
 	// support.
-	market, err := types.ProviderMarketMapFromMarketMap(cfg.Name, o.marketMap)
+	tickers, err := types.ProviderTickersFromMarketMap(cfg.Name, o.marketMap)
 	if err != nil {
 		return fmt.Errorf("failed to create %s's provider market map: %w", cfg.Name, err)
 	}
@@ -51,35 +56,35 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 	var provider *types.PriceProvider
 	switch {
 	case cfg.API.Enabled:
-		queryHandler, err := o.createAPIQueryHandler(cfg, market)
+		queryHandler, err := o.createAPIQueryHandler(cfg)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's api query handler: %w", cfg.Name, err)
 		}
 
 		provider, err = types.NewPriceProvider(
-			base.WithName[mmtypes.Ticker, *big.Int](cfg.Name),
-			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
+			base.WithName[types.ProviderTicker, *big.Float](cfg.Name),
+			base.WithLogger[types.ProviderTicker, *big.Float](o.logger),
 			base.WithAPIQueryHandler(queryHandler),
-			base.WithAPIConfig[mmtypes.Ticker, *big.Int](cfg.API),
-			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
-			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
+			base.WithAPIConfig[types.ProviderTicker, *big.Float](cfg.API),
+			base.WithIDs[types.ProviderTicker, *big.Float](tickers),
+			base.WithMetrics[types.ProviderTicker, *big.Float](o.providerMetrics),
 		)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
 		}
 	case cfg.WebSocket.Enabled:
-		queryHandler, err := o.createWebSocketQueryHandler(cfg, market)
+		queryHandler, err := o.createWebSocketQueryHandler(cfg)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's web socket query handler: %w", cfg.Name, err)
 		}
 
 		provider, err = types.NewPriceProvider(
-			base.WithName[mmtypes.Ticker, *big.Int](cfg.Name),
-			base.WithLogger[mmtypes.Ticker, *big.Int](o.logger),
+			base.WithName[types.ProviderTicker, *big.Float](cfg.Name),
+			base.WithLogger[types.ProviderTicker, *big.Float](o.logger),
 			base.WithWebSocketQueryHandler(queryHandler),
-			base.WithWebSocketConfig[mmtypes.Ticker, *big.Int](cfg.WebSocket),
-			base.WithIDs[mmtypes.Ticker, *big.Int](market.GetTickers()),
-			base.WithMetrics[mmtypes.Ticker, *big.Int](o.providerMetrics),
+			base.WithWebSocketConfig[types.ProviderTicker, *big.Float](cfg.WebSocket),
+			base.WithIDs[types.ProviderTicker, *big.Float](tickers),
+			base.WithMetrics[types.ProviderTicker, *big.Float](o.providerMetrics),
 		)
 		if err != nil {
 			return fmt.Errorf("failed to create %s's provider: %w", cfg.Name, err)
@@ -107,25 +112,23 @@ func (o *ProviderOrchestrator) createPriceProvider(cfg config.ProviderConfig) er
 // createAPIQueryHandler creates a new API query handler for the given provider configuration.
 func (o *ProviderOrchestrator) createAPIQueryHandler(
 	cfg config.ProviderConfig,
-	providerMarkets types.ProviderMarketMap,
 ) (types.PriceAPIQueryHandler, error) {
 	if o.priceAPIFactory == nil {
 		return nil, fmt.Errorf("cannot create provider; api query handler factory is not set")
 	}
 
-	return o.priceAPIFactory(o.logger, cfg, o.apiMetrics, providerMarkets)
+	return o.priceAPIFactory(o.logger, cfg, o.apiMetrics)
 }
 
 // createWebSocketQueryHandler creates a new web socket query handler for the given provider configuration.
 func (o *ProviderOrchestrator) createWebSocketQueryHandler(
 	cfg config.ProviderConfig,
-	providerMarkets types.ProviderMarketMap,
 ) (types.PriceWebSocketQueryHandler, error) {
 	if o.priceWSFactory == nil {
 		return nil, fmt.Errorf("cannot create provider; web socket query handler factory is not set")
 	}
 
-	return o.priceWSFactory(o.logger, cfg, o.wsMetrics, providerMarkets)
+	return o.priceWSFactory(o.logger, cfg, o.wsMetrics)
 }
 
 // createMarketMapProvider creates a new market map provider for the given provider configuration.
