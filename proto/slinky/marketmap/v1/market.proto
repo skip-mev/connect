@@ -59,7 +59,7 @@ message ProviderConfig {
   string off_chain_ticker = 2;
 
   // NormalizeByPair is the currency pair for this ticker to be normalized by.
-  // For example, if the desired Ticker is BTD/USD, this market could be reached
+  // For example, if the desired Ticker is BTC/USD, this market could be reached
   // using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
   // optional and nullable.
   slinky.types.v1.CurrencyPair normalize_by_pair = 3;

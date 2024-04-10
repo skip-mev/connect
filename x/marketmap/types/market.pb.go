@@ -176,7 +176,7 @@ type ProviderConfig struct {
 	// price of the ticker from the provider.
 	OffChainTicker string `protobuf:"bytes,2,opt,name=off_chain_ticker,json=offChainTicker,proto3" json:"off_chain_ticker,omitempty"`
 	// NormalizeByPair is the currency pair for this ticker to be normalized by.
-	// For example, if the desired Ticker is BTD/USD, this market could be reached
+	// For example, if the desired Ticker is BTC/USD, this market could be reached
 	// using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
 	// optional and nullable.
 	NormalizeByPair *types.CurrencyPair `protobuf:"bytes,3,opt,name=normalize_by_pair,json=normalizeByPair,proto3" json:"normalize_by_pair,omitempty"`
