@@ -3,6 +3,8 @@ package voteweighted
 import (
 	"context"
 	"fmt"
+	cmtprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,12 +34,16 @@ type CCVConsumerCompatKeeper struct {
 	ccvKeeper consumerkeeper.Keeper
 }
 
+// NewCCVConsumerCompatKeeper constructs a CCVConsumerCompatKeeper from a consumer keeper.
+func NewCCVConsumerCompatKeeper(keeper consumerkeeper.Keeper) CCVConsumerCompatKeeper {
+	return CCVConsumerCompatKeeper{
+		ccvKeeper: keeper,
+	}
+}
+
 // ValidatorByConsAddr returns a compat validator from the consumer keeper.
 func (c CCVConsumerCompatKeeper) ValidatorByConsAddr(ctx context.Context, addr sdk.ConsAddress) (stakingtypes.ValidatorI, error) {
-	sdkCtx, ok := ctx.(sdk.Context)
-	if !ok {
-		return nil, fmt.Errorf("could not convert context to sdk.Context")
-	}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ccv, found := c.ccvKeeper.GetCCValidator(sdkCtx, addr.Bytes())
 	if !found {
 		return nil, fmt.Errorf("could not find validator %s", addr.String())
@@ -48,12 +54,29 @@ func (c CCVConsumerCompatKeeper) ValidatorByConsAddr(ctx context.Context, addr s
 // TotalBondedTokens iterates through all CCVs and returns the sum of all validator power.
 func (c CCVConsumerCompatKeeper) TotalBondedTokens(ctx context.Context) (math.Int, error) {
 	total := math.NewInt(0)
-	sdkCtx, ok := ctx.(sdk.Context)
-	if !ok {
-		return total, fmt.Errorf("could not convert context to sdk.Context")
-	}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, ccVal := range c.ccvKeeper.GetAllCCValidator(sdkCtx) {
 		total = total.Add(math.NewInt(ccVal.Power))
 	}
 	return total, nil
+}
+
+// GetPubKeyByConsAddr returns the public key of a validator given the consensus addr.
+func (c CCVConsumerCompatKeeper) GetPubKeyByConsAddr(ctx context.Context, consAddr sdk.ConsAddress) (cmtprotocrypto.PublicKey, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	val, found := c.ccvKeeper.GetCCValidator(sdkCtx, consAddr)
+	if !found {
+		return cmtprotocrypto.PublicKey{}, fmt.Errorf("not found CCValidator for address: %s", consAddr.String())
+	}
+
+	consPubKey, err := val.ConsPubKey()
+	if err != nil {
+		return cmtprotocrypto.PublicKey{}, fmt.Errorf("could not get pubkey for val %s: %w", val.String(), err)
+	}
+	tmPubKey, err := cryptocodec.ToCmtProtoPublicKey(consPubKey)
+	if err != nil {
+		return cmtprotocrypto.PublicKey{}, err
+	}
+
+	return tmPubKey, nil
 }
