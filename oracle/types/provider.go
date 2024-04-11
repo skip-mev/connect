@@ -42,12 +42,12 @@ func NewProviderTicker(
 	}
 }
 
-// OffChainTicker returns the off-chain representation for the ticker.
+// GetOffChainTicker returns the off-chain representation for the ticker.
 func (t DefaultProviderTicker) GetOffChainTicker() string {
 	return t.OffChainTicker
 }
 
-// JSON returns additional JSON data for the ticker.
+// GetJSON returns additional JSON data for the ticker.
 func (t DefaultProviderTicker) GetJSON() string {
 	return t.JSON
 }
