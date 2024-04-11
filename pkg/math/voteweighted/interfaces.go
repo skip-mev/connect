@@ -20,6 +20,8 @@ type ValidatorStore interface {
 }
 
 // CCValidatorStore defines the interface contract required for the cross chain validator consumer store.
+//
+//go:generate mockery --name CCValidatorStore --filename mock_cc_validator_store.go
 type CCValidatorStore interface {
 	GetAllCCValidator(ctx sdk.Context) []types.CrossChainValidator
 	GetCCValidator(ctx sdk.Context, addr []byte) (types.CrossChainValidator, bool)
