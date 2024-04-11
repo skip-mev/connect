@@ -8,18 +8,11 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-var (
-	// DefaultMarketAuthority is the default value for the market authority Param.
-	DefaultMarketAuthority = authtypes.NewModuleAddress(govtypes.ModuleName).String()
-	// DefaultAdmin is the default value for the market admin Param.
-	DefaultAdmin = authtypes.NewModuleAddress(govtypes.ModuleName).String()
-)
-
 // DefaultParams returns default marketmap parameters.
 func DefaultParams() Params {
 	return Params{
-		MarketAuthorities: []string{DefaultMarketAuthority},
-		Admin:             DefaultAdmin,
+		MarketAuthorities: []string{authtypes.NewModuleAddress(govtypes.ModuleName).String()},
+		Admin:             authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	}
 }
 
