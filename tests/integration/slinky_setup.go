@@ -310,7 +310,7 @@ func RemoveCurrencyPairs(chain *cosmos.CosmosChain, authority string, deposit sd
 	// create message
 	msg := &oracletypes.MsgRemoveCurrencyPairs{
 		CurrencyPairIds: ids,
-		Authority: authority,
+		Authority:       authority,
 	}
 	propId, err := SubmitProposal(chain, deposit, submitter, msg)
 	if err != nil {

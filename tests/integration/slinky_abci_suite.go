@@ -7,6 +7,8 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -14,7 +16,6 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 )
 
 type SlinkyABCIIntegrationSuite struct {
@@ -47,7 +48,7 @@ func (s *SlinkyABCIIntegrationSuite) TestCurrencyPairRemoval() {
 	s.Require().NoError(err)
 
 	// expect prices to post
-	_, err = ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+	_, err = ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 		{
 			Prices: map[uint64][]byte{
 				id1: zeroBz,
@@ -78,11 +79,11 @@ func (s *SlinkyABCIIntegrationSuite) TestCurrencyPairRemoval() {
 		},
 	})
 	s.Require().NoError(err)
-	
+
 	_, err = RemoveCurrencyPairs(s.chain, s.authority.String(), sdk.NewCoin(s.denom, math.NewInt(deposit)), s.user.KeyName(), cps[0])
 	s.Require().NoError(err)
 
-	_, err = ExpectVoteExtensions(s.chain, s.blockTime * 3, []slinkyabci.OracleVoteExtension{
+	_, err = ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 		{
 			Prices: map[uint64][]byte{
 				id2: zeroBz,
@@ -107,15 +108,14 @@ func (s *SlinkyABCIIntegrationSuite) TestCurrencyPairRemoval() {
 				id3: zeroBz,
 			},
 		},
-	})	
+	})
 }
 
-func (s *SlinkyABCIIntegrationSuite) GetIDForCurrencyPair(ctx context.Context, cp slinkytypes.CurrencyPair) (uint64) {
+func (s *SlinkyABCIIntegrationSuite) GetIDForCurrencyPair(ctx context.Context, cp slinkytypes.CurrencyPair) uint64 {
 	cc, close, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
 
 	defer close()
-
 
 	id, err := getIDForCurrencyPair(ctx, oracletypes.NewQueryClient(cc), cp)
 	s.Require().NoError(err)
@@ -124,7 +124,7 @@ func (s *SlinkyABCIIntegrationSuite) GetIDForCurrencyPair(ctx context.Context, c
 }
 
 func (s *SlinkyABCIIntegrationSuite) addCurrencyPairs(ctx context.Context, chain *cosmos.CosmosChain, cps ...slinkytypes.CurrencyPair) {
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2 * s.blockTime, s.user, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
 
 	cc, close, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
@@ -141,7 +141,6 @@ func (s *SlinkyABCIIntegrationSuite) addCurrencyPairs(ctx context.Context, chain
 	// start oracles
 	for i := range s.chain.Nodes() {
 		node := s.chain.Nodes()[i]
-		s.T().Log("starting oracle on", node, "with tickers", cps)
 		oracleConfig := DefaultOracleConfig()
 		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
 			Name: static.Name,
@@ -158,52 +157,31 @@ func (s *SlinkyABCIIntegrationSuite) addCurrencyPairs(ctx context.Context, chain
 			Type: types.ConfigType,
 		})
 		tickers := make(map[string]mmtypes.Ticker)
+		marketConfig := mmtypes.MarketMap{
+			Markets: make(map[string]mmtypes.Market),
+		}
 
 		for _, cp := range cps {
 			tickers[cp.String()] = mmtypes.Ticker{
-				CurrencyPair: cp,
-				Decimals: 18,
+				CurrencyPair:     cp,
+				Decimals:         18,
 				MinProviderCount: 1,
 			}
-		}
 
-		providers := make(map[string]mmtypes.Providers)
-		for _, cp := range cps {
-			providers[cp.String()] = mmtypes.Providers{
-				[]mmtypes.ProviderConfig{
-					mmtypes.ProviderConfig{
-						Name: static.Name,
-						OffChainTicker: "0",
-					},
-				},
-			}
-		}
-
-		paths := make(map[string]mmtypes.Paths)
-		for _, cp := range cps {
-			paths[cp.String()] = mmtypes.Paths{
-				Paths: []mmtypes.Path{
+			marketConfig.Markets[cp.String()] = mmtypes.Market{
+				Ticker: tickers[cp.String()],
+				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
-						Operations: []mmtypes.Operation{
-							{
-								CurrencyPair: cp,
-								Provider: static.Name,
-							},
-						},
+						Name:           static.Name,
+						OffChainTicker: cp.String(),
+						Metadata_JSON:  `{"price": 0}`,
 					},
 				},
 			}
-		}
-
-		marketConfig := mmtypes.MarketMap{
-			Tickers: tickers,
-			Providers: providers,
-			Paths: paths,
 		}
 
 		oracle := GetOracleSideCar(node)
 		SetOracleConfigsOnOracle(oracle, oracleConfig, marketConfig)
 		s.Require().NoError(RestartOracle(node))
-		s.T().Log("started oracle on", node)
 	}
 }

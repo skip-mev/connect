@@ -1,4 +1,5 @@
 //go:build oracle_removals_enabled
+
 package simapp
 
 import (
