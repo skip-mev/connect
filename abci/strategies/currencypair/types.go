@@ -16,7 +16,8 @@ type OracleKeeper interface {
 	GetCurrencyPairFromID(ctx sdk.Context, id uint64) (cp slinkytypes.CurrencyPair, found bool)
 	GetIDForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, bool)
 	GetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (oracletypes.QuotePrice, error)
-	GetPrevBlockCPCounter(ctx sdk.Context) (uint64, error)
+	GetNumCurrencyPairs(ctx sdk.Context) (uint64, error)
+	GetNumRemovedCurrencyPairs(ctx sdk.Context) (uint64, error)
 }
 
 // CurrencyPairStrategy is a strategy for generating a unique ID and price representation for a given currency pair.

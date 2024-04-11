@@ -300,11 +300,11 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 	})
 }
 
-func (s *KeeperTestSuite) TestRemoveCounter() {
+func (s *KeeperTestSuite) TestGetNumRemovedCurrencyPairs() {
 	s.Run("get 0 with no state", func() {
 		s.SetupTest()
 
-		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		removes, err := s.oracleKeeper.GetNumRemovedCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(0))
 	})
@@ -315,7 +315,7 @@ func (s *KeeperTestSuite) TestRemoveCounter() {
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 
-		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		removes, err := s.oracleKeeper.GetNumRemovedCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(1))
 	})
@@ -328,19 +328,19 @@ func (s *KeeperTestSuite) TestRemoveCounter() {
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
 		s.Require().NoError(s.oracleKeeper.RemoveCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
 
-		removes, err := s.oracleKeeper.GetRemovedCPCounter(s.ctx)
+		removes, err := s.oracleKeeper.GetNumRemovedCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(removes, uint64(2))
 	})
 }
 
-func (s *KeeperTestSuite) TestCPCounter() {
+func (s *KeeperTestSuite) TestGetNumCurrencyPairs() {
 	s.Run("get 0 with no state", func() {
 		s.SetupTest()
 
-		removes, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
+		num, err := s.oracleKeeper.GetNumCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
-		s.Require().Equal(removes, uint64(0))
+		s.Require().Equal(num, uint64(0))
 	})
 
 	s.Run("get 1 with 1 cp", func() {
@@ -348,7 +348,7 @@ func (s *KeeperTestSuite) TestCPCounter() {
 
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 
-		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
+		cps, err := s.oracleKeeper.GetNumCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(cps, uint64(1))
 	})
@@ -359,7 +359,7 @@ func (s *KeeperTestSuite) TestCPCounter() {
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin1"}))
 		s.Require().NoError(s.oracleKeeper.CreateCurrencyPair(s.ctx, slinkytypes.CurrencyPair{Base: "test", Quote: "coin2"}))
 
-		cps, err := s.oracleKeeper.GetPrevBlockCPCounter(s.ctx)
+		cps, err := s.oracleKeeper.GetNumCurrencyPairs(s.ctx)
 		s.Require().NoError(err)
 		s.Require().Equal(cps, uint64(2))
 	})
