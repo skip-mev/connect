@@ -36,7 +36,7 @@ func createPriceFetcher(
 	client := mocks.NewEVMClient(t)
 	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
-		uniswapv3.DefaultAPIConfig,
+		uniswapv3.DefaultETHAPIConfig,
 		client,
 	)
 	require.NoError(t, err)
@@ -52,7 +52,7 @@ func createPriceFetcherWithClient(
 
 	fetcher, err := uniswapv3.NewPriceFetcher(
 		logger,
-		uniswapv3.DefaultAPIConfig,
+		uniswapv3.DefaultETHAPIConfig,
 		client,
 	)
 	require.NoError(t, err)
