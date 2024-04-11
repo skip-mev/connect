@@ -232,6 +232,17 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 			h.logger.Error("VerifyVoteExtensionHandler received a nil request")
 			return nil, err
 		}
+
+		// By default, we accept empty vote extensions.
+		if len(req.VoteExtension) == 0 {
+			h.logger.Info(
+				"empty vote extension",
+				"height", req.Height,
+			)
+
+			return &cometabci.ResponseVerifyVoteExtension{Status: cometabci.ResponseVerifyVoteExtension_ACCEPT}, nil
+		}
+
 		// decode the vote-extension bytes
 		voteExtension, err := h.voteExtensionCodec.Decode(req.VoteExtension)
 		if err != nil {

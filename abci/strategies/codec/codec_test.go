@@ -151,4 +151,10 @@ func TestCompressionExtendedCommitCodec(t *testing.T) {
 		// make sure it's the same
 		require.Equal(t, eci, decodedEci)
 	})
+
+	t.Run("test decoding empty byte array", func(t *testing.T) {
+		codec := compression.NewCompressionExtendedCommitCodec(compression.NewDefaultExtendedCommitCodec(), compression.NewZStdCompressor())
+		_, err := codec.Decode([]byte{})
+		require.NoError(t, err)
+	})
 }
