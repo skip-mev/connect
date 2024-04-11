@@ -37,7 +37,7 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(5 * time.Second)
@@ -61,7 +61,7 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(5 * time.Second)
@@ -85,7 +85,7 @@ func TestStart(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(5 * time.Second)

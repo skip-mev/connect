@@ -83,7 +83,7 @@ var (
 	// NewPriceResult is a function alias for the new price result.
 	NewPriceResult = providertypes.NewResult[*big.Float]
 
-	// NewPricesResponse is a function alias for the new price response.
+	// NewPriceResponse is a function alias for the new price response.
 	NewPriceResponse = providertypes.NewGetResponse[ProviderTicker, *big.Float]
 
 	// NewPriceResponseWithErr is a function alias for the new price response with errors.
@@ -91,10 +91,6 @@ var (
 
 	// NewPriceProvider is a function alias for the new price provider.
 	NewPriceProvider = base.NewProvider[ProviderTicker, *big.Float]
-
-	// NewPriceAPIQueryHandler is a function alias for the new API query handler meant to be
-	// used by the price providers.
-	NewPriceAPIQueryHandler = apihandlers.NewAPIQueryHandler[ProviderTicker, *big.Float]
 
 	// NewPriceAPIQueryHandlerWithFetcher is a function alias for the new API query handler with fetcher.
 	NewPriceAPIQueryHandlerWithFetcher = apihandlers.NewAPIQueryHandlerWithFetcher[ProviderTicker, *big.Float]
