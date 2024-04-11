@@ -343,7 +343,6 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
 				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(0), nil).Once()
 				return cpStrategy
 			},
 			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
@@ -358,7 +357,6 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
 				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(1), nil).Once()
 				return cpStrategy
 			},
 			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
