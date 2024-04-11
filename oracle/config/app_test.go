@@ -139,7 +139,7 @@ func TestReadConfigFromFile(t *testing.T) {
 			// Create temp file
 			f, err := os.CreateTemp("", "oracle_config")
 			require.NoError(t, err)
-			defer require.NoError(t, os.Remove(f.Name()))
+			defer os.Remove(f.Name())
 
 			// Write the config as a toml file
 			_, err = f.WriteString(tc.config)
