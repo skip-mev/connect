@@ -95,7 +95,10 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 	defer cancel()
 
 	pf.logger.Debug("making request", zap.String("url", url))
+
+	// Record the status code in the metrics.
 	resp, err := pf.requestHandler.Do(apiCtx, url)
+	pf.metrics.AddHTTPStatusCode(pf.config.Name, resp)
 	if err != nil {
 		status := providertypes.ErrorUnknown
 		if resp != nil {
@@ -110,8 +113,6 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 		)
 	}
 	defer resp.Body.Close()
-	// Record the status code in the metrics.
-	pf.metrics.AddHTTPStatusCode(pf.config.Name, resp)
 
 	pf.logger.Debug("received response", zap.Int("status_code", resp.StatusCode))
 	// TODO: add more error handling here.
