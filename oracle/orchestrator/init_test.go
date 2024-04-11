@@ -159,11 +159,11 @@ func TestInit(t *testing.T) {
 	t.Run("errors when a provider is not supported by the web socket query handler factory", func(t *testing.T) {
 		cfg := oracleCfg
 
-		okcCfg := okx.DefaultWebSocketConfig
-		okcCfg.Name = "unsupported"
+		okxCfg := okx.DefaultWebSocketConfig
+		okxCfg.Name = "unsupported"
 		cfg.Providers = append(cfg.Providers, config.ProviderConfig{
 			Name:      "unsupported",
-			WebSocket: okcCfg,
+			WebSocket: okxCfg,
 			Type:      oracletypes.ConfigType,
 		})
 
