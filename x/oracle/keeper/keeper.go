@@ -113,10 +113,19 @@ func NewKeeper(
 
 // RemoveCurrencyPair removes a given CurrencyPair from state, i.e. removes its nonce + QuotePrice from the module's store.
 func (k *Keeper) RemoveCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) error {
+	// check if the currency pair exists.
+	if !k.HasCurrencyPair(ctx, cp) {
+		return types.NewCurrencyPairNotExistError(cp)
+	}
+
 	if err := k.currencyPairs.Remove(ctx, cp.String()); err != nil {
 		return err
 	}
-	return k.incrementRemovedCPCounter(ctx)
+	if err := k.incrementRemovedCPCounter(ctx); err != nil {
+		return err
+	}
+
+	return k.decrementCPCounter(ctx)
 }
 
 // HasCurrencyPair returns true if a given CurrencyPair is stored in state, false otherwise.
@@ -334,8 +343,8 @@ func (k *Keeper) incrementRemovedCPCounter(ctx sdk.Context) error {
 	return k.numRemoves.Set(ctx, val)
 }
 
-// GetRemovedCPCounter gets the counter of removed currency pairs.
-func (k *Keeper) GetRemovedCPCounter(ctx sdk.Context) (uint64, error) {
+// GetNumRemovedCurrencyPairs gets the counter of removed currency pairs in the previous block.
+func (k *Keeper) GetNumRemovedCurrencyPairs(ctx sdk.Context) (uint64, error) {
 	return k.numRemoves.Get(ctx)
 }
 
@@ -350,7 +359,18 @@ func (k *Keeper) incrementCPCounter(ctx sdk.Context) error {
 	return k.numCPs.Set(ctx, val)
 }
 
-// GetPrevBlockCPCounter gets the counter of currency pairs in the previous block.
-func (k *Keeper) GetPrevBlockCPCounter(ctx sdk.Context) (uint64, error) {
+// DecrementCPCounter decrements the counter of currency pairs.
+func (k *Keeper) decrementCPCounter(ctx sdk.Context) error {
+	val, err := k.numCPs.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	val--
+	return k.numCPs.Set(ctx, val)
+}
+
+// GetNumCurrencyPairs returns the number of currency pairs currently in state.
+func (k *Keeper) GetNumCurrencyPairs(ctx sdk.Context) (uint64, error) {
 	return k.numCPs.Get(ctx)
 }
