@@ -301,7 +301,31 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, h
 	return res.Price, int64(res.Nonce), nil
 }
 
-// SubmitProposal creates and submits a proposal to the chain
+// RemoveCurrencyPairs submits a proposal + waits for it to pass to remove currency-pairs
+func RemoveCurrencyPairs(chain *cosmos.CosmosChain, authority string, deposit sdk.Coin, submitter string, cps ...slinkytypes.CurrencyPair) (string, error) {
+	ids := make([]string, len(cps))
+	for i, cp := range cps {
+		ids[i] = cp.String()
+	}
+	// create message
+	msg := &oracletypes.MsgRemoveCurrencyPairs{
+		CurrencyPairIds: ids,
+		Authority: authority,
+	}
+	propId, err := SubmitProposal(chain, deposit, submitter, msg)
+	if err != nil {
+		return "", err
+	}
+
+	// wait for proposal to pass
+	if err := PassProposal(chain, propId, 5*time.Minute); err != nil {
+		return "", err
+	}
+
+	return propId, nil
+}
+
+// Submit proposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
 	rand := rand.Str(10)

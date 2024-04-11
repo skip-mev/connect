@@ -175,6 +175,7 @@ type Inputs struct {
 
 	// keepers
 	types.MarketMapKeeper
+	MarketMapKeeperOptions func(types.MarketMapKeeper) types.MarketMapKeeper `optional:"true"`
 
 	// module-dependencies
 	Config       *oraclemodulev1.Module
@@ -195,6 +196,10 @@ func ProvideModule(in Inputs) Outputs {
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	if in.Config.Authority != "" {
 		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
+	}
+
+	if in.MarketMapKeeperOptions != nil {
+		in.MarketMapKeeper = in.MarketMapKeeperOptions(in.MarketMapKeeper)
 	}
 
 	oracleKeeper := keeper.NewKeeper(

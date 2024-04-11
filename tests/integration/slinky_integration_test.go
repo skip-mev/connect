@@ -38,6 +38,13 @@ var (
 		Version:    "latest",
 		UidGid:     "1000:1000",
 	}
+
+	imageWithRemovals = ibc.DockerImage{
+		Repository: "skip-mev/slinky-e2e-oracle-removal-enabled",
+		Version:    "latest",
+		UidGid:     "1000:1000",
+	}
+
 	encodingConfig = testutil.MakeTestEncodingConfig(
 		bank.AppModuleBasic{},
 		oracle.AppModuleBasic{},
@@ -128,4 +135,18 @@ func TestSlinkySlashingIntegration(t *testing.T) {
 	)
 
 	suite.Run(t, integration.NewSlinkySlashingIntegrationSuite(baseSuite))
+}
+
+func TestSlinkyABCIIntegration(t *testing.T) {
+	// update the spec
+	spec.ChainConfig.Images = []ibc.DockerImage{
+		imageWithRemovals,
+	}
+
+	baseSuite := integration.NewSlinkyIntegrationSuite(
+		spec,
+		oracleImage,
+	)
+
+	suite.Run(t, integration.NewSlinkyABCIIntegrationSuite(baseSuite))
 }

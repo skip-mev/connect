@@ -2,6 +2,8 @@ FROM golang:1.22-bullseye AS builder
 
 WORKDIR /src/slinky
 
+ARG BUILD_TAGS=""
+
 COPY go.mod .
 COPY go.sum .
 
@@ -9,7 +11,7 @@ RUN go mod download
 
 COPY . .
 
-RUN make build-test-app
+RUN make BUILD_TAGS=$BUILD_TAGS build-test-app
 
 ## Prepare the final clear binary
 ## This will expose the tendermint and cosmos ports alongside 

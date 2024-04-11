@@ -20,6 +20,7 @@ COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
 DEFI_PROVIDERS_ENABLED ?= false
 SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
+BUILD_TAGS ?= ""
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
@@ -79,6 +80,11 @@ docker-build:
 	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e -f contrib/images/slinky.e2e.Dockerfile .
 	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.dev.Dockerfile .
 
+docker-build-with-oracle-removals:
+	@echo "Building E2E Docker image..."
+	@DOCKER_BUILDKIT=1 $(DOCKER) build --build-arg="BUILD_TAGS="oracle_removals_enabled"" -t skip-mev/slinky-e2e-oracle-removal-enabled -f contrib/images/slinky.e2e.Dockerfile .
+	@DOCKER_BUILDKIT=1 $(DOCKER) build -t skip-mev/slinky-e2e-oracle -f contrib/images/slinky.sidecar.dev.Dockerfile .
+
 .PHONY: docker-build
 
 ###############################################################################
@@ -89,6 +95,8 @@ whitespace :=
 whitespace += $(whitespace)
 comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+build_tags += $(BUILD_TAGS)
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=testapp \
 		  -X github.com/cosmos/cosmos-sdk/version.AppName=testappd \
@@ -171,7 +179,7 @@ build-and-start-app: build-configs start-app
 ###                               Testing                                   ###
 ###############################################################################
 
-test-integration: tidy docker-build
+test-integration: tidy docker-build docker-build-with-oracle-removals 
 	@echo "Running integration tests..."
 	@cd ./tests/integration &&  go test -p 1 -v -race -timeout 30m
 

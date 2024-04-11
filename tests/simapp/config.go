@@ -283,6 +283,7 @@ var (
 	}),
 		depinject.Provide(alerttypes.ProvideMsgAlertGetSigners),
 		depinject.Provide(ProvideIncentives),
+		depinject.Provide(ProvideMarketMapKeeperOptions),
 		depinject.Supply(
 			// supply custom module basics
 			map[string]module.AppModuleBasic{
