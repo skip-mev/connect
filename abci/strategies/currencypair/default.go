@@ -114,9 +114,25 @@ func (s *DefaultCurrencyPairStrategy) GetDecodedPrice(
 }
 
 // GetMaxNumCP returns the number of pairs that the VEs should include.  This method returns an error if the size cannot
-// be queried from the x/oracle state.
+// be queried from the x/oracle state. Specifically, this method should return the maximum number of currency pairs that
+// could have existed at the time at which the votes were created. As such, if the execution mode is PrepareProposal or
+// ProcessProposal, the number of removed currency pairs in the previous block should be included in the total.
 func (s *DefaultCurrencyPairStrategy) GetMaxNumCP(
 	ctx sdk.Context,
 ) (uint64, error) {
-	return s.oracleKeeper.GetPrevBlockCPCounter(ctx)
+	current, err := s.oracleKeeper.GetNumCurrencyPairs(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	if mode := ctx.ExecMode(); mode == sdk.ExecModePrepareProposal || mode == sdk.ExecModeProcessProposal {
+		removed, err := s.oracleKeeper.GetNumRemovedCurrencyPairs(ctx)
+		if err != nil {
+			return 0, err
+		}
+
+		return current + removed, nil
+	}
+
+	return current, nil
 }

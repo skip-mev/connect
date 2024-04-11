@@ -2,6 +2,9 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/skip-mev/chaintestutil/sample"
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
@@ -236,7 +239,7 @@ func (s *KeeperTestSuite) TestMsgServerParams() {
 		msg := &types.MsgParams{
 			Authority: s.authority.String(),
 			Params: types.Params{
-				MarketAuthorities: []string{types.DefaultMarketAuthority, sample.Address(r)},
+				MarketAuthorities: []string{authtypes.NewModuleAddress(govtypes.ModuleName).String(), sample.Address(r)},
 				Admin:             sample.Address(r),
 			},
 		}
