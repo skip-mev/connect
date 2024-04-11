@@ -136,3 +136,86 @@ func TestDefaultCurrencyPairStrategyGetEncodedPrice(t *testing.T) {
 		require.Error(t, err)
 	})
 }
+
+func TestGetMaxNumCP(t *testing.T) {
+	ok := mocks.NewOracleKeeper(t)
+	strategy := strategies.NewDefaultCurrencyPairStrategy(ok)
+
+	t.Run("can get max number of currency pairs with no removals, PrepareProposal", func(t *testing.T) {
+		ctx := sdk.Context{}.WithExecMode(sdk.ExecModePrepareProposal)
+
+		maxNumCP := uint64(100)
+		ok.On("GetNumCurrencyPairs", ctx).Return(maxNumCP, nil).Once()
+
+		numRemovedInPrevBlock := uint64(0)
+		ok.On("GetNumRemovedCurrencyPairs", ctx).Return(numRemovedInPrevBlock, nil).Once()
+
+		numCP, err := strategy.GetMaxNumCP(ctx)
+		require.NoError(t, err)
+		require.Equal(t, maxNumCP, numCP)
+	})
+
+	t.Run("can get max number of currency pairs with removals, PrepareProposal", func(t *testing.T) {
+		ctx := sdk.Context{}.WithExecMode(sdk.ExecModePrepareProposal)
+
+		maxNumCP := uint64(100)
+		ok.On("GetNumCurrencyPairs", ctx).Return(maxNumCP, nil).Once()
+
+		numRemovedInPrevBlock := uint64(10)
+		ok.On("GetNumRemovedCurrencyPairs", ctx).Return(numRemovedInPrevBlock, nil).Once()
+
+		numCP, err := strategy.GetMaxNumCP(ctx)
+		require.NoError(t, err)
+		require.Equal(t, maxNumCP+numRemovedInPrevBlock, numCP)
+	})
+
+	t.Run("can get max number of currency pairs with no removals, ProcessProposal", func(t *testing.T) {
+		ctx := sdk.Context{}.WithExecMode(sdk.ExecModeProcessProposal)
+
+		maxNumCP := uint64(100)
+		ok.On("GetNumCurrencyPairs", ctx).Return(maxNumCP, nil).Once()
+
+		numRemovedInPrevBlock := uint64(0)
+		ok.On("GetNumRemovedCurrencyPairs", ctx).Return(numRemovedInPrevBlock, nil).Once()
+
+		numCP, err := strategy.GetMaxNumCP(ctx)
+		require.NoError(t, err)
+		require.Equal(t, maxNumCP, numCP)
+	})
+
+	t.Run("can get max number of currency pairs with removals, ProcessProposal", func(t *testing.T) {
+		ctx := sdk.Context{}.WithExecMode(sdk.ExecModeProcessProposal)
+
+		maxNumCP := uint64(100)
+		ok.On("GetNumCurrencyPairs", ctx).Return(maxNumCP, nil).Once()
+
+		numRemovedInPrevBlock := uint64(10)
+		ok.On("GetNumRemovedCurrencyPairs", ctx).Return(numRemovedInPrevBlock, nil).Once()
+
+		numCP, err := strategy.GetMaxNumCP(ctx)
+		require.NoError(t, err)
+		require.Equal(t, maxNumCP+numRemovedInPrevBlock, numCP)
+	})
+
+	t.Run("can get max number of currency pairs for extend vote", func(t *testing.T) {
+		ctx := sdk.Context{}.WithExecMode(sdk.ExecModeVoteExtension)
+
+		maxNumCP := uint64(100)
+		ok.On("GetNumCurrencyPairs", ctx).Return(maxNumCP, nil).Once()
+
+		numCP, err := strategy.GetMaxNumCP(ctx)
+		require.NoError(t, err)
+		require.Equal(t, maxNumCP, numCP)
+	})
+
+	t.Run("can get max number of currency pairs for verify vote", func(t *testing.T) {
+		ctx := sdk.Context{}.WithExecMode(sdk.ExecModeVerifyVoteExtension)
+
+		maxNumCP := uint64(100)
+		ok.On("GetNumCurrencyPairs", ctx).Return(maxNumCP, nil).Once()
+
+		numCP, err := strategy.GetMaxNumCP(ctx)
+		require.NoError(t, err)
+		require.Equal(t, maxNumCP, numCP)
+	})
+}

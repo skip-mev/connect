@@ -216,6 +216,16 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 			},
 			true,
 		},
+		{
+			"errors if the currency pair does not exist in state",
+			&types.MsgRemoveCurrencyPairs{
+				Authority: sdk.AccAddress(moduleAuth).String(),
+				CurrencyPairIds: []string{
+					"MOG/USD",
+				},
+			},
+			false,
+		},
 	}
 
 	ms := keeper.NewMsgServer(s.oracleKeeper)
