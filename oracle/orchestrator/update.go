@@ -22,7 +22,7 @@ func (o *ProviderOrchestrator) UpdateWithMarketMap(marketMap mmtypes.MarketMap) 
 		return err
 	}
 
-	// Iterate over all of the existing providers and update their market maps.
+	// Iterate over all existing providers and update their market maps.
 	for name, state := range o.providers {
 		providerTickers, err := types.ProviderTickersFromMarketMap(name, marketMap)
 		if err != nil {

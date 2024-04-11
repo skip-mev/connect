@@ -146,7 +146,8 @@ func (s *OracleTestSuite) TestProviders() {
 
 			for _, provider := range providers {
 				go func() {
-					provider.Start(ctx)
+					// context deadline exceeded
+					s.Require().Error(provider.Start(ctx))
 				}()
 			}
 
@@ -159,7 +160,7 @@ func (s *OracleTestSuite) TestProviders() {
 			s.Require().NoError(err)
 
 			go func() {
-				testOracle.Start(ctx)
+				s.Require().NoError(testOracle.Start(ctx))
 			}()
 
 			// Wait for the oracle to start and update.

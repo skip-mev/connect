@@ -5,7 +5,7 @@ import (
 )
 
 // MetricsConfig is the metrics configurations for the oracle. This configuration object specifically
-// exposes metrics pertaining to the oracle side car. To enable app side metrics, please see the app
+// exposes metrics pertaining to the oracle sidecar. To enable app side metrics, please see the app
 // configuration.
 type MetricsConfig struct {
 	// PrometheusServerAddress is the address of the prometheus server that the oracle will expose
