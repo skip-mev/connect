@@ -55,7 +55,7 @@ type OracleMetricsImpl struct {
 	providerTick    *prometheus.CounterVec
 }
 
-// NewMetricsFromConfig returns a oracle Metrics implementation based on the provided
+// NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
 // config.
 func NewMetricsFromConfig(config config.MetricsConfig) Metrics {
 	if config.Enabled {
