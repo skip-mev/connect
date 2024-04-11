@@ -847,8 +847,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 		cdc.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{}, nil)
 
 		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
-			VoteExtension: []byte{1, 2, 3
-			},
+			VoteExtension: []byte{1, 2, 3},
 		})
 		s.Require().NoError(err)
 	})
