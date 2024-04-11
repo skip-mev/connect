@@ -1,177 +1,105 @@
 package oracle_test
 
 import (
+	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/pkg/math/oracle"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func TestGetTickerFromOperation(t *testing.T) {
-	t.Run("has ticker included in the market config", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
+func TestGetProviderPrice(t *testing.T) {
+	t.Run("provider does not exist in the cache", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+		cfg := mmtypes.ProviderConfig{
+			Name:           "test",
+			OffChainTicker: "BTC/USD",
 		}
-		ticker, err := m.GetTickerFromOperation(operation)
-		require.NoError(t, err)
-		require.Equal(t, BTC_USD, ticker)
+		_, err = agg.GetProviderPrice(cfg)
+		require.Error(t, err)
 	})
 
-	t.Run("has ticker not included in the market config", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
+	t.Run("provider exists in the cache but does not have the desired CP", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		operation := mmtypes.Operation{
-			CurrencyPair: constants.MOG_USD.CurrencyPair,
+		cfg := mmtypes.ProviderConfig{
+			Name:           "test",
+			OffChainTicker: "BTC/USD",
 		}
-		ticker, err := m.GetTickerFromOperation(operation)
+		prices := types.Prices{
+			"BTC/USDT": big.NewFloat(100),
+		}
+		agg.SetProviderPrices("test", prices)
+
+		_, err = agg.GetProviderPrice(cfg)
 		require.Error(t, err)
-		require.Empty(t, ticker)
+	})
+
+	t.Run("provider exists in the cache and has the desired CP", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
+		require.NoError(t, err)
+
+		cfg := mmtypes.ProviderConfig{
+			Name:           "test",
+			OffChainTicker: "BTC/USD",
+		}
+		prices := types.Prices{
+			"BTC/USD": big.NewFloat(100),
+		}
+		agg.SetProviderPrices("test", prices)
+
+		price, err := agg.GetProviderPrice(cfg)
+		require.NoError(t, err)
+		require.Equal(t, big.NewFloat(100), price)
+	})
+
+	t.Run("provider exists in the cache and has the desired CP, invert is true", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
+		require.NoError(t, err)
+
+		cfg := mmtypes.ProviderConfig{
+			Name:           "test",
+			OffChainTicker: "BTC/USD",
+			Invert:         true,
+		}
+		prices := types.Prices{
+			"BTC/USD": big.NewFloat(100),
+		}
+		agg.SetProviderPrices("test", prices)
+
+		price, err := agg.GetProviderPrice(cfg)
+		require.NoError(t, err)
+		require.Equal(t, big.NewFloat(0.01).SetPrec(18), price.SetPrec(18))
 	})
 }
 
-func TestGetProviderPrice(t *testing.T) {
-	t.Run("does not have a ticker in the config", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
+func TestGetIndexPrice(t *testing.T) {
+	t.Run("has no index prices", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		operation := mmtypes.Operation{
-			CurrencyPair: constants.MOG_USD.CurrencyPair,
-		}
-		_, err = m.GetProviderPrice(operation)
+		_, err = agg.GetIndexPrice(constants.ETHEREUM_USD)
 		require.Error(t, err)
 	})
 
-	t.Run("has no provider prices or index prices", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
+	t.Run("has index prices", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
 		require.NoError(t, err)
 
-		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
+		prices := types.Prices{
+			constants.BITCOIN_USD.String(): big.NewFloat(100),
 		}
-		_, err = m.GetProviderPrice(operation)
-		require.Error(t, err)
+		agg.SetIndexPrices(prices)
 
-		// Attempt to retrieve the index price.
-		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     mmtypes.IndexPrice,
-		}
-		_, err = m.GetProviderPrice(operation)
-		require.Error(t, err)
-	})
-
-	t.Run("has provider prices but no index prices", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
+		price, err := agg.GetIndexPrice(constants.BITCOIN_USD)
 		require.NoError(t, err)
-
-		// Set the provider price.
-		prices := types.TickerPrices{
-			BTC_USD: createPrice(100, BTC_USD.Decimals),
-		}
-		m.DataAggregator.SetProviderData(coinbase.Name, prices)
-
-		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
-		}
-		price, err := m.GetProviderPrice(operation)
-		require.NoError(t, err)
-		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
-
-		// Attempt to retrieve the index price.
-		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     mmtypes.IndexPrice,
-		}
-		_, err = m.GetProviderPrice(operation)
-		require.Error(t, err)
-	})
-
-	t.Run("has provider prices and index prices", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
-		require.NoError(t, err)
-
-		// Set the provider price.
-		prices := types.TickerPrices{
-			BTC_USD: createPrice(100, BTC_USD.Decimals),
-		}
-		m.DataAggregator.SetProviderData(coinbase.Name, prices)
-
-		// Set the index price.
-		m.DataAggregator.SetAggregatedData(prices)
-
-		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
-		}
-		price, err := m.GetProviderPrice(operation)
-		require.NoError(t, err)
-		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
-
-		// Attempt to retrieve the index price.
-		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     mmtypes.IndexPrice,
-		}
-		price, err = m.GetProviderPrice(operation)
-		require.NoError(t, err)
-		require.Equal(t, createPrice(100, oracle.ScaledDecimals), price)
-	})
-
-	t.Run("has provider prices and can correctly scale up", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
-		require.NoError(t, err)
-
-		// Set the provider price.
-		prices := types.TickerPrices{
-			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
-		}
-		m.DataAggregator.SetProviderData(coinbase.Name, prices)
-
-		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
-		}
-		price, err := m.GetProviderPrice(operation)
-		require.NoError(t, err)
-		require.Equal(t, createPrice(40_000, oracle.ScaledDecimals), price)
-	})
-
-	t.Run("has provider prices and can correctly invert", func(t *testing.T) {
-		m, err := oracle.NewMedianAggregator(logger, marketmap, metrics.NewNopMetrics())
-		require.NoError(t, err)
-
-		// Set the provider price.
-		prices := types.TickerPrices{
-			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
-		}
-		m.DataAggregator.SetProviderData(coinbase.Name, prices)
-
-		// Attempt to retrieve the provider.
-		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
-			Provider:     coinbase.Name,
-			Invert:       true,
-		}
-		price, err := m.GetProviderPrice(operation)
-		require.NoError(t, err)
-		expectedPrice := createPrice(0.000025, oracle.ScaledDecimals)
-		math.VerifyPrice(t, expectedPrice, price, acceptableDelta)
+		require.Equal(t, big.NewFloat(100), price)
 	})
 }

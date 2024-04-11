@@ -15,12 +15,12 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	logger = zap.NewExample()
-	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+	btcusdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt = huobi.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	logger  = zap.NewExample()
 )
 
 func TestHandlerMessage(t *testing.T) {
@@ -87,8 +87,8 @@ func TestHandlerMessage(t *testing.T) {
 			},
 			resp: types.NewPriceResponse(
 				types.ResolvedPrices{
-					constants.BITCOIN_USDT: {
-						Value: big.NewInt(100000000),
+					btcusdt: {
+						Value: big.NewFloat(1),
 					},
 				},
 				types.UnResolvedPrices{},
@@ -243,10 +243,11 @@ func TestHandlerMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(huobi.Name, huobi.DefaultMarketConfig)
+			wsHandler, err := huobi.NewWebSocketDataHandler(logger, huobi.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
-			wsHandler, err := huobi.NewWebSocketDataHandler(logger, marketConfig, huobi.DefaultWebSocketConfig)
+			// Update the cache since it is assumed that CreateMessages is executed before anything else.
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -276,13 +277,13 @@ func TestHandlerMessage(t *testing.T) {
 func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
-			cps:  []mmtypes.Ticker{},
+			cps:  []types.ProviderTicker{},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				return nil
 			},
@@ -290,8 +291,8 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "one currency pair",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+			cps: []types.ProviderTicker{
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg, err := huobi.NewSubscriptionRequest("btcusdt")
@@ -303,9 +304,9 @@ func TestCreateMessage(t *testing.T) {
 		},
 		{
 			name: "two currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				bz1, err := huobi.NewSubscriptionRequest("btcusdt")
@@ -317,24 +318,11 @@ func TestCreateMessage(t *testing.T) {
 			},
 			expectedErr: false,
 		},
-		{
-			name: "one currency pair not in config",
-			cps: []mmtypes.Ticker{
-				mogusd,
-			},
-			expected: func() []handlers.WebsocketEncodedMessage {
-				return nil
-			},
-			expectedErr: true,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(huobi.Name, huobi.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			wsHandler, err := huobi.NewWebSocketDataHandler(logger, marketConfig, huobi.DefaultWebSocketConfig)
+			wsHandler, err := huobi.NewWebSocketDataHandler(logger, huobi.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)

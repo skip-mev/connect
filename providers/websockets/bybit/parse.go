@@ -51,15 +51,15 @@ func (h *WebSocketHandler) parseTickerUpdate(
 
 	// Iterate through all the tickers and add them to the response.
 	data := resp.Data
-	ticker, ok := h.market.OffChainMap[data.Symbol]
+	ticker, ok := h.cache.FromOffChainTicker(data.Symbol)
 	if !ok {
 		return types.NewPriceResponse(resolved, unresolved), fmt.Errorf("unknown ticker %s", data.Symbol)
 	}
 
-	// Convert the price to a big.Int.
-	price, err := math.Float64StringToBigInt(data.LastPrice, ticker.Decimals)
+	// Convert the price to a big.Float.
+	price, err := math.Float64StringToBigFloat(data.LastPrice)
 	if err != nil {
-		wErr := fmt.Errorf("failed to convert price to big.Int: %w", err)
+		wErr := fmt.Errorf("failed to convert price to big.Float: %w", err)
 		unresolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(wErr, providertypes.ErrorFailedToParsePrice),
 		}

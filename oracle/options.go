@@ -5,7 +5,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -65,21 +64,8 @@ func WithMetricsConfig(config config.MetricsConfig) Option {
 	}
 }
 
-// WithAggregateFunction sets the aggregate function on the Oracle.
-func WithAggregateFunction(fn types.PriceAggregationFn) Option {
-	return func(o *OracleImpl) {
-		if fn == nil {
-			panic("cannot set aggregate function on nil aggregator")
-		}
-
-		o.priceAggregator = aggregator.NewDataAggregator(
-			aggregator.WithAggregateFn(fn),
-		)
-	}
-}
-
-// WithDataAggregator sets the data aggregator on the Oracle.
-func WithDataAggregator(agg types.PriceAggregator) Option {
+// WithPriceAggregator sets the data aggregator on the Oracle.
+func WithPriceAggregator(agg PriceAggregator) Option {
 	return func(o *OracleImpl) {
 		if agg == nil {
 			panic("cannot set nil aggregator")
@@ -90,7 +76,7 @@ func WithDataAggregator(agg types.PriceAggregator) Option {
 }
 
 // WithProviders sets the providers on the Oracle.
-func WithProviders(providers []types.PriceProviderI) Option {
+func WithProviders(providers []*types.PriceProvider) Option {
 	return func(o *OracleImpl) {
 		o.providers = providers
 	}

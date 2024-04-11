@@ -13,12 +13,13 @@ import (
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var (
-	logger = zap.NewExample()
-	mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
+	btcusdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
+	ethusdt  = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	atomusdc = mexc.DefaultMarketConfig.MustGetProviderTicker(constants.ATOM_USDC)
+	logger   = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {
@@ -70,8 +71,8 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				Resolved: types.ResolvedPrices{
-					constants.BITCOIN_USDT: {
-						Value: big.NewInt(1000000000000),
+					btcusdt: {
+						Value: big.NewFloat(10000.00),
 					},
 				},
 			},
@@ -100,7 +101,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid channel"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -118,7 +119,7 @@ func TestHandleMessage(t *testing.T) {
 			},
 			resp: types.PriceResponse{
 				UnResolved: types.UnResolvedPrices{
-					constants.BITCOIN_USDT: providertypes.UnresolvedResult{
+					btcusdt: providertypes.UnresolvedResult{
 						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("invalid price"), providertypes.ErrorWebSocketGeneral),
 					},
 				},
@@ -132,10 +133,11 @@ func TestHandleMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
+			wsHandler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
-			wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
+			// Update the cache since it is assumed that CreateMessages is executed before anything else.
+			_, err = wsHandler.CreateMessages([]types.ProviderTicker{btcusdt, ethusdt, atomusdc})
 			require.NoError(t, err)
 
 			resp, updateMsg, err := wsHandler.HandleMessage(tc.msg())
@@ -157,7 +159,7 @@ func TestHandleMessage(t *testing.T) {
 
 			for cp, result := range tc.resp.Resolved {
 				require.Contains(t, resp.Resolved, cp)
-				require.Equal(t, result.Value, resp.Resolved[cp].Value)
+				require.Equal(t, result.Value.SetPrec(18), resp.Resolved[cp].Value.SetPrec(18))
 			}
 
 			for cp := range tc.resp.UnResolved {
@@ -171,14 +173,14 @@ func TestHandleMessage(t *testing.T) {
 func TestCreateMessages(t *testing.T) {
 	testCases := []struct {
 		name        string
-		cps         []mmtypes.Ticker
+		cps         []types.ProviderTicker
 		expected    func() []handlers.WebsocketEncodedMessage
 		expectedErr bool
 	}{
 		{
 			name: "single currency pair",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
+			cps: []types.ProviderTicker{
+				btcusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8"]}`
@@ -188,10 +190,10 @@ func TestCreateMessages(t *testing.T) {
 		},
 		{
 			name: "multiple currency pairs",
-			cps: []mmtypes.Ticker{
-				constants.BITCOIN_USDT,
-				constants.ETHEREUM_USDT,
-				constants.ATOM_USDC,
+			cps: []types.ProviderTicker{
+				btcusdt,
+				ethusdt,
+				atomusdc,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
 				msg := `{"method":"SUBSCRIPTION","params":["spot@public.miniTicker.v3.api@BTCUSDT@UTC+8","spot@public.miniTicker.v3.api@ETHUSDT@UTC+8","spot@public.miniTicker.v3.api@ATOMUSDC@UTC+8"]}`
@@ -199,22 +201,11 @@ func TestCreateMessages(t *testing.T) {
 			},
 			expectedErr: false,
 		},
-		{
-			name: "unsupported currency pair",
-			cps: []mmtypes.Ticker{
-				mogusd,
-			},
-			expected:    func() []handlers.WebsocketEncodedMessage { return nil },
-			expectedErr: true,
-		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
-			require.NoError(t, err)
-
-			wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
+			wsHandler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultWebSocketConfig)
 			require.NoError(t, err)
 
 			msgs, err := wsHandler.CreateMessages(tc.cps)
@@ -228,10 +219,7 @@ func TestCreateMessages(t *testing.T) {
 }
 
 func TestHeartBeatMessages(t *testing.T) {
-	marketConfig, err := types.NewProviderMarketMap(mexc.Name, mexc.DefaultMarketConfig)
-	require.NoError(t, err)
-
-	wsHandler, err := mexc.NewWebSocketDataHandler(logger, marketConfig, mexc.DefaultWebSocketConfig)
+	wsHandler, err := mexc.NewWebSocketDataHandler(logger, mexc.DefaultWebSocketConfig)
 	require.NoError(t, err)
 
 	expected := []handlers.WebsocketEncodedMessage{

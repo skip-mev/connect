@@ -2,73 +2,115 @@ package oracle
 
 import (
 	"fmt"
+	"maps"
 	"math/big"
 
 	"github.com/skip-mev/slinky/oracle/types"
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-// GetTickerFromOperation returns the ticker for the given operation.
-func (m *MedianAggregator) GetTickerFromOperation(
-	operation mmtypes.Operation,
-) (mmtypes.Ticker, error) {
-	cfg := m.GetMarketMap()
-	ticker, ok := cfg.Tickers[operation.CurrencyPair.String()]
+// GetProviderPrice returns the relevant provider price. Note that the aggregator's
+// provider data cache stores prices in the form of providerName -> offChainTicker -> price.
+func (m *IndexPriceAggregator) GetProviderPrice(
+	cfg mmtypes.ProviderConfig,
+) (*big.Float, error) {
+	cache, ok := m.providerPrices[cfg.Name]
 	if !ok {
-		return mmtypes.Ticker{}, fmt.Errorf("missing ticker: %s", operation.CurrencyPair.String())
+		return nil, fmt.Errorf("missing provider prices for provider: %s", cfg.Name)
 	}
 
-	return ticker, nil
+	price, ok := cache[cfg.OffChainTicker]
+	if !ok {
+		return nil, fmt.Errorf("missing %s price for ticker: %s", cfg.Name, cfg.OffChainTicker)
+	}
+
+	if cfg.Invert {
+		return new(big.Float).Quo(big.NewFloat(1), price), nil
+	}
+
+	return price, nil
 }
 
-// GetProviderPrice returns the relevant provider price. Note that if the operation
-// is for the index provider, then the price is retrieved from the previously calculated
-// median prices. Otherwise, the price is retrieved from the provider cache. Additionally,
-// this function normalizes (scales, inverts) the price to maintain the maximum precision.
-func (m *MedianAggregator) GetProviderPrice(
-	operation mmtypes.Operation,
-) (*big.Int, error) {
-	ticker, err := m.GetTickerFromOperation(operation)
-	if err != nil {
-		return nil, err
-	}
-
-	var cache types.TickerPrices
-	if operation.Provider != mmtypes.IndexPrice {
-		cache = m.GetDataByProvider(operation.Provider)
-	} else {
-		cache = m.GetAggregatedData()
-	}
-
-	price, ok := cache[ticker]
+// GetIndexPrice returns the relevant index price. Note that the aggregator's
+// index price cache stores prices in the form of ticker -> price.
+func (m *IndexPriceAggregator) GetIndexPrice(
+	cp pkgtypes.CurrencyPair,
+) (*big.Float, error) {
+	price, ok := m.indexPrices[cp.String()]
 	if !ok {
-		return nil, fmt.Errorf("missing %s price for ticker: %s", operation.Provider, ticker.String())
+		return nil, fmt.Errorf("missing index price for ticker: %s", cp)
 	}
 
-	scaledPrice, err := ScaleUpCurrencyPairPrice(ticker.Decimals, price)
-	if err != nil {
-		return nil, err
-	}
+	return price, nil
+}
 
-	if operation.Invert {
-		scaledPrice = InvertCurrencyPairPrice(scaledPrice, ScaledDecimals)
-	}
+// SetIndexPrice sets the index price for the given currency pair.
+func (m *IndexPriceAggregator) SetIndexPrices(
+	prices types.Prices,
+) {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 
-	return scaledPrice, nil
+	m.indexPrices = prices
+}
+
+// GetIndexPrices returns the index prices the aggregator has.
+func (m *IndexPriceAggregator) GetIndexPrices() types.Prices {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	cpy := make(types.Prices)
+	maps.Copy(cpy, m.indexPrices)
+
+	return cpy
 }
 
 // UpdateMarketMap updates the market map for the oracle.
-func (m *MedianAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
-	m.Lock()
-	defer m.Unlock()
+func (m *IndexPriceAggregator) UpdateMarketMap(marketMap mmtypes.MarketMap) {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 
 	m.cfg = marketMap
 }
 
 // GetMarketMap returns the market map for the oracle.
-func (m *MedianAggregator) GetMarketMap() *mmtypes.MarketMap {
-	m.Lock()
-	defer m.Unlock()
+func (m *IndexPriceAggregator) GetMarketMap() *mmtypes.MarketMap {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
 
 	return &m.cfg
+}
+
+// SetProviderPrices updates the data aggregator with the given provider and data.
+func (m *IndexPriceAggregator) SetProviderPrices(provider string, data types.Prices) {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	if data == nil {
+		data = make(types.Prices)
+	}
+
+	m.providerPrices[provider] = data
+}
+
+// Reset resets the data aggregator for all providers.
+func (m *IndexPriceAggregator) Reset() {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	m.providerPrices = make(map[string]types.Prices)
+}
+
+// GetPrices returns the aggregated data the aggregator has. Specifically, the
+// prices returned are the scaled prices - where each price is scaled by the
+// respective ticker's decimals.
+func (m *IndexPriceAggregator) GetPrices() types.Prices {
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+
+	cpy := make(types.Prices)
+	maps.Copy(cpy, m.scaledPrices)
+
+	return cpy
 }

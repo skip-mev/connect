@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/orchestrator"
-	"github.com/skip-mev/slinky/oracle/types"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -112,7 +111,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
 
 		resolved := make(mmclienttypes.ResolvedMarketMap)
-		resp := mmtypes.GetMarketMapResponse{
+		resp := mmtypes.MarketMapResponse{
 			MarketMap: marketMap,
 		}
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
@@ -150,7 +149,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
 
 		resolved := make(mmclienttypes.ResolvedMarketMap)
-		resp := mmtypes.GetMarketMapResponse{
+		resp := mmtypes.MarketMapResponse{
 			MarketMap: marketMap,
 		}
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
@@ -187,7 +186,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
 
 		resolved := make(mmclienttypes.ResolvedMarketMap)
-		resp := mmtypes.GetMarketMapResponse{
+		resp := mmtypes.MarketMapResponse{
 			MarketMap: marketMap,
 		}
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
@@ -226,7 +225,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		handler.On("CreateURL", mock.Anything).Return("", nil).Maybe()
 
 		resolved := make(mmclienttypes.ResolvedMarketMap)
-		resp := mmtypes.GetMarketMapResponse{
+		resp := mmtypes.MarketMapResponse{
 			MarketMap: marketMap,
 		}
 		resolved[chains[0]] = mmclienttypes.NewMarketMapResult(&resp, time.Now())
@@ -261,7 +260,7 @@ func TestListenForMarketMapUpdates(t *testing.T) {
 		o.Stop()
 
 		// Check that the market map was written to the path.
-		mm, err := types.ReadMarketConfigFromFile(path)
+		mm, err := mmtypes.ReadMarketMapFromFile(path)
 		require.NoError(t, err)
 		require.Equal(t, o.GetMarketMap(), mm)
 

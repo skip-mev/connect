@@ -10,7 +10,6 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
@@ -30,7 +29,6 @@ func APIQueryHandlerFactory(
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	metrics metrics.APIMetrics,
-	marketMap types.ProviderMarketMap,
 ) (types.PriceAPIQueryHandler, error) {
 	// Validate the provider config.
 	err := cfg.ValidateBasic()
@@ -41,10 +39,8 @@ func APIQueryHandlerFactory(
 	// Create the underlying client that will be used to fetch data from the API. This client
 	// will limit the number of concurrent connections and uses the configured timeout to
 	// ensure requests do not hang.
-	tickers := marketMap.GetTickers()
-	maxCons := math.Min(len(tickers), cfg.API.MaxQueries)
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: maxCons},
+		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries},
 		Timeout:   cfg.API.Timeout,
 	}
 
@@ -60,15 +56,15 @@ func APIQueryHandlerFactory(
 
 	switch cfg.Name {
 	case binance.Name:
-		apiDataHandler, err = binance.NewAPIHandler(marketMap, cfg.API)
+		apiDataHandler, err = binance.NewAPIHandler(cfg.API)
 	case coinbaseapi.Name:
-		apiDataHandler, err = coinbaseapi.NewAPIHandler(marketMap, cfg.API)
+		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
 	case coingecko.Name:
-		apiDataHandler, err = coingecko.NewAPIHandler(marketMap, cfg.API)
+		apiDataHandler, err = coingecko.NewAPIHandler(cfg.API)
 	case geckoterminal.Name:
-		apiDataHandler, err = geckoterminal.NewAPIHandler(marketMap, cfg.API)
+		apiDataHandler, err = geckoterminal.NewAPIHandler(cfg.API)
 	case kraken.Name:
-		apiDataHandler, err = kraken.NewAPIHandler(marketMap, cfg.API)
+		apiDataHandler, err = kraken.NewAPIHandler(cfg.API)
 	case uniswapv3.Name:
 		var ethClient uniswapv3.EVMClient
 		ethClient, err = uniswapv3.NewGoEthereumClientImpl(cfg.API.URL)
@@ -76,24 +72,15 @@ func APIQueryHandlerFactory(
 			return nil, err
 		}
 
-		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, metrics, cfg.API, ethClient)
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, cfg.API, ethClient)
 	case static.Name:
-		apiDataHandler, err = static.NewAPIHandler(marketMap)
-		if err != nil {
-			return nil, err
-		}
-
+		apiDataHandler = static.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
 	case volatile.Name:
-		apiDataHandler, err = volatile.NewAPIHandler(marketMap)
-		if err != nil {
-			return nil, err
-		}
-
+		apiDataHandler = volatile.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
 	case raydium.Name:
 		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
-			marketMap,
 			cfg.API,
 			logger,
 		)

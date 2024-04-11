@@ -5,229 +5,145 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
+	pkgtypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
-func TestProviderMarketMap(t *testing.T) {
-	testCases := []struct {
-		name         string
-		providerName string
-		configs      types.TickerToProviderConfig
-		expErr       bool
+func TestProviderTickersFromMarketMap(t *testing.T) {
+	cases := []struct {
+		name     string
+		provider string
+		market   mmtypes.MarketMap
+		expected []types.ProviderTicker
+		err      bool
 	}{
 		{
-			name:         "empty configs",
-			providerName: "test",
-			configs:      types.TickerToProviderConfig{},
-			expErr:       false,
+			name:     "empty market map",
+			provider: "test",
+			market:   mmtypes.MarketMap{},
+			expected: nil,
+			err:      false,
 		},
 		{
-			name:         "empty provider name",
-			providerName: "",
-			configs: types.TickerToProviderConfig{
-				constants.BITCOIN_USD: {
-					Name:           "test",
-					OffChainTicker: "BTC-USD",
+			name:     "invalid market map",
+			provider: "test",
+			market: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{
+					"test": {},
 				},
 			},
-			expErr: true,
+			expected: nil,
+			err:      true,
 		},
 		{
-			name:         "empty off-chain ticker",
-			providerName: "test",
-			configs: types.TickerToProviderConfig{
-				constants.BITCOIN_USD: {
-					Name:           "test",
-					OffChainTicker: "",
-				},
-			},
-			expErr: true,
-		},
-		{
-			name:         "invalid ticker",
-			providerName: "test",
-			configs: types.TickerToProviderConfig{
-				mmtypes.NewTicker("BTC", "USD", 8, 0): {
-					Name:           "test",
-					OffChainTicker: "BTC-USD",
-				},
-			},
-			expErr: true,
-		},
-		{
-			name:         "valid configs",
-			providerName: "test",
-			configs: types.TickerToProviderConfig{
-				constants.BITCOIN_USD: {
-					Name:           "test",
-					OffChainTicker: "BTC-USD",
-				},
-				constants.BITCOIN_USDC: {
-					Name:           "test",
-					OffChainTicker: "BTC-USDC",
-				},
-			},
-			expErr: false,
-		},
-		{
-			name:         "mismatch provider name and config",
-			providerName: "test",
-			configs: types.TickerToProviderConfig{
-				constants.BITCOIN_USD: {
-					Name:           "invalid",
-					OffChainTicker: "BTC-USD",
-				},
-			},
-			expErr: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			pmap, err := types.NewProviderMarketMap(tc.providerName, tc.configs)
-			if tc.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-
-			err = pmap.ValidateBasic()
-			if tc.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
-func TestProviderMarketMapFromMarketMap(t *testing.T) {
-	testCases := []struct {
-		name         string
-		marketMap    mmtypes.MarketMap
-		providerName string
-		expectedMap  types.ProviderMarketMap
-		expErr       bool
-	}{
-		{
-			name:         "empty market map",
-			marketMap:    mmtypes.MarketMap{},
-			providerName: "coinbase",
-			expectedMap: types.ProviderMarketMap{
-				Name:          "coinbase",
-				TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
-				OffChainMap:   map[string]mmtypes.Ticker{},
-			},
-			expErr: false,
-		},
-		{
-			name: "valid market map with no entries for the given provider",
-			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
-					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
+			name:     "single market for the provider",
+			provider: "test",
+			market: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{
+					"BTC/USD": {
+						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1),
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "test",
-								OffChainTicker: "BTC-USD",
+								OffChainTicker: "BTC/USDT",
+								Metadata_JSON:  "{}",
 							},
 						},
 					},
 				},
 			},
-			providerName: "coinbase",
-			expectedMap: types.ProviderMarketMap{
-				Name:          "coinbase",
-				TickerConfigs: make(map[mmtypes.Ticker]mmtypes.ProviderConfig),
-				OffChainMap:   map[string]mmtypes.Ticker{},
+			expected: []types.ProviderTicker{
+				types.NewProviderTicker(
+					"BTC/USDT",
+					"{}",
+				),
 			},
-			expErr: false,
+			err: false,
 		},
 		{
-			name: "valid market map with entries for the given provider",
-			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
-					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
+			name:     "provider has no configs in market map",
+			provider: "test",
+			market: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{
+					"BTC/USD": {
+						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1),
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
-								Name:           "coinbase",
-								OffChainTicker: "BTC-USD",
+								Name:           "other",
+								OffChainTicker: "BTC/USDT",
+								Metadata_JSON:  "{}",
 							},
 						},
 					},
 				},
 			},
-			providerName: "coinbase",
-			expectedMap: types.ProviderMarketMap{
-				Name: "coinbase",
-				TickerConfigs: types.TickerToProviderConfig{
-					constants.BITCOIN_USD: {
-						Name:           "coinbase",
-						OffChainTicker: "BTC-USD",
-					},
-				},
-				OffChainMap: map[string]mmtypes.Ticker{
-					"BTC-USD": constants.BITCOIN_USD,
-				},
-			},
-			expErr: false,
+			expected: nil,
+			err:      false,
 		},
 		{
-			name: "multiple providers for the same ticker",
-			marketMap: mmtypes.MarketMap{
-				Tickers: map[string]mmtypes.Ticker{
-					constants.BITCOIN_USD.String(): constants.BITCOIN_USD,
-				},
-				Providers: map[string]mmtypes.Providers{
-					constants.BITCOIN_USD.String(): {
-						Providers: []mmtypes.ProviderConfig{
-							{
-								Name:           "coinbase",
-								OffChainTicker: "BTC-USD",
-							},
+			name:     "duplicate markets for the provider",
+			provider: "test",
+			market: mmtypes.MarketMap{
+				Markets: map[string]mmtypes.Market{
+					"ETH/USD": {
+						Ticker: mmtypes.NewTicker("ETH", "USD", 8, 1),
+						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "test",
-								OffChainTicker: "BTCs-USD",
+								OffChainTicker: "ETH/USDT",
+								NormalizeByPair: &pkgtypes.CurrencyPair{
+									Base:  "USDT",
+									Quote: "USD",
+								},
+								Metadata_JSON: "{}",
+							},
+						},
+					},
+					"USDT/USD": {
+						Ticker: mmtypes.NewTicker("USDT", "USD", 8, 1),
+						ProviderConfigs: []mmtypes.ProviderConfig{
+							{
+								Name:           "test",
+								OffChainTicker: "ETH/USDT",
+								Invert:         true,
+								NormalizeByPair: &pkgtypes.CurrencyPair{
+									Base:  "ETH",
+									Quote: "USD",
+								},
+								Metadata_JSON: "{}",
 							},
 						},
 					},
 				},
 			},
-			providerName: "coinbase",
-			expectedMap: types.ProviderMarketMap{
-				Name: "coinbase",
-				TickerConfigs: types.TickerToProviderConfig{
-					constants.BITCOIN_USD: {
-						Name:           "coinbase",
-						OffChainTicker: "BTC-USD",
-					},
-				},
-				OffChainMap: map[string]mmtypes.Ticker{
-					"BTC-USD": constants.BITCOIN_USD,
-				},
+			expected: []types.ProviderTicker{
+				types.NewProviderTicker(
+					"ETH/USDT",
+					"{}",
+				),
 			},
-			expErr: false,
+			err: false,
 		},
 	}
 
-	for _, tc := range testCases {
+	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			pmap, err := types.ProviderMarketMapFromMarketMap(tc.providerName, tc.marketMap)
-			if tc.expErr {
+			actual, err := types.ProviderTickersFromMarketMap(tc.provider, tc.market)
+			if tc.err {
 				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tc.expectedMap.Name, pmap.Name)
-				require.Equal(t, tc.expectedMap.TickerConfigs, pmap.TickerConfigs)
-				require.Equal(t, tc.expectedMap.OffChainMap, pmap.OffChainMap)
+				return
 			}
+
+			expectedCache := make(map[types.ProviderTicker]struct{})
+			for _, ticker := range tc.expected {
+				expectedCache[ticker] = struct{}{}
+			}
+			actualCache := make(map[types.ProviderTicker]struct{})
+			for _, ticker := range actual {
+				actualCache[ticker] = struct{}{}
+			}
+			require.Equal(t, expectedCache, actualCache)
 		})
 	}
 }

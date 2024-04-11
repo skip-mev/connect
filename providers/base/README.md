@@ -22,6 +22,8 @@ In order to implement API based providers, you must implement the [`APIDataHandl
 
 Once these two interfaces are implemented, you can then instantiate an [`APIQueryHandler`](./api/handlers/api_query_handler.go) and pass it to the base provider. The `APIQueryHandler` is abstracts away the logic for making the HTTP request and parsing the response. The base provider will then take care of the rest. The responses from the `APIQueryHandler` are sent to the base provider via a buffered channel. The base provider will then store the data in a thread safe map. To read more about the various API provider configurations available, please visit the [API provider configuration](../../oracle/config/api.go) documentation.
 
+Alternatively, you can directly implement the [`APIFetcher`](./api/handlers/api_query_handler.go) interface. This is appropriate if you want to abstract over the various processes of interacting with GRPC, JSON-RPC, REST, etc. APIs.
+
 ### APIDataHandler
 
 The `APIDataHandler` interface is primarily responsible for constructing the URL that will fetch the desired data and parsing the response. The interface is purposefully built with generics in mind. This allows the provider to fetch data of any type from the underlying data source.
@@ -42,12 +44,10 @@ type APIDataHandler[K providertypes.ResponseKey, V providertypes.providertypes.R
 
 #### Determining K and V
 
-> **Currently, the oracle only supports `*big.Int` as the `V` type and `oracletypes.CurrencyPair` as the `K` type.** This will change in the future once generics are supported on the chain side.
-
 First developers must determine the type of data that they want to fetch from the underlying data source. This can be any type that is supported by the oracle. For example, the simplest example is price data for a given currency pair (base / quote). The `K` type would be the currency pair and the `V` type would be the price data.
 
 ```golang
-APIDataHandler[oracletypes.CurrencyPair, *big.Int]
+APIDataHandler[types.ProviderTicker, *big.Float]
 ```
 
 #### CreateURL
@@ -79,49 +79,17 @@ The `Do` function is responsible for making the HTTP request and returning the r
 
 This interface is particularly useful if a custom HTTP client is needed. For example, if the data provider requires a custom header to be sent with the request, the `RequestHandler` can be used to implement this logic.
 
-## API (HTTP) Considerations
+### APIFetcher
 
-### Number of Go Routines
-
-#### Atomic Handlers
-
-For atomic API handlers, the maximal number of concurrent go routines that can be run at the same time is 5.
-
-* 1. The main oracle process to start the provider.
-* 2. The main provider routine.
-* 3. The provider receive channel.
-* 4. The provider to call the query handler with the context and timeout.
-* 5. The query handler to make the HTTP request.
-
-
-#### Non-Atomic Handlers
-
-For non-atomic API handlers, the maximal number of concurrent go routines that be run is a function of the maximum queries configured for the provider + 4.
-
-* 1. The main oracle process to start the provider.
-* 2. The main provider routine.
-* 3. The provider receive channel.
-* 4. The provider to call the query handler with the context and timeout.
-* 5. The query handler to make the HTTP request(s).
-
-
-### Maximal number of data points that can be fetched (i.e. prices)
-
-#### Atomic Handlers
-
-For atomic API handlers, the maximal number of data points that can be fetched is dependent on the availability of the data source. For example, if an exchange can only support N number of currency pairs in a single request, then the maximal number of data points that can be fetched is N.
-
-#### Non-Atomic Handlers
-
-For non-atomic API handlers, the maximal number of data points that be fetched is a function of the oracle interval, provider interval, provider timeout, and max queries.
-
-The maximal number of data points that can be fetched is:
+The `APIFetcher` interface is used to fetch data from the underlying data source. This interface is used by the `APIQueryHandler` to encapsulate the logic for fetching data - with metrics collection and more.
 
 ```golang
-maxDataPoints := (oracleInterval / (providerInterval / providerTimeout)) * maxQueries
+// APIFetcher is an interface that encapsulates fetching data from a provider. This interface
+// is meant to abstract over the various processes of interacting w/ GRPC, JSON-RPC, REST, etc. APIs.
+type APIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValue] interface {
+	Fetch(ctx context.Context,ids []K) providertypes.GetResponse[K, V]
+}
 ```
-
-For example, if the oracle interval is 4 seconds, provider interval is 1 second, provider timeout is 250 milliseconds, and max queries is 4, then the maximal number of data points that can be fetched is 64.
 
 ## Websocket-Based Providers
 
@@ -143,17 +111,16 @@ type WebSocketDataHandler[K providertypes.ResponseKey, V providertypes.ResponseV
 	HandleMessage(message []byte) (response providertypes.GetResponse[K, V], updateMessages []WebsocketEncodedMessage, err error)
 	CreateMessages(ids []K) ([]WebsocketEncodedMessage, error)
 	HeartBeatMessages() ([]WebsocketEncodedMessage, error)
+	Copy() WebSocketDataHandler[K, V]
 }
 ```
 
 #### Determining K and V
 
-> **Currently, the oracle only supports `*big.Int` as the `V` type and `oracletypes.CurrencyPair` as the `K` type.** This will change in the future once generics are supported on the chain side.
-
 First developers must determine the type of data that they want to fetch from the underlying data source. This can be any type that is supported by the oracle. For example, the simplest example is price data for a given currency pair (base / quote). The `K` type would be the currency pair and the `V` type would be the price data.
 
 ```golang
-WebSocketDataHandler[oracletypes.CurrencyPair, *big.Int]
+WebSocketDataHandler[types.ProviderTicker, *big.Float]
 ```
 
 #### HandleMessage
@@ -167,6 +134,10 @@ CreateMessages is used to update the connection to the data provider. This can b
 #### HeartBeatMessages
 
 HeartBeatMessages is used to construct a heartbeat messages to be sent to the data provider. As the provider is receiving messages from the data provider, it should store any relevant identification data that is required to construct the heartbeat messages.
+
+#### Copy
+
+Copy is used to create a copy of the data handler. This is useful if the data handler needs to be shared across multiple providers.
 
 ### WebSocketConnHandler
 
@@ -183,6 +154,7 @@ type WebSocketConnHandler interface {
 	Write(message []byte) error
 	Close() error
 	Dial() error
+	Copy() WebSocketConnHandler
 }
 ```
 
@@ -202,14 +174,7 @@ type WebSocketConnHandler interface {
 
 `Dial()` is used to establish a connection to the data provider. This should block until the connection is established.
 
-## Websocket Considerations
+#### Copy
 
-### Number of Go Routines
+`Copy()` is used to create a copy of the connection handler. This is useful if the connection handler needs to be shared across multiple providers.
 
-A websocket-based provider will maintain a single connection to its data source. The maximal number of go routines that can be run at the same time is 5.
-
-* 1. The main oracle process to start the provider.
-* 2. The main provider routine.
-* 3. The provider receive routine.
-* 4. The websocket receive routine.
-* 5. The websocket heartbeat routine.

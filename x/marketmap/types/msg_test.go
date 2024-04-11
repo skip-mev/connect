@@ -24,49 +24,42 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 
 	tcs := []struct {
 		name       string
-		msg        types.MsgUpdateMarketMap
+		msg        types.MsgCreateMarkets
 		expectPass bool
 	}{
 		{
-			"if the signer is not an acc-address - fail",
-			types.MsgUpdateMarketMap{
-				Signer: "invalid",
+			"if the authority is not an acc-address - fail",
+			types.MsgCreateMarkets{
+				Authority: "invalid",
 			},
 			false,
 		},
 		{
-			"invalid ticker - fail",
-			types.MsgUpdateMarketMap{
-				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+			"if there are no creates -  fail",
+			types.MsgCreateMarkets{
+				Authority: sample.Address(sample.Rand()),
+			},
+			false,
+		},
+		{
+			"invalid ticker (0 decimals) - fail",
+			types.MsgCreateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				CreateMarkets: []types.Market{
 					{
 						Ticker: types.Ticker{
 							CurrencyPair:     validCurrencyPair,
 							Decimals:         0,
 							MinProviderCount: 0,
 						},
-						Providers: types.Providers{
-							Providers: []types.ProviderConfig{
-								{
-									Name:           "kucoin",
-									OffChainTicker: "btc-eth",
-								},
-								{
-									Name:           "mexc",
-									OffChainTicker: "btceth",
-								},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
 							},
-						},
-						Paths: types.Paths{
-							Paths: []types.Path{
-								{
-									Operations: []types.Operation{
-										{
-											CurrencyPair: validTicker.CurrencyPair,
-											Invert:       false,
-										},
-									},
-								},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
 							},
 						},
 					},
@@ -75,30 +68,149 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 			false,
 		},
 		{
-			"invalid num providers - fail",
-			types.MsgUpdateMarketMap{
-				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+			"invalid num providers (need more than 1) - fail",
+			types.MsgCreateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				CreateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
-						Providers: types.Providers{
-							Providers: []types.ProviderConfig{
-								{
-									Name:           "kucoin",
-									OffChainTicker: "btc-eth",
-								},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
 							},
 						},
-						Paths: types.Paths{
-							Paths: []types.Path{
-								{
-									Operations: []types.Operation{
-										{
-											CurrencyPair: validTicker.CurrencyPair,
-											Invert:       false,
-										},
-									},
-								},
+					},
+				},
+			},
+			false,
+		},
+		{
+			"invalid empty off-chain ticker - fail",
+			types.MsgCreateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				CreateMarkets: []types.Market{
+					{
+						Ticker: validTicker,
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "",
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{
+			"valid message",
+			types.MsgCreateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				CreateMarkets: []types.Market{
+					{
+						Ticker: validTicker,
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
+							},
+						},
+					},
+				},
+			},
+			true,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msg.ValidateBasic()
+			if !tc.expectPass {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateBasicMsgUpdateMarket(t *testing.T) {
+	validCurrencyPair := slinkytypes.CurrencyPair{
+		Base:  "BTC",
+		Quote: "ETH",
+	}
+
+	validTicker := types.Ticker{
+		CurrencyPair:     validCurrencyPair,
+		Decimals:         8,
+		MinProviderCount: 2,
+	}
+
+	tcs := []struct {
+		name       string
+		msg        types.MsgUpdateMarkets
+		expectPass bool
+	}{
+		{
+			"if the Authority is not an acc-address - fail",
+			types.MsgUpdateMarkets{
+				Authority: "invalid",
+			},
+			false,
+		},
+		{
+			"if there are no creates -  fail",
+			types.MsgUpdateMarkets{
+				Authority: sample.Address(sample.Rand()),
+			},
+			false,
+		},
+		{
+			"invalid ticker (decimals) - fail",
+			types.MsgUpdateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				UpdateMarkets: []types.Market{
+					{
+						Ticker: types.Ticker{
+							CurrencyPair:     validCurrencyPair,
+							Decimals:         0,
+							MinProviderCount: 0,
+						},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
+							},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
+							},
+						},
+					},
+				},
+			},
+			false,
+		},
+		{
+			"invalid num providers (need more than 1) - fail",
+			types.MsgUpdateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				UpdateMarkets: []types.Market{
+					{
+						Ticker: validTicker,
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
 							},
 						},
 					},
@@ -108,86 +220,20 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"invalid empty offchain ticker - fail",
-			types.MsgUpdateMarketMap{
-				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+			types.MsgUpdateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
-						Providers: types.Providers{
-							Providers: []types.ProviderConfig{
-								{
-									Name:           "kucoin",
-									OffChainTicker: "btc-eth",
-								},
-								{
-									Name:           "mexc",
-									OffChainTicker: "",
-								},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
 							},
-						},
-						Paths: types.Paths{
-							Paths: []types.Path{
-								{
-									Operations: []types.Operation{
-										{
-											CurrencyPair: validTicker.CurrencyPair,
-											Invert:       false,
-										},
-									},
-								},
+							{
+								Name:           "mexc",
+								OffChainTicker: "",
 							},
-						},
-					},
-				},
-			},
-			false,
-		},
-		{
-			"invalid no paths - fail",
-			types.MsgUpdateMarketMap{
-				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
-					{
-						Ticker: validTicker,
-						Providers: types.Providers{
-							Providers: []types.ProviderConfig{
-								{
-									Name:           "kucoin",
-									OffChainTicker: "btc-eth",
-								},
-								{
-									Name:           "mexc",
-									OffChainTicker: "",
-								},
-							},
-						},
-						Paths: types.Paths{},
-					},
-				},
-			},
-			false,
-		},
-		{
-			"invalid path - fail",
-			types.MsgUpdateMarketMap{
-				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
-					{
-						Ticker: validTicker,
-						Providers: types.Providers{
-							Providers: []types.ProviderConfig{
-								{
-									Name:           "kucoin",
-									OffChainTicker: "btc-eth",
-								},
-								{
-									Name:           "mexc",
-									OffChainTicker: "",
-								},
-							},
-						},
-						Paths: types.Paths{
-							Paths: make([]types.Path, 0),
 						},
 					},
 				},
@@ -196,39 +242,130 @@ func TestValidateBasicMsgCreateMarket(t *testing.T) {
 		},
 		{
 			"valid message",
-			types.MsgUpdateMarketMap{
-				Signer: sample.Address(sample.Rand()),
-				CreateMarkets: []types.CreateMarket{
+			types.MsgUpdateMarkets{
+				Authority: sample.Address(sample.Rand()),
+				UpdateMarkets: []types.Market{
 					{
 						Ticker: validTicker,
-						Providers: types.Providers{
-							Providers: []types.ProviderConfig{
-								{
-									Name:           "kucoin",
-									OffChainTicker: "btc-eth",
-								},
-								{
-									Name:           "mexc",
-									OffChainTicker: "btceth",
-								},
+						ProviderConfigs: []types.ProviderConfig{
+							{
+								Name:           "kucoin",
+								OffChainTicker: "btc-eth",
 							},
-						},
-						Paths: types.Paths{
-							Paths: []types.Path{
-								{
-									Operations: []types.Operation{
-										{
-											CurrencyPair: validTicker.CurrencyPair,
-											Invert:       false,
-										},
-									},
-								},
+							{
+								Name:           "mexc",
+								OffChainTicker: "btceth",
 							},
 						},
 					},
 				},
 			},
 			true,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msg.ValidateBasic()
+			if !tc.expectPass {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateBasicMsgParams(t *testing.T) {
+	rng := sample.Rand()
+
+	tcs := []struct {
+		name       string
+		msg        types.MsgParams
+		expectPass bool
+	}{
+		{
+			"if the Authority is not an acc-address - fail",
+			types.MsgParams{
+				Authority: "invalid",
+			},
+			false,
+		},
+		{
+			name: "invalid params (no authorities) - fail",
+			msg: types.MsgParams{
+				Params: types.Params{
+					MarketAuthorities: nil,
+				},
+				Authority: sample.Address(rng),
+			},
+			expectPass: false,
+		},
+		{
+			name: "valid params",
+			msg: types.MsgParams{
+				Params: types.Params{
+					MarketAuthorities: []string{sample.Address(rng)},
+					Admin:             sample.Address(rng),
+				},
+				Authority: sample.Address(rng),
+			},
+			expectPass: true,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.msg.ValidateBasic()
+			if !tc.expectPass {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateBasicMsgRemoveMarketAuthorities(t *testing.T) {
+	rng := sample.Rand()
+
+	sampleAuth := sample.Address(rng)
+
+	tcs := []struct {
+		name       string
+		msg        types.MsgRemoveMarketAuthorities
+		expectPass bool
+	}{
+		{
+			"if the Admin is not an acc-address - fail",
+			types.MsgRemoveMarketAuthorities{
+				Admin: "invalid",
+			},
+			false,
+		},
+		{
+			name: "invalid message (no authorities) - fail",
+			msg: types.MsgRemoveMarketAuthorities{
+				RemoveAddresses: nil,
+				Admin:           sample.Address(rng),
+			},
+			expectPass: false,
+		},
+		{
+			name: "valid message",
+			msg: types.MsgRemoveMarketAuthorities{
+				RemoveAddresses: []string{sample.Address(rng)},
+				Admin:           sample.Address(rng),
+			},
+			expectPass: true,
+		},
+		{
+			name: "invalid message (duplicate authorities",
+			msg: types.MsgRemoveMarketAuthorities{
+				RemoveAddresses: []string{sampleAuth, sampleAuth},
+				Admin:           sample.Address(rng),
+			},
+			expectPass: false,
 		},
 	}
 

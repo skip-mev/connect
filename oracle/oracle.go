@@ -9,10 +9,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/aggregator"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/types"
-	"github.com/skip-mev/slinky/pkg/math/median"
 	ssync "github.com/skip-mev/slinky/pkg/sync"
 )
 
@@ -24,7 +22,7 @@ var _ Oracle = (*OracleImpl)(nil)
 type Oracle interface {
 	IsRunning() bool
 	GetLastSyncTime() time.Time
-	GetPrices() types.TickerPrices
+	GetPrices() types.Prices
 	Start(ctx context.Context) error
 	Stop()
 }
@@ -42,7 +40,7 @@ type OracleImpl struct { //nolint
 	// Each provider is responsible for fetching prices for a given set of
 	// currency pairs (base, quote). The oracle will fetch prices from each
 	// provider concurrently.
-	providers []types.PriceProviderI
+	providers []*types.PriceProvider
 
 	// --------------------- Oracle Config --------------------- //
 	// lastPriceSync is the last time the oracle successfully updated its prices.
@@ -53,7 +51,7 @@ type OracleImpl struct { //nolint
 
 	// priceAggregator maintains the state of prices for each provider and
 	// computes the aggregate price for each currency pair.
-	priceAggregator types.PriceAggregator
+	priceAggregator PriceAggregator
 
 	// metrics is the set of metrics that the oracle will expose.
 	metrics oraclemetrics.Metrics
@@ -76,12 +74,9 @@ type OracleImpl struct { //nolint
 // price across all providers.
 func New(opts ...Option) (*OracleImpl, error) {
 	o := &OracleImpl{
-		closer:  ssync.NewCloser(),
-		logger:  zap.NewNop(),
-		metrics: oraclemetrics.NewNopMetrics(),
-		priceAggregator: types.NewPriceAggregator(
-			aggregator.WithAggregateFn(median.ComputeMedian()),
-		),
+		closer:         ssync.NewCloser(),
+		logger:         zap.NewNop(),
+		metrics:        oraclemetrics.NewNopMetrics(),
 		updateInterval: 1 * time.Second,
 		maxCacheAge:    time.Minute, // default max cache age is 1 minute
 	}
@@ -149,7 +144,7 @@ func (o *OracleImpl) tick() {
 	}()
 
 	// Reset the provider prices before fetching new prices.
-	o.priceAggregator.ResetProviderData()
+	o.priceAggregator.Reset()
 
 	// Retrieve the latest prices from each provider.
 	for _, priceProvider := range o.providers {
@@ -159,7 +154,7 @@ func (o *OracleImpl) tick() {
 	o.logger.Info("oracle fetched prices from providers")
 
 	// Compute aggregated prices and update the oracle.
-	o.priceAggregator.AggregateData()
+	o.priceAggregator.AggregatePrices()
 	o.setLastSyncTime(time.Now().UTC())
 
 	// update the last sync time
@@ -170,7 +165,7 @@ func (o *OracleImpl) tick() {
 
 // fetchPrices retrieves the latest prices from a given provider and updates the aggregator
 // iff the price age is less than the update interval.
-func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
+func (o *OracleImpl) fetchPrices(provider *types.PriceProvider) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.logger.Error("provider panicked", zap.Error(fmt.Errorf("%v", r)))
@@ -201,10 +196,11 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 			zap.String("provider", provider.Name()),
 			zap.String("data handler type", string(provider.Type())),
 		)
+
 		return
 	}
 
-	timeFilteredPrices := make(types.TickerPrices)
+	timeFilteredPrices := make(types.Prices)
 	for pair, result := range prices {
 		// If the price is older than the maxCacheAge, skip it.
 		diff := time.Now().UTC().Sub(result.Timestamp)
@@ -216,6 +212,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 				zap.String("pair", pair.String()),
 				zap.Duration("diff", diff),
 			)
+
 			continue
 		}
 
@@ -227,7 +224,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 			zap.String("price", result.Value.String()),
 			zap.Duration("diff", diff),
 		)
-		timeFilteredPrices[pair] = result.Value
+		timeFilteredPrices[pair.GetOffChainTicker()] = result.Value
 	}
 
 	o.logger.Info("provider returned prices",
@@ -235,7 +232,7 @@ func (o *OracleImpl) fetchPrices(provider types.PriceProviderI) {
 		zap.String("data handler type", string(provider.Type())),
 		zap.Int("prices", len(prices)),
 	)
-	o.priceAggregator.SetProviderData(provider.Name(), timeFilteredPrices)
+	o.priceAggregator.SetProviderPrices(provider.Name(), timeFilteredPrices)
 }
 
 // GetLastSyncTime returns the last time the oracle successfully updated prices.
@@ -255,7 +252,7 @@ func (o *OracleImpl) setLastSyncTime(t time.Time) {
 }
 
 // GetPrices returns the aggregate prices from the oracle.
-func (o *OracleImpl) GetPrices() types.TickerPrices {
-	prices := o.priceAggregator.GetAggregatedData()
+func (o *OracleImpl) GetPrices() types.Prices {
+	prices := o.priceAggregator.GetPrices()
 	return prices
 }

@@ -13,12 +13,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
-	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceAPIFetcher = (*PriceFetcher)(nil)
@@ -34,9 +33,8 @@ var _ types.PriceAPIFetcher = (*PriceFetcher)(nil)
 // this is more performant than making individual calls or the multi call contract:
 // https://docs.chainstack.com/docs/http-batch-request-vs-multicall-contract#performance-comparison.
 type PriceFetcher struct {
-	logger  *zap.Logger
-	metrics metrics.APIMetrics
-	api     config.APIConfig
+	logger *zap.Logger
+	api    config.APIConfig
 
 	// client is the EVM client implementation. This is used to interact with the ethereum network.
 	client EVMClient
@@ -48,22 +46,17 @@ type PriceFetcher struct {
 	payload []byte
 	// poolCache is a cache of the tickers to pool configs. This is used to avoid unmarshalling
 	// the metadata for each ticker.
-	poolCache map[mmtypes.Ticker]PoolConfig
+	poolCache map[types.ProviderTicker]PoolConfig
 }
 
 // NewPriceFetcher returns a new Uniswap V3 price fetcher.
 func NewPriceFetcher(
 	logger *zap.Logger,
-	metrics metrics.APIMetrics,
 	api config.APIConfig,
 	client EVMClient,
 ) (*PriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
-	}
-
-	if metrics == nil {
-		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
 	if api.Name != Name {
@@ -90,12 +83,11 @@ func NewPriceFetcher(
 
 	return &PriceFetcher{
 		logger:    logger,
-		metrics:   metrics,
 		api:       api,
 		client:    client,
 		abi:       abi,
 		payload:   payload,
-		poolCache: make(map[mmtypes.Ticker]PoolConfig),
+		poolCache: make(map[types.ProviderTicker]PoolConfig),
 	}, nil
 }
 
@@ -105,13 +97,8 @@ func NewPriceFetcher(
 // contract, specifically the sqrtPriceX96 value.
 func (u *PriceFetcher) Fetch(
 	ctx context.Context,
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) types.PriceResponse {
-	start := time.Now()
-	defer func() {
-		u.metrics.ObserveProviderResponseLatency(Name, time.Since(start))
-	}()
-
 	var (
 		resolved   = make(types.ResolvedPrices)
 		unResolved = make(types.UnResolvedPrices)
@@ -210,9 +197,8 @@ func (u *PriceFetcher) Fetch(
 		price := ConvertSquareRootX96Price(sqrtPriceX96)
 
 		// Scale the price to the respective token decimals.
-		scaledPrice := ScalePrice(ticker, pools[i], price)
-		intPrice, _ := scaledPrice.Int(nil)
-		resolved[ticker] = types.NewPriceResult(intPrice, time.Now())
+		scaledPrice := ScalePrice(pools[i], price)
+		resolved[ticker] = types.NewPriceResult(scaledPrice, time.Now().UTC())
 	}
 
 	// Add the price to the resolved prices.
@@ -222,14 +208,14 @@ func (u *PriceFetcher) Fetch(
 // GetPool returns the uniswap pool for the given ticker. This will unmarshal the metadata
 // and validate the pool config which contains all required information to query the EVM.
 func (u *PriceFetcher) GetPool(
-	ticker mmtypes.Ticker,
+	ticker types.ProviderTicker,
 ) (PoolConfig, error) {
 	if pool, ok := u.poolCache[ticker]; ok {
 		return pool, nil
 	}
 
 	var cfg PoolConfig
-	if err := json.Unmarshal([]byte(ticker.Metadata_JSON), &cfg); err != nil {
+	if err := json.Unmarshal([]byte(ticker.GetJSON()), &cfg); err != nil {
 		return cfg, fmt.Errorf("failed to unmarshal pool config on ticker: %w", err)
 	}
 	if err := cfg.ValidateBasic(); err != nil {

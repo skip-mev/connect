@@ -75,7 +75,7 @@ func CreateWebSocketProviderWithGetResponses[K providertypes.ResponseKey, V prov
 	cfg config.ProviderConfig,
 	logger *zap.Logger,
 	responses []providertypes.GetResponse[K, V],
-) providertypes.Provider[K, V] {
+) *base.Provider[K, V] {
 	t.Helper()
 
 	handler := CreateWebSocketQueryHandlerWithGetResponses[K, V](
@@ -103,7 +103,7 @@ func CreateWebSocketProviderWithResponseFn[K providertypes.ResponseKey, V provid
 	cfg config.ProviderConfig,
 	logger *zap.Logger,
 	fn func(context.Context, chan<- providertypes.GetResponse[K, V]),
-) providertypes.Provider[K, V] {
+) *base.Provider[K, V] {
 	t.Helper()
 
 	handler := CreateWebSocketQueryHandlerWithResponseFn[K, V](

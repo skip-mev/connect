@@ -7,21 +7,18 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle"
 	metricmocks "github.com/skip-mev/slinky/oracle/metrics/mocks"
 	"github.com/skip-mev/slinky/oracle/types"
+	mathtestutils "github.com/skip-mev/slinky/pkg/math/testutils"
+	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	providermocks "github.com/skip-mev/slinky/providers/types/mocks"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 type OracleMetricsTestSuite struct {
 	suite.Suite
-
-	// mocked providers
-	mockProvider1 *providermocks.Provider[mmtypes.Ticker, *big.Int]
-	mockProvider2 *providermocks.Provider[mmtypes.Ticker, *big.Int]
 
 	// mock metrics
 	mockMetrics *metricmocks.Metrics
@@ -40,12 +37,37 @@ func TestOracleMetricsTestSuite(t *testing.T) {
 }
 
 func (s *OracleMetricsTestSuite) SetupTest() {
-	// mock providers
-	s.mockProvider1 = providermocks.NewProvider[mmtypes.Ticker, *big.Int](s.T())
-	s.mockProvider1.On("Name").Return("provider1").Maybe()
+	ids := []types.ProviderTicker{
+		types.NewProviderTicker("BTCUSD", "{}"),
+		types.NewProviderTicker("ETHUSD", "{}"),
+	}
 
-	s.mockProvider2 = providermocks.NewProvider[mmtypes.Ticker, *big.Int](s.T())
-	s.mockProvider2.On("Name").Return("provider2").Maybe()
+	// mock providers
+	resolved := types.ResolvedPrices{}
+	response := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved, nil)
+	responses := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response}
+	provider := testutils.CreateAPIProviderWithGetResponses[types.ProviderTicker, *big.Float](
+		s.T(),
+		zap.NewNop(),
+		providerCfg1,
+		ids,
+		responses,
+		200*time.Millisecond,
+	)
+
+	resolved2 := types.ResolvedPrices{}
+	response2 := providertypes.NewGetResponse[types.ProviderTicker, *big.Float](resolved2, nil)
+	responses2 := []providertypes.GetResponse[types.ProviderTicker, *big.Float]{response2}
+	provider2 := testutils.CreateWebSocketProviderWithGetResponses[types.ProviderTicker, *big.Float](
+		s.T(),
+		time.Second*2,
+		ids,
+		providerCfg2,
+		zap.NewNop(),
+		responses2,
+	)
+
+	providers := []*types.PriceProvider{provider, provider2}
 
 	// mock metrics
 	s.mockMetrics = metricmocks.NewMetrics(s.T())
@@ -53,13 +75,9 @@ func (s *OracleMetricsTestSuite) SetupTest() {
 	var err error
 	s.o, err = oracle.New(
 		oracle.WithUpdateInterval(oracleTicker),
-		oracle.WithProviders(
-			[]types.PriceProviderI{
-				s.mockProvider1,
-				s.mockProvider2,
-			},
-		),
+		oracle.WithProviders(providers),
 		oracle.WithMetrics(s.mockMetrics),
+		oracle.WithPriceAggregator(mathtestutils.NewMedianAggregator()),
 	)
 	s.Require().NoError(err)
 }
@@ -76,16 +94,6 @@ func (s *OracleMetricsTestSuite) TearDownTest(_ *testing.T) {
 func (s *OracleMetricsTestSuite) TestTickMetric() {
 	// expect tick to be called
 	s.mockMetrics.On("AddTick").Return()
-
-	s.mockProvider1.On("Name").Return("provider1")
-	s.mockProvider1.On("Type").Return(providertypes.API)
-	s.mockProvider1.On("GetData").Return(nil)
-	s.mockProvider1.On("IsRunning").Return(true)
-
-	s.mockProvider2.On("Name").Return("provider2")
-	s.mockProvider2.On("Type").Return(providertypes.API)
-	s.mockProvider2.On("GetData").Return(nil, nil)
-	s.mockProvider2.On("IsRunning").Return(true)
 
 	// wait for a tick on the oracle
 	go func() {

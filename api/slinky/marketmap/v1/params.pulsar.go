@@ -12,17 +12,63 @@ import (
 	sync "sync"
 )
 
+var _ protoreflect.List = (*_Params_1_list)(nil)
+
+type _Params_1_list struct {
+	list *[]string
+}
+
+func (x *_Params_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_Params_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_Params_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_Params_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_Params_1_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message Params at list field MarketAuthorities as it is not of Message kind"))
+}
+
+func (x *_Params_1_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_Params_1_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_Params_1_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
-	md_Params                  protoreflect.MessageDescriptor
-	fd_Params_market_authority protoreflect.FieldDescriptor
-	fd_Params_version          protoreflect.FieldDescriptor
+	md_Params                    protoreflect.MessageDescriptor
+	fd_Params_market_authorities protoreflect.FieldDescriptor
+	fd_Params_admin              protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_slinky_marketmap_v1_params_proto_init()
 	md_Params = File_slinky_marketmap_v1_params_proto.Messages().ByName("Params")
-	fd_Params_market_authority = md_Params.Fields().ByName("market_authority")
-	fd_Params_version = md_Params.Fields().ByName("version")
+	fd_Params_market_authorities = md_Params.Fields().ByName("market_authorities")
+	fd_Params_admin = md_Params.Fields().ByName("admin")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -90,15 +136,15 @@ func (x *fastReflection_Params) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.MarketAuthority != "" {
-		value := protoreflect.ValueOfString(x.MarketAuthority)
-		if !f(fd_Params_market_authority, value) {
+	if len(x.MarketAuthorities) != 0 {
+		value := protoreflect.ValueOfList(&_Params_1_list{list: &x.MarketAuthorities})
+		if !f(fd_Params_market_authorities, value) {
 			return
 		}
 	}
-	if x.Version != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Version)
-		if !f(fd_Params_version, value) {
+	if x.Admin != "" {
+		value := protoreflect.ValueOfString(x.Admin)
+		if !f(fd_Params_admin, value) {
 			return
 		}
 	}
@@ -117,10 +163,10 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Params.market_authority":
-		return x.MarketAuthority != ""
-	case "slinky.marketmap.v1.Params.version":
-		return x.Version != uint64(0)
+	case "slinky.marketmap.v1.Params.market_authorities":
+		return len(x.MarketAuthorities) != 0
+	case "slinky.marketmap.v1.Params.admin":
+		return x.Admin != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
@@ -137,10 +183,10 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Params.market_authority":
-		x.MarketAuthority = ""
-	case "slinky.marketmap.v1.Params.version":
-		x.Version = uint64(0)
+	case "slinky.marketmap.v1.Params.market_authorities":
+		x.MarketAuthorities = nil
+	case "slinky.marketmap.v1.Params.admin":
+		x.Admin = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
@@ -157,12 +203,15 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "slinky.marketmap.v1.Params.market_authority":
-		value := x.MarketAuthority
+	case "slinky.marketmap.v1.Params.market_authorities":
+		if len(x.MarketAuthorities) == 0 {
+			return protoreflect.ValueOfList(&_Params_1_list{})
+		}
+		listValue := &_Params_1_list{list: &x.MarketAuthorities}
+		return protoreflect.ValueOfList(listValue)
+	case "slinky.marketmap.v1.Params.admin":
+		value := x.Admin
 		return protoreflect.ValueOfString(value)
-	case "slinky.marketmap.v1.Params.version":
-		value := x.Version
-		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
@@ -183,10 +232,12 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Params.market_authority":
-		x.MarketAuthority = value.Interface().(string)
-	case "slinky.marketmap.v1.Params.version":
-		x.Version = value.Uint()
+	case "slinky.marketmap.v1.Params.market_authorities":
+		lv := value.List()
+		clv := lv.(*_Params_1_list)
+		x.MarketAuthorities = *clv.list
+	case "slinky.marketmap.v1.Params.admin":
+		x.Admin = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
@@ -207,10 +258,14 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Params.market_authority":
-		panic(fmt.Errorf("field market_authority of message slinky.marketmap.v1.Params is not mutable"))
-	case "slinky.marketmap.v1.Params.version":
-		panic(fmt.Errorf("field version of message slinky.marketmap.v1.Params is not mutable"))
+	case "slinky.marketmap.v1.Params.market_authorities":
+		if x.MarketAuthorities == nil {
+			x.MarketAuthorities = []string{}
+		}
+		value := &_Params_1_list{list: &x.MarketAuthorities}
+		return protoreflect.ValueOfList(value)
+	case "slinky.marketmap.v1.Params.admin":
+		panic(fmt.Errorf("field admin of message slinky.marketmap.v1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
@@ -224,10 +279,11 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "slinky.marketmap.v1.Params.market_authority":
+	case "slinky.marketmap.v1.Params.market_authorities":
+		list := []string{}
+		return protoreflect.ValueOfList(&_Params_1_list{list: &list})
+	case "slinky.marketmap.v1.Params.admin":
 		return protoreflect.ValueOfString("")
-	case "slinky.marketmap.v1.Params.version":
-		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.marketmap.v1.Params"))
@@ -297,12 +353,15 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.MarketAuthority)
+		if len(x.MarketAuthorities) > 0 {
+			for _, s := range x.MarketAuthorities {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		l = len(x.Admin)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Version != 0 {
-			n += 1 + runtime.Sov(uint64(x.Version))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -333,17 +392,21 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Version != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Version))
+		if len(x.Admin) > 0 {
+			i -= len(x.Admin)
+			copy(dAtA[i:], x.Admin)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Admin)))
 			i--
-			dAtA[i] = 0x10
+			dAtA[i] = 0x12
 		}
-		if len(x.MarketAuthority) > 0 {
-			i -= len(x.MarketAuthority)
-			copy(dAtA[i:], x.MarketAuthority)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MarketAuthority)))
-			i--
-			dAtA[i] = 0xa
+		if len(x.MarketAuthorities) > 0 {
+			for iNdEx := len(x.MarketAuthorities) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.MarketAuthorities[iNdEx])
+				copy(dAtA[i:], x.MarketAuthorities[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MarketAuthorities[iNdEx])))
+				i--
+				dAtA[i] = 0xa
+			}
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -396,7 +459,7 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MarketAuthority", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MarketAuthorities", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -424,13 +487,13 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.MarketAuthority = string(dAtA[iNdEx:postIndex])
+				x.MarketAuthorities = append(x.MarketAuthorities, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 				}
-				x.Version = 0
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -440,11 +503,24 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Version |= uint64(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Admin = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -499,12 +575,12 @@ type Params struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// MarketAuthority is the authority account that is able to control updating
-	// the marketmap.
-	MarketAuthority string `protobuf:"bytes,1,opt,name=market_authority,json=marketAuthority,proto3" json:"market_authority,omitempty"`
-	// Version is the schema version for the MarketMap data structure and query
-	// response.
-	Version uint64 `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
+	// MarketAuthorities is the list of authority accounts that are able to
+	// control updating the marketmap.
+	MarketAuthorities []string `protobuf:"bytes,1,rep,name=market_authorities,json=marketAuthorities,proto3" json:"market_authorities,omitempty"`
+	// Admin is an address that can remove addresses from the MarketAuthorities
+	// list. Only governance can add to the MarketAuthorities or change the Admin.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -527,18 +603,18 @@ func (*Params) Descriptor() ([]byte, []int) {
 	return file_slinky_marketmap_v1_params_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Params) GetMarketAuthority() string {
+func (x *Params) GetMarketAuthorities() []string {
 	if x != nil {
-		return x.MarketAuthority
+		return x.MarketAuthorities
 	}
-	return ""
+	return nil
 }
 
-func (x *Params) GetVersion() uint64 {
+func (x *Params) GetAdmin() string {
 	if x != nil {
-		return x.Version
+		return x.Admin
 	}
-	return 0
+	return ""
 }
 
 var File_slinky_marketmap_v1_params_proto protoreflect.FileDescriptor
@@ -548,11 +624,11 @@ var file_slinky_marketmap_v1_params_proto_rawDesc = []byte{
 	0x61, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x12, 0x13, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
 	0x74, 0x6d, 0x61, 0x70, 0x2e, 0x76, 0x31, 0x22, 0x4d, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x12, 0x29, 0x0a, 0x10, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x5f, 0x61, 0x75, 0x74, 0x68,
-	0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x6d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x07,
-	0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x76,
-	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0xc6, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
+	0x73, 0x12, 0x2d, 0x0a, 0x12, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x5f, 0x61, 0x75, 0x74, 0x68,
+	0x6f, 0x72, 0x69, 0x74, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x11, 0x6d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x69, 0x65, 0x73,
+	0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x42, 0xc6, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
 	0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x6d, 0x61, 0x70, 0x2e,
 	0x76, 0x31, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
 	0x01, 0x5a, 0x30, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,

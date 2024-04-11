@@ -9,7 +9,6 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
@@ -19,26 +18,17 @@ var _ types.PriceWebSocketDataHandler = (*WebSocketHandler)(nil)
 type WebSocketHandler struct {
 	logger *zap.Logger
 
-	// market is the config for the Gate.io API.
-	market types.ProviderMarketMap
 	// ws is the config for the Gate.io websocket.
 	ws config.WebSocketConfig
+	// cache maintains the latest set of tickers seen by the handler.
+	cache types.ProviderTickers
 }
 
 // NewWebSocketDataHandler returns a new Gate.io PriceWebSocketDataHandler.
 func NewWebSocketDataHandler(
 	logger *zap.Logger,
-	market types.ProviderMarketMap,
 	ws config.WebSocketConfig,
 ) (types.PriceWebSocketDataHandler, error) {
-	if err := market.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market config for %s: %w", Name, err)
-	}
-
-	if market.Name != Name {
-		return nil, fmt.Errorf("expected market config name %s, got %s", Name, market.Name)
-	}
-
 	if ws.Name != Name {
 		return nil, fmt.Errorf("expected websocket config name %s, got %s", Name, ws.Name)
 	}
@@ -53,8 +43,8 @@ func NewWebSocketDataHandler(
 
 	return &WebSocketHandler{
 		logger: logger,
-		market: market,
 		ws:     ws,
+		cache:  types.NewProviderTickers(),
 	}, nil
 }
 
@@ -109,18 +99,13 @@ func (h *WebSocketHandler) HandleMessage(
 // Only the tickers that are specified in the config are subscribed to. The only channel that is
 // subscribed to is the tickers channel - which supports spot markets.
 func (h *WebSocketHandler) CreateMessages(
-	tickers []mmtypes.Ticker,
+	tickers []types.ProviderTicker,
 ) ([]handlers.WebsocketEncodedMessage, error) {
 	instruments := make([]string, 0)
 
 	for _, ticker := range tickers {
-		market, ok := h.market.TickerConfigs[ticker]
-		if !ok {
-			h.logger.Debug("market not found for currency pair", zap.String("ticker", ticker.String()))
-			continue
-		}
-
-		instruments = append(instruments, market.OffChainTicker)
+		instruments = append(instruments, ticker.GetOffChainTicker())
+		h.cache.Add(ticker)
 	}
 
 	return NewSubscribeRequest(instruments)
@@ -135,7 +120,7 @@ func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessa
 func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
 	return &WebSocketHandler{
 		logger: h.logger,
-		market: h.market,
 		ws:     h.ws,
+		cache:  types.NewProviderTickers(),
 	}
 }

@@ -1,5 +1,5 @@
 {
-  "updateInterval": 500000000,
+  "updateInterval": 250000000,
   "maxPriceAge": 120000000000,
   "providers": [
     {

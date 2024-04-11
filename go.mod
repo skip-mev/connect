@@ -35,7 +35,7 @@ require (
 	github.com/golangci/golangci-lint v1.57.2
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/klauspost/compress v1.17.7
+	github.com/klauspost/compress v1.17.8
 	github.com/prometheus/client_golang v1.18.0
 	github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
 	github.com/spf13/cast v1.6.0
@@ -50,7 +50,7 @@ require (
 	golang.org/x/sync v0.7.0
 	golang.org/x/vuln v1.0.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20240304212257-790db918fca8
-	google.golang.org/grpc v1.63.0
+	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.33.0
 	mvdan.cc/gofumpt v0.6.0
 )

@@ -53,6 +53,20 @@ run properly.
 The market map data is as follows:
 
 ```protobuf
+// Market encapsulates a Ticker and its provider-specific configuration.
+message Market {
+  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.stringer) = false;
+
+  // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The
+  // price feed is scaled to a number of decimal places and has a minimum number
+  // of providers required to consider the ticker valid.
+  Ticker ticker = 1 [ (gogoproto.nullable) = false ];
+
+  // ProviderConfigs is the list of provider-specific configs for this Market.
+  repeated ProviderConfig provider_configs = 2 [ (gogoproto.nullable) = false ];
+}
+
 // Ticker represents a price feed for a given asset pair i.e. BTC/USD. The price
 // feed is scaled to a number of decimal places and has a minimum number of
 // providers required to consider the ticker valid.
@@ -62,14 +76,19 @@ message Ticker {
 
   // CurrencyPair is the currency pair for this ticker.
   slinky.types.v1.CurrencyPair currency_pair = 1
-      [ (gogoproto.nullable) = false ];
+  [ (gogoproto.nullable) = false ];
 
   // Decimals is the number of decimal places for the ticker. The number of
   // decimal places is used to convert the price to a human-readable format.
-  uint64 decimals = 3;
+  uint64 decimals = 2;
+
   // MinProviderCount is the minimum number of providers required to consider
   // the ticker valid.
-  uint64 min_provider_count = 4;
+  uint64 min_provider_count = 3;
+
+  // Enabled is the flag that denotes if the Ticker is enabled for price
+  // fetching by an oracle.
+  bool enabled = 14;
 
   // MetadataJSON is a string of JSON that encodes any extra configuration
   // for the given ticker.
@@ -85,53 +104,32 @@ message ProviderConfig {
   // The off-chain ticker is unique to a given provider and is used to fetch the
   // price of the ticker from the provider.
   string off_chain_ticker = 2;
+
+  // NormalizeByPair is the currency pair for this ticker to be normalized by.
+  // For example, if the desired Ticker is BTC/USD, this market could be reached
+  // using: OffChainTicker = BTC/USDT NormalizeByPair = USDT/USD This field is
+  // optional and nullable.
+  slinky.types.v1.CurrencyPair normalize_by_pair = 3;
+
+  // Invert is a boolean indicating if the BASE and QUOTE of the market should
+  // be inverted. i.e. BASE -> QUOTE, QUOTE -> BASE
+  bool invert = 4;
+
+  // MetadataJSON is a string of JSON that encodes any extra configuration
+  // for the given provider config.
+  string metadata_JSON = 15;
 }
 
-// Path is the list of convertable markets that will be used to convert the
-// prices of a set of tickers to a common ticker.
-message Path {
-  // Operations is an ordered list of operations that will be taken. These must
-  // be topologically sorted to ensure that the conversion is possible i.e. DAG.
-  repeated Operation operations = 1 [ (gogoproto.nullable) = false ];
-}
-
-// Operation represents the operation configuration for a given ticker.
-message Operation {
-  // CurrencyPair is the on-chain currency pair for this ticker.
-  slinky.types.v1.CurrencyPair currency_pair = 1
-      [ (gogoproto.nullable) = false ];
-
-  // Invert is a boolean that indicates whether the price of the ticker should
-  // be inverted.
-  bool invert = 2;
-}
-
-message Paths {
-  // Paths is the list of convertable markets that will be used to convert the
-  // prices of a set of tickers to a common ticker.
-  repeated Path paths = 1 [ (gogoproto.nullable) = false ];
-}
-
-message Providers {
-  // Providers is the list of provider configurations for the given ticker.
-  repeated ProviderConfig providers = 1 [ (gogoproto.nullable) = false ];
-}
-
+// MarketMap maps ticker strings to their Markets.
 message MarketMap {
   option (gogoproto.goproto_stringer) = false;
   option (gogoproto.stringer) = false;
 
-  // Tickers is the full list of tickers and their associated configurations
+  // Markets is the full list of tickers and their associated configurations
   // to be stored on-chain.
-  map<string, Ticker> tickers = 1 [ (gogoproto.nullable) = false ];
-
-  // Paths is a map from CurrencyPair to all paths that resolve to that pair
-  map<string, Paths> paths = 2 [ (gogoproto.nullable) = false ];
-
-  // Providers is a map from CurrencyPair to each of to provider-specific
-  // configs associated with it.
-  map<string, Providers> providers = 3 [ (gogoproto.nullable) = false ];
+  map<string, Market> markets = 1 [ (gogoproto.nullable) = false ];
 }
+
 ```
 
 The `MarketMap` message itself is not stored in state.  Rather, ticker strings are used as key prefixes
@@ -145,18 +143,11 @@ keeper authority address.
 The `x/marketmap` module contains the following parameters:
 
 | Key               | Type     | Example                                          |
-| MarketAuthority | string | "cosmos1vq93x443c0fznuf6...q4jd28ke6r46p999s0" |
-| Version         | uint64 | 20                                             |
+| MarketAuthorities | []string | "cosmos1vq93x443c0fznuf6...q4jd28ke6r46p999s0" |
 
 #### MarketAuthority
 
-The MarketAuthority is the bech32 address that is permitted to submit market updates to the chain.
-
-#### Version
-
-Version is the version of the MarketMap schema. This version is returned in the `GetMarketMap` query and can be used
-by oracle service providers to verify the schema they are consuming.  When being modified via governance, the new value
-must always be greater than the current value.
+A MarketAuthority is the bech32 address that is permitted to submit market updates to the chain.
 
 ## Events
 
@@ -170,8 +161,6 @@ The marketmap module emits the following events:
 | decimals           | {uint64}        |
 | min_provider_count | {uint64}        |
 | metadata           | {json string}   |
-| providers          | {[]Provider}    |
-| paths              | {[]Path]}       |
 
 ## Hooks
 
@@ -180,17 +169,17 @@ The following hooks can be registered:
 
 ### AfterMarketCreated
 
-* `AfterMarketCreated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
+* `AfterMarketCreated(ctx sdk.Context, ticker marketmaptypes.Market) error`
     * Called after a new market is created in `CreateMarket` message server.
 
 ### AfterMarketUpdated
 
-* `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Ticker) error`
+* `AfterMarketUpdated(ctx sdk.Context, ticker marketmaptypes.Market) error`
     * Called after a new market is updated in `UpdateMarket` message server.
 
 ### AfterMarketGenesis
 
-* `AfterMarketGenesis(ctx sdk.Context, tickers map[string]marketmaptypes.Ticker) error`
+* `AfterMarketGenesis(ctx sdk.Context, tickers map[string]marketmaptypes.Market) error`
     * Called at the end of `InitGenesis` for the `x/marketmap` keeper.
 
 ## Client
@@ -202,7 +191,7 @@ A user can query the `marketmap` module using gRPC endpoints.
 #### MarketMap
 
 The `MarketMap` endpoint queries the full state of the market map as well as associated information such as
-`LastUpdated` and `Version`.
+`LastUpdated`.
 
 Example:
 
@@ -299,7 +288,7 @@ Example response:
 ```json
 {
   "params": {
-    "marketAuthority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+    "marketAuthorities": "[cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn]"
   }
 }
 ```

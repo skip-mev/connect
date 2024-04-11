@@ -9,6 +9,7 @@ import (
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
+	types "github.com/skip-mev/slinky/pkg/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -29,23 +30,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// GetMarketMapRequest is the query request for the GetMarketMap query.
+// MarketMapRequest is the query request for the MarketMap query.
 // It takes no arguments.
-type GetMarketMapRequest struct {
+type MarketMapRequest struct {
 }
 
-func (m *GetMarketMapRequest) Reset()         { *m = GetMarketMapRequest{} }
-func (m *GetMarketMapRequest) String() string { return proto.CompactTextString(m) }
-func (*GetMarketMapRequest) ProtoMessage()    {}
-func (*GetMarketMapRequest) Descriptor() ([]byte, []int) {
+func (m *MarketMapRequest) Reset()         { *m = MarketMapRequest{} }
+func (m *MarketMapRequest) String() string { return proto.CompactTextString(m) }
+func (*MarketMapRequest) ProtoMessage()    {}
+func (*MarketMapRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b5d6ff68f3c474a0, []int{0}
 }
-func (m *GetMarketMapRequest) XXX_Unmarshal(b []byte) error {
+func (m *MarketMapRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GetMarketMapRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MarketMapRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GetMarketMapRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MarketMapRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -55,20 +56,20 @@ func (m *GetMarketMapRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *GetMarketMapRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetMarketMapRequest.Merge(m, src)
+func (m *MarketMapRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MarketMapRequest.Merge(m, src)
 }
-func (m *GetMarketMapRequest) XXX_Size() int {
+func (m *MarketMapRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *GetMarketMapRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetMarketMapRequest.DiscardUnknown(m)
+func (m *MarketMapRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MarketMapRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetMarketMapRequest proto.InternalMessageInfo
+var xxx_messageInfo_MarketMapRequest proto.InternalMessageInfo
 
-// GetMarketMapResponse is the query response for the GetMarketMap query.
-type GetMarketMapResponse struct {
+// MarketMapResponse is the query response for the MarketMap query.
+type MarketMapResponse struct {
 	// MarketMap defines the global set of market configurations for all providers
 	// and markets.
 	MarketMap MarketMap `protobuf:"bytes,1,opt,name=market_map,json=marketMap,proto3" json:"market_map"`
@@ -76,25 +77,22 @@ type GetMarketMapResponse struct {
 	// This field can be used as an optimization for clients checking if there
 	// is a new update to the map.
 	LastUpdated uint64 `protobuf:"varint,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
-	// Version is the schema version for the MarketMap data structure and query
-	// response.
-	Version uint64 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
 	// ChainId is the chain identifier for the market map.
-	ChainId string `protobuf:"bytes,4,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	ChainId string `protobuf:"bytes,3,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
 }
 
-func (m *GetMarketMapResponse) Reset()         { *m = GetMarketMapResponse{} }
-func (m *GetMarketMapResponse) String() string { return proto.CompactTextString(m) }
-func (*GetMarketMapResponse) ProtoMessage()    {}
-func (*GetMarketMapResponse) Descriptor() ([]byte, []int) {
+func (m *MarketMapResponse) Reset()         { *m = MarketMapResponse{} }
+func (m *MarketMapResponse) String() string { return proto.CompactTextString(m) }
+func (*MarketMapResponse) ProtoMessage()    {}
+func (*MarketMapResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b5d6ff68f3c474a0, []int{1}
 }
-func (m *GetMarketMapResponse) XXX_Unmarshal(b []byte) error {
+func (m *MarketMapResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GetMarketMapResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MarketMapResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GetMarketMapResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MarketMapResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -104,44 +102,131 @@ func (m *GetMarketMapResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *GetMarketMapResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetMarketMapResponse.Merge(m, src)
+func (m *MarketMapResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MarketMapResponse.Merge(m, src)
 }
-func (m *GetMarketMapResponse) XXX_Size() int {
+func (m *MarketMapResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *GetMarketMapResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetMarketMapResponse.DiscardUnknown(m)
+func (m *MarketMapResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MarketMapResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetMarketMapResponse proto.InternalMessageInfo
+var xxx_messageInfo_MarketMapResponse proto.InternalMessageInfo
 
-func (m *GetMarketMapResponse) GetMarketMap() MarketMap {
+func (m *MarketMapResponse) GetMarketMap() MarketMap {
 	if m != nil {
 		return m.MarketMap
 	}
 	return MarketMap{}
 }
 
-func (m *GetMarketMapResponse) GetLastUpdated() uint64 {
+func (m *MarketMapResponse) GetLastUpdated() uint64 {
 	if m != nil {
 		return m.LastUpdated
 	}
 	return 0
 }
 
-func (m *GetMarketMapResponse) GetVersion() uint64 {
-	if m != nil {
-		return m.Version
-	}
-	return 0
-}
-
-func (m *GetMarketMapResponse) GetChainId() string {
+func (m *MarketMapResponse) GetChainId() string {
 	if m != nil {
 		return m.ChainId
 	}
 	return ""
+}
+
+// MarketRequest is the query request for the Market query.
+// It takes the currency pair of the market as an argument.
+type MarketRequest struct {
+	// CurrencyPair is the currency pair associated with the market being
+	// requested.
+	CurrencyPair types.CurrencyPair `protobuf:"bytes,1,opt,name=currency_pair,json=currencyPair,proto3" json:"currency_pair"`
+}
+
+func (m *MarketRequest) Reset()         { *m = MarketRequest{} }
+func (m *MarketRequest) String() string { return proto.CompactTextString(m) }
+func (*MarketRequest) ProtoMessage()    {}
+func (*MarketRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b5d6ff68f3c474a0, []int{2}
+}
+func (m *MarketRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MarketRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MarketRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MarketRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MarketRequest.Merge(m, src)
+}
+func (m *MarketRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MarketRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MarketRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MarketRequest proto.InternalMessageInfo
+
+func (m *MarketRequest) GetCurrencyPair() types.CurrencyPair {
+	if m != nil {
+		return m.CurrencyPair
+	}
+	return types.CurrencyPair{}
+}
+
+// MarketResponse is the query response for the Market query.
+type MarketResponse struct {
+	// Market is the configuration of a single market to be price-fetched for.
+	Market Market `protobuf:"bytes,1,opt,name=market,proto3" json:"market"`
+}
+
+func (m *MarketResponse) Reset()         { *m = MarketResponse{} }
+func (m *MarketResponse) String() string { return proto.CompactTextString(m) }
+func (*MarketResponse) ProtoMessage()    {}
+func (*MarketResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b5d6ff68f3c474a0, []int{3}
+}
+func (m *MarketResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MarketResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MarketResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MarketResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MarketResponse.Merge(m, src)
+}
+func (m *MarketResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MarketResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MarketResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MarketResponse proto.InternalMessageInfo
+
+func (m *MarketResponse) GetMarket() Market {
+	if m != nil {
+		return m.Market
+	}
+	return Market{}
 }
 
 // ParamsRequest is the request type for the Query/Params RPC method.
@@ -152,7 +237,7 @@ func (m *ParamsRequest) Reset()         { *m = ParamsRequest{} }
 func (m *ParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*ParamsRequest) ProtoMessage()    {}
 func (*ParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b5d6ff68f3c474a0, []int{2}
+	return fileDescriptor_b5d6ff68f3c474a0, []int{4}
 }
 func (m *ParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -190,7 +275,7 @@ func (m *ParamsResponse) Reset()         { *m = ParamsResponse{} }
 func (m *ParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*ParamsResponse) ProtoMessage()    {}
 func (*ParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b5d6ff68f3c474a0, []int{3}
+	return fileDescriptor_b5d6ff68f3c474a0, []int{5}
 }
 func (m *ParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -226,23 +311,23 @@ func (m *ParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// GetLastUpdatedRequest is the request type for the Query/LastUpdated RPC
+// LastUpdatedRequest is the request type for the Query/LastUpdated RPC
 // method.
-type GetLastUpdatedRequest struct {
+type LastUpdatedRequest struct {
 }
 
-func (m *GetLastUpdatedRequest) Reset()         { *m = GetLastUpdatedRequest{} }
-func (m *GetLastUpdatedRequest) String() string { return proto.CompactTextString(m) }
-func (*GetLastUpdatedRequest) ProtoMessage()    {}
-func (*GetLastUpdatedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b5d6ff68f3c474a0, []int{4}
+func (m *LastUpdatedRequest) Reset()         { *m = LastUpdatedRequest{} }
+func (m *LastUpdatedRequest) String() string { return proto.CompactTextString(m) }
+func (*LastUpdatedRequest) ProtoMessage()    {}
+func (*LastUpdatedRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b5d6ff68f3c474a0, []int{6}
 }
-func (m *GetLastUpdatedRequest) XXX_Unmarshal(b []byte) error {
+func (m *LastUpdatedRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GetLastUpdatedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *LastUpdatedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GetLastUpdatedRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_LastUpdatedRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -252,36 +337,36 @@ func (m *GetLastUpdatedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *GetLastUpdatedRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetLastUpdatedRequest.Merge(m, src)
+func (m *LastUpdatedRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LastUpdatedRequest.Merge(m, src)
 }
-func (m *GetLastUpdatedRequest) XXX_Size() int {
+func (m *LastUpdatedRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *GetLastUpdatedRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetLastUpdatedRequest.DiscardUnknown(m)
+func (m *LastUpdatedRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_LastUpdatedRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetLastUpdatedRequest proto.InternalMessageInfo
+var xxx_messageInfo_LastUpdatedRequest proto.InternalMessageInfo
 
-// GetLastUpdatedResponse is the response type for the Query/LastUpdated RPC
+// LastUpdatedResponse is the response type for the Query/LastUpdated RPC
 // method.
-type GetLastUpdatedResponse struct {
+type LastUpdatedResponse struct {
 	LastUpdated uint64 `protobuf:"varint,1,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
 }
 
-func (m *GetLastUpdatedResponse) Reset()         { *m = GetLastUpdatedResponse{} }
-func (m *GetLastUpdatedResponse) String() string { return proto.CompactTextString(m) }
-func (*GetLastUpdatedResponse) ProtoMessage()    {}
-func (*GetLastUpdatedResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_b5d6ff68f3c474a0, []int{5}
+func (m *LastUpdatedResponse) Reset()         { *m = LastUpdatedResponse{} }
+func (m *LastUpdatedResponse) String() string { return proto.CompactTextString(m) }
+func (*LastUpdatedResponse) ProtoMessage()    {}
+func (*LastUpdatedResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_b5d6ff68f3c474a0, []int{7}
 }
-func (m *GetLastUpdatedResponse) XXX_Unmarshal(b []byte) error {
+func (m *LastUpdatedResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GetLastUpdatedResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *LastUpdatedResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GetLastUpdatedResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_LastUpdatedResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -291,19 +376,19 @@ func (m *GetLastUpdatedResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *GetLastUpdatedResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetLastUpdatedResponse.Merge(m, src)
+func (m *LastUpdatedResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LastUpdatedResponse.Merge(m, src)
 }
-func (m *GetLastUpdatedResponse) XXX_Size() int {
+func (m *LastUpdatedResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *GetLastUpdatedResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetLastUpdatedResponse.DiscardUnknown(m)
+func (m *LastUpdatedResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_LastUpdatedResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetLastUpdatedResponse proto.InternalMessageInfo
+var xxx_messageInfo_LastUpdatedResponse proto.InternalMessageInfo
 
-func (m *GetLastUpdatedResponse) GetLastUpdated() uint64 {
+func (m *LastUpdatedResponse) GetLastUpdated() uint64 {
 	if m != nil {
 		return m.LastUpdated
 	}
@@ -311,49 +396,54 @@ func (m *GetLastUpdatedResponse) GetLastUpdated() uint64 {
 }
 
 func init() {
-	proto.RegisterType((*GetMarketMapRequest)(nil), "slinky.marketmap.v1.GetMarketMapRequest")
-	proto.RegisterType((*GetMarketMapResponse)(nil), "slinky.marketmap.v1.GetMarketMapResponse")
+	proto.RegisterType((*MarketMapRequest)(nil), "slinky.marketmap.v1.MarketMapRequest")
+	proto.RegisterType((*MarketMapResponse)(nil), "slinky.marketmap.v1.MarketMapResponse")
+	proto.RegisterType((*MarketRequest)(nil), "slinky.marketmap.v1.MarketRequest")
+	proto.RegisterType((*MarketResponse)(nil), "slinky.marketmap.v1.MarketResponse")
 	proto.RegisterType((*ParamsRequest)(nil), "slinky.marketmap.v1.ParamsRequest")
 	proto.RegisterType((*ParamsResponse)(nil), "slinky.marketmap.v1.ParamsResponse")
-	proto.RegisterType((*GetLastUpdatedRequest)(nil), "slinky.marketmap.v1.GetLastUpdatedRequest")
-	proto.RegisterType((*GetLastUpdatedResponse)(nil), "slinky.marketmap.v1.GetLastUpdatedResponse")
+	proto.RegisterType((*LastUpdatedRequest)(nil), "slinky.marketmap.v1.LastUpdatedRequest")
+	proto.RegisterType((*LastUpdatedResponse)(nil), "slinky.marketmap.v1.LastUpdatedResponse")
 }
 
 func init() { proto.RegisterFile("slinky/marketmap/v1/query.proto", fileDescriptor_b5d6ff68f3c474a0) }
 
 var fileDescriptor_b5d6ff68f3c474a0 = []byte{
-	// 483 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0xcd, 0xb6, 0x21, 0x25, 0x13, 0x3e, 0xa4, 0x6d, 0x0b, 0x26, 0x05, 0xd7, 0x75, 0x24, 0x94,
-	0xf2, 0xe1, 0x55, 0xcb, 0x09, 0x71, 0x2b, 0x12, 0x15, 0x82, 0x4a, 0x10, 0x89, 0x0b, 0x97, 0x68,
-	0xdb, 0xac, 0x5c, 0x2b, 0xb1, 0x77, 0xeb, 0x5d, 0x5b, 0xe4, 0xca, 0x89, 0x23, 0x88, 0x3b, 0x7f,
-	0x82, 0x3f, 0xd1, 0x63, 0x25, 0x2e, 0x9c, 0x10, 0x4a, 0xf8, 0x21, 0x28, 0xbb, 0xeb, 0x10, 0x5a,
-	0x27, 0xea, 0xcd, 0x33, 0xf3, 0x66, 0xde, 0x7b, 0x33, 0x5e, 0xd8, 0x94, 0x83, 0x28, 0xe9, 0x0f,
-	0x49, 0x4c, 0xd3, 0x3e, 0x53, 0x31, 0x15, 0x24, 0xdf, 0x21, 0x27, 0x19, 0x4b, 0x87, 0x81, 0x48,
-	0xb9, 0xe2, 0x78, 0xd5, 0x00, 0x82, 0x29, 0x20, 0xc8, 0x77, 0x9a, 0x6b, 0x21, 0x0f, 0xb9, 0xae,
-	0x93, 0xc9, 0x97, 0x81, 0x36, 0xef, 0x86, 0x9c, 0x87, 0x03, 0x46, 0xa8, 0x88, 0x08, 0x4d, 0x12,
-	0xae, 0xa8, 0x8a, 0x78, 0x22, 0x6d, 0xd5, 0x2b, 0x63, 0x32, 0xc1, 0x22, 0x84, 0xa0, 0x29, 0x8d,
-	0xed, 0x0c, 0x7f, 0x1d, 0x56, 0xf7, 0x99, 0x3a, 0xd0, 0xf5, 0x03, 0x2a, 0x3a, 0xec, 0x24, 0x63,
-	0x52, 0xf9, 0xdf, 0x11, 0xac, 0xfd, 0x9f, 0x97, 0x82, 0x27, 0x92, 0xe1, 0xe7, 0x00, 0x66, 0x58,
-	0x37, 0xa6, 0xc2, 0x41, 0x1e, 0x6a, 0x37, 0x76, 0xdd, 0xa0, 0xc4, 0x51, 0x30, 0xed, 0xdd, 0xab,
-	0x9e, 0xfe, 0xda, 0xac, 0x74, 0xea, 0x71, 0x91, 0xc0, 0x5b, 0x70, 0x6d, 0x40, 0xa5, 0xea, 0x66,
-	0xa2, 0x47, 0x15, 0xeb, 0x39, 0x4b, 0x1e, 0x6a, 0x57, 0x3b, 0x8d, 0x49, 0xee, 0x9d, 0x49, 0x61,
-	0x07, 0x56, 0x72, 0x96, 0xca, 0x88, 0x27, 0xce, 0xb2, 0xae, 0x16, 0x21, 0xbe, 0x03, 0x57, 0x8f,
-	0x8e, 0x69, 0x94, 0x74, 0xa3, 0x9e, 0x53, 0xf5, 0x50, 0xbb, 0xde, 0x59, 0xd1, 0xf1, 0xcb, 0x9e,
-	0x7f, 0x13, 0xae, 0xbf, 0xd1, 0xe6, 0x0a, 0x1b, 0xaf, 0xe0, 0x46, 0x91, 0xb0, 0xfa, 0x9f, 0x42,
-	0xcd, 0xf8, 0xb7, 0xda, 0x37, 0x4a, 0xb5, 0x9b, 0x26, 0x2b, 0xdc, 0x36, 0xf8, 0xb7, 0x61, 0x7d,
-	0x9f, 0xa9, 0xd7, 0xff, 0x44, 0x16, 0x2c, 0xcf, 0xe0, 0xd6, 0xf9, 0x82, 0x65, 0x3b, 0x6f, 0x14,
-	0x5d, 0x30, 0xba, 0xfb, 0x6d, 0x19, 0xae, 0xbc, 0x9d, 0xfc, 0x1d, 0xf8, 0x13, 0x82, 0xfa, 0x74,
-	0x69, 0xb8, 0x5d, 0x2a, 0xac, 0xe4, 0x56, 0xcd, 0xed, 0x4b, 0x20, 0x8d, 0x1e, 0xff, 0xfe, 0xc7,
-	0x1f, 0x7f, 0xbe, 0x2e, 0x79, 0xd8, 0x25, 0xf3, 0x7f, 0x9d, 0x98, 0x0a, 0xfc, 0x05, 0x41, 0x63,
-	0xc6, 0x0f, 0x7e, 0x30, 0x8f, 0xe2, 0xe2, 0x36, 0x9a, 0x0f, 0x2f, 0x85, 0xb5, 0x82, 0xb6, 0xb5,
-	0xa0, 0x16, 0xde, 0x2a, 0x15, 0x34, 0xbb, 0x3b, 0x9c, 0x43, 0xcd, 0x9c, 0x05, 0xfb, 0x0b, 0x6e,
-	0x56, 0xa8, 0x68, 0x2d, 0xc4, 0x58, 0xf6, 0x96, 0x66, 0xbf, 0x87, 0x37, 0xc8, 0xfc, 0x77, 0xb2,
-	0xf7, 0xe2, 0x74, 0xe4, 0xa2, 0xb3, 0x91, 0x8b, 0x7e, 0x8f, 0x5c, 0xf4, 0x79, 0xec, 0x56, 0xce,
-	0xc6, 0x6e, 0xe5, 0xe7, 0xd8, 0xad, 0xbc, 0x7f, 0x14, 0x46, 0xea, 0x38, 0x3b, 0x0c, 0x8e, 0x78,
-	0x4c, 0x64, 0x3f, 0x12, 0x8f, 0x63, 0x96, 0x17, 0x93, 0x3e, 0xcc, 0xcc, 0x52, 0x43, 0xc1, 0xe4,
-	0x61, 0x4d, 0x3f, 0xb8, 0x27, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x96, 0x38, 0x94, 0x38, 0x20,
-	0x04, 0x00, 0x00,
+	// 543 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
+	0x10, 0xcd, 0x96, 0x10, 0xc8, 0xa4, 0x29, 0xb0, 0xed, 0x21, 0xa4, 0xd4, 0x75, 0x1d, 0x51, 0x82,
+	0x04, 0xb6, 0x5a, 0x2e, 0x70, 0x6d, 0x25, 0x04, 0x2a, 0x95, 0x4a, 0x24, 0x0e, 0x70, 0x89, 0xb6,
+	0xce, 0xca, 0xb5, 0x12, 0x7b, 0xb7, 0xfe, 0x88, 0xc8, 0xb5, 0x47, 0xb8, 0x20, 0x21, 0xf1, 0x9b,
+	0x7a, 0xac, 0xc4, 0x85, 0x13, 0x42, 0x09, 0x3f, 0x04, 0x79, 0x3f, 0x52, 0x87, 0x26, 0xce, 0x2d,
+	0x3b, 0xfb, 0xe6, 0xbd, 0xb7, 0x6f, 0x26, 0x86, 0xed, 0x78, 0xe0, 0x87, 0xfd, 0x91, 0x13, 0x90,
+	0xa8, 0x4f, 0x93, 0x80, 0x70, 0x67, 0xb8, 0xe7, 0x9c, 0xa7, 0x34, 0x1a, 0xd9, 0x3c, 0x62, 0x09,
+	0xc3, 0xeb, 0x12, 0x60, 0x4f, 0x01, 0xf6, 0x70, 0xaf, 0xb9, 0xe1, 0x31, 0x8f, 0x89, 0x7b, 0x27,
+	0xfb, 0x25, 0xa1, 0xcd, 0x47, 0x1e, 0x63, 0xde, 0x80, 0x3a, 0x84, 0xfb, 0x0e, 0x09, 0x43, 0x96,
+	0x90, 0xc4, 0x67, 0x61, 0xac, 0x6e, 0x5b, 0x4a, 0x29, 0x19, 0x71, 0x1a, 0x67, 0x2a, 0x6e, 0x1a,
+	0x45, 0x34, 0x74, 0x47, 0x5d, 0x4e, 0xfc, 0x48, 0x81, 0xcc, 0x79, 0x76, 0xe4, 0xa1, 0x08, 0xc1,
+	0x49, 0x44, 0x02, 0x25, 0x64, 0x61, 0xb8, 0x7f, 0x2c, 0x2e, 0x8f, 0x09, 0xef, 0xd0, 0xf3, 0x94,
+	0xc6, 0x89, 0xf5, 0x03, 0xc1, 0x83, 0x5c, 0x31, 0xe6, 0x2c, 0x8c, 0x29, 0x3e, 0x04, 0x90, 0x34,
+	0xdd, 0x80, 0xf0, 0x06, 0x32, 0x51, 0xbb, 0xb6, 0x6f, 0xd8, 0x73, 0x1e, 0x6c, 0x4f, 0x7b, 0x0f,
+	0xca, 0x97, 0xbf, 0xb7, 0x4b, 0x9d, 0x6a, 0xa0, 0x0b, 0x78, 0x07, 0x56, 0x07, 0x24, 0x4e, 0xba,
+	0x29, 0xef, 0x91, 0x84, 0xf6, 0x1a, 0x2b, 0x26, 0x6a, 0x97, 0x3b, 0xb5, 0xac, 0xf6, 0x41, 0x96,
+	0xf0, 0x43, 0xb8, 0xeb, 0x9e, 0x11, 0x3f, 0xec, 0xfa, 0xbd, 0xc6, 0x2d, 0x13, 0xb5, 0xab, 0x9d,
+	0x3b, 0xe2, 0xfc, 0xb6, 0x67, 0x7d, 0x84, 0xba, 0xe4, 0x56, 0x4e, 0xf1, 0x1b, 0xa8, 0xcf, 0x04,
+	0xa3, 0x6c, 0x6d, 0x69, 0x5b, 0x22, 0xbe, 0xcc, 0xd2, 0xa1, 0x42, 0x9d, 0x10, 0x3f, 0x52, 0xae,
+	0x56, 0xdd, 0x5c, 0xcd, 0x3a, 0x82, 0x35, 0x4d, 0xad, 0xde, 0xfb, 0x0a, 0x2a, 0xd2, 0xb7, 0x22,
+	0xdd, 0x2c, 0x78, 0xab, 0xa2, 0x54, 0x0d, 0xd6, 0x3d, 0xa8, 0x9f, 0x88, 0x90, 0x75, 0xa2, 0x47,
+	0xb0, 0xa6, 0x0b, 0xd7, 0xec, 0x72, 0x0e, 0x85, 0xec, 0xb2, 0x49, 0xb3, 0xcb, 0x06, 0x6b, 0x03,
+	0xf0, 0xbb, 0xeb, 0xbc, 0xb4, 0xc4, 0x4b, 0x58, 0x9f, 0xa9, 0x2a, 0x9d, 0xff, 0x03, 0x47, 0x37,
+	0x02, 0xdf, 0xff, 0x52, 0x86, 0xdb, 0xef, 0xb3, 0x25, 0xc6, 0x17, 0x08, 0xaa, 0xd3, 0xe1, 0xe1,
+	0xc7, 0xc5, 0xc3, 0x55, 0xc2, 0xcd, 0xdd, 0x65, 0x30, 0xe9, 0xc4, 0xda, 0xbd, 0xf8, 0xf9, 0xf7,
+	0xfb, 0x8a, 0x89, 0x0d, 0x67, 0xf1, 0xda, 0x06, 0x84, 0xe3, 0x21, 0x54, 0x64, 0x33, 0xb6, 0x0a,
+	0x98, 0xb5, 0x7a, 0xab, 0x10, 0xa3, 0xa4, 0x5b, 0x42, 0x7a, 0x0b, 0x6f, 0x16, 0x48, 0xe3, 0xaf,
+	0x08, 0x6a, 0xb9, 0x04, 0xf1, 0x93, 0xb9, 0xcc, 0x37, 0x93, 0x6f, 0xb6, 0x97, 0x03, 0x95, 0x8f,
+	0xa7, 0xc2, 0x47, 0x0b, 0xef, 0xcc, 0xf5, 0x91, 0x9f, 0x53, 0x96, 0x82, 0x1c, 0xfe, 0x82, 0x14,
+	0x66, 0xf6, 0x6b, 0x41, 0x0a, 0xb3, 0x2b, 0xb7, 0x24, 0x05, 0xb9, 0x5c, 0x07, 0xaf, 0x2f, 0xc7,
+	0x06, 0xba, 0x1a, 0x1b, 0xe8, 0xcf, 0xd8, 0x40, 0xdf, 0x26, 0x46, 0xe9, 0x6a, 0x62, 0x94, 0x7e,
+	0x4d, 0x8c, 0xd2, 0xa7, 0x67, 0x9e, 0x9f, 0x9c, 0xa5, 0xa7, 0xb6, 0xcb, 0x02, 0x27, 0xee, 0xfb,
+	0xfc, 0x79, 0x40, 0x87, 0x9a, 0xe9, 0x73, 0x8e, 0x4b, 0xfc, 0xe7, 0x4e, 0x2b, 0xe2, 0xf3, 0xf2,
+	0xe2, 0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x7e, 0x7b, 0x92, 0x92, 0x33, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -370,9 +460,12 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
-	MarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error)
+	MarketMap(ctx context.Context, in *MarketMapRequest, opts ...grpc.CallOption) (*MarketMapResponse, error)
+	// Market returns a market stored in the x/marketmap
+	// module.
+	Market(ctx context.Context, in *MarketRequest, opts ...grpc.CallOption) (*MarketResponse, error)
 	// LastUpdated returns the last height the market map was updated at.
-	LastUpdated(ctx context.Context, in *GetLastUpdatedRequest, opts ...grpc.CallOption) (*GetLastUpdatedResponse, error)
+	LastUpdated(ctx context.Context, in *LastUpdatedRequest, opts ...grpc.CallOption) (*LastUpdatedResponse, error)
 	// Params returns the current x/marketmap module parameters.
 	Params(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ParamsResponse, error)
 }
@@ -385,8 +478,8 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) MarketMap(ctx context.Context, in *GetMarketMapRequest, opts ...grpc.CallOption) (*GetMarketMapResponse, error) {
-	out := new(GetMarketMapResponse)
+func (c *queryClient) MarketMap(ctx context.Context, in *MarketMapRequest, opts ...grpc.CallOption) (*MarketMapResponse, error) {
+	out := new(MarketMapResponse)
 	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Query/MarketMap", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -394,8 +487,17 @@ func (c *queryClient) MarketMap(ctx context.Context, in *GetMarketMapRequest, op
 	return out, nil
 }
 
-func (c *queryClient) LastUpdated(ctx context.Context, in *GetLastUpdatedRequest, opts ...grpc.CallOption) (*GetLastUpdatedResponse, error) {
-	out := new(GetLastUpdatedResponse)
+func (c *queryClient) Market(ctx context.Context, in *MarketRequest, opts ...grpc.CallOption) (*MarketResponse, error) {
+	out := new(MarketResponse)
+	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Query/Market", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) LastUpdated(ctx context.Context, in *LastUpdatedRequest, opts ...grpc.CallOption) (*LastUpdatedResponse, error) {
+	out := new(LastUpdatedResponse)
 	err := c.cc.Invoke(ctx, "/slinky.marketmap.v1.Query/LastUpdated", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -416,9 +518,12 @@ func (c *queryClient) Params(ctx context.Context, in *ParamsRequest, opts ...grp
 type QueryServer interface {
 	// MarketMap returns the full market map stored in the x/marketmap
 	// module.
-	MarketMap(context.Context, *GetMarketMapRequest) (*GetMarketMapResponse, error)
+	MarketMap(context.Context, *MarketMapRequest) (*MarketMapResponse, error)
+	// Market returns a market stored in the x/marketmap
+	// module.
+	Market(context.Context, *MarketRequest) (*MarketResponse, error)
 	// LastUpdated returns the last height the market map was updated at.
-	LastUpdated(context.Context, *GetLastUpdatedRequest) (*GetLastUpdatedResponse, error)
+	LastUpdated(context.Context, *LastUpdatedRequest) (*LastUpdatedResponse, error)
 	// Params returns the current x/marketmap module parameters.
 	Params(context.Context, *ParamsRequest) (*ParamsResponse, error)
 }
@@ -427,10 +532,13 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) MarketMap(ctx context.Context, req *GetMarketMapRequest) (*GetMarketMapResponse, error) {
+func (*UnimplementedQueryServer) MarketMap(ctx context.Context, req *MarketMapRequest) (*MarketMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MarketMap not implemented")
 }
-func (*UnimplementedQueryServer) LastUpdated(ctx context.Context, req *GetLastUpdatedRequest) (*GetLastUpdatedResponse, error) {
+func (*UnimplementedQueryServer) Market(ctx context.Context, req *MarketRequest) (*MarketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Market not implemented")
+}
+func (*UnimplementedQueryServer) LastUpdated(ctx context.Context, req *LastUpdatedRequest) (*LastUpdatedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LastUpdated not implemented")
 }
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *ParamsRequest) (*ParamsResponse, error) {
@@ -442,7 +550,7 @@ func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 }
 
 func _Query_MarketMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMarketMapRequest)
+	in := new(MarketMapRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -454,13 +562,31 @@ func _Query_MarketMap_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/slinky.marketmap.v1.Query/MarketMap",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).MarketMap(ctx, req.(*GetMarketMapRequest))
+		return srv.(QueryServer).MarketMap(ctx, req.(*MarketMapRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Market_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarketRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Market(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/slinky.marketmap.v1.Query/Market",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Market(ctx, req.(*MarketRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_LastUpdated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLastUpdatedRequest)
+	in := new(LastUpdatedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -472,7 +598,7 @@ func _Query_LastUpdated_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/slinky.marketmap.v1.Query/LastUpdated",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).LastUpdated(ctx, req.(*GetLastUpdatedRequest))
+		return srv.(QueryServer).LastUpdated(ctx, req.(*LastUpdatedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -504,6 +630,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_MarketMap_Handler,
 		},
 		{
+			MethodName: "Market",
+			Handler:    _Query_Market_Handler,
+		},
+		{
 			MethodName: "LastUpdated",
 			Handler:    _Query_LastUpdated_Handler,
 		},
@@ -516,7 +646,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	Metadata: "slinky/marketmap/v1/query.proto",
 }
 
-func (m *GetMarketMapRequest) Marshal() (dAtA []byte, err error) {
+func (m *MarketMapRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -526,12 +656,12 @@ func (m *GetMarketMapRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GetMarketMapRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MarketMapRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetMarketMapRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MarketMapRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -539,7 +669,7 @@ func (m *GetMarketMapRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GetMarketMapResponse) Marshal() (dAtA []byte, err error) {
+func (m *MarketMapResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -549,12 +679,12 @@ func (m *GetMarketMapResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GetMarketMapResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MarketMapResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -564,12 +694,7 @@ func (m *GetMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.ChainId)
 		i = encodeVarintQuery(dAtA, i, uint64(len(m.ChainId)))
 		i--
-		dAtA[i] = 0x22
-	}
-	if m.Version != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.Version))
-		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x1a
 	}
 	if m.LastUpdated != 0 {
 		i = encodeVarintQuery(dAtA, i, uint64(m.LastUpdated))
@@ -578,6 +703,72 @@ func (m *GetMarketMapResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	{
 		size, err := m.MarketMap.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MarketRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MarketRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MarketRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.CurrencyPair.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MarketResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MarketResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MarketResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Market.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -645,7 +836,7 @@ func (m *ParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GetLastUpdatedRequest) Marshal() (dAtA []byte, err error) {
+func (m *LastUpdatedRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -655,12 +846,12 @@ func (m *GetLastUpdatedRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GetLastUpdatedRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *LastUpdatedRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetLastUpdatedRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *LastUpdatedRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -668,7 +859,7 @@ func (m *GetLastUpdatedRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GetLastUpdatedResponse) Marshal() (dAtA []byte, err error) {
+func (m *LastUpdatedResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -678,12 +869,12 @@ func (m *GetLastUpdatedResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GetLastUpdatedResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *LastUpdatedResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GetLastUpdatedResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *LastUpdatedResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -707,7 +898,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *GetMarketMapRequest) Size() (n int) {
+func (m *MarketMapRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -716,7 +907,7 @@ func (m *GetMarketMapRequest) Size() (n int) {
 	return n
 }
 
-func (m *GetMarketMapResponse) Size() (n int) {
+func (m *MarketMapResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -727,13 +918,32 @@ func (m *GetMarketMapResponse) Size() (n int) {
 	if m.LastUpdated != 0 {
 		n += 1 + sovQuery(uint64(m.LastUpdated))
 	}
-	if m.Version != 0 {
-		n += 1 + sovQuery(uint64(m.Version))
-	}
 	l = len(m.ChainId)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	return n
+}
+
+func (m *MarketRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.CurrencyPair.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *MarketResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Market.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -757,7 +967,7 @@ func (m *ParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *GetLastUpdatedRequest) Size() (n int) {
+func (m *LastUpdatedRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -766,7 +976,7 @@ func (m *GetLastUpdatedRequest) Size() (n int) {
 	return n
 }
 
-func (m *GetLastUpdatedResponse) Size() (n int) {
+func (m *LastUpdatedResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -784,7 +994,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *GetMarketMapRequest) Unmarshal(dAtA []byte) error {
+func (m *MarketMapRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -807,10 +1017,10 @@ func (m *GetMarketMapRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GetMarketMapRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MarketMapRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GetMarketMapRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MarketMapRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -834,7 +1044,7 @@ func (m *GetMarketMapRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *GetMarketMapResponse) Unmarshal(dAtA []byte) error {
+func (m *MarketMapResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -857,10 +1067,10 @@ func (m *GetMarketMapResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GetMarketMapResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MarketMapResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GetMarketMapResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MarketMapResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -916,25 +1126,6 @@ func (m *GetMarketMapResponse) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
-			}
-			m.Version = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Version |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ChainId", wireType)
 			}
@@ -965,6 +1156,172 @@ func (m *GetMarketMapResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ChainId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MarketRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MarketRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MarketRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CurrencyPair", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CurrencyPair.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MarketResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MarketResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MarketResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Market", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Market.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1120,7 +1477,7 @@ func (m *ParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *GetLastUpdatedRequest) Unmarshal(dAtA []byte) error {
+func (m *LastUpdatedRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1143,10 +1500,10 @@ func (m *GetLastUpdatedRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GetLastUpdatedRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: LastUpdatedRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GetLastUpdatedRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LastUpdatedRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1170,7 +1527,7 @@ func (m *GetLastUpdatedRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *GetLastUpdatedResponse) Unmarshal(dAtA []byte) error {
+func (m *LastUpdatedResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1193,10 +1550,10 @@ func (m *GetLastUpdatedResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GetLastUpdatedResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: LastUpdatedResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GetLastUpdatedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LastUpdatedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

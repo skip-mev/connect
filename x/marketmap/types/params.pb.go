@@ -24,12 +24,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Params defines the parameters for the x/marketmap module.
 type Params struct {
-	// MarketAuthority is the authority account that is able to control updating
-	// the marketmap.
-	MarketAuthority string `protobuf:"bytes,1,opt,name=market_authority,json=marketAuthority,proto3" json:"market_authority,omitempty"`
-	// Version is the schema version for the MarketMap data structure and query
-	// response.
-	Version uint64 `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
+	// MarketAuthorities is the list of authority accounts that are able to
+	// control updating the marketmap.
+	MarketAuthorities []string `protobuf:"bytes,1,rep,name=market_authorities,json=marketAuthorities,proto3" json:"market_authorities,omitempty"`
+	// Admin is an address that can remove addresses from the MarketAuthorities
+	// list. Only governance can add to the MarketAuthorities or change the Admin.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -65,18 +65,18 @@ func (m *Params) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Params proto.InternalMessageInfo
 
-func (m *Params) GetMarketAuthority() string {
+func (m *Params) GetMarketAuthorities() []string {
 	if m != nil {
-		return m.MarketAuthority
+		return m.MarketAuthorities
 	}
-	return ""
+	return nil
 }
 
-func (m *Params) GetVersion() uint64 {
+func (m *Params) GetAdmin() string {
 	if m != nil {
-		return m.Version
+		return m.Admin
 	}
-	return 0
+	return ""
 }
 
 func init() {
@@ -90,15 +90,15 @@ var fileDescriptor_ee4934564ff92a6f = []byte{
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x28, 0xce, 0xc9, 0xcc,
 	0xcb, 0xae, 0xd4, 0xcf, 0x4d, 0x2c, 0xca, 0x4e, 0x2d, 0xc9, 0x4d, 0x2c, 0xd0, 0x2f, 0x33, 0xd4,
 	0x2f, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x86, 0xa8,
-	0xd0, 0x83, 0xab, 0xd0, 0x2b, 0x33, 0x54, 0xf2, 0xe5, 0x62, 0x0b, 0x00, 0x2b, 0x12, 0xd2, 0xe4,
-	0x12, 0x80, 0xc8, 0xc4, 0x27, 0x96, 0x96, 0x64, 0xe4, 0x17, 0x65, 0x96, 0x54, 0x4a, 0x30, 0x2a,
-	0x30, 0x6a, 0x70, 0x06, 0xf1, 0x43, 0xc4, 0x1d, 0x61, 0xc2, 0x42, 0x12, 0x5c, 0xec, 0x65, 0xa9,
-	0x45, 0xc5, 0x99, 0xf9, 0x79, 0x12, 0x4c, 0x0a, 0x8c, 0x1a, 0x2c, 0x41, 0x30, 0xae, 0x93, 0xdb,
+	0xd0, 0x83, 0xab, 0xd0, 0x2b, 0x33, 0x54, 0xf2, 0xe5, 0x62, 0x0b, 0x00, 0x2b, 0x12, 0xd2, 0xe5,
+	0x12, 0x82, 0xc8, 0xc4, 0x27, 0x96, 0x96, 0x64, 0xe4, 0x17, 0x65, 0x96, 0x64, 0xa6, 0x16, 0x4b,
+	0x30, 0x2a, 0x30, 0x6b, 0x70, 0x06, 0x09, 0x42, 0x64, 0x1c, 0x11, 0x12, 0x42, 0x22, 0x5c, 0xac,
+	0x89, 0x29, 0xb9, 0x99, 0x79, 0x12, 0x4c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x10, 0x8e, 0x93, 0xdb,
 	0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c,
 	0xc3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x44, 0xe9, 0xa4, 0x67, 0x96, 0x64, 0x94,
 	0x26, 0xe9, 0x25, 0xe7, 0xe7, 0xea, 0x17, 0x67, 0x67, 0x16, 0xe8, 0xe6, 0xa6, 0x96, 0xe9, 0x43,
 	0xdd, 0x5c, 0x81, 0xe4, 0xea, 0x92, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0xb0, 0x93, 0x8d, 0x01,
-	0x01, 0x00, 0x00, 0xff, 0xff, 0x57, 0x0b, 0x3d, 0xe1, 0xd6, 0x00, 0x00, 0x00,
+	0x01, 0x00, 0x00, 0xff, 0xff, 0x4a, 0xfb, 0xbf, 0x2c, 0xd6, 0x00, 0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -121,17 +121,21 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Version != 0 {
-		i = encodeVarintParams(dAtA, i, uint64(m.Version))
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintParams(dAtA, i, uint64(len(m.Admin)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
-	if len(m.MarketAuthority) > 0 {
-		i -= len(m.MarketAuthority)
-		copy(dAtA[i:], m.MarketAuthority)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.MarketAuthority)))
-		i--
-		dAtA[i] = 0xa
+	if len(m.MarketAuthorities) > 0 {
+		for iNdEx := len(m.MarketAuthorities) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.MarketAuthorities[iNdEx])
+			copy(dAtA[i:], m.MarketAuthorities[iNdEx])
+			i = encodeVarintParams(dAtA, i, uint64(len(m.MarketAuthorities[iNdEx])))
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -153,12 +157,15 @@ func (m *Params) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.MarketAuthority)
+	if len(m.MarketAuthorities) > 0 {
+		for _, s := range m.MarketAuthorities {
+			l = len(s)
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
+	l = len(m.Admin)
 	if l > 0 {
 		n += 1 + l + sovParams(uint64(l))
-	}
-	if m.Version != 0 {
-		n += 1 + sovParams(uint64(m.Version))
 	}
 	return n
 }
@@ -200,7 +207,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MarketAuthority", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MarketAuthorities", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -228,13 +235,13 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MarketAuthority = string(dAtA[iNdEx:postIndex])
+			m.MarketAuthorities = append(m.MarketAuthorities, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			m.Version = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -244,11 +251,24 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Version |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])

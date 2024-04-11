@@ -1,6 +1,7 @@
 module github.com/skip-mev/slinky/tests/petri
 
-go 1.21.6
+go 1.22
+
 toolchain go1.22.1
 
 require (
