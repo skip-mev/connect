@@ -1,5 +1,5 @@
 {
-  "updateInterval": 250000000,
+  "updateInterval": 500000000,
   "maxPriceAge": 120000000000,
   "providers": [
     {
@@ -12,6 +12,8 @@
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "binance_api"
       },
       "webSocket": {
@@ -42,6 +44,8 @@
         "maxQueries": 5,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "coinbase_api"
       },
       "webSocket": {
@@ -72,6 +76,8 @@
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.coingecko.com/api/v3",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "coingecko_api"
       },
       "webSocket": {
@@ -102,6 +108,8 @@
         "maxQueries": 1,
         "atomic": false,
         "url": "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/%s",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "gecko_terminal_api"
       },
       "webSocket": {
@@ -132,6 +140,8 @@
         "maxQueries": 1,
         "atomic": true,
         "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "kraken_api"
       },
       "webSocket": {
@@ -162,6 +172,8 @@
         "maxQueries": 1,
         "atomic": false,
         "url": "volatile-exchange-provider",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "volatile-exchange-provider"
       },
       "webSocket": {
@@ -192,6 +204,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -222,6 +236,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -252,6 +268,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -282,6 +300,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -312,6 +332,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -342,6 +364,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -372,6 +396,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -402,6 +428,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -432,6 +460,8 @@
         "maxQueries": 1,
         "atomic": false,
         "url": "https://api.kucoin.com",
+        "endpoints": null,
+        "batchSize": 0,
         "name": "kucoin_ws"
       },
       "webSocket": {
@@ -462,6 +492,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -492,6 +524,8 @@
         "maxQueries": 0,
         "atomic": false,
         "url": "",
+        "endpoints": null,
+        "batchSize": 0,
         "name": ""
       },
       "webSocket": {
@@ -508,6 +542,38 @@
         "writeTimeout": 45000000000,
         "pingInterval": 0,
         "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "uniswapv3_api",
+      "api": {
+        "enabled": true,
+        "timeout": 1000000000,
+        "interval": 2000000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "https://eth.public-rpc.com/",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "uniswapv3_api"
+      },
+      "webSocket": {
+        "enabled": false,
+        "maxBufferSize": 0,
+        "reconnectionTimeout": 0,
+        "wss": "",
+        "name": "",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 0,
+        "enableCompression": false,
+        "readTimeout": 0,
+        "writeTimeout": 0,
+        "pingInterval": 0,
+        "maxReadErrorCount": 0,
         "maxSubscriptionsPerConnection": 0
       },
       "type": "price_provider"
