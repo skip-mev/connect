@@ -303,7 +303,7 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Start the provider.
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(500 * time.Millisecond)
@@ -388,7 +388,7 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Start the provider.
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
@@ -475,7 +475,7 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Start the provider.
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(3 * time.Millisecond)
@@ -566,7 +566,7 @@ func TestUpdateProviderState(t *testing.T) {
 
 		// Start the provider.
 		go func() {
-			o.Start(ctx)
+			require.NoError(t, o.Start(ctx))
 		}()
 
 		time.Sleep(1000 * time.Millisecond)
