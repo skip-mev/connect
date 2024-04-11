@@ -9,6 +9,7 @@ import (
 
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
@@ -349,6 +350,25 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "raydium exchange config",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: "Raydium",
+						Ticker:       "SMOLE/SOL/VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS/8/HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2/9",
+					},
+				},
+			},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           raydium.Name,
+					OffChainTicker: "SMOLE/SOL",
+					Metadata_JSON:  "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+				},
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -367,6 +387,76 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			if len(tc.expectedProviders) > 0 {
 				require.Equal(t, tc.expectedProviders, providers)
 			}
+		})
+	}
+}
+
+func TestExtractMetadataFromTicker(t *testing.T) {
+	tcs := []struct {
+		name             string
+		provider         string
+		ticker           string
+		expectedMetadata string
+		expectedErr      bool
+	}{
+		{
+			name:             "non-raydium provider",
+			provider:         kucoin.Name,
+			ticker:           "BTC-USDT",
+			expectedMetadata: "",
+			expectedErr:      false,
+		},
+		{
+			name:             "raydium provider w/o additional metadata in ticker",
+			provider:         raydium.Name,
+			ticker:           "BTC/USDT",
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:             "raydium provider w/ non-solana base token",
+			provider:         raydium.Name,
+			ticker:           "SMOLE/SOL/abc/6/def/7",
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:             "raydium provider w/ non-solana quote token",
+			provider:         raydium.Name,
+			ticker:           "SMOLE/SOL/VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS/6/def/7",
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:        "raydium provider w/ incorrect base decimals",
+			provider:    raydium.Name,
+			ticker:      "SMOLE/SOL/VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS/a/HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2/7",
+			expectedErr: true,
+		},
+		{
+			name:        "raydium provider w/ incorrect base decimals",
+			provider:    raydium.Name,
+			ticker:      "SMOLE/SOL/VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS/8/HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2/a",
+			expectedErr: true,
+		},
+		{
+			name:             "raydium provider w/ correct metadata",
+			provider:         raydium.Name,
+			ticker:           "SMOLE/SOL/VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS/8/HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2/9",
+			expectedMetadata: "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+			expectedErr:      false,
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			metadata, err := dydx.ExtractMetadataFromTicker(tc.ticker, tc.provider)
+			if tc.expectedErr {
+				require.Error(t, err)
+				return
+			}
+
+			require.Equal(t, tc.expectedMetadata, metadata)
 		})
 	}
 }

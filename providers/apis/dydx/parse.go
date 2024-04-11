@@ -3,13 +3,17 @@ package dydx
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"go.uber.org/zap"
 
+	"github.com/gagliardetto/solana-go"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/volatile"
@@ -43,6 +47,7 @@ var ProviderMapping = map[string]string{
 	"Mexc":                 mexc.Name,
 	"CoinbasePro":          coinbase.Name,
 	"TestVolatileExchange": volatile.Name,
+	"Raydium":              raydium.Name,
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
@@ -180,35 +185,118 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 			normalizeByPair = &temp
 		}
 
+		denom, err := ConvertDenomByProvider(cfg.Ticker, exchange)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert denom by provider: %w", err)
+		}
+
+		metaData, err := ExtractMetadataFromTicker(cfg.Ticker, exchange)
+		if err != nil {
+			return nil, fmt.Errorf("failed to extract metadata from ticker: %w", err)
+		}
+
 		// Convert to a provider config.
 		providers = append(providers, mmtypes.ProviderConfig{
 			Name:            exchange,
-			OffChainTicker:  ConvertDenomByProvider(cfg.Ticker, exchange), // Convert the ticker to the provider's format.
+			OffChainTicker:  denom, // Convert the ticker to the provider's format.
 			Invert:          cfg.Invert,
 			NormalizeByPair: normalizeByPair,
+			Metadata_JSON:   metaData,
 		})
 	}
 
 	return providers, nil
 }
 
+// ExtractMetadataFromTicker extracts json-metadata from a ticker, based on the exchange. Specifically,
+// all raydium tickers on dydx will be formatted as follows (BASE/QUOTE/BASE_VAULT/BASE_DECIMALS/QUOTE_VAULT/QUOTE_DECIMALS).
+func ExtractMetadataFromTicker(ticker string, exchange string) (string, error) {
+	if exchange == raydium.Name {
+		// get the raydium ticker metadata from the dydx ticker
+		metaData, err := raydiumTickerMetadata(ticker)
+		if err != nil {
+			return "", fmt.Errorf("failed to get %s provider metadata for ticker %s: %w", raydium.Name, ticker, err)
+		}
+
+		// convert the metadata to json
+		bz, err := json.Marshal(metaData)
+		if err != nil {
+			return "", fmt.Errorf("failed to marshal %s provider metadata for ticker %s: %w", raydium.Name, ticker, err)
+		}
+
+		return string(bz), nil
+	}
+
+	return "", nil
+}
+
+// raydiumTickerMetadata extracts a raydiumTickerMetadata from a dydx ticker.
+func raydiumTickerMetadata(ticker string) (raydium.TickerMetadata, error) {
+	// split fields by separator and expect there to be at least 6 values
+	fields := strings.Split(ticker, "/")
+	if len(fields) < 6 {
+		return raydium.TickerMetadata{}, fmt.Errorf("expected at least 6 fields, got %d", len(fields))
+	}
+
+	// check that vault addresses are valid solana addresses
+	baseTokenVault := fields[2]
+	if _, err := solana.PublicKeyFromBase58(baseTokenVault); err != nil {
+		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse base token vault: %w", err)
+	}
+
+	quoteTokenVault := fields[4]
+	if _, err := solana.PublicKeyFromBase58(quoteTokenVault); err != nil {
+		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse quote token vault: %w", err)
+	}
+
+	// check that decimals are valid
+	baseDecimals, err := strconv.ParseUint(fields[3], 10, 64)
+	if err != nil {
+		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse base decimals: %w", err)
+	}
+
+	quoteDecimals, err := strconv.ParseUint(fields[5], 10, 64)
+	if err != nil {
+		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse quote decimals: %w", err)
+	}
+
+	// create the Raydium metadata
+	return raydium.TickerMetadata{
+		BaseTokenVault: raydium.AMMTokenVaultMetadata{
+			TokenVaultAddress: baseTokenVault,
+			TokenDecimals:     baseDecimals,
+		},
+		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+			TokenVaultAddress: quoteTokenVault,
+			TokenDecimals:     quoteDecimals,
+		},
+	}, nil
+}
+
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
-func ConvertDenomByProvider(denom string, exchange string) string {
+func ConvertDenomByProvider(denom string, exchange string) (string, error) {
 	switch {
 	case exchange == mexc.Name:
 		if strings.Contains(denom, "_") {
-			return strings.ReplaceAll(denom, "_", "")
+			return strings.ReplaceAll(denom, "_", ""), nil
 		}
 
-		return denom
+		return denom, nil
 	case exchange == bitstamp.Name:
 		if strings.Contains(denom, "/") {
-			return strings.ToLower(strings.ReplaceAll(denom, "/", ""))
+			return strings.ToLower(strings.ReplaceAll(denom, "/", "")), nil
+		}
+	case exchange == raydium.Name:
+		// split the ticker by /, and expect there to at least be two values
+		fields := strings.Split(denom, "/")
+		if len(fields) < 2 {
+			return "", fmt.Errorf("expected denom to have at least 2 fields, got %d for %s ticker: %s", len(fields), exchange, denom)
 		}
 
-		return strings.ToLower(denom)
+		return slinkytypes.NewCurrencyPair(fields[0], fields[1]).String(), nil
 	default:
-		return denom
+		return denom, nil
 	}
+	return "", nil
 }
