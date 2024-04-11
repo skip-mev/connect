@@ -7,11 +7,11 @@ import (
 	"go.uber.org/zap"
 )
 
-// generalProvider is a interface for a provider that implements the base provider.
+// generalProvider is an interface for a provider that implements the base provider.
 type generalProvider interface {
 	// Start starts the provider.
 	Start(ctx context.Context) error
-	// Stop stops the provider.
+	// Name is the provider's name.
 	Name() string
 }
 
@@ -27,7 +27,7 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	// Set the main context for the provider orchestrator.
 	ctx, _ = o.setMainCtx(ctx)
 
-	// Start all of the price providers.
+	// Start all price providers.
 	for _, state := range o.providers {
 		o.wg.Add(1)
 		go func() {
@@ -55,7 +55,7 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 }
 
 // Stop stops the provider orchestrator. This is a synchronous operation that will
-// wait for all of the providers to exit.
+// wait for all providers to exit.
 func (o *ProviderOrchestrator) Stop() {
 	o.logger.Info("stopping provider orchestrator")
 	if _, cancel := o.getMainCtx(); cancel != nil {
