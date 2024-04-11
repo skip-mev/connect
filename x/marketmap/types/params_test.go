@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/x/marketmap/types"
@@ -25,15 +26,15 @@ func TestValidateBasic(t *testing.T) {
 		{
 			name: "valid multiple authorities",
 			params: types.Params{
-				MarketAuthorities: []string{authtypes.NewModuleAddress(authtypes.ModuleName).String(), types.DefaultMarketAuthority},
-				Admin:             types.DefaultAdmin,
+				MarketAuthorities: []string{authtypes.NewModuleAddress(authtypes.ModuleName).String(), authtypes.NewModuleAddress(govtypes.ModuleName).String()},
+				Admin:             authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 			},
 			expectErr: false,
 		},
 		{
 			name: "invalid admin",
 			params: types.Params{
-				MarketAuthorities: []string{authtypes.NewModuleAddress(authtypes.ModuleName).String(), types.DefaultMarketAuthority},
+				MarketAuthorities: []string{authtypes.NewModuleAddress(authtypes.ModuleName).String(), authtypes.NewModuleAddress(govtypes.ModuleName).String()},
 				Admin:             "invalid",
 			},
 			expectErr: true,
@@ -41,8 +42,8 @@ func TestValidateBasic(t *testing.T) {
 		{
 			name: "invalid duplicate authority",
 			params: types.Params{
-				MarketAuthorities: []string{types.DefaultMarketAuthority, types.DefaultMarketAuthority},
-				Admin:             types.DefaultAdmin,
+				MarketAuthorities: []string{authtypes.NewModuleAddress(govtypes.ModuleName).String(), authtypes.NewModuleAddress(govtypes.ModuleName).String()},
+				Admin:             authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 			},
 			expectErr: true,
 		},
@@ -50,7 +51,7 @@ func TestValidateBasic(t *testing.T) {
 			name: "invalid authority string",
 			params: types.Params{
 				MarketAuthorities: []string{"incorrect"},
-				Admin:             types.DefaultAdmin,
+				Admin:             authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 			},
 			expectErr: true,
 		},
@@ -58,7 +59,7 @@ func TestValidateBasic(t *testing.T) {
 			name: "invalid nil authority",
 			params: types.Params{
 				MarketAuthorities: nil,
-				Admin:             types.DefaultAdmin,
+				Admin:             authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 			},
 			expectErr: true,
 		},
