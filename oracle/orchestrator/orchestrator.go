@@ -17,7 +17,7 @@ import (
 )
 
 // ProviderOrchestrator is a stateful orchestrator that is responsible for maintaining
-// all of the providers that the oracle is using. This includes initializing the providers,
+// all providers that the oracle is using. This includes initializing the providers,
 // creating the provider specific market map, and enabling/disabling the providers based
 // on the oracle configuration and market map.
 type ProviderOrchestrator struct {
@@ -35,7 +35,7 @@ type ProviderOrchestrator struct {
 
 	// -------------------Stateful Fields-------------------//
 	//
-	// providers is a map of all of the providers that the oracle is using.
+	// providers is a map of all providers that the oracle is using.
 	providers map[string]ProviderState
 	// mmProvider is the market map provider. Specifically this provider is responsible
 	// for making requests for the latest market map data.
@@ -107,7 +107,7 @@ func NewProviderOrchestrator(
 	return orchestrator, nil
 }
 
-// GetProviderState returns all of the providers and their state.
+// GetProviderState returns all providers and their state.
 func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	o.mut.Lock()
 	defer o.mut.Unlock()
@@ -115,7 +115,7 @@ func (o *ProviderOrchestrator) GetProviderState() map[string]ProviderState {
 	return o.providers
 }
 
-// GetPriceProviders returns all of the price providers.
+// GetPriceProviders returns all price providers.
 func (o *ProviderOrchestrator) GetPriceProviders() []*types.PriceProvider {
 	o.mut.Lock()
 	defer o.mut.Unlock()

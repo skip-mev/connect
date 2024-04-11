@@ -28,8 +28,6 @@ type OracleMetricsTestSuite struct {
 
 const (
 	oracleTicker = 1 * time.Second
-	provider1    = "provider1"
-	provider2    = "provider2"
 )
 
 func TestOracleMetricsTestSuite(t *testing.T) {
@@ -97,7 +95,7 @@ func (s *OracleMetricsTestSuite) TestTickMetric() {
 
 	// wait for a tick on the oracle
 	go func() {
-		s.o.Start(context.Background())
+		s.Require().NoError(s.o.Start(context.Background()))
 	}()
 
 	// wait for a tick

@@ -46,7 +46,7 @@ func WithPriceAPIQueryHandlerFactory(factory types.PriceAPIQueryHandlerFactory) 
 	}
 }
 
-// WithWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
+// WithPriceWebSocketQueryHandlerFactory sets the websocket query handler factory for the provider orchestrator.
 // Specifically, this is what is utilized to construct price providers that are websocket based.
 func WithPriceWebSocketQueryHandlerFactory(factory types.PriceWebSocketQueryHandlerFactory) Option {
 	return func(m *ProviderOrchestrator) {

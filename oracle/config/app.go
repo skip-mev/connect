@@ -35,7 +35,7 @@ oracle_address = "{{ .Oracle.OracleAddress }}"
 client_timeout = "{{ .Oracle.ClientTimeout }}"
 
 # MetricsEnabled determines whether oracle metrics are enabled. Specifically
-# this enables intsrumentation of the oracle client and the interaction between
+# this enables instrumentation of the oracle client and the interaction between
 # the oracle and the app.
 metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
 

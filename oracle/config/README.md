@@ -8,17 +8,17 @@
 >
 > <div align="center">
 > 
-> | Type | Oracle/Market Config | Oracle Metrics | App Metrics |
-> |----------|:--------:|---------:|--------:|
-> | Validator     | **Required**     |    **Recommended**   | **Recommended** |
-> | Non-Validator | **Optional**     |    **Optional**   | **Optional** |
+> | Type          | Oracle/Market Config |  Oracle Metrics |     App Metrics |
+> |---------------|:--------------------:|----------------:|----------------:|
+> | Validator     |     **Required**     | **Recommended** | **Recommended** |
+> | Non-Validator |     **Optional**     |    **Optional** |    **Optional** |
 > </div>
 
 All oracle configurations are broken down into three files:
 
 1. **Oracle side-car configuration (`oracle.json`):** This contains the data provider's that are utilized, how often they should be polled, and a variety of other configurations for API and web socket providers.
 2. **Market side-car configuration (`market.json`):** This contains the desired markets that the side-car will fetch prices for. NOTE: It is recommended that this file is **NOT** modified nor created by validators. This file is typically provided by the chain that the side-car supports.
-3. **Oracle configuration in the application (`app.toml`):** A few additional lines of code that must be added to the application's `app.toml` file to configure the oracle side car into the application.
+3. **Oracle configuration in the application (`app.toml`):** A few additional lines of code that must be added to the application's `app.toml` file to configure the oracle sidecar into the application.
 
 *The focus of this readme is the oracle side-car configuration and the application configuration. The market side-car configuration is typically provided by the chain that the oracle supports.*
 
@@ -29,7 +29,7 @@ The `app.toml` file is the configuration file that is consumed by the applicatio
 ```toml
 # Other configurations
 
-...
+# ...
 
 ###############################################################################
 ###                                  Oracle                                 ###
@@ -58,7 +58,7 @@ metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
 # exposed to.
 prometheus_server_address = "{{ .Oracle.PrometheusServerAddress }}"
 
-...
+# ...
 
 # More configurations
 ```
@@ -68,7 +68,7 @@ In your `app.toml`, you should see / write something that looks like this.
 > Note: This is only required if you are running a validator node. If you are running a non-validator node, you can skip this section.
 
 ```toml
-...
+# ...
 
 
 ###############################################################################
@@ -98,12 +98,12 @@ metrics_enabled = "true"
 # exposed to.
 prometheus_server_address = "0.0.0.0:8001"
 
-...
+# ...
 ```
 
 # Oracle Side-Car Configuration
 
-The `oracle.json` file is the configuration file that is consumed by the oracle side-car. Note that in most cases, this should **NOT** be custom made by validators - unless specified otherwise. A predefined oracle side car configuration should be provided by the chain that the oracle supports. This file contains:
+The `oracle.json` file is the configuration file that is consumed by the oracle sidecar. Note that in most cases, this should **NOT** be custom-made by validators - unless specified otherwise. A predefined oracle sidecar configuration should be provided by the chain that the oracle supports. This file contains:
 
 * The desired data providers to be utilized i.e. Coinbase, Binance, etc.
 * Metrics instrumentation.
@@ -186,7 +186,7 @@ This field is utilized to set the amount of time the provider should wait for a 
 
 #### Interval
 
-This field is utilized to set the interval at which the provider should update the prices. Note that provider's may rate limit based on this interval so it is recommended to tune this value as necessary.
+This field is utilized to set the interval at which the provider should update the prices. Note that provider's may rate limit based on this interval, so it is recommended to tune this value as necessary.
 
 #### MaxQueries
 
@@ -746,6 +746,6 @@ Sample configuration:
 
 # Conclusion
 
-This readme has provided an overview of how to configure the oracle side-car and application. It has also provided a brief overview of the oracle side-car configuration and the application configuration. To see an example of a properly configured oracle side car, please visit the [local config](./../../config/local) files - `oracle.json` and `market.json`. 
+This readme has provided an overview of how to configure the oracle side-car and application. It has also provided a brief overview of the oracle side-car configuration and the application configuration. To see an example of a properly configured oracle sidecar, please visit the [local config](./../../config/local) files - `oracle.json` and `market.json`. 
 
 In general, it is best to consult the chain's documentation and channels to determine the correct configurations for the oracle side-car. If you have any questions, please feel free to reach out to the Skip team on the [Skip Discord](https://discord.com/invite/hFeHVAE26P). 
