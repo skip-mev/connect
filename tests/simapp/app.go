@@ -56,8 +56,6 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"go.uber.org/zap"
-
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/proposals"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
@@ -67,7 +65,6 @@ import (
 	"github.com/skip-mev/slinky/pkg/math/voteweighted"
 	oracleclient "github.com/skip-mev/slinky/service/clients/oracle"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	"github.com/skip-mev/slinky/x/alerts"
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
@@ -155,8 +152,7 @@ type SimApp struct {
 	sm *module.SimulationManager
 
 	// processes
-	oraclePrometheusServer *promserver.PrometheusServer
-	oracleClient           oracleclient.OracleClient
+	oracleClient oracleclient.OracleClient
 }
 
 func init() {
@@ -300,23 +296,6 @@ func NewSimApp(
 	)
 	if err != nil {
 		panic(err)
-	}
-
-	// If the oracle is enabled, then create the oracle service and connect to it.
-	// Start the prometheus server if required
-	if cfg.MetricsEnabled {
-		logger, err := zap.NewProduction()
-		if err != nil {
-			panic(err)
-		}
-
-		app.oraclePrometheusServer, err = promserver.NewPrometheusServer(cfg.PrometheusServerAddress, logger)
-		if err != nil {
-			panic(err)
-		}
-
-		// start the prometheus server
-		go app.oraclePrometheusServer.Start()
 	}
 
 	// Connect to the oracle service (default timeout of 5 seconds).
