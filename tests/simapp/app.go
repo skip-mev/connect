@@ -429,12 +429,7 @@ func (app *SimApp) Close() error {
 
 	// close the oracle service
 	if app.oracleClient != nil {
-		app.oracleClient.Stop()
-	}
-
-	// close the prometheus server if necessary
-	if app.oraclePrometheusServer != nil {
-		app.oraclePrometheusServer.Close()
+		return app.oracleClient.Stop()
 	}
 
 	return nil
