@@ -187,11 +187,10 @@ func initAppConfig() (string, interface{}) {
 	// Sample config to run this locally
 	//
 	oracleConfig := oracleconfig.AppConfig{
-		Enabled:                 true,
-		OracleAddress:           "oracle:8080",
-		ClientTimeout:           250 * time.Millisecond,
-		MetricsEnabled:          true,
-		PrometheusServerAddress: "0.0.0.0:8001",
+		Enabled:        true,
+		OracleAddress:  "oracle:8080",
+		ClientTimeout:  250 * time.Millisecond,
+		MetricsEnabled: true,
 	}
 
 	customAppConfig := CustomAppConfig{

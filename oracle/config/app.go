@@ -69,10 +69,6 @@ type AppConfig struct {
 
 	// MetricsEnabled is a flag that determines whether oracle metrics are enabled.
 	MetricsEnabled bool `mapstructure:"metrics_enabled" toml:"metrics_enabled"`
-
-	// PrometheusServerAddress is the address of the prometheus server that the oracle
-	// will expose metrics to.
-	PrometheusServerAddress string `mapstructure:"prometheus_server_address" toml:"prometheus_server_address"`
 }
 
 // ValidateBasic performs basic validation of the app config.
@@ -87,12 +83,6 @@ func (c *AppConfig) ValidateBasic() error {
 
 	if c.ClientTimeout <= 0 {
 		return fmt.Errorf("oracle client timeout must be greater than 0")
-	}
-
-	if c.MetricsEnabled {
-		if c.PrometheusServerAddress == "" {
-			return fmt.Errorf("must supply a non-empty prometheus server address if metrics are enabled")
-		}
 	}
 
 	return nil
@@ -153,13 +143,6 @@ func ReadConfigFromAppOpts(opts servertypes.AppOptions) (AppConfig, error) {
 	// get the metrics enabled
 	if v := opts.Get(flagMetricsEnabled); v != nil {
 		if cfg.MetricsEnabled, err = cast.ToBoolE(v); err != nil {
-			return cfg, err
-		}
-	}
-
-	// get the prometheus server address
-	if v := opts.Get(flagPrometheusServerAddress); v != nil {
-		if cfg.PrometheusServerAddress, err = cast.ToStringE(v); err != nil {
 			return cfg, err
 		}
 	}
