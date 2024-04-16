@@ -92,8 +92,8 @@ job "slinky-dev" {
       }
 
       resources {
-        cpu    = 500
-        memory = 256
+        cpu    = 2000
+        memory = 2048
       }
     }
 
@@ -281,8 +281,8 @@ sed -i 's\oracle:8080\localhost:8080\g' /src/slinky/tests/.slinkyd/config/app.to
       }
 
       resources {
-        cpu    = 500
-        memory = 256
+        cpu    = 2000
+        memory = 2048
       }
     }
   }
