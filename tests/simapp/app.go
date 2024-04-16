@@ -56,6 +56,7 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+
 	oraclepreblock "github.com/skip-mev/slinky/abci/preblock/oracle"
 	"github.com/skip-mev/slinky/abci/proposals"
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
