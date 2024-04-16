@@ -38,10 +38,6 @@ client_timeout = "{{ .Oracle.ClientTimeout }}"
 # this enables instrumentation of the oracle client and the interaction between
 # the oracle and the app.
 metrics_enabled = "{{ .Oracle.MetricsEnabled }}"
-
-# PrometheusServerAddress is the address of the prometheus server that metrics will be
-# exposed to.
-prometheus_server_address = "{{ .Oracle.PrometheusServerAddress }}"
 `
 )
 

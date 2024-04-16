@@ -11,7 +11,7 @@ COPY . .
 
 RUN make build-test-app
 
-RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y
+RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y && apt-get install dasel -y
 
 ## Prepare the final clear binary
 ## This will expose the tendermint and cosmos ports alongside 
