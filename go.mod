@@ -26,7 +26,7 @@ require (
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.4.12
 	github.com/cosmos/interchain-security/v5 v5.0.0-alpha1
-	github.com/ethereum/go-ethereum v1.13.14
+	github.com/ethereum/go-ethereum v1.13.15
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.10.0
 	github.com/gogo/protobuf v1.3.2
