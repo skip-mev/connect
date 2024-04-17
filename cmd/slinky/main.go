@@ -20,6 +20,7 @@ import (
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
+	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -186,6 +187,24 @@ func runOracle() error {
 
 		cancel()
 	}()
+
+	// start prometheus metrics
+	if cfg.Metrics.Enabled {
+		logger.Info("starting prometheus metrics", zap.String("address", cfg.Metrics.PrometheusServerAddress))
+		ps, err := promserver.NewPrometheusServer(cfg.Metrics.PrometheusServerAddress, logger)
+		if err != nil {
+			return fmt.Errorf("failed to start prometheus metrics: %w", err)
+		}
+
+		go ps.Start()
+
+		// close server on shut-down
+		go func() {
+			<-ctx.Done()
+			logger.Info("stopping prometheus metrics")
+			ps.Close()
+		}()
+	}
 
 	if runPprof {
 		endpoint := fmt.Sprintf("%s:%s", cfg.Host, profilePort)
