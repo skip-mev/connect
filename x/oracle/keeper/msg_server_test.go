@@ -99,10 +99,8 @@ func (s *KeeperTestSuite) TestMsgAddCurrencyPairs() {
 					Price: sdkmath.NewInt(100),
 				},
 				Nonce: 100,
-				Id:    1,
 			},
 		},
-		NextId: 101,
 	}
 	s.oracleKeeper.InitGenesis(s.ctx, gs)
 
@@ -159,7 +157,6 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 					Price: sdkmath.NewInt(100),
 				},
 				Nonce: 100,
-				Id:    1,
 			},
 			{
 				CurrencyPair: cp2,
@@ -167,10 +164,8 @@ func (s *KeeperTestSuite) TestMsgRemoveCurrencyPairs() {
 					Price: sdkmath.NewInt(100),
 				},
 				Nonce: 101,
-				Id:    2,
 			},
 		},
-		NextId: 102,
 	}
 	// init genesis
 	s.oracleKeeper.InitGenesis(s.ctx, gs)

@@ -62,31 +62,26 @@ func (s *KeeperTestSuite) TestInitExportGenesisValid() {
 	s.Run("init valid genesis with fields", func() {
 		// first register x/oracle genesis
 		ogs := oracletypes.DefaultGenesisState()
-		ogs.NextId = 4
 		ogs.CurrencyPairGenesis = []oracletypes.CurrencyPairGenesis{
 			{
 				CurrencyPair:      ethusdt.Ticker.CurrencyPair,
 				CurrencyPairPrice: &oracletypes.QuotePrice{Price: sdkmath.NewInt(19)},
 				Nonce:             0,
-				Id:                0,
 			},
 			{
 				CurrencyPair:      btcusdt.Ticker.CurrencyPair,
 				CurrencyPairPrice: &oracletypes.QuotePrice{Price: sdkmath.NewInt(19)},
 				Nonce:             0,
-				Id:                1,
 			},
 			{
 				CurrencyPair:      usdcusd.Ticker.CurrencyPair,
 				CurrencyPairPrice: nil,
 				Nonce:             0,
-				Id:                2,
 			},
 			{
 				CurrencyPair:      usdtusd.Ticker.CurrencyPair,
 				CurrencyPairPrice: nil,
 				Nonce:             0,
-				Id:                3,
 			},
 		}
 

@@ -47,7 +47,6 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 							Base:  "AA",
 							Quote: "BB",
 						},
-						Id: 0,
 					},
 					{
 						CurrencyPair: slinkytypes.CurrencyPair{
@@ -58,10 +57,8 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 							Price: sdkmath.NewInt(100),
 						},
 						Nonce: 12,
-						Id:    1,
 					},
 				},
-				NextId: 2,
 			},
 			true,
 		},
@@ -102,7 +99,7 @@ func (s *KeeperTestSuite) TestInitGenesis() {
 					id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cpg.CurrencyPair)
 					s.Require().True(ok)
 
-					s.Require().Equal(id, cpg.Id)
+					s.Require().Equal(id, types.CurrencyPairToID(cpg.CurrencyPair.String()))
 				}
 			}
 		})
@@ -179,7 +176,6 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 						Price: sdkmath.NewInt(100),
 					},
 					Nonce: 100,
-					Id:    0,
 				},
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
@@ -190,10 +186,8 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 						Price: sdkmath.NewInt(101),
 					},
 					Nonce: 101,
-					Id:    1,
 				},
 			},
-			NextId: 2,
 		}
 		// init genesis
 		s.oracleKeeper.InitGenesis(s.ctx, gs)
@@ -252,7 +246,7 @@ func (s *KeeperTestSuite) TestExportGenesis() {
 
 			s.Require().True(ok)
 
-			s.Require().Equal(id, cpg.Id)
+			s.Require().Equal(id, types.CurrencyPairToID(cpg.CurrencyPair.String()))
 		}
 	})
 }

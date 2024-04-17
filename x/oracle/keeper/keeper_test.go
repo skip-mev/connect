@@ -242,7 +242,7 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		s.Require().True(ok)
 
 		// check that the ids are different
-		s.Require().Equal(id+1, id2)
+		s.Require().NotEqual(id, id2)
 	})
 
 	s.Run("test getting ids for currency-pairs", func() {
@@ -269,34 +269,17 @@ func (s *KeeperTestSuite) TestIDForCurrencyPair() {
 		s.Require().Equal(cp2, cp)
 	})
 
-	var unusedID uint64
 	s.Run("test that removing a currency-pair removes the ID for that currency-pair", func() {
 		var ok bool
-		unusedID, ok = s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
+		removedID, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp2)
 		s.Require().True(ok)
 
 		// remove the currency-pair
 		s.oracleKeeper.RemoveCurrencyPair(s.ctx, cp2)
 
 		// check that the id is no longer in use
-		_, ok = s.oracleKeeper.GetCurrencyPairFromID(s.ctx, unusedID)
+		_, ok = s.oracleKeeper.GetCurrencyPairFromID(s.ctx, removedID)
 		s.Require().False(ok)
-	})
-
-	s.Run("insert another currency-pair, and expect that unusedID + 1 is used", func() {
-		cp3 := slinkytypes.CurrencyPair{
-			Base:  "PAIR",
-			Quote: "3",
-		}
-
-		s.Require().Nil(s.oracleKeeper.CreateCurrencyPair(s.ctx, cp3))
-
-		// get the id for the currency-pair
-		id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp3)
-		s.Require().True(ok)
-
-		// check that the id is unusedID + 1
-		s.Require().Equal(unusedID+1, id)
 	})
 }
 

@@ -2,11 +2,11 @@
 package oraclev1
 
 import (
+	v1 "github.com/skip-mev/slinky/api/slinky/types/v1"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	v1 "github.com/skip-mev/slinky/api/slinky/types/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -1099,7 +1099,6 @@ var (
 	fd_CurrencyPairGenesis_currency_pair       protoreflect.FieldDescriptor
 	fd_CurrencyPairGenesis_currency_pair_price protoreflect.FieldDescriptor
 	fd_CurrencyPairGenesis_nonce               protoreflect.FieldDescriptor
-	fd_CurrencyPairGenesis_id                  protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -1108,7 +1107,6 @@ func init() {
 	fd_CurrencyPairGenesis_currency_pair = md_CurrencyPairGenesis.Fields().ByName("currency_pair")
 	fd_CurrencyPairGenesis_currency_pair_price = md_CurrencyPairGenesis.Fields().ByName("currency_pair_price")
 	fd_CurrencyPairGenesis_nonce = md_CurrencyPairGenesis.Fields().ByName("nonce")
-	fd_CurrencyPairGenesis_id = md_CurrencyPairGenesis.Fields().ByName("id")
 }
 
 var _ protoreflect.Message = (*fastReflection_CurrencyPairGenesis)(nil)
@@ -1194,12 +1192,6 @@ func (x *fastReflection_CurrencyPairGenesis) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
-	if x.Id != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Id)
-		if !f(fd_CurrencyPairGenesis_id, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -1221,8 +1213,6 @@ func (x *fastReflection_CurrencyPairGenesis) Has(fd protoreflect.FieldDescriptor
 		return x.CurrencyPairPrice != nil
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
 		return x.Nonce != uint64(0)
-	case "slinky.oracle.v1.CurrencyPairGenesis.id":
-		return x.Id != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPairGenesis"))
@@ -1245,8 +1235,6 @@ func (x *fastReflection_CurrencyPairGenesis) Clear(fd protoreflect.FieldDescript
 		x.CurrencyPairPrice = nil
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
 		x.Nonce = uint64(0)
-	case "slinky.oracle.v1.CurrencyPairGenesis.id":
-		x.Id = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPairGenesis"))
@@ -1271,9 +1259,6 @@ func (x *fastReflection_CurrencyPairGenesis) Get(descriptor protoreflect.FieldDe
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
 		value := x.Nonce
-		return protoreflect.ValueOfUint64(value)
-	case "slinky.oracle.v1.CurrencyPairGenesis.id":
-		value := x.Id
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
@@ -1301,8 +1286,6 @@ func (x *fastReflection_CurrencyPairGenesis) Set(fd protoreflect.FieldDescriptor
 		x.CurrencyPairPrice = value.Message().Interface().(*QuotePrice)
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
 		x.Nonce = value.Uint()
-	case "slinky.oracle.v1.CurrencyPairGenesis.id":
-		x.Id = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPairGenesis"))
@@ -1335,8 +1318,6 @@ func (x *fastReflection_CurrencyPairGenesis) Mutable(fd protoreflect.FieldDescri
 		return protoreflect.ValueOfMessage(x.CurrencyPairPrice.ProtoReflect())
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
 		panic(fmt.Errorf("field nonce of message slinky.oracle.v1.CurrencyPairGenesis is not mutable"))
-	case "slinky.oracle.v1.CurrencyPairGenesis.id":
-		panic(fmt.Errorf("field id of message slinky.oracle.v1.CurrencyPairGenesis is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.CurrencyPairGenesis"))
@@ -1357,8 +1338,6 @@ func (x *fastReflection_CurrencyPairGenesis) NewField(fd protoreflect.FieldDescr
 		m := new(QuotePrice)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "slinky.oracle.v1.CurrencyPairGenesis.nonce":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "slinky.oracle.v1.CurrencyPairGenesis.id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -1440,9 +1419,6 @@ func (x *fastReflection_CurrencyPairGenesis) ProtoMethods() *protoiface.Methods 
 		if x.Nonce != 0 {
 			n += 1 + runtime.Sov(uint64(x.Nonce))
 		}
-		if x.Id != 0 {
-			n += 1 + runtime.Sov(uint64(x.Id))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1471,11 +1447,6 @@ func (x *fastReflection_CurrencyPairGenesis) ProtoMethods() *protoiface.Methods 
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Id != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
-			i--
-			dAtA[i] = 0x20
 		}
 		if x.Nonce != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Nonce))
@@ -1650,25 +1621,6 @@ func (x *fastReflection_CurrencyPairGenesis) ProtoMethods() *protoiface.Methods 
 						break
 					}
 				}
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-				}
-				x.Id = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Id |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1758,14 +1710,12 @@ func (x *_GenesisState_1_list) IsValid() bool {
 var (
 	md_GenesisState                       protoreflect.MessageDescriptor
 	fd_GenesisState_currency_pair_genesis protoreflect.FieldDescriptor
-	fd_GenesisState_next_id               protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_slinky_oracle_v1_genesis_proto_init()
 	md_GenesisState = File_slinky_oracle_v1_genesis_proto.Messages().ByName("GenesisState")
 	fd_GenesisState_currency_pair_genesis = md_GenesisState.Fields().ByName("currency_pair_genesis")
-	fd_GenesisState_next_id = md_GenesisState.Fields().ByName("next_id")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisState)(nil)
@@ -1839,12 +1789,6 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if x.NextId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.NextId)
-		if !f(fd_GenesisState_next_id, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -1862,8 +1806,6 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 	switch fd.FullName() {
 	case "slinky.oracle.v1.GenesisState.currency_pair_genesis":
 		return len(x.CurrencyPairGenesis) != 0
-	case "slinky.oracle.v1.GenesisState.next_id":
-		return x.NextId != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.GenesisState"))
@@ -1882,8 +1824,6 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "slinky.oracle.v1.GenesisState.currency_pair_genesis":
 		x.CurrencyPairGenesis = nil
-	case "slinky.oracle.v1.GenesisState.next_id":
-		x.NextId = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.GenesisState"))
@@ -1906,9 +1846,6 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_1_list{list: &x.CurrencyPairGenesis}
 		return protoreflect.ValueOfList(listValue)
-	case "slinky.oracle.v1.GenesisState.next_id":
-		value := x.NextId
-		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.GenesisState"))
@@ -1933,8 +1870,6 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_1_list)
 		x.CurrencyPairGenesis = *clv.list
-	case "slinky.oracle.v1.GenesisState.next_id":
-		x.NextId = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.GenesisState"))
@@ -1961,8 +1896,6 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_1_list{list: &x.CurrencyPairGenesis}
 		return protoreflect.ValueOfList(value)
-	case "slinky.oracle.v1.GenesisState.next_id":
-		panic(fmt.Errorf("field next_id of message slinky.oracle.v1.GenesisState is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.GenesisState"))
@@ -1979,8 +1912,6 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "slinky.oracle.v1.GenesisState.currency_pair_genesis":
 		list := []*CurrencyPairGenesis{}
 		return protoreflect.ValueOfList(&_GenesisState_1_list{list: &list})
-	case "slinky.oracle.v1.GenesisState.next_id":
-		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: slinky.oracle.v1.GenesisState"))
@@ -2056,9 +1987,6 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if x.NextId != 0 {
-			n += 1 + runtime.Sov(uint64(x.NextId))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -2087,11 +2015,6 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.NextId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.NextId))
-			i--
-			dAtA[i] = 0x10
 		}
 		if len(x.CurrencyPairGenesis) > 0 {
 			for iNdEx := len(x.CurrencyPairGenesis) - 1; iNdEx >= 0; iNdEx-- {
@@ -2192,25 +2115,6 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NextId", wireType)
-				}
-				x.NextId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.NextId |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2388,8 +2292,6 @@ type CurrencyPairGenesis struct {
 	// nonce is the nonce (number of updates) for the CP (same case as above,
 	// likely 0 unless it results from fork of module)
 	Nonce uint64 `protobuf:"varint,3,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	// id is the ID of the CurrencyPair
-	Id uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *CurrencyPairGenesis) Reset() {
@@ -2433,13 +2335,6 @@ func (x *CurrencyPairGenesis) GetNonce() uint64 {
 	return 0
 }
 
-func (x *CurrencyPairGenesis) GetId() uint64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
 // GenesisState is the genesis-state for the x/oracle module, it takes a set of
 // predefined CurrencyPairGeneses
 type GenesisState struct {
@@ -2451,8 +2346,6 @@ type GenesisState struct {
 	// the starting set of CurrencyPairs for the module + information regarding
 	// their latest update.
 	CurrencyPairGenesis []*CurrencyPairGenesis `protobuf:"bytes,1,rep,name=currency_pair_genesis,json=currencyPairGenesis,proto3" json:"currency_pair_genesis,omitempty"`
-	// NextID is the next ID to be used for a CurrencyPair
-	NextId uint64 `protobuf:"varint,2,opt,name=next_id,json=nextId,proto3" json:"next_id,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -2480,13 +2373,6 @@ func (x *GenesisState) GetCurrencyPairGenesis() []*CurrencyPairGenesis {
 		return x.CurrencyPairGenesis
 	}
 	return nil
-}
-
-func (x *GenesisState) GetNextId() uint64 {
-	if x != nil {
-		return x.NextId
-	}
-	return 0
 }
 
 var File_slinky_oracle_v1_genesis_proto protoreflect.FileDescriptor
@@ -2522,7 +2408,7 @@ var file_slinky_oracle_v1_genesis_proto_rawDesc = []byte{
 	0x04, 0xc8, 0xde, 0x1f, 0x01, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x12, 0x14, 0x0a, 0x05,
 	0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x6e, 0x6f, 0x6e,
 	0x63, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
-	0x69, 0x64, 0x22, 0xd9, 0x01, 0x0a, 0x13, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
+	0x69, 0x64, 0x22, 0xc9, 0x01, 0x0a, 0x13, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
 	0x61, 0x69, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x12, 0x48, 0x0a, 0x0d, 0x63, 0x75,
 	0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x0b, 0x32, 0x1d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73,
@@ -2534,29 +2420,26 @@ var file_slinky_oracle_v1_genesis_proto_rawDesc = []byte{
 	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x6f, 0x74, 0x65, 0x50, 0x72, 0x69, 0x63, 0x65, 0x42,
 	0x04, 0xc8, 0xde, 0x1f, 0x01, 0x52, 0x11, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50,
 	0x61, 0x69, 0x72, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63,
-	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x22, 0x88,
-	0x01, 0x0a, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12,
-	0x5f, 0x0a, 0x15, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72,
-	0x5f, 0x67, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25,
-	0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76,
-	0x31, 0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x47, 0x65,
-	0x6e, 0x65, 0x73, 0x69, 0x73, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x13, 0x63, 0x75, 0x72,
-	0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73,
-	0x12, 0x17, 0x0a, 0x07, 0x6e, 0x65, 0x78, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x06, 0x6e, 0x65, 0x78, 0x74, 0x49, 0x64, 0x42, 0xb2, 0x01, 0x0a, 0x14, 0x63, 0x6f,
-	0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e,
-	0x76, 0x31, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x2a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2f, 0x6f, 0x72, 0x61, 0x63,
-	0x6c, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x76, 0x31, 0xa2, 0x02,
-	0x03, 0x53, 0x4f, 0x58, 0xaa, 0x02, 0x10, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x4f, 0x72,
-	0x61, 0x63, 0x6c, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x10, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79,
-	0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1c, 0x53, 0x6c, 0x69,
-	0x6e, 0x6b, 0x79, 0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x53, 0x6c, 0x69, 0x6e,
-	0x6b, 0x79, 0x3a, 0x3a, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x22, 0x6f,
+	0x0a, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x5f,
+	0x0a, 0x15, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x5f, 0x70, 0x61, 0x69, 0x72, 0x5f,
+	0x67, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25, 0x2e,
+	0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x43, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x47, 0x65, 0x6e,
+	0x65, 0x73, 0x69, 0x73, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x13, 0x63, 0x75, 0x72, 0x72,
+	0x65, 0x6e, 0x63, 0x79, 0x50, 0x61, 0x69, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x42,
+	0xb2, 0x01, 0x0a, 0x14, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x2e, 0x6f,
+	0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69,
+	0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x6c, 0x69, 0x6e, 0x6b,
+	0x79, 0x2f, 0x6f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6f, 0x72, 0x61, 0x63,
+	0x6c, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x53, 0x4f, 0x58, 0xaa, 0x02, 0x10, 0x53, 0x6c, 0x69,
+	0x6e, 0x6b, 0x79, 0x2e, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x10,
+	0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65, 0x5c, 0x56, 0x31,
+	0xe2, 0x02, 0x1c, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x5c, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x12, 0x53, 0x6c, 0x69, 0x6e, 0x6b, 0x79, 0x3a, 0x3a, 0x4f, 0x72, 0x61, 0x63, 0x6c, 0x65,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

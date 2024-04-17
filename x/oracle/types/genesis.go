@@ -25,22 +25,20 @@ func (cpg *CurrencyPairGenesis) ValidateBasic() error {
 }
 
 // NewGenesisState returns a new genesis-state from a set of CurrencyPairGeneses.
-func NewGenesisState(cpgs []CurrencyPairGenesis, nextID uint64) *GenesisState {
+func NewGenesisState(cpgs []CurrencyPairGenesis) *GenesisState {
 	return &GenesisState{
 		CurrencyPairGenesis: cpgs,
-		NextId:              nextID,
 	}
 }
 
 // DefaultGenesisState returns a default genesis state for the oracle module.
 func DefaultGenesisState() *GenesisState {
-	return NewGenesisState(nil, 0)
+	return NewGenesisState(nil)
 }
 
 // Validate validates the currency-pair geneses that the Genesis-State is composed of
 // valid CurrencyPairGenesis, and that no ID for a currency-pair is repeated.
 func (gs *GenesisState) Validate() error {
-	ids := make(map[uint64]struct{})
 	cps := make(map[string]struct{})
 	for _, cpg := range gs.CurrencyPairGenesis {
 		// validate the currency-pair genesis
@@ -48,23 +46,10 @@ func (gs *GenesisState) Validate() error {
 			return err
 		}
 
-		// check if the ID > gs.NextID
-		if cpg.Id >= gs.NextId {
-			return fmt.Errorf("invalid id: %v, must be less than next id: %v", cpg.Id, gs.NextId)
-		}
-
-		// check for a repeated ID
-		if _, ok := ids[cpg.Id]; ok {
-			return fmt.Errorf("repeated id: %v", cpg.Id)
-		}
-
 		// check for repeated currency-pairs
 		if _, ok := cps[cpg.CurrencyPair.String()]; ok {
 			return fmt.Errorf("repeated currency-pair: %v", cpg.CurrencyPair.String())
 		}
-
-		// add the ID to the set of IDs
-		ids[cpg.Id] = struct{}{}
 
 		// add the currency-pair to the set of currency-pairs
 		cps[cpg.CurrencyPair.String()] = struct{}{}

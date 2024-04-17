@@ -76,22 +76,18 @@ func (s *PreBlockTestSuite) SetupTest() {
 		{
 			CurrencyPair: s.currencyPairs[0],
 			Nonce:        0,
-			Id:           0,
 		},
 		{
 			CurrencyPair: s.currencyPairs[1],
 			Nonce:        0,
-			Id:           1,
 		},
 		{
 			CurrencyPair: s.currencyPairs[2],
 			Nonce:        0,
-			Id:           2,
 		},
 	}
 	s.genesis = oracletypes.GenesisState{
 		CurrencyPairGenesis: genesisCPs,
-		NextId:              3,
 	}
 
 	s.veCodec = compression.NewCompressionVoteExtensionCodec(

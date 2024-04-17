@@ -68,19 +68,17 @@ func (s *KeeperTestSuite) TestGetPrice() {
 				Price: sdkmath.NewInt(100),
 			},
 			Nonce: 12,
-			Id:    2,
 		},
 		{
 			CurrencyPair: slinkytypes.CurrencyPair{
 				Base:  "CC",
 				Quote: "BB",
 			},
-			Id: 1,
 		},
 	}
 
 	// init genesis
-	s.oracleKeeper.InitGenesis(s.ctx, *types.NewGenesisState(cpg, 3))
+	s.oracleKeeper.InitGenesis(s.ctx, *types.NewGenesisState(cpg))
 
 	tcs := []struct {
 		name       string
@@ -139,7 +137,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 			&types.GetPriceResponse{
 				Nonce:    0,
 				Decimals: uint64(8),
-				Id:       1,
+				Id:       types.CurrencyPairToID("CC/BB"),
 			},
 			true,
 		},
@@ -167,7 +165,7 @@ func (s *KeeperTestSuite) TestGetPrice() {
 					Price: sdkmath.NewInt(100),
 				},
 				Decimals: uint64(18),
-				Id:       2,
+				Id:       types.CurrencyPairToID("AA/ETHEREUM"),
 			},
 			true,
 		},

@@ -14,7 +14,6 @@ func TestGenesisValidation(t *testing.T) {
 	tcs := []struct {
 		name       string
 		cpgs       []types.CurrencyPairGenesis
-		nextID     uint64
 		expectPass bool
 	}{
 		{
@@ -33,7 +32,6 @@ func TestGenesisValidation(t *testing.T) {
 					},
 				},
 			},
-			0,
 			false,
 		},
 		{
@@ -47,7 +45,6 @@ func TestGenesisValidation(t *testing.T) {
 					Nonce: 10,
 				},
 			},
-			0,
 			false,
 		},
 		{
@@ -58,7 +55,6 @@ func TestGenesisValidation(t *testing.T) {
 						Base:  "AA",
 						Quote: "BB",
 					},
-					Id: 0,
 				},
 				{
 					// invalid CurrencyPairGenesis
@@ -66,10 +62,8 @@ func TestGenesisValidation(t *testing.T) {
 						Base:  "BB",
 						Quote: "CC",
 					},
-					Id: 1,
 				},
 			},
-			2,
 			true,
 		},
 		{
@@ -80,17 +74,14 @@ func TestGenesisValidation(t *testing.T) {
 						Base:  "AA",
 						Quote: "BB",
 					},
-					Id: 1,
 				},
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
-						Base:  "BB",
-						Quote: "CC",
+						Base:  "AA",
+						Quote: "BB",
 					},
-					Id: 1,
 				},
 			},
-			3,
 			false,
 		},
 		{
@@ -101,24 +92,21 @@ func TestGenesisValidation(t *testing.T) {
 						Base:  "AA",
 						Quote: "BB",
 					},
-					Id: 1,
 				},
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
 						Base:  "AA",
 						Quote: "BB",
 					},
-					Id: 2,
 				},
 			},
-			3,
 			false,
 		},
 	}
 
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {
-			gs := types.NewGenesisState(tc.cpgs, tc.nextID)
+			gs := types.NewGenesisState(tc.cpgs)
 			err := gs.Validate()
 
 			if tc.expectPass {

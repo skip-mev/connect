@@ -55,9 +55,8 @@ type Keeper struct {
 	mmKeeper types.MarketMapKeeper
 
 	// schema
-	nextCurrencyPairID collections.Sequence
-	currencyPairs      *collections.IndexedMap[string, types.CurrencyPairState, *oracleIndices]
-	schema             collections.Schema
+	currencyPairs *collections.IndexedMap[string, types.CurrencyPairState, *oracleIndices]
+	schema        collections.Schema
 
 	// indexes
 	idIndex *indexes.Multi[uint64, string, types.CurrencyPairState]
@@ -90,15 +89,14 @@ func NewKeeper(
 	}
 
 	k := Keeper{
-		storeService:       ss,
-		cdc:                cdc,
-		authority:          authority,
-		mmKeeper:           mmKeeper,
-		numRemoves:         collections.NewItem[uint64](sb, types.NumRemovesKeyPrefix, "removed_cps", types.CounterCodec),
-		numCPs:             collections.NewItem[uint64](sb, types.NumCPsKeyPrefix, "num_cps", types.CounterCodec),
-		nextCurrencyPairID: collections.NewSequence(sb, types.CurrencyPairIDKeyPrefix, "currency_pair_id"),
-		currencyPairs:      collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
-		idIndex:            idMulti,
+		storeService:  ss,
+		cdc:           cdc,
+		authority:     authority,
+		mmKeeper:      mmKeeper,
+		numRemoves:    collections.NewItem[uint64](sb, types.NumRemovesKeyPrefix, "removed_cps", types.CounterCodec),
+		numCPs:        collections.NewItem[uint64](sb, types.NumCPsKeyPrefix, "num_cps", types.CounterCodec),
+		currencyPairs: collections.NewIndexedMap(sb, types.CurrencyPairKeyPrefix, "currency_pair", collections.StringKey, codec.CollValue[types.CurrencyPairState](cdc), indices),
+		idIndex:       idMulti,
 	}
 
 	// create the schema
@@ -160,11 +158,6 @@ func (k *Keeper) GetPriceWithNonceForCurrencyPair(ctx sdk.Context, cp slinkytype
 	return types.NewQuotePriceWithNonce(qp, nonce), nil
 }
 
-// NextCurrencyPairID returns the next ID to be assigned to a currency-pair.
-func (k *Keeper) NextCurrencyPairID(ctx sdk.Context) (uint64, error) {
-	return k.nextCurrencyPairID.Peek(ctx)
-}
-
 // GetNonceForCurrencyPair returns the nonce for a given CurrencyPair. If one has not been stored, return an error.
 func (k *Keeper) GetNonceForCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair) (uint64, error) {
 	cps, err := k.currencyPairs.Get(ctx, cp.String())
@@ -198,12 +191,7 @@ func (k *Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.Currenc
 	// get the current state for the currency-pair, fail if it does not exist
 	cps, err := k.currencyPairs.Get(ctx, cp.String())
 	if err != nil {
-		// get the next currency-pair id
-		id, err := k.nextCurrencyPairID.Next(ctx)
-		if err != nil {
-			return err
-		}
-
+		id := types.CurrencyPairToID(cp.String())
 		cps = types.NewCurrencyPairState(id, 0, &qp)
 	} else {
 		// update the nonce
@@ -223,13 +211,9 @@ func (k *Keeper) CreateCurrencyPair(ctx sdk.Context, cp slinkytypes.CurrencyPair
 		return types.NewCurrencyPairAlreadyExistsError(cp)
 	}
 
-	id, err := k.nextCurrencyPairID.Next(ctx)
-	if err != nil {
-		return err
-	}
-
+	id := types.CurrencyPairToID(cp.String())
 	state := types.NewCurrencyPairState(id, 0, nil)
-	err = k.currencyPairs.Set(ctx, cp.String(), state)
+	err := k.currencyPairs.Set(ctx, cp.String(), state)
 	if err != nil {
 		return err
 	}
