@@ -22,7 +22,7 @@ type APIHandler struct {
 	api config.APIConfig
 }
 
-// NewAPIHandler returns a new MarketMap MarketMapAPIDatzaHandler.
+// NewAPIHandler returns a new MarketMap MarketMapAPIDataHandler.
 func NewAPIHandler(
 	api config.APIConfig,
 ) (types.MarketMapAPIDataHandler, error) {

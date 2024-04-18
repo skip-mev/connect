@@ -90,7 +90,7 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 			defer wg.Done()
 			resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 			if err != nil {
-				c.logger.Debug("failed to fetch accounts", zap.Error(err))
+				c.logger.Error("failed to fetch accounts", zap.Error(err))
 				return
 			}
 			responsesCh <- resp
