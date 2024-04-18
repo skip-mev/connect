@@ -46,7 +46,7 @@ func (p *Provider[K, V]) Update(opts ...UpdateOption[K, V]) {
 	p.logger.Debug("provider updated")
 
 	if _, cancel := p.getFetchCtx(); cancel != nil {
-		p.logger.Info("canceling fetch context; restarting provider")
+		p.logger.Debug("canceling fetch context; restarting provider")
 		cancel()
 	}
 }

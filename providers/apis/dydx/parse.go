@@ -56,7 +56,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 	for _, market := range params.MarketParams {
 		ticker, err := h.CreateTickerFromMarket(market)
 		if err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to create ticker from market",
 				zap.String("market", market.Pair),
 				zap.Error(err),
@@ -67,7 +67,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
 		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to unmarshal exchange json config",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -79,7 +79,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 		// Convert the exchange config JSON to a set of paths and providers.
 		providers, err := h.ConvertExchangeConfigJSON(exchangeConfigJSON)
 		if err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to convert exchange config json",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -156,7 +156,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		exchange, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
 			// ignore unsupported exchanges
-			h.logger.Error(
+			h.logger.Debug(
 				"skipping unsupported exchange",
 				zap.String("exchange", cfg.ExchangeName),
 				zap.String("ticker", cfg.Ticker),
