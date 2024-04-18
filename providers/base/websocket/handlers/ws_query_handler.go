@@ -114,13 +114,13 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 	}()
 
 	if responseCh == nil {
-		h.logger.Error("response channel is nil")
+		h.logger.Debug("response channel is nil")
 		return fmt.Errorf("response channel is nil")
 	}
 
 	h.ids = ids
 	if len(h.ids) == 0 {
-		h.logger.Info("no ids to query; exiting")
+		h.logger.Debug("no ids to query; exiting")
 		return nil
 	}
 
@@ -154,7 +154,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	// Start the connection.
 	h.logger.Debug("creating connection to data provider")
 	if err := h.connHandler.Dial(); err != nil {
-		h.logger.Error("failed to create connection with data provider", zap.Error(err))
+		h.logger.Debug("failed to create connection with data provider", zap.Error(err))
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialErr)
 		return errors.ErrDialWithErr(err)
 	}
@@ -163,7 +163,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.DialSuccess)
 	messages, err := h.dataHandler.CreateMessages(h.ids)
 	if err != nil {
-		h.logger.Error("failed to create subscription messages", zap.Error(err))
+		h.logger.Debug("failed to create subscription messages", zap.Error(err))
 		h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageErr)
 		return errors.ErrCreateMessageWithErr(err)
 	}
@@ -174,7 +174,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 
 		// Send the initial payload to the data provider.
 		if err := h.connHandler.Write(message); err != nil {
-			h.logger.Error("failed to write message to websocket connection handler", zap.Error(err))
+			h.logger.Debug("failed to write message to websocket connection handler", zap.Error(err))
 			h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
 			return errors.ErrWriteWithErr(err)
 		}
@@ -203,7 +203,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) heartBeat(ctx context.Context) {
 			msgs, err := h.dataHandler.HeartBeatMessages()
 			if err != nil {
 				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HeartBeatErr)
-				h.logger.Error("failed to create heartbeat messages", zap.Error(err))
+				h.logger.Debug("failed to create heartbeat messages", zap.Error(err))
 				continue
 			}
 
@@ -213,7 +213,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) heartBeat(ctx context.Context) {
 			for _, msg := range msgs {
 				if err := h.connHandler.Write(msg); err != nil {
 					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteErr)
-					h.logger.Error("failed to write heartbeat message", zap.String("message", string(msg)), zap.Error(err))
+					h.logger.Debug("failed to write heartbeat message", zap.String("message", string(msg)), zap.Error(err))
 				} else {
 					h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.WriteSuccess)
 					h.logger.Debug("heartbeat message sent", zap.String("message", string(msg)))
@@ -283,7 +283,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Handle the message.
 			response, updateMessage, err := h.dataHandler.HandleMessage(message)
 			if err != nil {
-				h.logger.Error("failed to handle websocket message", zap.Error(err))
+				h.logger.Debug("failed to handle websocket message", zap.Error(err))
 				h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.HandleMessageErr)
 				continue
 			}
@@ -331,7 +331,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 func (h *WebSocketQueryHandlerImpl[K, V]) close() error {
 	h.logger.Debug("closing connection to websocket handler")
 	if err := h.connHandler.Close(); err != nil {
-		h.logger.Error("failed to close connection", zap.Error(err))
+		h.logger.Debug("failed to close connection", zap.Error(err))
 		h.metrics.AddWebSocketConnectionStatus(h.config.Name, metrics.CloseErr)
 		return errors.ErrCloseWithErr(err)
 	}

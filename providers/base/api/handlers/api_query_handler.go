@@ -201,7 +201,7 @@ MainLoop:
 	// Wait for all tasks to complete.
 	h.logger.Debug("waiting for api sub-tasks to complete")
 	if err := wg.Wait(); err != nil {
-		h.logger.Error("error querying ids", zap.Error(err))
+		h.logger.Debug("error querying ids", zap.Error(err))
 	}
 	h.logger.Debug("all api sub-tasks completed")
 }

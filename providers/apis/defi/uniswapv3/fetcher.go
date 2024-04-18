@@ -110,7 +110,7 @@ func (u *PriceFetcher) Fetch(
 	for i, ticker := range tickers {
 		pool, err := u.GetPool(ticker)
 		if err != nil {
-			u.logger.Error(
+			u.logger.Debug(
 				"failed to get pool for ticker",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -143,7 +143,7 @@ func (u *PriceFetcher) Fetch(
 
 	// Batch call to the EVM.
 	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
-		u.logger.Error(
+		u.logger.Debug(
 			"failed to batch call to ethereum network for all tickers",
 			zap.Error(err),
 		)
@@ -158,7 +158,7 @@ func (u *PriceFetcher) Fetch(
 	for i, ticker := range tickers {
 		result := batchElems[i]
 		if result.Error != nil {
-			u.logger.Error(
+			u.logger.Debug(
 				"failed to batch call to ethereum network for ticker",
 				zap.String("ticker", ticker.String()),
 				zap.Error(result.Error),
@@ -177,7 +177,7 @@ func (u *PriceFetcher) Fetch(
 		// Parse the sqrtPriceX96 from the result.
 		sqrtPriceX96, err := u.ParseSqrtPriceX96(result.Result)
 		if err != nil {
-			u.logger.Error(
+			u.logger.Debug(
 				"failed to parse sqrt price x96",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
