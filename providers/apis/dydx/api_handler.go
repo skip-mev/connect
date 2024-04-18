@@ -122,6 +122,6 @@ func (h *APIHandler) ParseResponse(
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(&marketResp, time.Now())
 
-	h.logger.Info("successfully resolved market map", zap.Int("markets", len(marketResp.MarketMap.Markets)))
+	h.logger.Debug("successfully resolved market map", zap.Int("markets", len(marketResp.MarketMap.Markets)))
 	return types.NewMarketMapResponse(resolved, nil)
 }

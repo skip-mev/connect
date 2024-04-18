@@ -120,7 +120,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) Start(
 
 	h.ids = ids
 	if len(h.ids) == 0 {
-		h.logger.Info("no ids to query; exiting")
+		h.logger.Debug("no ids to query; exiting")
 		return nil
 	}
 

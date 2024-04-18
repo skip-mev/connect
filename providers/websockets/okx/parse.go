@@ -33,7 +33,7 @@ const (
 func (h *WebSocketHandler) parseSubscribeResponseMessage(resp SubscribeResponseMessage) ([]handlers.WebsocketEncodedMessage, error) {
 	// A response with an event type of subscribe means that we have successfully subscribed to the channel.
 	if t := EventType(resp.Event); t == EventSubscribe {
-		h.logger.Info("successfully subscribed to channel", zap.String("instrument", resp.Arguments.InstrumentID))
+		h.logger.Debug("successfully subscribed to channel", zap.String("instrument", resp.Arguments.InstrumentID))
 		return nil, nil
 	}
 
