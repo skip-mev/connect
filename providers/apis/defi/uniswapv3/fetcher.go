@@ -59,12 +59,12 @@ func NewPriceFetcher(
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
 
-	if api.Name != Name {
-		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
+	if !IsValidProviderName(api.Name) {
+		return nil, fmt.Errorf("invalid api config name %s", api.Name)
 	}
 
 	if !api.Enabled {
-		return nil, fmt.Errorf("api config for %s is not enabled", Name)
+		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
 	}
 
 	if err := api.ValidateBasic(); err != nil {

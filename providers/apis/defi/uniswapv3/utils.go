@@ -3,6 +3,7 @@ package uniswapv3
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -13,12 +14,33 @@ import (
 )
 
 const (
-	// Name is the name of the Uniswap V3 API.
-	Name = "uniswapv3_api"
+	// BaseName is the name of the Uniswap V3 API.
+	BaseName = "uniswapv3_api"
+
+	// NameSeparator is the character used to separate elements of dynamic naming for the provider.
+	NameSeparator = "-"
 
 	// ContractMethod is the contract method to call for the Uniswap V3 API.
 	ContractMethod = "slot0"
 )
+
+var (
+	// SupportedChains is the list of chains we support fetching prices from for uniswapv3.
+	SupportedChains = []string{
+		constants.ETHEREUM,
+	}
+)
+
+// IsValidProviderName returns a bool based on the validity of the passed in name.
+// Dynamic provider naming is supported via `BaseName“NameSeparator“SupportedChain`
+func IsValidProviderName(name string) bool {
+	for _, chain := range SupportedChains {
+		if name == strings.Join([]string{BaseName, chain}, NameSeparator) {
+			return true
+		}
+	}
+	return false
+}
 
 // PoolConfig is the configuration for a Uniswap V3 pool. This is specific to each pair of tokens.
 type PoolConfig struct {
@@ -66,7 +88,7 @@ var (
 	// DefaultETHAPIConfig is the default configuration for the Uniswap API. Specifically this is for
 	// Ethereum mainnet.
 	DefaultETHAPIConfig = config.APIConfig{
-		Name:             Name,
+		Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.ETHEREUM),
 		Atomic:           true,
 		Enabled:          true,
 		Timeout:          1000 * time.Millisecond,
