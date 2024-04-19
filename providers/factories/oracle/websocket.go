@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -28,6 +29,7 @@ import (
 // factory. Specifically, this factory function returns websocket query handlers that are used to
 // fetch data from the price providers.
 func WebSocketQueryHandlerFactory(
+	_ context.Context,
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	wsMetrics wsmetrics.WebSocketMetrics,

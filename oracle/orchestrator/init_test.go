@@ -1,6 +1,7 @@
 package orchestrator_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -27,7 +28,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
+		err = o.Init(context.TODO())
 		require.NoError(t, err)
 
 		state := o.GetProviderState()
@@ -56,7 +57,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
+		err = o.Init(context.TODO())
 		require.NoError(t, err)
 
 		state := o.GetProviderState()
@@ -112,7 +113,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
+		err = o.Init(context.TODO())
 		require.Error(t, err)
 	})
 
@@ -125,7 +126,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		require.Error(t, o.Init())
+		require.Error(t, o.Init(context.TODO()))
 	})
 
 	t.Run("errors when a provider is not supported by the api query handler factory", func(t *testing.T) {
@@ -153,7 +154,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		require.Error(t, o.Init())
+		require.Error(t, o.Init(context.TODO()))
 	})
 
 	t.Run("errors when a provider is not supported by the web socket query handler factory", func(t *testing.T) {
@@ -176,7 +177,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		require.Error(t, o.Init())
+		require.Error(t, o.Init(context.TODO()))
 	})
 
 	t.Run("creates a marketmap provider with price providers", func(t *testing.T) {
@@ -189,7 +190,7 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		err = o.Init()
+		err = o.Init(context.TODO())
 		require.NoError(t, err)
 
 		mapper := o.GetMarketMapProvider()
@@ -205,6 +206,6 @@ func TestInit(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		require.Error(t, o.Init())
+		require.Error(t, o.Init(context.TODO()))
 	})
 }
