@@ -51,11 +51,12 @@ func TestPoolConfig(t *testing.T) {
 }
 
 func TestIsValidProviderName(t *testing.T) {
-	testcases := []struct {
+	type testcase struct {
 		testName     string
 		providerName string
 		valid        bool
-	}{
+	}
+	testcases := []testcase{
 		{
 			testName:     "valid base, invalid chain",
 			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, "arbitrum"),
@@ -76,6 +77,14 @@ func TestIsValidProviderName(t *testing.T) {
 			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.ETHEREUM),
 			valid:        true,
 		},
+	}
+	// Also test that all ProviderNames are Valid
+	for _, providerName := range uniswapv3.ProviderNames {
+		testcases = append(testcases, testcase{
+			testName:     fmt.Sprintf("valid-provider-name-%s", providerName),
+			providerName: providerName,
+			valid:        true,
+		})
 	}
 	for _, tc := range testcases {
 		t.Run(tc.testName, func(t *testing.T) {

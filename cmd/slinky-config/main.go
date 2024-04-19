@@ -119,7 +119,7 @@ var (
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start Defi Providers-------------------	//
 		// // -----------------------------------------------------------	//
-		uniswapv3.Name: uniswapv3.DefaultETHMarketConfig,
+		uniswapv3.ProviderNames[constants.ETHEREUM]: uniswapv3.DefaultETHMarketConfig,
 	}
 
 	// LocalConfig defines a readable config for local development. Any changes to this
@@ -239,7 +239,7 @@ var (
 			// ---------------------Start Defi Providers-------------------	//
 			// -----------------------------------------------------------	//
 			{
-				Name: uniswapv3.Name,
+				Name: uniswapv3.ProviderNames[constants.ETHEREUM],
 				API:  uniswapv3.DefaultETHAPIConfig,
 				Type: types.ConfigType,
 			},

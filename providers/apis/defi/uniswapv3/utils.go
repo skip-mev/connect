@@ -24,18 +24,16 @@ const (
 	ContractMethod = "slot0"
 )
 
-var (
-	// SupportedChains is the list of chains we support fetching prices from for uniswapv3.
-	SupportedChains = []string{
-		constants.ETHEREUM,
-	}
-)
+// ProviderNames is the set of all supported "dynamic" names mapped by chain.
+var ProviderNames = map[string]string{
+	constants.ETHEREUM: strings.Join([]string{BaseName, constants.ETHEREUM}, NameSeparator),
+}
 
 // IsValidProviderName returns a bool based on the validity of the passed in name.
-// Dynamic provider naming is supported via `BaseName“NameSeparator“SupportedChain`
+// Dynamic provider naming is supported via `BaseName“NameSeparator“SupportedChain`.
 func IsValidProviderName(name string) bool {
-	for _, chain := range SupportedChains {
-		if name == strings.Join([]string{BaseName, chain}, NameSeparator) {
+	for _, providerName := range ProviderNames {
+		if name == providerName {
 			return true
 		}
 	}
