@@ -33,10 +33,10 @@ const (
 	// UniswapV3TickerSeparator is the separator for fields contained within a ticker for a uniswapv3_api provider.
 	UniswapV3TickerSeparator = Delimeter
 
-	// RaydiumTickerFields
+	// RaydiumTickerFields is the minimum number of fields to expect the raydium exchange ticker to have.
 	RaydiumTickerFields = 6
 
-	// RaydiumTickerSeparator
+	// RaydiumTickerSeparator is the separator for fields contained within a ticker for the raydium provider.
 	RaydiumTickerSeparator = Delimeter
 )
 
