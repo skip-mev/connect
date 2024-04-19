@@ -48,9 +48,9 @@ func NewMultiRPCClientFromEndpoints(ctx context.Context, logger *zap.Logger, end
 	return NewMultiRPCClient(clients, endpoints, logger), nil
 }
 
-// BatchCallContext injects a call to eth_getNumber, and makes batch calls to the underlying EVMClients.
-// It returns the first response it sees from the node which has the greatest height.
-// Warning logs are output on individual failures, and an error is only returned on failure of all calls.
+// BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
+// It returns the first response it sees from a node which has the greatest height.
+// An error is returned only when all clients fail.
 func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.BatchElem) error {
 	if len(batchElems) == 0 {
 		m.logger.Debug("BatchCallContext called with 0 elems")

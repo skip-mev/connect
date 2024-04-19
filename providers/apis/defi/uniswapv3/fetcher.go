@@ -7,8 +7,6 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
-
 	"go.uber.org/zap"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -18,6 +16,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )

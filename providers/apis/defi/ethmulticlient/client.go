@@ -32,6 +32,8 @@ func NewGoEthereumClientImplFromURL(ctx context.Context, api config.APIConfig) (
 	return rpc.DialOptions(ctx, api.URL)
 }
 
+// NewGoEthereumClientImplFromEndpoint creates an EVMClient via a config.Endpoint. This includes optional
+// authentication via a specified http header key and value.
 func NewGoEthereumClientImplFromEndpoint(ctx context.Context, endpoint config.Endpoint) (EVMClient, error) {
 	var opts []rpc.ClientOption
 	// fail if we have an invalid endpoint
