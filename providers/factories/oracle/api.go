@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -27,6 +28,7 @@ import (
 // Specifically, this factory function returns API query handlers that are used to fetch data from
 // the price providers.
 func APIQueryHandlerFactory(
+	ctx context.Context,
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	metrics metrics.APIMetrics,
@@ -67,13 +69,7 @@ func APIQueryHandlerFactory(
 	case providerName == kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(cfg.API)
 	case strings.HasPrefix(providerName, uniswapv3.BaseName):
-		var ethClient uniswapv3.EVMClient
-		ethClient, err = uniswapv3.NewGoEthereumClientImpl(cfg.API.URL)
-		if err != nil {
-			return nil, err
-		}
-
-		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, cfg.API, ethClient)
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(ctx, logger, cfg.API)
 	case providerName == static.Name:
 		apiDataHandler = static.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
@@ -85,9 +81,6 @@ func APIQueryHandlerFactory(
 			cfg.API,
 			logger,
 		)
-		if err != nil {
-			return nil, err
-		}
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

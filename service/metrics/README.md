@@ -1,5 +1,7 @@
 # Oracle Application / Service Metrics
 
+The following metrics are registered to the Cosmos SDK metrics port (default :26660):
+
 ## `oracle_response_latency`
 
 * **purpose**
@@ -16,7 +18,7 @@
     * `status` := (failure, success)
     * `chain_id`: the chain-id of this oracle deployment
 
-## `oracle_ABCI_method_latency`
+## `ABCI_method_latency`
 
 * **purpose**
     * This prometheus histogram measures the latency (per request) in seconds of ABCI method calls
@@ -25,7 +27,7 @@
     * `method`: one of (ExtendVote, PrepareProposal, ProcessProposal, VerifyVoteExtension, FinalizeBlock), this is the ABCI method that this latency report resulted from
     * `chain_id`: the chain-id of this oracle deployment
 
-## `oracle_ABCI_method_status`
+## `ABCI_method_status`
 
 * **purpose**
     * This prometheus counter measures the number of ABCI requests, and their associated statuses
@@ -35,7 +37,7 @@
     * `chain_id`: the chain-id of this oracle deployment
     * `status`: The status of the request, if it's a failure, the label is an indication of what logic failed
 
-## `oracle_message_size`
+## `message_size`
 
 * **purpose**
     * This prometheus histogram tracks the size of vote-extensions, and extended commits that slinky is transmitting 
