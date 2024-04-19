@@ -19,7 +19,7 @@ type generalProvider interface {
 // with the relevant price and market mapper providers, and then start all of them.
 func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	o.logger.Info("starting provider orchestrator")
-	if err := o.Init(); err != nil {
+	if err := o.Init(ctx); err != nil {
 		o.logger.Error("failed to initialize provider orchestrator", zap.Error(err))
 		return err
 	}

@@ -6,12 +6,17 @@ import (
 	"math/big"
 	"testing"
 
+	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/oracle/config"
+
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -19,13 +24,13 @@ func TestFetch(t *testing.T) {
 	testCases := []struct {
 		name     string
 		tickers  []types.ProviderTicker
-		client   func() uniswapv3.EVMClient
+		client   func() ethmulticlient.EVMClient
 		expected types.PriceResponse
 	}{
 		{
 			name:    "no tickers",
 			tickers: []types.ProviderTicker{},
-			client: func() uniswapv3.EVMClient {
+			client: func() ethmulticlient.EVMClient {
 				c := mocks.NewEVMClient(t)
 				c.On("BatchCallContext", context.Background(), []rpc.BatchElem{}).Return(nil)
 				return c
@@ -40,7 +45,7 @@ func TestFetch(t *testing.T) {
 			tickers: []types.ProviderTicker{
 				types.NewProviderTicker("WETH/USDC", ""),
 			},
-			client: func() uniswapv3.EVMClient {
+			client: func() ethmulticlient.EVMClient {
 				return mocks.NewEVMClient(t)
 			},
 			expected: types.PriceResponse{
@@ -55,7 +60,7 @@ func TestFetch(t *testing.T) {
 			tickers: []types.ProviderTicker{
 				wethusdcTicker,
 			},
-			client: func() uniswapv3.EVMClient {
+			client: func() ethmulticlient.EVMClient {
 				return createEVMClientWithResponse(t, fmt.Errorf("failed to make a batch call"), nil, nil)
 			},
 			expected: types.PriceResponse{
@@ -70,7 +75,7 @@ func TestFetch(t *testing.T) {
 			tickers: []types.ProviderTicker{
 				wethusdcTicker,
 			},
-			client: func() uniswapv3.EVMClient {
+			client: func() ethmulticlient.EVMClient {
 				batchErrors := []error{
 					fmt.Errorf("request for ticker did not return a result"),
 				}
@@ -91,7 +96,7 @@ func TestFetch(t *testing.T) {
 			tickers: []types.ProviderTicker{
 				wethusdcTicker,
 			},
-			client: func() uniswapv3.EVMClient {
+			client: func() ethmulticlient.EVMClient {
 				batchErrors := []error{
 					nil,
 				}
@@ -112,7 +117,7 @@ func TestFetch(t *testing.T) {
 			tickers: []types.ProviderTicker{
 				wethusdcTicker,
 			},
-			client: func() uniswapv3.EVMClient {
+			client: func() ethmulticlient.EVMClient {
 				batchErrors := []error{
 					nil,
 				}
@@ -241,4 +246,114 @@ func TestParseSqrtPriceX96(t *testing.T) {
 		require.True(t, ok)
 		require.Equal(t, expectedResult, sqrtPriceX96)
 	})
+}
+
+func TestNewPriceFetcher(t *testing.T) {
+	ctx := context.TODO()
+
+	testcases := []struct {
+		name   string
+		logger *zap.Logger
+		api    config.APIConfig
+		err    error
+	}{
+		{
+			name:   "no logger errors",
+			logger: nil,
+			err:    fmt.Errorf("logger cannot be nil"),
+		},
+		{
+			name: "invalid api config errors",
+			api: config.APIConfig{
+				Enabled: true,
+			},
+			err: fmt.Errorf("invalid api config: "),
+		},
+		{
+			name:   "invalid provider name errors",
+			logger: logger,
+			api: config.APIConfig{
+				Name: "uniswapv3_api-foobar",
+			},
+			err: fmt.Errorf("invalid api config name uniswapv3_api-foobar"),
+		},
+		{
+			name:   "invalid provider name errors",
+			logger: logger,
+			api: config.APIConfig{
+				Name: "uniswapv3_api-ethereum",
+			},
+			err: fmt.Errorf("api config for uniswapv3_api-ethereum is not enabled"),
+		},
+		{
+			name:   "no url or endpoints errors",
+			logger: logger,
+			api: config.APIConfig{
+				Enabled:          true,
+				Timeout:          1,
+				ReconnectTimeout: 1,
+				Interval:         1,
+				MaxQueries:       1,
+				Name:             "uniswapv3_api-ethereum",
+			},
+			err: fmt.Errorf("invalid api config: provider url and endpoints cannot be empty"),
+		},
+		{
+			name:   "multiclient failure errors",
+			logger: logger,
+			api: config.APIConfig{
+				Enabled:          true,
+				Timeout:          1,
+				ReconnectTimeout: 1,
+				Interval:         1,
+				MaxQueries:       1,
+				Endpoints: []config.Endpoint{
+					{URL: "foobar", Authentication: config.Authentication{APIKey: "foobar", APIKeyHeader: "foobar"}},
+				},
+				Name: "uniswapv3_api-ethereum",
+			},
+			err: fmt.Errorf("error creating multi-client: "),
+		},
+		{
+			name:   "multiclient success",
+			logger: logger,
+			api: config.APIConfig{
+				Enabled:          true,
+				Timeout:          1,
+				ReconnectTimeout: 1,
+				Interval:         1,
+				MaxQueries:       1,
+				Endpoints: []config.Endpoint{
+					{URL: "http://localhost:0", Authentication: config.Authentication{APIKey: "foobar", APIKeyHeader: "foobar"}},
+				},
+				Name: "uniswapv3_api-ethereum",
+			},
+			err: nil,
+		},
+		{
+			name:   "url success",
+			logger: logger,
+			api: config.APIConfig{
+				Enabled:          true,
+				Timeout:          1,
+				ReconnectTimeout: 1,
+				Interval:         1,
+				MaxQueries:       1,
+				URL:              "http://localhost:0",
+				Name:             "uniswapv3_api-ethereum",
+			},
+			err: nil,
+		},
+	}
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			pf, err := uniswapv3.NewPriceFetcher(ctx, tc.logger, tc.api)
+			if tc.err != nil {
+				require.ErrorContains(t, err, tc.err.Error())
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, pf)
+			}
+		})
+	}
 }

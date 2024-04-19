@@ -7,6 +7,8 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
+
 	"go.uber.org/zap"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -37,7 +39,7 @@ type PriceFetcher struct {
 	api    config.APIConfig
 
 	// client is the EVM client implementation. This is used to interact with the ethereum network.
-	client EVMClient
+	client ethmulticlient.EVMClient
 	// abi is the uniswap v3 pool abi. This is used to pack the slot0 call to the pool contract
 	// and parse the result.
 	abi *abi.ABI
@@ -51,10 +53,14 @@ type PriceFetcher struct {
 
 // NewPriceFetcher returns a new Uniswap V3 price fetcher.
 func NewPriceFetcher(
+	ctx context.Context,
 	logger *zap.Logger,
 	api config.APIConfig,
-	client EVMClient,
 ) (*PriceFetcher, error) {
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -67,10 +73,34 @@ func NewPriceFetcher(
 		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
 	}
 
-	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config: %w", err)
+	// use a multi-client if multiple endpoints are provided
+	var client ethmulticlient.EVMClient
+	var err error
+	if len(api.Endpoints) > 0 {
+		client, err = ethmulticlient.NewMultiRPCClientFromEndpoints(
+			ctx,
+			logger.With(zap.String("eth_multi_client", api.Name)),
+			api.Endpoints,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error creating multi-client: %w", err)
+		}
+	} else {
+		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(ctx, api)
+		if err != nil {
+			return nil, err
+		}
 	}
+	return NewPriceFetcherWithClient(logger, api, client)
+}
 
+// NewPriceFetcherWithClient returns a new PriceFetcher.
+// It requires a pre-validated config, and initialized client.
+func NewPriceFetcherWithClient(
+	logger *zap.Logger,
+	api config.APIConfig,
+	client ethmulticlient.EVMClient,
+) (*PriceFetcher, error) {
 	abi, err := uniswappool.UniswapMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get uniswap abi: %w", err)
