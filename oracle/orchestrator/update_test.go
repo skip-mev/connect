@@ -26,7 +26,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		err = o.UpdateWithMarketMap(mmtypes.MarketMap{
 			Markets: map[string]mmtypes.Market{
@@ -46,7 +46,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
@@ -186,7 +186,7 @@ func TestUpdateWithMarketMap(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
@@ -268,7 +268,7 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
@@ -348,7 +348,7 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
@@ -430,7 +430,7 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithPriceWebSocketQueryHandlerFactory(oraclefactory.WebSocketQueryHandlerFactory),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		tickers, err := types.ProviderTickersFromMarketMap(coinbase.Name, marketMap)
 		require.NoError(t, err)
@@ -519,7 +519,7 @@ func TestUpdateProviderState(t *testing.T) {
 			orchestrator.WithMarketMap(marketMap),
 		)
 		require.NoError(t, err)
-		require.NoError(t, o.Init())
+		require.NoError(t, o.Init(context.TODO()))
 
 		providers := o.GetProviderState()
 		require.Len(t, providers, 3)
