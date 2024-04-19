@@ -207,7 +207,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 // ExtractMetadata extracts Metadata_JSON from ExchangeMarketConfigJson, based on the converted provider name.
 func ExtractMetadata(providerName string, cfg dydxtypes.ExchangeMarketConfigJson) (string, error) {
 	// Exchange-specific logic for converting a ticker to provider-specific metadata json
-	switch {
+	switch { //nolint:gocritic // This will have a raydium case very soon
 	case strings.HasPrefix(providerName, uniswapv3.BaseName):
 		return UniswapV3MetadataFromTicker(cfg.Ticker, cfg.Invert)
 	}

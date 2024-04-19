@@ -3,10 +3,11 @@ package dydx
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 
 	"github.com/skip-mev/slinky/oracle/config"
 )
