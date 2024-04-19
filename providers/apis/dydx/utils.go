@@ -1,7 +1,13 @@
 package dydx
 
 import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
+
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 
 	"github.com/skip-mev/slinky/oracle/config"
 )
@@ -18,6 +24,12 @@ const (
 
 	// Delimeter is the delimeter used to separate the base and quote assets in a pair.
 	Delimeter = "-"
+
+	// UniswapV3TickerFields is the number of fields to expect to parse from a UniswapV3 ticker.
+	UniswapV3TickerFields = 3
+
+	// UniswapV3TickerSeparator is the separator for fields contained within a ticker for a uniswapv3_api provider.
+	UniswapV3TickerSeparator = "-"
 )
 
 // DefaultAPIConfig returns the default configuration for the dYdX market map API.
@@ -30,4 +42,41 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	URL:              "localhost:1317",
+}
+
+// UniswapV3MetadataFromTicker returns the metadataJSON string for uniswapv3_api according to the dYdX encoding.
+// This is PoolAddress-DecimalsBase-DecimalsQuote.
+func UniswapV3MetadataFromTicker(ticker string, invert bool) (string, error) {
+	fields := strings.Split(ticker, UniswapV3TickerSeparator)
+	if len(fields) != UniswapV3TickerFields {
+		return "", fmt.Errorf("expected %d fields, got %d", UniswapV3TickerFields, len(fields))
+	}
+
+	baseDecimals, err := strconv.ParseInt(fields[1], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse base decimals: %w", err)
+	}
+
+	quoteDecimals, err := strconv.ParseInt(fields[2], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse quote decimals: %w", err)
+	}
+
+	parsedConfig := uniswapv3.PoolConfig{
+		Address:       fields[0],
+		BaseDecimals:  baseDecimals,
+		QuoteDecimals: quoteDecimals,
+		Invert:        invert,
+	}
+
+	if err = parsedConfig.ValidateBasic(); err != nil {
+		return "", err
+	}
+
+	cfgBytes, err := json.Marshal(parsedConfig)
+	if err != nil {
+		return "", err
+	}
+
+	return string(cfgBytes), nil
 }

@@ -1,5 +1,39 @@
 {
   "markets": {
+    "$RETIRE/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "$RETIRE",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "$RETIRE/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2NJXbbLxfygPGusgTyxbFngLaodRRRCpXxeo1pv7M5XQ\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"8PcfqMPandh18bYZJKEvjuQRH5bcH4Y6TZzGUSWEPeYG\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "$WIF/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "$WIF",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "$WIF/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"7UYZ4vX13mmGiopayLZAduo8aie77yZ3o8FMzTeAX8uJ\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"7e9ExBAvDvuJP3GE6eKL5aSMi4RfXv3LkQaiNZBPmffR\",\"token_decimals\":9}}"
+        }
+      ]
+    },
     "AAVE/ETH": {
       "ticker": {
         "currency_pair": {
@@ -11,7 +45,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "AAVE/ETH",
           "metadata_JSON": "{\"address\":\"0x5aB53EE1d50eeF2C1DD3d5402789cd27bB52c1bB\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -28,15 +62,7 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "ADA/USD"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "ADAUSD"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "ADA-USD"
         },
         {
@@ -44,7 +70,15 @@
           "off_chain_ticker": "ADA-USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "kraken_api",
+          "off_chain_ticker": "ADAUSD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ADA/USD"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "ADA-USD"
         }
       ]
@@ -60,16 +94,16 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ADAUSDC"
-        },
-        {
           "name": "kucoin_ws",
           "off_chain_ticker": "ADA-USDC"
         },
         {
           "name": "okx_ws",
           "off_chain_ticker": "ADA-USDC"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ADAUSDC"
         }
       ]
     },
@@ -84,15 +118,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "ADAUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ADAUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "ADAUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ADA-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ADA-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "ADAUSDT"
         },
         {
@@ -108,12 +146,42 @@
           "off_chain_ticker": "adausdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "ADA-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "ADAUSDT"
+        }
+      ]
+    },
+    "ANDY/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "ANDY",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "ADA-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "ANDY/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"pVCniSexvGFdDTjYuzoSKXDkoTqFjRhqJpmzzYMs7tY\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"2tt4w3C9hKjtzVgPqqa9Apbxz5qEKEAWodJEbbmfpwEm\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "ANSEM/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "ANSEM",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "ANSEM/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5cM8YfCvkALkout2h9WxmYrc5e61YmvLgLLWsrZgumgK\",\"token_decimals\":1},\"quote_token_vault\":{\"token_vault_address\":\"B86KHBLhVVQQnsgbn6SDJR43NSKbqmpxZsrTai45yrMy\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -128,15 +196,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "APE-USD"
+        },
+        {
           "name": "kraken_ws",
           "off_chain_ticker": "APE/USD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "APE-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "APE-USD"
         }
       ]
@@ -152,15 +220,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "APE-USDC"
+        },
+        {
           "name": "kucoin_ws",
           "off_chain_ticker": "APE-USDC"
         },
         {
           "name": "okx_ws",
-          "off_chain_ticker": "APE-USDC"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "APE-USDC"
         }
       ]
@@ -176,12 +244,20 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
+          "name": "binance_api",
           "off_chain_ticker": "APEUSDT"
         },
         {
-          "name": "binance_api",
-          "off_chain_ticker": "APEUSDT"
+          "name": "coinbase_api",
+          "off_chain_ticker": "APE-USDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "APE-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "APE-USDT"
         },
         {
           "name": "gate_ws",
@@ -196,16 +272,8 @@
           "off_chain_ticker": "APE-USDT"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "APE-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "APE-USDT"
-        },
-        {
-          "name": "coinbase_api",
-          "off_chain_ticker": "APE-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "APEUSDT"
         }
       ]
     },
@@ -220,15 +288,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "APT-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "APTUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "APT-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "APT-USD"
         }
       ]
@@ -260,15 +328,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "APTUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "APTUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "APTUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "APT-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "APT-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "APTUSDT"
         },
         {
@@ -280,12 +352,8 @@
           "off_chain_ticker": "aptusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "APT-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "APT-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "APTUSDT"
         }
       ]
     },
@@ -300,15 +368,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ARB-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "ARBUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "ARB-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "ARB-USD"
         }
       ]
@@ -324,15 +392,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "ARBUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ARBUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "ARBUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ARB-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ARB-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "ARBUSDT"
         },
         {
@@ -344,12 +416,8 @@
           "off_chain_ticker": "arbusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "ARB-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "ARB-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "ARBUSDT"
         }
       ]
     },
@@ -364,6 +432,22 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ATOM-USD"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ATOM-USD"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ATOMUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ATOMUSD-PERP"
+        },
+        {
           "name": "kraken_ws",
           "off_chain_ticker": "ATOM/USD"
         },
@@ -372,23 +456,7 @@
           "off_chain_ticker": "cosmos/usd"
         },
         {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "ATOMUSD-PERP"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "ATOMUSD"
-        },
-        {
           "name": "coinbase_ws",
-          "off_chain_ticker": "ATOM-USD"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "ATOM-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "ATOM-USD"
         }
       ]
@@ -404,8 +472,8 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ATOMUSDC"
+          "name": "coinbase_api",
+          "off_chain_ticker": "ATOM-USDC"
         },
         {
           "name": "kucoin_ws",
@@ -416,8 +484,8 @@
           "off_chain_ticker": "ATOM-USDC"
         },
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "ATOM-USDC"
+          "name": "mexc_ws",
+          "off_chain_ticker": "ATOMUSDC"
         }
       ]
     },
@@ -432,36 +500,12 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "ATOMUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ATOMUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "ATOMUSDT"
         },
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "ATOM_USDT"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "ATOM_USDT"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "ATOMUSDT"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "ATOM-USDT"
-        },
-        {
-          "name": "huobi_ws",
-          "off_chain_ticker": "atomusdt"
         },
         {
           "name": "kucoin_ws",
@@ -472,8 +516,49 @@
           "off_chain_ticker": "ATOM-USDT"
         },
         {
-          "name": "coinbase_api",
+          "name": "bybit_ws",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "ATOM_USDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ATOMUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ATOM_USDT"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "atomusdt"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "ATOM-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ATOMUSDT"
+        }
+      ]
+    },
+    "ATR/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "ATR",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "ATR/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4rm2qWHwGZGj9rWoRvU7m3FDdsZJV11wuHmczw27C3Wc\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Ahy4NhTyBaXZfsGjq4DDxGaMosBkAjaanGYdfeZjuDzP\",\"token_decimals\":6}}"
         }
       ]
     },
@@ -488,12 +573,12 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "AVAX/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "AVAX-USD"
         },
         {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "AVAXUSD-PERP"
+          "name": "okx_ws",
+          "off_chain_ticker": "AVAX-USD"
         },
         {
           "name": "kraken_api",
@@ -504,15 +589,15 @@
           "off_chain_ticker": "avaxusd"
         },
         {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "AVAXUSD-PERP"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "AVAX/USD"
+        },
+        {
           "name": "coinbase_ws",
-          "off_chain_ticker": "AVAX-USD"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "AVAX-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "AVAX-USD"
         }
       ]
@@ -528,12 +613,8 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "AVAXUSDC"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "AVAXUSDC"
+          "name": "coinbase_api",
+          "off_chain_ticker": "AVAX-USDC"
         },
         {
           "name": "kucoin_ws",
@@ -544,8 +625,12 @@
           "off_chain_ticker": "AVAX-USDC"
         },
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "AVAX-USDC"
+          "name": "bybit_ws",
+          "off_chain_ticker": "AVAXUSDC"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "AVAXUSDC"
         }
       ]
     },
@@ -560,40 +645,12 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "AVAXUSDT"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "AVAX/USDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "AVAXUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "AVAXUSDT"
         },
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "AVAX_USDT"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "AVAX_USDT"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "AVAXUSDT"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "AVAX-USDT"
-        },
-        {
-          "name": "huobi_ws",
-          "off_chain_ticker": "avaxusdt"
         },
         {
           "name": "kucoin_ws",
@@ -604,8 +661,36 @@
           "off_chain_ticker": "AVAX-USDT"
         },
         {
-          "name": "coinbase_api",
+          "name": "bybit_ws",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "AVAX_USDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "AVAXUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "AVAX_USDT"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "avaxusdt"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "AVAX/USDT"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "AVAX-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "AVAXUSDT"
         }
       ]
     },
@@ -620,7 +705,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "AXL/ETH",
           "metadata_JSON": "{\"address\":\"0xE7F6720C1F546217081667A5ab7fEbB688036856\",\"base_decimals\":6,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -637,9 +722,26 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "AXL/USDC",
           "metadata_JSON": "{\"address\":\"0xAe2A25CBDb19d0dC0DDDD1D2f6b08A6E48c4a9a9\",\"base_decimals\":6,\"quote_decimals\":6,\"invert\":false}"
+        }
+      ]
+    },
+    "BAG/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "BAG",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "BAG/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"7eLwyCqfhxKLsKeFwcN4JdfspKK22rSC4uQHNy3zWNPB\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Cr7Yo8Uf5f8pzMsY3ZwgDFNx85nb3UDvPfQxuWG4acxc\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -654,19 +756,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "BCH/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "BCH-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "BCHUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "BCH-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "BCH/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "BCH-USD"
         }
       ]
@@ -682,15 +784,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "BCHUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "BCHUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "BCHUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "BCH-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "BCH-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "BCHUSDT"
         },
         {
@@ -706,12 +812,8 @@
           "off_chain_ticker": "bchusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "BCH-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "BCH-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "BCHUSDT"
         }
       ]
     },
@@ -726,15 +828,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BLUR-USD"
+        },
+        {
           "name": "kraken_ws",
           "off_chain_ticker": "BLUR/USD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "BLUR-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "BLUR-USD"
         }
       ]
@@ -750,20 +852,54 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "BLURUSDT"
-        },
-        {
-          "name": "gate_ws",
-          "off_chain_ticker": "BLUR_USDT"
-        },
-        {
           "name": "kucoin_ws",
           "off_chain_ticker": "BLUR-USDT"
         },
         {
           "name": "okx_ws",
           "off_chain_ticker": "BLUR-USDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "BLUR_USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "BLURUSDT"
+        }
+      ]
+    },
+    "BODEN/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "BODEN",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "BODEN/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"54zedUwxuSnmHHYg9oY1AfykeBDaCF6ZFZDW3ym2Nea4\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"DzpiXKsTUCacKyahLBUC5sfjj2fiWbwCpiCPEgyS3zDC\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "BOME/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "BOME",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "BOME/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FBba2XsQVhkoQDMfbNLVmo7dsvssdT39BMzVc2eFfE21\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"GuXKCb9ibwSeRSdSYqaCL3dcxBZ7jJcj6Y7rDwzmUBu9\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -778,20 +914,16 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BTC-USD"
+        },
+        {
           "name": "bitfinex_ws",
           "off_chain_ticker": "BTCUSD"
         },
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XBT/USD"
-        },
-        {
-          "name": "coingecko_api",
-          "off_chain_ticker": "bitcoin/usd"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "BTCUSD-PERP"
+          "name": "okx_ws",
+          "off_chain_ticker": "BTC-USD"
         },
         {
           "name": "kraken_api",
@@ -802,15 +934,19 @@
           "off_chain_ticker": "btcusd"
         },
         {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "BTCUSD-PERP"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "XBT/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "bitcoin/usd"
+        },
+        {
           "name": "coinbase_ws",
-          "off_chain_ticker": "BTC-USD"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "BTC-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "BTC-USD"
         }
       ]
@@ -826,19 +962,23 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "BTCUSDC"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XBT/USDC"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "BTCUSDC"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "BTCUSDC"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "BTC-USDC"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "BTCUSDC"
         },
         {
@@ -854,16 +994,12 @@
           "off_chain_ticker": "btcusdc"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "BTC-USDC"
+          "name": "kraken_ws",
+          "off_chain_ticker": "XBT/USDC"
         },
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "BTC-USDC"
-        },
-        {
-          "name": "coinbase_api",
-          "off_chain_ticker": "BTC-USDC"
+          "name": "mexc_ws",
+          "off_chain_ticker": "BTCUSDC"
         }
       ]
     },
@@ -878,27 +1014,27 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "BTCUSDT"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XBT/USDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "BTCUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "BTCUSDT"
         },
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "BTC_USDT"
+          "name": "coinbase_api",
+          "off_chain_ticker": "BTC-USDT"
         },
         {
-          "name": "crypto_dot_com_ws",
+          "name": "kucoin_ws",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "BTC-USDT"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "BTCUSDT"
+        },
+        {
+          "name": "gate_ws",
           "off_chain_ticker": "BTC_USDT"
         },
         {
@@ -910,24 +1046,75 @@
           "off_chain_ticker": "btcusdt"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "BTC-USDT"
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "BTC_USDT"
         },
         {
           "name": "huobi_ws",
           "off_chain_ticker": "btcusdt"
         },
         {
-          "name": "kucoin_ws",
+          "name": "kraken_ws",
+          "off_chain_ticker": "XBT/USDT"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "BTC-USDT"
         },
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "BTC-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "BTCUSDT"
+        }
+      ]
+    },
+    "CHAT/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "CHAT",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "BTC-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "CHAT/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FKCCPsYDgEoVpEhyE2XMFAXq5zWFrWHgpQjVEKQk1C54\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9APPnbdEXbJpktfKSGbbdgYvj6K3ZFRDFwQUabFw6CHP\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "CHEEMS/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "CHEEMS",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "CHEEMS/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HRi4eJ8xWFG4hsv7FA9L7YnPLSxhQR4U7CCXKyZvcLXe\",\"token_decimals\":4},\"quote_token_vault\":{\"token_vault_address\":\"4gnEBvHQEx4nLcf9qWk1Wsxh9V1GFFDf4MfwEYmFo8hm\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "CHONKY/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "CHONKY",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "CHONKY/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9rJqiGuRG971HCpapVNJtN4ho2fKMhkPiZRhQCAohonU\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"6Fbs4sCBH5jZp1v2Rr6zVdU44Fn4Vv9iPhY6eihjfdbz\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -942,19 +1129,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "COMP/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "COMP-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "COMPUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "COMP-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "COMP/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "COMP-USD"
         }
       ]
@@ -970,20 +1157,20 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
+          "name": "binance_api",
           "off_chain_ticker": "COMPUSDT"
         },
         {
-          "name": "binance_api",
-          "off_chain_ticker": "COMPUSDT"
+          "name": "okx_ws",
+          "off_chain_ticker": "COMP-USDT"
         },
         {
           "name": "gate_ws",
           "off_chain_ticker": "COMP_USDT"
         },
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "COMP-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "COMPUSDT"
         }
       ]
     },
@@ -998,19 +1185,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "CRV/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "CRV-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "CRVUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "CRV-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "CRV/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "CRV-USD"
         }
       ]
@@ -1026,16 +1213,8 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "CRVUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "CRVUSDT"
-        },
-        {
-          "name": "gate_ws",
-          "off_chain_ticker": "CRV_USDT"
         },
         {
           "name": "kucoin_ws",
@@ -1044,6 +1223,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "CRV-USDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "CRV_USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "CRVUSDT"
         }
       ]
     },
@@ -1058,7 +1245,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "DAI/ETH",
           "metadata_JSON": "{\"address\":\"0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":true}"
         }
@@ -1075,7 +1262,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "DAI/USDC",
           "metadata_JSON": "{\"address\":\"0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -1092,19 +1279,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XDG/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "DOGE-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "XDGUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "DOGE-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "XDG/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "DOGE-USD"
         }
       ]
@@ -1120,15 +1307,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "DOGEUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "DOGEUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "DOGEUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "DOGE-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "DOGE-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "DOGEUSDT"
         },
         {
@@ -1144,12 +1335,8 @@
           "off_chain_ticker": "dogeusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "DOGE-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "DOGE-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "DOGEUSDT"
         }
       ]
     },
@@ -1164,19 +1351,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "DOT/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "DOT-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "DOTUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "DOT-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "DOT/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "DOT-USD"
         }
       ]
@@ -1192,15 +1379,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "DOTUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "DOTUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "DOTUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "DOT-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "DOT-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "DOTUSDT"
         },
         {
@@ -1212,12 +1403,25 @@
           "off_chain_ticker": "DOTUSDT"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "DOT-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "DOTUSDT"
+        }
+      ]
+    },
+    "DUKO/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "DUKO",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "DOT-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "DUKO/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HD7aZ6YrqAxVbGNAMEKxozcW1ZDU7pbKfd7XMmZtxyzk\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"A9J2mXPXfRZ7Sh2ymUgCJM4p9iUjZBcyAfrz49PoBBN4\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -1232,28 +1436,28 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "DYDX/USD"
-        },
-        {
-          "name": "coingecko_api",
-          "off_chain_ticker": "dydx-chain/usd"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "DYDXUSD-PERP"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "DYDXUSD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "DYDX-USD"
         },
         {
           "name": "okx_ws",
           "off_chain_ticker": "DYDX-USD"
         },
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "DYDX-USD"
+          "name": "kraken_api",
+          "off_chain_ticker": "DYDXUSD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "DYDXUSD-PERP"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "DYDX/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "dydx-chain/usd"
         }
       ]
     },
@@ -1284,15 +1488,23 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "DYDXUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "DYDXUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "DYDXUSDT"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "DYDX-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "DYDXUSDT"
         },
         {
@@ -1308,16 +1520,8 @@
           "off_chain_ticker": "dydxusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "DYDX-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "DYDX-USDT"
-        },
-        {
-          "name": "coinbase_api",
-          "off_chain_ticker": "DYDX-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "DYDXUSDT"
         }
       ]
     },
@@ -1332,7 +1536,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "ENA/ETH",
           "metadata_JSON": "{\"address\":\"0xc3Db44ADC1fCdFd5671f555236eae49f4A8EEa18\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -1349,7 +1553,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "ENA/USDC",
           "metadata_JSON": "{\"address\":\"0x408A625596f47314e1FD4a6cBCE84C4A8695bA3f\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -1366,7 +1570,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "ENA/USDT",
           "metadata_JSON": "{\"address\":\"0x4185D2952eb74A28EF550a410BA9b8e210Ee9391\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -1383,15 +1587,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETC-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "ETCUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "ETC-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "ETC-USD"
         }
       ]
@@ -1407,12 +1611,16 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
+          "name": "binance_api",
           "off_chain_ticker": "ETCUSDT"
         },
         {
-          "name": "binance_api",
-          "off_chain_ticker": "ETCUSDT"
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ETC-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ETC-USDT"
         },
         {
           "name": "gate_ws",
@@ -1423,12 +1631,8 @@
           "off_chain_ticker": "etcusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "ETC-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "ETC-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETCUSDT"
         }
       ]
     },
@@ -1443,31 +1647,27 @@
       },
       "provider_configs": [
         {
-          "name": "bitfinex_ws",
-          "off_chain_ticker": "ETHBTC"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "ETH/XBT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ETHBTC"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "ETHBTC"
         },
         {
-          "name": "coingecko_api",
-          "off_chain_ticker": "ethereum/btc"
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "bitfinex_ws",
+          "off_chain_ticker": "ETHBTC"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "ETH-BTC"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "ETH-BTC"
         },
         {
           "name": "gate_ws",
-          "off_chain_ticker": "ETH_BTC"
-        },
-        {
-          "name": "crypto_dot_com_ws",
           "off_chain_ticker": "ETH_BTC"
         },
         {
@@ -1479,24 +1679,28 @@
           "off_chain_ticker": "ethbtc"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "ETH-BTC"
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ETH_BTC"
         },
         {
           "name": "huobi_ws",
           "off_chain_ticker": "ethbtc"
         },
         {
-          "name": "kucoin_ws",
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/XBT"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "ethereum/btc"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "ETH-BTC"
         },
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "ETH-BTC"
-        },
-        {
-          "name": "coinbase_api",
-          "off_chain_ticker": "ETH-BTC"
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETHBTC"
         }
       ]
     },
@@ -1511,20 +1715,16 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-USD"
+        },
+        {
           "name": "bitfinex_ws",
           "off_chain_ticker": "ETHUSD"
         },
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "ETH/USD"
-        },
-        {
-          "name": "coingecko_api",
-          "off_chain_ticker": "ethereum/usd"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "ETHUSD-PERP"
+          "name": "okx_ws",
+          "off_chain_ticker": "ETH-USD"
         },
         {
           "name": "kraken_api",
@@ -1535,15 +1735,19 @@
           "off_chain_ticker": "ethusd"
         },
         {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ETHUSD-PERP"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "ethereum/usd"
+        },
+        {
           "name": "coinbase_ws",
-          "off_chain_ticker": "ETH-USD"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "ETH-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "ETH-USD"
         }
       ]
@@ -1559,33 +1763,12 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "ETHUSDC"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "ETH/USDC"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ETHUSDC"
-        },
-        {
-          "name": "uniswapv3_api",
-          "off_chain_ticker": "ETH/USDC",
-          "metadata_JSON": "{\"address\":\"0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":true}"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "ETHUSDC"
         },
         {
-          "name": "kraken_api",
-          "off_chain_ticker": "ETHUSDC"
-        },
-        {
-          "name": "huobi_ws",
-          "off_chain_ticker": "ethusdc"
+          "name": "coinbase_api",
+          "off_chain_ticker": "ETH-USDC"
         },
         {
           "name": "kucoin_ws",
@@ -1596,8 +1779,29 @@
           "off_chain_ticker": "ETH-USDC"
         },
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "ETH-USDC"
+          "name": "bybit_ws",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "uniswapv3_api-ethereum",
+          "off_chain_ticker": "ETH/USDC",
+          "metadata_JSON": "{\"address\":\"0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":true}"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ETHUSDC"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "ethusdc"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/USDC"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETHUSDC"
         }
       ]
     },
@@ -1612,45 +1816,12 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "ETHUSDT"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "ETH/USDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "ETHUSDT"
-        },
-        {
-          "name": "uniswapv3_api",
-          "off_chain_ticker": "ETH/USDT",
-          "metadata_JSON": "{\"address\":\"0x4e68Ccd3E89f51C3074ca5072bbAC773960dFa36\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "ETHUSDT"
         },
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "ETH_USDT"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "ETH_USDT"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "ETHUSDT"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "ETH-USDT"
-        },
-        {
-          "name": "huobi_ws",
-          "off_chain_ticker": "ethusdt"
         },
         {
           "name": "kucoin_ws",
@@ -1661,8 +1832,41 @@
           "off_chain_ticker": "ETH-USDT"
         },
         {
-          "name": "coinbase_api",
+          "name": "bybit_ws",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "ETH_USDT"
+        },
+        {
+          "name": "uniswapv3_api-ethereum",
+          "off_chain_ticker": "ETH/USDT",
+          "metadata_JSON": "{\"address\":\"0x4e68Ccd3E89f51C3074ca5072bbAC773960dFa36\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "ETHUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ETH_USDT"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "ethusdt"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "ETH/USDT"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "ETH-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "ETHUSDT"
         }
       ]
     },
@@ -1677,7 +1881,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "ETHFI/ETH",
           "metadata_JSON": "{\"address\":\"0xDeFDAC77A9A767a2c4eEd826E1AEaD2dAcE53e1C\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":true}"
         }
@@ -1694,7 +1898,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "ETHFI/USDT",
           "metadata_JSON": "{\"address\":\"0x80fa4C1fd0fbB9A4f071999aF69531dee1016644\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":true}"
         }
@@ -1711,19 +1915,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "FIL/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "FIL-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "FILUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "FIL-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "FIL/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "FIL-USD"
         }
       ]
@@ -1739,12 +1943,12 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
+          "name": "binance_api",
           "off_chain_ticker": "FILUSDT"
         },
         {
-          "name": "binance_api",
-          "off_chain_ticker": "FILUSDT"
+          "name": "okx_ws",
+          "off_chain_ticker": "FIL-USDT"
         },
         {
           "name": "gate_ws",
@@ -1755,8 +1959,59 @@
           "off_chain_ticker": "filusdt"
         },
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "FIL-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "FILUSDT"
+        }
+      ]
+    },
+    "FKETH/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "FKETH",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "FKETH/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"DNh9pRMiRX6zwWuzsXtmxmXLdbAGNuYg4dmmnzrpL871\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"47fCbQKnJYaMbPaPSyUrPXPUahizhYwAbwXnEcKN1vwD\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "GMEOW/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "GMEOW",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "GMEOW/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9crtLiYfxYVYQ9sCfWix9vAMPJyBXCcMzCPXZ5isPFxB\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"ANLamVN6Df4HqC6YevQskovddsjhkqBqHsyLzhDibFEj\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "HARAMBE/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "HARAMBE",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "HARAMBE/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5f9Fgcp2C9vdrp75GspNKBjzdaxq5uiqpLVkgtWKpDZZ\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"Apgp3SzNB5VpVWbK5q2ucBvCJEsf1gqXL4iUAqvD9pgB\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -1771,9 +2026,26 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "HARRY_POTTER_OBAMA_SONIC_10_INU/ETH",
           "metadata_JSON": "{\"address\":\"0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa\",\"base_decimals\":8,\"quote_decimals\":18,\"invert\":false}"
+        }
+      ]
+    },
+    "KHAI/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "KHAI",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "KHAI/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"6g4rhxVTrN6SrtNvimq4QiU8yA5XScvwL6wxaMkegrtJ\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"7p2PrGMyeetNRqTKFraL7eYo2TbU3apWz6vfqrZFiPcG\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -1788,7 +2060,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "LDO/ETH",
           "metadata_JSON": "{\"address\":\"0xa3f558aebAecAf0e11cA4b2199cC5Ed341edfd74\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -1805,19 +2077,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "LDO/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "LDO-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "LDOUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "LDO-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "LDO/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "LDO-USD"
         }
       ]
@@ -1833,7 +2105,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "LDO/USDC",
           "metadata_JSON": "{\"address\":\"0x78235D08B2aE7a3E00184329212a4d7AcD2F9985\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -1850,15 +2122,6 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "LDOUSDT"
-        },
-        {
-          "name": "uniswapv3_api",
-          "off_chain_ticker": "LDO/USDT",
-          "metadata_JSON": "{\"address\":\"0xd296B77f1CAD3F0eC64Ae00cdbFa749E24b1f9cb\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "LDOUSDT"
         },
@@ -1869,6 +2132,44 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "LDO-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "LDOUSDT"
+        }
+      ]
+    },
+    "LIGMA/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "LIGMA",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "LIGMA/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"6aefaP7C6eKbW2taLqmyHinYH4ZMyY2G6MdqNu6PvfbL\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"G3kKDmmxwpjt4NVdQgdvgiuFxFsAsC1hSv4PVg63cKwM\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "LIKE/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "LIKE",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "LIKE/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"8LoHX6f6bMdQVs4mThoH2KwX2dQDSkqVFADi4ZjDQv9T\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"2Fwm8M8vuPXEXxvKz98VdawDxsK9W8uRuJyJhvtRdhid\",\"token_decimals\":6}}"
         }
       ]
     },
@@ -1883,7 +2184,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "LINK/ETH",
           "metadata_JSON": "{\"address\":\"0xa6Cc3C2531FdaA6Ae1A3CA84c2855806728693e8\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -1900,19 +2201,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "LINK/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "LINK-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "LINKUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "LINK-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "LINK/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "LINK-USD"
         }
       ]
@@ -1928,7 +2229,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "LINK/USDC",
           "metadata_JSON": "{\"address\":\"0xFAD57d2039C21811C8F2B5D5B65308aa99D31559\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -1945,19 +2246,7 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "LINKUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "LINKUSDT"
-        },
-        {
           "name": "binance_api",
-          "off_chain_ticker": "LINKUSDT"
-        },
-        {
-          "name": "kraken_api",
           "off_chain_ticker": "LINKUSDT"
         },
         {
@@ -1967,6 +2256,18 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "LINK-USDT"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "LINKUSDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "LINKUSDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "LINKUSDT"
         }
       ]
     },
@@ -1981,19 +2282,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XLTCZ/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "LTC-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "XLTCZUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "LTC-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "XLTCZ/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "LTC-USD"
         }
       ]
@@ -2009,15 +2310,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "LTCUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "LTCUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "LTCUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "LTC-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "LTC-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "LTCUSDT"
         },
         {
@@ -2029,12 +2334,25 @@
           "off_chain_ticker": "ltcusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "LTC-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "LTCUSDT"
+        }
+      ]
+    },
+    "MARVIN/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "MARVIN",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "LTC-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "MARVIN/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"3vLTpZneGAzceAXKu2HuesT4rt6ksRJ3Q9WvjUmwksqA\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"3rWa7PstXZk4ZaEhLamfoqMVozwq7hfXEDqyNbHcL4uK\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -2049,19 +2367,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "MATIC/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "MATIC-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "MATICUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "MATIC-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "MATIC/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "MATIC-USD"
         }
       ]
@@ -2077,15 +2395,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "MATICUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "MATICUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "MATICUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "MATIC-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "MATIC-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "MATICUSDT"
         },
         {
@@ -2101,12 +2423,25 @@
           "off_chain_ticker": "maticusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "MATIC-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "MATICUSDT"
+        }
+      ]
+    },
+    "MEW/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "MEW",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "MATIC-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "MEW/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4HqAjFKuQX7tnXEkxsjGQha3G4bcgER8qPXRahn9gj8F\",\"token_decimals\":5},\"quote_token_vault\":{\"token_vault_address\":\"BhNdEGJef9jSqT1iCEkFZ2bYZCdpC1vuiWtqDt87vBVp\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -2121,7 +2456,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "MKR/ETH",
           "metadata_JSON": "{\"address\":\"0xe8c6c9227491C0a8156A0106A0204d881BB7E531\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -2138,19 +2473,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "MKR/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "MKR-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "MKRUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "MKR-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "MKR/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "MKR-USD"
         }
       ]
@@ -2166,7 +2501,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "MKR/USDC",
           "metadata_JSON": "{\"address\":\"0xC486Ad2764D55C7dc033487D634195d6e4A6917E\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -2183,10 +2518,6 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "MKRUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "MKRUSDT"
         },
@@ -2197,6 +2528,10 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "MKR-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "MKRUSDT"
         }
       ]
     },
@@ -2211,7 +2546,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "MOG/ETH",
           "metadata_JSON": "{\"address\":\"0x7832310Cd0de39c4cE0A635F34d9a4B5b47fd434\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -2233,6 +2568,74 @@
         }
       ]
     },
+    "MONK/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "MONK",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "MONK/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"CeLZLhC2nScSpsKqRL1eRr3L3LLfjDzakZLCUKcUHW1m\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"Be6DM12uTWtxHMSRJeah3J5PRP4CumR28Yy2qpLQFTE7\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "MOUTAI/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "MOUTAI",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "MOUTAI/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4VkmzH14ETcNhSQLTK6AtL1ZP8UmvWpbNCgokDVfiCcD\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HSQPdDCxtGo4fTHeZuBGWtQUqHgRsgdz4BVhTCCAtsTv\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "MPLX/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "MPLX",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "MPLX/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5zdZza5N2TzV7cPtLeqCZQQRYCCHFVdXWLMeJo75DK24\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"7mwk7ZBiTtrKkKC5o34gpFBSCabEvLkp2fLjGNz43PyM\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "MUMU/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "MUMU",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "MUMU/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2Re1H89emr8hNacyDTrm1NU8VEhuwaJX7JwcdDqy5Q6g\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"4VPXFMpndqZhME27vMqtkuGtBo7hVTA9kEvo87zbjXsA\",\"token_decimals\":9}}"
+        }
+      ]
+    },
     "NEAR/USD": {
       "ticker": {
         "currency_pair": {
@@ -2244,15 +2647,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "NEAR-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "NEARUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "NEAR-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "NEAR-USD"
         }
       ]
@@ -2268,12 +2671,16 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
+          "name": "binance_api",
           "off_chain_ticker": "NEARUSDT"
         },
         {
-          "name": "binance_api",
-          "off_chain_ticker": "NEARUSDT"
+          "name": "kucoin_ws",
+          "off_chain_ticker": "NEAR-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "NEAR-USDT"
         },
         {
           "name": "gate_ws",
@@ -2284,12 +2691,76 @@
           "off_chain_ticker": "nearusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "NEAR-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "NEARUSDT"
+        }
+      ]
+    },
+    "NICK/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "NICK",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "NEAR-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "NICK/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FDvQiwbJVHdSZE3ngZ6WCkJfciFTdg958W7bxyKU2PJ9\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"z6ZCZESyof3ZgCJ23hY31f1SSD33gQgyVRfMB8wP9iM\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "NINJA/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "NINJA",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "NINJA/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"5Mmie9Drh6RGMy8X8UQ3egyBi4Hvva1TR778bf77ViCV\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"HxVbv76N8EoRGEPJsKdtWCu3mz7ZXJi8dbZy8kM3QL3i\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "NOS/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "NOS",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "NOS/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9Gs4LvFZw18EBLrSmZbQBw4G2SpTu4bJRCWH1Dz33cUZ\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"FqKU4BxbabPd1tcZAVVv8JkdUWmdz32CocRM856gA3Lw\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "NUB/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "NUB",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "NUB/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9uNqUwneLXbQ6YKndciL5aBXTLJhwpyDXkZmaBbWfwWz\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"75DrZt3zmGSFfKaYDm7yHLKMrr35Wy8ffBNN1143PWbj\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -2304,15 +2775,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "OP-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "OPUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "OP-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "OP-USD"
         }
       ]
@@ -2328,16 +2799,8 @@
       },
       "provider_configs": [
         {
-          "name": "mexc_ws",
-          "off_chain_ticker": "OPUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "OPUSDT"
-        },
-        {
-          "name": "gate_ws",
-          "off_chain_ticker": "OP_USDT"
         },
         {
           "name": "kucoin_ws",
@@ -2346,6 +2809,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "OP-USDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "OP_USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "OPUSDT"
         }
       ]
     },
@@ -2360,19 +2831,19 @@
       },
       "provider_configs": [
         {
-          "name": "coingecko_api",
-          "off_chain_ticker": "osmosis/usd"
+          "name": "coinbase_api",
+          "off_chain_ticker": "OSMO-USD"
         },
         {
           "name": "crypto_dot_com_ws",
           "off_chain_ticker": "OSMO_USD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "OSMO-USD"
+          "name": "coingecko_api",
+          "off_chain_ticker": "osmosis/usd"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OSMO-USD"
         }
       ]
@@ -2388,11 +2859,11 @@
       },
       "provider_configs": [
         {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "OSMO-USDC"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OSMO-USDC"
         }
       ]
@@ -2408,7 +2879,7 @@
       },
       "provider_configs": [
         {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "OSMO-USDT"
         },
         {
@@ -2416,8 +2887,25 @@
           "off_chain_ticker": "OSMO-USDT"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OSMO-USDT"
+        }
+      ]
+    },
+    "PENG/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "PENG",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "PENG/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"2g5q7fBGKZm2CXix8JjK4ZFdBTHQ1LerxkseBTqWuDdD\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"GmLJXUzjQAAU86a91hKesg5P9pKb6p9AZaGBEZLaDySD\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -2432,7 +2920,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "PEPE/ETH",
           "metadata_JSON": "{\"address\":\"0x11950d141EcB863F01007AdD7D1A342041227b58\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -2449,16 +2937,16 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "PEPE/USD"
+          "name": "gecko_terminal_api",
+          "off_chain_ticker": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "PEPEUSD"
         },
         {
-          "name": "gecko_terminal_api",
-          "off_chain_ticker": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+          "name": "kraken_ws",
+          "off_chain_ticker": "PEPE/USD"
         }
       ]
     },
@@ -2473,7 +2961,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "PEPE/USDC",
           "metadata_JSON": "{\"address\":\"0xcEE31C846CbF003F4cEB5Bbd234cBA03C6e940C7\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -2490,20 +2978,8 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "PEPEUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "PEPEUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "PEPEUSDT"
-        },
-        {
-          "name": "gate_ws",
-          "off_chain_ticker": "PEPE_USDT"
         },
         {
           "name": "kucoin_ws",
@@ -2512,6 +2988,137 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "PEPE-USDT"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "PEPEUSDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "PEPE_USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "PEPEUSDT"
+        }
+      ]
+    },
+    "PONKE/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "PONKE",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "PONKE/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"D7rw7fyEzo9EQcozjqAHJwbdbywGcSLw1at5MioZtMZ4\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"8DcvfWidQ53a3SCBrWxBWL2UU5zEBAKEypApiiCCFu2Y\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "POPCAT/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "POPCAT",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "POPCAT/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4Vc6N76UBu26c3jJDKBAbvSD7zPLuQWStBk7QgVEoeoS\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"n6CwMY77wdEftf2VF6uPvbusYoraYUci3nYBPqH1DJ5\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "POPCAT/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "POPCAT",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "POPCAT/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Ej1CZHUcHYcqAx3pJXUvqCTs3diVmEWSfozvQQLsQkyU\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"pTJo5c4ynoxxRAgDyWgQKasR8dgqQHP3CSeoXzDgZvZ\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "RAY/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "RAY",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "RAY/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Em6rHi68trYgBFyJ5261A2nhwuQWfLcirgzZZYoRcrkX\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"3mEFzHsJyu2Cpjrz6zPmTzP7uoLFj9SbbecGVzzkL1mJ\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "RAY/USDC": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "RAY",
+          "Quote": "USDC"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "RAY/USDC",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"FdmKUE4UMiJYFK5ogCngHzShuVKrFXBamPWcewDr31th\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"Eqrhxd7bDUCH3MepKmdVkgwazXRzY6iHhEoBpY7yAohk\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "RAY/USDT": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "RAY",
+          "Quote": "USDT"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "RAY/USDT",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"3wqhzSB9avepM9xMteiZnbJw75zmTBDVmPFLTQAGcSMN\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"5GtSbKJEPaoumrDzNj4kGkgZtfDyUceKaHrPziazALC1\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "RETARDIO/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "RETARDIO",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "RETARDIO/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"HXzTvbuKKPyNMmLKJb8vaSUaRZsVS2J2AAsDuDm36rNC\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HNcAAdLKHSRnwdmmWCYnP5Zcd11sfGpAoCuWFtugt2ma\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -2526,15 +3133,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "SEI-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "SEIUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "SEI-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "SEI-USD"
         }
       ]
@@ -2550,15 +3157,15 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "SEIUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "SEIUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "SEIUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SEI-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "SEIUSDT"
         },
         {
@@ -2570,8 +3177,8 @@
           "off_chain_ticker": "seiusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "SEI-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "SEIUSDT"
         }
       ]
     },
@@ -2586,19 +3193,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "SHIB/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "SHIB-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "SHIBUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "SHIB-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "SHIB/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SHIB-USD"
         }
       ]
@@ -2614,15 +3221,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "SHIBUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "SHIBUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "SHIBUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SHIB-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "SHIB-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "SHIBUSDT"
         },
         {
@@ -2634,12 +3245,93 @@
           "off_chain_ticker": "SHIBUSDT"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "SHIB-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "SHIBUSDT"
+        }
+      ]
+    },
+    "SLERF/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "SLERF",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "SHIB-USDT"
+          "name": "raydium_api",
+          "off_chain_ticker": "SLERF/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9A2ZsPz5Zg6jKN4o4KRMjTVPmkH51wYWFLmt4KBRy1Rq\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"5Zumc1SYPmQ89nqwXqzogeuhdJ85iEMpSk35A4P87pmD\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "SMOLE/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "SMOLE",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "SMOLE/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "SOL/EPIK": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "SOL",
+          "Quote": "EPIK"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "SOL/EPIK",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"9aGBQqKRyC5bbrZsnZJJtp59EqJj7vBkgV3HehgKEu5y\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"ANpMJb9ToMGNivLEdmBNBC2Qcf5ASaZkEdmUddV1FUZB\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "SOL/HOBBES": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "SOL",
+          "Quote": "HOBBES"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "SOL/HOBBES",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"4J3cZy8G2qm6MBVGfeXhYETZvbRThv9TPPeY3p83QYLb\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"7DejqJN5iRcuUhR7C1Vif3SbjTXKCzkpyS3AxC28tiaF\",\"token_decimals\":6}}"
+        }
+      ]
+    },
+    "SOL/MAIL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "SOL",
+          "Quote": "MAIL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "SOL/MAIL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"BtJXP2iWPGW2x3EsscHtCuFLBECRCfrxsJ2SDi9jh96C\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"GmHpq7Wgri9TFitGj89quvwRc1ALhe7dePM6VBAiqxrC\",\"token_decimals\":6}}"
         }
       ]
     },
@@ -2654,20 +3346,16 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "SOL-USD"
+        },
+        {
           "name": "bitfinex_ws",
           "off_chain_ticker": "SOLUSD"
         },
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "SOL/USD"
-        },
-        {
-          "name": "coingecko_api",
-          "off_chain_ticker": "solana/usd"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "SOLUSD-PERP"
+          "name": "okx_ws",
+          "off_chain_ticker": "SOL-USD"
         },
         {
           "name": "kraken_api",
@@ -2678,15 +3366,19 @@
           "off_chain_ticker": "solusd"
         },
         {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "SOLUSD-PERP"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "SOL/USD"
+        },
+        {
+          "name": "coingecko_api",
+          "off_chain_ticker": "solana/usd"
+        },
+        {
           "name": "coinbase_ws",
-          "off_chain_ticker": "SOL-USD"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "SOL-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "SOL-USD"
         }
       ]
@@ -2702,23 +3394,11 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "SOLUSDC"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "SOLUSDC"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "SOLUSDC"
         },
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "SOL_USDC"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "SOL-USDC"
         },
         {
@@ -2730,8 +3410,20 @@
           "off_chain_ticker": "SOL-USDC"
         },
         {
-          "name": "coinbase_api",
+          "name": "bybit_ws",
+          "off_chain_ticker": "SOLUSDC"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "SOL_USDC"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "SOL-USDC"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "SOLUSDC"
         }
       ]
     },
@@ -2746,40 +3438,12 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "SOLUSDT"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "SOL/USDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "SOLUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "SOLUSDT"
         },
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "SOL_USDT"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "SOL_USDT"
-        },
-        {
-          "name": "kraken_api",
-          "off_chain_ticker": "SOLUSDT"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "SOL-USDT"
-        },
-        {
-          "name": "huobi_ws",
-          "off_chain_ticker": "solusdt"
         },
         {
           "name": "kucoin_ws",
@@ -2790,8 +3454,36 @@
           "off_chain_ticker": "SOL-USDT"
         },
         {
-          "name": "coinbase_api",
+          "name": "bybit_ws",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "SOL_USDT"
+        },
+        {
+          "name": "kraken_api",
+          "off_chain_ticker": "SOLUSDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "SOL_USDT"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "solusdt"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "SOL/USDT"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "SOL-USDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "SOLUSDT"
         }
       ]
     },
@@ -2806,15 +3498,15 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "SUI-USD"
+        },
+        {
           "name": "kraken_api",
           "off_chain_ticker": "SUIUSD"
         },
         {
           "name": "coinbase_ws",
-          "off_chain_ticker": "SUI-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "SUI-USD"
         }
       ]
@@ -2830,15 +3522,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "SUIUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "SUIUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "SUIUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "SUI-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "SUI-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "SUIUSDT"
         },
         {
@@ -2850,12 +3546,8 @@
           "off_chain_ticker": "suiusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "SUI-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "SUI-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "SUIUSDT"
         }
       ]
     },
@@ -2870,8 +3562,20 @@
       },
       "provider_configs": [
         {
+          "name": "coinbase_api",
+          "off_chain_ticker": "TIA-USD"
+        },
+        {
           "name": "bitfinex_ws",
           "off_chain_ticker": "TIAUSD"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "TIA-USD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "TIAUSD-PERP"
         },
         {
           "name": "kraken_ws",
@@ -2882,19 +3586,7 @@
           "off_chain_ticker": "celestia/usd"
         },
         {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "TIAUSD-PERP"
-        },
-        {
           "name": "coinbase_ws",
-          "off_chain_ticker": "TIA-USD"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "TIA-USD"
-        },
-        {
-          "name": "coinbase_api",
           "off_chain_ticker": "TIA-USD"
         }
       ]
@@ -2910,11 +3602,11 @@
       },
       "provider_configs": [
         {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "TIA-USDC"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "TIA-USDC"
         }
       ]
@@ -2930,20 +3622,8 @@
       },
       "provider_configs": [
         {
-          "name": "gate_ws",
-          "off_chain_ticker": "TIA_USDT"
-        },
-        {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "TIA_USDT"
-        },
-        {
-          "name": "coinbase_ws",
+          "name": "coinbase_api",
           "off_chain_ticker": "TIA-USDT"
-        },
-        {
-          "name": "huobi_ws",
-          "off_chain_ticker": "tiausdt"
         },
         {
           "name": "kucoin_ws",
@@ -2954,8 +3634,71 @@
           "off_chain_ticker": "TIA-USDT"
         },
         {
-          "name": "coinbase_api",
+          "name": "gate_ws",
+          "off_chain_ticker": "TIA_USDT"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "TIA_USDT"
+        },
+        {
+          "name": "huobi_ws",
+          "off_chain_ticker": "tiausdt"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "TIA-USDT"
+        }
+      ]
+    },
+    "TOOKER/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "TOOKER",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "TOOKER/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"Cki9WdL3sCoNY3cLmfG4iqSbvB8g1Fr9tw8qa5tP1m3Y\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"2vTTh5pGbzc6guAJmt78XnTcXVBEZEWmGBkXkSNZwN59\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "TREMP/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "TREMP",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "TREMP/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"G2XNC6Rt2G7JZQWhqpJriYwZyxd2L52KSDbDNBCYCpvx\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"9DfnSR9h3hrmgy5pjqBP3SrVQRWPfjSqZZBrNNYGoyaN\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "TRUMP/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "TRUMP",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "TRUMP/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"GwUn3JYQ5PC6P9cB9HsatJN7y7aw3BXrNqHPpoHtWyKF\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"5DNPt6WYgj3x7EmU4Fyqe3jDYPk2HMAB21H5N4Ggbev9\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -2970,12 +3713,12 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "TRX/USD"
-        },
-        {
           "name": "kraken_api",
           "off_chain_ticker": "TRXUSD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "TRX/USD"
         }
       ]
     },
@@ -2990,15 +3733,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "TRXUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "TRXUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "TRXUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "TRX-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "TRX-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "TRXUSDT"
         },
         {
@@ -3010,12 +3757,8 @@
           "off_chain_ticker": "trxusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "TRX-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "TRX-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "TRXUSDT"
         }
       ]
     },
@@ -3030,7 +3773,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "UNI/ETH",
           "metadata_JSON": "{\"address\":\"0x1d42064Fc4Beb5F8aAF85F4617AE8b3b5B8Bd801\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -3047,19 +3790,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "UNI/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "UNI-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "UNIUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "UNI-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "UNI/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "UNI-USD"
         }
       ]
@@ -3075,7 +3818,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "UNI/USDC",
           "metadata_JSON": "{\"address\":\"0xD0fC8bA7E267f2bc56044A7715A489d851dC6D78\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -3092,21 +3835,8 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "UNIUSDT"
-        },
-        {
-          "name": "uniswapv3_api",
-          "off_chain_ticker": "UNI/USDT",
-          "metadata_JSON": "{\"address\":\"0x3470447f3CecfFAc709D3e783A307790b0208d60\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "UNIUSDT"
-        },
-        {
-          "name": "gate_ws",
-          "off_chain_ticker": "UNI_USDT"
         },
         {
           "name": "kucoin_ws",
@@ -3115,6 +3845,36 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "UNI-USDT"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "UNIUSDT"
+        },
+        {
+          "name": "gate_ws",
+          "off_chain_ticker": "UNI_USDT"
+        },
+        {
+          "name": "uniswapv3_api-ethereum",
+          "off_chain_ticker": "UNI/USDT",
+          "metadata_JSON": "{\"address\":\"0x3470447f3CecfFAc709D3e783A307790b0208d60\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
+        }
+      ]
+    },
+    "USDC/$MYRO": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "USDC",
+          "Quote": "$MYRO"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "USDC/$MYRO",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"AMtPGYQS873njs35mD9MAAMKoospEuzNHPy7LQuuKo4A\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"BUvMbqP311JDU4ZGnf1rSZJLjutTU9VpNLEos393TYyW\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -3129,16 +3889,16 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "USDC/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "USDC-USD"
         },
         {
           "name": "okx_ws",
           "off_chain_ticker": "USDC-USD"
         },
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "USDC-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "USDC/USD"
         }
       ]
     },
@@ -3153,19 +3913,23 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "USDCUSDT"
-        },
-        {
-          "name": "kraken_ws",
-          "off_chain_ticker": "USDC/USDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "USDCUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "USDCUSDT"
+        },
+        {
+          "name": "coinbase_api",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "USDC-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "USDCUSDT"
         },
         {
@@ -3181,24 +3945,20 @@
           "off_chain_ticker": "usdcusdt"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "USDC-USDT"
-        },
-        {
           "name": "huobi_ws",
           "off_chain_ticker": "usdcusdt"
         },
         {
-          "name": "kucoin_ws",
+          "name": "kraken_ws",
+          "off_chain_ticker": "USDC/USDT"
+        },
+        {
+          "name": "coinbase_ws",
           "off_chain_ticker": "USDC-USDT"
         },
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "USDC-USDT"
-        },
-        {
-          "name": "coinbase_api",
-          "off_chain_ticker": "USDC-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "USDCUSDT"
         }
       ]
     },
@@ -3213,16 +3973,16 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "USDT/USD"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "USDTUSD"
         },
         {
-          "name": "crypto_dot_com_ws",
-          "off_chain_ticker": "USDT_USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "USDT-USD"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "USDT-USD"
         },
         {
           "name": "kraken_api",
@@ -3233,16 +3993,50 @@
           "off_chain_ticker": "usdtusd"
         },
         {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "USDT_USD"
+        },
+        {
+          "name": "kraken_ws",
+          "off_chain_ticker": "USDT/USD"
+        },
+        {
           "name": "coinbase_ws",
           "off_chain_ticker": "USDT-USD"
+        }
+      ]
+    },
+    "VCAT/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "VCAT",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "okx_ws",
-          "off_chain_ticker": "USDT-USD"
+          "name": "raydium_api",
+          "off_chain_ticker": "VCAT/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"8gNjWm2wGubUiAXT9cXBeoY2NqAFkrnvKkh9J3gHZ7Wn\",\"token_decimals\":9},\"quote_token_vault\":{\"token_vault_address\":\"7G9HpLoYVhcBsg7ZEy928iUuzetJFK4AWBcfaCQTMp72\",\"token_decimals\":9}}"
+        }
+      ]
+    },
+    "VONSPEED/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "VONSPEED",
+          "Quote": "SOL"
         },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
         {
-          "name": "coinbase_api",
-          "off_chain_ticker": "USDT-USD"
+          "name": "raydium_api",
+          "off_chain_ticker": "VONSPEED/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"89CwpgTSsCc9u187kKvQQo6VAL5gKZViVub4eaNXfrtu\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"2fEchHP5r5wks9PPN1C2S39wPCe6Ni4247oMMTausc2a\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -3257,7 +4051,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "WBTC/ETH",
           "metadata_JSON": "{\"address\":\"0xCBCdF9626bC03E24f779434178A73a0B4bad62eD\",\"base_decimals\":8,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -3274,9 +4068,26 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "WBTC/USDC",
           "metadata_JSON": "{\"address\":\"0x99ac8cA7087fA4A2A1FB6357269965A2014ABc35\",\"base_decimals\":8,\"quote_decimals\":6,\"invert\":false}"
+        }
+      ]
+    },
+    "WHALES/SOL": {
+      "ticker": {
+        "currency_pair": {
+          "Base": "WHALES",
+          "Quote": "SOL"
+        },
+        "decimals": 18,
+        "min_provider_count": 1
+      },
+      "provider_configs": [
+        {
+          "name": "raydium_api",
+          "off_chain_ticker": "WHALES/SOL",
+          "metadata_JSON": "{\"base_token_vault\":{\"token_vault_address\":\"P9uSMnNEGHDP7Dhu7fKWfRViAGGHjEMv6urC8c2qG4k\",\"token_decimals\":6},\"quote_token_vault\":{\"token_vault_address\":\"CktEbT37HFRtwXVjwPEVfXHdcTAnqnmCvkgAw9SEN7zf\",\"token_decimals\":9}}"
         }
       ]
     },
@@ -3291,15 +4102,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "WLDUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "WLDUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "WLDUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "WLD-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "WLD-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "WLDUSDT"
         },
         {
@@ -3311,12 +4126,8 @@
           "off_chain_ticker": "wldusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "WLD-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "WLD-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "WLDUSDT"
         }
       ]
     },
@@ -3331,7 +4142,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "WSTETH/ETH",
           "metadata_JSON": "{\"address\":\"0x109830a1AAaD605BbF02a9dFA7B0B92EC2FB7dAa\",\"base_decimals\":18,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -3348,7 +4159,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "WSTETH/USDC",
           "metadata_JSON": "{\"address\":\"0x4622Df6fB2d9Bee0DCDaCF545aCDB6a2b2f4f863\",\"base_decimals\":18,\"quote_decimals\":6,\"invert\":false}"
         }
@@ -3365,7 +4176,7 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "WTAO/ETH",
           "metadata_JSON": "{\"address\":\"0x433a00819C771b33FA7223a5B3499b24FBCd1bBC\",\"base_decimals\":9,\"quote_decimals\":18,\"invert\":false}"
         }
@@ -3382,26 +4193,9 @@
       },
       "provider_configs": [
         {
-          "name": "uniswapv3_api",
+          "name": "uniswapv3_api-ethereum",
           "off_chain_ticker": "WTAO/USDC",
           "metadata_JSON": "{\"address\":\"0xf763Bb342eB3d23C02ccB86312422fe0c1c17E94\",\"base_decimals\":9,\"quote_decimals\":6,\"invert\":false}"
-        }
-      ]
-    },
-    "WTAO/USDT": {
-      "ticker": {
-        "currency_pair": {
-          "Base": "WTAO",
-          "Quote": "USDT"
-        },
-        "decimals": 18,
-        "min_provider_count": 1
-      },
-      "provider_configs": [
-        {
-          "name": "uniswapv3_api",
-          "off_chain_ticker": "WTAO/USDT",
-          "metadata_JSON": "{\"address\":\"0xFEb6A9de89465dA662Ff16F85b5342B73bD0B455\",\"base_decimals\":9,\"quote_decimals\":6,\"invert\":false}"
         }
       ]
     },
@@ -3416,19 +4210,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XXLMZ/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "XLM-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "XXLMZUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "XLM-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "XXLMZ/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "XLM-USD"
         }
       ]
@@ -3444,14 +4238,6 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "XLMUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "XLMUSDT"
-        },
-        {
           "name": "binance_api",
           "off_chain_ticker": "XLMUSDT"
         },
@@ -3462,6 +4248,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "XLM-USDT"
+        },
+        {
+          "name": "bybit_ws",
+          "off_chain_ticker": "XLMUSDT"
+        },
+        {
+          "name": "mexc_ws",
+          "off_chain_ticker": "XLMUSDT"
         }
       ]
     },
@@ -3476,19 +4270,19 @@
       },
       "provider_configs": [
         {
-          "name": "kraken_ws",
-          "off_chain_ticker": "XXRPZ/USD"
+          "name": "coinbase_api",
+          "off_chain_ticker": "XRP-USD"
         },
         {
           "name": "kraken_api",
           "off_chain_ticker": "XXRPZUSD"
         },
         {
-          "name": "coinbase_ws",
-          "off_chain_ticker": "XRP-USD"
+          "name": "kraken_ws",
+          "off_chain_ticker": "XXRPZ/USD"
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "XRP-USD"
         }
       ]
@@ -3504,15 +4298,19 @@
       },
       "provider_configs": [
         {
-          "name": "bybit_ws",
-          "off_chain_ticker": "XRPUSDT"
-        },
-        {
-          "name": "mexc_ws",
-          "off_chain_ticker": "XRPUSDT"
-        },
-        {
           "name": "binance_api",
+          "off_chain_ticker": "XRPUSDT"
+        },
+        {
+          "name": "kucoin_ws",
+          "off_chain_ticker": "XRP-USDT"
+        },
+        {
+          "name": "okx_ws",
+          "off_chain_ticker": "XRP-USDT"
+        },
+        {
+          "name": "bybit_ws",
           "off_chain_ticker": "XRPUSDT"
         },
         {
@@ -3528,12 +4326,8 @@
           "off_chain_ticker": "xrpusdt"
         },
         {
-          "name": "kucoin_ws",
-          "off_chain_ticker": "XRP-USDT"
-        },
-        {
-          "name": "okx_ws",
-          "off_chain_ticker": "XRP-USDT"
+          "name": "mexc_ws",
+          "off_chain_ticker": "XRPUSDT"
         }
       ]
     }
