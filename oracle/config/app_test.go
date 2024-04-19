@@ -51,22 +51,20 @@ func TestValidateBasic(t *testing.T) {
 		{
 			name: "good config with metrics",
 			config: config.AppConfig{
-				Enabled:                 true,
-				OracleAddress:           "localhost:8080",
-				ClientTimeout:           time.Second,
-				MetricsEnabled:          true,
-				PrometheusServerAddress: "localhost:9090",
+				Enabled:        true,
+				OracleAddress:  "localhost:8080",
+				ClientTimeout:  time.Second,
+				MetricsEnabled: true,
 			},
 			expectedErr: false,
 		},
 		{
 			name: "good config with metrics",
 			config: config.AppConfig{
-				Enabled:                 true,
-				OracleAddress:           "localhost:8080",
-				ClientTimeout:           time.Second,
-				MetricsEnabled:          true,
-				PrometheusServerAddress: "localhost:9090",
+				Enabled:        true,
+				OracleAddress:  "localhost:8080",
+				ClientTimeout:  time.Second,
+				MetricsEnabled: true,
 			},
 			expectedErr: false,
 		},
@@ -83,17 +81,6 @@ func TestValidateBasic(t *testing.T) {
 			config: config.AppConfig{
 				Enabled:       true,
 				OracleAddress: "localhost:8080",
-			},
-			expectedErr: true,
-		},
-		{
-			name: "bad config with no prometheus server address",
-			config: config.AppConfig{
-				Enabled:                 true,
-				OracleAddress:           "localhost:8080",
-				ClientTimeout:           time.Second,
-				MetricsEnabled:          true,
-				PrometheusServerAddress: "",
 			},
 			expectedErr: true,
 		},
