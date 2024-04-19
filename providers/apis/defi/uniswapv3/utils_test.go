@@ -1,10 +1,12 @@
 package uniswapv3_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 )
 
@@ -46,4 +48,47 @@ func TestPoolConfig(t *testing.T) {
 		}
 		require.NoError(t, cfg.ValidateBasic())
 	})
+}
+
+func TestIsValidProviderName(t *testing.T) {
+	type testcase struct {
+		testName     string
+		providerName string
+		valid        bool
+	}
+	testcases := []testcase{
+		{
+			testName:     "valid base, invalid chain",
+			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, "arbitrum"),
+			valid:        false,
+		},
+		{
+			testName:     "valid base, invalid separator",
+			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, "*", constants.ETHEREUM),
+			valid:        false,
+		},
+		{
+			testName:     "invalid base",
+			providerName: fmt.Sprintf("%s%s%s", "uniswapv2", uniswapv3.NameSeparator, constants.ETHEREUM),
+			valid:        false,
+		},
+		{
+			testName:     "valid provider",
+			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.ETHEREUM),
+			valid:        true,
+		},
+	}
+	// Also test that all ProviderNames are Valid
+	for _, providerName := range uniswapv3.ProviderNames {
+		testcases = append(testcases, testcase{
+			testName:     fmt.Sprintf("valid-provider-name-%s", providerName),
+			providerName: providerName,
+			valid:        true,
+		})
+	}
+	for _, tc := range testcases {
+		t.Run(tc.testName, func(t *testing.T) {
+			require.Equal(t, tc.valid, uniswapv3.IsValidProviderName(tc.providerName))
+		})
+	}
 }
