@@ -7,9 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
+	"github.com/gagliardetto/solana-go"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 )
 
 const (
@@ -29,7 +31,13 @@ const (
 	UniswapV3TickerFields = 3
 
 	// UniswapV3TickerSeparator is the separator for fields contained within a ticker for a uniswapv3_api provider.
-	UniswapV3TickerSeparator = "-"
+	UniswapV3TickerSeparator = Delimeter
+
+	// RaydiumTickerFields is the minimum number of fields to expect the raydium exchange ticker to have.
+	RaydiumTickerFields = 6
+
+	// RaydiumTickerSeparator is the separator for fields contained within a ticker for the raydium provider.
+	RaydiumTickerSeparator = Delimeter
 )
 
 // DefaultAPIConfig returns the default configuration for the dYdX market map API.
@@ -76,6 +84,58 @@ func UniswapV3MetadataFromTicker(ticker string, invert bool) (string, error) {
 	cfgBytes, err := json.Marshal(parsedConfig)
 	if err != nil {
 		return "", err
+	}
+
+	return string(cfgBytes), nil
+}
+
+// RaydiumMetadataFromTicker extracts json-metadata from a ticker for Raydium.
+// All raydium tickers on dydx will be formatted as follows
+// (BASE-QUOTE-BASE_VAULT-BASE_DECIMALS-QUOTE_VAULT-QUOTE_DECIMALS).
+func RaydiumMetadataFromTicker(ticker string) (string, error) {
+	// split fields by separator and expect there to be at least 6 values
+	fields := strings.Split(ticker, RaydiumTickerSeparator)
+	if len(fields) < RaydiumTickerFields {
+		return "", fmt.Errorf("expected at least 6 fields, got %d", len(fields))
+	}
+
+	// check that vault addresses are valid solana addresses
+	baseTokenVault := fields[2]
+	if _, err := solana.PublicKeyFromBase58(baseTokenVault); err != nil {
+		return "", fmt.Errorf("failed to parse base token vault: %w", err)
+	}
+
+	quoteTokenVault := fields[4]
+	if _, err := solana.PublicKeyFromBase58(quoteTokenVault); err != nil {
+		return "", fmt.Errorf("failed to parse quote token vault: %w", err)
+	}
+
+	// check that decimals are valid
+	baseDecimals, err := strconv.ParseUint(fields[3], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse base decimals: %w", err)
+	}
+
+	quoteDecimals, err := strconv.ParseUint(fields[5], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse quote decimals: %w", err)
+	}
+
+	// create the Raydium metadata
+	parsedConfig := raydium.TickerMetadata{
+		BaseTokenVault: raydium.AMMTokenVaultMetadata{
+			TokenVaultAddress: baseTokenVault,
+			TokenDecimals:     baseDecimals,
+		},
+		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+			TokenVaultAddress: quoteTokenVault,
+			TokenDecimals:     quoteDecimals,
+		},
+	}
+	// convert the metadata to json
+	cfgBytes, err := json.Marshal(parsedConfig)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal %s provider metadata for ticker %s: %w", raydium.Name, ticker, err)
 	}
 
 	return string(cfgBytes), nil

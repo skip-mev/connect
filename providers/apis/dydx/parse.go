@@ -11,6 +11,7 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
@@ -45,6 +46,7 @@ var ProviderMapping = map[string]string{
 	"Mexc":                 mexc.Name,
 	"CoinbasePro":          coinbase.Name,
 	"TestVolatileExchange": volatile.Name,
+	"Raydium":              raydium.Name,
 	"UniswapV3-Ethereum":   uniswapv3.ProviderNames[constants.ETHEREUM],
 }
 
@@ -184,11 +186,14 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		}
 
 		// Convert the ticker to the provider's format.
-		denom := ConvertDenomByProvider(cfg.Ticker, exchange)
+		denom, err := ConvertDenomByProvider(cfg.Ticker, exchange)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert denom by provider: %w", err)
+		}
 
 		metaData, err := ExtractMetadata(exchange, cfg)
 		if err != nil {
-			return nil, fmt.Errorf("failed to extract metadata from ticker: %w", err)
+			return nil, fmt.Errorf("failed to extract metadata: %w", err)
 		}
 
 		// Convert to a provider config.
@@ -207,30 +212,39 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 // ExtractMetadata extracts Metadata_JSON from ExchangeMarketConfigJson, based on the converted provider name.
 func ExtractMetadata(providerName string, cfg dydxtypes.ExchangeMarketConfigJson) (string, error) {
 	// Exchange-specific logic for converting a ticker to provider-specific metadata json
-	switch { //nolint:gocritic // This will have a raydium case very soon
+	switch {
 	case strings.HasPrefix(providerName, uniswapv3.BaseName):
 		return UniswapV3MetadataFromTicker(cfg.Ticker, cfg.Invert)
+	case providerName == raydium.Name:
+		return RaydiumMetadataFromTicker(cfg.Ticker)
 	}
 	return "", nil
 }
 
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
-func ConvertDenomByProvider(denom string, exchange string) string {
+func ConvertDenomByProvider(denom string, exchange string) (string, error) {
 	switch {
 	case exchange == mexc.Name:
 		if strings.Contains(denom, "_") {
-			return strings.ReplaceAll(denom, "_", "")
+			return strings.ReplaceAll(denom, "_", ""), nil
 		}
 
-		return denom
+		return denom, nil
 	case exchange == bitstamp.Name:
 		if strings.Contains(denom, "/") {
-			return strings.ToLower(strings.ReplaceAll(denom, "/", ""))
+			return strings.ToLower(strings.ReplaceAll(denom, "/", "")), nil
+		}
+	case exchange == raydium.Name:
+		// split the ticker by /, and expect there to at least be two values
+		fields := strings.Split(denom, RaydiumTickerSeparator)
+		if len(fields) < 2 {
+			return "", fmt.Errorf("expected denom to have at least 2 fields, got %d for %s ticker: %s", len(fields), exchange, denom)
 		}
 
-		return strings.ToLower(denom)
+		return slinkytypes.NewCurrencyPair(fields[0], fields[1]).String(), nil
 	default:
-		return denom
+		return denom, nil
 	}
+	return "", nil
 }

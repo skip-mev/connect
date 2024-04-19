@@ -10,6 +10,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
@@ -352,6 +353,25 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name: "raydium exchange config",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: "Raydium",
+						Ticker:       "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9",
+					},
+				},
+			},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           raydium.Name,
+					OffChainTicker: "SMOLE/SOL",
+					Metadata_JSON:  "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+				},
+			},
+			expectedErr: false,
+		},
+		{
 			name: "uniswapv3-ethereum exchange config",
 			config: dydxtypes.ExchangeConfigJson{
 				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
@@ -406,6 +426,53 @@ func TestExtractMetadata(t *testing.T) {
 		expectedMetadata string
 		expectedErr      bool
 	}{
+		{
+			name:             "non-raydium provider",
+			providerName:     kucoin.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "BTC-USDT"},
+			expectedMetadata: "",
+			expectedErr:      false,
+		},
+		{
+			name:             "raydium provider w/o additional metadata in ticker",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "BTC-USDT"},
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:             "raydium provider w/ non-solana base token",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-abc-6-def-7"},
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:             "raydium provider w/ non-solana quote token",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-6-def-7"},
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:         "raydium provider w/ incorrect base decimals",
+			providerName: raydium.Name,
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-a-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-7"},
+			expectedErr:  true,
+		},
+		{
+			name:         "raydium provider w/ incorrect base decimals",
+			providerName: raydium.Name,
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-a"},
+			expectedErr:  true,
+		},
+		{
+			name:             "raydium provider w/ correct metadata",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9"},
+			expectedMetadata: "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+			expectedErr:      false,
+		},
 		{
 			name:         "invalid exchange",
 			providerName: "foobar",
