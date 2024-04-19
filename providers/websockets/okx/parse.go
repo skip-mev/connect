@@ -33,7 +33,7 @@ const (
 func (h *WebSocketHandler) parseSubscribeResponseMessage(resp SubscribeResponseMessage) ([]handlers.WebsocketEncodedMessage, error) {
 	// A response with an event type of subscribe means that we have successfully subscribed to the channel.
 	if t := EventType(resp.Event); t == EventSubscribe {
-		h.logger.Info("successfully subscribed to channel", zap.String("instrument", resp.Arguments.InstrumentID))
+		h.logger.Debug("successfully subscribed to channel", zap.String("instrument", resp.Arguments.InstrumentID))
 		return nil, nil
 	}
 
@@ -44,7 +44,7 @@ func (h *WebSocketHandler) parseSubscribeResponseMessage(resp SubscribeResponseM
 	//  ...
 	//
 	// The message is an exact copy of the request message, so we can just unmarshal it and re-subscribe.
-	h.logger.Error("received error message", zap.String("message", resp.Message), zap.String("code", resp.Code))
+	h.logger.Debug("received error message", zap.String("message", resp.Message), zap.String("code", resp.Code))
 	jsonString := strings.Split(resp.Message, ExpectedErrorPrefix)
 	if len(jsonString) != ExpectedErrorElements {
 		return nil, fmt.Errorf("unable to parse subscription message from message: %s", resp.Message)

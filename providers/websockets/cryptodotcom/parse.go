@@ -35,7 +35,7 @@ func (h *WebSocketHandler) parseInstrumentMessage(
 		// error.
 		ticker, ok := h.cache.FromOffChainTicker(instrument.Name)
 		if !ok {
-			h.logger.Error("failed to find currency pair for instrument", zap.String("instrument", instrument.Name))
+			h.logger.Debug("failed to find currency pair for instrument", zap.String("instrument", instrument.Name))
 			continue
 		}
 

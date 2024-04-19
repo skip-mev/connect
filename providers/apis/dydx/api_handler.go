@@ -67,7 +67,7 @@ func (h *APIHandler) ParseResponse(
 	resp *http.Response,
 ) types.MarketMapResponse {
 	if len(chains) != 1 {
-		h.logger.Error("expected one chain", zap.Any("chains", chains))
+		h.logger.Debug("expected one chain", zap.Any("chains", chains))
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -78,7 +78,7 @@ func (h *APIHandler) ParseResponse(
 	}
 
 	if resp == nil {
-		h.logger.Error("got nil response from dydx market params API")
+		h.logger.Debug("got nil response from dydx market params API")
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -91,7 +91,7 @@ func (h *APIHandler) ParseResponse(
 	// Parse the response body into a dydx market params response object.
 	var params dydxtypes.QueryAllMarketParamsResponse
 	if err := json.NewDecoder(resp.Body).Decode(&params); err != nil {
-		h.logger.Error("failed to parse dydx market params response", zap.Error(err))
+		h.logger.Debug("failed to parse dydx market params response", zap.Error(err))
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -104,7 +104,7 @@ func (h *APIHandler) ParseResponse(
 	// Convert the dydx market params to a market map.
 	marketResp, err := h.ConvertMarketParamsToMarketMap(params)
 	if err != nil {
-		h.logger.Error(
+		h.logger.Debug(
 			"failed to convert dydx market params to market map",
 			zap.Any("params", params),
 			zap.Error(err),
@@ -122,6 +122,6 @@ func (h *APIHandler) ParseResponse(
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(&marketResp, time.Now())
 
-	h.logger.Info("successfully resolved market map", zap.Int("markets", len(marketResp.MarketMap.Markets)))
+	h.logger.Debug("successfully resolved market map", zap.Int("markets", len(marketResp.MarketMap.Markets)))
 	return types.NewMarketMapResponse(resolved, nil)
 }

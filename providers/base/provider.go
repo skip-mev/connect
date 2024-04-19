@@ -122,7 +122,7 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 		// Ensure that the provider has IDs set. This could be reset if the provider is
 		// restarted / reconfigured.
 		if len(p.GetIDs()) == 0 {
-			p.logger.Info("no ids set on provider; exiting")
+			p.logger.Debug("no ids set on provider; exiting")
 			return nil
 		}
 
@@ -179,18 +179,18 @@ func (p *Provider[K, V]) Start(ctx context.Context) error {
 func (p *Provider[K, V]) Stop() {
 	mainCtx, cancelMain := p.getMainCtx()
 	if mainCtx == nil {
-		p.logger.Info("provider is not running")
+		p.logger.Debug("provider is not running")
 		return
 	}
 
 	select {
 	case <-mainCtx.Done():
 		// The provider is already stopped.
-		p.logger.Info("provider is not running")
+		p.logger.Debug("provider is not running")
 		return
 	default:
 		// Cancel the main context to stop the provider.
-		p.logger.Info("manually stopping provider")
+		p.logger.Debug("manually stopping provider")
 		cancelMain()
 	}
 }
