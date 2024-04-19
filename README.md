@@ -82,7 +82,7 @@ $ make stop-oracle
 
 * metrics relevant to the network's (that is running the instance slinky) performance are [here](./service/metrics/README.md)
 
-## Basic Perfomance Analysis
+## Basic Performance Analysis
 
 > **Note: These are numbers based on 14 providers and 9 currency pairs over a 24 hour period.**
 

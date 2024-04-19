@@ -1,9 +1,17 @@
 package dydx
 
 import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/gagliardetto/solana-go"
+
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 )
 
 const (
@@ -18,6 +26,18 @@ const (
 
 	// Delimeter is the delimeter used to separate the base and quote assets in a pair.
 	Delimeter = "-"
+
+	// UniswapV3TickerFields is the number of fields to expect to parse from a UniswapV3 ticker.
+	UniswapV3TickerFields = 3
+
+	// UniswapV3TickerSeparator is the separator for fields contained within a ticker for a uniswapv3_api provider.
+	UniswapV3TickerSeparator = Delimeter
+
+	// RaydiumTickerFields
+	RaydiumTickerFields = 6
+
+	// RaydiumTickerSeparator
+	RaydiumTickerSeparator = Delimeter
 )
 
 // DefaultAPIConfig returns the default configuration for the dYdX market map API.
@@ -30,4 +50,93 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	URL:              "localhost:1317",
+}
+
+// UniswapV3MetadataFromTicker returns the metadataJSON string for uniswapv3_api according to the dYdX encoding.
+// This is PoolAddress-DecimalsBase-DecimalsQuote.
+func UniswapV3MetadataFromTicker(ticker string, invert bool) (string, error) {
+	fields := strings.Split(ticker, UniswapV3TickerSeparator)
+	if len(fields) != UniswapV3TickerFields {
+		return "", fmt.Errorf("expected %d fields, got %d", UniswapV3TickerFields, len(fields))
+	}
+
+	baseDecimals, err := strconv.ParseInt(fields[1], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse base decimals: %w", err)
+	}
+
+	quoteDecimals, err := strconv.ParseInt(fields[2], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse quote decimals: %w", err)
+	}
+
+	parsedConfig := uniswapv3.PoolConfig{
+		Address:       fields[0],
+		BaseDecimals:  baseDecimals,
+		QuoteDecimals: quoteDecimals,
+		Invert:        invert,
+	}
+
+	if err = parsedConfig.ValidateBasic(); err != nil {
+		return "", err
+	}
+
+	cfgBytes, err := json.Marshal(parsedConfig)
+	if err != nil {
+		return "", err
+	}
+
+	return string(cfgBytes), nil
+}
+
+// RaydiumMetadataFromTicker extracts json-metadata from a ticker for Raydium.
+// All raydium tickers on dydx will be formatted as follows
+// (BASE-QUOTE-BASE_VAULT-BASE_DECIMALS-QUOTE_VAULT-QUOTE_DECIMALS).
+func RaydiumMetadataFromTicker(ticker string) (string, error) {
+	// split fields by separator and expect there to be at least 6 values
+	fields := strings.Split(ticker, RaydiumTickerSeparator)
+	if len(fields) < RaydiumTickerFields {
+		return "", fmt.Errorf("expected at least 6 fields, got %d", len(fields))
+	}
+
+	// check that vault addresses are valid solana addresses
+	baseTokenVault := fields[2]
+	if _, err := solana.PublicKeyFromBase58(baseTokenVault); err != nil {
+		return "", fmt.Errorf("failed to parse base token vault: %w", err)
+	}
+
+	quoteTokenVault := fields[4]
+	if _, err := solana.PublicKeyFromBase58(quoteTokenVault); err != nil {
+		return "", fmt.Errorf("failed to parse quote token vault: %w", err)
+	}
+
+	// check that decimals are valid
+	baseDecimals, err := strconv.ParseUint(fields[3], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse base decimals: %w", err)
+	}
+
+	quoteDecimals, err := strconv.ParseUint(fields[5], 10, 64)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse quote decimals: %w", err)
+	}
+
+	// create the Raydium metadata
+	parsedConfig := raydium.TickerMetadata{
+		BaseTokenVault: raydium.AMMTokenVaultMetadata{
+			TokenVaultAddress: baseTokenVault,
+			TokenDecimals:     baseDecimals,
+		},
+		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
+			TokenVaultAddress: quoteTokenVault,
+			TokenDecimals:     quoteDecimals,
+		},
+	}
+	// convert the metadata to json
+	cfgBytes, err := json.Marshal(parsedConfig)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal %s provider metadata for ticker %s: %w", raydium.Name, ticker, err)
+	}
+
+	return string(cfgBytes), nil
 }

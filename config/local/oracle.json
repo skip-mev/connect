@@ -1,5 +1,5 @@
 {
-  "updateInterval": 500000000,
+  "updateInterval": 250000000,
   "maxPriceAge": 120000000000,
   "providers": [
     {
@@ -547,7 +547,7 @@
       "type": "price_provider"
     },
     {
-      "name": "uniswapv3_api",
+      "name": "uniswapv3_api-ethereum",
       "api": {
         "enabled": true,
         "timeout": 1000000000,
@@ -558,7 +558,47 @@
         "url": "https://eth.public-rpc.com/",
         "endpoints": null,
         "batchSize": 0,
-        "name": "uniswapv3_api"
+        "name": "uniswapv3_api-ethereum"
+      },
+      "webSocket": {
+        "enabled": false,
+        "maxBufferSize": 0,
+        "reconnectionTimeout": 0,
+        "wss": "",
+        "name": "",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 0,
+        "enableCompression": false,
+        "readTimeout": 0,
+        "writeTimeout": 0,
+        "pingInterval": 0,
+        "maxReadErrorCount": 0,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "raydium_api",
+      "api": {
+        "enabled": true,
+        "timeout": 500000000,
+        "interval": 500000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 10,
+        "atomic": false,
+        "url": "",
+        "endpoints": [
+          {
+            "url": "https://api.devnet.solana.com",
+            "authentication": {
+              "apiKey": "",
+              "apiKeyHeader": ""
+            }
+          }
+        ],
+        "batchSize": 50,
+        "name": "raydium_api"
       },
       "webSocket": {
         "enabled": false,

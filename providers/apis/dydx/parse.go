@@ -3,17 +3,16 @@ package dydx
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"go.uber.org/zap"
 
-	"github.com/gagliardetto/solana-go"
-
+	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/volatile"
@@ -48,6 +47,7 @@ var ProviderMapping = map[string]string{
 	"CoinbasePro":          coinbase.Name,
 	"TestVolatileExchange": volatile.Name,
 	"Raydium":              raydium.Name,
+	"UniswapV3-Ethereum":   uniswapv3.ProviderNames[constants.ETHEREUM],
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
@@ -61,7 +61,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 	for _, market := range params.MarketParams {
 		ticker, err := h.CreateTickerFromMarket(market)
 		if err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to create ticker from market",
 				zap.String("market", market.Pair),
 				zap.Error(err),
@@ -72,7 +72,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
 		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to unmarshal exchange json config",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -84,7 +84,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 		// Convert the exchange config JSON to a set of paths and providers.
 		providers, err := h.ConvertExchangeConfigJSON(exchangeConfigJSON)
 		if err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to convert exchange config json",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -124,7 +124,7 @@ func (h *APIHandler) CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtyp
 	return t, t.ValidateBasic()
 }
 
-// CreateCurrencyPairFromMarket creates a currency pair from a dYdX market.
+// CreateCurrencyPairFromPair creates a currency pair from a dYdX market.
 func (h *APIHandler) CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
 	split := strings.Split(pair, Delimeter)
 	if len(split) != 2 {
@@ -161,7 +161,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		exchange, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
 			// ignore unsupported exchanges
-			h.logger.Error(
+			h.logger.Debug(
 				"skipping unsupported exchange",
 				zap.String("exchange", cfg.ExchangeName),
 				zap.String("ticker", cfg.Ticker),
@@ -185,20 +185,21 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 			normalizeByPair = &temp
 		}
 
+		// Convert the ticker to the provider's format.
 		denom, err := ConvertDenomByProvider(cfg.Ticker, exchange)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert denom by provider: %w", err)
 		}
 
-		metaData, err := ExtractMetadataFromTicker(cfg.Ticker, exchange)
+		metaData, err := ExtractMetadata(exchange, cfg)
 		if err != nil {
-			return nil, fmt.Errorf("failed to extract metadata from ticker: %w", err)
+			return nil, fmt.Errorf("failed to extract metadata: %w", err)
 		}
 
 		// Convert to a provider config.
 		providers = append(providers, mmtypes.ProviderConfig{
 			Name:            exchange,
-			OffChainTicker:  denom, // Convert the ticker to the provider's format.
+			OffChainTicker:  denom,
 			Invert:          cfg.Invert,
 			NormalizeByPair: normalizeByPair,
 			Metadata_JSON:   metaData,
@@ -208,69 +209,16 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 	return providers, nil
 }
 
-// ExtractMetadataFromTicker extracts json-metadata from a ticker, based on the exchange. Specifically,
-// all raydium tickers on dydx will be formatted as follows (BASE/QUOTE/BASE_VAULT/BASE_DECIMALS/QUOTE_VAULT/QUOTE_DECIMALS).
-func ExtractMetadataFromTicker(ticker string, exchange string) (string, error) {
-	if exchange == raydium.Name {
-		// get the raydium ticker metadata from the dydx ticker
-		metaData, err := raydiumTickerMetadata(ticker)
-		if err != nil {
-			return "", fmt.Errorf("failed to get %s provider metadata for ticker %s: %w", raydium.Name, ticker, err)
-		}
-
-		// convert the metadata to json
-		bz, err := json.Marshal(metaData)
-		if err != nil {
-			return "", fmt.Errorf("failed to marshal %s provider metadata for ticker %s: %w", raydium.Name, ticker, err)
-		}
-
-		return string(bz), nil
+// ExtractMetadata extracts Metadata_JSON from ExchangeMarketConfigJson, based on the converted provider name.
+func ExtractMetadata(providerName string, cfg dydxtypes.ExchangeMarketConfigJson) (string, error) {
+	// Exchange-specific logic for converting a ticker to provider-specific metadata json
+	switch {
+	case strings.HasPrefix(providerName, uniswapv3.BaseName):
+		return UniswapV3MetadataFromTicker(cfg.Ticker, cfg.Invert)
+	case providerName == raydium.Name:
+		return RaydiumMetadataFromTicker(cfg.Ticker)
 	}
-
 	return "", nil
-}
-
-// raydiumTickerMetadata extracts a raydiumTickerMetadata from a dydx ticker.
-func raydiumTickerMetadata(ticker string) (raydium.TickerMetadata, error) {
-	// split fields by separator and expect there to be at least 6 values
-	fields := strings.Split(ticker, "/")
-	if len(fields) < 6 {
-		return raydium.TickerMetadata{}, fmt.Errorf("expected at least 6 fields, got %d", len(fields))
-	}
-
-	// check that vault addresses are valid solana addresses
-	baseTokenVault := fields[2]
-	if _, err := solana.PublicKeyFromBase58(baseTokenVault); err != nil {
-		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse base token vault: %w", err)
-	}
-
-	quoteTokenVault := fields[4]
-	if _, err := solana.PublicKeyFromBase58(quoteTokenVault); err != nil {
-		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse quote token vault: %w", err)
-	}
-
-	// check that decimals are valid
-	baseDecimals, err := strconv.ParseUint(fields[3], 10, 64)
-	if err != nil {
-		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse base decimals: %w", err)
-	}
-
-	quoteDecimals, err := strconv.ParseUint(fields[5], 10, 64)
-	if err != nil {
-		return raydium.TickerMetadata{}, fmt.Errorf("failed to parse quote decimals: %w", err)
-	}
-
-	// create the Raydium metadata
-	return raydium.TickerMetadata{
-		BaseTokenVault: raydium.AMMTokenVaultMetadata{
-			TokenVaultAddress: baseTokenVault,
-			TokenDecimals:     baseDecimals,
-		},
-		QuoteTokenVault: raydium.AMMTokenVaultMetadata{
-			TokenVaultAddress: quoteTokenVault,
-			TokenDecimals:     quoteDecimals,
-		},
-	}, nil
 }
 
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
@@ -289,7 +237,7 @@ func ConvertDenomByProvider(denom string, exchange string) (string, error) {
 		}
 	case exchange == raydium.Name:
 		// split the ticker by /, and expect there to at least be two values
-		fields := strings.Split(denom, "/")
+		fields := strings.Split(denom, RaydiumTickerSeparator)
 		if len(fields) < 2 {
 			return "", fmt.Errorf("expected denom to have at least 2 fields, got %d for %s ticker: %s", len(fields), exchange, denom)
 		}
