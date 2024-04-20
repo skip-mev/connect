@@ -91,4 +91,4 @@ $ make stop-oracle
 * ~**60 go routines** are running at any given time.
 * ~**7x** improvement in performance of websocket providers over API providers.
 
-To test these numbers yourself, spin up the the oracle server following the instructions above and then navigate to http://localhost:9090. From here, you can run the prometheus queries defined in this [readme](./metrics.md) to get insight into the oracle's performance.
+To test these numbers yourself, spin up the oracle server following the instructions above and then navigate to http://localhost:9090. From here, you can run the prometheus queries defined in this [readme](./metrics.md) to get insight into the oracle's performance.
