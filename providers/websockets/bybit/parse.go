@@ -14,7 +14,7 @@ import (
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 )
 
-// parseSubscribeResponseMessage parses a subscribe response message. The format of the message
+// parseSubscriptionResponse parses a subscribe response message. The format of the message
 // is defined in the messages.go file. There are two cases that are handled:
 //
 // 1. Successfully subscribed to the channel. In this case, no further action is required.
