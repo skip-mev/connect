@@ -16,6 +16,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
@@ -37,7 +38,7 @@ type PriceFetcher struct {
 	api    config.APIConfig
 
 	// client is the EVM client implementation. This is used to interact with the ethereum network.
-	client EVMClient
+	client ethmulticlient.EVMClient
 	// abi is the uniswap v3 pool abi. This is used to pack the slot0 call to the pool contract
 	// and parse the result.
 	abi *abi.ABI
@@ -51,26 +52,54 @@ type PriceFetcher struct {
 
 // NewPriceFetcher returns a new Uniswap V3 price fetcher.
 func NewPriceFetcher(
+	ctx context.Context,
 	logger *zap.Logger,
 	api config.APIConfig,
-	client EVMClient,
 ) (*PriceFetcher, error) {
-	if logger == nil {
-		return nil, fmt.Errorf("logger cannot be nil")
-	}
-
-	if api.Name != Name {
-		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
-	}
-
-	if !api.Enabled {
-		return nil, fmt.Errorf("api config for %s is not enabled", Name)
-	}
-
 	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
+
+	if !IsValidProviderName(api.Name) {
+		return nil, fmt.Errorf("invalid api config name %s", api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
+	}
+
+	// use a multi-client if multiple endpoints are provided
+	var client ethmulticlient.EVMClient
+	var err error
+	if len(api.Endpoints) > 0 {
+		client, err = ethmulticlient.NewMultiRPCClientFromEndpoints(
+			ctx,
+			logger.With(zap.String("eth_multi_client", api.Name)),
+			api.Endpoints,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error creating multi-client: %w", err)
+		}
+	} else {
+		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(ctx, api)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return NewPriceFetcherWithClient(logger, api, client)
+}
+
+// NewPriceFetcherWithClient returns a new PriceFetcher.
+// It requires a pre-validated config, and initialized client.
+func NewPriceFetcherWithClient(
+	logger *zap.Logger,
+	api config.APIConfig,
+	client ethmulticlient.EVMClient,
+) (*PriceFetcher, error) {
 	abi, err := uniswappool.UniswapMetaData.GetAbi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get uniswap abi: %w", err)
@@ -110,7 +139,7 @@ func (u *PriceFetcher) Fetch(
 	for i, ticker := range tickers {
 		pool, err := u.GetPool(ticker)
 		if err != nil {
-			u.logger.Error(
+			u.logger.Debug(
 				"failed to get pool for ticker",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -143,7 +172,7 @@ func (u *PriceFetcher) Fetch(
 
 	// Batch call to the EVM.
 	if err := u.client.BatchCallContext(ctx, batchElems); err != nil {
-		u.logger.Error(
+		u.logger.Debug(
 			"failed to batch call to ethereum network for all tickers",
 			zap.Error(err),
 		)
@@ -158,7 +187,7 @@ func (u *PriceFetcher) Fetch(
 	for i, ticker := range tickers {
 		result := batchElems[i]
 		if result.Error != nil {
-			u.logger.Error(
+			u.logger.Debug(
 				"failed to batch call to ethereum network for ticker",
 				zap.String("ticker", ticker.String()),
 				zap.Error(result.Error),
@@ -177,7 +206,7 @@ func (u *PriceFetcher) Fetch(
 		// Parse the sqrtPriceX96 from the result.
 		sqrtPriceX96, err := u.ParseSqrtPriceX96(result.Result)
 		if err != nil {
-			u.logger.Error(
+			u.logger.Debug(
 				"failed to parse sqrt price x96",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),

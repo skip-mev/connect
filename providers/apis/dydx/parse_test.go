@@ -7,8 +7,11 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
@@ -349,6 +352,50 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name: "raydium exchange config",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName: "Raydium",
+						Ticker:       "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9",
+					},
+				},
+			},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           raydium.Name,
+					OffChainTicker: "SMOLE/SOL",
+					Metadata_JSON:  "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+				},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "uniswapv3-ethereum exchange config",
+			config: dydxtypes.ExchangeConfigJson{
+				Exchanges: []dydxtypes.ExchangeMarketConfigJson{
+					{
+						ExchangeName:   "UniswapV3-Ethereum",
+						Ticker:         "0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa-8-18",
+						AdjustByMarket: "ETH-USD",
+						Invert:         false,
+					},
+				},
+			},
+			expectedProviders: []mmtypes.ProviderConfig{
+				{
+					Name:           uniswapv3.ProviderNames[constants.ETHEREUM],
+					OffChainTicker: "0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa-8-18",
+					Metadata_JSON:  "{\"address\":\"0x0c30062368eEfB96bF3AdE1218E685306b8E89Fa\",\"base_decimals\":8,\"quote_decimals\":18,\"invert\":false}",
+					NormalizeByPair: &slinkytypes.CurrencyPair{
+						Base:  "ETH",
+						Quote: "USD",
+					},
+				},
+			},
+			expectedErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -366,6 +413,114 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 
 			if len(tc.expectedProviders) > 0 {
 				require.Equal(t, tc.expectedProviders, providers)
+			}
+		})
+	}
+}
+
+func TestExtractMetadata(t *testing.T) {
+	testcases := []struct {
+		name             string
+		providerName     string
+		cfg              dydxtypes.ExchangeMarketConfigJson
+		expectedMetadata string
+		expectedErr      bool
+	}{
+		{
+			name:             "non-raydium provider",
+			providerName:     kucoin.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "BTC-USDT"},
+			expectedMetadata: "",
+			expectedErr:      false,
+		},
+		{
+			name:             "raydium provider w/o additional metadata in ticker",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "BTC-USDT"},
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:             "raydium provider w/ non-solana base token",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-abc-6-def-7"},
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:             "raydium provider w/ non-solana quote token",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-6-def-7"},
+			expectedMetadata: "",
+			expectedErr:      true,
+		},
+		{
+			name:         "raydium provider w/ incorrect base decimals",
+			providerName: raydium.Name,
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-a-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-7"},
+			expectedErr:  true,
+		},
+		{
+			name:         "raydium provider w/ incorrect base decimals",
+			providerName: raydium.Name,
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-a"},
+			expectedErr:  true,
+		},
+		{
+			name:             "raydium provider w/ correct metadata",
+			providerName:     raydium.Name,
+			cfg:              dydxtypes.ExchangeMarketConfigJson{Ticker: "SMOLE-SOL-VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS-8-HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2-9"},
+			expectedMetadata: "{\"base_token_vault\":{\"token_vault_address\":\"VDZ9kwvKRbqhNdsoRZyLVzAAQMbGY9akHbtM6YugViS\",\"token_decimals\":8},\"quote_token_vault\":{\"token_vault_address\":\"HiLcngHP5y1Jno53tuuNeFHKWhyyZp3XuxtKPszD6rG2\",\"token_decimals\":9}}",
+			expectedErr:      false,
+		},
+		{
+			name:         "invalid exchange",
+			providerName: "foobar",
+			expectedErr:  false,
+		},
+		{
+			name:         "uniswapv3-ethereum invalid field number",
+			providerName: uniswapv3.ProviderNames[constants.ETHEREUM],
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "0xabc123-abc"},
+			expectedErr:  true,
+		},
+		{
+			name:         "uniswapv3-ethereum invalid base decimals",
+			providerName: uniswapv3.ProviderNames[constants.ETHEREUM],
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "0xabc123-abc-12"},
+			expectedErr:  true,
+		},
+		{
+			name:         "uniswapv3-ethereum invalid quote decimals",
+			providerName: uniswapv3.ProviderNames[constants.ETHEREUM],
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "0xabc123-8-abc"},
+			expectedErr:  true,
+		},
+		{
+			name:         "uniswapv3-ethereum invalid pool address",
+			providerName: uniswapv3.ProviderNames[constants.ETHEREUM],
+			cfg:          dydxtypes.ExchangeMarketConfigJson{Ticker: "zzzzzz-8-18"},
+			expectedErr:  true,
+		},
+		{
+			name:         "uniswapv3-ethereum valid config",
+			providerName: uniswapv3.ProviderNames[constants.ETHEREUM],
+			cfg: dydxtypes.ExchangeMarketConfigJson{
+				Ticker: "0xE7F6720C1F546217081667A5ab7fEbB688036856-8-18",
+				Invert: true,
+			},
+			expectedMetadata: "{\"address\":\"0xE7F6720C1F546217081667A5ab7fEbB688036856\",\"base_decimals\":8,\"quote_decimals\":18,\"invert\":true}",
+			expectedErr:      false,
+		},
+	}
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			metadata, err := dydx.ExtractMetadata(tc.providerName, tc.cfg)
+			if tc.expectedErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expectedMetadata, metadata)
 			}
 		})
 	}

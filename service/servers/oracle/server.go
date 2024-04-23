@@ -161,7 +161,7 @@ func (os *OracleServer) Prices(ctx context.Context, req *types.QueryPricesReques
 		return nil, ErrNilRequest
 	}
 
-	os.logger.Info("received request for prices")
+	os.logger.Debug("received request for prices")
 
 	// check that oracle is running
 	if !os.o.IsRunning() {

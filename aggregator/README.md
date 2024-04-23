@@ -8,7 +8,7 @@ The aggregator is a aggregation alias that allows developers to plug and play di
 
 ## Configuration
 
-The aggregator is configured by supplimenting a data aggregator strategy.
+The aggregator is configured by supplementing a data aggregator strategy.
 
 ```golang
 // DataAggregator is a simple aggregator for provider data. It is thread-safe since
@@ -27,7 +27,7 @@ type DataAggregator[K comparable, V any] struct {
 }
 ```
 
-The aggreagtion strategy is defined as follows:
+The aggregation strategy is defined as follows:
 
 ```golang
 // AggregateFn is the function used to aggregate data from each provider. Given a

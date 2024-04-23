@@ -1,6 +1,7 @@
 package types
 
 import (
+	"context"
 	"math/big"
 
 	"go.uber.org/zap"
@@ -26,6 +27,7 @@ type (
 	// PriceAPIQueryHandlerFactory is a type alias for the price API query handler factory.
 	// This is responsible for creating the API query handler for the price provider.
 	PriceAPIQueryHandlerFactory = func(
+		ctx context.Context,
 		logger *zap.Logger,
 		cfg config.ProviderConfig,
 		apiMetrics apimetrics.APIMetrics,
@@ -48,6 +50,7 @@ type (
 	// PriceWebSocketQueryHandlerFactory is a type alias for the price web socket query handler factory.
 	// This is responsible for creating the web socket query handler for the price provider.
 	PriceWebSocketQueryHandlerFactory = func(
+		ctx context.Context,
 		logger *zap.Logger,
 		cfg config.ProviderConfig,
 		wsMetrics wsmetrics.WebSocketMetrics,

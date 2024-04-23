@@ -1,8 +1,10 @@
 package oracle
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 
@@ -26,6 +28,7 @@ import (
 // Specifically, this factory function returns API query handlers that are used to fetch data from
 // the price providers.
 func APIQueryHandlerFactory(
+	ctx context.Context,
 	logger *zap.Logger,
 	cfg config.ProviderConfig,
 	metrics metrics.APIMetrics,
@@ -54,39 +57,30 @@ func APIQueryHandlerFactory(
 		return nil, err
 	}
 
-	switch cfg.Name {
-	case binance.Name:
+	switch providerName := cfg.Name; {
+	case providerName == binance.Name:
 		apiDataHandler, err = binance.NewAPIHandler(cfg.API)
-	case coinbaseapi.Name:
+	case providerName == coinbaseapi.Name:
 		apiDataHandler, err = coinbaseapi.NewAPIHandler(cfg.API)
-	case coingecko.Name:
+	case providerName == coingecko.Name:
 		apiDataHandler, err = coingecko.NewAPIHandler(cfg.API)
-	case geckoterminal.Name:
+	case providerName == geckoterminal.Name:
 		apiDataHandler, err = geckoterminal.NewAPIHandler(cfg.API)
-	case kraken.Name:
+	case providerName == kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(cfg.API)
-	case uniswapv3.Name:
-		var ethClient uniswapv3.EVMClient
-		ethClient, err = uniswapv3.NewGoEthereumClientImpl(cfg.API.URL)
-		if err != nil {
-			return nil, err
-		}
-
-		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(logger, cfg.API, ethClient)
-	case static.Name:
+	case strings.HasPrefix(providerName, uniswapv3.BaseName):
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(ctx, logger, cfg.API)
+	case providerName == static.Name:
 		apiDataHandler = static.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
-	case volatile.Name:
+	case providerName == volatile.Name:
 		apiDataHandler = volatile.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
-	case raydium.Name:
+	case providerName == raydium.Name:
 		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
 			cfg.API,
 			logger,
 		)
-		if err != nil {
-			return nil, err
-		}
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

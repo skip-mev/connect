@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	servicemetrics "github.com/skip-mev/slinky/service/metrics"
-
 	"cosmossdk.io/log"
 	cometabci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	slinkyabci "github.com/skip-mev/slinky/abci/types"
-
 	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair"
+	slinkyabci "github.com/skip-mev/slinky/abci/types"
 	"github.com/skip-mev/slinky/abci/ve"
+	servicemetrics "github.com/skip-mev/slinky/service/metrics"
 )
 
 // ProposalHandler is responsible primarily for:

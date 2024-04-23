@@ -91,6 +91,12 @@ var (
 	raydiumEnabled bool
 	// solana node url is the solana node that the raydium provider will connect to.
 	solanaNodeURLs []string
+	// uniswapv3-enabled determines whether or not the uniswapv3 defi provider will be configured.
+	uniswapv3Enabled bool
+	// ethNodeURLs is the set of ethereum nodes evm providers will connect to.
+	ethNodeURLs []string
+	// providerMarkets is the set of providers to output config for. It is used for testing.
+	providerMarkets []string
 	// ProviderToMarkets defines a map of provider names to their respective market
 	// configurations. This is used to generate the local market config file.
 	ProviderToMarkets = map[string]types.CurrencyPairsToProviderTickers{
@@ -119,7 +125,7 @@ var (
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start Defi Providers-------------------	//
 		// // -----------------------------------------------------------	//
-		uniswapv3.Name: uniswapv3.DefaultETHMarketConfig,
+		uniswapv3.ProviderNames[constants.ETHEREUM]: uniswapv3.DefaultETHMarketConfig,
 	}
 
 	// LocalConfig defines a readable config for local development. Any changes to this
@@ -239,7 +245,7 @@ var (
 			// ---------------------Start Defi Providers-------------------	//
 			// -----------------------------------------------------------	//
 			{
-				Name: uniswapv3.Name,
+				Name: uniswapv3.ProviderNames[constants.ETHEREUM],
 				API:  uniswapv3.DefaultETHAPIConfig,
 				Type: types.ConfigType,
 			},
@@ -339,6 +345,27 @@ func init() {
 		nil,
 		"The HTTP endpoints of the solana node endpoint the raydium provider will be configured to use. If multiple are given they must be comma delimited",
 	)
+	rootCmd.Flags().BoolVarP(
+		&uniswapv3Enabled,
+		"uniswapv3-enabled",
+		"",
+		false,
+		"whether or not to enable uniswapv3 support",
+	)
+	rootCmd.Flags().StringSliceVarP(
+		&ethNodeURLs,
+		"eth-node-endpoint",
+		"",
+		nil,
+		"The HTTP endpoints of the eth node endpoint the eth providers will be configured to use. If multiple are given they must be comma delimited",
+	)
+	rootCmd.Flags().StringSliceVarP(
+		&providerMarkets,
+		"provider-markets",
+		"",
+		nil,
+		"The set of providers to add markets for.",
+	)
 }
 
 // main executes a simple script that encodes the local config file to the local
@@ -394,6 +421,14 @@ func createOracleConfig() error {
 			API:  cfg,
 			Type: types.ConfigType,
 		})
+	}
+	if uniswapv3Enabled {
+		cfg := uniswapv3.DefaultETHAPIConfig
+		for _, node := range ethNodeURLs {
+			cfg.Endpoints = append(cfg.Endpoints, config.Endpoint{
+				URL: node,
+			})
+		}
 	}
 
 	// Set the host and port for the oracle.
@@ -453,6 +488,17 @@ func createMarketMap() error {
 	// contains all of the tickers that are supported by the oracle.
 	marketMap := mmtypes.MarketMap{
 		Markets: make(map[string]mmtypes.Market),
+	}
+
+	if providerMarkets != nil {
+		pruned := make(map[string]types.CurrencyPairsToProviderTickers)
+		for _, provider := range providerMarkets {
+			val, ok := ProviderToMarkets[provider]
+			if ok {
+				pruned[provider] = val
+			}
+		}
+		ProviderToMarkets = pruned
 	}
 
 	// if raydium is enabled, configure the raydium markets based on the local raydium_pairs fixture

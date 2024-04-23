@@ -1,3 +1,6 @@
 package constants
 
-const DYDX = "dydx"
+const (
+	DYDX     = "dydx"
+	ETHEREUM = "ethereum"
+)

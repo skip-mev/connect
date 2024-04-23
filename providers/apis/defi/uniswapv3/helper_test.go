@@ -9,8 +9,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
+	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/mocks"
 )
 
 var (
@@ -34,7 +35,7 @@ func createPriceFetcher(
 	t.Helper()
 
 	client := mocks.NewEVMClient(t)
-	fetcher, err := uniswapv3.NewPriceFetcher(
+	fetcher, err := uniswapv3.NewPriceFetcherWithClient(
 		logger,
 		uniswapv3.DefaultETHAPIConfig,
 		client,
@@ -46,11 +47,11 @@ func createPriceFetcher(
 
 func createPriceFetcherWithClient(
 	t *testing.T,
-	client uniswapv3.EVMClient,
+	client ethmulticlient.EVMClient,
 ) *uniswapv3.PriceFetcher {
 	t.Helper()
 
-	fetcher, err := uniswapv3.NewPriceFetcher(
+	fetcher, err := uniswapv3.NewPriceFetcherWithClient(
 		logger,
 		uniswapv3.DefaultETHAPIConfig,
 		client,
@@ -65,7 +66,7 @@ func createEVMClientWithResponse(
 	failedRequestErr error,
 	responses []string,
 	errs []error,
-) uniswapv3.EVMClient {
+) ethmulticlient.EVMClient {
 	t.Helper()
 
 	c := mocks.NewEVMClient(t)

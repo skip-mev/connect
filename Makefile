@@ -11,11 +11,14 @@ HTTPS_GIT := https://github.com/skip-mev/slinky.git
 DOCKER := $(shell which docker)
 DOCKER_COMPOSE := $(shell which docker-compose)
 ORACLE_CONFIG_FILE ?= $(CURDIR)/config/local/oracle.json
+DYDX_ORACLE_CONFIG_FILE ?= $(CURDIR)/config/dydx/oracle.json
 MARKET_CONFIG_FILE ?= $(CURDIR)/config/local/market.json
 CONFIG_DIR ?= $(CURDIR)/config
 HOMEDIR ?= $(CURDIR)/tests/.slinkyd
 GENESIS ?= $(HOMEDIR)/config/genesis.json
 GENESIS_TMP ?= $(HOMEDIR)/config/genesis_tmp.json
+APP_TOML ?= $(HOMEDIR)/config/app.toml
+CONFIG_TOML ?= $(HOMEDIR)/config/config.toml
 COVER_FILE ?= cover.out
 BENCHMARK_ITERS ?= 10
 DEFI_PROVIDERS_ENABLED ?= false
@@ -47,6 +50,7 @@ update-local-configs: build
 	@echo "Updating local config..."
 	@./build/slinky-config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE} --raydium-enabled ${DEFI_ORACLE_ENABLED} \
 		--solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
+	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_ORACLE_CONFIG_FILE} --node-http-url=localhost:1317 --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
 start-oracle:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
@@ -152,6 +156,8 @@ build-configs:
 	@jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 	@jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BTC", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
 	@jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
+	@dasel put -r toml 'telemetry.enabled' -f $(APP_TOML) -t bool -v true
+	@dasel put -r toml 'instrumentation.enabled' -f $(CONFIG_TOML) -t bool -v true
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
 # this will set the environment variable for running locally

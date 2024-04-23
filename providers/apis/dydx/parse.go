@@ -7,9 +7,12 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
+	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/volatile"
@@ -43,6 +46,8 @@ var ProviderMapping = map[string]string{
 	"Mexc":                 mexc.Name,
 	"CoinbasePro":          coinbase.Name,
 	"TestVolatileExchange": volatile.Name,
+	"Raydium":              raydium.Name,
+	"UniswapV3-Ethereum":   uniswapv3.ProviderNames[constants.ETHEREUM],
 }
 
 // ConvertMarketParamsToMarketMap converts a dYdX market params response to a slinky market map response.
@@ -56,7 +61,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 	for _, market := range params.MarketParams {
 		ticker, err := h.CreateTickerFromMarket(market)
 		if err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to create ticker from market",
 				zap.String("market", market.Pair),
 				zap.Error(err),
@@ -67,7 +72,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 
 		var exchangeConfigJSON dydxtypes.ExchangeConfigJson
 		if err := json.Unmarshal([]byte(market.ExchangeConfigJson), &exchangeConfigJSON); err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to unmarshal exchange json config",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -79,7 +84,7 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 		// Convert the exchange config JSON to a set of paths and providers.
 		providers, err := h.ConvertExchangeConfigJSON(exchangeConfigJSON)
 		if err != nil {
-			h.logger.Error(
+			h.logger.Debug(
 				"failed to convert exchange config json",
 				zap.String("ticker", ticker.String()),
 				zap.Error(err),
@@ -119,7 +124,7 @@ func (h *APIHandler) CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtyp
 	return t, t.ValidateBasic()
 }
 
-// CreateCurrencyPairFromMarket creates a currency pair from a dYdX market.
+// CreateCurrencyPairFromPair creates a currency pair from a dYdX market.
 func (h *APIHandler) CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
 	split := strings.Split(pair, Delimeter)
 	if len(split) != 2 {
@@ -156,7 +161,7 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 		exchange, ok := ProviderMapping[cfg.ExchangeName]
 		if !ok {
 			// ignore unsupported exchanges
-			h.logger.Error(
+			h.logger.Debug(
 				"skipping unsupported exchange",
 				zap.String("exchange", cfg.ExchangeName),
 				zap.String("ticker", cfg.Ticker),
@@ -180,35 +185,66 @@ func (h *APIHandler) ConvertExchangeConfigJSON(
 			normalizeByPair = &temp
 		}
 
+		// Convert the ticker to the provider's format.
+		denom, err := ConvertDenomByProvider(cfg.Ticker, exchange)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert denom by provider: %w", err)
+		}
+
+		metaData, err := ExtractMetadata(exchange, cfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to extract metadata: %w", err)
+		}
+
 		// Convert to a provider config.
 		providers = append(providers, mmtypes.ProviderConfig{
 			Name:            exchange,
-			OffChainTicker:  ConvertDenomByProvider(cfg.Ticker, exchange), // Convert the ticker to the provider's format.
+			OffChainTicker:  denom,
 			Invert:          cfg.Invert,
 			NormalizeByPair: normalizeByPair,
+			Metadata_JSON:   metaData,
 		})
 	}
 
 	return providers, nil
 }
 
+// ExtractMetadata extracts Metadata_JSON from ExchangeMarketConfigJson, based on the converted provider name.
+func ExtractMetadata(providerName string, cfg dydxtypes.ExchangeMarketConfigJson) (string, error) {
+	// Exchange-specific logic for converting a ticker to provider-specific metadata json
+	switch {
+	case strings.HasPrefix(providerName, uniswapv3.BaseName):
+		return UniswapV3MetadataFromTicker(cfg.Ticker, cfg.Invert)
+	case providerName == raydium.Name:
+		return RaydiumMetadataFromTicker(cfg.Ticker)
+	}
+	return "", nil
+}
+
 // ConvertDenomByProvider converts a given denom to a format that is compatible with a given provider.
 // Specifically, this is used to convert API to WebSocket representations of denoms where necessary.
-func ConvertDenomByProvider(denom string, exchange string) string {
+func ConvertDenomByProvider(denom string, exchange string) (string, error) {
 	switch {
 	case exchange == mexc.Name:
 		if strings.Contains(denom, "_") {
-			return strings.ReplaceAll(denom, "_", "")
+			return strings.ReplaceAll(denom, "_", ""), nil
 		}
 
-		return denom
+		return denom, nil
 	case exchange == bitstamp.Name:
 		if strings.Contains(denom, "/") {
-			return strings.ToLower(strings.ReplaceAll(denom, "/", ""))
+			return strings.ToLower(strings.ReplaceAll(denom, "/", "")), nil
+		}
+	case exchange == raydium.Name:
+		// split the ticker by /, and expect there to at least be two values
+		fields := strings.Split(denom, RaydiumTickerSeparator)
+		if len(fields) < 2 {
+			return "", fmt.Errorf("expected denom to have at least 2 fields, got %d for %s ticker: %s", len(fields), exchange, denom)
 		}
 
-		return strings.ToLower(denom)
+		return slinkytypes.NewCurrencyPair(fields[0], fields[1]).String(), nil
 	default:
-		return denom
+		return denom, nil
 	}
+	return "", nil
 }
