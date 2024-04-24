@@ -34,7 +34,7 @@ The slinky repository is composed of the following core packages:
 To run the oracle, run the following command.
 
 ```bash
-$ make start-oracle
+$ make start-all
 ```
 
 This will:
@@ -69,7 +69,7 @@ price:
 To stop the oracle, run the following command:
 
 ```bash
-$ make stop-oracle
+$ make stop-all
 ```
 
 ## Metrics
@@ -82,13 +82,3 @@ $ make stop-oracle
 
 * metrics relevant to the network's (that is running the instance slinky) performance are [here](./service/metrics/README.md)
 
-## Basic Performance Analysis
-
-> **Note: These are numbers based on 14 providers and 9 currency pairs over a 24 hour period.**
-
-* ~**5 milliseconds** between price updates across all providers and price feeds.
-* ~**14 million** total price updates.
-* ~**60 go routines** are running at any given time.
-* ~**7x** improvement in performance of websocket providers over API providers.
-
-To test these numbers yourself, spin up the the oracle server following the instructions above and then navigate to http://localhost:9090. From here, you can run the prometheus queries defined in this [readme](./metrics.md) to get insight into the oracle's performance.

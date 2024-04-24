@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -65,7 +66,7 @@ func NewMetrics(chainID string) Metrics {
 			Help:      "The time it took for the oracle to respond",
 			Buckets:   prometheus.ExponentialBuckets(1, 2, 10),
 		}, []string{ChainIDLabel}),
-		oracleResponseCounter: prometheus.NewCounterVec(prometheus.CounterOpts{
+		oracleResponseCounter: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: AppNamespace,
 			Name:      "oracle_responses",
 			Help:      "The number of oracle responses",
@@ -76,7 +77,7 @@ func NewMetrics(chainID string) Metrics {
 			Help:      "The time it took for an ABCI method to execute slinky specific logic (in seconds)",
 			Buckets:   []float64{.0001, .0004, .002, .009, .02, .1, .65, 2, 6, 25},
 		}, []string{ABCIMethodLabel, ChainIDLabel}),
-		abciRequests: prometheus.NewCounterVec(prometheus.CounterOpts{
+		abciRequests: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: AppNamespace,
 			Name:      "abci_requests",
 			Help:      "The number of requests made to the ABCI server",
@@ -97,7 +98,7 @@ func NewMetrics(chainID string) Metrics {
 			Name:      "reports_per_validator",
 			Help:      "The price reported for a specific validator and ticker",
 		}, []string{ChainIDLabel, ValidatorLabel, TickerLabel}),
-		reportStatusPerValidator: prometheus.NewCounterVec(prometheus.CounterOpts{
+		reportStatusPerValidator: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: AppNamespace,
 			Name:      "report_status_per_validator",
 			Help:      "The status of the report for a specific validator and ticker",
@@ -121,11 +122,11 @@ func NewMetrics(chainID string) Metrics {
 
 type metricsImpl struct {
 	oracleResponseLatency    *prometheus.HistogramVec
-	oracleResponseCounter    *prometheus.CounterVec
+	oracleResponseCounter    *prometheus.GaugeVec
 	reportsPerValidator      *prometheus.GaugeVec
-	reportStatusPerValidator *prometheus.CounterVec
+	reportStatusPerValidator *prometheus.GaugeVec
 	abciMethodLatency        *prometheus.HistogramVec
-	abciRequests             *prometheus.CounterVec
+	abciRequests             *prometheus.GaugeVec
 	messageSize              *prometheus.HistogramVec
 	prices                   *prometheus.GaugeVec
 	chainID                  string
@@ -169,14 +170,14 @@ func (m *metricsImpl) ObserveMessageSize(messageType MessageType, size int) {
 func (m *metricsImpl) ObservePriceForTicker(ticker slinkytypes.CurrencyPair, price float64) {
 	m.prices.With(prometheus.Labels{
 		ChainIDLabel: m.chainID,
-		TickerLabel:  ticker.String(),
+		TickerLabel:  strings.ToLower(ticker.String()),
 	}).Set(price)
 }
 
 func (m *metricsImpl) AddValidatorPriceForTicker(validator string, ticker slinkytypes.CurrencyPair, price float64) {
 	m.reportsPerValidator.With(prometheus.Labels{
 		ChainIDLabel:   m.chainID,
-		TickerLabel:    ticker.String(),
+		TickerLabel:    strings.ToLower(ticker.String()),
 		ValidatorLabel: validator,
 	}).Set(price)
 }
@@ -185,7 +186,7 @@ func (m *metricsImpl) AddValidatorReportForTicker(validator string, ticker slink
 	m.reportStatusPerValidator.With(prometheus.Labels{
 		ChainIDLabel:   m.chainID,
 		ValidatorLabel: validator,
-		TickerLabel:    ticker.String(),
+		TickerLabel:    strings.ToLower(ticker.String()),
 		StatusLabel:    rs.String(),
 	}).Inc()
 }

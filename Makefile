@@ -52,11 +52,11 @@ update-local-configs: build
 		--solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_ORACLE_CONFIG_FILE} --node-http-url=localhost:1317 --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
-start-oracle:
+start-all:
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
 
-stop-oracle:
+stop-all:
 	@echo "Stopping network..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
