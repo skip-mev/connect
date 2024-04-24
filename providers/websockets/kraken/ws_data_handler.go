@@ -51,7 +51,7 @@ func NewWebSocketDataHandler(
 // HandleMessage is used to handle a message received from the data provider. There are two
 // types of messages that are handled by this function:
 //  1. Price update messages. This is used to update the price of the given ticker. This
-//     is formated as a JSON array.
+//     is formatted as a JSON array.
 //  2. General response messages. This is used to check if the subscription request was successful,
 //     heartbeats, and system status updates.
 func (h *WebSocketHandler) HandleMessage(

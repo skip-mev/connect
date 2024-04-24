@@ -57,3 +57,17 @@ jobs:
         if: env.GIT_DIFF
         run: |
           make govulncheck
+  spellcheck:
+    name: Run codespell
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install codespell
+      run: pip install codespell
+    - name: Run codespell
+      run: codespell

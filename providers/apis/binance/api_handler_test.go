@@ -168,7 +168,7 @@ func TestParseResponse(t *testing.T) {
 				btcusdt,
 			},
 			response: testutils.CreateResponseFromJSON(
-				`shout out my label thats me`,
+				`shout out my label that's me`,
 			),
 			expected: types.NewPriceResponse(
 				types.ResolvedPrices{},

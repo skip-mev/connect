@@ -128,7 +128,7 @@ func (pf *APIPriceFetcher) Fetch(
 	ctx context.Context,
 	tickers []oracletypes.ProviderTicker,
 ) oracletypes.PriceResponse {
-	// get the acounts to query in order of the tickers given
+	// get the accounts to query in order of the tickers given
 	expectedNumAccounts := len(tickers) * 2
 	accounts := make([]solana.PublicKey, expectedNumAccounts)
 
