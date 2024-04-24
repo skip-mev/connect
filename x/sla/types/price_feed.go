@@ -26,7 +26,7 @@ const (
 type UpdateStatus int
 
 // NewPriceFeed returns a new price feed for the given parameters. This is meant to be
-// called everytime a new SLA is created, new currency pair is added, or a new validator
+// called every time a new SLA is created, new currency pair is added, or a new validator
 // is added to the network.
 func NewPriceFeed(
 	maximumViableWindow uint,
