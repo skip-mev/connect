@@ -126,7 +126,7 @@ func (h *APIHandler) CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtyp
 
 // CreateCurrencyPairFromPair creates a currency pair from a dYdX market.
 func (h *APIHandler) CreateCurrencyPairFromPair(pair string) (slinkytypes.CurrencyPair, error) {
-	split := strings.Split(pair, Delimeter)
+	split := strings.Split(pair, Delimiter)
 	if len(split) != 2 {
 		return slinkytypes.CurrencyPair{}, fmt.Errorf("expected pair (%s) to have 2 elements, got %d", pair, len(split))
 	}

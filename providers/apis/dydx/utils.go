@@ -24,20 +24,20 @@ const (
 	// Endpoint is the endpoint for the dYdX market map API.
 	Endpoint = "%s/dydxprotocol/prices/params/market?limit=10000"
 
-	// Delimeter is the delimeter used to separate the base and quote assets in a pair.
-	Delimeter = "-"
+	// Delimiter is the delimiter used to separate the base and quote assets in a pair.
+	Delimiter = "-"
 
 	// UniswapV3TickerFields is the number of fields to expect to parse from a UniswapV3 ticker.
 	UniswapV3TickerFields = 3
 
 	// UniswapV3TickerSeparator is the separator for fields contained within a ticker for a uniswapv3_api provider.
-	UniswapV3TickerSeparator = Delimeter
+	UniswapV3TickerSeparator = Delimiter
 
 	// RaydiumTickerFields is the minimum number of fields to expect the raydium exchange ticker to have.
 	RaydiumTickerFields = 6
 
 	// RaydiumTickerSeparator is the separator for fields contained within a ticker for the raydium provider.
-	RaydiumTickerSeparator = Delimeter
+	RaydiumTickerSeparator = Delimiter
 )
 
 // DefaultAPIConfig returns the default configuration for the dYdX market map API.
