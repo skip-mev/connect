@@ -24,7 +24,7 @@ The ticker conversions are used to convert the specific parameters associated wi
 ```
 
 * `id` - This is currently not applicable to the side car and is not utilized.
-* `pair` - This is the pair that the market is associated with. There is a direct conversion here assuming the delimeter is `-` across all markets.
+* `pair` - This is the pair that the market is associated with. There is a direct conversion here assuming the delimiter is `-` across all markets.
 * `exponent` - In the side-car we represent all prices in `Decimals`, which is the absolute value of the `exponent`.
 * `min_exchanges` - This is the minimum number of exchanges that need to provide prices for the market to be considered valid. This is a direct mapping to `MinProviderCount` in the side-car.
 * `min_price_change_ppm` - This is currently not applicable to the side car and is not utilized.
@@ -40,6 +40,6 @@ The dYdX Mexc API uses the [Spot V2 endpoint](https://mexcdevelop.github.io/apid
 
 #### Bitstamp Ticker Conversions
 
-The dYdX Bitstamp API uses the [Ticker endpoint](https://www.bitstamp.net/api/v2/ticker/) which has a different representation of tickers relative to the [Websocket API](https://www.bitstamp.net/websocket/v2/). The ticker endpoint uses a `/` delimiter, while the websocket connection does not have a delimeter and lowercases the ticker.
+The dYdX Bitstamp API uses the [Ticker endpoint](https://www.bitstamp.net/api/v2/ticker/) which has a different representation of tickers relative to the [Websocket API](https://www.bitstamp.net/websocket/v2/). The ticker endpoint uses a `/` delimiter, while the websocket connection does not have a delimiter and lowercases the ticker.
 
 

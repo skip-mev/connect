@@ -41,7 +41,7 @@ const (
 
 const (
 	// TickerChannel represents the ticker channel. The ticker channel providers real-time price
-	// updates everytime a match happens. It batches updates in case of cascading matches,
+	// updates every time a match happens. It batches updates in case of cascading matches,
 	// greatly reducing bandwidth requirements.
 	//
 	// ref: https://docs.cloud.coinbase.com/exchange/docs/websocket-channels#ticker-channel
