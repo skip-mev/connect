@@ -38,7 +38,7 @@ type GoodPriceIncentiveStrategy struct {
 	bk BankKeeper
 }
 
-// NewBadPriceIncentiveStrategy returns a new GoodPriceIncentiveStrategy.
+// NewGoodPriceIncentiveStrategy returns a new GoodPriceIncentiveStrategy.
 func NewGoodPriceIncentiveStrategy(bk BankKeeper) *GoodPriceIncentiveStrategy {
 	return &GoodPriceIncentiveStrategy{
 		bk: bk,
