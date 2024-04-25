@@ -82,7 +82,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	scaledPrices := make(types.Prices)
 
 	for ticker, market := range m.cfg.Markets {
-		// Get the converted prices for set of convertable markets.
+		// Get the converted prices for set of convertible markets.
 		// ex. BTC/USDT * Index USDT/USD = BTC/USD
 		//     BTC/USDC * Index USDC/USD = BTC/USD
 		target := market.Ticker

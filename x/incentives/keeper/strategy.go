@@ -26,7 +26,7 @@ func (k Keeper) ExecuteStrategies(ctx sdk.Context) error {
 
 // ExecuteIncentiveStrategy executes a given strategy for all incentives of a given type.
 // Note that the strategy may mutate the incentive, and return a new incentive to be
-// stored. Stategies must return nil if the incentive should be deleted. Otherwise, the
+// stored. Strategies must return nil if the incentive should be deleted. Otherwise, the
 // incentive will be updated.
 func (k Keeper) ExecuteIncentiveStrategy(
 	ctx sdk.Context,
