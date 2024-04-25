@@ -29,4 +29,4 @@ The verify vote extension handler acknowledges and verifies the vote extensions 
 
 1. Verifying the vote extension is valid. If the vote extension is empty, the vote extension is considered valid.
 2. Verifying the vote extension is not expired. If the vote extension is expired, the vote extension is considered invalid.
-3. Verfiying that the prices provided in the vote extension are valid. If the prices are invalid, the vote extension is considered invalid.
+3. Verifying that the prices provided in the vote extension are valid. If the prices are invalid, the vote extension is considered invalid.

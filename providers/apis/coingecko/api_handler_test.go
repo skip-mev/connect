@@ -135,7 +135,7 @@ func TestParseResponse(t *testing.T) {
 			},
 			response: testutils.CreateResponseFromJSON(
 				`
-shout out my label thats me
+shout out my label that's me
 	`,
 			),
 			expected: types.NewPriceResponse(

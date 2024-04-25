@@ -44,7 +44,7 @@ const (
 	// ReconnectEvent is the reconnect event. After you receive this request,
 	// you will have a few seconds to reconnect. Without doing so, you will
 	// automatically be disconnected. If you send reconnection request, you
-	// will be placed to a new server. Consequentially, you can continue without
+	// will be placed to a new server. Consequently, you can continue without
 	// any message loss.
 	//
 	// ref: https://www.bitstamp.net/websocket/v2/
