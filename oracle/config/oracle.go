@@ -25,6 +25,8 @@ type OracleConfig struct {
 
 	// Production specifies whether the oracle is running in production mode. This is used to
 	// determine whether the oracle should be run in debug mode or not.
+	//
+	// TODO:  Deprecate this field in favor of a more robust configuration system.
 	Production bool `json:"production"`
 
 	// Metrics is the metrics configurations for the oracle.

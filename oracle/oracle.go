@@ -135,7 +135,7 @@ func (o *OracleImpl) Stop() {
 // tick executes a single oracle tick. It fetches prices from each provider's
 // cache and computes the aggregated price for each currency pair.
 func (o *OracleImpl) tick() {
-	o.logger.Info("starting oracle tick")
+	o.logger.Debug("starting oracle tick")
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -151,7 +151,7 @@ func (o *OracleImpl) tick() {
 		o.fetchPrices(priceProvider)
 	}
 
-	o.logger.Info("oracle fetched prices from providers")
+	o.logger.Debug("oracle fetched prices from providers")
 
 	// Compute aggregated prices and update the oracle.
 	o.priceAggregator.AggregatePrices()
@@ -181,7 +181,7 @@ func (o *OracleImpl) fetchPrices(provider *types.PriceProvider) {
 		return
 	}
 
-	o.logger.Info(
+	o.logger.Debug(
 		"retrieving prices",
 		zap.String("provider", provider.Name()),
 		zap.String("data handler type",
@@ -191,7 +191,7 @@ func (o *OracleImpl) fetchPrices(provider *types.PriceProvider) {
 	// Fetch and set prices from the provider.
 	prices := provider.GetData()
 	if prices == nil {
-		o.logger.Info(
+		o.logger.Debug(
 			"provider returned nil prices",
 			zap.String("provider", provider.Name()),
 			zap.String("data handler type", string(provider.Type())),
@@ -227,7 +227,7 @@ func (o *OracleImpl) fetchPrices(provider *types.PriceProvider) {
 		timeFilteredPrices[pair.GetOffChainTicker()] = result.Value
 	}
 
-	o.logger.Info("provider returned prices",
+	o.logger.Debug("provider returned prices",
 		zap.String("provider", provider.Name()),
 		zap.String("data handler type", string(provider.Type())),
 		zap.Int("prices", len(prices)),

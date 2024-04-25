@@ -17,6 +17,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
+	"github.com/skip-mev/slinky/pkg/log"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
@@ -39,6 +40,8 @@ var (
 	updateMarketCfgPath string
 	runPprof            bool
 	profilePort         string
+	logLevel            string
+	writeLogsTo         string
 )
 
 func init() {
@@ -77,6 +80,20 @@ func init() {
 		"6060",
 		"Port for the pprof server to listen on.",
 	)
+	rootCmd.Flags().StringVarP(
+		&logLevel,
+		"log-level",
+		"",
+		"info",
+		"Log level (debug, info, warn, error, dpanic, panic, fatal).",
+	)
+	rootCmd.Flags().StringVarP(
+		&writeLogsTo,
+		"write-logs-to",
+		"",
+		"",
+		"Write logs to a file.",
+	)
 	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
 }
 
@@ -109,18 +126,12 @@ func runOracle() error {
 		}
 	}
 
-	var logger *zap.Logger
-	if !cfg.Production {
-		logger, err = zap.NewDevelopment()
-		if err != nil {
-			return fmt.Errorf("failed to create logger: %s", err.Error())
-		}
-	} else {
-		logger, err = zap.NewProduction()
-		if err != nil {
-			return fmt.Errorf("failed to create logger: %s", err.Error())
-		}
-	}
+	// Build logger.
+	logger := log.NewLogger(log.Config{
+		LogLevel: logLevel,
+		WriteTo:  writeLogsTo,
+	})
+	defer logger.Sync()
 
 	logger.Info(
 		"successfully read in configs",
