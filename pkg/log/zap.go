@@ -35,9 +35,6 @@ func NewLogger(config Config) *zap.Logger {
 	initialFields := map[string]interface{}{
 		"pid": os.Getpid(),
 	}
-	if config.WriteTo != "" {
-		initialFields["writing_logs_to"] = config.WriteTo
-	}
 
 	var (
 		logLevel zapcore.Level

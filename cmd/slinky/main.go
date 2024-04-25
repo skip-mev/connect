@@ -89,7 +89,7 @@ func init() {
 	)
 	rootCmd.Flags().StringVarP(
 		&writeLogsTo,
-		"write-logs-to",
+		"log-file",
 		"",
 		"",
 		"Write logs to a file.",
