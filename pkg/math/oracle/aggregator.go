@@ -82,7 +82,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	scaledPrices := make(types.Prices)
 
 	for ticker, market := range m.cfg.Markets {
-		// Get the converted prices for set of convertable markets.
+		// Get the converted prices for set of convertible markets.
 		// ex. BTC/USDT * Index USDT/USD = BTC/USD
 		//     BTC/USDC * Index USDC/USD = BTC/USD
 		target := market.Ticker
@@ -109,7 +109,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		// Scale the price to the target ticker's decimals.
 		scaledPrices[target.String()] = math.ScaleBigFloat(new(big.Float).Copy(price), target.Decimals)
 
-		m.logger.Info(
+		m.logger.Debug(
 			"calculated median price",
 			zap.String("target_ticker", ticker),
 
@@ -124,7 +124,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
-	m.logger.Info("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
+	m.logger.Debug("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
 	m.indexPrices = indexPrices
 	m.scaledPrices = scaledPrices
 }

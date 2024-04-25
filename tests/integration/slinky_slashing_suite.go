@@ -374,7 +374,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 }
 
 // TestAlertPruning tests the pruning of alerts, specifically we submit 2 alerts, wait for some period of time between them,
-// and expect that they are pruned afer BlocksToPrune has passed. Also test that after an alert is concluded, it's BlocksToPrune
+// and expect that they are pruned after BlocksToPrune has passed. Also test that after an alert is concluded, it's BlocksToPrune
 // is updated to alert.Height + MaxBlockAge, so that the same alert cannot be submitted + concluded twice.
 func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 	// check if the BTC/USD currency pair exists
