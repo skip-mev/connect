@@ -9,8 +9,10 @@ import (
 
 // Config is the configuration for the logger.
 type Config struct {
+	// LogLevel is the log level to use. The default is "info".
 	LogLevel string
-	WriteTo  string
+	// WriteTo is the path to write logs to. The default is stderr.
+	WriteTo string
 }
 
 // NewLogger creates a new logger with the given configuration. This logger
@@ -18,7 +20,7 @@ type Config struct {
 // the Config struct.
 func NewLogger(config Config) *zap.Logger {
 	// EncodeTime is set to ISO8601TimeEncoder by default. This is a more human readable
-	// format than the default RFC3339NanoTimeEncoder.
+	// format than the default EpochTimeEncoder.
 	encoderCfg := zap.NewProductionEncoderConfig()
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
@@ -37,7 +39,6 @@ func NewLogger(config Config) *zap.Logger {
 		initialFields["writing_logs_to"] = config.WriteTo
 	}
 
-	// logLevel is set to DebugLevel if the Development flag is set.
 	var (
 		logLevel zapcore.Level
 		dev      = false
