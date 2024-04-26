@@ -1,15 +1,15 @@
 # my global config
 global:
-  scrape_interval: 100ms
+  scrape_interval: 100ms  # Adjust this based on your system's needs and performance
   evaluation_interval: 1s
-  # scrape_timeout is set to the global default (10s).
 
 scrape_configs:
-  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: "prometheus"
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
+  # Scrape configuration for the Oracle service
+  - job_name: "oracle"
     static_configs:
-      - targets: ["oracle:8002"]
+      - targets: ["oracle:8002"]  # Oracle metrics endpoint
+
+  # Scrape configuration for the Blockchain service
+  - job_name: "blockchain"
+    static_configs:
+      - targets: ["blockchain:26660"]  # Blockchain metrics endpoint
