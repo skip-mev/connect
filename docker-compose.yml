@@ -45,3 +45,16 @@ services:
       - "26655:26655"
     networks:
       - oracle_network
+    
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - oracle_network
+
+volumes:
+  grafana_data:
