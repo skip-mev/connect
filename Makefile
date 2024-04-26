@@ -53,7 +53,7 @@ update-local-configs: build
 	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_ORACLE_CONFIG_FILE} --node-http-url=localhost:1317 --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
 start-all:
-	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
+	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
 
 stop-all:
@@ -61,8 +61,8 @@ stop-all:
 	@$(DOCKER_COMPOSE) -f docker-compose.yml down
 
 start-sidecar:
-	@echo "Starting oracle side-car and prometheus dashboard..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus
+	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
+	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana
 
 stop-sidecar:
 	@echo "Stopping network..."
