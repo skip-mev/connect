@@ -1,15 +1,8 @@
 # my global config
 global:
-  scrape_interval: 100ms  # Adjust this based on your system's needs and performance
+  scrape_interval: 100ms  # Adjust this as necessary
   evaluation_interval: 1s
-
 scrape_configs:
-  # Scrape configuration for the Oracle service
-  - job_name: "oracle"
+  - job_name: "prometheus"
     static_configs:
-      - targets: ["oracle:8002"]  # Oracle metrics endpoint
-
-  # Scrape configuration for the Blockchain service
-  - job_name: "blockchain"
-    static_configs:
-      - targets: ["blockchain:26660"]  # Blockchain metrics endpoint
+      - targets: ["oracle:8002", "blockchain:26660"]
