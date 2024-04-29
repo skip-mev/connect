@@ -31,7 +31,7 @@ func MarketMapProviderFactory(
 	}
 
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries},
+		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyFromEnvironment},
 		Timeout:   cfg.API.Timeout,
 	}
 	var apiDataHandler types.MarketMapAPIDataHandler
