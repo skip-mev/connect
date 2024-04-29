@@ -8,8 +8,8 @@ services:
       context: .
       dockerfile: contrib/images/slinky.sidecar.prod.Dockerfile
     volumes:
-      - ./config/local/oracle.json:/oracle/oracle.json
-      - ./config/local/market.json:/oracle/market.json
+      - ./config/dydx/oracle.json:/oracle/oracle.json
+      - ./config/dydx/market.json:/oracle/market.json
     entrypoint: [
       "slinky", 
       "--oracle-config-path", "/oracle/oracle.json", 
