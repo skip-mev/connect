@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -30,10 +29,151 @@
         "x": 0,
         "y": 0
       },
-      "id": 44,
+      "id": 113,
       "panels": [],
-      "title": "Side Car Aggregated Prices",
+      "title": "Side Car Summary",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 11,
+        "x": 0,
+        "y": 1
+      },
+      "id": 127,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "count(side_car_aggregated_price)",
+          "instant": false,
+          "legendFormat": "Total # of Aggregated Feeds",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "count(side_car_provider_price)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Total # of Provider Feeds",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Number of successful price updates that were fetched by WebSocket and API providers per second.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 13,
+        "x": 11,
+        "y": 1
+      },
+      "id": 126,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": true,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(side_car_provider_status_responses{job=\"${job}\", status=\"success\"}[$__range]))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Prices Fetched / Sec in Range",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -53,12 +193,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-red",
                 "value": null
               },
               {
-                "color": "red",
-                "value": 80
+                "color": "semi-dark-green",
+                "value": 1
               }
             ]
           },
@@ -67,10 +207,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 2,
+        "h": 3,
+        "w": 11,
         "x": 0,
-        "y": 1
+        "y": 4
       },
       "id": 71,
       "options": {
@@ -104,7 +244,74 @@
           "refId": "A"
         }
       ],
-      "title": "Side Car Price Updates in Range",
+      "title": "Side Car Price Aggregation Tick Interval",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 13,
+        "x": 11,
+        "y": 4
+      },
+      "id": 116,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 1
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "increase(side_car_health_check_system_updates_total{job=\"${job}\"}[$__range])",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Number of Attempted Price Calculations in Range",
       "type": "stat"
     },
     {
@@ -129,7 +336,7 @@
               },
               {
                 "color": "semi-dark-green",
-                "value": 0.97
+                "value": 1
               }
             ]
           },
@@ -138,10 +345,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 22,
-        "x": 2,
-        "y": 1
+        "h": 9,
+        "w": 11,
+        "x": 0,
+        "y": 7
       },
       "id": 70,
       "options": {
@@ -168,7 +375,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
+          "exemplar": false,
           "expr": "sum by (id) \n(rate(side_car_health_check_ticker_updates_total{job=\"${job}\"}[$__range]))\n/\nscalar(rate(side_car_health_check_system_updates_total{job=\"${job}\"}[$__range]))",
+          "format": "heatmap",
           "instant": false,
           "legendFormat": "{{id}}",
           "range": true,
@@ -183,7 +392,85 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 13,
+        "x": 11,
+        "y": 7
+      },
+      "id": 115,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "increase(side_car_health_check_ticker_updates_total{job=\"${job}\"}[$__range])",
+          "instant": true,
+          "legendFormat": "{{id}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Number of Successful Price Updates in Side Car in Range",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 44,
+      "panels": [],
+      "title": "Side Car Aggregated Prices",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "The bolded line is the final aggregate price while each of the thinner lines are the prices per provider.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -228,10 +515,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -249,52 +532,23 @@
                 "value": 8
               }
             ]
-          },
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "bonk/usd",
-                  "bonk/usd bybit_ws",
-                  "bonk/usd coinbase_api",
-                  "bonk/usd kucoin_ws",
-                  "bonk/usd mexc_ws",
-                  "bonk/usd okx_ws"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
           }
         ]
       },
       "gridPos": {
-        "h": 18,
+        "h": 12,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 17
       },
-      "id": 45,
+      "id": 103,
       "options": {
         "legend": {
           "calcs": [
+            "last",
             "min",
             "max",
-            "mean",
-            "lastNotNull"
+            "mean"
           ],
           "displayMode": "table",
           "placement": "bottom",
@@ -309,12 +563,10 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "exemplar": false,
-          "expr": "side_car_aggregated_price{job=\"${job}\",id=~\"${id}\"}",
-          "hide": false,
+          "expr": "side_car_aggregated_price{job=\"${job}\", id=~\"${id}\"}",
           "instant": false,
           "legendFormat": "{{id}}",
           "range": true,
@@ -326,12 +578,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "side_car_provider_price{job=\"${job}\",id=~\"${id}\"}",
+          "expr": "side_car_provider_price{job=\"${job}\",id=~\"${id}\", provider=~\"${provider}\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "{{id}} {{provider}}",
           "range": true,
-          "refId": "C"
+          "refId": "B"
         }
       ],
       "title": "Side Car Aggregated Price Pair - Filter Above",
@@ -343,7 +595,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 29
       },
       "id": 47,
       "panels": [],
@@ -389,12 +641,12 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 28
+        "y": 30
       },
       "id": 49,
       "options": {
         "colorMode": "background_solid",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
@@ -445,7 +697,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-red",
                 "value": null
               },
               {
@@ -466,12 +718,12 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 28
+        "y": 30
       },
       "id": 57,
       "options": {
         "colorMode": "background_solid",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
@@ -645,7 +897,7 @@
         "h": 15,
         "w": 6,
         "x": 0,
-        "y": 36
+        "y": 38
       },
       "id": 46,
       "options": {
@@ -723,7 +975,7 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 36
+        "y": 38
       },
       "id": 58,
       "options": {
@@ -798,7 +1050,7 @@
         "h": 7,
         "w": 18,
         "x": 6,
-        "y": 44
+        "y": 46
       },
       "id": 59,
       "options": {
@@ -841,11 +1093,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 53
       },
       "id": 55,
       "panels": [],
-      "title": "Detailed Side Car Provider Status",
+      "title": "Detailed Side Car Provider Market Data",
       "type": "row"
     },
     {
@@ -886,7 +1138,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 52
+        "y": 54
       },
       "id": 93,
       "maxPerRow": 2,
@@ -981,72 +1233,12 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "skip-1",
-          "value": "skip-1"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "definition": "label_values({job=\"$job\"},chain_id)",
-        "hide": 0,
-        "includeAll": false,
-        "label": "chain-id",
-        "multi": false,
-        "name": "chain_id",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values({job=\"$job\"},chain_id)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
-      },
-      {
-        "current": {
           "selected": true,
           "text": [
-            "All"
+            "btc/usd"
           ],
           "value": [
-            "$__all"
-          ]
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "definition": "label_values(app_prices,ticker)",
-        "hide": 0,
-        "includeAll": true,
-        "label": "Reported Ticker",
-        "multi": true,
-        "name": "ticker",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(app_prices,ticker)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": true,
-          "text": [
-            "bonk/usd"
-          ],
-          "value": [
-            "bonk/usd"
+            "btc/usd"
           ]
         },
         "datasource": {
@@ -1089,7 +1281,7 @@
         "definition": "label_values(side_car_health_check_provider_updates_total,provider)",
         "hide": 0,
         "includeAll": true,
-        "label": "Price Data Provider",
+        "label": "Price Provider",
         "multi": true,
         "name": "provider",
         "options": [],
@@ -1105,41 +1297,9 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "definition": "label_values(app_reports_per_validator,validator)",
-        "hide": 0,
-        "includeAll": true,
-        "label": "Validator Consensus Address",
-        "multi": true,
-        "name": "validator",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(app_reports_per_validator,validator)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "dydx_api",
           "value": "dydx_api"
         },
@@ -1150,7 +1310,7 @@
         "definition": "label_values(side_car_provider_status_responses_per_id,provider)",
         "hide": 0,
         "includeAll": false,
-        "label": "Market Map Data Provider",
+        "label": "Market Map Provider",
         "multi": false,
         "name": "market_map_provider",
         "options": [],
@@ -1180,8 +1340,8 @@
     ]
   },
   "timezone": "",
-  "title": "Slinky SideCar Dashboard Local",
-  "uid": "cdca49ue665moc2",
-  "version": 3,
+  "title": "Slinky SideCar Dashboard",
+  "uid": "cdca49ue665moc4",
+  "version": 1,
   "weekStart": ""
 }
