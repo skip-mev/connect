@@ -20,6 +20,7 @@ services:
     ports:
       - "8080:8080" # main oracle port
       - "6060:6060" # pprof port
+      - "8002:8002" # metrics port
     networks:
       - oracle_network
 
