@@ -88,8 +88,6 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 		)
 	}
 
-	fmt.Println(pf.requestHandler)
-
 	pf.logger.Debug("created url", zap.String("url", url))
 
 	// Make the request.

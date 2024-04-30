@@ -50,8 +50,6 @@ func NewRequestHandlerImpl(client *http.Client, opts ...Option) (RequestHandler,
 // wraps the request with the given context before sending it to the data provider.
 func (r *RequestHandlerImpl) Do(ctx context.Context, url string) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, r.method, url, nil)
-	proxy, _ := r.client.Transport.(*http.Transport).Proxy(req)
-	fmt.Printf("%+v\n", proxy)
 	if err != nil {
 		return nil, err
 	}

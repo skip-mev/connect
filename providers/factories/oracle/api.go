@@ -3,12 +3,9 @@ package oracle
 import (
 	"context"
 	"fmt"
-	"net"
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"net/http"
 	"strings"
-	"time"
-
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 
 	"go.uber.org/zap"
 
@@ -48,17 +45,6 @@ func APIQueryHandlerFactory(
 		Transport: &http.Transport{
 			MaxConnsPerHost: cfg.API.MaxQueries,
 			Proxy:           http.ProxyFromEnvironment,
-			DialContext: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-				// Force IPv4 by specifying the network type as "tcp4"
-				Resolver: &net.Resolver{
-					PreferGo: true,
-					Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-						return net.Dial("tcp4", address)
-					},
-				},
-			}).DialContext,
 		},
 		Timeout: cfg.API.Timeout,
 	}
