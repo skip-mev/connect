@@ -102,7 +102,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 			OrigName:     true,
 		}),
 	)
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithNoProxy()}
 	err := types.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, serverEndpoint, opts)
 	if err != nil {
 		return err

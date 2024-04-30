@@ -42,8 +42,11 @@ func WebSocketQueryHandlerFactory(
 	// Create the underlying client that can be utilized by websocket providers that need to
 	// interact with an API.
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries},
-		Timeout:   cfg.API.Timeout,
+		Transport: &http.Transport{
+			MaxConnsPerHost: cfg.API.MaxQueries,
+			Proxy:           http.ProxyFromEnvironment,
+		},
+		Timeout: cfg.API.Timeout,
 	}
 
 	var (
