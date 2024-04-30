@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -104,10 +103,6 @@ func main() {
 }
 
 func runOracle() error {
-	htt := http.DefaultTransport.(*http.Transport).Clone()
-	proxy, _ := url.Parse("http://localhost:1080")
-	http.DefaultTransport.(*http.Transport).Proxy = http.ProxyURL(proxy)
-	http.DefaultTransport = htt
 	// channel with width for either signal
 	sigs := make(chan os.Signal, 1)
 

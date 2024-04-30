@@ -70,6 +70,7 @@ func NewOracleServer(o oracle.Oracle, logger *zap.Logger) *OracleServer {
 
 // routeRequest determines if the incoming http request is a grpc or http request and routes to the proper handler.
 func (os *OracleServer) routeRequest(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("routing request")
 	if r.ProtoMajor == 2 && strings.HasPrefix(
 		r.Header.Get("Content-Type"), "application/grpc") {
 
@@ -102,7 +103,7 @@ func (os *OracleServer) StartServer(ctx context.Context, host, port string) erro
 			OrigName:     true,
 		}),
 	)
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithNoProxy()}
 	err := types.RegisterOracleHandlerFromEndpoint(ctx, os.gatewayMux, serverEndpoint, opts)
 	if err != nil {
 		return err
