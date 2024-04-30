@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"go.uber.org/zap"
 
@@ -41,8 +42,9 @@ func WebSocketQueryHandlerFactory(
 
 	// Create the underlying client that can be utilized by websocket providers that need to
 	// interact with an API.
+	proxy, _ := url.Parse("http://localhost:1080")
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyFromEnvironment},
+		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyURL(proxy)},
 		Timeout:   cfg.API.Timeout,
 	}
 

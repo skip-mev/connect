@@ -100,7 +100,6 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 	pf.logger.Debug("making request", zap.String("url", url))
 
 	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
-	proxy, _ := pf.requestHandler.(*RequestHandlerImpl).client.Transport.(*http.Transport).Proxy(req)
 	ipResp, err := pf.requestHandler.Do(apiCtx, "https://ifconfig.io")
 	if err != nil {
 		fmt.Printf("%+v\n", err)

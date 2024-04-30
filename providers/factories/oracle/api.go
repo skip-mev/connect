@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
@@ -42,8 +43,9 @@ func APIQueryHandlerFactory(
 	// Create the underlying client that will be used to fetch data from the API. This client
 	// will limit the number of concurrent connections and uses the configured timeout to
 	// ensure requests do not hang.
+	proxy, _ := url.Parse("http://localhost:1080")
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyFromEnvironment},
+		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyURL(proxy)},
 		Timeout:   cfg.API.Timeout,
 	}
 

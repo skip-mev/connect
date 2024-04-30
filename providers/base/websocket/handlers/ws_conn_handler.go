@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -79,8 +80,9 @@ func NewWebSocketHandlerImpl(cfg config.WebSocketConfig, opts ...Option) (*WebSo
 
 // CreateDialer is a function that dynamically creates a new websocket dialer.
 func (h *WebSocketConnHandlerImpl) CreateDialer() *websocket.Dialer {
+	proxy, _ := url.Parse("http://localhost:1080")
 	return &websocket.Dialer{
-		Proxy:             http.ProxyFromEnvironment,
+		Proxy:             http.ProxyURL(proxy),
 		HandshakeTimeout:  h.cfg.HandshakeTimeout,
 		ReadBufferSize:    h.cfg.ReadBufferSize,
 		WriteBufferSize:   h.cfg.WriteBufferSize,
