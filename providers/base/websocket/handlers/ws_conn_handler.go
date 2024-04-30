@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
+	"net"
 	"net/http"
-	"net/url"
 	"sync"
 	"time"
 
@@ -80,9 +81,19 @@ func NewWebSocketHandlerImpl(cfg config.WebSocketConfig, opts ...Option) (*WebSo
 
 // CreateDialer is a function that dynamically creates a new websocket dialer.
 func (h *WebSocketConnHandlerImpl) CreateDialer() *websocket.Dialer {
-	proxy, _ := url.Parse("http://localhost:1080")
 	return &websocket.Dialer{
-		Proxy:             http.ProxyURL(proxy),
+		NetDialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			// Force IPv4 by specifying the network type as "tcp4"
+			Resolver: &net.Resolver{
+				PreferGo: true,
+				Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+					return net.Dial("tcp4", address)
+				},
+			},
+		}).DialContext,
+		Proxy:             http.ProxyFromEnvironment,
 		HandshakeTimeout:  h.cfg.HandshakeTimeout,
 		ReadBufferSize:    h.cfg.ReadBufferSize,
 		WriteBufferSize:   h.cfg.WriteBufferSize,

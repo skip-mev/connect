@@ -1,8 +1,10 @@
 package oracle
 
 import (
+	"context"
+	"net"
 	"net/http"
-	"net/url"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -30,11 +32,24 @@ func MarketMapProviderFactory(
 	if err != nil {
 		return nil, err
 	}
-	proxy, _ := url.Parse("http://localhost:1080")
 
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyURL(proxy)},
-		Timeout:   cfg.API.Timeout,
+		Transport: &http.Transport{
+			MaxConnsPerHost: cfg.API.MaxQueries,
+			Proxy:           http.ProxyFromEnvironment,
+			DialContext: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+				// Force IPv4 by specifying the network type as "tcp4"
+				Resolver: &net.Resolver{
+					PreferGo: true,
+					Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+						return net.Dial("tcp4", address)
+					},
+				},
+			}).DialContext,
+		},
+		Timeout: cfg.API.Timeout,
 	}
 	var apiDataHandler types.MarketMapAPIDataHandler
 	var requestHandler apihandlers.RequestHandler

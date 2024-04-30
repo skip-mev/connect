@@ -3,9 +3,10 @@ package oracle
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
-	"net/url"
 	"strings"
+	"time"
 
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 
@@ -43,10 +44,23 @@ func APIQueryHandlerFactory(
 	// Create the underlying client that will be used to fetch data from the API. This client
 	// will limit the number of concurrent connections and uses the configured timeout to
 	// ensure requests do not hang.
-	proxy, _ := url.Parse("http://localhost:1080")
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries, Proxy: http.ProxyURL(proxy)},
-		Timeout:   cfg.API.Timeout,
+		Transport: &http.Transport{
+			MaxConnsPerHost: cfg.API.MaxQueries,
+			Proxy:           http.ProxyFromEnvironment,
+			DialContext: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+				// Force IPv4 by specifying the network type as "tcp4"
+				Resolver: &net.Resolver{
+					PreferGo: true,
+					Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+						return net.Dial("tcp4", address)
+					},
+				},
+			}).DialContext,
+		},
+		Timeout: cfg.API.Timeout,
 	}
 
 	var (
