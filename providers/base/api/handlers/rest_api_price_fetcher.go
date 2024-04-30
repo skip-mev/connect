@@ -88,6 +88,8 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 		)
 	}
 
+	fmt.Println(pf.requestHandler)
+
 	pf.logger.Debug("created url", zap.String("url", url))
 
 	// Make the request.
@@ -98,6 +100,10 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 
 	// Record the status code in the metrics.
 	resp, err := pf.requestHandler.Do(apiCtx, url)
+	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+	proxy, _ := pf.requestHandler.(*RequestHandlerImpl).client.Transport.(*http.Transport).Proxy(req)
+	fmt.Printf("%+v\n", proxy)
+	pf.logger.Info("proxy", zap.Any("proxy", proxy))
 	pf.metrics.AddHTTPStatusCode(pf.config.Name, resp)
 	if err != nil {
 		status := providertypes.ErrorUnknown
