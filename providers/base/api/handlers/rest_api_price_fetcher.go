@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -98,12 +99,23 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 
 	pf.logger.Debug("making request", zap.String("url", url))
 
-	// Record the status code in the metrics.
-	resp, err := pf.requestHandler.Do(apiCtx, url)
 	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 	proxy, _ := pf.requestHandler.(*RequestHandlerImpl).client.Transport.(*http.Transport).Proxy(req)
+	ipResp, err := pf.requestHandler.Do(apiCtx, "https://ifconfig.io")
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+	}
+
+	ip, err := io.ReadAll(ipResp.Body)
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+	}
+	fmt.Printf("%+v\n", string(ip))
 	fmt.Printf("%+v\n", proxy)
 	pf.logger.Info("proxy", zap.Any("proxy", proxy))
+
+	// Record the status code in the metrics.
+	resp, err := pf.requestHandler.Do(apiCtx, url)
 	pf.metrics.AddHTTPStatusCode(pf.config.Name, resp)
 	if err != nil {
 		status := providertypes.ErrorUnknown
