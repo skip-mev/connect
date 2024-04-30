@@ -3,9 +3,10 @@ package oracle
 import (
 	"context"
 	"fmt"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"net/http"
 	"strings"
+
+	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 
 	"go.uber.org/zap"
 
