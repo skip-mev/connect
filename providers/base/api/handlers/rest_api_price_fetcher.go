@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -98,17 +97,6 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 	defer cancel()
 
 	pf.logger.Debug("making request", zap.String("url", url))
-
-	ipResp, err := pf.requestHandler.Do(apiCtx, "https://ifconfig.io")
-	if err != nil {
-		fmt.Printf("%+v\n", err)
-	}
-
-	ip, err := io.ReadAll(ipResp.Body)
-	if err != nil {
-		fmt.Printf("%+v\n", err)
-	}
-	fmt.Printf("%+v\n", string(ip))
 
 	// Record the status code in the metrics.
 	resp, err := pf.requestHandler.Do(apiCtx, url)
