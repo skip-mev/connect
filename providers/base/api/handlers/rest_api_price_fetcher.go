@@ -99,7 +99,6 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 
 	pf.logger.Debug("making request", zap.String("url", url))
 
-	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 	ipResp, err := pf.requestHandler.Do(apiCtx, "https://ifconfig.io")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
@@ -110,8 +109,6 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 		fmt.Printf("%+v\n", err)
 	}
 	fmt.Printf("%+v\n", string(ip))
-	fmt.Printf("%+v\n", proxy)
-	pf.logger.Info("proxy", zap.Any("proxy", proxy))
 
 	// Record the status code in the metrics.
 	resp, err := pf.requestHandler.Do(apiCtx, url)
