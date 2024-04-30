@@ -44,6 +44,10 @@ type Metrics interface {
 	// this is used to track the number of times a provider included a price update that
 	// was used in the aggregation.
 	AddProviderTick(providerName, pairID string, success bool)
+
+	// AddProviderCountForMarket increments the number of providers that were utilized
+	// to calculate the final price for a given market.
+	AddProviderCountForMarket(market string, count int)
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
@@ -53,6 +57,7 @@ type OracleMetricsImpl struct {
 	prices          *prometheus.GaugeVec
 	aggregatePrices *prometheus.GaugeVec
 	providerTick    *prometheus.CounterVec
+	providerCount   *prometheus.GaugeVec
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
@@ -92,6 +97,11 @@ func NewMetrics() Metrics {
 			Name:      "health_check_provider_updates_total",
 			Help:      "Number of ticks with a successful provider update.",
 		}, []string{ProviderLabel, PairIDLabel, SuccessLabel}),
+		providerCount: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: OracleSubsystem,
+			Name:      "health_check_provider_count",
+			Help:      "Number of providers that were utilized to calculate the final price for a given market.",
+		}, []string{PairIDLabel}),
 	}
 
 	// register the above metrics
@@ -100,6 +110,7 @@ func NewMetrics() Metrics {
 	prometheus.MustRegister(m.prices)
 	prometheus.MustRegister(m.aggregatePrices)
 	prometheus.MustRegister(m.providerTick)
+	prometheus.MustRegister(m.providerCount)
 
 	return m
 }
@@ -132,6 +143,11 @@ func (m *noOpOracleMetrics) UpdateAggregatePrice(string, uint64, float64) {
 // this is used to track the number of times a provider included a price update that
 // was used in the aggregation.
 func (m *noOpOracleMetrics) AddProviderTick(_, _ string, _ bool) {
+}
+
+// AddProviderCountForMarket increments the number of providers that were utilized
+// to calculate the final price for a given market.
+func (m *noOpOracleMetrics) AddProviderCountForMarket(string, int) {
 }
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
@@ -185,4 +201,13 @@ func (m *OracleMetricsImpl) AddProviderTick(providerName, pairID string, success
 		SuccessLabel:  fmt.Sprintf("%t", success),
 	},
 	).Add(1)
+}
+
+// AddProviderCountForMarket increments the number of providers that were utilized
+// to calculate the final price for a given market.
+func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) {
+	m.providerCount.With(prometheus.Labels{
+		PairIDLabel: strings.ToLower(market),
+	},
+	).Set(float64(count))
 }
