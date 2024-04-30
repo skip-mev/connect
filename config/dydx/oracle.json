@@ -459,7 +459,7 @@
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
-        "url": "localhost:1317",
+        "url": "https://dydx-api.polkachu.com/dydxprotocol",
         "endpoints": null,
         "batchSize": 0,
         "name": "dydx_api"
