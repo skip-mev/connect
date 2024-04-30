@@ -99,7 +99,7 @@ func NewMetrics() Metrics {
 		}, []string{ProviderLabel, PairIDLabel, SuccessLabel}),
 		providerCount: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: OracleSubsystem,
-			Name:      "health_check_provider_count",
+			Name:      "health_check_market_providers",
 			Help:      "Number of providers that were utilized to calculate the final price for a given market.",
 		}, []string{PairIDLabel}),
 	}
