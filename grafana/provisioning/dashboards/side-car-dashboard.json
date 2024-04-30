@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 76,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -81,7 +81,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -89,7 +89,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "count(side_car_aggregated_price)",
+          "expr": "count(side_car_aggregated_price{job=\"${job}\"})",
           "instant": false,
           "legendFormat": "Total # of Aggregated Feeds",
           "range": true,
@@ -101,7 +101,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "count(side_car_provider_price)",
+          "expr": "count(side_car_provider_price{job=\"${job}\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Total # of Provider Feeds",
@@ -158,7 +158,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -230,7 +230,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -297,7 +297,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -337,7 +337,7 @@
               },
               {
                 "color": "semi-dark-green",
-                "value": 1
+                "value": 0.95
               }
             ]
           },
@@ -368,7 +368,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -434,7 +434,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -592,113 +592,12 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "# of Providers",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "bars",
-            "fillOpacity": 53,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-red",
-                "value": null
-              },
-              {
-                "color": "dark-green",
-                "value": 3
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 281
-      },
-      "id": 202,
-      "maxPerRow": 2,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "repeat": "id",
-      "repeatDirection": "h",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "side_car_health_check_provider_count{job=\"${job}\", id=~\"${id}\"}",
-          "instant": false,
-          "legendFormat": "{{id}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "${id} available provider prices",
-      "type": "timeseries"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 545
+        "y": 273
       },
       "id": 47,
       "panels": [],
@@ -723,8 +622,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "orange",
@@ -744,7 +642,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 546
+        "y": 274
       },
       "id": 49,
       "options": {
@@ -763,7 +661,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -800,8 +698,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "orange",
@@ -821,7 +718,7 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 546
+        "y": 274
       },
       "id": 57,
       "options": {
@@ -840,7 +737,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -907,8 +804,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1000,7 +896,7 @@
         "h": 15,
         "w": 6,
         "x": 0,
-        "y": 554
+        "y": 282
       },
       "id": 46,
       "options": {
@@ -1057,8 +953,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "semi-dark-yellow",
@@ -1078,7 +973,7 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 554
+        "y": 282
       },
       "id": 58,
       "options": {
@@ -1097,7 +992,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -1132,8 +1027,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "semi-dark-yellow",
@@ -1153,7 +1047,7 @@
         "h": 7,
         "w": 18,
         "x": 6,
-        "y": 562
+        "y": 290
       },
       "id": 59,
       "options": {
@@ -1172,7 +1066,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "targets": [
         {
           "datasource": {
@@ -1180,7 +1074,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "(sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success\"}[$__range]))) / (sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|write_err\"}[$__range])))",
+          "expr": "(sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|dial_success\"}[$__range]))) / (sum by (provider) (increase(side_car_web_socket_connection_status{job=\"${job}\",status=~\"write_success|write_err|dial_success|dial_error\"}[$__range])))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1196,7 +1090,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 569
+        "y": 297
       },
       "id": 55,
       "panels": [],
@@ -1220,8 +1114,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red",
-                "value": null
+                "color": "dark-red"
               },
               {
                 "color": "#EAB839",
@@ -1241,7 +1134,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 570
+        "y": 298
       },
       "id": 93,
       "maxPerRow": 2,
@@ -1261,7 +1154,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.1.0-69950",
       "repeat": "provider",
       "repeatDirection": "h",
       "targets": [
@@ -1309,8 +1202,8 @@
       {
         "current": {
           "selected": false,
-          "text": "prometheus",
-          "value": "prometheus"
+          "text": "slinky-customer-dydx-staging-sidecar-0",
+          "value": "slinky-customer-dydx-staging-sidecar-0"
         },
         "datasource": {
           "type": "prometheus",
@@ -1336,7 +1229,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1348,7 +1241,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_aggregated_price,id)",
+        "definition": "label_values(side_car_aggregated_price{job=\"$job\"},id)",
         "hide": 0,
         "includeAll": true,
         "label": "Side Car Price Pair",
@@ -1357,7 +1250,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_aggregated_price,id)",
+          "query": "label_values(side_car_aggregated_price{job=\"$job\"},id)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -1369,7 +1262,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1381,7 +1274,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_health_check_provider_updates_total,provider)",
+        "definition": "label_values(side_car_health_check_provider_updates_total{job=\"$job\"},provider)",
         "hide": 0,
         "includeAll": true,
         "label": "Price Provider",
@@ -1390,7 +1283,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_health_check_provider_updates_total,provider)",
+          "query": "label_values(side_car_health_check_provider_updates_total{job=\"$job\"},provider)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -1402,10 +1295,9 @@
       {
         "allValue": "",
         "current": {
-          "isNone": true,
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "dydx_api",
+          "value": "dydx_api"
         },
         "datasource": {
           "type": "prometheus",
@@ -1432,9 +1324,10 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "30s",
@@ -1444,8 +1337,8 @@
     ]
   },
   "timezone": "",
-  "title": "Slinky SideCar Dashboard2",
+  "title": "Slinky SideCar Dashboard",
   "uid": "cdca49ue665mocd",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
