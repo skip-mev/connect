@@ -3,11 +3,10 @@ package dydx
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-
-	"encoding/json"
 
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
@@ -109,11 +108,11 @@ func marketParamFromResearchJSONMarketParam(marketParam dydxtypes.ResearchJSONMa
 	}
 
 	return dydxtypes.MarketParam{
-		Id:                marketParam.Id,
-		Pair: 			   marketParam.Pair,
-		Exponent: 		   int32(marketParam.Exponent),
-		MinExchanges: marketParam.MinExchanges,
-		MinPriceChangePpm: marketParam.MinPriceChangePpm,
+		Id:                 marketParam.ID,
+		Pair:               marketParam.Pair,
+		Exponent:           int32(marketParam.Exponent),
+		MinExchanges:       marketParam.MinExchanges,
+		MinPriceChangePpm:  marketParam.MinPriceChangePpm,
 		ExchangeConfigJson: string(exchangeConfigJSONBz),
 	}, nil
 }

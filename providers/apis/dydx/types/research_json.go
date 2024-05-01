@@ -1,12 +1,12 @@
 package types
 
 // MarketParamIndex is the index into the research json market-structure under which
-// the market's parameters are stored
+// the market's parameters are stored.
 const MarketParamIndex = "params"
 
 type ResearchJSONMarketParam struct {
 	// Id is the unique identifier for the market
-	Id uint32 `json:"id"`
+	ID uint32 `json:"id"`
 
 	// Pair is the ticker symbol for the market
 	Pair string `json:"ticker"`

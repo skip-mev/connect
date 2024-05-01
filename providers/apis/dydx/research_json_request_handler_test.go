@@ -35,7 +35,7 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 		// mock
 		ctx := context.Background()
 		mockReqHandler.On("Do", ctx, testURL).Return(&http.Response{
-			StatusCode: 500,
+			StatusCode: http.StatusInternalServerError,
 			Body:       io.NopCloser(bytes.NewBufferString("")),
 		}, nil).Once()
 
@@ -50,7 +50,7 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 		// mock
 		ctx := context.Background()
 		mockReqHandler.On("Do", ctx, testURL).Return(&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(bytes.NewBufferString("")),
 		}, nil).Once()
 
@@ -64,8 +64,8 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 		// mock
 		ctx := context.Background()
 		mockReqHandler.On("Do", ctx, testURL).Return(&http.Response{
-			StatusCode: 200,
-			Body:       io.NopCloser(bytes.NewBufferString(`{
+			StatusCode: http.StatusOK,
+			Body: io.NopCloser(bytes.NewBufferString(`{
 				"1INCH": {
 				}
 			}`)),
@@ -83,15 +83,15 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 		researchJSON := dydxtypes.ResearchJSON{
 			"1INCH": {
 				"params": {
-					Id: 0,
-					Pair: "1INCH-USD",
-					Exponent: -10.0,
+					ID:                0,
+					Pair:              "1INCH-USD",
+					Exponent:          -10.0,
 					MinPriceChangePpm: 4000,
-					MinExchanges: 3,
+					MinExchanges:      3,
 					ExchangeConfigJSON: []dydxtypes.ExchangeMarketConfigJson{
 						{
-							ExchangeName: "Binance",
-							Ticker:       "1INCHUSDT",
+							ExchangeName:   "Binance",
+							Ticker:         "1INCHUSDT",
 							AdjustByMarket: "USDT-USD",
 						},
 						{
@@ -99,23 +99,23 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 							Ticker:       "1INCH-USD",
 						},
 						{
-							ExchangeName: "Gate",
-							Ticker:       "1INCH_USDT",
+							ExchangeName:   "Gate",
+							Ticker:         "1INCH_USDT",
 							AdjustByMarket: "USDT-USD",
 						},
 						{
-							ExchangeName: "Kucoin",
-							Ticker:       "1INCH-USDT",
+							ExchangeName:   "Kucoin",
+							Ticker:         "1INCH-USDT",
 							AdjustByMarket: "USDT-USD",
 						},
 						{
-							ExchangeName: "Mexc",
-							Ticker:       "1INCH_USDT",
+							ExchangeName:   "Mexc",
+							Ticker:         "1INCH_USDT",
 							AdjustByMarket: "USDT-USD",
 						},
 						{
-							ExchangeName: "Okx",
-							Ticker:       "1INCH-USDT",
+							ExchangeName:   "Okx",
+							Ticker:         "1INCH-USDT",
 							AdjustByMarket: "USDT-USD",
 						},
 					},
@@ -126,7 +126,7 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 		require.NoError(t, err)
 
 		mockReqHandler.On("Do", ctx, testURL).Return(&http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(bytes.NewBuffer(bz)),
 		}, nil)
 
@@ -143,11 +143,11 @@ func TestResearchJSONRequestHandler_Do(t *testing.T) {
 		require.Equal(t, dydxtypes.QueryAllMarketParamsResponse{
 			MarketParams: []dydxtypes.MarketParam{
 				{
-					Id: 			0,
-					Pair: 			"1INCH-USD",
-					Exponent: 		int32(-10),
-					MinExchanges: 	3,
-					MinPriceChangePpm: 4000,
+					Id:                 0,
+					Pair:               "1INCH-USD",
+					Exponent:           int32(-10),
+					MinExchanges:       3,
+					MinPriceChangePpm:  4000,
 					ExchangeConfigJson: "{\"exchanges\":[{\"exchangeName\":\"Binance\",\"ticker\":\"1INCHUSDT\",\"adjustByMarket\":\"USDT-USD\"},{\"exchangeName\":\"CoinbasePro\",\"ticker\":\"1INCH-USD\"},{\"exchangeName\":\"Gate\",\"ticker\":\"1INCH_USDT\",\"adjustByMarket\":\"USDT-USD\"},{\"exchangeName\":\"Kucoin\",\"ticker\":\"1INCH-USDT\",\"adjustByMarket\":\"USDT-USD\"},{\"exchangeName\":\"Mexc\",\"ticker\":\"1INCH_USDT\",\"adjustByMarket\":\"USDT-USD\"},{\"exchangeName\":\"Okx\",\"ticker\":\"1INCH-USDT\",\"adjustByMarket\":\"USDT-USD\"}]}",
 				},
 			},
