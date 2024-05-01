@@ -9,6 +9,11 @@ type Metrics struct {
 	mock.Mock
 }
 
+// AddProviderCountForMarket provides a mock function with given fields: market, count
+func (_m *Metrics) AddProviderCountForMarket(market string, count int) {
+	_m.Called(market, count)
+}
+
 // AddProviderTick provides a mock function with given fields: providerName, pairID, success
 func (_m *Metrics) AddProviderTick(providerName string, pairID string, success bool) {
 	_m.Called(providerName, pairID, success)
