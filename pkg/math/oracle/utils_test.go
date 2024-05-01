@@ -78,6 +78,23 @@ func TestGetProviderPrice(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, big.NewFloat(0.01).SetPrec(18), price.SetPrec(18))
 	})
+
+	t.Run("provider price is nil", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
+		require.NoError(t, err)
+
+		cfg := mmtypes.ProviderConfig{
+			Name:           "test",
+			OffChainTicker: "BTC/USD",
+		}
+		prices := types.Prices{
+			"BTC/USD": nil,
+		}
+		agg.SetProviderPrices("test", prices)
+
+		_, err = agg.GetProviderPrice(cfg)
+		require.Error(t, err)
+	})
 }
 
 func TestGetIndexPrice(t *testing.T) {
@@ -101,5 +118,18 @@ func TestGetIndexPrice(t *testing.T) {
 		price, err := agg.GetIndexPrice(constants.BITCOIN_USD)
 		require.NoError(t, err)
 		require.Equal(t, big.NewFloat(100), price)
+	})
+
+	t.Run("index price is nil", func(t *testing.T) {
+		agg, err := oracle.NewIndexPriceAggregator(logger, marketmap, nil)
+		require.NoError(t, err)
+
+		prices := types.Prices{
+			constants.BITCOIN_USD.String(): nil,
+		}
+		agg.SetIndexPrices(prices)
+
+		_, err = agg.GetIndexPrice(constants.BITCOIN_USD)
+		require.Error(t, err)
 	})
 }
