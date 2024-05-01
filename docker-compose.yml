@@ -4,12 +4,14 @@ networks:
 
 services:
   oracle:
+    environment:
+      - ORACLE_GROUP=${ORACLE_GROUP:-core}
     build:
       context: .
       dockerfile: contrib/images/slinky.sidecar.prod.Dockerfile
     volumes:
-      - ./config/local/oracle.json:/oracle/oracle.json
-      - ./config/local/market.json:/oracle/market.json
+      - ./config/${ORACLE_GROUP}/oracle.json:/oracle/oracle.json
+      - ./config/${ORACLE_GROUP}/market.json:/oracle/market.json
     entrypoint: [
       "slinky", 
       "--oracle-config-path", "/oracle/oracle.json", 
