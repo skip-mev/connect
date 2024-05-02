@@ -1246,10 +1246,10 @@
         "current": {
           "selected": true,
           "text": [
-            "slinky-preview-pr-388-sidecar-0"
+            "slinky-customer-dydx-vpn-staging-sidecar-0"
           ],
           "value": [
-            "slinky-preview-pr-388-sidecar-0"
+            "slinky-customer-dydx-vpn-staging-sidecar-0"
           ]
         },
         "datasource": {
@@ -1371,7 +1371,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
@@ -1386,6 +1386,6 @@
   "timezone": "",
   "title": "Slinky SideCar Dashboard",
   "uid": "cdca49ue665mocd",
-  "version": 28,
+  "version": 29,
   "weekStart": ""
 }
