@@ -66,7 +66,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 	MaxQueries:       1,
 	Endpoints: []config.Endpoint{
 		{
-			URL:              "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
+			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
 		},
 	},
 }

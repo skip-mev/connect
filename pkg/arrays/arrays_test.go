@@ -2,6 +2,7 @@ package arrays_test
 
 import (
 	"testing"
+
 	"github.com/skip-mev/slinky/pkg/arrays"
 )
 
@@ -34,9 +35,11 @@ func TestCheckEntryInArray(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			if _, got := arrays.CheckEntryInArray(tt.entry, tt.array); got != tt.want {
 				t.Errorf("CheckEntryInArray() = %v, want %v", got, tt.want)
 			}
 		})
-	}	
+	}
 }

@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"time"
 
+	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/pkg/arrays"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
-	"go.uber.org/zap"
-	"github.com/skip-mev/slinky/oracle/config"
 )
 
 var _ types.MarketMapAPIDataHandler = (*ResearchAPIHandler)(nil)
@@ -47,7 +48,7 @@ func NewResearchAPIHandler(
 	}, nil
 }
 
-// ResearchAPIHandler is a subclass of the dydx_chain.ResearchAPIHandler. It interprets the dydx ResearchJSON 
+// ResearchAPIHandler is a subclass of the dydx_chain.ResearchAPIHandler. It interprets the dydx ResearchJSON
 // as a market-map.
 type ResearchAPIHandler struct {
 	APIHandler
