@@ -89,7 +89,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "count(side_car_aggregated_price{job=\"${job}\"})",
+          "expr": "count(side_car_aggregated_price{job=~\"${job}\"})",
           "instant": false,
           "legendFormat": "Total # of Aggregated Feeds",
           "range": true,
@@ -101,7 +101,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "count(side_car_provider_price{job=\"${job}\"})",
+          "expr": "count(side_car_provider_price{job=~\"${job}\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Total # of Provider Feeds",
@@ -166,7 +166,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(rate(side_car_provider_status_responses{job=\"${job}\", status=\"success\"}[$__range]))",
+          "expr": "sum(rate(side_car_provider_status_responses{job=~\"${job}\", status=\"success\", provider=~\"${provider}\"}[$__range]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -238,7 +238,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "rate(side_car_health_check_system_updates_total{job=\"${job}\"}[$__range])",
+          "expr": "rate(side_car_health_check_system_updates_total{job=~\"${job}\"}[$__range])",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -305,7 +305,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "increase(side_car_health_check_system_updates_total{job=\"${job}\"}[$__range])",
+          "expr": "sum(increase(side_car_health_check_system_updates_total{job=~\"${job}\"}[$__range]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -454,12 +454,49 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "loki",
+        "uid": "grafanacloud-logs"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 210,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "editorMode": "builder",
+          "expr": "{job=\"$job\"} |= `` | json | __error__=``",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Sidecar logs",
+      "type": "logs"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 27
       },
       "id": 44,
       "panels": [],
@@ -542,7 +579,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 28
       },
       "id": 137,
       "maxPerRow": 2,
@@ -567,7 +604,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "side_car_aggregated_price{job=\"${job}\", id=~\"${id}\"}",
+          "expr": "side_car_aggregated_price{job=~\"${job}\", id=~\"${id}\"}",
           "instant": false,
           "legendFormat": "index",
           "range": true,
@@ -580,7 +617,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "side_car_provider_price{job=\"${job}\", id=~\"${id}\"}",
+          "expr": "side_car_provider_price{job=~\"${job}\", id=~\"${id}\", provider=~\"${provider}\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "{{provider}}",
@@ -588,7 +625,7 @@
           "refId": "B"
         }
       ],
-      "title": "${id} Index Price",
+      "title": "${id} Market",
       "type": "timeseries"
     },
     {
@@ -597,7 +634,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 273
+        "y": 284
       },
       "id": 47,
       "panels": [],
@@ -622,7 +659,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -630,7 +668,7 @@
               },
               {
                 "color": "green",
-                "value": 0.98
+                "value": 0.95
               }
             ]
           },
@@ -642,7 +680,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 274
+        "y": 285
       },
       "id": 49,
       "options": {
@@ -698,7 +736,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -718,7 +757,7 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 274
+        "y": 285
       },
       "id": 57,
       "options": {
@@ -804,7 +843,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -896,7 +936,7 @@
         "h": 15,
         "w": 6,
         "x": 0,
-        "y": 282
+        "y": 293
       },
       "id": 46,
       "options": {
@@ -953,7 +993,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "semi-dark-yellow",
@@ -973,7 +1014,7 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 282
+        "y": 293
       },
       "id": 58,
       "options": {
@@ -1027,7 +1068,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "semi-dark-yellow",
@@ -1047,7 +1089,7 @@
         "h": 7,
         "w": 18,
         "x": 6,
-        "y": 290
+        "y": 301
       },
       "id": 59,
       "options": {
@@ -1090,7 +1132,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 297
+        "y": 308
       },
       "id": 55,
       "panels": [],
@@ -1114,7 +1156,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "#EAB839",
@@ -1122,7 +1165,7 @@
               },
               {
                 "color": "semi-dark-green",
-                "value": 0.97
+                "value": 0.95
               }
             ]
           },
@@ -1134,7 +1177,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 298
+        "y": 309
       },
       "id": 93,
       "maxPerRow": 2,
@@ -1201,24 +1244,28 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "slinky-customer-dydx-staging-sidecar-0",
-          "value": "slinky-customer-dydx-staging-sidecar-0"
+          "selected": true,
+          "text": [
+            "slinky-customer-dydx-vpn-staging-sidecar-0"
+          ],
+          "value": [
+            "slinky-customer-dydx-vpn-staging-sidecar-0"
+          ]
         },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(up,job)",
+        "definition": "label_values(side_car_provider_price,job)",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Job",
-        "multi": false,
+        "multi": true,
         "name": "job",
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(up,job)",
+          "query": "label_values(side_car_provider_price,job)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -1229,7 +1276,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -1241,7 +1288,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_aggregated_price{job=\"$job\"},id)",
+        "definition": "label_values(side_car_aggregated_price{job=~\"$job\"},id)",
         "hide": 0,
         "includeAll": true,
         "label": "Side Car Price Pair",
@@ -1250,7 +1297,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_aggregated_price{job=\"$job\"},id)",
+          "query": "label_values(side_car_aggregated_price{job=~\"$job\"},id)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -1262,7 +1309,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -1274,7 +1321,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_health_check_provider_updates_total{job=\"$job\"},provider)",
+        "definition": "label_values(side_car_health_check_provider_updates_total{job=~\"$job\"},provider)",
         "hide": 0,
         "includeAll": true,
         "label": "Price Provider",
@@ -1283,7 +1330,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_health_check_provider_updates_total{job=\"$job\"},provider)",
+          "query": "label_values(side_car_health_check_provider_updates_total{job=~\"$job\"},provider)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -1324,7 +1371,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
@@ -1339,6 +1386,6 @@
   "timezone": "",
   "title": "Slinky SideCar Dashboard",
   "uid": "cdca49ue665mocd",
-  "version": 10,
+  "version": 29,
   "weekStart": ""
 }
