@@ -109,7 +109,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		// Scale the price to the target ticker's decimals.
 		scaledPrices[target.String()] = math.ScaleBigFloat(new(big.Float).Copy(price), target.Decimals)
 
-		m.logger.Info(
+		m.logger.Debug(
 			"calculated median price",
 			zap.String("target_ticker", ticker),
 
@@ -120,11 +120,12 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		floatPrice, _ := price.Float64()
 		m.metrics.AddTickerTick(target.String())
 		m.metrics.UpdateAggregatePrice(target.String(), target.GetDecimals(), floatPrice)
+		m.metrics.AddProviderCountForMarket(target.String(), len(convertedPrices))
 	}
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
 	// next time we calculate prices.
-	m.logger.Info("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
+	m.logger.Debug("calculated median prices for price feeds", zap.Int("num_prices", len(indexPrices)))
 	m.indexPrices = indexPrices
 	m.scaledPrices = scaledPrices
 }

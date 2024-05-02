@@ -4,12 +4,14 @@ networks:
 
 services:
   oracle:
+    environment:
+      - ORACLE_GROUP=${ORACLE_GROUP:-core}
     build:
       context: .
       dockerfile: contrib/images/slinky.sidecar.prod.Dockerfile
     volumes:
-      - ./config/dydx/oracle.json:/oracle/oracle.json
-      - ./config/dydx/market.json:/oracle/market.json
+      - ./config/${ORACLE_GROUP}/oracle.json:/oracle/oracle.json
+      - ./config/${ORACLE_GROUP}/market.json:/oracle/market.json
     entrypoint: [
       "slinky", 
       "--oracle-config-path", "/oracle/oracle.json", 
@@ -20,6 +22,7 @@ services:
     ports:
       - "8080:8080" # main oracle port
       - "6060:6060" # pprof port
+      - "8002:8002" # metrics port
     networks:
       - oracle_network
 
@@ -45,3 +48,16 @@ services:
       - "26655:26655"
     networks:
       - oracle_network
+    
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - oracle_network
+
+volumes:
+  grafana_data:
