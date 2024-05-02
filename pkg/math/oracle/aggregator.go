@@ -120,6 +120,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		floatPrice, _ := price.Float64()
 		m.metrics.AddTickerTick(target.String())
 		m.metrics.UpdateAggregatePrice(target.String(), target.GetDecimals(), floatPrice)
+		m.metrics.AddProviderCountForMarket(target.String(), len(convertedPrices))
 	}
 
 	// Update the aggregated data. These prices are going to be used as the index prices the

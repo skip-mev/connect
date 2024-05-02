@@ -43,8 +43,11 @@ func APIQueryHandlerFactory(
 	// will limit the number of concurrent connections and uses the configured timeout to
 	// ensure requests do not hang.
 	client := &http.Client{
-		Transport: &http.Transport{MaxConnsPerHost: cfg.API.MaxQueries},
-		Timeout:   cfg.API.Timeout,
+		Transport: &http.Transport{
+			MaxConnsPerHost: cfg.API.MaxQueries,
+			Proxy:           http.ProxyFromEnvironment,
+		},
+		Timeout: cfg.API.Timeout,
 	}
 
 	var (
