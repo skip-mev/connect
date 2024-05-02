@@ -284,7 +284,7 @@ func init() {
 		"dydx-research-json-market-map",
 		"",
 		false,
-		"Path to the dydx research json market map file. This should only be specified if required by the chain.",
+		"Whether to use the dydx-research json to configure markets, instead of the chain. If specified, this will over-ride the node-http endpoint given",
 	)
 
 	rootCmd.Flags().StringVarP(
@@ -400,27 +400,28 @@ func configureDYDXProviders() error {
 		}
 	}
 
-	if len(nodeURL) == 0 {
-		return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --node-http-url flag (ex. --node-http-url http://localhost:1317)")
-	}
-
 	// if we want to use the research json
 	var marketMapProviderConfig config.APIConfig
+	name := dydx.Name
 	if dydxResearchJSONMarketMap {
 		marketMapProviderConfig = dydx.DefaultResearchAPIConfig
+		name = dydx.ResearchAPIHandlerName
 	} else {
+		if len(nodeURL) == 0 {
+			return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --node-http-url flag (ex. --node-http-url http://localhost:1317)")
+		}
 		marketMapProviderConfig = dydx.DefaultAPIConfig
 		marketMapProviderConfig.URL = nodeURL
 	}
 
 	// Add the dYdX market map provider to the list of providers.
 	ps = append(ps, config.ProviderConfig{
-		Name: dydx.Name,
+		Name: name,
 		API:  marketMapProviderConfig,
 		Type: mmclienttypes.ConfigType,
 	})
 	LocalOracleConfig.Providers = ps
-	return nil	
+	return nil
 }
 
 // createOracleConfig creates an oracle config given all of the local provider configurations.

@@ -145,13 +145,8 @@ func researchJSONToQueryAllMarketsParamsResponse(research dydxtypes.ResearchJSON
 	// iterate over all entries in the research json + unmarshal it's market-params
 	resp := dydxtypes.QueryAllMarketParamsResponse{}
 	for _, market := range research {
-		researchMarketParam, ok := market[dydxtypes.MarketParamIndex]
-		if !ok {
-			return dydxtypes.QueryAllMarketParamsResponse{}, fmt.Errorf("market %v does not have params", market)
-		}
-
 		// convert the dydx research json market-param into a MarketParam struct
-		marketParam, err := marketParamFromResearchJSONMarketParam(researchMarketParam)
+		marketParam, err := marketParamFromResearchJSONMarketParam(market.ResearchJSONMarketParam)
 		if err != nil {
 			return dydxtypes.QueryAllMarketParamsResponse{}, err
 		}
