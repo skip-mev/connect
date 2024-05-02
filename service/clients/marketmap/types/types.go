@@ -45,6 +45,10 @@ type (
 	// is responsible for parsing http responses and returning the resolved and unresolved
 	// market map data.
 	MarketMapAPIDataHandler = apihandlers.APIDataHandler[Chain, *mmtypes.MarketMapResponse]
+	
+	// MarketMapFetcher is a type alias for the market map fetcher. This is responsible for
+	// fetching the market map data.
+	MarketMapFetcher = apihandlers.APIFetcher[Chain, *mmtypes.MarketMapResponse]
 
 	// MarketMapResponse is a type alias for the market map response. This is used to
 	// represent the resolved and unresolved market map data.
@@ -75,4 +79,7 @@ var (
 
 	// NewMarketMapAPIQueryHandler is a function alias for the new market map API query handler.
 	NewMarketMapAPIQueryHandler = apihandlers.NewAPIQueryHandler[Chain, *mmtypes.MarketMapResponse]
+
+	// NewMarketMapAPIQueryHandlerWithMarketMapFetcher is a function alias for the new market map API query handler with market map fetcher.
+	NewMarketMapAPIQueryHandlerWithMarketMapFetcher = apihandlers.NewAPIQueryHandlerWithFetcher[Chain, *mmtypes.MarketMapResponse]
 )
