@@ -32,7 +32,7 @@ var (
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,
 		EnableCompression:             config.DefaultEnableCompression,
 		WriteTimeout:                  config.DefaultWriteTimeout,
-		ReadTimeout:                   config.DefaultReadTimeout,
+		ReadTimeout:                   config.DefaultReadTimeout * 5,
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,

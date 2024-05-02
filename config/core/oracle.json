@@ -250,7 +250,7 @@
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
         "enableCompression": false,
-        "readTimeout": 45000000000,
+        "readTimeout": 225000000000,
         "writeTimeout": 45000000000,
         "pingInterval": 10000000000,
         "maxReadErrorCount": 100,

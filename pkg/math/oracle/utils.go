@@ -25,6 +25,10 @@ func (m *IndexPriceAggregator) GetProviderPrice(
 		return nil, fmt.Errorf("missing %s price for ticker: %s", cfg.Name, cfg.OffChainTicker)
 	}
 
+	if price == nil {
+		return nil, fmt.Errorf("price for %s ticker %s is nil", cfg.Name, cfg.OffChainTicker)
+	}
+
 	if cfg.Invert {
 		return new(big.Float).Quo(big.NewFloat(1), price), nil
 	}
@@ -40,6 +44,10 @@ func (m *IndexPriceAggregator) GetIndexPrice(
 	price, ok := m.indexPrices[cp.String()]
 	if !ok {
 		return nil, fmt.Errorf("missing index price for ticker: %s", cp)
+	}
+
+	if price == nil {
+		return nil, fmt.Errorf("index price for ticker %s is nil", cp)
 	}
 
 	return price, nil
