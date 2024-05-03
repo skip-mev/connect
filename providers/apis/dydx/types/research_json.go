@@ -26,6 +26,6 @@ type ResearchJSONMarketParam struct {
 
 // ResearchJSON is the go-struct that encompasses the dydx research json, as hosted
 // on [github](https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json)
-type ResearchJSON map[string]struct{
+type ResearchJSON map[string]struct {
 	ResearchJSONMarketParam `json:"params"`
 }

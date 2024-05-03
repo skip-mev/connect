@@ -2,11 +2,10 @@ package dydx_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"testing"
-
-	"encoding/json"
 
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
@@ -35,7 +34,7 @@ func TestNewResearchAPIHandler(t *testing.T) {
 
 	t.Run("fail if the api is not enabled", func(t *testing.T) {
 		_, err := dydx.NewResearchAPIHandler(zap.NewNop(), config.APIConfig{
-			Name: dydx.ResearchAPIHandlerName,
+			Name:    dydx.ResearchAPIHandlerName,
 			Enabled: false,
 		})
 		require.Error(t, err)
@@ -68,8 +67,8 @@ func TestNewResearchAPIHandler(t *testing.T) {
 }
 
 // TestCreateURL tests that:
-//  - If no chain in the given chains are dydx - fail
-//  - If one chain in the given chains is dydx - return the first endpoint configured
+//   - If no chain in the given chains are dydx - fail
+//   - If one chain in the given chains is dydx - return the first endpoint configured
 func TestCreateURLResearchHandler(t *testing.T) {
 	ah, err := dydx.NewResearchAPIHandler(
 		zap.NewNop(),
@@ -135,7 +134,7 @@ func TestParseResponseResearchAPI(t *testing.T) {
 
 		resp := ah.ParseResponse(chains, &http.Response{
 			StatusCode: http.StatusOK,
-			Body: io.NopCloser(bytes.NewBufferString("")),
+			Body:       io.NopCloser(bytes.NewBufferString("")),
 		})
 
 		require.Len(t, resp.UnResolved, 1)
@@ -162,7 +161,7 @@ func TestParseResponseResearchAPI(t *testing.T) {
 		require.Len(t, resp.UnResolved, 1)
 		require.Len(t, resp.Resolved, 0)
 
-		require.Error(t, resp.UnResolved[chains[0]])	
+		require.Error(t, resp.UnResolved[chains[0]])
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -173,7 +172,9 @@ func TestParseResponseResearchAPI(t *testing.T) {
 		}
 
 		researchJSON := dydxtypes.ResearchJSON{
-			"1INCH": struct{dydxtypes.ResearchJSONMarketParam "json:\"params\""}{
+			"1INCH": struct {
+				dydxtypes.ResearchJSONMarketParam "json:\"params\""
+			}{
 				dydxtypes.ResearchJSONMarketParam{
 					ID:                0,
 					Pair:              "1INCH-USD",
@@ -182,28 +183,28 @@ func TestParseResponseResearchAPI(t *testing.T) {
 					MinExchanges:      3,
 					ExchangeConfigJSON: []dydxtypes.ExchangeMarketConfigJson{
 						{
-							ExchangeName:   "Binance",
-							Ticker:         "1INCHUSDT",
+							ExchangeName: "Binance",
+							Ticker:       "1INCHUSDT",
 						},
 						{
 							ExchangeName: "CoinbasePro",
 							Ticker:       "1INCH-USD",
 						},
 						{
-							ExchangeName:   "Gate",
-							Ticker:         "1INCH_USDT",
+							ExchangeName: "Gate",
+							Ticker:       "1INCH_USDT",
 						},
 						{
-							ExchangeName:   "Kucoin",
-							Ticker:         "1INCH-USDT",
+							ExchangeName: "Kucoin",
+							Ticker:       "1INCH-USDT",
 						},
 						{
-							ExchangeName:   "Mexc",
-							Ticker:         "1INCH_USDT",
+							ExchangeName: "Mexc",
+							Ticker:       "1INCH_USDT",
 						},
 						{
-							ExchangeName:   "Okx",
-							Ticker:         "1INCH-USDT",
+							ExchangeName: "Okx",
+							Ticker:       "1INCH-USDT",
 						},
 					},
 				},
@@ -214,7 +215,7 @@ func TestParseResponseResearchAPI(t *testing.T) {
 
 		resp := ah.ParseResponse(chains, &http.Response{
 			StatusCode: http.StatusOK,
-			Body: io.NopCloser(bytes.NewBuffer(bz)),
+			Body:       io.NopCloser(bytes.NewBuffer(bz)),
 		})
 
 		require.Len(t, resp.UnResolved, 0)
@@ -229,8 +230,8 @@ func TestParseResponseResearchAPI(t *testing.T) {
 
 		// check the ticker
 		expectedTicker := mmtypes.Ticker{
-			CurrencyPair: slinkytypes.NewCurrencyPair("1INCH", "USD"),
-			Decimals:    10,
+			CurrencyPair:     slinkytypes.NewCurrencyPair("1INCH", "USD"),
+			Decimals:         10,
 			MinProviderCount: 3,
 		}
 		require.Equal(t, expectedTicker, market.Ticker)
@@ -238,31 +239,31 @@ func TestParseResponseResearchAPI(t *testing.T) {
 		// check each provider
 		expectedProviders := map[string]mmtypes.ProviderConfig{
 			binance.Name: {
-				Name: binance.Name,
+				Name:           binance.Name,
 				OffChainTicker: "1INCHUSDT",
 			},
 			coinbase.Name: {
-				Name: coinbase.Name,
+				Name:           coinbase.Name,
 				OffChainTicker: "1INCH-USD",
 			},
 			gate.Name: {
-				Name: gate.Name,
+				Name:           gate.Name,
 				OffChainTicker: "1INCH_USDT",
 			},
 			kucoin.Name: {
-				Name: kucoin.Name,
+				Name:           kucoin.Name,
 				OffChainTicker: "1INCH-USDT",
 			},
 			mexc.Name: {
-				Name: mexc.Name,
+				Name:           mexc.Name,
 				OffChainTicker: "1INCHUSDT",
 			},
 			okx.Name: {
-				Name: okx.Name,
+				Name:           okx.Name,
 				OffChainTicker: "1INCH-USDT",
 			},
 		}
-		
+
 		for _, provider := range market.ProviderConfigs {
 			expectedProvider, ok := expectedProviders[provider.Name]
 			require.True(t, ok)

@@ -284,7 +284,7 @@ func init() {
 		"dydx-research-json-market-map",
 		"",
 		false,
-		"Whether to use the dydx-research json to configure markets, instead of the chain. If specified, this will over-ride the node-http endpoint given",
+		"Whether to use the dydx-research json to configure markets alongside the chain.",
 	)
 
 	rootCmd.Flags().StringVarP(

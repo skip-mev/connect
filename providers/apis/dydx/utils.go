@@ -63,6 +63,7 @@ var DefaultResearchAPIConfig = config.APIConfig{
 	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
 	Interval:         10 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
+	URL: 			"https://dydx-api.lavenderfive.com:443",
 	MaxQueries:       1,
 	Endpoints: []config.Endpoint{
 		{

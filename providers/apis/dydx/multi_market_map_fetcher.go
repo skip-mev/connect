@@ -2,23 +2,26 @@ package dydx
 
 import (
 	"context"
-
-	"sync"
 	"fmt"
+	"sync"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	providertypes "github.com/skip-mev/slinky/providers/types"
 	"go.uber.org/zap"
 )
 
-var _ mmclient.MarketMapFetcher = &MultiMarketMapRestAPIFetcher{}
-var DYDXChain = mmclient.Chain{
-	ChainID: ChainID,
-}
+var (
+	_         mmclient.MarketMapFetcher = &MultiMarketMapRestAPIFetcher{}
+	DYDXChain                           = mmclient.Chain{
+		ChainID: ChainID,
+	}
+)
 
 // NewDYDXResearchMarketMapFetcher returns a MultiMarketMapFetcher composed of dydx mainnet + research
-// apiDataHandlers
+// apiDataHandlers.
 func DefaultDYDXResearchMarketMapFetcher(
 	rh apihandlers.RequestHandler,
 	metrics metrics.APIMetrics,
@@ -38,7 +41,7 @@ func DefaultDYDXResearchMarketMapFetcher(
 
 	mainnetAPIDataHandler := &APIHandler{
 		logger: logger,
-		api:   cfg,
+		api:    cfg,
 	}
 
 	mainnetFetcher, err := apihandlers.NewRestAPIFetcher(
@@ -59,27 +62,33 @@ func DefaultDYDXResearchMarketMapFetcher(
 		cfg,
 		logger,
 	)
+	if err != nil {
+		return nil, err
+	}
 
-
-	return NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher), nil
+	return NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher, logger), nil
 }
 
 // MultiMarketMapRestAPIFetcher is an implementation of a RestAPIFetcher that wraps
 // two underlying Fetchers for fetching the market-map according to dydx mainnet and
-// the additional markets that can be added according to the dydx research json
+// the additional markets that can be added according to the dydx research json.
 type MultiMarketMapRestAPIFetcher struct {
 	// dydx mainnet fetcher is the api-fetcher for the dydx mainnet market-map
-	dydxMainnetFetcher   mmclient.MarketMapFetcher
+	dydxMainnetFetcher mmclient.MarketMapFetcher
 
 	// dydx research fetcher is the api-fetcher for the dydx research market-map
-	dydxResearchFetcher  mmclient.MarketMapFetcher
+	dydxResearchFetcher mmclient.MarketMapFetcher
+
+	// logger is the logger for the fetcher
+	logger *zap.Logger
 }
 
-// NewDYDXResearchMarketMapFetcher returns an aggregated market-map among the dydx mainnet and the dydx research json
-func NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher mmclient.MarketMapFetcher) *MultiMarketMapRestAPIFetcher {
+// NewDYDXResearchMarketMapFetcher returns an aggregated market-map among the dydx mainnet and the dydx research json.
+func NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher mmclient.MarketMapFetcher, logger *zap.Logger) *MultiMarketMapRestAPIFetcher {
 	return &MultiMarketMapRestAPIFetcher{
 		dydxMainnetFetcher:  mainnetFetcher,
 		dydxResearchFetcher: researchFetcher,
+		logger:             logger.With(zap.String("module", "dydx-research-market-map-fetcher")),
 	}
 }
 
@@ -99,12 +108,14 @@ func (f *MultiMarketMapRestAPIFetcher) Fetch(ctx context.Context, chains []mmcli
 	go func() {
 		defer wg.Done()
 		dydxMainnetResponseChan <- f.dydxMainnetFetcher.Fetch(ctx, chains)
+		f.logger.Debug("fetched valid market-map from dydx mainnet")
 	}()
 
 	// fetch dydx research
 	go func() {
 		defer wg.Done()
 		dydxResearchResponseChan <- f.dydxResearchFetcher.Fetch(ctx, chains)
+		f.logger.Debug("fetched valid market-map from dydx research")
 	}()
 
 	// wait for both fetchers to finish
@@ -117,6 +128,7 @@ func (f *MultiMarketMapRestAPIFetcher) Fetch(ctx context.Context, chains []mmcli
 	// combine the two market maps
 	// if the dydx mainnet market-map response failed, return the dydx mainnet failed response
 	if _, ok := dydxMainnetMarketMapResponse.UnResolved[DYDXChain]; ok {
+		f.logger.Error("dydx mainnet market-map fetch failed", zap.Any("response", dydxMainnetMarketMapResponse))
 		return dydxMainnetMarketMapResponse
 	}
 
@@ -127,11 +139,25 @@ func (f *MultiMarketMapRestAPIFetcher) Fetch(ctx context.Context, chains []mmcli
 		for ticker, market := range resolved.Value.MarketMap.Markets {
 			// if the market is not already in the dydx mainnet market-map, add it
 			if _, ok := dydxMainnetMarketMap.Markets[ticker]; !ok {
+				f.logger.Debug("adding market from dydx research", zap.String("ticker", ticker))
 				dydxMainnetMarketMap.Markets[ticker] = market
 			}
 		}
 	} else {
 		return dydxResearchMarketMapResponse
+	}
+
+	// validate the combined market-map
+	if err := dydxMainnetMarketMap.ValidateBasic(); err != nil {
+		f.logger.Error("combined market-map failed validation", zap.Error(err))
+
+		return mmclient.NewMarketMapResponseWithErr(
+			chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("combined market-map failed validation: %w", err),
+				providertypes.ErrorUnknown,
+			),
+		)
 	}
 
 	dydxMainnetMarketMapResponse.Resolved[DYDXChain].Value.MarketMap = dydxMainnetMarketMap
