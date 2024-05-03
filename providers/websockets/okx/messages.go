@@ -98,14 +98,21 @@ func NewSubscribeToTickersRequestMessage(
 		return nil, fmt.Errorf("instruments cannot be empty")
 	}
 
-	bz, err := json.Marshal(
-		SubscribeRequestMessage{
-			Operation: string(OperationSubscribe),
-			Arguments: instruments,
-		},
-	)
+	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
+	for i, instrument := range instruments {
+		bz, err := json.Marshal(
+			SubscribeRequestMessage{
+				Operation: string(OperationSubscribe),
+				Arguments: []SubscriptionTopic{instrument},
+			},
+		)
+		if err != nil {
+			return msgs, err
+		}
+		msgs[i] = bz
+	}
 
-	return []handlers.WebsocketEncodedMessage{bz}, err
+	return msgs, nil
 }
 
 // SubscribeResponseMessage is the response message for subscribing to a channel. The
