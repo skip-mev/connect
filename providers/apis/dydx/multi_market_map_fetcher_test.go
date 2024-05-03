@@ -2,9 +2,11 @@ package dydx_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
-	"fmt"
+
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	apihandlermocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -12,7 +14,6 @@ import (
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 func TestDYDXMultiMarketMapFetcher(t *testing.T) {
@@ -91,13 +92,13 @@ func TestDYDXMultiMarketMapFetcher(t *testing.T) {
 						Markets: map[string]mmtypes.Market{
 							"BTC/USD": {
 								Ticker: mmtypes.Ticker{
-									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-									Decimals:    8,
+									CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Decimals:         8,
 									MinProviderCount: 1,
 								},
 								ProviderConfigs: []mmtypes.ProviderConfig{
 									{
-										Name: "dydx",
+										Name:           "dydx",
 										OffChainTicker: "BTC/USD",
 									},
 								},
@@ -114,20 +115,20 @@ func TestDYDXMultiMarketMapFetcher(t *testing.T) {
 						Markets: map[string]mmtypes.Market{
 							"ETH/USD": {
 								Ticker: mmtypes.Ticker{
-									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-									Decimals:    8,
+									CurrencyPair:     slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Decimals:         8,
 									MinProviderCount: 1,
 								},
 								ProviderConfigs: []mmtypes.ProviderConfig{
 									{
-										Name: "dydx",
+										Name:           "dydx",
 										OffChainTicker: "BTC/USD",
 									},
+								},
 							},
 						},
 					},
-				},
-			}, time.Now()),
+				}, time.Now()),
 			},
 		}, nil).Once()
 

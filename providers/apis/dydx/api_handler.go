@@ -130,7 +130,7 @@ func (h *APIHandler) ParseResponse(
 			),
 		)
 	}
-	
+
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(&marketResp, time.Now())
 

@@ -8,8 +8,8 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
-	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	"go.uber.org/zap"
 )
 
@@ -88,7 +88,7 @@ func NewDYDXResearchMarketMapFetcher(mainnetFetcher, researchFetcher mmclient.Ma
 	return &MultiMarketMapRestAPIFetcher{
 		dydxMainnetFetcher:  mainnetFetcher,
 		dydxResearchFetcher: researchFetcher,
-		logger:             logger.With(zap.String("module", "dydx-research-market-map-fetcher")),
+		logger:              logger.With(zap.String("module", "dydx-research-market-map-fetcher")),
 	}
 }
 
