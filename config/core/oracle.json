@@ -417,7 +417,7 @@
         "maxSubscriptionsPerConnection": 0
       },
       "type": "price_provider"
-    },
+    }
   ],
   "production": true,
   "metrics": {
