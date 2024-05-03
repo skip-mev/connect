@@ -65,7 +65,6 @@ stop-all:
 	@echo "Stopping network..."
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml down
 
-
 start-sidecar:
 	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana
@@ -81,6 +80,7 @@ stop-sidecar:
 install: tidy
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
+	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 
 .PHONY: build run-oracle-server install
 

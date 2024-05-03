@@ -15,7 +15,7 @@ services:
     entrypoint: [
       "slinky", 
       "--oracle-config-path", "/oracle/oracle.json", 
-      "--market-config-path", "/oracle/market.json", 
+      #"--market-config-path", "/oracle/market.json",
       "--pprof-port", "6060", 
       "--run-pprof",
       ]
@@ -36,9 +36,13 @@ services:
       - oracle_network
   
   blockchain:
+    environment:
+      - ORACLE_GROUP=${ORACLE_GROUP:-core}
     build:
       context: .
       dockerfile: contrib/images/slinky.local.Dockerfile
+    volumes:
+      - ./config/${ORACLE_GROUP}/market.json:/oracle/market.json
     ports:
       - "26656:26656"
       - "26657:26657"
