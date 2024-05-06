@@ -7,6 +7,8 @@ If there are any additional metrics that you would like to see, please open an i
 
 # Table of Contents
 
+* [Dashboard](#dashboard)
+    * [Set Up](#set-up)
 * [Metrics](#metrics)
     * [Health Metrics](#health-metrics)
     * [Prices Metrics](#prices-metrics)
@@ -14,6 +16,24 @@ If there are any additional metrics that you would like to see, please open an i
         * [Aggregated Price Metrics](#aggregated-price-metrics)
     * [HTTP Metrics](#http-metrics)
     * [WebSocket Metrics](#websocket-metrics)
+
+# Dashboard
+
+The slinky repo contains a sidecar Grafana dashboard that can be utilized across deployments. The dashboard is designed to provide a high-level overview of the sidecar's health and performance. The dashboard includes various panels that display metrics related to the sidecar's health, price feeds, HTTP requests, and WebSocket connections.
+
+![Dashboard Overview](./assets/dashboard.png)
+
+## Set Up
+
+To set up the sidecar Grafana dashboard, you will need to import the [`side-car-dashboard.json`](./grafana/provisioning/dashboards/side-car-dashboard.json) file. This file contains the JSON representation of the dashboard. You can import the dashboard by following these steps:
+
+1. Add the side car prometheus data source to your Grafana instance. This can be done by adding a new data source in your datasources directory. An example can be found [here](./grafana/provisioning/datasources/prometheus.yml). Note that the `url` field should be the URL of your sidecar Prometheus instance.
+2. Log in to your Grafana instance.
+3. Click on the "+" icon in the sidebar and select "Import".
+4. Click on "Upload JSON file" and select the `side-car-dashboard.json` file or copy paste the file.
+
+The sidecar dashboard should now be available in your Grafana instance. You can access the dashboard by clicking on the "Dashboards" tab in the sidebar.
+
 
 # Metrics
 
