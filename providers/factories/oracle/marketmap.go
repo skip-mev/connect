@@ -54,7 +54,9 @@ func MarketMapProviderFactory(
 		opts = append(opts, base.WithIDs[types.Chain, *mmtypes.MarketMapResponse](ids))
 
 	default:
+		ids := []types.Chain{{ChainID: "skip-1"}}
 		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
+		opts = append(opts, base.WithIDs[types.Chain, *mmtypes.MarketMapResponse](ids))
 	}
 	if err != nil {
 		return nil, err
