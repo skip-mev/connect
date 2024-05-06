@@ -445,10 +445,6 @@ func createOracleConfig() error {
 	LocalOracleConfig.UpdateInterval = updateInterval
 	LocalOracleConfig.MaxPriceAge = maxPriceAge
 
-	if debug {
-		LocalOracleConfig.Production = false
-	}
-
 	if err := LocalOracleConfig.ValidateBasic(); err != nil {
 		fmt.Fprintf(os.Stderr, "error validating local config: %v\n", err)
 		return err
