@@ -451,7 +451,6 @@
       "type": "market_map_provider"
     }
   ],
-  "production": true,
   "metrics": {
     "prometheusServerAddress": "0.0.0.0:8002",
     "enabled": true

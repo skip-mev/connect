@@ -44,7 +44,7 @@ build: tidy
 	@go build -o ./build/ ./...
 
 run-oracle-server: build
-	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE}
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
