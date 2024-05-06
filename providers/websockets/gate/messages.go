@@ -104,17 +104,24 @@ func NewSubscribeRequest(symbols []string) ([]handlers.WebsocketEncodedMessage, 
 		return nil, fmt.Errorf("cannot attach payload of 0 length")
 	}
 
-	bz, err := json.Marshal(SubscribeRequest{
-		BaseMessage: BaseMessage{
-			Time:    time.Now().UTC().Second(),
-			Channel: string(ChannelTickers),
-			Event:   string(EventSubscribe),
-		},
-		ID:      time.Now().UTC().Second(),
-		Payload: symbols,
-	})
+	msgs := make([]handlers.WebsocketEncodedMessage, len(symbols))
+	for i, symbol := range symbols {
+		bz, err := json.Marshal(SubscribeRequest{
+			BaseMessage: BaseMessage{
+				Time:    time.Now().UTC().Second(),
+				Channel: string(ChannelTickers),
+				Event:   string(EventSubscribe),
+			},
+			ID:      time.Now().UTC().Second(),
+			Payload: []string{symbol},
+		})
+		if err != nil {
+			return msgs, err
+		}
+		msgs[i] = bz
+	}
 
-	return []handlers.WebsocketEncodedMessage{bz}, err
+	return msgs, nil
 }
 
 // SubscribeResponse is a subscription response sent from the Gate.io websocket API.

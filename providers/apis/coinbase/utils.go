@@ -27,7 +27,7 @@ var (
 		Name:             Name,
 		Atomic:           false,
 		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
+		Timeout:          3000 * time.Millisecond,
 		Interval:         100 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       5,
