@@ -10,7 +10,6 @@ COPY . .
 RUN make build
 RUN make update-local-configs
 
-
 FROM ubuntu:rolling
 EXPOSE 8080
 EXPOSE 8002

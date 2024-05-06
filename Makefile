@@ -185,7 +185,7 @@ build-configs:
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
 # this will set the environment variable for running locally
 start-app:
-	@./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level info --home $(HOMEDIR)
+	@./build/slinkyd start --log_level info --home $(HOMEDIR)
 
 # build-and-start-app builds a slinky simulation application binary in the build folder
 # and initializes a single validator configuration. If desired, users can supplement

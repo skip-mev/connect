@@ -3,6 +3,7 @@ package marketmap
 import (
 	"encoding/json"
 	"fmt"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 
@@ -18,12 +19,14 @@ var _ types.MarketMapAPIDataHandler = (*APIHandler)(nil)
 // by a base provider. This is specifically for fetching market map data from the x/marketmap module.
 type APIHandler struct {
 	// api is the config for the MarketMap API.
-	api config.APIConfig
+	api    config.APIConfig
+	logger *zap.Logger
 }
 
 // NewAPIHandler returns a new MarketMap MarketMapAPIDataHandler.
 func NewAPIHandler(
 	api config.APIConfig,
+	logger *zap.Logger,
 ) (types.MarketMapAPIDataHandler, error) {
 	if api.Name != Name {
 		return nil, fmt.Errorf("expected api config name %s, got %s", Name, api.Name)
@@ -38,7 +41,8 @@ func NewAPIHandler(
 	}
 
 	return &APIHandler{
-		api: api,
+		api:    api,
+		logger: logger.With(zap.String("handler", Name)),
 	}, nil
 }
 
@@ -59,6 +63,10 @@ func (h *APIHandler) ParseResponse(
 	chains []types.Chain,
 	resp *http.Response,
 ) types.MarketMapResponse {
+	h.logger.Info("received response", zap.Int("status_code", resp.StatusCode))
+	h.logger.Info("received response", zap.Any("resp", resp.Body))
+	h.logger.Info("running", zap.Any("config", h.api))
+
 	if len(chains) != 1 {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
