@@ -274,20 +274,24 @@ func TestCreateMessage(t *testing.T) {
 				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
-				msg := gate.SubscribeRequest{
-					BaseMessage: gate.BaseMessage{
-						Time:    time.Now().Second(),
-						Channel: string(gate.ChannelTickers),
-						Event:   string(gate.EventSubscribe),
-					},
-					ID:      time.Now().Second(),
-					Payload: []string{"BTC_USDT", "ETH_USDT"},
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				for i, ticker := range []string{"BTC_USDT", "ETH_USDT"} {
+					msg := gate.SubscribeRequest{
+						BaseMessage: gate.BaseMessage{
+							Time:    time.Now().Second(),
+							Channel: string(gate.ChannelTickers),
+							Event:   string(gate.EventSubscribe),
+						},
+						ID:      time.Now().Second(),
+						Payload: []string{ticker},
+					}
+
+					bz, err := json.Marshal(msg)
+					require.NoError(t, err)
+					msgs[i] = bz
 				}
 
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return []handlers.WebsocketEncodedMessage{bz}
+				return msgs
 			},
 			expectedErr: false,
 		},
@@ -309,15 +313,19 @@ func TestCreateMessage(t *testing.T) {
 				expectedMsg gate.SubscribeRequest
 			)
 
-			// need to check the non-time based fields
-			err = json.Unmarshal(msgs[0], &gotMsg)
-			require.NoError(t, err)
-			err = json.Unmarshal(tc.expected()[0], &expectedMsg)
-			require.NoError(t, err)
+			expected := tc.expected()
+			require.Equal(t, len(expected), len(msgs))
+			for i := range expected {
+				// need to check the non-time based fields
+				err = json.Unmarshal(msgs[i], &gotMsg)
+				require.NoError(t, err)
+				err = json.Unmarshal(expected[i], &expectedMsg)
+				require.NoError(t, err)
 
-			require.Equal(t, expectedMsg.Event, gotMsg.Event)
-			require.Equal(t, expectedMsg.Channel, gotMsg.Channel)
-			require.Equal(t, expectedMsg.Payload, gotMsg.Payload)
+				require.Equal(t, expectedMsg.Event, gotMsg.Event)
+				require.Equal(t, expectedMsg.Channel, gotMsg.Channel)
+				require.Equal(t, expectedMsg.Payload, gotMsg.Payload)
+			}
 		})
 	}
 }

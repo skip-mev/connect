@@ -165,17 +165,23 @@ func NewSubscribeRequestMessage(
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	bz, err := json.Marshal(
-		SubscribeRequestMessage{
-			Event: string(SubscribeEvent),
-			Pair:  instruments,
-			Subscription: Subscription{
-				Name: string(TickerChannel),
+	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
+	for i, instrument := range instruments {
+		bz, err := json.Marshal(
+			SubscribeRequestMessage{
+				Event: string(SubscribeEvent),
+				Pair:  []string{instrument},
+				Subscription: Subscription{
+					Name: string(TickerChannel),
+				},
 			},
-		},
-	)
-
-	return []handlers.WebsocketEncodedMessage{bz}, err
+		)
+		if err != nil {
+			return msgs, err
+		}
+		msgs[i] = bz
+	}
+	return msgs, nil
 }
 
 // SubscribeResponseMessage is the message that is sent to the client when the

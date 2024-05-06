@@ -366,24 +366,23 @@ func TestCreateMessage(t *testing.T) {
 				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
-				msg := okx.SubscribeRequestMessage{
-					Operation: string(okx.OperationSubscribe),
-					Arguments: []okx.SubscriptionTopic{
-						{
-							Channel:      string(okx.IndexTickersChannel),
-							InstrumentID: "BTC-USDT",
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				for i, ticker := range []string{"BTC-USDT", "ETH-USDT"} {
+					msg := okx.SubscribeRequestMessage{
+						Operation: string(okx.OperationSubscribe),
+						Arguments: []okx.SubscriptionTopic{
+							{
+								Channel:      string(okx.IndexTickersChannel),
+								InstrumentID: ticker,
+							},
 						},
-						{
-							Channel:      string(okx.IndexTickersChannel),
-							InstrumentID: "ETH-USDT",
-						},
-					},
+					}
+					bz, err := json.Marshal(msg)
+					require.NoError(t, err)
+					msgs[i] = bz
 				}
 
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return []handlers.WebsocketEncodedMessage{bz}
+				return msgs
 			},
 			expectedErr: false,
 		},
