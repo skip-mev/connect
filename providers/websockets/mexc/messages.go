@@ -88,15 +88,19 @@ func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncod
 		return nil, fmt.Errorf("cannot subscribe to 0 instruments")
 	}
 
-	bz, err := json.Marshal(SubscriptionRequestMessage{
-		Method: string(SubscriptionMethod),
-		Params: instruments,
-	})
-	if err != nil {
-		return nil, err
+	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
+	for i, instrument := range instruments {
+		bz, err := json.Marshal(SubscriptionRequestMessage{
+			Method: string(SubscriptionMethod),
+			Params: []string{instrument},
+		})
+		if err != nil {
+			return nil, err
+		}
+		msgs[i] = bz
 	}
 
-	return []handlers.WebsocketEncodedMessage{bz}, nil
+	return msgs, nil
 }
 
 // SubscriptionResponseMessage defines the message that is sent from the MEXC websocket to confirm that

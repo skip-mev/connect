@@ -64,27 +64,16 @@ func NewSubscriptionRequestMessage(tickers []string) ([]handlers.WebsocketEncode
 		return nil, fmt.Errorf("tickers cannot be empty")
 	}
 
-	numMessages := (numTickers / MaxArgsPerRequest) + 1
-	messages := make([]handlers.WebsocketEncodedMessage, numMessages)
+	messages := make([]handlers.WebsocketEncodedMessage, len(tickers))
 
-	for i := range messages {
-		start := i * MaxArgsPerRequest
-		end := (i + 1) * MaxArgsPerRequest
-
-		var argTickers []string
-		if i == numMessages-1 {
-			// if we are on the last message, truncate
-			argTickers = tickers[start:]
-		} else {
-			argTickers = tickers[start:end]
-		}
+	for i, ticker := range tickers {
 
 		bz, err := json.Marshal(
 			SubscriptionRequest{
 				BaseRequest: BaseRequest{
 					Op: string(OperationSubscribe),
 				},
-				Args: argTickers,
+				Args: []string{ticker},
 			},
 		)
 		if err != nil {
