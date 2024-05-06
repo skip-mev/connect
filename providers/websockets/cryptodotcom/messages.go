@@ -99,14 +99,21 @@ func NewInstrumentMessage(instruments []string) ([]handlers.WebsocketEncodedMess
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	bz, err := json.Marshal(InstrumentRequestMessage{
-		Method: string(InstrumentMethod),
-		Params: InstrumentParams{
-			Channels: instruments,
-		},
-	})
+	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
+	for i, instrument := range instruments {
+		bz, err := json.Marshal(InstrumentRequestMessage{
+			Method: string(InstrumentMethod),
+			Params: InstrumentParams{
+				Channels: []string{instrument},
+			},
+		})
+		if err != nil {
+			return msgs, err
+		}
+		msgs[i] = bz
+	}
 
-	return []handlers.WebsocketEncodedMessage{bz}, err
+	return msgs, nil
 }
 
 // InstrumentResponseMessage is the response received from the Crypto.com websocket API when subscribing

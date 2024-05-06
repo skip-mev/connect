@@ -292,13 +292,13 @@ func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
-		msg         cryptodotcom.InstrumentRequestMessage
+		msgs        []cryptodotcom.InstrumentRequestMessage
 		expectedErr bool
 	}{
 		{
 			name:        "no currency pairs",
 			cps:         []types.ProviderTicker{},
-			msg:         cryptodotcom.InstrumentRequestMessage{},
+			msgs:        []cryptodotcom.InstrumentRequestMessage{},
 			expectedErr: true,
 		},
 		{
@@ -306,10 +306,12 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusd,
 			},
-			msg: cryptodotcom.InstrumentRequestMessage{
-				Method: "subscribe",
-				Params: cryptodotcom.InstrumentParams{
-					Channels: []string{"ticker.BTCUSD-PERP"},
+			msgs: []cryptodotcom.InstrumentRequestMessage{
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{"ticker.BTCUSD-PERP"},
+					},
 				},
 			},
 			expectedErr: false,
@@ -321,13 +323,29 @@ func TestCreateMessage(t *testing.T) {
 				ethusd,
 				solusd,
 			},
-			msg: cryptodotcom.InstrumentRequestMessage{
-				Method: "subscribe",
-				Params: cryptodotcom.InstrumentParams{
-					Channels: []string{
-						"ticker.BTCUSD-PERP",
-						"ticker.ETHUSD-PERP",
-						"ticker.SOLUSD-PERP",
+			msgs: []cryptodotcom.InstrumentRequestMessage{
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{
+							"ticker.BTCUSD-PERP",
+						},
+					},
+				},
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{
+							"ticker.ETHUSD-PERP",
+						},
+					},
+				},
+				{
+					Method: "subscribe",
+					Params: cryptodotcom.InstrumentParams{
+						Channels: []string{
+							"ticker.SOLUSD-PERP",
+						},
 					},
 				},
 			},
@@ -347,10 +365,12 @@ func TestCreateMessage(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			expectedBz, err := json.Marshal(tc.msg)
-			require.NoError(t, err)
-			require.Equal(t, 1, len(msgs))
-			require.EqualValues(t, expectedBz, msgs[0])
+			require.Equal(t, len(tc.msgs), len(msgs))
+			for i := range tc.msgs {
+				expectedBz, err := json.Marshal(tc.msgs[i])
+				require.NoError(t, err)
+				require.EqualValues(t, expectedBz, msgs[i])
+			}
 		})
 	}
 }

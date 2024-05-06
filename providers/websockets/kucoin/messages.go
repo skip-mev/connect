@@ -3,7 +3,6 @@ package kucoin
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
@@ -149,21 +148,23 @@ func NewSubscribeRequestMessage(
 		return nil, fmt.Errorf("no instruments specified")
 	}
 
-	tickers := strings.Join(instruments, ",")
-	topic := fmt.Sprintf("%s%s", TickerTopic, tickers)
-
-	bz, err := json.Marshal(SubscribeRequestMessage{
-		ID:             time.Now().UTC().UnixNano(),
-		Type:           string(SubscribeMessage),
-		Topic:          topic,
-		PrivateChannel: false,
-		Response:       false,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal subscribe request message: %w", err)
+	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
+	for i, instrument := range instruments {
+		topic := fmt.Sprintf("%s%s", TickerTopic, instrument)
+		bz, err := json.Marshal(SubscribeRequestMessage{
+			ID:             time.Now().UTC().UnixNano(),
+			Type:           string(SubscribeMessage),
+			Topic:          topic,
+			PrivateChannel: false,
+			Response:       false,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal subscribe request message: %w", err)
+		}
+		msgs[i] = bz
 	}
 
-	return []handlers.WebsocketEncodedMessage{bz}, nil
+	return msgs, nil
 }
 
 // TickerResponseMessage represents the ticker response message received from

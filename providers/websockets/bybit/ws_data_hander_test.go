@@ -194,13 +194,13 @@ func TestCreateMessage(t *testing.T) {
 	testCases := []struct {
 		name        string
 		cps         []types.ProviderTicker
-		expected    func() []byte
+		expected    func() [][]byte
 		expectedErr bool
 	}{
 		{
 			name: "no currency pairs",
 			cps:  []types.ProviderTicker{},
-			expected: func() []byte {
+			expected: func() [][]byte {
 				return nil
 			},
 			expectedErr: true,
@@ -210,7 +210,7 @@ func TestCreateMessage(t *testing.T) {
 			cps: []types.ProviderTicker{
 				btcusdt,
 			},
-			expected: func() []byte {
+			expected: func() [][]byte {
 				msg := bybit.SubscriptionRequest{
 					BaseRequest: bybit.BaseRequest{
 						Op: string(bybit.OperationSubscribe),
@@ -221,7 +221,7 @@ func TestCreateMessage(t *testing.T) {
 				bz, err := json.Marshal(msg)
 				require.NoError(t, err)
 
-				return bz
+				return [][]byte{bz}
 			},
 			expectedErr: false,
 		},
@@ -231,18 +231,21 @@ func TestCreateMessage(t *testing.T) {
 				btcusdt,
 				ethusdt,
 			},
-			expected: func() []byte {
-				msg := bybit.SubscriptionRequest{
-					BaseRequest: bybit.BaseRequest{
-						Op: string(bybit.OperationSubscribe),
-					},
-					Args: []string{"tickers.BTCUSDT", "tickers.ETHUSDT"},
+			expected: func() [][]byte {
+				msgs := make([][]byte, 2)
+				for i, ticker := range []string{"tickers.BTCUSDT", "tickers.ETHUSDT"} {
+					msg := bybit.SubscriptionRequest{
+						BaseRequest: bybit.BaseRequest{
+							Op: string(bybit.OperationSubscribe),
+						},
+						Args: []string{ticker},
+					}
+					bz, err := json.Marshal(msg)
+					require.NoError(t, err)
+					msgs[i] = bz
 				}
 
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return bz
+				return msgs
 			},
 			expectedErr: false,
 		},
@@ -259,8 +262,11 @@ func TestCreateMessage(t *testing.T) {
 				return
 			}
 
-			require.Equal(t, 1, len(msgs))
-			require.EqualValues(t, tc.expected(), []byte(msgs[0]))
+			expected := tc.expected()
+			require.Equal(t, len(expected), len(msgs))
+			for i, msg := range msgs {
+				require.EqualValues(t, expected[i], msg)
+			}
 		})
 	}
 }
