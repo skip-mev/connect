@@ -60,9 +60,6 @@ func (h *APIHandler) ParseResponse(
 	chains []types.Chain,
 	resp *http.Response,
 ) types.MarketMapResponse {
-	fmt.Println("PODFODOFODOFFODOFO")
-	fmt.Println(resp)
-
 	if len(chains) != 1 {
 		return types.NewMarketMapResponseWithErr(chains,
 			providertypes.NewErrorWithCode(
