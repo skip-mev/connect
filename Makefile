@@ -174,6 +174,7 @@ build-configs:
 	@./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
 	@sh ./scripts/genesis.sh
 	@dasel put -r toml 'instrumentation.enabled' -f $(CONFIG_TOML) -t bool -v true
+	@dasel put -r toml 'rpc.laddr' -f $(CONFIG_TOML) -t string -v "tcp://0.0.0.0:26657"
 	@dasel put -r toml 'telemetry.enabled' -f $(APP_TOML) -t bool -v true
 	@dasel put -r toml 'api.enable' -f $(APP_TOML) -t bool -v true
 	@dasel put -r toml 'api.address' -f $(APP_TOML) -t string -v "tcp://0.0.0.0:1317"
