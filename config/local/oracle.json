@@ -6,8 +6,8 @@
       "name": "binance_api",
       "api": {
         "enabled": true,
-        "timeout": 1000000000,
-        "interval": 400000000,
+        "timeout": 3000000000,
+        "interval": 750000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
@@ -38,7 +38,7 @@
       "name": "coinbase_api",
       "api": {
         "enabled": true,
-        "timeout": 500000000,
+        "timeout": 3000000000,
         "interval": 100000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 5,
@@ -134,8 +134,8 @@
       "name": "kraken_api",
       "api": {
         "enabled": true,
-        "timeout": 500000000,
-        "interval": 400000000,
+        "timeout": 3000000000,
+        "interval": 600000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
