@@ -255,21 +255,24 @@ func TestCreateMessages(t *testing.T) {
 				ethusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
-				msg := coinbase.SubscribeRequestMessage{
-					Type: string(coinbase.SubscribeMessage),
-					ProductIDs: []string{
-						"BTC-USD",
-						"ETH-USD",
-					},
-					Channels: []string{
-						string(coinbase.TickerChannel),
-					},
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				for i, ticker := range []string{"BTC-USD", "ETH-USD"} {
+					msg := coinbase.SubscribeRequestMessage{
+						Type: string(coinbase.SubscribeMessage),
+						ProductIDs: []string{
+							ticker,
+						},
+						Channels: []string{
+							string(coinbase.TickerChannel),
+						},
+					}
+
+					bz, err := json.Marshal(msg)
+					require.NoError(t, err)
+					msgs[i] = bz
 				}
 
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return []handlers.WebsocketEncodedMessage{bz}
+				return msgs
 			},
 			expectedErr: false,
 		},
