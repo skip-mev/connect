@@ -111,16 +111,20 @@ func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncod
 		return nil, fmt.Errorf("no instruments provided")
 	}
 
-	bz, err := json.Marshal(SubscribeRequestMessage{
-		Type:       string(SubscribeMessage),
-		ProductIDs: instruments,
-		Channels:   []string{string(TickerChannel)},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal subscribe request message %w", err)
+	msgs := make([]handlers.WebsocketEncodedMessage, len(instruments))
+	for i, instrument := range instruments {
+		bz, err := json.Marshal(SubscribeRequestMessage{
+			Type:       string(SubscribeMessage),
+			ProductIDs: []string{instrument},
+			Channels:   []string{string(TickerChannel)},
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal subscribe request message %w", err)
+		}
+		msgs[i] = bz
 	}
 
-	return []handlers.WebsocketEncodedMessage{bz}, nil
+	return msgs, nil
 }
 
 // SubscribeResponseMessage represents a subscribe response message.
