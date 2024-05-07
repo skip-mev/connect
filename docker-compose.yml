@@ -13,12 +13,11 @@ services:
       - ./config/${ORACLE_GROUP}/oracle.json:/oracle/oracle.json
       - ./config/${ORACLE_GROUP}/market.json:/oracle/market.json
     entrypoint: [
-      "slinky", 
-      "--oracle-config-path", "/oracle/oracle.json", 
-      "--market-config-path", "/oracle/market.json", 
-      "--pprof-port", "6060", 
+      "slinky",
+      "--oracle-config-path", "/oracle/oracle.json",
+      "--pprof-port", "6060",
       "--run-pprof",
-      ]
+    ]
     ports:
       - "8080:8080" # main oracle port
       - "6060:6060" # pprof port
@@ -36,9 +35,13 @@ services:
       - oracle_network
   
   blockchain:
+    environment:
+      - ORACLE_GROUP=${ORACLE_GROUP:-core}
     build:
       context: .
       dockerfile: contrib/images/slinky.local.Dockerfile
+    volumes:
+      - ./config/${ORACLE_GROUP}/market.json:/oracle/market.json
     ports:
       - "26656:26656"
       - "26657:26657"
@@ -48,7 +51,7 @@ services:
       - "26655:26655"
     networks:
       - oracle_network
-    
+
   grafana:
     image: grafana/grafana
     ports:

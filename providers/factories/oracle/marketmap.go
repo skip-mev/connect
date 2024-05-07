@@ -37,9 +37,12 @@ func MarketMapProviderFactory(
 		},
 		Timeout: cfg.API.Timeout,
 	}
-	var apiDataHandler types.MarketMapAPIDataHandler
-	var ids []types.Chain
-	var marketMapFetcher types.MarketMapFetcher
+
+	var (
+		apiDataHandler   types.MarketMapAPIDataHandler
+		ids              []types.Chain
+		marketMapFetcher types.MarketMapFetcher
+	)
 
 	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
 	if err != nil {
@@ -60,6 +63,7 @@ func MarketMapProviderFactory(
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
 		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
+		ids = []types.Chain{{ChainID: "skip-1"}}
 	}
 	if err != nil {
 		return nil, err

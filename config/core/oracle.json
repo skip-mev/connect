@@ -417,6 +417,22 @@
         "maxSubscriptionsPerConnection": 0
       },
       "type": "price_provider"
+    },
+    {
+      "name": "marketmap_api",
+      "api": {
+        "enabled": true,
+        "timeout": 20000000000,
+        "interval": 10000000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "http://blockchain:1317/slinky/marketmap/v1/marketmap",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "marketmap_api"
+      },
+      "type": "market_map_provider"
     }
   ],
   "metrics": {
