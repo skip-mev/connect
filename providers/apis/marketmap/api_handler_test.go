@@ -174,8 +174,9 @@ func TestParseResponse(t *testing.T) {
 			chains: chains[:1],
 			resp: func() *http.Response {
 				resp := mmtypes.MarketMapResponse{
-					MarketMap: goodMarketMap,
-					ChainId:   chains[0].ChainID,
+					MarketMap:   goodMarketMap,
+					ChainId:     chains[0].ChainID,
+					LastUpdated: 10,
 				}
 
 				json, err := json.Marshal(resp)
@@ -187,8 +188,9 @@ func TestParseResponse(t *testing.T) {
 				Resolved: types.ResolvedMarketMap{
 					chains[0]: types.MarketMapResult{
 						Value: &mmtypes.MarketMapResponse{
-							MarketMap: goodMarketMap,
-							ChainId:   chains[0].ChainID,
+							MarketMap:   goodMarketMap,
+							ChainId:     chains[0].ChainID,
+							LastUpdated: 10,
 						},
 					},
 				},
