@@ -119,6 +119,7 @@ func (h *APIHandler) CreateTickerFromMarket(market dydxtypes.MarketParam) (mmtyp
 		CurrencyPair:     cp,
 		Decimals:         uint64(market.Exponent * -1),
 		MinProviderCount: uint64(market.MinExchanges),
+		Enabled:          true,
 	}
 
 	return t, t.ValidateBasic()

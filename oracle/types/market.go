@@ -13,10 +13,6 @@ func ProviderTickersFromMarketMap(
 	name string,
 	marketMap mmtypes.MarketMap,
 ) ([]ProviderTicker, error) {
-	if err := marketMap.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market map: %w", err)
-	}
-
 	var (
 		// Track all tickers that the provider will be providing data for.
 		providerTickers = make([]ProviderTicker, 0)

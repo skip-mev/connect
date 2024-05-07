@@ -127,6 +127,7 @@ func TestCreateTickerFromMarket(t *testing.T) {
 				CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
 				Decimals:         8,
 				MinProviderCount: 3,
+				Enabled:          true,
 			},
 			err: false,
 		},

@@ -81,7 +81,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 	MarketMap: mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
 			"BTC/USD": {
-				Ticker: mmtypes.NewTicker("BTC", "USD", 5, 3),
+				Ticker: mmtypes.NewTicker("BTC", "USD", 5, 3, true),
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:            binance.Name,
@@ -124,7 +124,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 				},
 			},
 			"ETH/USD": {
-				Ticker: mmtypes.NewTicker("ETH", "USD", 6, 3),
+				Ticker: mmtypes.NewTicker("ETH", "USD", 6, 3, true),
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:            binance.Name,
@@ -167,7 +167,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 				},
 			},
 			"USDT/USD": {
-				Ticker: mmtypes.NewTicker("USDT", "USD", 9, 3),
+				Ticker: mmtypes.NewTicker("USDT", "USD", 9, 3, true),
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					{
 						Name:           binance.Name,
