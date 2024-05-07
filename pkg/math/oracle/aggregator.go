@@ -79,6 +79,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 
 	for ticker, market := range m.cfg.Markets {
 		if !market.Ticker.Enabled {
+			m.logger.Debug("skipping disabled market", zap.Any("market", market))
 			continue
 		}
 
