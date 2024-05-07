@@ -25,9 +25,17 @@ BENCHMARK_ITERS ?= 10
 DEFI_PROVIDERS_ENABLED ?= false
 SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
 ORACLE_GROUP ?= core
+GENESIS_MARKETS ?=  $(CONFIG_DIR)/$(ORACLE_GROUP)/market.json
+MARKETS := $(shell cat ${GENESIS_MARKETS})
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
+
+export HOMEDIR := $(HOMEDIR)
+export APP_TOML := $(APP_TOML)
+export GENESIS := $(GENESIS)
+export GENESIS_TMP := $(GENESIS_TMP)
+export MARKETS := $(MARKETS)
 
 ###############################################################################
 ###                               build                                     ###
@@ -57,11 +65,11 @@ update-local-configs: build
 
 start-all:
 	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
 
 start-all-%:
 	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
 
 stop-all:
 	@echo "Stopping network..."
@@ -70,11 +78,11 @@ stop-all:
 
 start-sidecar:
 	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
 
 start-sidecar-%:
 	@echo "Starting oracle side-car, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
 
 stop-sidecar:
 	@echo "Stopping network..."
@@ -82,6 +90,7 @@ stop-sidecar:
 
 install: tidy
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
+	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
 .PHONY: build run-oracle-server install
@@ -159,6 +168,7 @@ $(BUILD_DIR)/:
 
 # build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
 build-configs:
+	@rm -rf ./tests/.slinkyd/
 	@./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
 	@./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
 	@./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
