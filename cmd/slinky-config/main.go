@@ -128,12 +128,11 @@ var (
 		uniswapv3.ProviderNames[constants.ETHEREUM]: uniswapv3.DefaultETHMarketConfig,
 	}
 
-	// LocalConfig defines a readable config for local development. Any changes to this
+	// LocalOracleConfig defines a readable config for local development. Any changes to this
 	// file should be reflected in oracle.json. To update the oracle.json file, run
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
 	LocalOracleConfig = config.OracleConfig{
-		Production: true,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
@@ -374,7 +373,7 @@ func main() {
 	rootCmd.Execute()
 }
 
-// createOracleConfig creates an oracle config given all of the local provider configurations.
+// createOracleConfig creates an oracle config given all local provider configurations.
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
@@ -502,7 +501,7 @@ func createMarketMap() error {
 		ProviderToMarkets = addRaydiumMarkets(ProviderToMarkets)
 	}
 
-	// Iterate through all of the provider ticker configurations and update the
+	// Iterate through all provider ticker configurations and update the
 	// tickers and tickers to providers maps.
 	for provider, providerConfig := range ProviderToMarkets {
 		for cp, config := range providerConfig {
@@ -510,6 +509,7 @@ func createMarketMap() error {
 				CurrencyPair:     cp,
 				Decimals:         18,
 				MinProviderCount: 1,
+				Enabled:          true,
 			}
 
 			// Add the ticker to the tickers map iff the ticker does not already exist.
