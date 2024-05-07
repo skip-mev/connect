@@ -38,12 +38,25 @@ func MarketMapProviderFactory(
 		Timeout: cfg.API.Timeout,
 	}
 	var apiDataHandler types.MarketMapAPIDataHandler
-	var requestHandler apihandlers.RequestHandler
 	var ids []types.Chain
+	var marketMapFetcher types.MarketMapFetcher
+
+	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
+	if err != nil {
+		return nil, err
+	}
 
 	switch cfg.Name {
 	case dydx.Name:
 		apiDataHandler, err = dydx.NewAPIHandler(logger, cfg.API)
+		ids = []types.Chain{{ChainID: dydx.ChainID}}
+	case dydx.ResearchAPIHandlerName:
+		marketMapFetcher, err = dydx.DefaultDYDXResearchMarketMapFetcher(
+			requestHandler,
+			apiMetrics,
+			cfg.API,
+			logger,
+		)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
 		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
@@ -51,16 +64,24 @@ func MarketMapProviderFactory(
 	if err != nil {
 		return nil, err
 	}
-	requestHandler, err = apihandlers.NewRequestHandlerImpl(client)
-	if err != nil {
-		return nil, err
+
+	if marketMapFetcher == nil {
+		marketMapFetcher, err = apihandlers.NewRestAPIFetcher(
+			requestHandler,
+			apiDataHandler,
+			apiMetrics,
+			cfg.API,
+			logger,
+		)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	queryHandler, err := types.NewMarketMapAPIQueryHandler(
+	queryHandler, err := types.NewMarketMapAPIQueryHandlerWithMarketMapFetcher(
 		logger,
 		cfg.API,
-		requestHandler,
-		apiDataHandler,
+		marketMapFetcher,
 		apiMetrics,
 	)
 	if err != nil {

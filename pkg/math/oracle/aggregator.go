@@ -88,6 +88,7 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		//     BTC/USDC * Index USDC/USD = BTC/USD
 		target := market.Ticker
 		convertedPrices := m.CalculateConvertedPrices(market)
+		m.metrics.AddProviderCountForMarket(target.String(), len(convertedPrices))
 
 		// We need to have at least the minimum number of providers to calculate the median.
 		if len(convertedPrices) < int(target.MinProviderCount) {
@@ -121,7 +122,6 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 		floatPrice, _ := price.Float64()
 		m.metrics.AddTickerTick(target.String())
 		m.metrics.UpdateAggregatePrice(target.String(), target.GetDecimals(), floatPrice)
-		m.metrics.AddProviderCountForMarket(target.String(), len(convertedPrices))
 	}
 
 	// Update the aggregated data. These prices are going to be used as the index prices the
