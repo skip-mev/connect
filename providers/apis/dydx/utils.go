@@ -18,6 +18,9 @@ const (
 	// Name is the name of the MarketMap provider.
 	Name = "dydx_api"
 
+	// ResearchAPIHandlerName is the name of the dYdX research json API.
+	ResearchAPIHandlerName = "dydx_research_json_api"
+
 	// ChainID is the chain ID for the dYdX market map provider.
 	ChainID = "dydx-node"
 
@@ -50,6 +53,23 @@ var DefaultAPIConfig = config.APIConfig{
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
 	URL:              "localhost:1317",
+}
+
+// DefaultResearchAPIConfig returns the default configuration for the dYdX market map API.
+var DefaultResearchAPIConfig = config.APIConfig{
+	Name:             ResearchAPIHandlerName,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          20 * time.Second, // Set a high timeout to account for slow API responses in the case where many markets are queried.
+	Interval:         10 * time.Second,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	URL:              "https://dydx-api.lavenderfive.com:443",
+	MaxQueries:       1,
+	Endpoints: []config.Endpoint{
+		{
+			URL: "https://raw.githubusercontent.com/dydxprotocol/v4-web/main/public/configs/otherMarketData.json",
+		},
+	},
 }
 
 // UniswapV3MetadataFromTicker returns the metadataJSON string for uniswapv3_api according to the dYdX encoding.

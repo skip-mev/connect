@@ -119,6 +119,18 @@ func (h *APIHandler) ParseResponse(
 		)
 	}
 
+	// validate the market-map
+	if err := marketResp.MarketMap.ValidateBasic(); err != nil {
+		h.logger.Debug("failed to validate market map", zap.Error(err))
+		return types.NewMarketMapResponseWithErr(
+			chains,
+			providertypes.NewErrorWithCode(
+				fmt.Errorf("failed to validate market map: %w", err),
+				providertypes.ErrorUnknown,
+			),
+		)
+	}
+
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(&marketResp, time.Now())
 

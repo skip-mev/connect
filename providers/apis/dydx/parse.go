@@ -99,10 +99,6 @@ func (h *APIHandler) ConvertMarketParamsToMarketMap(
 		}
 	}
 
-	if err := marketMap.ValidateBasic(); err != nil {
-		return mmtypes.MarketMapResponse{}, fmt.Errorf("failed to validate market map: %w", err)
-	}
-
 	return mmtypes.MarketMapResponse{
 		MarketMap: marketMap,
 	}, nil
