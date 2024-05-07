@@ -57,11 +57,11 @@ update-local-configs: build
 
 start-all:
 	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
 
 start-all-%:
 	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
 
 stop-all:
 	@echo "Stopping network..."
@@ -70,11 +70,11 @@ stop-all:
 
 start-sidecar:
 	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
 
 start-sidecar-%:
 	@echo "Starting oracle side-car, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
 
 stop-sidecar:
 	@echo "Stopping network..."
