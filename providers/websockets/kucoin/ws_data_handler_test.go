@@ -349,22 +349,25 @@ func TestCreateMessages(t *testing.T) {
 				ethusdt,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
-				msg := kucoin.SubscribeRequestMessage{
-					Type: string(kucoin.SubscribeMessage),
-					Topic: fmt.Sprintf(
-						"%s%s,%s",
-						kucoin.TickerTopic,
-						"BTC-USDT",
-						"ETH-USDT",
-					),
-					PrivateChannel: false,
-					Response:       false,
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				for i, ticker := range []string{"BTC-USDT", "ETH-USDT"} {
+					msg := kucoin.SubscribeRequestMessage{
+						Type: string(kucoin.SubscribeMessage),
+						Topic: fmt.Sprintf(
+							"%s%s",
+							kucoin.TickerTopic,
+							ticker,
+						),
+						PrivateChannel: false,
+						Response:       false,
+					}
+
+					bz, err := json.Marshal(msg)
+					require.NoError(t, err)
+					msgs[i] = bz
 				}
 
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return []handlers.WebsocketEncodedMessage{bz}
+				return msgs
 			},
 			expectedErr: false,
 		},
@@ -381,18 +384,20 @@ func TestCreateMessages(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			require.Len(t, actual, 1)
+			expected := tc.expected()
+			require.Len(t, actual, len(expected))
 
-			var expected kucoin.SubscribeRequestMessage
-			require.NoError(t, json.Unmarshal(tc.expected()[0], &expected))
+			for i := range expected {
+				var expectedMsg kucoin.SubscribeRequestMessage
+				require.NoError(t, json.Unmarshal(expected[i], &expectedMsg))
+				var actualMsg kucoin.SubscribeRequestMessage
+				require.NoError(t, json.Unmarshal(actual[i], &actualMsg))
 
-			var actualMsg kucoin.SubscribeRequestMessage
-			require.NoError(t, json.Unmarshal(actual[0], &actualMsg))
-
-			require.Equal(t, expected.Type, actualMsg.Type)
-			require.Equal(t, expected.Topic, actualMsg.Topic)
-			require.Equal(t, expected.PrivateChannel, actualMsg.PrivateChannel)
-			require.Equal(t, expected.Response, actualMsg.Response)
+				require.Equal(t, expectedMsg.Type, actualMsg.Type)
+				require.Equal(t, expectedMsg.Topic, actualMsg.Topic)
+				require.Equal(t, expectedMsg.PrivateChannel, actualMsg.PrivateChannel)
+				require.Equal(t, expectedMsg.Response, actualMsg.Response)
+			}
 		})
 	}
 }

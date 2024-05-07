@@ -270,18 +270,22 @@ func TestCreateMessage(t *testing.T) {
 				ethusd,
 			},
 			expected: func() []handlers.WebsocketEncodedMessage {
-				msg := kraken.SubscribeRequestMessage{
-					Event: string(kraken.SubscribeEvent),
-					Pair:  []string{"XBT/USD", "ETH/USD"},
-					Subscription: kraken.Subscription{
-						Name: string(kraken.TickerChannel),
-					},
+				msgs := make([]handlers.WebsocketEncodedMessage, 2)
+				for i, ticker := range []string{"XBT/USD", "ETH/USD"} {
+					msg := kraken.SubscribeRequestMessage{
+						Event: string(kraken.SubscribeEvent),
+						Pair:  []string{ticker},
+						Subscription: kraken.Subscription{
+							Name: string(kraken.TickerChannel),
+						},
+					}
+
+					bz, err := json.Marshal(msg)
+					require.NoError(t, err)
+					msgs[i] = bz
 				}
 
-				bz, err := json.Marshal(msg)
-				require.NoError(t, err)
-
-				return []handlers.WebsocketEncodedMessage{bz}
+				return msgs
 			},
 			expectedErr: false,
 		},
