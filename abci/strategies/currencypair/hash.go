@@ -87,7 +87,8 @@ func (s *HashCurrencyPairStrategy) FromID(ctx sdk.Context, id uint64) (slinkytyp
 
 // CurrencyPairToHashID returns the ID of the given currency pair, by taking the
 // sha256 hash of the currency pair.
-func CurrencyPairToHashID(currencyPair string) (uint64, error) {
+func CurrencyPairToHashID(currencyPair string) (uint64, error) { //nolint
+	
 	hash := sha256.New()
 	if _, err := hash.Write([]byte(currencyPair)); err != nil {
 		return 0, err

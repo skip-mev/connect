@@ -7,14 +7,18 @@ import (
 	strategies "github.com/skip-mev/slinky/abci/strategies/currencypair"
 	"github.com/skip-mev/slinky/abci/strategies/currencypair/mocks"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
 func TestHashCurrencyPairStrategyID(t *testing.T) {
+	ok := mocks.NewOracleKeeper(t)
 	ctx := sdk.Context{}
-	strategy := strategies.NewHashCurrencyPairStrategy(mocks.NewOracleKeeper(t))
+	strategy := strategies.NewHashCurrencyPairStrategy(ok)
 
 	t.Run("test a single valid currency pair getting a hash", func(t *testing.T) {
+		ok.On("GetIDForCurrencyPair", mock.Anything, btcusd).Return(uint64(0), true).Once()
+
 		// expect the first currency-pair to have ID 0
 		id, err := strategy.ID(ctx, btcusd)
 		require.NoError(t, err)
@@ -22,13 +26,17 @@ func TestHashCurrencyPairStrategyID(t *testing.T) {
 	})
 
 	t.Run("test a currency pair with no base/quote", func(t *testing.T) {
+		ok.On("GetIDForCurrencyPair", mock.Anything, slinkytypes.CurrencyPair{}).Return(uint64(0), false).Once()
+
 		// expect an error when querying for a currency-pair not in module-state
 		id, err := strategy.ID(ctx, slinkytypes.CurrencyPair{})
-		require.NoError(t, err)
-		require.NotEqual(t, uint64(0), id) // not equal to 0 because we have a delimiter.
+		require.Error(t, err)
+		require.Equal(t, uint64(0), id) // not equal to 0 because we have a delimiter.
 	})
 
 	t.Run("test equality of hashing", func(t *testing.T) {
+		ok.On("GetIDForCurrencyPair", mock.Anything, btcusd).Return(uint64(0), true).Twice()
+
 		id1, err := strategy.ID(ctx, btcusd)
 		require.NoError(t, err)
 
