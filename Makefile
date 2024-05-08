@@ -70,7 +70,6 @@ stop-all:
 
 start-sidecar:
 	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
-	
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
 
 start-sidecar-%:

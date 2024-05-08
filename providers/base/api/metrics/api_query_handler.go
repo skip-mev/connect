@@ -135,7 +135,6 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 	switch {
 	case resp == nil || resp.StatusCode >= 500:
 		status = "5XX"
-		statusExact = "500"
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
 		status = "2XX"
 	case resp.StatusCode >= 300 && resp.StatusCode < 400:
@@ -146,6 +145,8 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 
 	if resp != nil {
 		statusExact = fmt.Sprintf("%d", resp.StatusCode)
+	} else {
+		statusExact = "500"
 	}
 
 	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
