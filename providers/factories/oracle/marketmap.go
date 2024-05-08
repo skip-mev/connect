@@ -73,6 +73,7 @@ func MarketMapProviderFactory(
 			cfg.API,
 			client,
 		)
+		ids = []types.Chain{{ChainID: "local-node"}}
 	}
 	if err != nil {
 		return nil, err

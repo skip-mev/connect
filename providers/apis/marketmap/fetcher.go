@@ -16,7 +16,7 @@ import (
 // MarketMapFetcher is the x/marketmap fetcher. This fetcher is responsible for querying the
 // x/marketmap module and returning the market map data. The fetcher utilizes the QueryClient
 // to query the x/marketmap module.
-type MarketMapFetcher struct {
+type MarketMapFetcher struct { //nolint
 	logger *zap.Logger
 	api    config.APIConfig
 
