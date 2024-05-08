@@ -19,6 +19,9 @@ const (
 
 	// StatusCodeLabel is a label for the status code of a provider API response.
 	StatusCodeLabel = "status_code"
+
+	// StatusCodeExactLabel is a label for the exact status code of a provider API response.
+	StatusCodeExactLabel = "status_code_exact"
 )
 
 // APIMetrics is an interface that defines the API for metrics collection for providers
@@ -48,9 +51,6 @@ type APIMetricsImpl struct {
 	// Number of provider responses by grouped status code.
 	apiHTTPStatusCodePerProvider *prometheus.CounterVec
 
-	// Number of provider responses by status code with the exact status code.
-	apiHTTPStatusCodeExactPerProvider *prometheus.CounterVec
-
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
 	apiResponseTimePerProvider *prometheus.HistogramVec
 }
@@ -74,13 +74,8 @@ func NewAPIMetrics() APIMetrics {
 		apiHTTPStatusCodePerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_http_status_code",
-			Help:      "Number of API provider responses by status code grouped by category (2XX, 3XX, etc.).",
-		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
-		apiHTTPStatusCodeExactPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: oraclemetrics.OracleSubsystem,
-			Name:      "api_http_status_code_granular",
-			Help:      "Number of API provider responses by status code with granularity on the exact code.",
-		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
+			Help:      "Number of API provider responses by status code grouped by category (2XX, 3XX, etc.) along with the exact code.",
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel, StatusCodeExactLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_latency",
@@ -93,7 +88,6 @@ func NewAPIMetrics() APIMetrics {
 	prometheus.MustRegister(m.apiResponseStatusPerProvider)
 	prometheus.MustRegister(m.apiHTTPStatusCodePerProvider)
 	prometheus.MustRegister(m.apiResponseTimePerProvider)
-	prometheus.MustRegister(m.apiHTTPStatusCodeExactPerProvider)
 
 	return m
 }
@@ -152,11 +146,7 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
 		StatusCodeLabel:               status,
-	}).Add(1)
-
-	m.apiHTTPStatusCodeExactPerProvider.With(prometheus.Labels{
-		providermetrics.ProviderLabel: providerName,
-		StatusCodeLabel:               statusExact,
+		StatusCodeExactLabel:          statusExact,
 	}).Add(1)
 }
 
