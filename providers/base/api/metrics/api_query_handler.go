@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -18,6 +19,9 @@ const (
 
 	// StatusCodeLabel is a label for the status code of a provider API response.
 	StatusCodeLabel = "status_code"
+
+	// StatusCodeExactLabel is a label for the exact status code of a provider API response.
+	StatusCodeExactLabel = "status_code_exact"
 )
 
 // APIMetrics is an interface that defines the API for metrics collection for providers
@@ -44,7 +48,7 @@ type APIMetricsImpl struct {
 	// Number of provider successes.
 	apiResponseStatusPerProvider *prometheus.CounterVec
 
-	// Number of provider responses by status code.
+	// Number of provider responses by grouped status code.
 	apiHTTPStatusCodePerProvider *prometheus.CounterVec
 
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
@@ -70,8 +74,8 @@ func NewAPIMetrics() APIMetrics {
 		apiHTTPStatusCodePerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_http_status_code",
-			Help:      "Number of API provider responses by status code.",
-		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
+			Help:      "Number of API provider responses by status code grouped by category (2XX, 3XX, etc.) along with the exact code.",
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel, StatusCodeExactLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_latency",
@@ -118,7 +122,10 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err
 
 // AddHTTPStatusCode increments the http status code by provider and response.
 func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Response) {
-	var status string
+	var (
+		status      string
+		statusExact string
+	)
 	switch {
 	case resp == nil || resp.StatusCode >= 500:
 		status = "5XX"
@@ -130,11 +137,17 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 		status = "4XX"
 	}
 
+	if resp != nil {
+		statusExact = fmt.Sprintf("%d", resp.StatusCode)
+	} else {
+		statusExact = "500"
+	}
+
 	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
 		StatusCodeLabel:               status,
-	},
-	).Add(1)
+		StatusCodeExactLabel:          statusExact,
+	}).Add(1)
 }
 
 // ObserveProviderResponseLatency records the time it took for a provider to respond.

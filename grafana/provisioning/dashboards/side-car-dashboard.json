@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 76,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -81,7 +80,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -158,7 +157,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -230,7 +229,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -297,7 +296,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -368,7 +367,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -377,7 +376,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (id) \n(rate(side_car_health_check_ticker_updates_total{job=\"${job}\"}[$__range]))\n/\nscalar(rate(side_car_health_check_system_updates_total{job=\"${job}\"}[$__range]))",
+          "expr": "sum by (id) \n(rate(side_car_health_check_ticker_updates_total{job=~\"${job}\"}[$__range]))\n/\nscalar(rate(side_car_health_check_system_updates_total{job=~\"${job}\"}[$__range]))",
           "format": "heatmap",
           "instant": false,
           "legendFormat": "{{id}}",
@@ -434,7 +433,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -596,7 +595,7 @@
         }
       },
       "repeat": "id",
-      "repeatDirection": "h",
+      "repeatDirection": "v",
       "targets": [
         {
           "datasource": {
@@ -629,12 +628,109 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "# Providers",
+            "axisPlacement": "auto",
+            "axisSoftMax": 10,
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "dark-blue",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "id": 283,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.52,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "Time",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": -100
+      },
+      "repeat": "id",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "side_car_health_check_market_providers{job=~\"${job}\", id=~\"${id}\"}",
+          "instant": false,
+          "legendFormat": "{{id}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Available Provider Prices for ${id}",
+      "type": "barchart"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 284
+        "y": 548
       },
       "id": 47,
       "panels": [],
@@ -677,10 +773,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 6,
+        "h": 7,
+        "w": 12,
         "x": 0,
-        "y": 285
+        "y": 549
       },
       "id": 49,
       "options": {
@@ -699,7 +795,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -754,10 +850,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 18,
-        "x": 6,
-        "y": 285
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 549
       },
       "id": 57,
       "options": {
@@ -776,7 +872,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -933,10 +1029,10 @@
         ]
       },
       "gridPos": {
-        "h": 15,
-        "w": 6,
+        "h": 13,
+        "w": 12,
         "x": 0,
-        "y": 293
+        "y": 556
       },
       "id": 46,
       "options": {
@@ -965,9 +1061,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\"}[$__range])) by (status_code,provider)",
+          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\"}[$__range])) by (status_code_exact,provider)",
           "instant": false,
-          "legendFormat": "{{provider}} - {{status_code}}",
+          "legendFormat": "{{provider}} - {{status_code_exact}}",
           "range": true,
           "refId": "A"
         }
@@ -980,7 +1076,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Percentage of reads that were successfully made on the underlying connection by the data provider in the range.",
+      "description": "Percentage of reads that were successfully made on the underlying connection by the data provider in the range. Note that a lower percentage doesn't necessarily imply that the connection is bad - it could just mean that it has received fewer updates.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1011,10 +1107,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 18,
-        "x": 6,
-        "y": 293
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 556
       },
       "id": 58,
       "options": {
@@ -1033,7 +1129,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1086,10 +1182,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 18,
-        "x": 6,
-        "y": 301
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 563
       },
       "id": 59,
       "options": {
@@ -1108,7 +1204,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1127,16 +1223,204 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "fieldMinMax": false
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 569
+      },
+      "id": 419,
+      "options": {
+        "calculate": false,
+        "calculation": {
+          "xBuckets": {
+            "mode": "size",
+            "value": ""
+          }
+        },
+        "cellGap": 1,
+        "cellValues": {
+          "unit": "ms"
+        },
+        "color": {
+          "exponent": 0.3,
+          "fill": "dark-orange",
+          "max": 2000,
+          "min": 0,
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "RdYlGn",
+          "steps": 125
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "unknown",
+          "value": "Latency"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisLabel": "Provider",
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "ms"
+        }
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.5, sum(rate(side_car_api_response_latency_bucket{job=~\"${job}\", provider=~\"${provider}|${market_map_provider}\"}[$__range])) by (le, provider))",
+          "instant": false,
+          "legendFormat": "{{provider}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Median Round Trip Latency by API Provider",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          },
+          "fieldMinMax": false
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 569
+      },
+      "id": 546,
+      "options": {
+        "calculate": false,
+        "calculation": {
+          "xBuckets": {
+            "mode": "size",
+            "value": ""
+          }
+        },
+        "cellGap": 1,
+        "cellValues": {
+          "unit": "ms"
+        },
+        "color": {
+          "exponent": 0.3,
+          "fill": "dark-green",
+          "max": 2000,
+          "min": 0,
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "linear",
+          "scheme": "RdYlGn",
+          "steps": 97
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "unknown",
+          "value": "Latency"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisLabel": "Provider",
+          "axisPlacement": "left",
+          "reverse": true,
+          "unit": "ms"
+        }
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.5, sum(rate(side_car_web_socket_response_time_bucket{job=~\"${job}\", provider=~\"${provider}\"}[$__range])) by (le, provider))",
+          "instant": false,
+          "legendFormat": "{{provider}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Median Latency between Message Receives by WebSocket Provider",
+      "type": "heatmap"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 308
+        "y": 577
       },
       "id": 55,
       "panels": [],
-      "title": "Detailed Side Car Provider Market Data",
+      "title": "Detailed Side Car Provider Market Health",
       "type": "row"
     },
     {
@@ -1160,8 +1444,8 @@
                 "value": null
               },
               {
-                "color": "#EAB839",
-                "value": 0.85
+                "color": "semi-dark-orange",
+                "value": 0.75
               },
               {
                 "color": "semi-dark-green",
@@ -1177,7 +1461,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 309
+        "y": 578
       },
       "id": 93,
       "maxPerRow": 2,
@@ -1197,7 +1481,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "repeat": "provider",
       "repeatDirection": "h",
       "targets": [
@@ -1218,7 +1502,7 @@
       "type": "stat"
     }
   ],
-  "refresh": "30s",
+  "refresh": "",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
@@ -1244,13 +1528,9 @@
       },
       {
         "current": {
-          "selected": true,
-          "text": [
-            "slinky-customer-dydx-vpn-staging-sidecar-0"
-          ],
-          "value": [
-            "slinky-customer-dydx-vpn-staging-sidecar-0"
-          ]
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -1342,9 +1622,10 @@
       {
         "allValue": "",
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "dydx_api",
-          "value": "dydx_api"
+          "text": "None",
+          "value": ""
         },
         "datasource": {
           "type": "prometheus",
@@ -1371,10 +1652,9 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "30s",
@@ -1386,6 +1666,6 @@
   "timezone": "",
   "title": "Slinky SideCar Dashboard",
   "uid": "cdca49ue665mocd",
-  "version": 29,
+  "version": 1,
   "weekStart": ""
 }
