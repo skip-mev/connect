@@ -48,7 +48,7 @@ type APIMetricsImpl struct {
 	// Number of provider responses by grouped status code.
 	apiHTTPStatusCodePerProvider *prometheus.CounterVec
 
-	// Number of provder responses by status code with the exact status code.
+	// Number of provider responses by status code with the exact status code.
 	apiHTTPStatusCodeExactPerProvider *prometheus.CounterVec
 
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
