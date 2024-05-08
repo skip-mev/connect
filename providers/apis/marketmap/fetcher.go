@@ -70,7 +70,7 @@ func (f *MarketMapFetcher) Fetch(
 	// Query the x/marketmap module for the market map data.
 	resp, err := f.client.MarketMap(ctx, &mmtypes.MarketMapRequest{})
 	if err != nil {
-		f.logger.Error("failed to query market map", zap.Error(err))
+		f.logger.Error("failed to query market map module on node", zap.Error(err))
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -81,7 +81,7 @@ func (f *MarketMapFetcher) Fetch(
 	}
 
 	if resp == nil {
-		f.logger.Info("nil response from market map query")
+		f.logger.Info("nil response from market map module query")
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -95,7 +95,12 @@ func (f *MarketMapFetcher) Fetch(
 	//
 	// TODO: Add checks on the chain ID.
 	if err := resp.MarketMap.ValidateBasic(); err != nil {
-		f.logger.Info("invalid market map response", zap.Error(err))
+		f.logger.Info(
+			"invalid market map response from module",
+			zap.Any("market_map", resp.MarketMap),
+			zap.Error(err),
+		)
+
 		return types.NewMarketMapResponseWithErr(
 			chains,
 			providertypes.NewErrorWithCode(
@@ -108,6 +113,6 @@ func (f *MarketMapFetcher) Fetch(
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(resp, time.Now())
 
-	f.logger.Info("successfully fetched market map data", zap.Any("market_map", resp.MarketMap))
+	f.logger.Info("successfully fetched market map data from module", zap.Any("market_map", resp.MarketMap))
 	return types.NewMarketMapResponse(resolved, nil)
 }
