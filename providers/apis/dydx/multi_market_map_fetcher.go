@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"sync"
 
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	"go.uber.org/zap"
 )
 
 var (
