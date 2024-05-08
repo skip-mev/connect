@@ -6,14 +6,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	apihandlermocks "github.com/skip-mev/slinky/providers/base/api/handlers/mocks"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	mmclient "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 func TestDYDXMultiMarketMapFetcher(t *testing.T) {
