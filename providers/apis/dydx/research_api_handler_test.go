@@ -15,13 +15,14 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
+
 	"github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 )
 
 func TestNewResearchAPIHandler(t *testing.T) {
