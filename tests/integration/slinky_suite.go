@@ -106,38 +106,76 @@ type SlinkyIntegrationSuite struct {
 
 	// block time
 	blockTime time.Duration
+
+	// interchain constructor
+	ic InterchainConstructor
+
+	// chain constructor
+	cc ChainConstructor
 }
 
-func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage) *SlinkyIntegrationSuite {
-	return &SlinkyIntegrationSuite{
+// Option is a function that modifies the SlinkyIntegrationSuite
+type Option func(*SlinkyIntegrationSuite)
+
+// WithDenom sets the token denom
+func WithDenom(denom string) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.denom = denom
+	}
+}
+
+// WithAuthority sets the authority address
+func WithAuthority(addr sdk.AccAddress) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.authority = addr
+	}
+}
+
+// WithBlockTime sets the block time
+func WithBlockTime(t time.Duration) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.blockTime = t
+	}
+}
+
+// WithInterchainConstructor sets the interchain constructor
+func WithInterchainConstructor(ic InterchainConstructor) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.ic = ic
+	}
+}
+
+// WithChainConstructor sets the chain constructor
+func WithChainConstructor(cc ChainConstructor) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.cc = cc
+	}
+}
+
+func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts... Option) *SlinkyIntegrationSuite {
+	suite := &SlinkyIntegrationSuite{
 		spec:         spec,
 		oracleConfig: DefaultOracleSidecar(oracleImage),
 		denom:        defaultDenom,
 		authority:    authtypes.NewModuleAddress(govtypes.ModuleName),
 		blockTime:    10 * time.Second,
+		ic:           DefaultInterchainConstructor,
+		cc:           DefaultChainConstructor,
 	}
-}
 
-func (s *SlinkyIntegrationSuite) WithDenom(denom string) *SlinkyIntegrationSuite {
-	s.denom = denom
-	return s
-}
+	for _, opt := range opts {
+		opt(suite)
+	}
 
-func (s *SlinkyIntegrationSuite) WithAuthority(addr sdk.AccAddress) *SlinkyIntegrationSuite {
-	s.authority = addr
-	return s
-}
-
-func (s *SlinkyIntegrationSuite) WithBlockTime(t time.Duration) *SlinkyIntegrationSuite {
-	s.blockTime = t
-	return s
+	return suite
 }
 
 func (s *SlinkyIntegrationSuite) SetupSuite() {
 	// create the chain
-	s.chain = ChainBuilderFromChainSpec(s.T(), s.spec)
+	chains := s.cc(s.T(), s.spec)
+	s.chain = chains[0]
 
-	s.chain.WithPrestartNodes(func(c *cosmos.CosmosChain) {
+	s.chain.WithPreStartNodes(func(c *cosmos.CosmosChain) {
 		// for each node in the chain, set the sidecars
 		for i := range c.Nodes() {
 			// pin
@@ -150,14 +188,14 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 			SetOracleConfigsOnOracle(GetOracleSideCar(node), oracleCfg)
 
 			// set the out-of-process oracle config for all nodes
-			node.WithPrestartNode(func(n *cosmos.ChainNode) {
+			node.WithPreStartNode(func(n *cosmos.ChainNode) {
 				SetOracleConfigsOnApp(n)
 			})
 		}
 	})
 
 	// start the chain
-	BuildPOBInterchain(s.T(), context.Background(), s.chain)
+	s.ic(context.Background(), s.T(), chains)
 	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), math.NewInt(genesisAmount), s.chain)
 	s.user = users[0]
 

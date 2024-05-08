@@ -213,7 +213,7 @@ func ExpectAlerts(chain *cosmos.CosmosChain, timeout time.Duration, alerts []ale
 
 	alertsClient := alerttypes.NewQueryClient(cc)
 
-	var height uint64
+	var height int64
 
 	if err := testutil.WaitForCondition(timeout, 100*time.Millisecond, func() (bool, error) {
 		height, err = chain.Height(context.Background())
@@ -239,7 +239,7 @@ func ExpectAlerts(chain *cosmos.CosmosChain, timeout time.Duration, alerts []ale
 		return 0, err
 	}
 
-	return height, WaitForHeight(chain, height+1, timeout)
+	return uint64(height), WaitForHeight(chain, uint64(height+1), timeout)
 }
 
 func mapAlerts(alerts []alerttypes.Alert) map[string]struct{} {
