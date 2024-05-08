@@ -15,8 +15,6 @@ func NewGRPCClient(
 	conn, err := grpc.Dial(
 		config.URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*4)), // Set max receive message size to 4MB
-		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1024*1024*4)), // Set max send message size to 4MB
 	)
 	if err != nil {
 		return nil, err
