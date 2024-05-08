@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -44,8 +45,11 @@ type APIMetricsImpl struct {
 	// Number of provider successes.
 	apiResponseStatusPerProvider *prometheus.CounterVec
 
-	// Number of provider responses by status code.
+	// Number of provider responses by grouped status code.
 	apiHTTPStatusCodePerProvider *prometheus.CounterVec
+
+	// Number of provder responses by status code with the exact status code.
+	apiHTTPStatusCodeExactPerProvider *prometheus.CounterVec
 
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
 	apiResponseTimePerProvider *prometheus.HistogramVec
@@ -70,7 +74,12 @@ func NewAPIMetrics() APIMetrics {
 		apiHTTPStatusCodePerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_http_status_code",
-			Help:      "Number of API provider responses by status code.",
+			Help:      "Number of API provider responses by status code grouped by category (2XX, 3XX, etc.).",
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
+		apiHTTPStatusCodeExactPerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: oraclemetrics.OracleSubsystem,
+			Name:      "api_http_status_code_granular",
+			Help:      "Number of API provider responses by status code with granularity on the exact code.",
 		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
@@ -84,6 +93,7 @@ func NewAPIMetrics() APIMetrics {
 	prometheus.MustRegister(m.apiResponseStatusPerProvider)
 	prometheus.MustRegister(m.apiHTTPStatusCodePerProvider)
 	prometheus.MustRegister(m.apiResponseTimePerProvider)
+	prometheus.MustRegister(m.apiHTTPStatusCodeExactPerProvider)
 
 	return m
 }
@@ -118,10 +128,14 @@ func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err
 
 // AddHTTPStatusCode increments the http status code by provider and response.
 func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Response) {
-	var status string
+	var (
+		status      string
+		statusExact string
+	)
 	switch {
 	case resp == nil || resp.StatusCode >= 500:
 		status = "5XX"
+		statusExact = "500"
 	case resp.StatusCode >= 200 && resp.StatusCode < 300:
 		status = "2XX"
 	case resp.StatusCode >= 300 && resp.StatusCode < 400:
@@ -130,11 +144,19 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 		status = "4XX"
 	}
 
+	if resp != nil {
+		statusExact = fmt.Sprintf("%d", resp.StatusCode)
+	}
+
 	m.apiHTTPStatusCodePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
 		StatusCodeLabel:               status,
-	},
-	).Add(1)
+	}).Add(1)
+
+	m.apiHTTPStatusCodeExactPerProvider.With(prometheus.Labels{
+		providermetrics.ProviderLabel: providerName,
+		StatusCodeLabel:               statusExact,
+	}).Add(1)
 }
 
 // ObserveProviderResponseLatency records the time it took for a provider to respond.
