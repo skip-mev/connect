@@ -113,6 +113,6 @@ func (f *MarketMapFetcher) Fetch(
 	resolved := make(types.ResolvedMarketMap)
 	resolved[chains[0]] = types.NewMarketMapResult(resp, time.Now())
 
-	f.logger.Info("successfully fetched market map data from module", zap.Any("market_map", resp.MarketMap))
+	f.logger.Info("successfully fetched market map data from module; checking if market map has changed")
 	return types.NewMarketMapResponse(resolved, nil)
 }
