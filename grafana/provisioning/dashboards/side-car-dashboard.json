@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 76,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -81,7 +80,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -158,7 +157,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -230,7 +229,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -297,7 +296,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -368,7 +367,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -434,7 +433,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -731,7 +730,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1420
+        "y": 548
       },
       "id": 47,
       "panels": [],
@@ -756,7 +755,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -776,7 +776,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 1421
+        "y": 549
       },
       "id": 49,
       "options": {
@@ -795,7 +795,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -832,7 +832,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -852,7 +853,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 1421
+        "y": 549
       },
       "id": 57,
       "options": {
@@ -871,7 +872,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -938,7 +939,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1030,7 +1032,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 1428
+        "y": 556
       },
       "id": 46,
       "options": {
@@ -1059,9 +1061,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\"}[$__range])) by (status_code,provider)",
+          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\"}[$__range])) by (status_code_exact,provider)",
           "instant": false,
-          "legendFormat": "{{provider}} - {{status_code}}",
+          "legendFormat": "{{provider}} - {{status_code_exact}}",
           "range": true,
           "refId": "A"
         }
@@ -1087,7 +1089,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "semi-dark-yellow",
@@ -1107,7 +1110,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 1428
+        "y": 556
       },
       "id": 58,
       "options": {
@@ -1126,7 +1129,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1161,7 +1164,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "semi-dark-yellow",
@@ -1181,7 +1185,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 1435
+        "y": 563
       },
       "id": 59,
       "options": {
@@ -1200,7 +1204,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1243,7 +1247,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 1441
+        "y": 569
       },
       "id": 419,
       "options": {
@@ -1294,7 +1298,7 @@
           "unit": "ms"
         }
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1337,7 +1341,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 1441
+        "y": 569
       },
       "id": 546,
       "options": {
@@ -1388,7 +1392,7 @@
           "unit": "ms"
         }
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1412,7 +1416,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1449
+        "y": 577
       },
       "id": 55,
       "panels": [],
@@ -1436,7 +1440,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "dark-red"
+                "color": "dark-red",
+                "value": null
               },
               {
                 "color": "semi-dark-orange",
@@ -1456,7 +1461,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 1450
+        "y": 578
       },
       "id": 93,
       "maxPerRow": 2,
@@ -1476,7 +1481,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.0-69950",
+      "pluginVersion": "10.4.2",
       "repeat": "provider",
       "repeatDirection": "h",
       "targets": [
@@ -1617,9 +1622,10 @@
       {
         "allValue": "",
         "current": {
+          "isNone": true,
           "selected": false,
-          "text": "dydx_api",
-          "value": "dydx_api"
+          "text": "None",
+          "value": ""
         },
         "datasource": {
           "type": "prometheus",
@@ -1649,7 +1655,6 @@
     "from": "now-30m",
     "to": "now"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
     "refresh_intervals": [
       "30s",
@@ -1661,6 +1666,6 @@
   "timezone": "",
   "title": "Slinky SideCar Dashboard",
   "uid": "cdca49ue665mocd",
-  "version": 55,
+  "version": 1,
   "weekStart": ""
 }
