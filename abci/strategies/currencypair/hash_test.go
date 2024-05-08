@@ -52,7 +52,7 @@ func TestHashCurrencyPairStrategyFromID(t *testing.T) {
 	ctx := sdk.Context{}
 	strategy := strategies.NewHashCurrencyPairStrategy(ok)
 
-	t.Run("test getting currency pair fom currency pair that does not exist in state", func(t *testing.T) {
+	t.Run("test getting currency pair for currency pair that does not exist in state", func(t *testing.T) {
 		ok.On("GetAllCurrencyPairs", ctx).Return([]slinkytypes.CurrencyPair{}).Once()
 
 		id, err := strategies.CurrencyPairToHashID(btcusd.String())
