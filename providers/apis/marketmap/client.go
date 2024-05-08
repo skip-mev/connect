@@ -1,10 +1,11 @@
 package marketmap
 
 import (
-	"github.com/skip-mev/slinky/oracle/config"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/skip-mev/slinky/oracle/config"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 // NewGRPCClient returns a new GRPC client for MarketMap module.
