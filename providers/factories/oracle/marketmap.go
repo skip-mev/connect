@@ -62,8 +62,17 @@ func MarketMapProviderFactory(
 		)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
-		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
-		ids = []types.Chain{{ChainID: "skip-1"}}
+		var client mmtypes.QueryClient
+		client, err = marketmap.NewGRPCClient(cfg.API)
+		if err != nil {
+			return nil, err
+		}
+
+		marketMapFetcher, err = marketmap.NewMarketMapFetcher(
+			logger,
+			cfg.API,
+			client,
+		)
 	}
 	if err != nil {
 		return nil, err

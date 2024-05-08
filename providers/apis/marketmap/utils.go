@@ -20,5 +20,5 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         1 * time.Second,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       1,
-	URL:              "http://localhost:1317/slinky/marketmap/v1/marketmap",
+	URL:              "http://localhost:9090",
 }
