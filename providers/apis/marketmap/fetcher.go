@@ -50,7 +50,8 @@ func NewMarketMapFetcher(
 	}, nil
 }
 
-// Fetch returns the latest market map data from the x/marketmap module.
+// Fetch returns the latest market map data from the x/marketmap module. It expects only a single
+// chain ID since the current implementation assumes a single connection to one chain.
 func (f *MarketMapFetcher) Fetch(
 	ctx context.Context,
 	chains []types.Chain,

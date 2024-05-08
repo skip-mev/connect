@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/test-go/testify/mock"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/constants"
