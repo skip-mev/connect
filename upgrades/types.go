@@ -1,6 +1,7 @@
 package upgrades
 
 import (
+	"context"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -23,4 +24,9 @@ type Upgrade interface {
 		cdc codec.Codec,
 		handler upgradetypes.UpgradeHandler,
 	) upgradetypes.UpgradeHandler
+}
+
+// EmptyUpgrade is a useful alias for an empty upgrade handler you can append as a no-op to wrap.
+func EmptyUpgrade(_ context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return fromVM, nil
 }
