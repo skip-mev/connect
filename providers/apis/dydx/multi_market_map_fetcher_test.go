@@ -96,6 +96,7 @@ func TestDYDXMultiMarketMapFetcher(t *testing.T) {
 									CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
 									Decimals:         8,
 									MinProviderCount: 1,
+									Enabled:          true,
 								},
 								ProviderConfigs: []mmtypes.ProviderConfig{
 									{

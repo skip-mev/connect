@@ -38,6 +38,8 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 
 	// Start the market map provider.
 	if o.mmProvider != nil {
+		o.logger.Info("starting marketmap provider")
+
 		o.wg.Add(1)
 		go func() {
 			defer o.wg.Done()
