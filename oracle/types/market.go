@@ -13,10 +13,6 @@ func ProviderTickersFromMarketMap(
 	name string,
 	marketMap mmtypes.MarketMap,
 ) ([]ProviderTicker, error) {
-	if err := marketMap.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid market map: %w", err)
-	}
-
 	var (
 		// Track all tickers that the provider will be providing data for.
 		providerTickers = make([]ProviderTicker, 0)
@@ -28,6 +24,10 @@ func ProviderTickersFromMarketMap(
 	// Iterate through every single market and its provider configurations to find the
 	// provider configurations that match the provider name.
 	for _, market := range marketMap.Markets {
+		if !market.Ticker.Enabled {
+			continue
+		}
+
 		for _, cfg := range market.ProviderConfigs {
 			if cfg.Name != name {
 				continue

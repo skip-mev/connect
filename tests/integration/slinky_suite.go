@@ -278,6 +278,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 							CurrencyPair:     ethusdc,
 							Decimals:         8,
 							MinProviderCount: 1,
+							Enabled:          true,
 						},
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
@@ -505,6 +506,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						CurrencyPair:     ethusdc,
 						Decimals:         8,
 						MinProviderCount: 1,
+						Enabled:          true,
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
@@ -518,6 +520,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						CurrencyPair:     ethusdt,
 						Decimals:         8,
 						MinProviderCount: 1,
+						Enabled:          true,
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
@@ -531,6 +534,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						CurrencyPair:     ethusd,
 						Decimals:         8,
 						MinProviderCount: 1,
+						Enabled:          true,
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
@@ -616,6 +620,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						CurrencyPair:     ethusdc,
 						Decimals:         8,
 						MinProviderCount: 1,
+						Enabled:          true,
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
@@ -629,6 +634,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 						CurrencyPair:     ethusdt,
 						Decimals:         8,
 						MinProviderCount: 1,
+						Enabled:          true,
 					}, ProviderConfigs: []mmtypes.ProviderConfig{
 						{
 							Name:           static.Name,
