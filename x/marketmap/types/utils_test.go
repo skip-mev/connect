@@ -1,10 +1,12 @@
 package types_test
 
 import (
-	"github.com/skip-mev/slinky/x/marketmap/types"
-	"github.com/stretchr/testify/require"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/skip-mev/slinky/x/marketmap/types"
 )
 
 func TestReadMarketMapFromFile(t *testing.T) {
