@@ -1,20 +1,21 @@
 package marketmap_test
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/skip-mev/slinky/x/marketmap/types/mocks"
 )
 
 var (
@@ -56,44 +57,30 @@ var (
 			},
 		},
 	}
+
+	logger = zap.NewExample()
 )
 
-func TestCreateURL(t *testing.T) {
-	apiHandler, err := marketmap.NewAPIHandler(marketmap.DefaultAPIConfig)
-	require.NoError(t, err)
-
-	t.Run("errors when there are multiple chains inputted", func(t *testing.T) {
-		_, err := apiHandler.CreateURL(chains)
-		require.Error(t, err)
-	})
-
-	t.Run("returns the URL when there is only one chain inputted", func(t *testing.T) {
-		url, err := apiHandler.CreateURL(chains[:1])
-		require.NoError(t, err)
-		require.Equal(t, marketmap.DefaultAPIConfig.URL, url)
-	})
-}
-
-func TestParseResponse(t *testing.T) {
+func TestFetch(t *testing.T) {
 	cases := []struct {
 		name     string
 		chains   []types.Chain
-		resp     func() *http.Response
+		client   func() mmtypes.QueryClient
 		expected types.MarketMapResponse
 	}{
 		{
 			name:   "errors when too many chains are inputted",
 			chains: chains,
-			resp: func() *http.Response {
-				return &http.Response{}
+			client: func() mmtypes.QueryClient {
+				return mocks.NewQueryClient(t)
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
 					chains[0]: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected one chain, got 2"), providertypes.ErrorAPIGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected one chain, got 2"), providertypes.ErrorInvalidAPIChains),
 					},
 					chains[1]: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected one chain, got 2"), providertypes.ErrorAPIGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected one chain, got 2"), providertypes.ErrorInvalidAPIChains),
 					},
 				},
 			},
@@ -101,27 +88,31 @@ func TestParseResponse(t *testing.T) {
 		{
 			name:   "errors when the response is nil",
 			chains: chains[:1],
-			resp: func() *http.Response {
-				return nil
+			client: func() mmtypes.QueryClient {
+				c := mocks.NewQueryClient(t)
+				c.On("MarketMap", mock.Anything, mock.Anything).Return(nil, nil)
+				return c
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
 					chains[0]: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("nil response"), providertypes.ErrorAPIGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("nil response"), providertypes.ErrorGRPCGeneral),
 					},
 				},
 			},
 		},
 		{
-			name:   "errors when the response body cannot be parsed",
+			name:   "errors when the request cannot be made",
 			chains: chains[:1],
-			resp: func() *http.Response {
-				return testutils.CreateResponseFromJSON("invalid json")
+			client: func() mmtypes.QueryClient {
+				c := mocks.NewQueryClient(t)
+				c.On("MarketMap", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("could not make request"))
+				return c
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
 					chains[0]: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("failed to parse market map response"), providertypes.ErrorAPIGeneral),
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("could not make request"), providertypes.ErrorGRPCGeneral),
 					},
 				},
 			},
@@ -129,15 +120,15 @@ func TestParseResponse(t *testing.T) {
 		{
 			name:   "errors when the market map response is invalid",
 			chains: chains[:1],
-			resp: func() *http.Response {
-				resp := mmtypes.MarketMapResponse{
-					MarketMap: badMarketMap,
-				}
-
-				json, err := json.Marshal(resp)
-				require.NoError(t, err)
-
-				return testutils.CreateResponseFromJSON(string(json))
+			client: func() mmtypes.QueryClient {
+				c := mocks.NewQueryClient(t)
+				c.On("MarketMap", mock.Anything, mock.Anything).Return(
+					&mmtypes.MarketMapResponse{
+						MarketMap: badMarketMap,
+					},
+					nil,
+				)
+				return c
 			},
 			expected: types.MarketMapResponse{
 				UnResolved: types.UnResolvedMarketMap{
@@ -148,41 +139,19 @@ func TestParseResponse(t *testing.T) {
 			},
 		},
 		{
-			name:   "returns a market map that does not match the chain id",
-			chains: chains[:1],
-			resp: func() *http.Response {
-				resp := mmtypes.MarketMapResponse{
-					MarketMap: goodMarketMap,
-					ChainId:   "invalid",
-				}
-
-				json, err := json.Marshal(resp)
-				require.NoError(t, err)
-
-				return testutils.CreateResponseFromJSON(string(json))
-			},
-			expected: types.MarketMapResponse{
-				UnResolved: types.UnResolvedMarketMap{
-					chains[0]: providertypes.UnresolvedResult{
-						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("expected chain id dYdX, got invalid"), providertypes.ErrorAPIGeneral),
-					},
-				},
-			},
-		},
-		{
 			name:   "returns a resolved market map",
 			chains: chains[:1],
-			resp: func() *http.Response {
-				resp := mmtypes.MarketMapResponse{
-					MarketMap:   goodMarketMap,
-					ChainId:     chains[0].ChainID,
-					LastUpdated: 10,
-				}
-
-				json, err := json.Marshal(resp)
-				require.NoError(t, err)
-
-				return testutils.CreateResponseFromJSON(string(json))
+			client: func() mmtypes.QueryClient {
+				c := mocks.NewQueryClient(t)
+				c.On("MarketMap", mock.Anything, mock.Anything).Return(
+					&mmtypes.MarketMapResponse{
+						MarketMap:   goodMarketMap,
+						ChainId:     chains[0].ChainID,
+						LastUpdated: 10,
+					},
+					nil,
+				)
+				return c
 			},
 			expected: types.MarketMapResponse{
 				Resolved: types.ResolvedMarketMap{
@@ -200,10 +169,10 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			apiHandler, err := marketmap.NewAPIHandler(marketmap.DefaultAPIConfig)
+			fetcher, err := marketmap.NewMarketMapFetcher(logger, marketmap.DefaultAPIConfig, tc.client())
 			require.NoError(t, err)
 
-			resp := apiHandler.ParseResponse(tc.chains, tc.resp())
+			resp := fetcher.Fetch(context.TODO(), tc.chains)
 			require.Equal(t, len(resp.Resolved), len(tc.expected.Resolved))
 			require.Equal(t, len(resp.UnResolved), len(tc.expected.UnResolved))
 
