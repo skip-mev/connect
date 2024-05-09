@@ -29,9 +29,9 @@ func TestMultiClient(t *testing.T) {
 		{
 			name: "no elems, no-ops",
 			client: ethmulticlient.NewMultiRPCClient(
+				logger,
 				[]ethmulticlient.EVMClient{},
 				[]config.Endpoint{},
-				logger,
 			),
 			args: []rpc.BatchElem{},
 			err:  nil,

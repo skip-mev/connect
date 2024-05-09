@@ -15,6 +15,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -51,18 +52,21 @@ type APIPriceFetcher struct {
 // NewAPIPriceFetcher returns a new APIPriceFetcher. This method constructs the
 // default solana JSON-RPC client in accordance with the config's URL param.
 func NewAPIPriceFetcher(
-	config config.APIConfig,
 	logger *zap.Logger,
+	config config.APIConfig,
+	rpcMetrics metrics.APIMetrics,
 	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	// use a multi-client if multiple endpoints are provided
 	if len(config.Endpoints) > 0 {
 		if len(config.Endpoints) > 1 {
 			client, err := NewMultiJSONRPCClientFromEndpoints(
-				config.Endpoints,
-				logger.With(zap.String("raydium_multi_client", Name)),
+				logger.With(zap.String("multi_client", Name)),
+				config,
+				rpcMetrics,
 			)
 			if err != nil {
+				logger.Error("error creating multi-client", zap.Error(err))
 				return nil, fmt.Errorf("error creating multi-client: %w", err)
 			}
 
@@ -75,9 +79,9 @@ func NewAPIPriceFetcher(
 	}
 
 	return NewAPIPriceFetcherWithClient(
+		logger,
 		config,
 		rpc.New(config.URL),
-		logger,
 		opts...,
 	)
 }
@@ -86,9 +90,9 @@ func NewAPIPriceFetcher(
 // that the given market + config are valid, otherwise a nil implementation + an error
 // will be returned.
 func NewAPIPriceFetcherWithClient(
+	logger *zap.Logger,
 	config config.APIConfig,
 	client SolanaJSONRPCClient,
-	logger *zap.Logger,
 	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	if err := config.ValidateBasic(); err != nil {
@@ -109,7 +113,7 @@ func NewAPIPriceFetcherWithClient(
 		config:            config,
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
-		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
+		logger:            logger.With(zap.String("price_fetcher", Name)),
 	}
 
 	for _, opt := range opts {

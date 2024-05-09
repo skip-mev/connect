@@ -28,7 +28,7 @@ type APIMetrics interface {
 
 	// AddRPCStatusCode increments the number of responses by provider and status for RPC requests.
 	// This includes gRPC and JSON-RPC.
-	AddRPCStatusCode(providerName string, code RPCCode)
+	AddRPCStatusCode(providerName, endpoint string, code RPCCode)
 
 	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
@@ -76,7 +76,7 @@ func NewAPIMetrics() APIMetrics {
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_rpc_status_code",
 			Help:      "Number of API provider responses by status code.",
-		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel, EndpointLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_latency",
@@ -102,7 +102,7 @@ func NewNopAPIMetrics() APIMetrics {
 
 func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode) {}
 func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)                      {}
-func (m *noOpAPIMetricsImpl) AddRPCStatusCode(_ string, _ RPCCode)                              {}
+func (m *noOpAPIMetricsImpl) AddRPCStatusCode(_, _ string, _ RPCCode)                           {}
 func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration)          {}
 
 // AddProviderResponse increments the number of requests by provider and status.
@@ -153,10 +153,11 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 }
 
 // AddRPCStatusCode increments the rpc status code by provider and response.
-func (m *APIMetricsImpl) AddRPCStatusCode(providerName string, code RPCCode) {
+func (m *APIMetricsImpl) AddRPCStatusCode(providerName, endpoint string, code RPCCode) {
 	m.apiRPCStatusCodePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
 		StatusCodeLabel:               string(code),
+		EndpointLabel:                 endpoint,
 	}).Add(1)
 }
 

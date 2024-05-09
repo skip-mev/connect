@@ -7,6 +7,9 @@ const (
 	StatusCodeLabel = "status_code"
 	// StatusCodeExactLabel is a label for the exact status code of a provider API response.
 	StatusCodeExactLabel = "status_code_exact"
+	// EndpointLabel is a label for the endpoint of a provider API response. This is
+	// particularly useful for provider's with multiple clients.
+	EndpointLabel = "endpoint"
 )
 
 type (
@@ -16,7 +19,7 @@ type (
 
 const (
 	// RPCCodeOK is the status code for a successful RPC request.
-	RPCCodeOK RPCCode = "OK"
+	RPCCodeOK RPCCode = "ok"
 	// RPCCodeError is the status code for a failed RPC request.
-	RPCCodeError RPCCode = "ERROR"
+	RPCCodeError RPCCode = "request_error"
 )

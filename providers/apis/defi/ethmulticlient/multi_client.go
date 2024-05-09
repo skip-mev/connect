@@ -9,32 +9,52 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 // MultiRPCClient implements the EVMClient interface by calling multiple underlying EVMClients and choosing
 // the best response.
 type MultiRPCClient struct {
-	clients   []EVMClient
-	endpoints []config.Endpoint
-	logger    *zap.Logger
+	logger     *zap.Logger
+	config     config.APIConfig
+	rpcMetrics metrics.APIMetrics
+
+	// underlying clients
+	clients []EVMClient
 }
 
 // NewMultiRPCClient returns a new MultiRPCClient.
-func NewMultiRPCClient(clients []EVMClient, endpoints []config.Endpoint, logger *zap.Logger) *MultiRPCClient {
+func NewMultiRPCClient(
+	logger *zap.Logger,
+	config config.APIConfig,
+	rpcMetrics metrics.APIMetrics,
+	clients []EVMClient,
+) *MultiRPCClient {
 	return &MultiRPCClient{
-		clients:   clients,
-		endpoints: endpoints,
-		logger:    logger,
+		logger:     logger,
+		config:     config,
+		rpcMetrics: rpcMetrics,
+		clients:    clients,
 	}
 }
 
 // NewMultiRPCClientFromEndpoints creates a MultiRPCClient from config endpoints.
-func NewMultiRPCClientFromEndpoints(ctx context.Context, logger *zap.Logger, endpoints []config.Endpoint) (*MultiRPCClient, error) {
+func NewMultiRPCClientFromEndpoints(
+	ctx context.Context,
+	logger *zap.Logger,
+	config config.APIConfig,
+	rpcMetrics metrics.APIMetrics,
+) (*MultiRPCClient, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
-	clients := make([]EVMClient, len(endpoints))
-	for i, endpoint := range endpoints {
+
+	if len(config.Endpoints) == 0 {
+		return nil, fmt.Errorf("no endpoints provided")
+	}
+
+	clients := make([]EVMClient, len(config.Endpoints))
+	for i, endpoint := range config.Endpoints {
 		var err error
 		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, endpoint)
 		if err != nil {
@@ -45,7 +65,12 @@ func NewMultiRPCClientFromEndpoints(ctx context.Context, logger *zap.Logger, end
 			return nil, fmt.Errorf("failed to create eth client from endpoint: %w", err)
 		}
 	}
-	return NewMultiRPCClient(clients, endpoints, logger), nil
+	return NewMultiRPCClient(
+		logger,
+		config,
+		rpcMetrics,
+		clients,
+	), nil
 }
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
@@ -56,13 +81,18 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug("BatchCallContext called with 0 elems")
 		return nil
 	}
-	var maxHeight uint64
+
 	req := make([]rpc.BatchElem, len(batchElems)+1)
 	copy(req, batchElems)
 	blockNumReqIndex := len(batchElems)
 	req[blockNumReqIndex] = EthBlockNumberBatchElem()
 	errs := fmt.Errorf("all eth client requests failed")
+
+	// TODO(david): consider parallelizing these requests.
+	var maxHeight uint64
 	for i, client := range m.clients {
+		url := m.config.Endpoints[i].URL
+
 		err := client.BatchCallContext(ctx, req)
 		if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
 			errs = fmt.Errorf("%w: endpoint request failed: %w, %w", errs, err, req[blockNumReqIndex].Error)
@@ -72,8 +102,21 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				zap.Any("result", req[blockNumReqIndex].Result),
 				zap.Error(req[blockNumReqIndex].Error),
 			)
+			m.rpcMetrics.AddRPCStatusCode(
+				m.config.Name,
+				url,
+				metrics.RPCCodeError,
+			)
+
 			continue
 		}
+
+		m.rpcMetrics.AddRPCStatusCode(
+			m.config.Name,
+			url,
+			metrics.RPCCodeOK,
+		)
+
 		r, ok := req[blockNumReqIndex].Result.(*string)
 		if !ok {
 			errs = fmt.Errorf("%w: result from eth_blockNumber was not a string", errs)
@@ -82,6 +125,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			)
 			continue
 		}
+
 		newHeight, err := hexutil.DecodeUint64(*r)
 		if err != nil {
 			errs = fmt.Errorf("%w: could not decode hex eth height: %w", errs, err)
@@ -94,7 +138,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug(
 			"got height for eth batch request",
 			zap.Uint64("height", newHeight),
-			zap.String("endpoint", m.endpoints[i].URL))
+			zap.String("endpoint", url),
+		)
 
 		if newHeight > maxHeight {
 			m.logger.Debug("new max eth height seen",

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 
 	"github.com/ethereum/go-ethereum/rpc"
 )
@@ -23,20 +24,47 @@ var _ EVMClient = (*GoEthereumClientImpl)(nil)
 // GoEthereumClientImpl is a go-ethereum client implementation using the go-ethereum RPC
 // library.
 type GoEthereumClientImpl struct {
+	rpcMetrics metrics.APIMetrics
+	api        config.APIConfig
+
+	// client is the underlying rpc client.
 	client *rpc.Client
 }
 
 // NewGoEthereumClientImplFromURL returns a new go-ethereum client. This is the default
 // implementation that connects to an ethereum node via rpc.
-func NewGoEthereumClientImplFromURL(ctx context.Context, api config.APIConfig) (EVMClient, error) {
-	return rpc.DialOptions(ctx, api.URL)
+func NewGoEthereumClientImplFromURL(
+	ctx context.Context,
+	rpcMetrics metrics.APIMetrics,
+	api config.APIConfig,
+) (EVMClient, error) {
+	client, err := rpc.DialOptions(ctx, api.URL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
+	}
+
+	return &GoEthereumClientImpl{
+		rpcMetrics: rpcMetrics,
+		api:        api,
+		client:     client,
+	}, nil
 }
 
 // NewGoEthereumClientImplFromEndpoint creates an EVMClient via a config.Endpoint. This includes optional
 // authentication via a specified http header key and value.
-func NewGoEthereumClientImplFromEndpoint(ctx context.Context, endpoint config.Endpoint) (EVMClient, error) {
+func NewGoEthereumClientImplFromEndpoint(
+	ctx context.Context,
+	rpcMetrics metrics.APIMetrics,
+	api config.APIConfig,
+) (EVMClient, error) {
 	var opts []rpc.ClientOption
+
+	if len(api.Endpoints) != 1 {
+		return nil, fmt.Errorf("no endpoints provided to create go-ethereum client")
+	}
+
 	// fail if we have an invalid endpoint
+	endpoint := api.Endpoints[0]
 	if err := endpoint.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
 	}
@@ -46,7 +74,17 @@ func NewGoEthereumClientImplFromEndpoint(ctx context.Context, endpoint config.En
 			return nil
 		}))
 	}
-	return rpc.DialOptions(ctx, endpoint.URL, opts...)
+
+	client, err := rpc.DialOptions(ctx, endpoint.URL, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
+	}
+
+	return &GoEthereumClientImpl{
+		rpcMetrics: rpcMetrics,
+		api:        api,
+		client:     client,
+	}, nil
 }
 
 // BatchCallContext sends all given requests as a single batch and waits for the server
@@ -58,5 +96,9 @@ func NewGoEthereumClientImplFromEndpoint(ctx context.Context, endpoint config.En
 //
 // Note that batch calls may not be executed atomically on the server side.
 func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
-	return c.client.BatchCallContext(ctx, calls)
+	if err := c.client.BatchCallContext(ctx, calls); err != nil {
+		return fmt.Errorf("failed to batch call: %w", err)
+	}
+
+	return nil
 }

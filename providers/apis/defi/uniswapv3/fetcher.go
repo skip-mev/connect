@@ -18,6 +18,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	uniswappool "github.com/skip-mev/slinky/providers/apis/defi/uniswapv3/pool"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -54,6 +55,7 @@ type PriceFetcher struct {
 func NewPriceFetcher(
 	ctx context.Context,
 	logger *zap.Logger,
+	rpcMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (*PriceFetcher, error) {
 	if err := api.ValidateBasic(); err != nil {
@@ -78,8 +80,9 @@ func NewPriceFetcher(
 	if len(api.Endpoints) > 0 {
 		client, err = ethmulticlient.NewMultiRPCClientFromEndpoints(
 			ctx,
-			logger.With(zap.String("eth_multi_client", api.Name)),
-			api.Endpoints,
+			logger.With(zap.String("multi_client", api.Name)),
+			api,
+			rpcMetrics,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error creating multi-client: %w", err)
@@ -111,7 +114,7 @@ func NewPriceFetcherWithClient(
 	}
 
 	return &PriceFetcher{
-		logger:    logger,
+		logger:    logger.With(zap.String("price_fetcher", api.Name)),
 		api:       api,
 		client:    client,
 		abi:       abi,

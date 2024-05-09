@@ -11,40 +11,59 @@ import (
 	"github.com/gagliardetto/solana-go/rpc/jsonrpc"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 // MultiJSONRPCClient is an implementation of the SolanaJSONRPCClient interface that delegates
 // requests to multiple underlying clients, and aggregates over all provided responses.
 type MultiJSONRPCClient struct {
+	logger     *zap.Logger
+	config     config.APIConfig
+	rpcMetrics metrics.APIMetrics
+
 	// underlying clients
 	clients []SolanaJSONRPCClient
-
-	// logger
-	logger *zap.Logger
 }
 
-func NewMultiJSONRPCClient(clients []SolanaJSONRPCClient, logger *zap.Logger) *MultiJSONRPCClient {
+func NewMultiJSONRPCClient(
+	logger *zap.Logger,
+	config config.APIConfig,
+	rpcMetrics metrics.APIMetrics,
+	clients []SolanaJSONRPCClient,
+) *MultiJSONRPCClient {
 	return &MultiJSONRPCClient{
-		clients: clients,
-		logger:  logger,
+		logger:     logger,
+		config:     config,
+		rpcMetrics: rpcMetrics,
+		clients:    clients,
 	}
 }
 
 // NewMultiJSONRPCClientFromEndpoints creates a new MultiJSONRPCClient from a list of endpoints.
-func NewMultiJSONRPCClientFromEndpoints(endpoints []oracleconfig.Endpoint, logger *zap.Logger) (*MultiJSONRPCClient, error) {
-	clients := make([]SolanaJSONRPCClient, len(endpoints))
+func NewMultiJSONRPCClientFromEndpoints(
+	logger *zap.Logger,
+	config config.APIConfig,
+	rpcMetrics metrics.APIMetrics,
+) (*MultiJSONRPCClient, error) {
+	clients := make([]SolanaJSONRPCClient, len(config.Endpoints))
 
 	var err error
-	for i := range endpoints {
-		clients[i], err = solanaClientFromEndpoint(endpoints[i])
+	for i := range config.Endpoints {
+		clients[i], err = solanaClientFromEndpoint(config.Endpoints[i])
 		if err != nil {
 			return nil, fmt.Errorf("failed to create solana client from endpoint: %w", err)
 		}
 	}
 
-	return NewMultiJSONRPCClient(clients, logger), nil
+	return NewMultiJSONRPCClient(
+		logger,
+		config,
+		rpcMetrics,
+		clients,
+	), nil
 }
 
 // solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
@@ -88,12 +107,31 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	for i := range c.clients {
 		go func(client SolanaJSONRPCClient) {
 			defer wg.Done()
+			url := c.config.Endpoints[i].URL
+
 			resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 			if err != nil {
-				c.logger.Error("failed to fetch accounts", zap.Error(err))
+				c.rpcMetrics.AddRPCStatusCode(
+					c.config.Name,
+					url,
+					metrics.RPCCodeError,
+				)
+
+				c.logger.Error(
+					"failed to fetch accounts",
+					zap.String("url", url),
+					zap.Error(err),
+				)
 				return
 			}
+
+			c.rpcMetrics.AddRPCStatusCode(
+				c.config.Name,
+				url,
+				metrics.RPCCodeOK,
+			)
 			responsesCh <- resp
+			c.logger.Debug("successfully fetched accounts", zap.String("url", url))
 		}(c.clients[i])
 	}
 
