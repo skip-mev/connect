@@ -2,6 +2,7 @@ package upgrades
 
 import (
 	"context"
+
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
