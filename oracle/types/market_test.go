@@ -26,15 +26,24 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 			err:      false,
 		},
 		{
-			name:     "invalid market map",
+			name:     "single disabled market",
 			provider: "test",
 			market: mmtypes.MarketMap{
 				Markets: map[string]mmtypes.Market{
-					"test": {},
+					"BTC/USD": {
+						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1, false),
+						ProviderConfigs: []mmtypes.ProviderConfig{
+							{
+								Name:           "test",
+								OffChainTicker: "BTC/USDT",
+								Metadata_JSON:  "{}",
+							},
+						},
+					},
 				},
 			},
-			expected: nil,
-			err:      true,
+			expected: []types.ProviderTicker{},
+			err:      false,
 		},
 		{
 			name:     "single market for the provider",
@@ -42,7 +51,7 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 			market: mmtypes.MarketMap{
 				Markets: map[string]mmtypes.Market{
 					"BTC/USD": {
-						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1),
+						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1, true),
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "test",
@@ -67,7 +76,7 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 			market: mmtypes.MarketMap{
 				Markets: map[string]mmtypes.Market{
 					"BTC/USD": {
-						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1),
+						Ticker: mmtypes.NewTicker("BTC", "USD", 8, 1, true),
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "other",
@@ -87,7 +96,7 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 			market: mmtypes.MarketMap{
 				Markets: map[string]mmtypes.Market{
 					"ETH/USD": {
-						Ticker: mmtypes.NewTicker("ETH", "USD", 8, 1),
+						Ticker: mmtypes.NewTicker("ETH", "USD", 8, 1, true),
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "test",
@@ -101,7 +110,7 @@ func TestProviderTickersFromMarketMap(t *testing.T) {
 						},
 					},
 					"USDT/USD": {
-						Ticker: mmtypes.NewTicker("USDT", "USD", 8, 1),
+						Ticker: mmtypes.NewTicker("USDT", "USD", 8, 1, true),
 						ProviderConfigs: []mmtypes.ProviderConfig{
 							{
 								Name:           "test",

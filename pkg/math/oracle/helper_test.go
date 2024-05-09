@@ -17,30 +17,34 @@ var (
 		CurrencyPair:     constants.BITCOIN_USD,
 		Decimals:         8,
 		MinProviderCount: 3,
+		Enabled:          true,
 	}
 
 	ETH_USD = mmtypes.Ticker{
 		CurrencyPair:     constants.ETHEREUM_USD,
 		Decimals:         11,
 		MinProviderCount: 3,
+		Enabled:          true,
 	}
 
 	USDT_USD = mmtypes.Ticker{
 		CurrencyPair:     constants.USDT_USD,
 		Decimals:         6,
 		MinProviderCount: 2,
+		Enabled:          true,
 	}
 
 	PEPE_USD = mmtypes.Ticker{
 		CurrencyPair:     constants.PEPE_USD,
 		Decimals:         18,
 		MinProviderCount: 1,
+		Enabled:          true,
 	}
 
 	logger = zap.NewExample()
 
 	// Marketmap is a test market map that contains a set of tickers, providers, and paths.
-	// In particular all of the paths correspond to the desired "index prices" i.e. the
+	// In particular, all paths correspond to the desired "index prices" i.e. the
 	// prices we actually want to resolve to.
 	marketmap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{

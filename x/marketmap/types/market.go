@@ -6,11 +6,12 @@ import (
 
 // ValidateBasic validates the market map configuration and its expected configuration.
 //
-//	In particular, this will
+//		In particular, this will
 //
-//	1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
-//	   markets are supported by the market map.
-//	2. Ensure that each provider config has a valid corresponding ticker.
+//		1. Ensure that the market map is valid (ValidateBasic). This ensures that each of the provider's
+//		   markets are supported by the market map.
+//		2. Ensure that each provider config has a valid corresponding ticker.
+//	 	3. Ensure that all normalization markets are enabled.
 func (mm *MarketMap) ValidateBasic() error {
 	for _, market := range mm.Markets {
 		if err := market.ValidateBasic(); err != nil {
@@ -19,8 +20,13 @@ func (mm *MarketMap) ValidateBasic() error {
 
 		for _, providerConfig := range market.ProviderConfigs {
 			if providerConfig.NormalizeByPair != nil {
-				if _, found := mm.Markets[providerConfig.NormalizeByPair.String()]; !found {
+				normalizeMarket, found := mm.Markets[providerConfig.NormalizeByPair.String()]
+				if !found {
 					return fmt.Errorf("provider's (%s) pair for normalization (%s) was not found in the marketmap", providerConfig.Name, providerConfig.NormalizeByPair.String())
+				}
+
+				if !normalizeMarket.Ticker.Enabled && market.Ticker.Enabled {
+					return fmt.Errorf("enabled market %s cannot have use a normalization market %s that is disabled", market.Ticker.String(), normalizeMarket.Ticker.String())
 				}
 			}
 		}
