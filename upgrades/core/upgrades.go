@@ -32,6 +32,18 @@ func NewInitializeUpgrade(params marketmaptypes.Params, markets marketmaptypes.M
 	}
 }
 
+func NewDefaultInitializeUpgrade(params marketmaptypes.Params) *InitializeUpgrade {
+	markets, err := marketmaptypes.ReadMarketsFromFile("markets.json")
+	if err != nil {
+		panic("could not load markets.json: " + err.Error())
+	}
+
+	return &InitializeUpgrade{
+		params:  params,
+		markets: markets,
+	}
+}
+
 func (i *InitializeUpgrade) CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

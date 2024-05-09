@@ -50,7 +50,7 @@ func (s *UpgradeTestSuite) TestSlinkyCoreUpgrade() {
 	s.Require().NoError(err)
 	marketMap := markets.ToMarketMap()
 
-	initializeUpgrade := core.NewInitializeUpgrade(marketmaptypes.DefaultParams(), markets)
+	initializeUpgrade := core.NewDefaultInitializeUpgrade(marketmaptypes.DefaultParams())
 
 	app.UpgradeKeeper.SetUpgradeHandler(core.Name, initializeUpgrade.CreateUpgradeHandler(
 		app.ModuleManager,
