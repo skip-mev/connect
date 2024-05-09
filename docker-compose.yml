@@ -28,7 +28,7 @@ services:
   prometheus:
     image: prom/prometheus
     ports:
-      - "9091:9090"
+      - "9090:9090"
     volumes:
       - ./contrib/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
@@ -49,7 +49,6 @@ services:
       - "1317:1317" # used to query the blockchain
       - "7171:7171"
       - "26655:26655"
-      - "9090:9090" # gRPC port
     networks:
       - oracle_network
 
