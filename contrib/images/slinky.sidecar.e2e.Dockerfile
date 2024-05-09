@@ -10,10 +10,8 @@ COPY . .
 RUN make build
 RUN make update-local-configs
 
-
 FROM ubuntu:rolling
 EXPOSE 8080 8002
-
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
 COPY --from=builder /src/slinky/config/local /etc/slinky/default_config

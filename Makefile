@@ -27,6 +27,7 @@ SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
 ORACLE_GROUP ?= core
 GENESIS_MARKETS ?=  $(CONFIG_DIR)/$(ORACLE_GROUP)/market.json
 MARKETS := $(shell cat ${GENESIS_MARKETS})
+DEV_COMPOSE := $(CURDIR)/contrib/docker-compose.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
@@ -63,30 +64,30 @@ update-local-configs: build
 	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_ORACLE_CONFIG_FILE} --node-http-url=localhost:1317 --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_RESEARCH_ORACLE_CONFIG_FILE} --dydx-research-json-market-map=true --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
-start-all:
-	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
+start-all-dev:
+	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
-start-all-%:
-	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
+start-all-%-dev:
+	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
-stop-all:
-	@echo "Stopping network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml down
+stop-all-dev:
+	@echo "Stopping development network..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 
-start-sidecar:
-	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
+start-sidecar-dev:
+	@echo "Starting development oracle side-car, grafana, and prometheus dashboard..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
 
-start-sidecar-%:
-	@echo "Starting oracle side-car, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
+start-sidecar-%-dev:
+	@echo "Starting development oracle side-car, grafana, and prometheus dashboard for $*..."
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
 
-stop-sidecar:
-	@echo "Stopping network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml down
+stop-sidecar-dev:
+	@echo "Stopping development network..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 install: tidy
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky

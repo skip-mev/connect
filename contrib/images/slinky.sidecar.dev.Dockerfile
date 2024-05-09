@@ -16,4 +16,4 @@ COPY --from=builder /src/slinky/build/* /usr/local/bin/
 RUN apt-get update && apt-get install ca-certificates -y
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT ["slinky", "--oracle-config-path", "/oracle/oracle.json", "--update-market-config-path", "/oracle/market.json"]
+ENTRYPOINT ["slinky", "--oracle-config-path", "/oracle/oracle.json", "--update-market-config-path", "/oracle/market.json", "--market-map-endpoint", "blockchain:9090"]
