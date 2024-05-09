@@ -3,9 +3,11 @@ package core
 import (
 	"context"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"github.com/skip-mev/slinky/upgrades"
 	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
 	marketmaptypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -33,12 +35,18 @@ func NewInitializeUpgrade(params marketmaptypes.Params, markets marketmaptypes.M
 func (i *InitializeUpgrade) CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
-	_ *oraclekeeper.Keeper,
+	oracleKeeper *oraclekeeper.Keeper,
 	marketMapKeeper *marketmapkeeper.Keeper,
 	_ codec.Codec,
 	handler upgradetypes.UpgradeHandler,
 ) upgradetypes.UpgradeHandler {
-	if oraclekeeper == nil
+	if oracleKeeper == nil {
+		panic("oracle keeper is required")
+	}
+
+	if marketMapKeeper == nil {
+		panic("marketmap keeper is required")
+	}
 
 	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx := sdk.UnwrapSDKContext(c)
@@ -50,13 +58,13 @@ func (i *InitializeUpgrade) CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info("Setting marketmap params...")
-		err = setMarketMapParams(ctx, marketMapKeeper, marketmaptypes.DefaultParams())
+		err = setMarketMapParams(ctx, marketMapKeeper, i.params)
 		if err != nil {
 			return nil, err
 		}
 
 		ctx.Logger().Info("Setting marketmap and oracle state...")
-		err = setMarketState(ctx, marketMapKeeper)
+		err = setMarketState(ctx, marketMapKeeper, i.markets)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +89,7 @@ func setMarketState(ctx sdk.Context, mmKeeper *marketmapkeeper.Keeper, markets m
 	//}
 
 	for _, market := range markets {
-		err = mmKeeper.CreateMarket(ctx, market)
+		err := mmKeeper.CreateMarket(ctx, market)
 		if err != nil {
 			return err
 		}
