@@ -27,7 +27,7 @@ SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
 ORACLE_GROUP ?= core
 GENESIS_MARKETS ?=  $(CONFIG_DIR)/$(ORACLE_GROUP)/market.json
 MARKETS := $(shell cat ${GENESIS_MARKETS})
-DEV_COMPOSE := $(CURDIR)/contrib/docker-compose.yml
+DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
