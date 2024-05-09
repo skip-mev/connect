@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
- set -eoux pipefail
+set -eux
 
  NUM_MARKETS=$(echo "$MARKETS" | jq '.markets | length + 1')
 
