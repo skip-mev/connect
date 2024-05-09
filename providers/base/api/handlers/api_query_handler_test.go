@@ -705,11 +705,11 @@ func TestAPIQueryHandlerWithBatchSize(t *testing.T) {
 		done := make(chan struct{})
 		go func() {
 			handler.Query(ctx, []mmtypes.Ticker{
-				mmtypes.NewTicker("BTC", "USD", 8, 0),
-				mmtypes.NewTicker("BTC1", "USD", 8, 0),
-				mmtypes.NewTicker("BTC2", "USD", 8, 0),
-				mmtypes.NewTicker("BTC3", "USD", 8, 0),
-				mmtypes.NewTicker("BTC4", "USD", 8, 0),
+				mmtypes.NewTicker("BTC", "USD", 8, 0, true),
+				mmtypes.NewTicker("BTC1", "USD", 8, 0, true),
+				mmtypes.NewTicker("BTC2", "USD", 8, 0, true),
+				mmtypes.NewTicker("BTC3", "USD", 8, 0, true),
+				mmtypes.NewTicker("BTC4", "USD", 8, 0, true),
 			}, responseCh)
 			close(done)
 		}()
