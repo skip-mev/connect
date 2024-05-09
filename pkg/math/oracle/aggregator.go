@@ -46,10 +46,6 @@ func NewIndexPriceAggregator(
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
 
-	if err := cfg.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
 	if metrics == nil {
 		logger.Warn("metrics is nil; using a no-op metrics implementation")
 		metrics = oraclemetrics.NewNopMetrics()
@@ -82,6 +78,11 @@ func (m *IndexPriceAggregator) AggregatePrices() {
 	scaledPrices := make(types.Prices)
 
 	for ticker, market := range m.cfg.Markets {
+		if !market.Ticker.Enabled {
+			m.logger.Debug("skipping disabled market", zap.Any("market", market))
+			continue
+		}
+
 		// Get the converted prices for set of convertible markets.
 		// ex. BTC/USDT * Index USDT/USD = BTC/USD
 		//     BTC/USDC * Index USDC/USD = BTC/USD
