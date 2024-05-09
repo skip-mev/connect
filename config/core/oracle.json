@@ -427,7 +427,7 @@
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
-        "url": "blockchain:9090",
+        "url": "0.0.0.0:9090",
         "endpoints": null,
         "batchSize": 0,
         "name": "marketmap_api"

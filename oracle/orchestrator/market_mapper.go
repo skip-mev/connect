@@ -35,8 +35,6 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
-			o.logger.Info("market map provider received update")
-
 			result, ok := response[chain]
 			if !ok {
 				o.logger.Debug("market map provider response missing chain", zap.Any("chain", chain))
