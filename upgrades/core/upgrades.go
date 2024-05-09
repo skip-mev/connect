@@ -16,7 +16,7 @@ import (
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 )
 
-const Name = "initialize slinky state"
+const InitializationName = "initialize slinky state"
 
 var _ upgrades.Upgrade = &InitializeUpgrade{}
 
@@ -81,7 +81,7 @@ func (i *InitializeUpgrade) CreateUpgradeHandler(
 			return nil, err
 		}
 
-		ctx.Logger().Info(fmt.Sprintf("Migration {%s} applied", Name))
+		ctx.Logger().Info(fmt.Sprintf("Migration {%s} applied", InitializationName))
 		return handler(c, plan, vm)
 	}
 }

@@ -52,7 +52,7 @@ func (s *UpgradeTestSuite) TestSlinkyCoreUpgrade() {
 
 	initializeUpgrade := core.NewDefaultInitializeUpgrade(marketmaptypes.DefaultParams())
 
-	app.UpgradeKeeper.SetUpgradeHandler(core.Name, initializeUpgrade.CreateUpgradeHandler(
+	app.UpgradeKeeper.SetUpgradeHandler(core.InitializationName, initializeUpgrade.CreateUpgradeHandler(
 		app.ModuleManager,
 		app.Configurator(),
 		app.OracleKeeper,
@@ -62,7 +62,7 @@ func (s *UpgradeTestSuite) TestSlinkyCoreUpgrade() {
 	))
 
 	upgrade := upgradetypes.Plan{
-		Name:   core.Name,
+		Name:   core.InitializationName,
 		Info:   "some text here",
 		Height: 100,
 	}

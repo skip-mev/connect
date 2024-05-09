@@ -11,10 +11,7 @@ import (
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )
 
-// Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal
-// must have written, in order for the state migration to go smoothly.
-// An upgrade must implement this struct, and then set it in the app.go.
-// The app.go will then define the handler.
+// Upgrade defines an interface for a Slinky Upgrade.
 type Upgrade interface {
 	// CreateUpgradeHandler defines the function that creates an upgrade handler that wraps the provided handler.
 	CreateUpgradeHandler(
