@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	"math/big"
 	"os"
 	"time"
@@ -57,6 +58,13 @@ func DefaultOracleConfig() oracleconfig.OracleConfig {
 		MaxPriceAge:    1 * time.Minute,
 		Host:           "0.0.0.0",
 		Port:           "8080",
+		Providers: []oracleconfig.ProviderConfig{
+			{
+				Name: "marketmap_api",
+				API:  marketmap.DefaultAPIConfig,
+				Type: "market_map_provider",
+			},
+		},
 	}
 
 	return oracleConfig
@@ -239,10 +247,9 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		ethusdc,
 	}...))
 
-	cc, close, err := GetChainGRPC(s.chain)
+	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
-
-	defer close()
+	defer closeFn()
 
 	id, err := getIDForCurrencyPair(context.Background(), oracletypes.NewQueryClient(cc), ethusdc)
 	s.Require().NoError(err)
@@ -461,10 +468,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
 
-	cc, close, err := GetChainGRPC(s.chain)
+	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)
-
-	defer close()
+	defer closeFn()
 
 	// get the currency pair ids
 	ctx := context.Background()
