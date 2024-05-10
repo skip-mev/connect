@@ -14,7 +14,6 @@ import (
 
 	"github.com/skip-mev/slinky/providers/static"
 
-	"cosmossdk.io/math"
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/rand"
@@ -560,18 +559,4 @@ func (vv validatorVotes) Less(i, j int) bool {
 
 	// break ties by the sum of the prices for each validator
 	return iTotalPrice < jTotalPrice
-}
-
-// UpdateMarketMapParams creates + submits the proposal to update the marketmap params, votes for the prop w/ all nodes,
-// and waits for the proposal to pass.
-func UpdateMarketMapParams(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, params mmtypes.Params) (string, error) {
-	propId, err := SubmitProposal(chain, sdk.NewCoin(denom, math.NewInt(deposit)), user.KeyName(), []sdk.Msg{&mmtypes.MsgParams{
-		Authority: authority,
-		Params:    params,
-	}}...)
-	if err != nil {
-		return "", err
-	}
-
-	return propId, PassProposal(chain, propId, timeout)
 }

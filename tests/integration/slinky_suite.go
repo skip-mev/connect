@@ -2,12 +2,14 @@ package integration
 
 import (
 	"context"
+	"encoding/hex"
 	"math/big"
 	"os"
 	"time"
 
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -34,6 +36,8 @@ const (
 	validatorKey  = "validator"
 	yes           = "yes"
 	deposit       = 1000000
+	userMnemonic = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
+	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
 )
 
 func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
@@ -171,13 +175,44 @@ func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.D
 }
 
 func (s *SlinkyIntegrationSuite) SetupSuite() {
-	// create the chain
-	chains := s.cc(s.T(), s.spec)
-	s.chain = chains[0]
+	// update market-map params to add the user as the market-authority
+	accountAddressBz, err := hex.DecodeString(userAccountAddressHex)
+	if err != nil {
+		panic(err)
+	}
+	accountAddress, err := bech32.ConvertAndEncode(s.spec.ChainConfig.Bech32Prefix, accountAddressBz)
+	if err != nil {
+		panic(err)
+	}
+	existingGenesisModifier := s.spec.ChainConfig.ModifyGenesis
+	s.spec.ChainConfig.ModifyGenesis = func(cc ibc.ChainConfig, genesisBz []byte) ([]byte, error) {
+		genesisBz, err := cosmos.ModifyGenesis([]cosmos.GenesisKV{
+			cosmos.NewGenesisKV(
+				"app_state.marketmap.params.admin",
+				accountAddress,
+			),
+			cosmos.NewGenesisKV(
+				"app_state.marketmap.params.market_authorities.0",
+				accountAddress,
+			),
+		})(cc, genesisBz)
+		if err != nil {
+			return nil, err
+		}
 
-	s.chain.WithPreStartNodes(func(c *cosmos.CosmosChain) {
+		return existingGenesisModifier(cc, genesisBz)
+	}
+
+	chains := s.cc(s.T(), s.spec)
+
+	if len(chains) < 1 {
+		panic("no chains created")
+	}
+
+	chains[0].WithPreStartNodes(func(c *cosmos.CosmosChain) {
 		// for each node in the chain, set the sidecars
 		for i := range c.Nodes() {
+			s.T().Logf("adding sidecar to node %d\n\n\n", i)
 			// pin
 			node := c.Nodes()[i]
 			// add sidecars to node
@@ -196,14 +231,9 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 
 	// start the chain
 	s.ic(context.Background(), s.T(), chains)
-	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), math.NewInt(genesisAmount), s.chain)
-	s.user = users[0]
-
-	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
-		MarketAuthorities: []string{s.user.FormattedAddress()},
-		Admin:             s.user.FormattedAddress(),
-	})
-	s.Require().NoError(err, resp)
+	s.chain = chains[0]
+	s.user, err = interchaintest.GetAndFundTestUserWithMnemonic(context.Background(), s.T().Name(), userMnemonic, math.NewInt(genesisAmount), s.chain)
+	s.Require().NoError(err)
 }
 
 func (s *SlinkyIntegrationSuite) TearDownSuite() {
