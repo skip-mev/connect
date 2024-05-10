@@ -542,7 +542,9 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		StopOracle(node)
 
 		oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
-		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
+
+		// set only a provider (no marketmap)
+		oracleConfig.Providers = []oracleconfig.ProviderConfig{{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
 				Enabled:          true,
@@ -555,7 +557,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Name:             static.Name,
 			},
 			Type: types.ConfigType,
-		})
+		}}
 
 		oracle := GetOracleSideCar(node)
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
@@ -564,10 +566,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 
 		height, err := ExpectVoteExtensions(s.chain, s.blockTime*3, []slinkyabci.OracleVoteExtension{
 			{
-				Prices: map[uint64][]byte{
-					id1: zeroBz,
-					id2: zeroBz,
-				},
+				Prices: map[uint64][]byte{},
 			},
 			{
 				Prices: map[uint64][]byte{
