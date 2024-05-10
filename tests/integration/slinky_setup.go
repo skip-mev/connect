@@ -169,7 +169,6 @@ func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *int
 func SetOracleConfigsOnOracle(
 	oracle *cosmos.SidecarProcess,
 	oracleCfg oracleconfig.OracleConfig,
-	marketCfg mmtypes.MarketMap,
 ) {
 	// marshal the oracle config
 	bz, err := json.Marshal(oracleCfg)
@@ -179,18 +178,6 @@ func SetOracleConfigsOnOracle(
 
 	// write the oracle config to the node
 	err = oracle.WriteFile(context.Background(), bz, oracleConfigPath)
-	if err != nil {
-		panic(err)
-	}
-
-	// marshal the market map config
-	bz, err = json.Marshal(marketCfg)
-	if err != nil {
-		panic(err)
-	}
-
-	// write the market map config to the node
-	err = oracle.WriteFile(context.Background(), bz, marketMapPath)
 	if err != nil {
 		panic(err)
 	}
