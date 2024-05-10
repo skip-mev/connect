@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
