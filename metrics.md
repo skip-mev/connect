@@ -25,9 +25,9 @@ The slinky repo contains a sidecar Grafana dashboard that can be utilized across
 
 ## Set Up
 
-To set up the sidecar Grafana dashboard, you will need to import the [`side-car-dashboard.json`](./grafana/provisioning/dashboards/side-car-dashboard.json) file. This file contains the JSON representation of the dashboard. You can import the dashboard by following these steps:
+To set up the sidecar Grafana dashboard, you will need to import the [`side-car-dashboard.json`](grafana/provisioning/dashboards/side-car-dashboard.json) file. This file contains the JSON representation of the dashboard. You can import the dashboard by following these steps:
 
-1. Add the side car prometheus data source to your Grafana instance. This can be done by adding a new data source in your datasources directory. An example can be found [here](./grafana/provisioning/datasources/prometheus.yml). Note that the `url` field should be the URL of your sidecar Prometheus instance.
+1. Add the side car prometheus data source to your Grafana instance. This can be done by adding a new data source in your datasources directory. An example can be found [here](grafana/provisioning/datasources/prometheus.yml). Note that the `url` field should be the URL of your sidecar Prometheus instance.
 2. Log in to your Grafana instance.
 3. Click on the "+" icon in the sidebar and select "Import".
 4. Click on "Upload JSON file" and select the `side-car-dashboard.json` file or copy paste the file.

@@ -13,13 +13,13 @@ import (
 // pair as the unique ID for a given currency pair and utilizes raw prices as the
 // price representation for a given currency pair.
 type HashCurrencyPairStrategy struct {
-	DefaultCurrencyPairStrategy
+	*DefaultCurrencyPairStrategy
 }
 
 // NewHashCurrencyPairStrategy returns a new HashCurrencyPairStrategy instance.
 func NewHashCurrencyPairStrategy(oracleKeeper OracleKeeper) *HashCurrencyPairStrategy {
 	return &HashCurrencyPairStrategy{
-		DefaultCurrencyPairStrategy: *NewDefaultCurrencyPairStrategy(oracleKeeper),
+		DefaultCurrencyPairStrategy: NewDefaultCurrencyPairStrategy(oracleKeeper),
 	}
 }
 

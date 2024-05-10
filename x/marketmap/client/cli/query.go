@@ -42,7 +42,7 @@ func CmdQueryParams() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.Params(clientCtx.CmdContext, &types.ParamsRequest{})
+			res, err := queryClient.Params(cmd.Context(), &types.ParamsRequest{})
 			if err != nil {
 				return err
 			}
@@ -67,7 +67,7 @@ func CmdQueryMarketMap() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.MarketMap(clientCtx.CmdContext, &types.MarketMapRequest{})
+			res, err := queryClient.MarketMap(cmd.Context(), &types.MarketMapRequest{})
 			if err != nil {
 				return err
 			}
@@ -82,22 +82,19 @@ func CmdQueryMarketMap() *cobra.Command {
 
 func CmdQueryMarket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "market",
+		Use:   "market [base] [quote]",
 		Short: "Query the a market using the given currency pair",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			cp, err := slinkytypes.CurrencyPairFromString(args[0])
-			if err != nil {
-				return err
-			}
+			cp := slinkytypes.NewCurrencyPair(args[0], args[1])
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.Market(clientCtx.CmdContext, &types.MarketRequest{
+			res, err := queryClient.Market(cmd.Context(), &types.MarketRequest{
 				CurrencyPair: cp,
 			})
 			if err != nil {
@@ -124,7 +121,7 @@ func CmdQueryLastUpdated() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.LastUpdated(clientCtx.CmdContext, &types.LastUpdatedRequest{})
+			res, err := queryClient.LastUpdated(cmd.Context(), &types.LastUpdatedRequest{})
 			if err != nil {
 				return err
 			}
