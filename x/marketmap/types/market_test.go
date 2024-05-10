@@ -15,11 +15,12 @@ var (
 	btcusdt = types.Market{
 		Ticker: types.Ticker{
 			CurrencyPair: slinkytypes.CurrencyPair{
-				Base:  "BITCOIN",
+				Base:  "BTC",
 				Quote: "USDT",
 			},
 			Decimals:         8,
 			MinProviderCount: 1,
+			Enabled:          true,
 		},
 		ProviderConfigs: []types.ProviderConfig{
 			{
@@ -32,17 +33,37 @@ var (
 	btcusd = types.Market{
 		Ticker: types.Ticker{
 			CurrencyPair: slinkytypes.CurrencyPair{
-				Base:  "BITCOIN",
+				Base:  "BTC",
 				Quote: "USD",
 			},
 			Decimals:         8,
 			MinProviderCount: 1,
+			Enabled:          true,
 		},
 		ProviderConfigs: []types.ProviderConfig{
 			{
 				Name:            "kucoin",
 				OffChainTicker:  "btc-usdt",
 				NormalizeByPair: &usdtusd.Ticker.CurrencyPair,
+			},
+		},
+	}
+
+	btcusdInvalid = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "BTC",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+			Enabled:          true,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:            "kucoin",
+				OffChainTicker:  "btc-usdt",
+				NormalizeByPair: &usdtusdDisabled.Ticker.CurrencyPair,
 			},
 		},
 	}
@@ -55,6 +76,25 @@ var (
 			},
 			Decimals:         8,
 			MinProviderCount: 1,
+			Enabled:          true,
+		},
+		ProviderConfigs: []types.ProviderConfig{
+			{
+				Name:           "kucoin",
+				OffChainTicker: "usdt-usd",
+			},
+		},
+	}
+
+	usdtusdDisabled = types.Market{
+		Ticker: types.Ticker{
+			CurrencyPair: slinkytypes.CurrencyPair{
+				Base:  "USDT",
+				Quote: "USD",
+			},
+			Decimals:         8,
+			MinProviderCount: 1,
+			Enabled:          false,
 		},
 		ProviderConfigs: []types.ProviderConfig{
 			{
@@ -72,6 +112,7 @@ var (
 			},
 			Decimals:         8,
 			MinProviderCount: 1,
+			Enabled:          true,
 		},
 		ProviderConfigs: []types.ProviderConfig{
 			{
@@ -89,6 +130,7 @@ var (
 			},
 			Decimals:         8,
 			MinProviderCount: 1,
+			Enabled:          true,
 		},
 		ProviderConfigs: []types.ProviderConfig{
 			{
@@ -106,6 +148,7 @@ var (
 			},
 			Decimals:         8,
 			MinProviderCount: 3,
+			Enabled:          true,
 		},
 		ProviderConfigs: []types.ProviderConfig{
 			{
@@ -134,6 +177,11 @@ var (
 		ethusdt.Ticker.String(): ethusdt,
 		ethusd.Ticker.String():  ethusd,
 	}
+
+	invalidMarkets = map[string]types.Market{
+		btcusdInvalid.Ticker.String():   btcusdInvalid,
+		usdtusdDisabled.Ticker.String(): usdtusdDisabled,
+	}
 )
 
 func TestMarketMapValidateBasic(t *testing.T) {
@@ -153,6 +201,13 @@ func TestMarketMapValidateBasic(t *testing.T) {
 				Markets: markets,
 			},
 			expectErr: false,
+		},
+		{
+			name: "invalid disabled normalizeByPair",
+			marketMap: types.MarketMap{
+				Markets: invalidMarkets,
+			},
+			expectErr: true,
 		},
 		{
 			name: "market with no ticker",

@@ -161,6 +161,7 @@ var (
 					CurrencyPair:     constants.BITCOIN_USD,
 					MinProviderCount: 1,
 					Decimals:         8,
+					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.BITCOIN_USD),
@@ -172,6 +173,7 @@ var (
 					CurrencyPair:     constants.ETHEREUM_USD,
 					MinProviderCount: 1,
 					Decimals:         8,
+					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
