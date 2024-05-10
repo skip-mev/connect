@@ -169,7 +169,6 @@ func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *int
 func SetOracleConfigsOnOracle(
 	oracle *cosmos.SidecarProcess,
 	oracleCfg oracleconfig.OracleConfig,
-	marketCfg mmtypes.MarketMap,
 ) {
 	// marshal the oracle config
 	bz, err := json.Marshal(oracleCfg)
@@ -179,18 +178,6 @@ func SetOracleConfigsOnOracle(
 
 	// write the oracle config to the node
 	err = oracle.WriteFile(context.Background(), bz, oracleConfigPath)
-	if err != nil {
-		panic(err)
-	}
-
-	// marshal the market map config
-	bz, err = json.Marshal(marketCfg)
-	if err != nil {
-		panic(err)
-	}
-
-	// write the market map config to the node
-	err = oracle.WriteFile(context.Background(), bz, marketMapPath)
 	if err != nil {
 		panic(err)
 	}
@@ -304,8 +291,8 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, h
 // SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
-	rand := rand.Str(10)
-	prop, err := chain.BuildProposal(msgs, rand, rand, rand, deposit.String(), submitter, false)
+	randStr := rand.Str(10)
+	prop, err := chain.BuildProposal(msgs, randStr, randStr, randStr, deposit.String(), submitter, false)
 	if err != nil {
 		return "", err
 	}
@@ -346,7 +333,7 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
+func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, price float64, cps ...slinkytypes.CurrencyPair) error {
 	creates := make([]mmtypes.Market, len(cps))
 	for i, cp := range cps {
 		creates[i] = mmtypes.Market{
@@ -355,11 +342,13 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 				Decimals:         8,
 				MinProviderCount: 1,
 				Metadata_JSON:    "",
+				Enabled:          true,
 			},
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
 					Name:           static.Name,
 					OffChainTicker: cp.String(),
+					Metadata_JSON:  fmt.Sprintf(`{"price": %f}`, price),
 				},
 			},
 		}
