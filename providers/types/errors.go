@@ -23,6 +23,7 @@ const (
 	ErrorFailedToDecode        ErrorCode = 12
 	ErrorAPIGeneral            ErrorCode = 13
 	ErrorWebSocketGeneral      ErrorCode = 14
+	ErrorGRPCGeneral           ErrorCode = 15
 )
 
 // Error returns the error representation of the ErrorCode.
@@ -56,6 +57,8 @@ func (e ErrorCode) Error() error {
 		return errors.New("failed to create URL for request")
 	case ErrorWebsocketStartFail:
 		return errors.New("failed to start websocker connection")
+	case ErrorGRPCGeneral:
+		return errors.New("general grpc error")
 	case ErrorUnknown:
 		fallthrough
 	default:

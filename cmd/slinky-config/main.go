@@ -49,12 +49,12 @@ var (
 		Short: "Create configuration required for running slinky.",
 		Args:  cobra.NoArgs,
 		Run: func(_ *cobra.Command, _ []string) {
-			// Create the oracle config that contains all of the providers that are supported.
+			// Create the oracle config that contains all providers that are supported.
 			if err := createOracleConfig(); err != nil {
 				panic(err)
 			}
 
-			// Create the market map that contains all of the tickers and providers that are
+			// Create the market map that contains all tickers and providers that are
 			// supported.
 			if err := createMarketMap(); err != nil {
 				panic(err)
@@ -131,12 +131,11 @@ var (
 		uniswapv3.ProviderNames[constants.ETHEREUM]: uniswapv3.DefaultETHMarketConfig,
 	}
 
-	// LocalConfig defines a readable config for local development. Any changes to this
+	// LocalOracleConfig defines a readable config for local development. Any changes to this
 	// file should be reflected in oracle.json. To update the oracle.json file, run
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
 	LocalOracleConfig = config.OracleConfig{
-		Production: true,
 		// -----------------------------------------------------------	//
 		// ----------------------Metrics Config-----------------------	//
 		// -----------------------------------------------------------	//
@@ -424,7 +423,7 @@ func configureDYDXProviders() error {
 	return nil
 }
 
-// createOracleConfig creates an oracle config given all of the local provider configurations.
+// createOracleConfig creates an oracle config given all local provider configurations.
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
@@ -494,7 +493,7 @@ func createOracleConfig() error {
 	return nil
 }
 
-// createMarketMap creates a market map given all of the local market configurations for
+// createMarketMap creates a market map given all local market configurations for
 // each provider as well as the custom conversion markets. We do so to ensure that the
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
@@ -508,7 +507,7 @@ func createMarketMap() error {
 	}
 
 	// Tickers defines a map of tickers to their respective ticker configurations. This
-	// contains all of the tickers that are supported by the oracle.
+	// contains all tickers that are supported by the oracle.
 	marketMap := mmtypes.MarketMap{
 		Markets: make(map[string]mmtypes.Market),
 	}
@@ -529,7 +528,7 @@ func createMarketMap() error {
 		ProviderToMarkets = addRaydiumMarkets(ProviderToMarkets)
 	}
 
-	// Iterate through all of the provider ticker configurations and update the
+	// Iterate through all provider ticker configurations and update the
 	// tickers and tickers to providers maps.
 	for provider, providerConfig := range ProviderToMarkets {
 		for cp, config := range providerConfig {
@@ -537,6 +536,7 @@ func createMarketMap() error {
 				CurrencyPair:     cp,
 				Decimals:         18,
 				MinProviderCount: 1,
+				Enabled:          true,
 			}
 
 			// Add the ticker to the tickers map iff the ticker does not already exist.

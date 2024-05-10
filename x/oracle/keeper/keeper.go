@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"errors"
-	"fmt"
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/collections/indexes"
@@ -326,7 +325,11 @@ func (k *Keeper) GetDecimalsForCurrencyPair(ctx sdk.Context, cp slinkytypes.Curr
 
 	market, err := k.mmKeeper.GetMarket(ctx, cp.String())
 	if err != nil {
-		return 0, fmt.Errorf("no market for CurrencyPair: %w", err)
+		if errors.Is(err, collections.ErrNotFound) {
+			return uint64(cp.LegacyDecimals()), nil
+		}
+
+		return 0, err
 	}
 
 	return market.Ticker.Decimals, nil
