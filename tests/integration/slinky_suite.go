@@ -214,6 +214,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	chains[0].WithPreStartNodes(func(c *cosmos.CosmosChain) {
 		// for each node in the chain, set the sidecars
 		for i := range c.Nodes() {
+			s.T().Logf("adding sidecar to node %d\n\n\n", i)
 			// pin
 			node := c.Nodes()[i]
 			// add sidecars to node
