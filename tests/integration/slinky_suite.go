@@ -212,7 +212,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 
 	// pass a governance proposal to approve a new currency-pair, and check Prices are reported
 	s.Run("Add a currency-pair and check Prices", func() {
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, []slinkytypes.CurrencyPair{
 			{
 				Base:  "BTC",
 				Quote: "USD",
@@ -230,7 +230,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 	s.Run("Add multiple Currency Pairs", func() {
 		cp1 := slinkytypes.NewCurrencyPair("ETH", "USD")
 		cp2 := slinkytypes.NewCurrencyPair("USDT", "USD")
-		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
+		s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, []slinkytypes.CurrencyPair{
 			cp1, cp2,
 		}...))
 
@@ -243,7 +243,7 @@ func (s *SlinkyOracleIntegrationSuite) TestOracleModule() {
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 	ethusdc := constants.ETHEREUM_USDC
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, []slinkytypes.CurrencyPair{
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, []slinkytypes.CurrencyPair{
 		ethusdc,
 	}...))
 
@@ -466,7 +466,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		ethusd,
 	}
 
-	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, cps...))
+	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, cps...))
 
 	cc, closeFn, err := GetChainGRPC(s.chain)
 	s.Require().NoError(err)

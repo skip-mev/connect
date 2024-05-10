@@ -346,7 +346,7 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
-func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
+func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
 	creates := make([]mmtypes.Market, len(cps))
 	for i, cp := range cps {
 		creates[i] = mmtypes.Market{
@@ -355,6 +355,7 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, aut
 				Decimals:         8,
 				MinProviderCount: 1,
 				Metadata_JSON:    "",
+				Enabled:          true,
 			},
 			ProviderConfigs: []mmtypes.ProviderConfig{
 				{
