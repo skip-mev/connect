@@ -82,19 +82,16 @@ func CmdQueryMarketMap() *cobra.Command {
 
 func CmdQueryMarket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "market",
-		Short: "Query the a market using the given currency pair i.e. BTC/USD",
-		Args:  cobra.ExactArgs(1),
+		Use:   "market [base] [quote]",
+		Short: "Query the a market using the given currency pair",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			cp, err := slinkytypes.CurrencyPairFromString(args[0])
-			if err != nil {
-				return err
-			}
+			cp := slinkytypes.NewCurrencyPair(args[0], args[1])
 
 			queryClient := types.NewQueryClient(clientCtx)
 			res, err := queryClient.Market(cmd.Context(), &types.MarketRequest{
