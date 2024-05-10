@@ -94,7 +94,7 @@ func init() {
 		&writeLogsTo,
 		"log-file",
 		"",
-		"",
+		"sidecar.log",
 		"Write logs to a file.",
 	)
 	rootCmd.Flags().StringVarP(
@@ -145,11 +145,12 @@ func runOracle() error {
 		}
 	}
 
+	logCfg := log.NewDefaultConfig()
+	logCfg.LogLevel = logLevel
+	logCfg.WriteTo = writeLogsTo
+
 	// Build logger.
-	logger := log.NewLogger(log.Config{
-		LogLevel: logLevel,
-		WriteTo:  writeLogsTo,
-	})
+	logger := log.NewLogger(logCfg)
 	defer logger.Sync()
 
 	logger.Info(

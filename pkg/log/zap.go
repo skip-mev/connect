@@ -30,9 +30,9 @@ func NewDefaultConfig() Config {
 	return Config{
 		LogLevel:   "info",
 		WriteTo:    "",
-		MaxSize:    1, // 1MB
-		MaxBackups: 1,
-		MaxAge:     3, // 3 days
+		MaxSize:    100, // 100MB
+		MaxBackups: 0,
+		MaxAge:     1, // 1 day
 		Compress:   false,
 	}
 }
@@ -49,7 +49,7 @@ func NewLogger(config Config) *zap.Logger {
 		// Configure lumberjack for logging to a file
 		lumberjackLogger := &lumberjack.Logger{
 			Filename:   config.WriteTo,
-			MaxSize:    config.MaxSize, // Defaults, if not set in config
+			MaxSize:    config.MaxSize,
 			MaxBackups: config.MaxBackups,
 			MaxAge:     config.MaxAge,
 			Compress:   config.Compress,
