@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"math/big"
+	"os"
 
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	cmthttp "github.com/cometbft/cometbft/rpc/client/http"
@@ -25,7 +25,7 @@ var (
 			--vote-extension-codec: The codec to use to decode the vote extension. Options are 1: standard encoding (default), 2: z-lib compressed encoding, 3: zstd compressed encoding
 		`,
 		Args: cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			// create a comet-http client
 			client, err := cmthttp.New(node, "/websocket")
 			if err != nil {
@@ -84,11 +84,11 @@ var (
 		},
 	}
 
-	// Flags
-	node string
-	height int64
+	// Flags.
+	node                string
+	height              int64
 	extendedCommitCodec string
-	voteExtensionCodec string
+	voteExtensionCodec  string
 )
 
 func init() {
@@ -103,7 +103,6 @@ func main() {
 		os.Exit(1)
 	}
 }
-
 
 func codecsFromFlags(extCommitCodecFlag, veCodecFlag string) (codec.ExtendedCommitCodec, codec.VoteExtensionCodec) {
 	var extCommitCodec codec.ExtendedCommitCodec
