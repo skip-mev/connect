@@ -93,5 +93,7 @@ func (s *UpgradeTestSuite) TestSlinkyCoreUpgrade() {
 		s.Require().NoError(err)
 		s.Require().Equal(uint64(0), price.Nonce())     // no nonce because no updates yet
 		s.Require().Equal(uint64(0), price.BlockHeight) // no block height because no price written yet
+
+		s.Require().True(market.Ticker.Enabled)
 	}
 }

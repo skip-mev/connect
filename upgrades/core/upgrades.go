@@ -95,11 +95,6 @@ func setMarketMapParams(ctx sdk.Context, marketmapKeeper *marketmapkeeper.Keeper
 }
 
 func setMarketState(ctx sdk.Context, mmKeeper *marketmapkeeper.Keeper, markets marketmaptypes.Markets) error {
-	// markets, err := marketmaptypes.ReadMarketsFromFile("markets.json")
-	//if err != nil {
-	//	return err
-	//}
-
 	for _, market := range markets {
 		err := mmKeeper.CreateMarket(ctx, market)
 		if err != nil {
