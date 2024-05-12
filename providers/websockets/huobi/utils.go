@@ -13,6 +13,8 @@ const (
 	// Name is the name of the Huobi provider.
 	Name = "huobi_ws"
 
+	Type = types.ConfigType
+
 	// URL is the public Huobi Websocket URL.
 	URL = "wss://api.huobi.pro/ws"
 
@@ -37,6 +39,12 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for the Huobi Websocket.

@@ -18,6 +18,8 @@ const (
 	// Name is the name of the Binance provider.
 	Name = "binance_api"
 
+	Type = types.ConfigType
+
 	// URL is the base URL of the Binance API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL. This URL should be utilized
 	// by Non-US users.
@@ -58,6 +60,12 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name: Name,
+		API:  DefaultNonUSAPIConfig,
+		Type: Type,
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.

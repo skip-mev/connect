@@ -12,6 +12,8 @@ const (
 	// Name is the name of the bitstamp provider.
 	Name = "bitstamp_ws"
 
+	Type = types.ConfigType
+
 	// WSS is the bitstamp websocket address.
 	WSS = "wss://ws.bitstamp.net"
 
@@ -36,6 +38,12 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig returns the default market config for bitstamp.

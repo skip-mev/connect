@@ -15,6 +15,8 @@ const (
 	// Name is the name of the MEXC provider.
 	Name = "mexc_ws"
 
+	Type = types.ConfigType
+
 	// WSS is the public MEXC Websocket URL.
 	WSS = "wss://wbs.mexc.com/ws"
 
@@ -47,6 +49,12 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: MaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for the MEXC Websocket.

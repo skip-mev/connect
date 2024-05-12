@@ -18,6 +18,8 @@ const (
 	// Name is the name of the GeckoTerminal provider.
 	Name = "gecko_terminal_api"
 
+	Type = types.ConfigType
+
 	// URL is the root URL for the GeckoTerminal API.
 	ETH_URL = "https://api.geckoterminal.com/api/v2/simple/networks/eth/token_price/%s"
 
@@ -38,6 +40,12 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              ETH_URL,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name: Name,
+		API:  DefaultETHAPIConfig,
+		Type: Type,
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for tokens on

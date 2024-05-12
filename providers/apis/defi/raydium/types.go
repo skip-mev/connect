@@ -15,6 +15,8 @@ const (
 	// Name is the name of the Raydium API.
 	Name = "raydium_api"
 
+	Type = types.ConfigType
+
 	// NormalizedTokenAmountExponent.
 	NormalizedTokenAmountExponent = 18
 )

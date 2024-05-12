@@ -12,6 +12,7 @@ import (
 const (
 	// Name is the name of the provider.
 	Name = "volatile-exchange-provider"
+	Type = types.ConfigType
 	// Offset is the average of the returned value from GetVolatilePrice.
 	Offset = float64(100)
 	// Amplitude is the magnitude of price variation of the cosine function used in GetVolatilePrice.
@@ -29,6 +30,12 @@ var DefaultAPIConfig = config.APIConfig{
 	Interval:         500 * time.Millisecond,
 	ReconnectTimeout: 500 * time.Millisecond,
 	URL:              Name,
+}
+
+var DefaultProviderConfig = config.ProviderConfig{
+	Name: Name,
+	API:  DefaultAPIConfig,
+	Type: Type,
 }
 
 // APIHandler implements the APIHandler interface.

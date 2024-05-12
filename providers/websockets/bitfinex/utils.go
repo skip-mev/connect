@@ -10,6 +10,8 @@ const (
 	// Name is the name of the BitFinex provider.
 	Name = "bitfinex_ws"
 
+	Type = types.ConfigType
+
 	// URLProd is the public BitFinex Websocket URL.
 	URLProd = "wss://api-pub.bitfinex.com/ws/2"
 
@@ -33,6 +35,12 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for BitFinex.

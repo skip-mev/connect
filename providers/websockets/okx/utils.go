@@ -15,6 +15,8 @@ const (
 	// Name is the name of the OKX provider.
 	Name = "okx_ws"
 
+	Type = types.ConfigType
+
 	// URL_PROD is the public OKX Websocket URL.
 	URL_PROD = "wss://ws.okx.com:8443/ws/v5/public"
 
@@ -40,6 +42,12 @@ var (
 		ReadTimeout:         config.DefaultReadTimeout,
 		WriteTimeout:        config.DefaultWriteTimeout,
 		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for OKX.

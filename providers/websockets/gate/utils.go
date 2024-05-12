@@ -11,6 +11,9 @@ import (
 const (
 	// Name is the name of the Gate.io provider.
 	Name = "gate_ws"
+
+	Type = types.ConfigType
+
 	// URL is the base url of for the Gate.io websocket API.
 	URL = "wss://api.gateio.ws/ws/v4/"
 )
@@ -32,6 +35,12 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Gate.io.

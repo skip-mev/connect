@@ -16,6 +16,8 @@ const (
 	// Name is the name of the ByBit provider.
 	Name = "bybit_ws"
 
+	Type = types.ConfigType
+
 	// URLProd is the public ByBit Websocket URL.
 	URLProd = "wss://stream.bybit.com/v5/public/spot"
 
@@ -43,6 +45,12 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for ByBit.
