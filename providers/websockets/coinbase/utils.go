@@ -15,6 +15,8 @@ const (
 	// Name is the name of the Coinbase provider.
 	Name = "coinbase_ws"
 
+	Type = types.ConfigType
+
 	// URL is the production Coinbase Websocket URL.
 	URL = "wss://ws-feed.exchange.coinbase.com"
 
@@ -52,6 +54,12 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name:      Name,
+		WebSocket: DefaultWebSocketConfig,
+		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.

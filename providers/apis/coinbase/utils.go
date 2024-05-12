@@ -16,6 +16,8 @@ const (
 	// Name is the name of the Coinbase provider.
 	Name = "coinbase_api"
 
+	Type = types.ConfigType
+
 	// URL is the base URL of the Coinbase API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
 	URL = "https://api.coinbase.com/v2/prices/%s/spot"
@@ -32,6 +34,12 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       5,
 		URL:              URL,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name: Name,
+		API:  DefaultAPIConfig,
+		Type: Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.

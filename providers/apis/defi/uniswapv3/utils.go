@@ -17,6 +17,8 @@ const (
 	// BaseName is the name of the Uniswap V3 API.
 	BaseName = "uniswapv3_api"
 
+	Type = types.ConfigType
+
 	// NameSeparator is the character used to separate elements of dynamic naming for the provider.
 	NameSeparator = "-"
 
@@ -94,6 +96,12 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              "https://eth.public-rpc.com/",
+	}
+
+	DefaultETHProviderConfig = config.ProviderConfig{
+		Name: ProviderNames[constants.ETHEREUM],
+		API:  DefaultETHAPIConfig,
+		Type: Type,
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for Uniswap V3. Specifically

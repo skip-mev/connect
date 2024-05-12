@@ -18,6 +18,8 @@ const (
 	// Name is the name of the Coingecko provider.
 	Name = "coingecko_api"
 
+	Type = types.ConfigType
+
 	// URL is the base URL for the CoinGecko API. This URL does not require
 	// an API key but may be rate limited.
 	URL = "https://api.coingecko.com/api/v3"
@@ -50,6 +52,12 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
+	}
+
+	DefaultProviderConfig = config.ProviderConfig{
+		Name: Name,
+		API:  DefaultAPIConfig,
+		Type: Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for CoinGecko.
