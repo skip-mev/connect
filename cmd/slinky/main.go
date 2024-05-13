@@ -49,6 +49,7 @@ var (
 	}
 
 	oracleCfgPath       string
+	legacyOracleCfgPath string
 	marketCfgPath       string
 	updateMarketCfgPath string
 	runPprof            bool
@@ -66,10 +67,17 @@ var (
 
 func init() {
 	rootCmd.Flags().StringVarP(
+		&legacyOracleCfgPath,
+		"legacy-oracle-config-path",
+		"",
+		"",
+		"Path to the legacy oracle config file.",
+	)
+	rootCmd.Flags().StringVarP(
 		&oracleCfgPath,
 		"oracle-config-path",
 		"",
-		"oracle.json",
+		"",
 		"Path to the oracle config file.",
 	)
 	rootCmd.Flags().StringVarP(
@@ -185,9 +193,18 @@ func runOracle() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
-	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %w", err)
+	var cfg config.OracleConfig
+	var err error
+	if legacyOracleCfgPath != "" {
+		cfg, err = config.ReadOracleConfigFromFile(legacyOracleCfgPath)
+		if err != nil {
+			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
+		}
+	} else {
+		cfg, err = GetLegacyOracleConfig(oracleCfgPath)
+		if err != nil {
+			return fmt.Errorf("failed to get oracle config: %w", err)
+		}
 	}
 
 	// overwrite endpoint
