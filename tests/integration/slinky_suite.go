@@ -268,6 +268,19 @@ func (s *SlinkyIntegrationSuite) Teardown() {
 	}
 }
 
+func (s *SlinkyIntegrationSuite) Teardown() {
+	// stop all nodes + sidecars in the chain
+	ctx := context.Background()
+	s.Require().NoError(s.chain.StopAllNodes(ctx))
+	s.Require().NoError(s.chain.StopAllSidecars(ctx))
+
+	// if there is a provider, stop that as well
+	if s.chain.Provider != nil {
+		s.Require().NoError(s.chain.Provider.StopAllNodes(ctx))
+		s.Require().NoError(s.chain.Provider.StopAllSidecars(ctx))
+	}
+}
+
 func (s *SlinkyIntegrationSuite) SetupTest() {
 	s.TearDownSuite()
 	s.SetupSuite()
