@@ -31,13 +31,18 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 			// Fetch the latest market map.
 			response := mmProvider.GetData()
 			if response == nil {
-				o.logger.Debug("market map provider returned nil response")
+				o.logger.Info("market map provider returned nil response")
 				continue
 			}
 
 			result, ok := response[chain]
 			if !ok {
 				o.logger.Debug("market map provider response missing chain", zap.Any("chain", chain))
+				continue
+			}
+
+			if result.Code.Error() != nil {
+				o.logger.Info("market map provider response error", zap.Error(result.Code.Error()))
 				continue
 			}
 
@@ -58,6 +63,8 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 			if err := o.WriteMarketMap(); err != nil {
 				o.logger.Error("failed to write market map", zap.Error(err))
 			}
+
+			o.logger.Info("updated orchestrator with new market map", zap.Any("market_map", updated))
 		}
 	}
 }

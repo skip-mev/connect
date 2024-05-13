@@ -1,77 +1,99 @@
 package log
 
 import (
+	"fmt"
 	"os"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2" // Include this for lumberjack
 )
 
 // Config is the configuration for the logger.
 type Config struct {
-	// LogLevel is the log level to use. The default is "info".
-	LogLevel string
-	// WriteTo is the path to write logs to. The default is stderr.
+	// StdOutLogLevel is the log level for the standard out logger.
+	StdOutLogLevel string
+	// FileOutLogLevel is the log level for the file logger.
+	FileOutLogLevel string
+	// WriteTo is the output file for the logger. If empty, logs will be written to stderr.
 	WriteTo string
+	// MaxSize is the maximum size in megabytes before log is rotated.
+	MaxSize int
+	// MaxBackups is the maximum number of old log files to retain.
+	MaxBackups int
+	// MaxAge is the maximum number of days to retain an old log file.
+	MaxAge int
+	// Compress determines if the rotated log files should be compressed.
+	Compress bool
 }
 
-// NewLogger creates a new logger with the given configuration. This logger
-// is pre-configured to production settings. To change the settings, modify
-// the Config struct.
+// NewDefaultConfig creates a default configuration for the logger.
+func NewDefaultConfig() Config {
+	return Config{
+		StdOutLogLevel:  "info",
+		FileOutLogLevel: "info",
+		WriteTo:         "sidecar.log",
+		MaxSize:         1, // 100MB
+		MaxBackups:      1,
+		MaxAge:          3, // 3 days
+		Compress:        false,
+	}
+}
+
 func NewLogger(config Config) *zap.Logger {
-	// EncodeTime is set to ISO8601TimeEncoder by default. This is a more human readable
-	// format than the default EpochTimeEncoder.
 	encoderCfg := zap.NewProductionEncoderConfig()
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	// outputPaths is the list of paths to write logs to. By default, logs are
-	// written to stderr.
-	outputPaths := []string{"stderr"}
+	var fileCore zapcore.Core
 	if config.WriteTo != "" {
-		outputPaths = append(outputPaths, config.WriteTo)
+		// Configure lumberjack for logging to a file
+		lumberjackLogger := &lumberjack.Logger{
+			Filename:   config.WriteTo,
+			MaxSize:    config.MaxSize,
+			MaxBackups: config.MaxBackups,
+			MaxAge:     config.MaxAge,
+			Compress:   config.Compress,
+		}
+		fileSyncer := zapcore.AddSync(lumberjackLogger)
+
+		logLevel := zapcore.InfoLevel
+		if err := logLevel.Set(config.FileOutLogLevel); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to set log level on file logging: %v\nfalling back to info", err)
+			logLevel = zapcore.InfoLevel // Fallback to info if setting fails
+		}
+
+		fileCore = zapcore.NewCore(
+			zapcore.NewJSONEncoder(encoderCfg),
+			fileSyncer,
+			logLevel,
+		)
 	}
 
-	// initialFields are the fields that are added to every log message.
-	initialFields := map[string]interface{}{
-		"pid": os.Getpid(),
+	// Setup the primary output to always include os.Stderr.
+	logLevel := zapcore.InfoLevel
+	if err := logLevel.Set(config.StdOutLogLevel); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to set log level on std out: %v\nfalling back to info", err)
+		logLevel = zapcore.InfoLevel // Fallback to info if setting fails
 	}
 
-	var (
-		logLevel zapcore.Level
-		dev      = false
+	// Setup the primary output to always include os.Stderr
+	stdCore := zapcore.NewCore(
+		zapcore.NewJSONEncoder(encoderCfg),
+		zapcore.Lock(os.Stderr),
+		logLevel,
 	)
-	switch config.LogLevel {
-	case "debug":
-		logLevel = zapcore.DebugLevel
-		dev = true
-	case "info":
-		logLevel = zapcore.InfoLevel
-	case "warn":
-		logLevel = zapcore.WarnLevel
-	case "error":
-		logLevel = zapcore.ErrorLevel
-	case "dpanic":
-		logLevel = zapcore.DPanicLevel
-	case "panic":
-		logLevel = zapcore.PanicLevel
-	case "fatal":
-		logLevel = zapcore.FatalLevel
-	default:
-		logLevel = zapcore.InfoLevel
+
+	// Use zapcore.NewTee to write to both stderr and the file (if configured)
+	var core zapcore.Core
+	if fileCore != nil {
+		core = zapcore.NewTee(stdCore, fileCore)
+	} else {
+		core = stdCore
 	}
 
-	zapConfig := zap.Config{
-		Level:             zap.NewAtomicLevelAt(logLevel),
-		Development:       dev,
-		DisableCaller:     false,
-		DisableStacktrace: false,
-		Sampling:          nil,
-		Encoding:          "json",
-		EncoderConfig:     encoderCfg,
-		OutputPaths:       outputPaths,
-		ErrorOutputPaths:  outputPaths,
-		InitialFields:     initialFields,
-	}
-
-	return zap.Must(zapConfig.Build())
+	return zap.New(
+		core,
+		zap.AddCaller(),
+		zap.Fields(zapcore.Field{Key: "pid", Type: zapcore.Int64Type, Integer: int64(os.Getpid())}),
+	)
 }
