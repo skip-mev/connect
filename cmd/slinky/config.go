@@ -9,6 +9,21 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
+const (
+	// DefaultUpdateInterval is the default value for how frequently slinky updates aggregate price responses.
+	DefaultUpdateInterval = 250000000
+	// DefaultMaxPriceAge is the default value for the oldest price considered in an aggregate price response by slinky.
+	DefaultMaxPriceAge = 120000000000
+	// DefaultPrometheusServerAddress is the default value for the prometheus server address in slinky.
+	DefaultPrometheusServerAddress = "0.0.0.0:8002"
+	// DefaultMetricsEnabled is the default value for enabling prometheus metrics in slinky.
+	DefaultMetricsEnabled = true
+	// DefaultHost is the default for the slinky oracle server host.
+	DefaultHost = "0.0.0.0"
+	// DefaultPort is the default for the slinky oracle server port.
+	DefaultPort = "8080"
+)
+
 type OracleConfig struct {
 	// UpdateInterval is the interval at which the oracle will fetch prices from providers.
 	UpdateInterval time.Duration `json:"updateInterval"`
@@ -82,14 +97,14 @@ func (c *OracleConfig) ToLegacy() config.OracleConfig {
 }
 
 func SetDefaults() {
-	viper.Set("updateInterval", 250000000)
-	viper.Set("maxPriceAge", 120000000000)
-	viper.Set("metrics.prometheusServerAddress", "0.0.0.0:8002")
-	viper.Set("metrics.enabled", true)
-	viper.Set("host", "0.0.0.0")
-	viper.Set("port", "8080")
+	viper.SetDefault("updateInterval", DefaultUpdateInterval)
+	viper.SetDefault("maxPriceAge", DefaultMaxPriceAge)
+	viper.SetDefault("metrics.prometheusServerAddress", DefaultPrometheusServerAddress)
+	viper.SetDefault("metrics.enabled", DefaultMetricsEnabled)
+	viper.SetDefault("host", DefaultHost)
+	viper.SetDefault("port", DefaultPort)
 	for _, providerConfig := range providers.ProviderDefaults {
-		viper.Set(fmt.Sprintf("providers.%s", providerConfig.Name), providerConfig)
+		viper.SetDefault(fmt.Sprintf("providers.%s", providerConfig.Name), providerConfig)
 	}
 }
 
