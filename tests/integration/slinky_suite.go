@@ -27,6 +27,8 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -236,14 +238,17 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 }
 
 func (s *SlinkyIntegrationSuite) TearDownSuite() {
+	defer s.Teardown()
 	// get the oracle integration-test suite keep alive env
 	if ok := os.Getenv(envKeepAlive); ok == "" {
 		return
 	}
 
-	// keep the chain running
+	// await on a signal to keep the chain running
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	s.T().Log("Keeping the chain running")
-	select {}
+	<-sig
 }
 
 func (s *SlinkyIntegrationSuite) Teardown() {

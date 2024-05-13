@@ -87,9 +87,7 @@ func DefaultChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*co
 	return []*cosmos.CosmosChain{cosmosChain}
 }
 
-// spin up the network (with side-cars enabled)
-
-// BuildPOBInterchain creates a new Interchain testing env with the configured POB CosmosChain
+// DefaultInterchainConstructor is the default constructor of an interchain that will be used in the slinky.
 func DefaultInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) *interchaintest.Interchain {
 	require.Len(t, chains, 1)
 
