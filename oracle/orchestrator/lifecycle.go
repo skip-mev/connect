@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"go.uber.org/zap"
+
+	"github.com/skip-mev/slinky/oracle/types"
 )
 
 // generalProvider is an interface for a provider that implements the base provider.
@@ -27,13 +29,20 @@ func (o *ProviderOrchestrator) Start(ctx context.Context) error {
 	// Set the main context for the provider orchestrator.
 	ctx, _ = o.setMainCtx(ctx)
 
-	// Start all price providers.
-	for _, state := range o.providers {
-		o.wg.Add(1)
-		go func() {
-			defer o.wg.Done()
-			o.execProviderFn(ctx, state.Provider)
-		}()
+	// Start all price providers which have tickers.
+	for name, state := range o.providers {
+		providerTickers, err := types.ProviderTickersFromMarketMap(name, o.marketMap)
+		if err != nil {
+			o.logger.Error("failed to create provider market map", zap.String("provider", name), zap.Error(err))
+			return err
+		}
+
+		// Update the provider's state.
+		_, err = o.UpdateProviderState(providerTickers, state)
+		if err != nil {
+			o.logger.Error("failed to update provider state", zap.String("provider", name), zap.Error(err))
+			return err
+		}
 	}
 
 	// Start the market map provider.
