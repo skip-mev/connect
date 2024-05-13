@@ -2,12 +2,14 @@ package integration
 
 import (
 	"context"
+	"encoding/hex"
 	"math/big"
 	"os"
 	"time"
 
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -25,6 +27,8 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -34,6 +38,8 @@ const (
 	validatorKey  = "validator"
 	yes           = "yes"
 	deposit       = 1000000
+	userMnemonic = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
+	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
 )
 
 func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
@@ -106,38 +112,106 @@ type SlinkyIntegrationSuite struct {
 
 	// block time
 	blockTime time.Duration
+
+	// interchain constructor
+	ic InterchainConstructor
+
+	// chain constructor
+	cc ChainConstructor
 }
 
-func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage) *SlinkyIntegrationSuite {
-	return &SlinkyIntegrationSuite{
+// Option is a function that modifies the SlinkyIntegrationSuite
+type Option func(*SlinkyIntegrationSuite)
+
+// WithDenom sets the token denom
+func WithDenom(denom string) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.denom = denom
+	}
+}
+
+// WithAuthority sets the authority address
+func WithAuthority(addr sdk.AccAddress) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.authority = addr
+	}
+}
+
+// WithBlockTime sets the block time
+func WithBlockTime(t time.Duration) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.blockTime = t
+	}
+}
+
+// WithInterchainConstructor sets the interchain constructor
+func WithInterchainConstructor(ic InterchainConstructor) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.ic = ic
+	}
+}
+
+// WithChainConstructor sets the chain constructor
+func WithChainConstructor(cc ChainConstructor) Option {
+	return func(s *SlinkyIntegrationSuite) {
+		s.cc = cc
+	}
+}
+
+func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts... Option) *SlinkyIntegrationSuite {
+	suite := &SlinkyIntegrationSuite{
 		spec:         spec,
 		oracleConfig: DefaultOracleSidecar(oracleImage),
 		denom:        defaultDenom,
 		authority:    authtypes.NewModuleAddress(govtypes.ModuleName),
 		blockTime:    10 * time.Second,
+		ic:           DefaultInterchainConstructor,
+		cc:           DefaultChainConstructor,
 	}
-}
 
-func (s *SlinkyIntegrationSuite) WithDenom(denom string) *SlinkyIntegrationSuite {
-	s.denom = denom
-	return s
-}
+	for _, opt := range opts {
+		opt(suite)
+	}
 
-func (s *SlinkyIntegrationSuite) WithAuthority(addr sdk.AccAddress) *SlinkyIntegrationSuite {
-	s.authority = addr
-	return s
-}
-
-func (s *SlinkyIntegrationSuite) WithBlockTime(t time.Duration) *SlinkyIntegrationSuite {
-	s.blockTime = t
-	return s
+	return suite
 }
 
 func (s *SlinkyIntegrationSuite) SetupSuite() {
-	// create the chain
-	s.chain = ChainBuilderFromChainSpec(s.T(), s.spec)
+	// update market-map params to add the user as the market-authority
+	accountAddressBz, err := hex.DecodeString(userAccountAddressHex)
+	if err != nil {
+		panic(err)
+	}
+	accountAddress, err := bech32.ConvertAndEncode(s.spec.ChainConfig.Bech32Prefix, accountAddressBz)
+	if err != nil {
+		panic(err)
+	}
+	existingGenesisModifier := s.spec.ChainConfig.ModifyGenesis
+	s.spec.ChainConfig.ModifyGenesis = func(cc ibc.ChainConfig, genesisBz []byte) ([]byte, error) {
+		genesisBz, err := cosmos.ModifyGenesis([]cosmos.GenesisKV{
+			cosmos.NewGenesisKV(
+				"app_state.marketmap.params.admin",
+				accountAddress,
+			),
+			cosmos.NewGenesisKV(
+				"app_state.marketmap.params.market_authorities.0",
+				accountAddress,
+			),
+		})(cc, genesisBz)
+		if err != nil {
+			return nil, err
+		}
 
-	s.chain.WithPrestartNodes(func(c *cosmos.CosmosChain) {
+		return existingGenesisModifier(cc, genesisBz)
+	}
+
+	chains := s.cc(s.T(), s.spec)
+
+	if len(chains) < 1 {
+		panic("no chains created")
+	}
+
+	chains[0].WithPreStartNodes(func(c *cosmos.CosmosChain) {
 		// for each node in the chain, set the sidecars
 		for i := range c.Nodes() {
 			// pin
@@ -150,33 +224,48 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 			SetOracleConfigsOnOracle(GetOracleSideCar(node), oracleCfg)
 
 			// set the out-of-process oracle config for all nodes
-			node.WithPrestartNode(func(n *cosmos.ChainNode) {
+			node.WithPreStartNode(func(n *cosmos.ChainNode) {
 				SetOracleConfigsOnApp(n)
 			})
 		}
 	})
 
 	// start the chain
-	BuildPOBInterchain(s.T(), context.Background(), s.chain)
-	users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), math.NewInt(genesisAmount), s.chain)
-	s.user = users[0]
-
-	resp, err := UpdateMarketMapParams(s.chain, s.authority.String(), s.denom, deposit, 2*s.blockTime, s.user, mmtypes.Params{
-		MarketAuthorities: []string{s.user.FormattedAddress()},
-		Admin:             s.user.FormattedAddress(),
-	})
-	s.Require().NoError(err, resp)
+	s.ic(context.Background(), s.T(), chains)
+	s.chain = chains[0]
+	s.user, err = interchaintest.GetAndFundTestUserWithMnemonic(context.Background(), s.T().Name(), userMnemonic, math.NewInt(genesisAmount), s.chain)
+	s.Require().NoError(err)
 }
 
 func (s *SlinkyIntegrationSuite) TearDownSuite() {
+	defer s.Teardown()
 	// get the oracle integration-test suite keep alive env
 	if ok := os.Getenv(envKeepAlive); ok == "" {
 		return
 	}
 
-	// keep the chain running
+	// await on a signal to keep the chain running
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	s.T().Log("Keeping the chain running")
-	select {}
+	<-sig
+}
+
+func (s *SlinkyIntegrationSuite) Teardown() {
+	// stop all nodes + sidecars in the chain
+	ctx := context.Background()
+	if s.chain == nil {
+		return
+	}
+
+	s.chain.StopAllNodes(ctx)
+	s.chain.StopAllSidecars(ctx)
+
+	// if there is a provider, stop that as well
+	if s.chain.Provider != nil {
+		s.chain.Provider.StopAllNodes(ctx)
+		s.chain.Provider.StopAllSidecars(ctx)
+	}
 }
 
 func (s *SlinkyIntegrationSuite) SetupTest() {
