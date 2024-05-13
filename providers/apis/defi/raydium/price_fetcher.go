@@ -113,7 +113,7 @@ func NewAPIPriceFetcherWithClient(
 		config:            config,
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
-		logger:            logger.With(zap.String("price_fetcher", Name)),
+		logger:            logger.With(zap.String("fetcher", Name)),
 	}
 
 	for _, opt := range opts {

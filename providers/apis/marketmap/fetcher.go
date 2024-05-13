@@ -7,7 +7,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -18,7 +17,6 @@ import (
 // to query the x/marketmap module.
 type MarketMapFetcher struct { //nolint
 	logger *zap.Logger
-	api    config.APIConfig
 
 	// client is the QueryClient implementation. This is used to interact with the x/marketmap
 	// module.
@@ -28,15 +26,10 @@ type MarketMapFetcher struct { //nolint
 // NewMarketMapFetcher returns a new MarketMap fetcher.
 func NewMarketMapFetcher(
 	logger *zap.Logger,
-	api config.APIConfig,
 	client mmtypes.QueryClient,
 ) (*MarketMapFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger is required")
-	}
-
-	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
 	if client == nil {
@@ -44,8 +37,7 @@ func NewMarketMapFetcher(
 	}
 
 	return &MarketMapFetcher{
-		logger: logger,
-		api:    api,
+		logger: logger.With(zap.String("fetcher", Name)),
 		client: client,
 	}, nil
 }

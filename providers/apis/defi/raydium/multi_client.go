@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
@@ -12,7 +13,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
@@ -67,7 +67,7 @@ func NewMultiJSONRPCClientFromEndpoints(
 }
 
 // solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
-func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClient, error) {
+func solanaClientFromEndpoint(endpoint config.Endpoint) (SolanaJSONRPCClient, error) {
 	// fail if the endpoint is invalid
 	if err := endpoint.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
@@ -106,8 +106,13 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 
 	for i := range c.clients {
 		go func(client SolanaJSONRPCClient) {
-			defer wg.Done()
+			// Observe the latency of the request.
 			url := c.config.Endpoints[i].URL
+			start := time.Now()
+			defer func() {
+				wg.Done()
+				c.rpcMetrics.ObserveProviderResponseLatency(c.config.Name, url, time.Since(start))
+			}()
 
 			resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 			if err != nil {

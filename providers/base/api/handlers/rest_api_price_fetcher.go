@@ -67,7 +67,7 @@ func NewRestAPIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValu
 		apiDataHandler: apiDataHandler,
 		metrics:        metrics,
 		config:         config,
-		logger:         logger,
+		logger:         logger.With(zap.String("fetcher", config.Name)),
 	}, nil
 }
 

@@ -90,7 +90,6 @@ func NewPriceFetcher(
 	} else {
 		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(
 			ctx,
-			
 			apiMetrics,
 			api.Name,
 			api.URL,
@@ -99,7 +98,11 @@ func NewPriceFetcher(
 			return nil, err
 		}
 	}
-	return NewPriceFetcherWithClient(logger, api, client)
+	return NewPriceFetcherWithClient(
+		logger,
+		api,
+		client,
+	)
 }
 
 // NewPriceFetcherWithClient returns a new PriceFetcher.
@@ -120,7 +123,7 @@ func NewPriceFetcherWithClient(
 	}
 
 	return &PriceFetcher{
-		logger:    logger.With(zap.String("price_fetcher", api.Name)),
+		logger:    logger.With(zap.String("fetcher", api.Name)),
 		api:       api,
 		client:    client,
 		abi:       abi,

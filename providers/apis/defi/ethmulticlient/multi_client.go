@@ -16,7 +16,6 @@ import (
 // the best response.
 type MultiRPCClient struct {
 	logger *zap.Logger
-	config config.APIConfig
 
 	// underlying clients
 	clients []EVMClient
@@ -25,12 +24,10 @@ type MultiRPCClient struct {
 // NewMultiRPCClient returns a new MultiRPCClient.
 func NewMultiRPCClient(
 	logger *zap.Logger,
-	config config.APIConfig,
 	clients []EVMClient,
 ) *MultiRPCClient {
 	return &MultiRPCClient{
 		logger:  logger,
-		config:  config,
 		clients: clients,
 	}
 }
@@ -62,11 +59,8 @@ func NewMultiRPCClientFromEndpoints(
 			return nil, fmt.Errorf("failed to create eth client from endpoint: %w", err)
 		}
 	}
-	return NewMultiRPCClient(
-		logger,
-		config,
-		clients,
-	), nil
+
+	return NewMultiRPCClient(logger, clients), nil
 }
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
@@ -86,9 +80,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 
 	// TODO(david): consider parallelizing these requests.
 	var maxHeight uint64
-	for i, client := range m.clients {
-		url := m.config.Endpoints[i].URL
-
+	for _, client := range m.clients {
 		err := client.BatchCallContext(ctx, req)
 		if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
 			errs = fmt.Errorf("%w: endpoint request failed: %w, %w", errs, err, req[blockNumReqIndex].Error)
@@ -122,13 +114,14 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug(
 			"got height for eth batch request",
 			zap.Uint64("height", newHeight),
-			zap.String("endpoint", url),
 		)
 
 		if newHeight > maxHeight {
 			m.logger.Debug("new max eth height seen",
 				zap.Uint64("prev_height", maxHeight),
-				zap.Uint64("new_height", newHeight))
+				zap.Uint64("new_height", newHeight),
+			)
+
 			maxHeight = newHeight
 			copy(batchElems, req[:blockNumReqIndex])
 		}
