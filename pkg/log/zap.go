@@ -34,7 +34,7 @@ func NewDefaultConfig() Config {
 		FileOutLogLevel: "info",
 		WriteTo:         "sidecar.log",
 		MaxSize:         1, // 100MB
-		MaxBackups:      0,
+		MaxBackups:      1,
 		MaxAge:          3, // 3 days
 		Compress:        false,
 	}
@@ -44,11 +44,8 @@ func NewLogger(config Config) *zap.Logger {
 	encoderCfg := zap.NewProductionEncoderConfig()
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	// Setup the primary output to always include os.Stderr
-	stderrSyncer := zapcore.Lock(os.Stderr)
-
 	var fileCore zapcore.Core
-	if config.WriteTo != "" && config.WriteTo != "stderr" {
+	if config.WriteTo != "" {
 		// Configure lumberjack for logging to a file
 		lumberjackLogger := &lumberjack.Logger{
 			Filename:   config.WriteTo,
@@ -79,9 +76,10 @@ func NewLogger(config Config) *zap.Logger {
 		logLevel = zapcore.InfoLevel // Fallback to info if setting fails
 	}
 
+	// Setup the primary output to always include os.Stderr
 	stdCore := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderCfg),
-		stderrSyncer,
+		zapcore.Lock(os.Stderr),
 		logLevel,
 	)
 

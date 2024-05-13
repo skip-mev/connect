@@ -120,7 +120,7 @@ func init() {
 		&maxBackups,
 		"log-max-backups",
 		"",
-		0,
+		1,
 		"Maximum number of old log files to retain.",
 	)
 	rootCmd.Flags().IntVarP(
