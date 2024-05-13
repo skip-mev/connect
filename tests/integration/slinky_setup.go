@@ -394,6 +394,29 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 	return nil
 }
 
+func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
+	msg := &mmtypes.MsgUpdateMarkets{
+		Authority: s.user.FormattedAddress(),
+		UpdateMarkets: markets,
+	}
+
+	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	if err != nil {
+		return err
+	}
+
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	return nil
+}
+
 // QueryProposal queries the chain for a given proposal
 func QueryProposal(chain *cosmos.CosmosChain, propID string) (*govtypesv1.QueryProposalResponse, error) {
 	// get grpc address
