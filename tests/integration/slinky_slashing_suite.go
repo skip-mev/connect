@@ -82,6 +82,15 @@ func (s *SlinkySlashingIntegrationSuite) SetupTest() {
 	}
 }
 
+func (s *SlinkySlashingIntegrationSuite) Height(ctx context.Context) (uint64, error) {
+	height, err := s.chain.Height(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	return uint64(height), nil
+}
+
 func (s *SlinkySlashingIntegrationSuite) TestAlerts() {
 	// test getting / setting params
 	s.Run("test get params", func() {
@@ -194,14 +203,14 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 
 		// get the current height, and submit an alert with a height that is too old
-		height, err := s.chain.Height(context.Background())
+		height, err := s.Height(context.Background())
 		s.Require().NoError(err)
 
 		// submit an alert
 		resp, err := s.SubmitAlert(
 			s.multiSigUser1,
 			alerttypes.NewAlert(
-				height-5,
+				uint64(height-5),
 				alertSubmitter,
 				slinkytypes.NewCurrencyPair("BTC", "USD"),
 			),
@@ -239,7 +248,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		s.Require().NoError(err)
 
 		// get the current height
-		height, err := s.chain.Height(context.Background())
+		height, err := s.Height(context.Background())
 		s.Require().NoError(err)
 
 		alertSubmitter, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
@@ -249,7 +258,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 		resp, err := s.SubmitAlert(
 			s.multiSigUser1,
 			alerttypes.NewAlert(
-				height-1,
+				uint64(height-1),
 				alertSubmitter,
 				slinkytypes.CurrencyPair{
 					Base:  "MOG",
@@ -265,7 +274,7 @@ func (s *SlinkySlashingIntegrationSuite) TestSubmittingAlerts() {
 	})
 
 	// submit the alert (the max block-age set previously will suffice)
-	height, err := s.chain.Height(context.Background())
+	height, err := s.Height(context.Background())
 	s.Require().NoError(err)
 
 	s.Run("test submitting an alert and check for bond deposit - pass", func() {
@@ -423,7 +432,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 		submitter1, err := sdk.AccAddressFromBech32(s.multiSigUser1.FormattedAddress())
 		s.Require().NoError(err)
 
-		height, err := s.chain.Height(context.Background())
+		height, err := s.Height(context.Background())
 		s.Require().NoError(err)
 
 		submitter2, err := sdk.AccAddressFromBech32(s.multiSigUser2.FormattedAddress())
@@ -616,7 +625,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 			}
 		})
 
-		alertHeight, err = s.chain.Height(context.Background())
+		alertHeight, err = s.Height(context.Background())
 		s.Require().NoError(err)
 
 		s.Run("submit an alert from multiSigAddress1", func() {
@@ -737,7 +746,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 		s.Run("expect that the alert still exists, even after commitHeight + purge-height", func() {
 			s.Run("alert exists", func() {
 				// query the current height, if less than max-block-age + alert.Height, check for alert's existence, and expect status to be concluded
-				currentHeight, err := s.chain.Height(context.Background())
+				currentHeight, err := s.Height(context.Background())
 				s.Require().NoError(err)
 
 				// query for the alert (if it still should exist)
@@ -759,7 +768,7 @@ func (s *SlinkySlashingIntegrationSuite) TestAlertPruning() {
 
 			s.Run("submission of alert fails", func() {
 				// query the current height, if less than max-block-age + alert.Height, attempt to submit an alert for the same height
-				currentHeight, err := s.chain.Height(context.Background())
+				currentHeight, err := s.Height(context.Background())
 				s.Require().NoError(err)
 
 				// submit the same alert again
