@@ -1,8 +1,6 @@
 module github.com/skip-mev/slinky
 
-go 1.22
-
-toolchain go1.22.0
+go 1.22.2
 
 require (
 	cosmossdk.io/api v0.7.4
@@ -52,6 +50,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240509183442-62759503f434
 	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.34.1
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	mvdan.cc/gofumpt v0.6.0
 )
 

@@ -104,6 +104,13 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 		if resp != nil {
 			status = providertypes.ErrorCode(resp.StatusCode)
 		}
+
+		pf.logger.Error(
+			"failed to make request",
+			zap.Error(err),
+			zap.String("url", url),
+		)
+
 		return providertypes.NewGetResponseWithErr[K, V](
 			ids,
 			providertypes.NewErrorWithCode( // TODO(nikhil): coordinate api-errors w/ correct metric codes
@@ -137,6 +144,14 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 		)
 	default:
 		response = pf.apiDataHandler.ParseResponse(ids, resp)
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		pf.logger.Error(
+			"failed to make and parse response",
+			zap.Int("status_code", resp.StatusCode),
+			zap.String("url", url),
+		)
 	}
 
 	return response

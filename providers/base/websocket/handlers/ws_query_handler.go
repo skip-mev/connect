@@ -255,7 +255,7 @@ func (h *WebSocketQueryHandlerImpl[K, V]) recv(ctx context.Context, responseCh c
 			// Case 2: The context is not cancelled. Wait for a message from the data provider.
 			message, err := h.connHandler.Read()
 			if err != nil {
-				h.logger.Debug(
+				h.logger.Error(
 					"failed to read message from websocket handler",
 					zap.String("message", string(message)),
 					zap.Error(err),
