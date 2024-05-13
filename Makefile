@@ -25,9 +25,18 @@ BENCHMARK_ITERS ?= 10
 DEFI_PROVIDERS_ENABLED ?= false
 SOLANA_NODE_ENDPOINT ?= https://api.devnet.solana.com
 ORACLE_GROUP ?= core
+GENESIS_MARKETS ?=  $(CONFIG_DIR)/$(ORACLE_GROUP)/market.json
+MARKETS := $(shell cat ${GENESIS_MARKETS})
+DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
+
+export HOMEDIR := $(HOMEDIR)
+export APP_TOML := $(APP_TOML)
+export GENESIS := $(GENESIS)
+export GENESIS_TMP := $(GENESIS_TMP)
+export MARKETS := $(MARKETS)
 
 ###############################################################################
 ###                               build                                     ###
@@ -55,33 +64,34 @@ update-local-configs: build
 	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_ORACLE_CONFIG_FILE} --node-http-url=localhost:1317 --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 	@./build/slinky-config --chain dydx --oracle-config-path ${DYDX_RESEARCH_ORACLE_CONFIG_FILE} --dydx-research-json-market-map=true --raydium-enabled=true --solana-node-endpoint ${SOLANA_NODE_ENDPOINT}
 
-start-all:
-	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
+start-all-dev:
+	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
-start-all-%:
-	@echo "Starting oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d --build
+start-all-%-dev:
+	@echo "Starting development oracle side-car, blockchain, grafana, and prometheus dashboard for $*..."
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d --build
 
-stop-all:
-	@echo "Stopping network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml down
+stop-all-dev:
+	@echo "Stopping development network..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 
-start-sidecar:
-	@echo "Starting oracle side-car, grafana, and prometheus dashboard..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
+start-sidecar-dev:
+	@echo "Starting development oracle side-car, grafana, and prometheus dashboard..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
 
-start-sidecar-%:
-	@echo "Starting oracle side-car, grafana, and prometheus dashboard for $*..."
-	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f docker-compose.yml up -d oracle prometheus grafana --build
+start-sidecar-%-dev:
+	@echo "Starting development oracle side-car, grafana, and prometheus dashboard for $*..."
+	@ORACLE_GROUP=$* $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) up -d oracle prometheus grafana --build
 
-stop-sidecar:
-	@echo "Stopping network..."
-	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f docker-compose.yml down
+stop-sidecar-dev:
+	@echo "Stopping development network..."
+	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 install: tidy
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
+	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
 .PHONY: build run-oracle-server install
@@ -159,23 +169,20 @@ $(BUILD_DIR)/:
 
 # build-configs builds a slinky simulation application binary in the build folder (/test/.slinkyd)
 build-configs:
-	@./build/slinkyd init validator --chain-id skip-1 --home $(HOMEDIR)
-	@./build/slinkyd keys add validator --home $(HOMEDIR) --keyring-backend test
-	@./build/slinkyd genesis add-genesis-account validator 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	@./build/slinkyd genesis add-genesis-account cosmos1see0htr47uapjvcvh0hu6385rp8lw3em24hysg 10000000000000000000000000stake --home $(HOMEDIR) --keyring-backend test
-	@./build/slinkyd genesis gentx validator 1000000000stake --chain-id skip-1 --home $(HOMEDIR) --keyring-backend test
-	@./build/slinkyd genesis collect-gentxs --home $(HOMEDIR)
-	@jq '.consensus["params"]["abci"]["vote_extensions_enable_height"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	@jq '.app_state["oracle"]["currency_pair_genesis"] += [{"currency_pair": {"Base": "BTC", "Quote": "USD"},"currency_pair_price": null,"nonce": "0"}]' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	@jq '.app_state["oracle"]["next_id"] = "2"' $(GENESIS) > $(GENESIS_TMP) && mv $(GENESIS_TMP) $(GENESIS)
-	@dasel put -r toml 'telemetry.enabled' -f $(APP_TOML) -t bool -v true
+	@rm -rf ./tests/.slinkyd/
+	@sh ./scripts/genesis.sh
 	@dasel put -r toml 'instrumentation.enabled' -f $(CONFIG_TOML) -t bool -v true
+	@dasel put -r toml 'rpc.laddr' -f $(CONFIG_TOML) -t string -v "tcp://0.0.0.0:26657"
+	@dasel put -r toml 'telemetry.enabled' -f $(APP_TOML) -t bool -v true
+	@dasel put -r toml 'api.enable' -f $(APP_TOML) -t bool -v true
+	@dasel put -r toml 'grpc.address' -f $(APP_TOML) -t string -v "0.0.0.0:9090"
+	@dasel put -r toml 'api.address' -f $(APP_TOML) -t string -v "tcp://0.0.0.0:1317"
+	@dasel put -r toml 'api.enabled-unsafe-cors' -f $(APP_TOML) -t bool -v true
 
 # start-app starts a slinky simulation application binary in the build folder (/test/.slinkyd)
 # this will set the environment variable for running locally
 start-app:
-	@./build/slinkyd start --api.enable true --api.enabled-unsafe-cors true --log_level info --home $(HOMEDIR)
-
+	@./build/slinkyd start --log_level info --home $(HOMEDIR)
 
 # build-and-start-app builds a slinky simulation application binary in the build folder
 # and initializes a single validator configuration. If desired, users can supplement

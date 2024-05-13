@@ -37,9 +37,12 @@ func MarketMapProviderFactory(
 		},
 		Timeout: cfg.API.Timeout,
 	}
-	var apiDataHandler types.MarketMapAPIDataHandler
-	var ids []types.Chain
-	var marketMapFetcher types.MarketMapFetcher
+
+	var (
+		apiDataHandler   types.MarketMapAPIDataHandler
+		ids              []types.Chain
+		marketMapFetcher types.MarketMapFetcher
+	)
 
 	requestHandler, err := apihandlers.NewRequestHandlerImpl(client)
 	if err != nil {
@@ -59,7 +62,18 @@ func MarketMapProviderFactory(
 		)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
-		apiDataHandler, err = marketmap.NewAPIHandler(cfg.API)
+		var client mmtypes.QueryClient
+		client, err = marketmap.NewGRPCClient(cfg.API)
+		if err != nil {
+			return nil, err
+		}
+
+		marketMapFetcher, err = marketmap.NewMarketMapFetcher(
+			logger,
+			cfg.API,
+			client,
+		)
+		ids = []types.Chain{{ChainID: "local-node"}}
 	}
 	if err != nil {
 		return nil, err

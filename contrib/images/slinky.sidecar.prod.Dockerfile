@@ -10,10 +10,9 @@ COPY . .
 RUN make build
 
 FROM gcr.io/distroless/base-debian11:debug
-EXPOSE 8080
-EXPOSE 8002
+EXPOSE 8080 8002
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
 
 WORKDIR /usr/local/bin/
-ENTRYPOINT ["slinky", "--oracle-config-path", "/oracle/oracle.json", "--market-config-path", "/oracle/market.json"]
+ENTRYPOINT ["slinky", "--oracle-config-path", "/oracle/oracle.json", "--update-market-config-path", "/oracle/market.json"]

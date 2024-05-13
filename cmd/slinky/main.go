@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/skip-mev/slinky/providers/apis/marketmap"
+
 	_ "net/http/pprof" //nolint: gosec
 
 	"github.com/spf13/cobra"
@@ -41,7 +43,13 @@ var (
 	runPprof            bool
 	profilePort         string
 	logLevel            string
+	fileLogLevel        string
 	writeLogsTo         string
+	marketMapEndPoint   string
+	maxLogSize          int
+	maxBackups          int
+	maxAge              int
+	compressLogs        bool
 )
 
 func init() {
@@ -82,19 +90,62 @@ func init() {
 	)
 	rootCmd.Flags().StringVarP(
 		&logLevel,
-		"log-level",
+		"log-std-out-level",
 		"",
 		"info",
 		"Log level (debug, info, warn, error, dpanic, panic, fatal).",
 	)
 	rootCmd.Flags().StringVarP(
+		&fileLogLevel,
+		"log-file-level",
+		"",
+		"info",
+		"Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).",
+	)
+	rootCmd.Flags().StringVarP(
 		&writeLogsTo,
 		"log-file",
 		"",
-		"",
+		"sidecar.log",
 		"Write logs to a file.",
 	)
+	rootCmd.Flags().IntVarP(
+		&maxLogSize,
+		"log-max-size",
+		"",
+		100,
+		"Maximum size in megabytes before log is rotated.",
+	)
+	rootCmd.Flags().IntVarP(
+		&maxBackups,
+		"log-max-backups",
+		"",
+		1,
+		"Maximum number of old log files to retain.",
+	)
+	rootCmd.Flags().IntVarP(
+		&maxAge,
+		"log-max-age",
+		"",
+		3,
+		"Maximum number of days to retain an old log file.",
+	)
+	rootCmd.Flags().BoolVarP(
+		&compressLogs,
+		"log-compress",
+		"",
+		false,
+		"Compress rotated log files.",
+	)
+	rootCmd.Flags().StringVarP(
+		&marketMapEndPoint,
+		"market-map-endpoint",
+		"",
+		"",
+		"Use a custom listen-to endpoint for market-map (overwrites what is provided in oracle-config).",
+	)
 	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
+	rootCmd.MarkFlagsMutuallyExclusive("market-map-endpoint", "market-config-path")
 }
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
@@ -115,22 +166,37 @@ func runOracle() error {
 
 	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
 	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %s", err.Error())
+		return fmt.Errorf("failed to read oracle config file: %w", err)
+	}
+
+	// overwrite endpoint
+	if marketMapEndPoint != "" {
+		cfg, err = overwriteMarketMapEndpoint(cfg, marketMapEndPoint)
+		if err != nil {
+			return fmt.Errorf("failed to overwrite market endpoint %s: %w", marketMapEndPoint, err)
+		}
 	}
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
 		marketCfg, err = mmtypes.ReadMarketMapFromFile(marketCfgPath)
 		if err != nil {
-			return fmt.Errorf("failed to read market config file: %s", err.Error())
+			return fmt.Errorf("failed to read market config file: %w", err)
 		}
 	}
 
+	// Set up logging.
+	logCfg := log.NewDefaultConfig()
+	logCfg.StdOutLogLevel = logLevel
+	logCfg.FileOutLogLevel = fileLogLevel
+	logCfg.WriteTo = writeLogsTo
+	logCfg.MaxSize = maxLogSize
+	logCfg.MaxBackups = maxBackups
+	logCfg.MaxAge = maxAge
+	logCfg.Compress = compressLogs
+
 	// Build logger.
-	logger := log.NewLogger(log.Config{
-		LogLevel: logLevel,
-		WriteTo:  writeLogsTo,
-	})
+	logger := log.NewLogger(logCfg)
 	defer logger.Sync()
 
 	logger.Info(
@@ -233,4 +299,16 @@ func runOracle() error {
 		logger.Error("stopping server", zap.Error(err))
 	}
 	return nil
+}
+
+func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (config.OracleConfig, error) {
+	for i, provider := range cfg.Providers {
+		if provider.Name == marketmap.Name {
+			provider.API.URL = overwrite
+			cfg.Providers[i] = provider
+			return cfg, cfg.ValidateBasic()
+		}
+	}
+
+	return cfg, fmt.Errorf("no market-map provider found in config")
 }

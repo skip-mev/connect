@@ -234,6 +234,7 @@ func TestParseResponseResearchAPI(t *testing.T) {
 			CurrencyPair:     slinkytypes.NewCurrencyPair("1INCH", "USD"),
 			Decimals:         10,
 			MinProviderCount: 3,
+			Enabled:          true,
 		}
 		require.Equal(t, expectedTicker, market.Ticker)
 
