@@ -1,8 +1,6 @@
 module github.com/skip-mev/slinky
 
-go 1.22
-
-toolchain go1.22.0
+go 1.22.2
 
 require (
 	cosmossdk.io/api v0.7.4
@@ -14,9 +12,9 @@ require (
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/store v1.1.0
 	cosmossdk.io/tools/confix v0.1.1
-	cosmossdk.io/x/circuit v0.1.0
+	cosmossdk.io/x/circuit v0.1.1
 	cosmossdk.io/x/tx v0.13.3
-	cosmossdk.io/x/upgrade v0.1.1
+	cosmossdk.io/x/upgrade v0.1.2
 	github.com/bits-and-blooms/bitset v1.13.0
 	github.com/client9/misspell v0.3.4
 	github.com/cometbft/cometbft v0.38.7
@@ -25,7 +23,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.6
 	github.com/cosmos/gogogateway v1.2.0
 	github.com/cosmos/gogoproto v1.4.12
-	github.com/cosmos/interchain-security/v5 v5.0.0-rc0
+	github.com/cosmos/interchain-security/v5 v5.0.0
 	github.com/ethereum/go-ethereum v1.14.3
 	github.com/gagliardetto/binary v0.8.0
 	github.com/gagliardetto/solana-go v1.10.0
@@ -36,7 +34,7 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/klauspost/compress v1.17.8
-	github.com/prometheus/client_golang v1.19.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
@@ -52,6 +50,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240304212257-790db918fca8
 	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.34.1
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	mvdan.cc/gofumpt v0.6.0
 )
 
