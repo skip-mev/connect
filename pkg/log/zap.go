@@ -35,7 +35,7 @@ func NewDefaultConfig() Config {
 		WriteTo:         "",
 		MaxSize:         1, // 100MB
 		MaxBackups:      0,
-		MaxAge:          1, // 1 day
+		MaxAge:          3, // 3 days
 		Compress:        false,
 	}
 }

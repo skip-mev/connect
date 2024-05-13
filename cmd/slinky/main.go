@@ -97,7 +97,7 @@ func init() {
 	)
 	rootCmd.Flags().StringVarP(
 		&fileLogLevel,
-		"file-log-level",
+		"log-file-level",
 		"",
 		"info",
 		"Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).",
@@ -120,14 +120,14 @@ func init() {
 		&maxBackups,
 		"log-max-backups",
 		"",
-		2,
+		0,
 		"Maximum number of old log files to retain.",
 	)
 	rootCmd.Flags().IntVarP(
 		&maxAge,
 		"log-max-age",
 		"",
-		1,
+		3,
 		"Maximum number of days to retain an old log file.",
 	)
 	rootCmd.Flags().BoolVarP(
