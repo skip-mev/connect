@@ -55,7 +55,7 @@ type PriceFetcher struct {
 func NewPriceFetcher(
 	ctx context.Context,
 	logger *zap.Logger,
-	rpcMetrics metrics.APIMetrics,
+	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (*PriceFetcher, error) {
 	if err := api.ValidateBasic(); err != nil {
@@ -82,13 +82,19 @@ func NewPriceFetcher(
 			ctx,
 			logger.With(zap.String("multi_client", api.Name)),
 			api,
-			rpcMetrics,
+			apiMetrics,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error creating multi-client: %w", err)
 		}
 	} else {
-		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(ctx, api)
+		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(
+			ctx,
+			
+			apiMetrics,
+			api.Name,
+			api.URL,
+		)
 		if err != nil {
 			return nil, err
 		}

@@ -20,6 +20,8 @@ import (
 type APIMetrics interface {
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
 	// This increments the number of responses by provider, id (i.e. currency pair), and status.
+	//
+	// TODO(david); Deprecate this since this is replicated in the base provider.
 	AddProviderResponse(providerName, id string, errorCode providertypes.ErrorCode)
 
 	// AddHTTPStatusCode increments the number of responses by provider and status.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
@@ -24,8 +25,9 @@ var _ EVMClient = (*GoEthereumClientImpl)(nil)
 // GoEthereumClientImpl is a go-ethereum client implementation using the go-ethereum RPC
 // library.
 type GoEthereumClientImpl struct {
-	rpcMetrics metrics.APIMetrics
-	api        config.APIConfig
+	apiMetrics   metrics.APIMetrics
+	providerName string
+	url          string
 
 	// client is the underlying rpc client.
 	client *rpc.Client
@@ -35,18 +37,19 @@ type GoEthereumClientImpl struct {
 // implementation that connects to an ethereum node via rpc.
 func NewGoEthereumClientImplFromURL(
 	ctx context.Context,
-	rpcMetrics metrics.APIMetrics,
-	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+	providerName, url string,
 ) (EVMClient, error) {
-	client, err := rpc.DialOptions(ctx, api.URL)
+	client, err := rpc.DialOptions(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
 	}
 
 	return &GoEthereumClientImpl{
-		rpcMetrics: rpcMetrics,
-		api:        api,
-		client:     client,
+		apiMetrics:   apiMetrics,
+		providerName: providerName,
+		url:          url,
+		client:       client,
 	}, nil
 }
 
@@ -54,20 +57,16 @@ func NewGoEthereumClientImplFromURL(
 // authentication via a specified http header key and value.
 func NewGoEthereumClientImplFromEndpoint(
 	ctx context.Context,
-	rpcMetrics metrics.APIMetrics,
-	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+	providerName string,
+	endpoint config.Endpoint,
 ) (EVMClient, error) {
-	var opts []rpc.ClientOption
-
-	if len(api.Endpoints) != 1 {
-		return nil, fmt.Errorf("no endpoints provided to create go-ethereum client")
-	}
-
 	// fail if we have an invalid endpoint
-	endpoint := api.Endpoints[0]
 	if err := endpoint.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
 	}
+
+	var opts []rpc.ClientOption
 	if endpoint.Authentication.Enabled() {
 		opts = append(opts, rpc.WithHTTPAuth(func(h http.Header) error {
 			h.Set(endpoint.Authentication.APIKeyHeader, endpoint.Authentication.APIKey)
@@ -81,9 +80,10 @@ func NewGoEthereumClientImplFromEndpoint(
 	}
 
 	return &GoEthereumClientImpl{
-		rpcMetrics: rpcMetrics,
-		api:        api,
-		client:     client,
+		apiMetrics:   apiMetrics,
+		providerName: providerName,
+		url:          endpoint.URL,
+		client:       client,
 	}, nil
 }
 
@@ -96,9 +96,16 @@ func NewGoEthereumClientImplFromEndpoint(
 //
 // Note that batch calls may not be executed atomically on the server side.
 func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
+	start := time.Now()
+	defer func() {
+		c.apiMetrics.ObserveProviderResponseLatency(c.providerName, c.url, time.Since(start))
+	}()
+
 	if err := c.client.BatchCallContext(ctx, calls); err != nil {
+		c.apiMetrics.AddRPCStatusCode(c.providerName, c.url, metrics.RPCCodeError)
 		return fmt.Errorf("failed to batch call: %w", err)
 	}
 
+	c.apiMetrics.AddRPCStatusCode(c.providerName, c.url, metrics.RPCCodeOK)
 	return nil
 }

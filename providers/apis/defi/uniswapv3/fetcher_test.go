@@ -16,6 +16,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -346,7 +347,12 @@ func TestNewPriceFetcher(t *testing.T) {
 	}
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			pf, err := uniswapv3.NewPriceFetcher(ctx, tc.logger, tc.api)
+			pf, err := uniswapv3.NewPriceFetcher(
+				ctx,
+				tc.logger,
+				metrics.NewNopAPIMetrics(),
+				tc.api,
+			)
 			if tc.err != nil {
 				require.ErrorContains(t, err, tc.err.Error())
 			} else {

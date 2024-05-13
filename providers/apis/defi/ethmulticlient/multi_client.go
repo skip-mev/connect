@@ -15,9 +15,8 @@ import (
 // MultiRPCClient implements the EVMClient interface by calling multiple underlying EVMClients and choosing
 // the best response.
 type MultiRPCClient struct {
-	logger     *zap.Logger
-	config     config.APIConfig
-	rpcMetrics metrics.APIMetrics
+	logger *zap.Logger
+	config config.APIConfig
 
 	// underlying clients
 	clients []EVMClient
@@ -27,14 +26,12 @@ type MultiRPCClient struct {
 func NewMultiRPCClient(
 	logger *zap.Logger,
 	config config.APIConfig,
-	rpcMetrics metrics.APIMetrics,
 	clients []EVMClient,
 ) *MultiRPCClient {
 	return &MultiRPCClient{
-		logger:     logger,
-		config:     config,
-		rpcMetrics: rpcMetrics,
-		clients:    clients,
+		logger:  logger,
+		config:  config,
+		clients: clients,
 	}
 }
 
@@ -43,7 +40,7 @@ func NewMultiRPCClientFromEndpoints(
 	ctx context.Context,
 	logger *zap.Logger,
 	config config.APIConfig,
-	rpcMetrics metrics.APIMetrics,
+	apiMetrics metrics.APIMetrics,
 ) (*MultiRPCClient, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -56,7 +53,7 @@ func NewMultiRPCClientFromEndpoints(
 	clients := make([]EVMClient, len(config.Endpoints))
 	for i, endpoint := range config.Endpoints {
 		var err error
-		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, endpoint)
+		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, config.Name, endpoint)
 		if err != nil {
 			logger.Error(
 				"endpoint failed to construct client",
@@ -68,7 +65,6 @@ func NewMultiRPCClientFromEndpoints(
 	return NewMultiRPCClient(
 		logger,
 		config,
-		rpcMetrics,
 		clients,
 	), nil
 }
@@ -102,20 +98,8 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				zap.Any("result", req[blockNumReqIndex].Result),
 				zap.Error(req[blockNumReqIndex].Error),
 			)
-			m.rpcMetrics.AddRPCStatusCode(
-				m.config.Name,
-				url,
-				metrics.RPCCodeError,
-			)
-
 			continue
 		}
-
-		m.rpcMetrics.AddRPCStatusCode(
-			m.config.Name,
-			url,
-			metrics.RPCCodeOK,
-		)
 
 		r, ok := req[blockNumReqIndex].Result.(*string)
 		if !ok {
@@ -149,6 +133,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			copy(batchElems, req[:blockNumReqIndex])
 		}
 	}
+
 	if maxHeight == 0 {
 		return errs
 	}

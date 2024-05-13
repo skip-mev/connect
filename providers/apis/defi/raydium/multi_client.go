@@ -122,6 +122,7 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 					zap.String("url", url),
 					zap.Error(err),
 				)
+
 				return
 			}
 
