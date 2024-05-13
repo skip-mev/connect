@@ -90,7 +90,7 @@ func init() {
 	)
 	rootCmd.Flags().StringVarP(
 		&logLevel,
-		"log-std-level",
+		"log-std-out-level",
 		"",
 		"info",
 		"Log level (debug, info, warn, error, dpanic, panic, fatal).",

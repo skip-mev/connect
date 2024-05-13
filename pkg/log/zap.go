@@ -11,7 +11,7 @@ import (
 
 // Config is the configuration for the logger.
 type Config struct {
-	// StdOutLogLevel is the log level for the logger.
+	// StdOutLogLevel is the log level for the standard out logger.
 	StdOutLogLevel string
 	// FileOutLogLevel is the log level for the file logger.
 	FileOutLogLevel string
@@ -32,7 +32,7 @@ func NewDefaultConfig() Config {
 	return Config{
 		StdOutLogLevel:  "info",
 		FileOutLogLevel: "info",
-		WriteTo:         "",
+		WriteTo:         "sidecar.log",
 		MaxSize:         1, // 100MB
 		MaxBackups:      0,
 		MaxAge:          3, // 3 days
@@ -47,7 +47,7 @@ func NewLogger(config Config) *zap.Logger {
 	// Setup the primary output to always include os.Stderr
 	stderrSyncer := zapcore.Lock(os.Stderr)
 
-	var fileSyncer zapcore.WriteSyncer
+	var fileCore zapcore.Core
 	if config.WriteTo != "" && config.WriteTo != "stderr" {
 		// Configure lumberjack for logging to a file
 		lumberjackLogger := &lumberjack.Logger{
@@ -57,13 +57,9 @@ func NewLogger(config Config) *zap.Logger {
 			MaxAge:     config.MaxAge,
 			Compress:   config.Compress,
 		}
-		fileSyncer = zapcore.AddSync(lumberjackLogger)
-	}
+		fileSyncer := zapcore.AddSync(lumberjackLogger)
 
-	// Use zapcore.NewTee to write to both stderr and the file (if configured)
-	var fileCore zapcore.Core
-	if fileSyncer != nil {
-		logLevel := zapcore.InfoLevel // Default log level
+		logLevel := zapcore.InfoLevel
 		if err := logLevel.Set(config.FileOutLogLevel); err != nil {
 			fmt.Fprintf(os.Stderr, "failed to set log level on file logging: %v\nfalling back to info", err)
 			logLevel = zapcore.InfoLevel // Fallback to info if setting fails
@@ -76,7 +72,8 @@ func NewLogger(config Config) *zap.Logger {
 		)
 	}
 
-	logLevel := zapcore.InfoLevel // Default log level
+	// Setup the primary output to always include os.Stderr.
+	logLevel := zapcore.InfoLevel
 	if err := logLevel.Set(config.StdOutLogLevel); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to set log level on std out: %v\nfalling back to info", err)
 		logLevel = zapcore.InfoLevel // Fallback to info if setting fails
@@ -88,6 +85,7 @@ func NewLogger(config Config) *zap.Logger {
 		logLevel,
 	)
 
+	// Use zapcore.NewTee to write to both stderr and the file (if configured)
 	var core zapcore.Core
 	if fileCore != nil {
 		core = zapcore.NewTee(stdCore, fileCore)
