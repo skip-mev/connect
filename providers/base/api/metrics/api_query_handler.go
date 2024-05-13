@@ -33,7 +33,7 @@ type APIMetrics interface {
 	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
 	// time it took for all the requests to complete.
-	ObserveProviderResponseLatency(providerName string, duration time.Duration)
+	ObserveProviderResponseLatency(providerName, url string, duration time.Duration)
 }
 
 // APIMetricsImpl contains metrics exposed by this package.
@@ -82,12 +82,13 @@ func NewAPIMetrics() APIMetrics {
 			Name:      "api_response_latency",
 			Help:      "Response time per API provider.",
 			Buckets:   []float64{50, 100, 250, 500, 1000, 2000},
-		}, []string{providermetrics.ProviderLabel}),
+		}, []string{providermetrics.ProviderLabel, EndpointLabel}),
 	}
 
 	// register the above metrics
 	prometheus.MustRegister(m.apiResponseStatusPerProvider)
 	prometheus.MustRegister(m.apiHTTPStatusCodePerProvider)
+	prometheus.MustRegister(m.apiRPCStatusCodePerProvider)
 	prometheus.MustRegister(m.apiResponseTimePerProvider)
 
 	return m
@@ -103,7 +104,7 @@ func NewNopAPIMetrics() APIMetrics {
 func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode) {}
 func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)                      {}
 func (m *noOpAPIMetricsImpl) AddRPCStatusCode(_, _ string, _ RPCCode)                           {}
-func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration)          {}
+func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_, _ string, _ time.Duration)       {}
 
 // AddProviderResponse increments the number of requests by provider and status.
 func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err providertypes.ErrorCode) {
@@ -162,9 +163,10 @@ func (m *APIMetricsImpl) AddRPCStatusCode(providerName, endpoint string, code RP
 }
 
 // ObserveProviderResponseLatency records the time it took for a provider to respond.
-func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
+func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName, url string, duration time.Duration) {
 	m.apiResponseTimePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
+		EndpointLabel:                 url,
 	},
 	).Observe(float64(duration.Milliseconds()))
 }

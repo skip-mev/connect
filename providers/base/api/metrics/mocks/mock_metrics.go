@@ -28,14 +28,14 @@ func (_m *APIMetrics) AddProviderResponse(providerName string, id string, errorC
 	_m.Called(providerName, id, errorCode)
 }
 
-// AddRPCStatusCode provides a mock function with given fields: providerName, code
-func (_m *APIMetrics) AddRPCStatusCode(providerName string, code metrics.RPCCode) {
-	_m.Called(providerName, code)
+// AddRPCStatusCode provides a mock function with given fields: providerName, endpoint, code
+func (_m *APIMetrics) AddRPCStatusCode(providerName string, endpoint string, code metrics.RPCCode) {
+	_m.Called(providerName, endpoint, code)
 }
 
-// ObserveProviderResponseLatency provides a mock function with given fields: providerName, duration
-func (_m *APIMetrics) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
-	_m.Called(providerName, duration)
+// ObserveProviderResponseLatency provides a mock function with given fields: providerName, url, duration
+func (_m *APIMetrics) ObserveProviderResponseLatency(providerName string, url string, duration time.Duration) {
+	_m.Called(providerName, url, duration)
 }
 
 // NewAPIMetrics creates a new instance of APIMetrics. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
