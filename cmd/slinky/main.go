@@ -43,6 +43,7 @@ var (
 	runPprof            bool
 	profilePort         string
 	logLevel            string
+	fileLogLevel        string
 	writeLogsTo         string
 	marketMapEndPoint   string
 )
@@ -89,6 +90,13 @@ func init() {
 		"",
 		"info",
 		"Log level (debug, info, warn, error, dpanic, panic, fatal).",
+	)
+	rootCmd.Flags().StringVarP(
+		&fileLogLevel,
+		"file-log-level",
+		"",
+		"info",
+		"Log level for the file logger (debug, info, warn, error, dpanic, panic, fatal).",
 	)
 	rootCmd.Flags().StringVarP(
 		&writeLogsTo,
@@ -146,7 +154,8 @@ func runOracle() error {
 	}
 
 	logCfg := log.NewDefaultConfig()
-	logCfg.LogLevel = logLevel
+	logCfg.StdOutLogLevel = logLevel
+	logCfg.FileOutLogLevel = fileLogLevel
 	logCfg.WriteTo = writeLogsTo
 
 	// Build logger.

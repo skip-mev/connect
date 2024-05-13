@@ -11,8 +11,10 @@ import (
 
 // Config is the configuration for the logger.
 type Config struct {
-	// LogLevel is the log level for the logger.
-	LogLevel string
+	// StdOutLogLevel is the log level for the logger.
+	StdOutLogLevel string
+	// FileOutLogLevel is the log level for the file logger.
+	FileOutLogLevel string
 	// WriteTo is the output file for the logger. If empty, logs will be written to stderr.
 	WriteTo string
 	// MaxSize is the maximum size in megabytes before log is rotated.
@@ -28,12 +30,13 @@ type Config struct {
 // NewDefaultConfig creates a default configuration for the logger.
 func NewDefaultConfig() Config {
 	return Config{
-		LogLevel:   "info",
-		WriteTo:    "",
-		MaxSize:    100, // 100MB
-		MaxBackups: 0,
-		MaxAge:     1, // 1 day
-		Compress:   false,
+		StdOutLogLevel:  "info",
+		FileOutLogLevel: "info",
+		WriteTo:         "",
+		MaxSize:         100, // 100MB
+		MaxBackups:      2,
+		MaxAge:          3, // 1 day
+		Compress:        false,
 	}
 }
 
@@ -58,24 +61,39 @@ func NewLogger(config Config) *zap.Logger {
 	}
 
 	// Use zapcore.NewTee to write to both stderr and the file (if configured)
-	var combinedSyncer zapcore.WriteSyncer
+	var fileCore zapcore.Core
 	if fileSyncer != nil {
-		combinedSyncer = zapcore.NewMultiWriteSyncer(stderrSyncer, fileSyncer)
-	} else {
-		combinedSyncer = stderrSyncer
+		logLevel := zapcore.InfoLevel // Default log level
+		if err := logLevel.Set(config.FileOutLogLevel); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to set log level on file logging: %v\nfalling back to info", err)
+			logLevel = zapcore.InfoLevel // Fallback to info if setting fails
+		}
+
+		fileCore = zapcore.NewCore(
+			zapcore.NewJSONEncoder(encoderCfg),
+			fileSyncer,
+			logLevel,
+		)
 	}
 
 	logLevel := zapcore.InfoLevel // Default log level
-	if err := logLevel.Set(config.LogLevel); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to set log level: %v\nfalling back to info", err)
+	if err := logLevel.Set(config.StdOutLogLevel); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to set log level on std out: %v\nfalling back to info", err)
 		logLevel = zapcore.InfoLevel // Fallback to info if setting fails
 	}
 
-	core := zapcore.NewCore(
+	stdCore := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderCfg),
-		combinedSyncer,
+		stderrSyncer,
 		logLevel,
 	)
+
+	var core zapcore.Core
+	if fileCore != nil {
+		core = zapcore.NewTee(stdCore, fileCore)
+	} else {
+		core = stdCore
+	}
 
 	return zap.New(
 		core,
