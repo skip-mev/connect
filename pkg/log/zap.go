@@ -33,9 +33,9 @@ func NewDefaultConfig() Config {
 		StdOutLogLevel:  "info",
 		FileOutLogLevel: "info",
 		WriteTo:         "",
-		MaxSize:         100, // 100MB
-		MaxBackups:      2,
-		MaxAge:          3, // 1 day
+		MaxSize:         1, // 100MB
+		MaxBackups:      0,
+		MaxAge:          1, // 1 day
 		Compress:        false,
 	}
 }
