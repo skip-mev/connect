@@ -130,7 +130,6 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		return
 	}
 
-	// Observe the total amount of time it takes to fulfill the request(s).
 	h.logger.Debug("starting api query handler")
 	defer func() {
 		if r := recover(); r != nil {
@@ -174,7 +173,13 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 			// Create a new task for the batch.
 			tasks = append(tasks, h.subTask(ctx, ids[start:end], responseCh))
 		}
-		h.logger.Debug("created sub-tasks", zap.Int("threads", threads), zap.Int("limit", limit), zap.Int("batch_size", batchSize))
+
+		h.logger.Debug(
+			"created sub-tasks",
+			zap.Int("threads", threads),
+			zap.Int("limit", limit),
+			zap.Int("batch_size", batchSize),
+		)
 	}
 
 	// Block each task until the wait group has capacity to accept a new response.
@@ -234,8 +239,8 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 	responseCh chan<- providertypes.GetResponse[K, V],
 ) func() error {
 	return func() error {
+		// Observe the total amount of time it takes to fulfill the request(s).
 		start := time.Now().UTC()
-
 		defer func() {
 			// Recover from any panics that occur.
 			if r := recover(); r != nil {
