@@ -21,8 +21,8 @@ import (
 // requests to multiple underlying clients, and aggregates over all provided responses.
 type MultiJSONRPCClient struct {
 	logger     *zap.Logger
-	config     config.APIConfig
-	rpcMetrics metrics.APIMetrics
+	api        config.APIConfig
+	apiMetrics metrics.APIMetrics
 
 	// underlying clients
 	clients []SolanaJSONRPCClient
@@ -30,14 +30,14 @@ type MultiJSONRPCClient struct {
 
 func NewMultiJSONRPCClient(
 	logger *zap.Logger,
-	config config.APIConfig,
+	api config.APIConfig,
 	rpcMetrics metrics.APIMetrics,
 	clients []SolanaJSONRPCClient,
 ) *MultiJSONRPCClient {
 	return &MultiJSONRPCClient{
 		logger:     logger,
-		config:     config,
-		rpcMetrics: rpcMetrics,
+		api:        api,
+		apiMetrics: rpcMetrics,
 		clients:    clients,
 	}
 }
@@ -45,14 +45,13 @@ func NewMultiJSONRPCClient(
 // NewMultiJSONRPCClientFromEndpoints creates a new MultiJSONRPCClient from a list of endpoints.
 func NewMultiJSONRPCClientFromEndpoints(
 	logger *zap.Logger,
-	config config.APIConfig,
-	rpcMetrics metrics.APIMetrics,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
 ) (*MultiJSONRPCClient, error) {
-	clients := make([]SolanaJSONRPCClient, len(config.Endpoints))
-
 	var err error
-	for i := range config.Endpoints {
-		clients[i], err = solanaClientFromEndpoint(config.Endpoints[i])
+	clients := make([]SolanaJSONRPCClient, len(api.Endpoints))
+	for i := range api.Endpoints {
+		clients[i], err = solanaClientFromEndpoint(api.Endpoints[i])
 		if err != nil {
 			return nil, fmt.Errorf("failed to create solana client from endpoint: %w", err)
 		}
@@ -60,8 +59,8 @@ func NewMultiJSONRPCClientFromEndpoints(
 
 	return NewMultiJSONRPCClient(
 		logger,
-		config,
-		rpcMetrics,
+		api,
+		apiMetrics,
 		clients,
 	), nil
 }
@@ -105,37 +104,23 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	wg.Add(len(c.clients))
 
 	for i := range c.clients {
+		url := c.api.Endpoints[i].URL
 		go func(client SolanaJSONRPCClient) {
 			// Observe the latency of the request.
-			url := c.config.Endpoints[i].URL
 			start := time.Now()
 			defer func() {
 				wg.Done()
-				c.rpcMetrics.ObserveProviderResponseLatency(c.config.Name, url, time.Since(start))
+				c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
 			}()
 
 			resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 			if err != nil {
-				c.rpcMetrics.AddRPCStatusCode(
-					c.config.Name,
-					url,
-					metrics.RPCCodeError,
-				)
-
-				c.logger.Error(
-					"failed to fetch accounts",
-					zap.String("url", url),
-					zap.Error(err),
-				)
-
+				c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
+				c.logger.Error("failed to fetch accounts", zap.String("url", url), zap.Error(err))
 				return
 			}
 
-			c.rpcMetrics.AddRPCStatusCode(
-				c.config.Name,
-				url,
-				metrics.RPCCodeOK,
-			)
+			c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
 			responsesCh <- resp
 			c.logger.Debug("successfully fetched accounts", zap.String("url", url))
 		}(c.clients[i])

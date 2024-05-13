@@ -36,21 +36,13 @@ func NewMultiRPCClient(
 func NewMultiRPCClientFromEndpoints(
 	ctx context.Context,
 	logger *zap.Logger,
-	config config.APIConfig,
+	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (*MultiRPCClient, error) {
-	if logger == nil {
-		return nil, fmt.Errorf("logger cannot be nil")
-	}
-
-	if len(config.Endpoints) == 0 {
-		return nil, fmt.Errorf("no endpoints provided")
-	}
-
-	clients := make([]EVMClient, len(config.Endpoints))
-	for i, endpoint := range config.Endpoints {
+	clients := make([]EVMClient, len(api.Endpoints))
+	for i, endpoint := range api.Endpoints {
 		var err error
-		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, config.Name, endpoint)
+		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, endpoint, api.Name)
 		if err != nil {
 			logger.Error(
 				"endpoint failed to construct client",

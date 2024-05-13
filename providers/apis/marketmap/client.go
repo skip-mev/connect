@@ -16,18 +16,20 @@ import (
 type MarketMapClient struct {
 	mmtypes.QueryClient
 
+	// metrics is the metrics collector for the MarketMapClient.
 	metrics metrics.APIMetrics
-	config  config.APIConfig
+	// api is the APIConfig for the MarketMapClient.
+	api config.APIConfig
 }
 
 // NewGRPCClient returns a new GRPC client for MarketMap module.
 func NewMarketMapClient(
-	config config.APIConfig,
+	api config.APIConfig,
 	metrics metrics.APIMetrics,
 ) (mmtypes.QueryClient, error) {
 	// TODO: Do we want to ignore proxy settings?
 	conn, err := grpc.Dial(
-		config.URL,
+		api.URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -37,7 +39,7 @@ func NewMarketMapClient(
 	return &MarketMapClient{
 		QueryClient: mmtypes.NewQueryClient(conn),
 		metrics:     metrics,
-		config:      config,
+		api:         api,
 	}, nil
 }
 
@@ -49,15 +51,15 @@ func (c *MarketMapClient) MarketMap(
 ) (*mmtypes.MarketMapResponse, error) {
 	start := time.Now()
 	defer func() {
-		c.metrics.ObserveProviderResponseLatency(c.config.Name, c.config.URL, time.Since(start))
+		c.metrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
 	}()
 
 	resp, err := c.QueryClient.MarketMap(ctx, req)
 	if err != nil {
-		c.metrics.AddRPCStatusCode(c.config.Name, c.config.URL, metrics.RPCCodeOK)
+		c.metrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
 		return resp, err
 	}
 
-	c.metrics.AddRPCStatusCode(c.config.Name, c.config.URL, metrics.RPCCodeOK)
+	c.metrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
 	return resp, nil
 }

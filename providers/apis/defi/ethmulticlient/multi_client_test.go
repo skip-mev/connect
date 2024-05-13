@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
 )
@@ -31,7 +30,6 @@ func TestMultiClient(t *testing.T) {
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
 				[]ethmulticlient.EVMClient{},
-				[]config.Endpoint{},
 			),
 			args: []rpc.BatchElem{},
 			err:  nil,
@@ -39,6 +37,7 @@ func TestMultiClient(t *testing.T) {
 		{
 			name: "single client failure height request",
 			client: ethmulticlient.NewMultiRPCClient(
+				logger,
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -47,8 +46,6 @@ func TestMultiClient(t *testing.T) {
 						[]error{nil, fmt.Errorf("height req failed")},
 					),
 				},
-				[]config.Endpoint{},
-				logger,
 			),
 			args: []rpc.BatchElem{{}},
 			err:  fmt.Errorf("endpoint request failed"),
@@ -56,6 +53,7 @@ func TestMultiClient(t *testing.T) {
 		{
 			name: "single client failure hex height decode",
 			client: ethmulticlient.NewMultiRPCClient(
+				logger,
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -64,8 +62,6 @@ func TestMultiClient(t *testing.T) {
 						[]error{nil, nil},
 					),
 				},
-				[]config.Endpoint{},
-				logger,
 			),
 			args: []rpc.BatchElem{{}},
 			err:  fmt.Errorf("could not decode hex eth height"),
@@ -73,6 +69,7 @@ func TestMultiClient(t *testing.T) {
 		{
 			name: "single client success",
 			client: ethmulticlient.NewMultiRPCClient(
+				logger,
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -81,8 +78,6 @@ func TestMultiClient(t *testing.T) {
 						[]error{nil, nil},
 					),
 				},
-				[]config.Endpoint{{URL: "foobar"}},
-				logger,
 			),
 			args:            []rpc.BatchElem{{}},
 			expectedResults: []interface{}{"some value"},
@@ -91,6 +86,7 @@ func TestMultiClient(t *testing.T) {
 		{
 			name: "two clients one failed height request",
 			client: ethmulticlient.NewMultiRPCClient(
+				logger,
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -105,8 +101,6 @@ func TestMultiClient(t *testing.T) {
 						[]error{nil, nil},
 					),
 				},
-				[]config.Endpoint{{URL: "foobar"}, {URL: "baz"}},
-				logger,
 			),
 			args:            []rpc.BatchElem{{}},
 			expectedResults: []interface{}{"some value"},
@@ -115,6 +109,7 @@ func TestMultiClient(t *testing.T) {
 		{
 			name: "two clients different heights",
 			client: ethmulticlient.NewMultiRPCClient(
+				logger,
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -129,8 +124,6 @@ func TestMultiClient(t *testing.T) {
 						[]error{nil, nil},
 					),
 				},
-				[]config.Endpoint{{URL: "foobar"}, {URL: "baz"}},
-				logger,
 			),
 			args:            []rpc.BatchElem{{}},
 			expectedResults: []interface{}{"value2"},

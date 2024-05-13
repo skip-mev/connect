@@ -47,7 +47,7 @@ func TestMultiJSONRPCClient(t *testing.T) {
 				},
 			}
 
-			_, err := raydium.NewMultiJSONRPCClientFromEndpoints(endpoints, zap.NewNop())
+			_, err := raydium.NewMultiJSONRPCClientFromEndpoints(zap.NewNop(), endpoints)
 			require.NoError(t, err)
 		})
 	})

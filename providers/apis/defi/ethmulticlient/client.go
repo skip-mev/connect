@@ -27,7 +27,6 @@ var _ EVMClient = (*GoEthereumClientImpl)(nil)
 type GoEthereumClientImpl struct {
 	apiMetrics   metrics.APIMetrics
 	providerName string
-	url          string
 
 	// client is the underlying rpc client.
 	client *rpc.Client
@@ -38,17 +37,16 @@ type GoEthereumClientImpl struct {
 func NewGoEthereumClientImplFromURL(
 	ctx context.Context,
 	apiMetrics metrics.APIMetrics,
-	providerName, url string,
+	api config.APIConfig,
 ) (EVMClient, error) {
-	client, err := rpc.DialOptions(ctx, url)
+	client, err := rpc.DialOptions(ctx, api.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
 	}
 
 	return &GoEthereumClientImpl{
 		apiMetrics:   apiMetrics,
-		providerName: providerName,
-		url:          url,
+		providerName: api.Name,
 		client:       client,
 	}, nil
 }
@@ -58,9 +56,17 @@ func NewGoEthereumClientImplFromURL(
 func NewGoEthereumClientImplFromEndpoint(
 	ctx context.Context,
 	apiMetrics metrics.APIMetrics,
-	providerName string,
 	endpoint config.Endpoint,
+	name string,
 ) (EVMClient, error) {
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("api metrics is nil")
+	}
+
+	if len(name) == 0 {
+		return nil, fmt.Errorf("provider name is empty")
+	}
+
 	// fail if we have an invalid endpoint
 	if err := endpoint.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
@@ -81,9 +87,8 @@ func NewGoEthereumClientImplFromEndpoint(
 
 	return &GoEthereumClientImpl{
 		apiMetrics:   apiMetrics,
-		providerName: providerName,
-		url:          endpoint.URL,
 		client:       client,
+		providerName: name,
 	}, nil
 }
 
@@ -98,14 +103,14 @@ func NewGoEthereumClientImplFromEndpoint(
 func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
 	start := time.Now()
 	defer func() {
-		c.apiMetrics.ObserveProviderResponseLatency(c.providerName, c.url, time.Since(start))
+		c.apiMetrics.ObserveProviderResponseLatency(c.providerName, time.Since(start))
 	}()
 
 	if err := c.client.BatchCallContext(ctx, calls); err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.providerName, c.url, metrics.RPCCodeError)
+		c.apiMetrics.AddRPCStatusCode(c.providerName, metrics.RPCCodeError)
 		return fmt.Errorf("failed to batch call: %w", err)
 	}
 
-	c.apiMetrics.AddRPCStatusCode(c.providerName, c.url, metrics.RPCCodeOK)
+	c.apiMetrics.AddRPCStatusCode(c.providerName, metrics.RPCCodeOK)
 	return nil
 }

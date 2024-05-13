@@ -74,6 +74,10 @@ func NewPriceFetcher(
 		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
 	}
 
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("api metrics is nil")
+	}
+
 	// use a multi-client if multiple endpoints are provided
 	var client ethmulticlient.EVMClient
 	var err error
@@ -91,8 +95,7 @@ func NewPriceFetcher(
 		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(
 			ctx,
 			apiMetrics,
-			api.Name,
-			api.URL,
+			api,
 		)
 		if err != nil {
 			return nil, err
