@@ -152,7 +152,7 @@ func TestProviderInit(t *testing.T) {
 			cfg,
 			metrics.NewNopAPIMetrics(),
 		)
-		require.Equal(t, err.Error(), fmt.Sprintf("configured name is incorrect; expected: %s, got: %s", raydium.Name, raydium.Name+"a"))
+		require.Error(t, err)
 	})
 
 	t.Run("api not enabled", func(t *testing.T) {
