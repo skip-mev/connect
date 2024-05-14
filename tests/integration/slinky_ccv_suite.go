@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"cosmossdk.io/math"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -23,15 +22,21 @@ import (
 	"strings"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/strangelove-ventures/interchaintest/v8"
 )
-
 
 // Type SlinkyCCVSuite is a testing-suite for testing slinky's integration with ics consumer chains
 type SlinkyCCVSuite struct {
 	*SlinkyIntegrationSuite
-	relayer ibc.Relayer
-	reporter ibc.RelayerExecReporter
-	ibcPath string
+}
+
+func NewSlinkyCCVIntegrationSuite(
+	spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option,
+) *SlinkyCCVSuite {
+	suite := NewSlinkyIntegrationSuite(spec, oracleImage, opts...)
+	return &SlinkyCCVSuite{
+		SlinkyIntegrationSuite: suite,
+	}
 }
 
 func (s *SlinkyCCVSuite) TestCCVAggregation() {
@@ -121,18 +126,22 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 		// get the validator
 		validator := providerValidators[0]
 
+		// fund a new user
+		users := interchaintest.GetAndFundTestUsers(s.T(), context.Background(), s.T().Name(), validator.Tokens.Mul(math.NewInt(2)), provider)
+
 		// double this validator's stake
 		tokens := validator.Tokens
-		s.Require().NoError(provider.GetNode().StakingDelegate(ctx, s.user.KeyName(), validator.OperatorAddress, fmt.Sprintf("%s%s", tokens.String(), s.chain.Config().Denom)))
+		s.Require().NoError(provider.GetNode().StakingDelegate(ctx, users[0].KeyName(), validator.OperatorAddress, fmt.Sprintf("%s%s", tokens.String(), provider.Config().Denom)))
 
 		// expect stake to have doubled for validator
 		updatedValidator, err := provider.StakingQueryValidator(ctx, validator.OperatorAddress)
 		s.Require().NoError(err)
-
+	
 		s.Require().Equal(tokens.Mul(math.NewInt(2)), updatedValidator.Tokens)
 
 		// flush packets
-		provider.FlushPendingICSPackets(ctx, s.relayer, s.reporter.(*testreporter.RelayerExecReporter), s.ibcPath)
+		s.Require().NotNil(s.ic)
+		provider.FlushPendingICSPackets(ctx, s.ic.Relayer(), s.ic.Reporter(), s.ic.IBCPath())
 
 		// consensus address
 		expectedConsensusAddress, err := pubKeyToAddress(validator.ConsensusPubkey)
