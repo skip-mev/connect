@@ -22,6 +22,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 const (
@@ -104,8 +105,9 @@ func TestProviderInit(t *testing.T) {
 		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			cfg,
 			zap.NewNop(),
+			cfg,
+			metrics.NewNopAPIMetrics(),
 		)
 
 		require.True(t, strings.Contains(err.Error(), "config for raydium is invalid"))
@@ -126,8 +128,9 @@ func TestProviderInit(t *testing.T) {
 		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			cfg,
 			zap.NewNop(),
+			cfg,
+			metrics.NewNopAPIMetrics(),
 		)
 
 		require.True(t, strings.Contains(err.Error(), "error creating multi-client"))
@@ -145,8 +148,9 @@ func TestProviderInit(t *testing.T) {
 		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			cfg,
 			zap.NewNop(),
+			cfg,
+			metrics.NewNopAPIMetrics(),
 		)
 		require.Equal(t, err.Error(), fmt.Sprintf("configured name is incorrect; expected: %s, got: %s", raydium.Name, raydium.Name+"a"))
 	})
@@ -162,8 +166,9 @@ func TestProviderInit(t *testing.T) {
 		}
 
 		_, err := raydium.NewAPIPriceFetcher(
-			cfg,
 			zap.NewNop(),
+			cfg,
+			metrics.NewNopAPIMetrics(),
 		)
 		require.Error(t, err, "config is not enabled")
 	})
@@ -414,9 +419,9 @@ func newPriceFetcher(client *mocks.SolanaJSONRPCClient) (*raydium.APIPriceFetche
 	}
 
 	return raydium.NewAPIPriceFetcherWithClient(
+		zap.NewExample(),
 		cfg,
 		client,
-		zap.NewExample(),
 	)
 }
 

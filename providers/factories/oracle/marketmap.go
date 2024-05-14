@@ -62,16 +62,10 @@ func MarketMapProviderFactory(
 		)
 		ids = []types.Chain{{ChainID: dydx.ChainID}}
 	default:
-		var client mmtypes.QueryClient
-		client, err = marketmap.NewGRPCClient(cfg.API)
-		if err != nil {
-			return nil, err
-		}
-
 		marketMapFetcher, err = marketmap.NewMarketMapFetcher(
 			logger,
 			cfg.API,
-			client,
+			apiMetrics,
 		)
 		ids = []types.Chain{{ChainID: "local-node"}}
 	}

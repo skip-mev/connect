@@ -7,6 +7,8 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -23,8 +25,37 @@ type MarketMapFetcher struct { //nolint
 	client mmtypes.QueryClient
 }
 
-// NewMarketMapFetcher returns a new MarketMap fetcher.
+// NewMarketMapFetcher returns a new MarketMap fetcher with the standard grpc client.
 func NewMarketMapFetcher(
+	logger *zap.Logger,
+	api config.APIConfig,
+	metrics metrics.APIMetrics,
+) (*MarketMapFetcher, error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger is required")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if metrics == nil {
+		return nil, fmt.Errorf("metrics is required")
+	}
+
+	client, err := NewMarketMapClient(api, metrics)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MarketMapFetcher{
+		logger: logger.With(zap.String("fetcher", Name)),
+		client: client,
+	}, nil
+}
+
+// NewMarketMapFetcherWithClient returns a new MarketMap fetcher.
+func NewMarketMapFetcherWithClient(
 	logger *zap.Logger,
 	client mmtypes.QueryClient,
 ) (*MarketMapFetcher, error) {

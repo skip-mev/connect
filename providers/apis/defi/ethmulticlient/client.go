@@ -25,8 +25,8 @@ var _ EVMClient = (*GoEthereumClientImpl)(nil)
 // GoEthereumClientImpl is a go-ethereum client implementation using the go-ethereum RPC
 // library.
 type GoEthereumClientImpl struct {
-	apiMetrics   metrics.APIMetrics
-	providerName string
+	apiMetrics metrics.APIMetrics
+	api        config.APIConfig
 
 	// client is the underlying rpc client.
 	client *rpc.Client
@@ -39,15 +39,19 @@ func NewGoEthereumClientImplFromURL(
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (EVMClient, error) {
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics cannot be nil")
+	}
+
 	client, err := rpc.DialOptions(ctx, api.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
 	}
 
 	return &GoEthereumClientImpl{
-		apiMetrics:   apiMetrics,
-		providerName: api.Name,
-		client:       client,
+		apiMetrics: apiMetrics,
+		api:        api,
+		client:     client,
 	}, nil
 }
 
@@ -56,23 +60,22 @@ func NewGoEthereumClientImplFromURL(
 func NewGoEthereumClientImplFromEndpoint(
 	ctx context.Context,
 	apiMetrics metrics.APIMetrics,
-	endpoint config.Endpoint,
-	name string,
+	api config.APIConfig,
 ) (EVMClient, error) {
 	if apiMetrics == nil {
-		return nil, fmt.Errorf("api metrics is nil")
+		return nil, fmt.Errorf("apiMetrics cannot be nil")
 	}
 
-	if len(name) == 0 {
-		return nil, fmt.Errorf("provider name is empty")
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
-	// fail if we have an invalid endpoint
-	if err := endpoint.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
+	if len(api.Endpoints) != 1 {
+		return nil, fmt.Errorf("expected exactly one endpoint, got %d", len(api.Endpoints))
 	}
 
 	var opts []rpc.ClientOption
+	endpoint := api.Endpoints[0]
 	if endpoint.Authentication.Enabled() {
 		opts = append(opts, rpc.WithHTTPAuth(func(h http.Header) error {
 			h.Set(endpoint.Authentication.APIKeyHeader, endpoint.Authentication.APIKey)
@@ -86,9 +89,9 @@ func NewGoEthereumClientImplFromEndpoint(
 	}
 
 	return &GoEthereumClientImpl{
-		apiMetrics:   apiMetrics,
-		client:       client,
-		providerName: name,
+		apiMetrics: apiMetrics,
+		api:        api,
+		client:     client,
 	}, nil
 }
 
@@ -103,14 +106,14 @@ func NewGoEthereumClientImplFromEndpoint(
 func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
 	start := time.Now()
 	defer func() {
-		c.apiMetrics.ObserveProviderResponseLatency(c.providerName, time.Since(start))
+		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
 	}()
 
 	if err := c.client.BatchCallContext(ctx, calls); err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.providerName, metrics.RPCCodeError)
+		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
 		return fmt.Errorf("failed to batch call: %w", err)
 	}
 
-	c.apiMetrics.AddRPCStatusCode(c.providerName, metrics.RPCCodeOK)
+	c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
 	return nil
 }

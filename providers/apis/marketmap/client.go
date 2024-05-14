@@ -2,6 +2,7 @@ package marketmap
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"google.golang.org/grpc"
@@ -13,7 +14,7 @@ import (
 )
 
 // MarketMapClient is a wrapper around the x/marketmap QueryClient.
-type MarketMapClient struct {
+type MarketMapClient struct { //nolint
 	mmtypes.QueryClient
 
 	// metrics is the metrics collector for the MarketMapClient.
@@ -27,6 +28,14 @@ func NewMarketMapClient(
 	api config.APIConfig,
 	metrics metrics.APIMetrics,
 ) (mmtypes.QueryClient, error) {
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if metrics == nil {
+		return nil, fmt.Errorf("metrics is nil")
+	}
+
 	// TODO: Do we want to ignore proxy settings?
 	conn, err := grpc.Dial(
 		api.URL,

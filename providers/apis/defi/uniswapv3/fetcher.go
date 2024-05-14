@@ -84,7 +84,7 @@ func NewPriceFetcher(
 	if len(api.Endpoints) > 0 {
 		client, err = ethmulticlient.NewMultiRPCClientFromEndpoints(
 			ctx,
-			logger.With(zap.String("multi_client", api.Name)),
+			logger,
 			api,
 			apiMetrics,
 		)

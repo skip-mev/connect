@@ -31,13 +31,13 @@ type MultiJSONRPCClient struct {
 func NewMultiJSONRPCClient(
 	logger *zap.Logger,
 	api config.APIConfig,
-	rpcMetrics metrics.APIMetrics,
+	apiMetrics metrics.APIMetrics,
 	clients []SolanaJSONRPCClient,
 ) *MultiJSONRPCClient {
 	return &MultiJSONRPCClient{
 		logger:     logger,
 		api:        api,
-		apiMetrics: rpcMetrics,
+		apiMetrics: apiMetrics,
 		clients:    clients,
 	}
 }
@@ -48,6 +48,22 @@ func NewMultiJSONRPCClientFromEndpoints(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (*MultiJSONRPCClient, error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics cannot be nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if len(api.Endpoints) == 0 {
+		return nil, fmt.Errorf("invalid endpoint: no endpoints provided")
+	}
+
 	var err error
 	clients := make([]SolanaJSONRPCClient, len(api.Endpoints))
 	for i := range api.Endpoints {
@@ -67,11 +83,6 @@ func NewMultiJSONRPCClientFromEndpoints(
 
 // solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
 func solanaClientFromEndpoint(endpoint config.Endpoint) (SolanaJSONRPCClient, error) {
-	// fail if the endpoint is invalid
-	if err := endpoint.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
-	}
-
 	// if authentication is enabled
 	if endpoint.Authentication.Enabled() {
 		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{

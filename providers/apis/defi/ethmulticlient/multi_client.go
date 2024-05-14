@@ -13,7 +13,8 @@ import (
 )
 
 // MultiRPCClient implements the EVMClient interface by calling multiple underlying EVMClients and choosing
-// the best response.
+// the best response. Specifically, it calls eth_blockNumber on each client and chooses the response with the
+// highest block number.
 type MultiRPCClient struct {
 	logger *zap.Logger
 
@@ -41,8 +42,12 @@ func NewMultiRPCClientFromEndpoints(
 ) (*MultiRPCClient, error) {
 	clients := make([]EVMClient, len(api.Endpoints))
 	for i, endpoint := range api.Endpoints {
+		// Pin the endpoint directly into a copy of the config.
+		apiCopy := api
+		apiCopy.Endpoints = []config.Endpoint{endpoint}
+
 		var err error
-		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, endpoint, api.Name)
+		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, apiCopy)
 		if err != nil {
 			logger.Error(
 				"endpoint failed to construct client",
@@ -52,12 +57,15 @@ func NewMultiRPCClientFromEndpoints(
 		}
 	}
 
-	return NewMultiRPCClient(logger, clients), nil
+	return NewMultiRPCClient(
+		logger.With(zap.String("multi_client", api.Name)),
+		clients,
+	), nil
 }
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.
-// It returns the first response it sees from a node which has the greatest height.
-// An error is returned only when all clients fail.
+// It returns the first response it sees from a node which has the greatest height. An error is returned
+// only when all clients fail.
 func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.BatchElem) error {
 	if len(batchElems) == 0 {
 		m.logger.Debug("BatchCallContext called with 0 elems")
