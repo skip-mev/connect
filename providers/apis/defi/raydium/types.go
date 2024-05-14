@@ -99,7 +99,7 @@ func SolanaJSONRPCError(err error) error {
 var DefaultAPIConfig = config.APIConfig{
 	Enabled:          true,
 	Name:             Name,
-	Timeout:          1 * time.Second,
+	Timeout:          2 * time.Second,
 	Interval:         500 * time.Millisecond,
 	ReconnectTimeout: 2000 * time.Millisecond,
 	MaxQueries:       10,
