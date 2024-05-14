@@ -53,35 +53,50 @@ type APIPriceFetcher struct {
 // default solana JSON-RPC client in accordance with the config's URL param.
 func NewAPIPriceFetcher(
 	logger *zap.Logger,
-	config config.APIConfig,
-	rpcMetrics metrics.APIMetrics,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
 	opts ...Option,
 ) (*APIPriceFetcher, error) {
-	// use a multi-client if multiple endpoints are provided
-	if len(config.Endpoints) > 0 {
-		if len(config.Endpoints) > 1 {
-			client, err := NewMultiJSONRPCClientFromEndpoints(
-				logger.With(zap.String("multi_client", Name)),
-				config,
-				rpcMetrics,
-			)
-			if err != nil {
-				logger.Error("error creating multi-client", zap.Error(err))
-				return nil, fmt.Errorf("error creating multi-client: %w", err)
-			}
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
 
-			opts = append(opts, WithSolanaClient(
-				client,
-			))
-		} else {
-			config.URL = config.Endpoints[0].URL
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics cannot be nil")
+	}
+
+	// use a multi-client if multiple endpoints are provided
+	var client SolanaJSONRPCClient
+	if len(api.Endpoints) > 1 {
+		client, err := NewMultiJSONRPCClientFromEndpoints(
+			logger.With(zap.String("multi_client", Name)),
+			api,
+			apiMetrics,
+		)
+		if err != nil {
+			logger.Error("error creating multi-client", zap.Error(err))
+			return nil, fmt.Errorf("error creating multi-client: %w", err)
 		}
+
+		opts = append(opts, WithSolanaClient(
+			client,
+		))
+	}
+
+	client, err := NewJSONRPCClient(api, apiMetrics)
+	if err != nil {
+		logger.Error("error creating client", zap.Error(err))
+		return nil, fmt.Errorf("error creating client: %w", err)
 	}
 
 	return NewAPIPriceFetcherWithClient(
 		logger,
-		config,
-		rpc.New(config.URL),
+		api,
+		client,
 		opts...,
 	)
 }
@@ -164,6 +179,7 @@ func (pf *APIPriceFetcher) Fetch(
 		// TODO(nikhil): Keep track of latest height queried as well?
 	})
 	if err != nil {
+		pf.logger.Error("error querying accounts", zap.Error(err))
 		return oracletypes.NewPriceResponseWithErr(
 			tickers,
 			providertypes.NewErrorWithCode(

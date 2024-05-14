@@ -52,6 +52,7 @@ func NewMultiRPCClientFromEndpoints(
 			logger.Error(
 				"endpoint failed to construct client",
 				zap.String("endpoint.URL", endpoint.URL),
+				zap.Error(err),
 			)
 			return nil, fmt.Errorf("failed to create eth client from endpoint: %w", err)
 		}

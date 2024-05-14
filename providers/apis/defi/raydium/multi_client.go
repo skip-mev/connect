@@ -3,17 +3,14 @@ package raydium
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"github.com/gagliardetto/solana-go/rpc/jsonrpc"
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
@@ -33,7 +30,7 @@ func NewMultiJSONRPCClient(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 	clients []SolanaJSONRPCClient,
-) *MultiJSONRPCClient {
+) SolanaJSONRPCClient {
 	return &MultiJSONRPCClient{
 		logger:     logger,
 		api:        api,
@@ -47,7 +44,7 @@ func NewMultiJSONRPCClientFromEndpoints(
 	logger *zap.Logger,
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
-) (*MultiJSONRPCClient, error) {
+) (SolanaJSONRPCClient, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
 	}
@@ -74,30 +71,11 @@ func NewMultiJSONRPCClientFromEndpoints(
 	}
 
 	return NewMultiJSONRPCClient(
-		logger,
+		logger.With(zap.String("multi_client", api.Name)),
 		api,
 		apiMetrics,
 		clients,
 	), nil
-}
-
-// solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
-func solanaClientFromEndpoint(endpoint config.Endpoint) (SolanaJSONRPCClient, error) {
-	// if authentication is enabled
-	if endpoint.Authentication.Enabled() {
-		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{
-			endpoint.Authentication.APIKeyHeader: endpoint.Authentication.APIKey,
-		}, http.DefaultTransport)
-
-		client := rpc.NewWithCustomRPCClient(jsonrpc.NewClientWithOpts(endpoint.URL, &jsonrpc.RPCClientOpts{
-			HTTPClient: &http.Client{
-				Transport: transport,
-			},
-		}))
-
-		return client, nil
-	}
-	return rpc.New(endpoint.URL), nil
 }
 
 // GetMultipleAccountsWithOpts delegates the request to all underlying clients and applies a filter

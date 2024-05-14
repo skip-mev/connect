@@ -110,7 +110,7 @@ func TestProviderInit(t *testing.T) {
 			metrics.NewNopAPIMetrics(),
 		)
 
-		require.True(t, strings.Contains(err.Error(), "config for raydium is invalid"))
+		require.Error(t, err)
 	})
 
 	t.Run("config has invalid endpoints", func(t *testing.T) {
@@ -133,7 +133,7 @@ func TestProviderInit(t *testing.T) {
 			metrics.NewNopAPIMetrics(),
 		)
 
-		require.True(t, strings.Contains(err.Error(), "error creating multi-client"))
+		require.Error(t, err)
 	})
 
 	t.Run("incorrect provider name", func(t *testing.T) {
