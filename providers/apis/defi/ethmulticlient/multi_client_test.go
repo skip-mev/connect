@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient"
 	"github.com/skip-mev/slinky/providers/apis/defi/ethmulticlient/mocks"
 )
@@ -29,6 +30,7 @@ func TestMultiClient(t *testing.T) {
 			name: "no elems, no-ops",
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
+				config.APIConfig{},
 				[]ethmulticlient.EVMClient{},
 			),
 			args: []rpc.BatchElem{},
@@ -38,6 +40,9 @@ func TestMultiClient(t *testing.T) {
 			name: "single client failure height request",
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
+				config.APIConfig{
+					Endpoints: []config.Endpoint{{URL: "http://localhost:8545"}},
+				},
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -54,6 +59,9 @@ func TestMultiClient(t *testing.T) {
 			name: "single client failure hex height decode",
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
+				config.APIConfig{
+					Endpoints: []config.Endpoint{{URL: "http://localhost:8545"}},
+				},
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -70,6 +78,9 @@ func TestMultiClient(t *testing.T) {
 			name: "single client success",
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
+				config.APIConfig{
+					Endpoints: []config.Endpoint{{URL: "http://localhost:8545"}},
+				},
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -87,6 +98,9 @@ func TestMultiClient(t *testing.T) {
 			name: "two clients one failed height request",
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
+				config.APIConfig{
+					Endpoints: []config.Endpoint{{URL: "http://localhost:8545"}, {URL: "http://localhost:8546"}},
+				},
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,
@@ -110,6 +124,9 @@ func TestMultiClient(t *testing.T) {
 			name: "two clients different heights",
 			client: ethmulticlient.NewMultiRPCClient(
 				logger,
+				config.APIConfig{
+					Endpoints: []config.Endpoint{{URL: "http://localhost:8545"}, {URL: "http://localhost:8546"}},
+				},
 				[]ethmulticlient.EVMClient{
 					createEVMClientWithResponse(
 						t,

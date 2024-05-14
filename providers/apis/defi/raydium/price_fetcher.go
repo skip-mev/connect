@@ -69,11 +69,15 @@ func NewAPIPriceFetcher(
 		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
 	// use a multi-client if multiple endpoints are provided
 	var client SolanaJSONRPCClient
 	if len(api.Endpoints) > 1 {
 		client, err := NewMultiJSONRPCClientFromEndpoints(
-			logger.With(zap.String("multi_client", Name)),
+			logger,
 			api,
 			apiMetrics,
 		)

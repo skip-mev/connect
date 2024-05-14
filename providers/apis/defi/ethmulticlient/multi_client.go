@@ -17,6 +17,7 @@ import (
 // highest block number.
 type MultiRPCClient struct {
 	logger *zap.Logger
+	api    config.APIConfig
 
 	// underlying clients
 	clients []EVMClient
@@ -25,11 +26,13 @@ type MultiRPCClient struct {
 // NewMultiRPCClient returns a new MultiRPCClient.
 func NewMultiRPCClient(
 	logger *zap.Logger,
+	api config.APIConfig,
 	clients []EVMClient,
 ) *MultiRPCClient {
 	return &MultiRPCClient{
 		logger:  logger,
 		clients: clients,
+		api:     api,
 	}
 }
 
@@ -60,6 +63,7 @@ func NewMultiRPCClientFromEndpoints(
 
 	return NewMultiRPCClient(
 		logger.With(zap.String("multi_client", api.Name)),
+		api,
 		clients,
 	), nil
 }
@@ -81,7 +85,9 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 
 	// TODO(david): consider parallelizing these requests.
 	var maxHeight uint64
-	for _, client := range m.clients {
+	for i, client := range m.clients {
+		url := m.api.Endpoints[i].URL
+
 		err := client.BatchCallContext(ctx, req)
 		if err != nil || req[blockNumReqIndex].Result == "" || req[blockNumReqIndex].Error != nil {
 			errs = fmt.Errorf("%w: endpoint request failed: %w, %w", errs, err, req[blockNumReqIndex].Error)
@@ -90,6 +96,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 				zap.Error(err),
 				zap.Any("result", req[blockNumReqIndex].Result),
 				zap.Error(req[blockNumReqIndex].Error),
+				zap.String("url", url),
 			)
 			continue
 		}
@@ -99,6 +106,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			errs = fmt.Errorf("%w: result from eth_blockNumber was not a string", errs)
 			m.logger.Debug(
 				"result from eth_blockNumber was not a string",
+				zap.String("url", url),
 			)
 			continue
 		}
@@ -108,6 +116,7 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 			errs = fmt.Errorf("%w: could not decode hex eth height: %w", errs, err)
 			m.logger.Debug(
 				"could not decode hex eth height",
+				zap.String("url", url),
 				zap.Error(err),
 			)
 			continue
@@ -115,12 +124,14 @@ func (m *MultiRPCClient) BatchCallContext(ctx context.Context, batchElems []rpc.
 		m.logger.Debug(
 			"got height for eth batch request",
 			zap.Uint64("height", newHeight),
+			zap.String("url", url),
 		)
 
 		if newHeight > maxHeight {
 			m.logger.Debug("new max eth height seen",
 				zap.Uint64("prev_height", maxHeight),
 				zap.Uint64("new_height", newHeight),
+				zap.String("url", url),
 			)
 
 			maxHeight = newHeight

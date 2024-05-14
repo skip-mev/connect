@@ -39,10 +39,6 @@ func NewGoEthereumClientImplFromURL(
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (EVMClient, error) {
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("metrics cannot be nil")
-	}
-
 	client, err := rpc.DialOptions(ctx, api.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
@@ -55,27 +51,19 @@ func NewGoEthereumClientImplFromURL(
 	}, nil
 }
 
-// NewGoEthereumClientImplFromEndpoint creates an EVMClient via a config.Endpoint. This includes optional
-// authentication via a specified http header key and value.
+// NewGoEthereumClientImplFromEndpoint creates an EVMClient via a config.Endpoint. This
+// includes optional authentication via a specified http header key and value.
 func NewGoEthereumClientImplFromEndpoint(
 	ctx context.Context,
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (EVMClient, error) {
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("apiMetrics cannot be nil")
-	}
-
-	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config: %w", err)
-	}
-
 	if len(api.Endpoints) != 1 {
 		return nil, fmt.Errorf("expected exactly one endpoint, got %d", len(api.Endpoints))
 	}
 
 	var opts []rpc.ClientOption
-	endpoint := api.Endpoints[0]
+	endpoint := api.Endpoints[0] // pin
 	if endpoint.Authentication.Enabled() {
 		opts = append(opts, rpc.WithHTTPAuth(func(h http.Header) error {
 			h.Set(endpoint.Authentication.APIKeyHeader, endpoint.Authentication.APIKey)
@@ -103,17 +91,17 @@ func NewGoEthereumClientImplFromEndpoint(
 // the corresponding BatchElem.
 //
 // Note that batch calls may not be executed atomically on the server side.
-func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) error {
+func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) (err error) {
 	start := time.Now()
 	defer func() {
 		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
 	}()
 
-	if err := c.client.BatchCallContext(ctx, calls); err != nil {
+	if err = c.client.BatchCallContext(ctx, calls); err != nil {
 		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
-		return fmt.Errorf("failed to batch call: %w", err)
+		return
 	}
 
 	c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
-	return nil
+	return
 }

@@ -45,20 +45,8 @@ func NewMultiJSONRPCClientFromEndpoints(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (SolanaJSONRPCClient, error) {
-	if logger == nil {
-		return nil, fmt.Errorf("logger cannot be nil")
-	}
-
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("metrics cannot be nil")
-	}
-
-	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config: %w", err)
-	}
-
 	if len(api.Endpoints) == 0 {
-		return nil, fmt.Errorf("invalid endpoint: no endpoints provided")
+		return nil, fmt.Errorf("no endpoints provided")
 	}
 
 	var err error
@@ -71,7 +59,7 @@ func NewMultiJSONRPCClientFromEndpoints(
 	}
 
 	return NewMultiJSONRPCClient(
-		logger.With(zap.String("multi_client", api.Name)),
+		logger.With(zap.String("multi_client", Name)),
 		api,
 		apiMetrics,
 		clients,

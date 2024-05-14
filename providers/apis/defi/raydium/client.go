@@ -29,14 +29,6 @@ func NewJSONRPCClient(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (SolanaJSONRPCClient, error) {
-	if err := api.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("metrics cannot be nil")
-	}
-
 	var (
 		client *rpc.Client
 		err    error
@@ -44,13 +36,13 @@ func NewJSONRPCClient(
 	switch {
 	case len(api.Endpoints) == 1:
 		client, err = solanaClientFromEndpoint(api.Endpoints[0])
-		if err != nil {
-			return nil, err
-		}
 	case len(api.URL) > 0:
 		client = rpc.New(api.URL)
 	default:
 		return nil, fmt.Errorf("no valid endpoints or url were provided")
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	return &JSONRPCClient{

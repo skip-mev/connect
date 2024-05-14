@@ -80,11 +80,7 @@ func APIQueryHandlerFactory(
 		apiDataHandler = volatile.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
 	case providerName == raydium.Name:
-		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
-			logger,
-			cfg.API,
-			metrics,
-		)
+		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(logger, cfg.API, metrics)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}
