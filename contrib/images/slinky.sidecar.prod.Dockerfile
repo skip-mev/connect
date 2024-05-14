@@ -1,6 +1,7 @@
-FROM golang:1.22-bullseye AS builder
+FROM ghcr.io/skip-mev/slinky-dev-base as builder
 
 WORKDIR /src/slinky
+
 COPY go.mod .
 
 RUN go mod download
