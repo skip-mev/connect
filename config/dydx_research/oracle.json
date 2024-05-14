@@ -494,7 +494,7 @@
       "name": "raydium_api",
       "api": {
         "enabled": true,
-        "timeout": 1000000000,
+        "timeout": 2000000000,
         "interval": 500000000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 10,
