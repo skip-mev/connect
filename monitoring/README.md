@@ -119,6 +119,8 @@ This monitoring solution comes built in with a Slinky Monitoring dashboard,
 which works out of the box. Grafana, Prometheus, and Infinity are installed 
 automatically.
 
+![Slinky Dashboard](https://raw.githubusercontent.com/LavenderFive/slinky-monitoring/master/screens/slinky_dashboard.png)
+
 ---
 
 Navigate to `http://<host-ip>:3000` and login with user ***admin*** password ***admin***. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables on compose up. The config file can be added directly in grafana part like this
