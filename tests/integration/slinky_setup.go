@@ -37,6 +37,7 @@ import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
+	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 )
 
 const (
@@ -62,9 +63,17 @@ var (
 // slinky integration tests.
 type ChainConstructor func(t *testing.T, spec *interchaintest.ChainSpec) ([]*cosmos.CosmosChain)
 
+// Interchain is an interface representing the set of chains that are used in the slinky e2e tests, as well
+// as any additional relayer / ibc-path information
+type Interchain interface {
+	Relayer() ibc.Relayer
+	Reporter() *testreporter.RelayerExecReporter
+	IBCPath() string
+}
+
 // InterchainConstructor returns an interchain that will be used in the slinky integration tests. 
 // The chains used in the interchain constructor should be the chains constructed via the ChainConstructor
-type InterchainConstructor func(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) *interchaintest.Interchain
+type InterchainConstructor func(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) Interchain
 
 // DefaultChainConstructor is the default construct of a chan that will be used in the slinky 
 // integration tests. There is only a single chain that is created.
@@ -88,7 +97,7 @@ func DefaultChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*co
 }
 
 // DefaultInterchainConstructor is the default constructor of an interchain that will be used in the slinky.
-func DefaultInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) *interchaintest.Interchain {
+func DefaultInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) Interchain {
 	require.Len(t, chains, 1)
 
 	ic := interchaintest.NewInterchain()
@@ -109,7 +118,7 @@ func DefaultInterchainConstructor(ctx context.Context, t *testing.T, chains []*c
 	})
 	require.NoError(t, err)
 
-	return ic
+	return nil
 }
 
 // SetOracleConfigsOnApp writes the oracle configuration to the given node's application config.
@@ -381,6 +390,29 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 	// get an rpc endpoint for the chain
 	client := chain.Nodes()[0].Client
 
+	// broadcast the tx
+	resp, err := client.BroadcastTxCommit(context.Background(), tx)
+	if err != nil {
+		return err
+	}
+
+	if resp.TxResult.Code != abcitypes.CodeTypeOK {
+		return fmt.Errorf(resp.TxResult.Log)
+	}
+
+	return nil
+}
+
+func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
+	msg := &mmtypes.MsgUpdateMarkets{
+		Authority: s.user.FormattedAddress(),
+		UpdateMarkets: markets,
+	}
+
+	tx := CreateTx(s.T(), s.chain, s.user, gasPrice, msg)
+
+	// get an rpc endpoint for the chain
+	client := chain.Nodes()[0].Client
 	// broadcast the tx
 	resp, err := client.BroadcastTxCommit(context.Background(), tx)
 	if err != nil {
