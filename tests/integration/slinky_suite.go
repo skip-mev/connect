@@ -114,7 +114,10 @@ type SlinkyIntegrationSuite struct {
 	blockTime time.Duration
 
 	// interchain constructor
-	ic InterchainConstructor
+	icc InterchainConstructor
+
+	// interchain
+	ic Interchain
 
 	// chain constructor
 	cc ChainConstructor
@@ -147,7 +150,7 @@ func WithBlockTime(t time.Duration) Option {
 // WithInterchainConstructor sets the interchain constructor
 func WithInterchainConstructor(ic InterchainConstructor) Option {
 	return func(s *SlinkyIntegrationSuite) {
-		s.ic = ic
+		s.icc = ic
 	}
 }
 
@@ -165,7 +168,7 @@ func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.D
 		denom:        defaultDenom,
 		authority:    authtypes.NewModuleAddress(govtypes.ModuleName),
 		blockTime:    10 * time.Second,
-		ic:           DefaultInterchainConstructor,
+		icc:          DefaultInterchainConstructor,
 		cc:           DefaultChainConstructor,
 	}
 
@@ -231,7 +234,7 @@ func (s *SlinkyIntegrationSuite) SetupSuite() {
 	})
 
 	// start the chain
-	s.ic(context.Background(), s.T(), chains)
+	s.ic = s.icc(context.Background(), s.T(), chains)
 	s.chain = chains[0]
 	s.user, err = interchaintest.GetAndFundTestUserWithMnemonic(context.Background(), s.T().Name(), userMnemonic, math.NewInt(genesisAmount), s.chain)
 	s.Require().NoError(err)
