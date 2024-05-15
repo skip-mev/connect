@@ -1,0 +1,37 @@
+{
+    # email to use on Let's Encrypt
+    email YOUR_EMAIL@EMAIL.COM
+
+    # Uncomment for debug
+    #acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+    #debug
+}
+
+
+(basic-auth) {
+       basicauth {
+           {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
+       }
+}
+
+:9090 {
+    import basic-auth
+    reverse_proxy prometheus:9090
+}
+
+:9093 {
+    import basic-auth
+    reverse_proxy alertmanager:9093
+}
+
+:80 {
+    reverse_proxy grafana:3000
+}
+
+:3000 {
+    reverse_proxy grafana:3000
+}
+
+grafana.YOUR_WEBSITE.COM {
+    reverse_proxy grafana:3000
+}

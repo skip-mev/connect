@@ -1,0 +1,29 @@
+global:
+  pagerduty_url: "https://events.pagerduty.com/v2/enqueue"
+
+route:
+  receiver: pagerduty
+
+receivers:
+# Documentation for Pagerduty <> Alertmanager Integration
+# https://www.pagerduty.com/docs/guides/prometheus-integration-guide/
+  - name: pagerduty
+    pagerduty_configs:
+    - routing_key: <integration_key>
+      severity: '{{ if .CommonLabels.severity }}{{ .CommonLabels.severity | toLower }}{{ else }}critical{{ end }}'
+
+# Documentation for Discord <> Alertmanager Integration
+# https://github.com/benjojo/alertmanager-discord
+  - name: 'discord_webhook'
+    webhook_configs:
+    - url: 'http://localhost:9094'
+
+# Documentation for Slack <> Alertmanager Integration
+# https://grafana.com/blog/2020/02/25/step-by-step-guide-to-setting-up-prometheus-alertmanager-with-slack-pagerduty-and-gmail/
+  - name: 'slack'
+    slack_configs:
+        - send_resolved: true
+          text: "{{ .CommonAnnotations.description }}"
+          username: 'Prometheus'
+          channel: '#<channel>'
+          api_url: 'https://hooks.slack.com/services/<webhook-id>'

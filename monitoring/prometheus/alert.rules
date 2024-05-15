@@ -1,0 +1,70 @@
+groups:
+- name: Node/server alerts
+  rules:
+  - alert: InstanceDown
+    # Condition for alerting
+    expr: up == 0
+    for: 3m
+    # Annotation - additional informational labels to store more information
+    annotations:
+      title: 'Instance {{ $labels.instance }} down'
+      description: '{{ $labels.job }} on {{ $labels.instance }} has been down for more than 3 minutes'
+    # Labels - additional labels to be attached to the alert
+    labels:
+      severity: 'critical'
+
+- name: Slinky alerts
+  rules:
+  - alert: OracleSubmissionPercentage
+    expr: (increase(app_oracle_responses{job="${job}",status="Success"}[5m])) / (increase(app_oracle_responses{job="${job}"}[5m])) < 0.9
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Oracle Submission Percentage'
+      description: 'Oracle Submission Percentage is less than 90%'
+
+  - alert: OracleSubmissionPercentageCritical
+    expr: (increase(app_oracle_responses{job="${job}",status="Success"}[5m])) / (increase(app_oracle_responses{job="${job}"}[5m])) < 0.75
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Oracle Submission Percentage'
+      description: 'Oracle Submission Percentage is less than 75%'
+
+  - alert: OnChainOracleSubmission
+    expr: rate(app_prices{job="${job}",chain_id="${chain_id}"}[5m]) == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: 'On-Chain Oracle Submission'
+      description: 'On-Chain Oracle Submission is 0 for 5 minutes'
+
+  - alert: SideCarAggregatePriceCreation
+    expr: rate(side_car_aggregated_price{job="${job}",id=~"${id}"}[5m]) == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Side Car Aggregate Price Creation'
+      description: 'Side Car Aggregate Price Creation is 0 for 5 minutes'
+
+  - alert: SideCarProviderDataAcquisition
+    expr: (sum by (provider,id) (increase(side_car_api_response_internal_status{job="${job}",internal_status="success"}[15m]))) / (sum by (provider,id) (increase(side_car_api_response_internal_status{job="${job}"}[15m]))) < 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      title: 'Side Car Provider Data Acquisition'
+      description: 'Side Car Provider Data Acquisition is less than 80%'
+
+  - alert: SideCarProviderDataAcquisitionCritical
+    expr: (sum by (provider,id) (increase(side_car_api_response_internal_status{job="${job}",internal_status="success"}[15m]))) / (sum by (provider,id) (increase(side_car_api_response_internal_status{job="${job}"}[15m]))) < 0.5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Side Car Provider Data Acquisition'
+      description: 'Side Car Provider Data Acquisition is less than 50%'
