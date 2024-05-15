@@ -50,6 +50,7 @@ var (
 	maxBackups          int
 	maxAge              int
 	compressLogs        bool
+	disableRotatingLogs bool
 )
 
 func init() {
@@ -137,6 +138,13 @@ func init() {
 		false,
 		"Compress rotated log files.",
 	)
+	rootCmd.Flags().BoolVarP(
+		&disableRotatingLogs,
+		"log-disable-file-rotation",
+		"",
+		false,
+		"Disable writing logs to a file.",
+	)
 	rootCmd.Flags().StringVarP(
 		&marketMapEndPoint,
 		"market-map-endpoint",
@@ -189,6 +197,7 @@ func runOracle() error {
 	logCfg := log.NewDefaultConfig()
 	logCfg.StdOutLogLevel = logLevel
 	logCfg.FileOutLogLevel = fileLogLevel
+	logCfg.DisableRotating = disableRotatingLogs
 	logCfg.WriteTo = writeLogsTo
 	logCfg.MaxSize = maxLogSize
 	logCfg.MaxBackups = maxBackups
