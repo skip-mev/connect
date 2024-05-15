@@ -29,20 +29,25 @@ The slinky repository is composed of the following core packages:
 * **x/sla** - This package contains a Cosmos SDK module that allows you to create service level agreements (SLAs) that can be used to incentivize network participants to consistently, reliably provide data with high uptime.
 * **x/marketmap** - This [package](./x/marketmap/README.md) contains  a Cosmos SDK module that allows for market configuration to be stored and updated on a blockchain.
 
-## Usage
+## Validator Usage
+
+To read how to run the oracle as a validator based on the chain, please reference the [validator documentation](https://docs.skip.money/slinky/integrations).
+
+## Developer Usage
 
 To run the oracle, run the following command.
 
 ```bash
-$ make start-all
+$ make start-all-core-dev
 ```
 
 This will:
 
 1. Start a blockchain with a single validator node. It may take a few minutes to build and reach a point where vote extensions can be submitted.
 2. Start the oracle side-car that will aggregate prices from external data providers and broadcast them to the network. To check the current aggregated prices on the side-car, you can run `curl localhost:8080/slinky/oracle/v1/prices`.
-3. Host a prometheus instance that will scrape metrics from the oracle side-car. Navigate to http://localhost:9090 to see all network traffic and metrics pertaining to the oracle sidecar. Navigate to http://localhost:8001 to see all application-side oracle metrics.
+3. Host a prometheus instance that will scrape metrics from the oracle side-car. Navigate to http://localhost:9091 to see all network traffic and metrics pertaining to the oracle sidecar. Navigate to http://localhost:8002 to see all application-side oracle metrics.
 4. Host a profiler that will allow you to profile the oracle side-car. Navigate to http://localhost:6060 to see the profiler.
+5. Host a grafana instance that will allow you to visualize the metrics scraped by prometheus. Navigate to http://localhost:3000 to see the grafana dashboard. The default username and password are `admin` and `admin`, respectively.
 
 After a few minutes, run the following commands to see the prices written to the blockchain:
 
@@ -51,7 +56,7 @@ After a few minutes, run the following commands to see the prices written to the
 $ docker exec -it slinky-blockchain-1 bash
 
 # query the price of bitcoin in USD on the node
-$ (slinky-blockchain-1) ./build/slinkyd q oracle price BITCOIN USD
+$ (slinky-blockchain-1) ./build/slinkyd q oracle price BTC USD
 ```
 
 Result: 
@@ -69,7 +74,7 @@ price:
 To stop the oracle, run the following command:
 
 ```bash
-$ make stop-all
+$ make stop-all-dev
 ```
 
 ## Metrics
