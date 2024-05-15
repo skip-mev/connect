@@ -46,11 +46,8 @@ func NewMultiRPCClientFromEndpoints(
 	clients := make([]EVMClient, len(api.Endpoints))
 	for i, endpoint := range api.Endpoints {
 		// Pin the endpoint directly into a copy of the config.
-		apiCopy := api
-		apiCopy.Endpoints = []config.Endpoint{endpoint}
-
 		var err error
-		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, apiCopy)
+		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, api, i)
 		if err != nil {
 			logger.Error(
 				"endpoint failed to construct client",

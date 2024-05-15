@@ -74,9 +74,12 @@ func NewAPIPriceFetcher(
 	}
 
 	// use a multi-client if multiple endpoints are provided
-	var client SolanaJSONRPCClient
+	var (
+		client SolanaJSONRPCClient
+		err    error
+	)
 	if len(api.Endpoints) > 1 {
-		client, err := NewMultiJSONRPCClientFromEndpoints(
+		client, err = NewMultiJSONRPCClientFromEndpoints(
 			logger,
 			api,
 			apiMetrics,
@@ -85,16 +88,12 @@ func NewAPIPriceFetcher(
 			logger.Error("error creating multi-client", zap.Error(err))
 			return nil, fmt.Errorf("error creating multi-client: %w", err)
 		}
-
-		opts = append(opts, WithSolanaClient(
-			client,
-		))
-	}
-
-	client, err := NewJSONRPCClient(api, apiMetrics)
-	if err != nil {
-		logger.Error("error creating client", zap.Error(err))
-		return nil, fmt.Errorf("error creating client: %w", err)
+	} else {
+		client, err = NewJSONRPCClient(api, apiMetrics)
+		if err != nil {
+			logger.Error("error creating client", zap.Error(err))
+			return nil, fmt.Errorf("error creating client: %w", err)
+		}
 	}
 
 	return NewAPIPriceFetcherWithClient(

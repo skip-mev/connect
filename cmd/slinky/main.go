@@ -49,7 +49,7 @@ var (
 	maxLogSize          int
 	maxBackups          int
 	maxAge              int
-	compressLogs        bool
+	disableCompressLogs bool
 	disableRotatingLogs bool
 )
 
@@ -132,8 +132,8 @@ func init() {
 		"Maximum number of days to retain an old log file.",
 	)
 	rootCmd.Flags().BoolVarP(
-		&compressLogs,
-		"log-compress",
+		&disableCompressLogs,
+		"log-file-disable-compression",
 		"",
 		false,
 		"Compress rotated log files.",
@@ -202,7 +202,7 @@ func runOracle() error {
 	logCfg.MaxSize = maxLogSize
 	logCfg.MaxBackups = maxBackups
 	logCfg.MaxAge = maxAge
-	logCfg.Compress = compressLogs
+	logCfg.Compress = !disableCompressLogs
 
 	// Build logger.
 	logger := log.NewLogger(logCfg)

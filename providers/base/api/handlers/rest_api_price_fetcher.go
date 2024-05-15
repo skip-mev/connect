@@ -80,7 +80,7 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 	// Observe the latency of the request.
 	start := time.Now()
 	defer func() {
-		pf.metrics.ObserveProviderResponseLatency(pf.config.Name, time.Since(start))
+		pf.metrics.ObserveProviderResponseLatency(pf.config.Name, metrics.RedactedURL, time.Since(start))
 	}()
 
 	// Create the URL for the request.

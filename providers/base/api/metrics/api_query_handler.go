@@ -30,12 +30,12 @@ type APIMetrics interface {
 
 	// AddRPCStatusCode increments the number of responses by provider and status for RPC requests.
 	// This includes gRPC and JSON-RPC.
-	AddRPCStatusCode(providerName string, code RPCCode)
+	AddRPCStatusCode(providerName, endpoint string, code RPCCode)
 
 	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
 	// time it took for all the requests to complete.
-	ObserveProviderResponseLatency(providerName string, duration time.Duration)
+	ObserveProviderResponseLatency(providerName, endpoint string, duration time.Duration)
 }
 
 // APIMetricsImpl contains metrics exposed by this package.
@@ -77,14 +77,14 @@ func NewAPIMetrics() APIMetrics {
 		apiRPCStatusCodePerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_rpc_status_code",
-			Help:      "Number of JSON-RPC/gRPC provider responses by status code.",
-		}, []string{providermetrics.ProviderLabel, StatusCodeLabel}),
+			Help:      "Number of JSON-RPC/gRPC provider responses by status code. Note that this is not the HTTP status code. URL may be redacted but will correspond to indices in the oracle config.",
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel, EndpointLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_latency",
-			Help:      "Response time per API provider.",
+			Help:      "Response time per API provider. URL may be redacted but will correspond to indices in the oracle config.",
 			Buckets:   []float64{50, 100, 250, 500, 1000, 2000},
-		}, []string{providermetrics.ProviderLabel}),
+		}, []string{providermetrics.ProviderLabel, EndpointLabel}),
 	}
 
 	// register the above metrics
@@ -105,8 +105,8 @@ func NewNopAPIMetrics() APIMetrics {
 
 func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode) {}
 func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)                      {}
-func (m *noOpAPIMetricsImpl) AddRPCStatusCode(_ string, _ RPCCode)                              {}
-func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration)          {}
+func (m *noOpAPIMetricsImpl) AddRPCStatusCode(_, _ string, _ RPCCode)                           {}
+func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_, _ string, _ time.Duration)       {}
 
 // AddProviderResponse increments the number of requests by provider and status.
 func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err providertypes.ErrorCode) {
@@ -156,17 +156,19 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 }
 
 // AddRPCStatusCode increments the rpc status code by provider and response.
-func (m *APIMetricsImpl) AddRPCStatusCode(providerName string, code RPCCode) {
+func (m *APIMetricsImpl) AddRPCStatusCode(providerName, endpoint string, code RPCCode) {
 	m.apiRPCStatusCodePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
 		StatusCodeLabel:               string(code),
+		EndpointLabel:                 endpoint,
 	}).Add(1)
 }
 
 // ObserveProviderResponseLatency records the time it took for a provider to respond.
-func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
+func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName, endpoint string, duration time.Duration) {
 	m.apiResponseTimePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
+		EndpointLabel:                 endpoint,
 	},
 	).Observe(float64(duration.Milliseconds()))
 }

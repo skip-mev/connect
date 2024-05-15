@@ -81,23 +81,25 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	wg.Add(len(c.clients))
 
 	for i := range c.clients {
+		// Pin
 		url := c.api.Endpoints[i].URL
+		index := i
 		go func(client SolanaJSONRPCClient) {
 			// Observe the latency of the request.
 			start := time.Now()
 			defer func() {
 				wg.Done()
-				c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
+				c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, metrics.RedactedEndpointURL(index), time.Since(start))
 			}()
 
 			resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 			if err != nil {
-				c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
+				c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeError)
 				c.logger.Error("failed to fetch accounts", zap.String("url", url), zap.Error(err))
 				return
 			}
 
-			c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
+			c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeOK)
 			responsesCh <- resp
 			c.logger.Debug("successfully fetched accounts", zap.String("url", url))
 		}(c.clients[i])

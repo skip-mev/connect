@@ -25,8 +25,9 @@ var _ EVMClient = (*GoEthereumClientImpl)(nil)
 // GoEthereumClientImpl is a go-ethereum client implementation using the go-ethereum RPC
 // library.
 type GoEthereumClientImpl struct {
-	apiMetrics metrics.APIMetrics
-	api        config.APIConfig
+	apiMetrics  metrics.APIMetrics
+	api         config.APIConfig
+	redactedURL string
 
 	// client is the underlying rpc client.
 	client *rpc.Client
@@ -45,9 +46,10 @@ func NewGoEthereumClientImplFromURL(
 	}
 
 	return &GoEthereumClientImpl{
-		apiMetrics: apiMetrics,
-		api:        api,
-		client:     client,
+		apiMetrics:  apiMetrics,
+		api:         api,
+		redactedURL: metrics.RedactedURL,
+		client:      client,
 	}, nil
 }
 
@@ -57,13 +59,14 @@ func NewGoEthereumClientImplFromEndpoint(
 	ctx context.Context,
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
+	index int,
 ) (EVMClient, error) {
-	if len(api.Endpoints) != 1 {
-		return nil, fmt.Errorf("expected exactly one endpoint, got %d", len(api.Endpoints))
+	if len(api.Endpoints) < index {
+		return nil, fmt.Errorf("expected endpoints at index %d, got %d endpoints", index, len(api.Endpoints))
 	}
 
 	var opts []rpc.ClientOption
-	endpoint := api.Endpoints[0] // pin
+	endpoint := api.Endpoints[index] // pin
 	if endpoint.Authentication.Enabled() {
 		opts = append(opts, rpc.WithHTTPAuth(func(h http.Header) error {
 			h.Set(endpoint.Authentication.APIKeyHeader, endpoint.Authentication.APIKey)
@@ -77,9 +80,10 @@ func NewGoEthereumClientImplFromEndpoint(
 	}
 
 	return &GoEthereumClientImpl{
-		apiMetrics: apiMetrics,
-		api:        api,
-		client:     client,
+		apiMetrics:  apiMetrics,
+		api:         api,
+		redactedURL: metrics.RedactedEndpointURL(index),
+		client:      client,
 	}, nil
 }
 
@@ -94,14 +98,14 @@ func NewGoEthereumClientImplFromEndpoint(
 func (c *GoEthereumClientImpl) BatchCallContext(ctx context.Context, calls []rpc.BatchElem) (err error) {
 	start := time.Now()
 	defer func() {
-		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
+		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
 	}()
 
 	if err = c.client.BatchCallContext(ctx, calls); err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
+		c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeError)
 		return
 	}
 
-	c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
+	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
 	return
 }

@@ -17,8 +17,9 @@ import (
 // JSONRPCClient is an implementation of the Solana JSON RPC client with
 // additional functionality for metrics and logging.
 type JSONRPCClient struct {
-	api        config.APIConfig
-	apiMetrics metrics.APIMetrics
+	api         config.APIConfig
+	apiMetrics  metrics.APIMetrics
+	redactedURL string
 
 	// client is the underlying solana-go JSON-RPC client.
 	client *rpc.Client
@@ -30,14 +31,17 @@ func NewJSONRPCClient(
 	apiMetrics metrics.APIMetrics,
 ) (SolanaJSONRPCClient, error) {
 	var (
-		client *rpc.Client
-		err    error
+		client      *rpc.Client
+		redactedURL string
+		err         error
 	)
 	switch {
 	case len(api.Endpoints) == 1:
 		client, err = solanaClientFromEndpoint(api.Endpoints[0])
+		redactedURL = metrics.RedactedEndpointURL(0)
 	case len(api.URL) > 0:
 		client = rpc.New(api.URL)
+		redactedURL = metrics.RedactedURL
 	default:
 		return nil, fmt.Errorf("no valid endpoints or url were provided")
 	}
@@ -46,9 +50,10 @@ func NewJSONRPCClient(
 	}
 
 	return &JSONRPCClient{
-		api:        api,
-		apiMetrics: apiMetrics,
-		client:     client,
+		api:         api,
+		apiMetrics:  apiMetrics,
+		redactedURL: redactedURL,
+		client:      client,
 	}, nil
 }
 
@@ -60,16 +65,16 @@ func (c *JSONRPCClient) GetMultipleAccountsWithOpts(
 ) (out *rpc.GetMultipleAccountsResult, err error) {
 	start := time.Now()
 	defer func() {
-		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
+		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, c.redactedURL, time.Since(start))
 	}()
 
 	out, err = c.client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 	if err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
+		c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeError)
 		return
 	}
 
-	c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
+	c.apiMetrics.AddRPCStatusCode(c.api.Name, c.redactedURL, metrics.RPCCodeOK)
 	return
 }
 

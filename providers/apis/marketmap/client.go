@@ -28,7 +28,7 @@ func NewGRPCClient(
 	apiMetrics metrics.APIMetrics,
 ) (mmtypes.QueryClient, error) {
 	// TODO: Do we want to ignore proxy settings?
-	conn, err := grpc.Dial(
+	conn, err := grpc.NewClient(
 		api.URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -51,15 +51,15 @@ func (c *MarketMapClient) MarketMap(
 ) (resp *mmtypes.MarketMapResponse, err error) {
 	start := time.Now()
 	defer func() {
-		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, time.Since(start))
+		c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, metrics.RedactedURL, time.Since(start))
 	}()
 
 	resp, err = c.QueryClient.MarketMap(ctx, req)
 	if err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
+		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedURL, metrics.RPCCodeOK)
 		return
 	}
 
-	c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
+	c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedURL, metrics.RPCCodeOK)
 	return
 }
