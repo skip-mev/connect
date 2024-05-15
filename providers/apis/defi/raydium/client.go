@@ -65,7 +65,7 @@ func (c *JSONRPCClient) GetMultipleAccountsWithOpts(
 
 	out, err = c.client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 	if err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeOK)
+		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RPCCodeError)
 		return
 	}
 
