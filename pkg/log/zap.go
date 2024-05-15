@@ -15,6 +15,8 @@ type Config struct {
 	StdOutLogLevel string
 	// FileOutLogLevel is the log level for the file logger.
 	FileOutLogLevel string
+	// DisableRotating disables log rotation.
+	DisableRotating bool
 	// WriteTo is the output file for the logger. If empty, logs will be written to stderr.
 	WriteTo string
 	// MaxSize is the maximum size in megabytes before log is rotated.
@@ -32,6 +34,7 @@ func NewDefaultConfig() Config {
 	return Config{
 		StdOutLogLevel:  "info",
 		FileOutLogLevel: "info",
+		DisableRotating: false,
 		WriteTo:         "sidecar.log",
 		MaxSize:         1, // 100MB
 		MaxBackups:      1,
@@ -45,7 +48,7 @@ func NewLogger(config Config) *zap.Logger {
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	var fileCore zapcore.Core
-	if config.WriteTo != "" {
+	if config.WriteTo != "" && !config.DisableRotating {
 		// Configure lumberjack for logging to a file
 		lumberjackLogger := &lumberjack.Logger{
 			Filename:   config.WriteTo,

@@ -15,6 +15,8 @@ RUN make build-test-app
 ## starting up the sim app and the slinky daemon
 FROM ubuntu:rolling
 EXPOSE 26656 26657 1317 9090 7171 26655 8081 26660
+
+RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y
 ENTRYPOINT ["slinkyd", "start"]
 
 COPY --from=builder /src/slinky/build/* /usr/local/bin/
