@@ -33,6 +33,11 @@ func CCVChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos
 				GasPrices: "0.0uatom",
 				ChainID: providerChainID,
 				TrustingPeriod: "336h",
+				ModifyGenesis: cosmos.ModifyGenesis(
+					[]cosmos.GenesisKV{
+						cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", "1"),
+					},
+				),
 			}},
 		},
 	)
@@ -45,8 +50,26 @@ func CCVChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos
 	return []*cosmos.CosmosChain{chains[0].(*cosmos.CosmosChain), chains[1].(*cosmos.CosmosChain)}
 }
 
+type CCVInterchain struct {
+	relayer ibc.Relayer
+	reporter *testreporter.RelayerExecReporter
+	ibcPath string
+}
+
+func (c *CCVInterchain) Relayer() ibc.Relayer {
+	return c.relayer
+}
+
+func (c *CCVInterchain) Reporter() *testreporter.RelayerExecReporter {
+	return c.reporter
+}
+
+func (c *CCVInterchain) IBCPath() string {
+	return c.ibcPath
+}
+
 // CCVInterchainConstructor is a constructor for the CCV interchain
-func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) *interchaintest.Interchain {
+func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) Interchain {
 	// expect 2 chains
 	require.Len(t, chains, 2)
 
@@ -68,8 +91,8 @@ func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmo
 			Consumer: chains[0],
 			Relayer: r,
 			Path: path,
-		})
 
+		})
 	// Log location
 	f, err := interchaintest.CreateLogFile(fmt.Sprintf("%d.json", time.Now().Unix()))
 	require.NoError(t, err)
@@ -86,5 +109,9 @@ func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmo
 
 	require.NoError(t, chains[1].FinishICSProviderSetup(ctx, r, eRep, path))
 
-	return ic
+	return &CCVInterchain{
+		relayer: r,
+		reporter: eRep,
+		ibcPath: path,
+	}
 }
