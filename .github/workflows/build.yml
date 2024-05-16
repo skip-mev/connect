@@ -77,7 +77,7 @@ jobs:
           matrix-step-name: github-action-matrix-outputs-read
           matrix-key: ${{ matrix.image.name }}
           outputs: |-
-            image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+            image: ${{ steps.meta.outputs.version }}
   deploy:
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
