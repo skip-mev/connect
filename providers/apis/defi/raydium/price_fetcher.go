@@ -55,7 +55,6 @@ func NewAPIPriceFetcher(
 	logger *zap.Logger,
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
-	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -104,7 +103,6 @@ func NewAPIPriceFetcher(
 		logger,
 		api,
 		client,
-		opts...,
 	)
 }
 
@@ -115,7 +113,6 @@ func NewAPIPriceFetcherWithClient(
 	logger *zap.Logger,
 	api config.APIConfig,
 	client SolanaJSONRPCClient,
-	opts ...Option,
 ) (*APIPriceFetcher, error) {
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
@@ -144,10 +141,6 @@ func NewAPIPriceFetcherWithClient(
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
 		logger:            logger.With(zap.String("fetcher", Name)),
-	}
-
-	for _, opt := range opts {
-		opt(pf)
 	}
 
 	return pf, nil
