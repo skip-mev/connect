@@ -263,7 +263,8 @@ func TestNewPriceFetcher(t *testing.T) {
 			err:    fmt.Errorf("logger cannot be nil"),
 		},
 		{
-			name: "invalid api config errors",
+			name:   "invalid api config errors",
+			logger: logger,
 			api: config.APIConfig{
 				Enabled: true,
 			},
@@ -312,7 +313,7 @@ func TestNewPriceFetcher(t *testing.T) {
 				},
 				Name: "uniswapv3_api-ethereum",
 			},
-			err: fmt.Errorf("error creating multi-client: "),
+			err: fmt.Errorf("failed to dial go ethereum client"),
 		},
 		{
 			name:   "multiclient success",
