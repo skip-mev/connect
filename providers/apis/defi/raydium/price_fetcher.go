@@ -15,6 +15,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/pkg/math"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
@@ -36,7 +37,7 @@ type SolanaJSONRPCClient interface {
 // about the price of a given currency pair.
 type APIPriceFetcher struct {
 	// config is the APIConfiguration for this provider
-	config config.APIConfig
+	api config.APIConfig
 
 	// client is the solana JSON-RPC client used to query the API.
 	client SolanaJSONRPCClient
@@ -51,34 +52,57 @@ type APIPriceFetcher struct {
 // NewAPIPriceFetcher returns a new APIPriceFetcher. This method constructs the
 // default solana JSON-RPC client in accordance with the config's URL param.
 func NewAPIPriceFetcher(
-	config config.APIConfig,
 	logger *zap.Logger,
-	opts ...Option,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
 ) (*APIPriceFetcher, error) {
-	// use a multi-client if multiple endpoints are provided
-	if len(config.Endpoints) > 0 {
-		if len(config.Endpoints) > 1 {
-			client, err := NewMultiJSONRPCClientFromEndpoints(
-				config.Endpoints,
-				logger.With(zap.String("raydium_multi_client", Name)),
-			)
-			if err != nil {
-				return nil, fmt.Errorf("error creating multi-client: %w", err)
-			}
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
 
-			opts = append(opts, WithSolanaClient(
-				client,
-			))
-		} else {
-			config.URL = config.Endpoints[0].URL
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics cannot be nil")
+	}
+
+	// use a multi-client if multiple endpoints are provided
+	var (
+		client SolanaJSONRPCClient
+		err    error
+	)
+	if len(api.Endpoints) > 1 {
+		client, err = NewMultiJSONRPCClientFromEndpoints(
+			logger,
+			api,
+			apiMetrics,
+		)
+		if err != nil {
+			logger.Error("error creating multi-client", zap.Error(err))
+			return nil, fmt.Errorf("error creating multi-client: %w", err)
+		}
+	} else {
+		client, err = NewJSONRPCClient(api, apiMetrics)
+		if err != nil {
+			logger.Error("error creating client", zap.Error(err))
+			return nil, fmt.Errorf("error creating client: %w", err)
 		}
 	}
 
 	return NewAPIPriceFetcherWithClient(
-		config,
-		rpc.New(config.URL),
 		logger,
-		opts...,
+		api,
+		client,
 	)
 }
 
@@ -86,34 +110,37 @@ func NewAPIPriceFetcher(
 // that the given market + config are valid, otherwise a nil implementation + an error
 // will be returned.
 func NewAPIPriceFetcherWithClient(
-	config config.APIConfig,
-	client SolanaJSONRPCClient,
 	logger *zap.Logger,
-	opts ...Option,
+	api config.APIConfig,
+	client SolanaJSONRPCClient,
 ) (*APIPriceFetcher, error) {
-	if err := config.ValidateBasic(); err != nil {
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
 	}
 
 	// check fields of config
-	if config.Name != Name {
-		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, config.Name)
+	if api.Name != Name {
+		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, api.Name)
 	}
 
-	if !config.Enabled {
+	if !api.Enabled {
 		return nil, fmt.Errorf("config is not enabled")
+	}
+
+	if client == nil {
+		return nil, fmt.Errorf("client cannot be nil")
 	}
 
 	// generate metadata per ticker
 	pf := &APIPriceFetcher{
-		config:            config,
+		api:               api,
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
-		logger:            logger.With(zap.String("raydium_api_price_fetcher", Name)),
-	}
-
-	for _, opt := range opts {
-		opt(pf)
+		logger:            logger.With(zap.String("fetcher", Name)),
 	}
 
 	return pf, nil
@@ -152,7 +179,7 @@ func (pf *APIPriceFetcher) Fetch(
 	// We assume that the solana JSON-RPC response returns all accounts in the order
 	// that they were queried, there is not a very good way to handle if this order is incorrect
 	// or verify that the order is correct, as there is no way to correlate account data <> address
-	ctx, cancel := context.WithTimeout(ctx, pf.config.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, pf.api.Timeout)
 	defer cancel()
 
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
@@ -160,6 +187,7 @@ func (pf *APIPriceFetcher) Fetch(
 		// TODO(nikhil): Keep track of latest height queried as well?
 	})
 	if err != nil {
+		pf.logger.Error("error querying accounts", zap.Error(err))
 		return oracletypes.NewPriceResponseWithErr(
 			tickers,
 			providertypes.NewErrorWithCode(

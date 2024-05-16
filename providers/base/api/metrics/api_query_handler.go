@@ -13,17 +13,6 @@ import (
 	providertypes "github.com/skip-mev/slinky/providers/types"
 )
 
-const (
-	// StatusLabel is a label for the status of a provider API response.
-	StatusLabel = "internal_status"
-
-	// StatusCodeLabel is a label for the status code of a provider API response.
-	StatusCodeLabel = "status_code"
-
-	// StatusCodeExactLabel is a label for the exact status code of a provider API response.
-	StatusCodeExactLabel = "status_code_exact"
-)
-
 // APIMetrics is an interface that defines the API for metrics collection for providers
 // that implement the APIQueryHandler.
 //
@@ -31,16 +20,22 @@ const (
 type APIMetrics interface {
 	// AddProviderResponse increments the number of ticks with a fully successful provider update.
 	// This increments the number of responses by provider, id (i.e. currency pair), and status.
+	//
+	// TODO(david); Deprecate this since this is replicated in the base provider.
 	AddProviderResponse(providerName, id string, errorCode providertypes.ErrorCode)
 
 	// AddHTTPStatusCode increments the number of responses by provider and status.
 	// This is used to track the number of responses by provider and status.
 	AddHTTPStatusCode(providerName string, resp *http.Response)
 
+	// AddRPCStatusCode increments the number of responses by provider and status for RPC requests.
+	// This includes gRPC and JSON-RPC.
+	AddRPCStatusCode(providerName, endpoint string, code RPCCode)
+
 	// ObserveProviderResponseLatency records the time it took for a provider to respond for
 	// within a single interval. Note that if the provider is not atomic, this will be the
 	// time it took for all the requests to complete.
-	ObserveProviderResponseLatency(providerName string, duration time.Duration)
+	ObserveProviderResponseLatency(providerName, endpoint string, duration time.Duration)
 }
 
 // APIMetricsImpl contains metrics exposed by this package.
@@ -48,8 +43,11 @@ type APIMetricsImpl struct {
 	// Number of provider successes.
 	apiResponseStatusPerProvider *prometheus.CounterVec
 
-	// Number of provider responses by grouped status code.
+	// Number of provider http responses by grouped status code.
 	apiHTTPStatusCodePerProvider *prometheus.CounterVec
+
+	// Number of provider rpc responses by status code.
+	apiRPCStatusCodePerProvider *prometheus.CounterVec
 
 	// Histogram paginated by provider, measuring the latency between invocation and collection.
 	apiResponseTimePerProvider *prometheus.HistogramVec
@@ -76,17 +74,23 @@ func NewAPIMetrics() APIMetrics {
 			Name:      "api_http_status_code",
 			Help:      "Number of API provider responses by status code grouped by category (2XX, 3XX, etc.) along with the exact code.",
 		}, []string{providermetrics.ProviderLabel, StatusCodeLabel, StatusCodeExactLabel}),
+		apiRPCStatusCodePerProvider: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: oraclemetrics.OracleSubsystem,
+			Name:      "api_rpc_status_code",
+			Help:      "Number of JSON-RPC/gRPC provider responses by status code. Note that this is not the HTTP status code. URL may be redacted but will correspond to indices in the oracle config.",
+		}, []string{providermetrics.ProviderLabel, StatusCodeLabel, EndpointLabel}),
 		apiResponseTimePerProvider: prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Namespace: oraclemetrics.OracleSubsystem,
 			Name:      "api_response_latency",
-			Help:      "Response time per API provider.",
+			Help:      "Response time per API provider. URL may be redacted but will correspond to indices in the oracle config.",
 			Buckets:   []float64{50, 100, 250, 500, 1000, 2000},
-		}, []string{providermetrics.ProviderLabel}),
+		}, []string{providermetrics.ProviderLabel, EndpointLabel}),
 	}
 
 	// register the above metrics
 	prometheus.MustRegister(m.apiResponseStatusPerProvider)
 	prometheus.MustRegister(m.apiHTTPStatusCodePerProvider)
+	prometheus.MustRegister(m.apiRPCStatusCodePerProvider)
 	prometheus.MustRegister(m.apiResponseTimePerProvider)
 
 	return m
@@ -101,7 +105,8 @@ func NewNopAPIMetrics() APIMetrics {
 
 func (m *noOpAPIMetricsImpl) AddProviderResponse(_ string, _ string, _ providertypes.ErrorCode) {}
 func (m *noOpAPIMetricsImpl) AddHTTPStatusCode(_ string, _ *http.Response)                      {}
-func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_ string, _ time.Duration)          {}
+func (m *noOpAPIMetricsImpl) AddRPCStatusCode(_, _ string, _ RPCCode)                           {}
+func (m *noOpAPIMetricsImpl) ObserveProviderResponseLatency(_, _ string, _ time.Duration)       {}
 
 // AddProviderResponse increments the number of requests by provider and status.
 func (m *APIMetricsImpl) AddProviderResponse(providerName string, id string, err providertypes.ErrorCode) {
@@ -150,10 +155,20 @@ func (m *APIMetricsImpl) AddHTTPStatusCode(providerName string, resp *http.Respo
 	}).Add(1)
 }
 
+// AddRPCStatusCode increments the rpc status code by provider and response.
+func (m *APIMetricsImpl) AddRPCStatusCode(providerName, endpoint string, code RPCCode) {
+	m.apiRPCStatusCodePerProvider.With(prometheus.Labels{
+		providermetrics.ProviderLabel: providerName,
+		StatusCodeLabel:               string(code),
+		EndpointLabel:                 endpoint,
+	}).Add(1)
+}
+
 // ObserveProviderResponseLatency records the time it took for a provider to respond.
-func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName string, duration time.Duration) {
+func (m *APIMetricsImpl) ObserveProviderResponseLatency(providerName, endpoint string, duration time.Duration) {
 	m.apiResponseTimePerProvider.With(prometheus.Labels{
 		providermetrics.ProviderLabel: providerName,
+		EndpointLabel:                 endpoint,
 	},
 	).Observe(float64(duration.Milliseconds()))
 }
