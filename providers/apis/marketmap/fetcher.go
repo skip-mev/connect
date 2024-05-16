@@ -39,12 +39,16 @@ func NewMarketMapFetcher(
 		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
-	if metrics == nil {
-		return nil, fmt.Errorf("metrics is required")
-	}
-
 	if api.Name != Name {
 		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if metrics == nil {
+		return nil, fmt.Errorf("metrics is required")
 	}
 
 	client, err := NewGRPCClient(api, metrics)

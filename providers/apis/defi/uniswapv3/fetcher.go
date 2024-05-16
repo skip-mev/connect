@@ -58,12 +58,20 @@ func NewPriceFetcher(
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (*PriceFetcher, error) {
-	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config: %w", err)
+	if ctx == nil {
+		return nil, fmt.Errorf("context cannot be nil")
 	}
 
 	if logger == nil {
 		return nil, fmt.Errorf("logger cannot be nil")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("api metrics is nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
 	if !IsValidProviderName(api.Name) {
@@ -74,33 +82,36 @@ func NewPriceFetcher(
 		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
 	}
 
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("api metrics is nil")
-	}
-
-	// use a multi-client if multiple endpoints are provided
-	var client ethmulticlient.EVMClient
-	var err error
-	if len(api.Endpoints) > 0 {
+	var (
+		client ethmulticlient.EVMClient
+		err    error
+	)
+	switch {
+	case len(api.Endpoints) > 1:
 		client, err = ethmulticlient.NewMultiRPCClientFromEndpoints(
 			ctx,
 			logger,
 			api,
 			apiMetrics,
 		)
-		if err != nil {
-			return nil, fmt.Errorf("error creating multi-client: %w", err)
-		}
-	} else {
+	case len(api.Endpoints) == 1:
+		client, err = ethmulticlient.NewGoEthereumClientImplFromEndpoint(
+			ctx,
+			apiMetrics,
+			api,
+			0,
+		)
+	default:
 		client, err = ethmulticlient.NewGoEthereumClientImplFromURL(
 			ctx,
 			apiMetrics,
 			api,
 		)
-		if err != nil {
-			return nil, err
-		}
 	}
+	if err != nil {
+		return nil, err
+	}
+
 	return NewPriceFetcherWithClient(
 		logger,
 		api,

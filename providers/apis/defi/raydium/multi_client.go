@@ -25,6 +25,7 @@ type MultiJSONRPCClient struct {
 	clients []SolanaJSONRPCClient
 }
 
+// NewMultiJSONRPCClient returns a new MultiJSONRPCClient.
 func NewMultiJSONRPCClient(
 	logger *zap.Logger,
 	api config.APIConfig,
@@ -45,8 +46,28 @@ func NewMultiJSONRPCClientFromEndpoints(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (SolanaJSONRPCClient, error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger is required")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
 	if len(api.Endpoints) == 0 {
 		return nil, fmt.Errorf("no endpoints provided")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics is nil")
 	}
 
 	var err error
@@ -58,12 +79,12 @@ func NewMultiJSONRPCClientFromEndpoints(
 		}
 	}
 
-	return NewMultiJSONRPCClient(
-		logger.With(zap.String("multi_client", Name)),
-		api,
-		apiMetrics,
-		clients,
-	), nil
+	return &MultiJSONRPCClient{
+		logger:     logger.With(zap.String("multi_client", Name)),
+		api:        api,
+		apiMetrics: apiMetrics,
+		clients:    clients,
+	}, nil
 }
 
 // GetMultipleAccountsWithOpts delegates the request to all underlying clients and applies a filter

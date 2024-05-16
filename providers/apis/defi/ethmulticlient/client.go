@@ -40,6 +40,27 @@ func NewGoEthereumClientImplFromURL(
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,
 ) (EVMClient, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("context is nil")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("api metrics nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
+	}
+
+	// We need to have a URL to connect to.
+	if len(api.URL) == 0 {
+		return nil, fmt.Errorf("url is empty")
+	}
+
 	client, err := rpc.DialOptions(ctx, api.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
@@ -61,8 +82,25 @@ func NewGoEthereumClientImplFromEndpoint(
 	api config.APIConfig,
 	index int,
 ) (EVMClient, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("context is nil")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("api metrics nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
+	}
+
+	// We need to have at least one endpoint to connect to.
 	if len(api.Endpoints) < index {
-		return nil, fmt.Errorf("expected endpoints at index %d, got %d endpoints", index, len(api.Endpoints))
+		return nil, fmt.Errorf("expected endpoint at index %d, got %d endpoints", index, len(api.Endpoints))
 	}
 
 	var opts []rpc.ClientOption

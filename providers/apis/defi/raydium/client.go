@@ -30,6 +30,22 @@ func NewJSONRPCClient(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (SolanaJSONRPCClient, error) {
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics is required")
+	}
+
 	var (
 		client      *rpc.Client
 		redactedURL string
@@ -94,5 +110,6 @@ func solanaClientFromEndpoint(endpoint config.Endpoint) (*rpc.Client, error) {
 
 		return client, nil
 	}
+
 	return rpc.New(endpoint.URL), nil
 }

@@ -28,7 +28,7 @@ func NewMultiRPCClient(
 	logger *zap.Logger,
 	api config.APIConfig,
 	clients []EVMClient,
-) *MultiRPCClient {
+) EVMClient {
 	return &MultiRPCClient{
 		logger:  logger,
 		clients: clients,
@@ -42,7 +42,27 @@ func NewMultiRPCClientFromEndpoints(
 	logger *zap.Logger,
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
-) (*MultiRPCClient, error) {
+) (EVMClient, error) {
+	if ctx == nil {
+		return nil, fmt.Errorf("context is nil")
+	}
+
+	if logger == nil {
+		return nil, fmt.Errorf("logger is nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
+	}
+
+	if len(api.Endpoints) == 0 {
+		return nil, fmt.Errorf("no endpoints provided")
+	}
+
 	clients := make([]EVMClient, len(api.Endpoints))
 	for i, endpoint := range api.Endpoints {
 		// Pin the endpoint directly into a copy of the config.
@@ -58,11 +78,11 @@ func NewMultiRPCClientFromEndpoints(
 		}
 	}
 
-	return NewMultiRPCClient(
-		logger.With(zap.String("multi_client", api.Name)),
-		api,
-		clients,
-	), nil
+	return &MultiRPCClient{
+		logger:  logger.With(zap.String("multi_client", api.Name)),
+		api:     api,
+		clients: clients,
+	}, nil
 }
 
 // BatchCallContext injects a call to eth_blockNumber, and makes batch calls to the underlying EVMClients.

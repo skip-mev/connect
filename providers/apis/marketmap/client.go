@@ -2,6 +2,7 @@ package marketmap
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"google.golang.org/grpc"
@@ -27,6 +28,22 @@ func NewGRPCClient(
 	api config.APIConfig,
 	apiMetrics metrics.APIMetrics,
 ) (mmtypes.QueryClient, error) {
+	if err := api.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics is required")
+	}
+
 	// TODO: Do we want to ignore proxy settings?
 	conn, err := grpc.NewClient(
 		api.URL,
@@ -56,7 +73,7 @@ func (c *MarketMapClient) MarketMap(
 
 	resp, err = c.QueryClient.MarketMap(ctx, req)
 	if err != nil {
-		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedURL, metrics.RPCCodeOK)
+		c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedURL, metrics.RPCCodeError)
 		return
 	}
 

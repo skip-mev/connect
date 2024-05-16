@@ -37,7 +37,7 @@ type SolanaJSONRPCClient interface {
 // about the price of a given currency pair.
 type APIPriceFetcher struct {
 	// config is the APIConfiguration for this provider
-	config config.APIConfig
+	api config.APIConfig
 
 	// client is the solana JSON-RPC client used to query the API.
 	client SolanaJSONRPCClient
@@ -65,12 +65,16 @@ func NewAPIPriceFetcher(
 		return nil, fmt.Errorf("invalid api config: %w", err)
 	}
 
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("metrics cannot be nil")
-	}
-
 	if api.Name != Name {
 		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics cannot be nil")
 	}
 
 	// use a multi-client if multiple endpoints are provided
@@ -109,26 +113,34 @@ func NewAPIPriceFetcher(
 // will be returned.
 func NewAPIPriceFetcherWithClient(
 	logger *zap.Logger,
-	config config.APIConfig,
+	api config.APIConfig,
 	client SolanaJSONRPCClient,
 	opts ...Option,
 ) (*APIPriceFetcher, error) {
-	if err := config.ValidateBasic(); err != nil {
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
 		return nil, fmt.Errorf("config for raydium is invalid: %w", err)
 	}
 
 	// check fields of config
-	if config.Name != Name {
-		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, config.Name)
+	if api.Name != Name {
+		return nil, fmt.Errorf("configured name is incorrect; expected: %s, got: %s", Name, api.Name)
 	}
 
-	if !config.Enabled {
+	if !api.Enabled {
 		return nil, fmt.Errorf("config is not enabled")
+	}
+
+	if client == nil {
+		return nil, fmt.Errorf("client cannot be nil")
 	}
 
 	// generate metadata per ticker
 	pf := &APIPriceFetcher{
-		config:            config,
+		api:               api,
 		client:            client,
 		metaDataPerTicker: make(map[string]TickerMetadata),
 		logger:            logger.With(zap.String("fetcher", Name)),
@@ -174,7 +186,7 @@ func (pf *APIPriceFetcher) Fetch(
 	// We assume that the solana JSON-RPC response returns all accounts in the order
 	// that they were queried, there is not a very good way to handle if this order is incorrect
 	// or verify that the order is correct, as there is no way to correlate account data <> address
-	ctx, cancel := context.WithTimeout(ctx, pf.config.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, pf.api.Timeout)
 	defer cancel()
 
 	accountsResp, err := pf.client.GetMultipleAccountsWithOpts(ctx, accounts, &rpc.GetMultipleAccountsOpts{
