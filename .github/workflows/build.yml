@@ -82,6 +82,7 @@ jobs:
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    environment: dev
     permissions:
       id-token: write
     steps:
