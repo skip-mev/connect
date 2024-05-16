@@ -56,12 +56,12 @@ jobs:
             ${{ env.registry_url }}
             ghcr.io/skip-mev/${{ matrix.image.name }}
           tags: |
-            type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
             type=semver,pattern=v{{major}}
             type=sha,prefix=
+            type=ref,event=branch
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
