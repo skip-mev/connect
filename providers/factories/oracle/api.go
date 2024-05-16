@@ -72,7 +72,7 @@ func APIQueryHandlerFactory(
 	case providerName == kraken.Name:
 		apiDataHandler, err = kraken.NewAPIHandler(cfg.API)
 	case strings.HasPrefix(providerName, uniswapv3.BaseName):
-		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(ctx, logger, cfg.API)
+		apiPriceFetcher, err = uniswapv3.NewPriceFetcher(ctx, logger, metrics, cfg.API)
 	case providerName == static.Name:
 		apiDataHandler = static.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
@@ -80,10 +80,7 @@ func APIQueryHandlerFactory(
 		apiDataHandler = volatile.NewAPIHandler()
 		requestHandler = static.NewStaticMockClient()
 	case providerName == raydium.Name:
-		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(
-			cfg.API,
-			logger,
-		)
+		apiPriceFetcher, err = raydium.NewAPIPriceFetcher(logger, cfg.API, metrics)
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Name)
 	}

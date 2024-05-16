@@ -3,72 +3,88 @@ package raydium
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gagliardetto/solana-go"
 	"github.com/gagliardetto/solana-go/rpc"
-	"github.com/gagliardetto/solana-go/rpc/jsonrpc"
 	"go.uber.org/zap"
 
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	slinkyhttp "github.com/skip-mev/slinky/pkg/http"
+	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 // MultiJSONRPCClient is an implementation of the SolanaJSONRPCClient interface that delegates
 // requests to multiple underlying clients, and aggregates over all provided responses.
 type MultiJSONRPCClient struct {
+	logger     *zap.Logger
+	api        config.APIConfig
+	apiMetrics metrics.APIMetrics
+
 	// underlying clients
 	clients []SolanaJSONRPCClient
-
-	// logger
-	logger *zap.Logger
 }
 
-func NewMultiJSONRPCClient(clients []SolanaJSONRPCClient, logger *zap.Logger) *MultiJSONRPCClient {
+// NewMultiJSONRPCClient returns a new MultiJSONRPCClient.
+func NewMultiJSONRPCClient(
+	logger *zap.Logger,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+	clients []SolanaJSONRPCClient,
+) SolanaJSONRPCClient {
 	return &MultiJSONRPCClient{
-		clients: clients,
-		logger:  logger,
+		logger:     logger,
+		api:        api,
+		apiMetrics: apiMetrics,
+		clients:    clients,
 	}
 }
 
 // NewMultiJSONRPCClientFromEndpoints creates a new MultiJSONRPCClient from a list of endpoints.
-func NewMultiJSONRPCClientFromEndpoints(endpoints []oracleconfig.Endpoint, logger *zap.Logger) (*MultiJSONRPCClient, error) {
-	clients := make([]SolanaJSONRPCClient, len(endpoints))
+func NewMultiJSONRPCClientFromEndpoints(
+	logger *zap.Logger,
+	api config.APIConfig,
+	apiMetrics metrics.APIMetrics,
+) (SolanaJSONRPCClient, error) {
+	if logger == nil {
+		return nil, fmt.Errorf("logger is required")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, fmt.Errorf("invalid api config: %w", err)
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if api.Name != Name {
+		return nil, fmt.Errorf("invalid api name; expected %s, got %s", Name, api.Name)
+	}
+
+	if len(api.Endpoints) == 0 {
+		return nil, fmt.Errorf("no endpoints provided")
+	}
+
+	if apiMetrics == nil {
+		return nil, fmt.Errorf("metrics is nil")
+	}
 
 	var err error
-	for i := range endpoints {
-		clients[i], err = solanaClientFromEndpoint(endpoints[i])
+	clients := make([]SolanaJSONRPCClient, len(api.Endpoints))
+	for i := range api.Endpoints {
+		clients[i], err = solanaClientFromEndpoint(api.Endpoints[i])
 		if err != nil {
 			return nil, fmt.Errorf("failed to create solana client from endpoint: %w", err)
 		}
 	}
 
-	return NewMultiJSONRPCClient(clients, logger), nil
-}
-
-// solanaClientFromEndpoint creates a new SolanaJSONRPCClient from an endpoint.
-func solanaClientFromEndpoint(endpoint oracleconfig.Endpoint) (SolanaJSONRPCClient, error) {
-	// fail if the endpoint is invalid
-	if err := endpoint.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid endpoint %v: %w", endpoint, err)
-	}
-
-	// if authentication is enabled
-	if endpoint.Authentication.Enabled() {
-		transport := slinkyhttp.NewRoundTripperWithHeaders(map[string]string{
-			endpoint.Authentication.APIKeyHeader: endpoint.Authentication.APIKey,
-		}, http.DefaultTransport)
-
-		client := rpc.NewWithCustomRPCClient(jsonrpc.NewClientWithOpts(endpoint.URL, &jsonrpc.RPCClientOpts{
-			HTTPClient: &http.Client{
-				Transport: transport,
-			},
-		}))
-
-		return client, nil
-	}
-	return rpc.New(endpoint.URL), nil
+	return &MultiJSONRPCClient{
+		logger:     logger.With(zap.String("multi_client", Name)),
+		api:        api,
+		apiMetrics: apiMetrics,
+		clients:    clients,
+	}, nil
 }
 
 // GetMultipleAccountsWithOpts delegates the request to all underlying clients and applies a filter
@@ -86,14 +102,27 @@ func (c *MultiJSONRPCClient) GetMultipleAccountsWithOpts(
 	wg.Add(len(c.clients))
 
 	for i := range c.clients {
+		// Pin
+		url := c.api.Endpoints[i].URL
+		index := i
 		go func(client SolanaJSONRPCClient) {
-			defer wg.Done()
+			// Observe the latency of the request.
+			start := time.Now()
+			defer func() {
+				wg.Done()
+				c.apiMetrics.ObserveProviderResponseLatency(c.api.Name, metrics.RedactedEndpointURL(index), time.Since(start))
+			}()
+
 			resp, err := client.GetMultipleAccountsWithOpts(ctx, accounts, opts)
 			if err != nil {
-				c.logger.Error("failed to fetch accounts", zap.Error(err))
+				c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeError)
+				c.logger.Error("failed to fetch accounts", zap.String("url", url), zap.Error(err))
 				return
 			}
+
+			c.apiMetrics.AddRPCStatusCode(c.api.Name, metrics.RedactedEndpointURL(index), metrics.RPCCodeOK)
 			responsesCh <- resp
+			c.logger.Debug("successfully fetched accounts", zap.String("url", url))
 		}(c.clients[i])
 	}
 
