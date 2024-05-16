@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -66,7 +67,7 @@ func NewRestAPIFetcher[K providertypes.ResponseKey, V providertypes.ResponseValu
 		apiDataHandler: apiDataHandler,
 		metrics:        metrics,
 		config:         config,
-		logger:         logger,
+		logger:         logger.With(zap.String("fetcher", config.Name)),
 	}, nil
 }
 
@@ -76,6 +77,12 @@ func (pf *RestAPIFetcher[K, V]) Fetch(
 	ctx context.Context,
 	ids []K,
 ) providertypes.GetResponse[K, V] {
+	// Observe the latency of the request.
+	start := time.Now()
+	defer func() {
+		pf.metrics.ObserveProviderResponseLatency(pf.config.Name, metrics.RedactedURL, time.Since(start))
+	}()
+
 	// Create the URL for the request.
 	url, err := pf.apiDataHandler.CreateURL(ids)
 	if err != nil {

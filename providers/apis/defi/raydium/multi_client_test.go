@@ -3,7 +3,6 @@ package raydium_test
 import (
 	"context"
 	"fmt"
-	"strings"
 	"testing"
 	"time"
 
@@ -12,42 +11,60 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium/mocks"
+	"github.com/skip-mev/slinky/providers/base/api/metrics"
 )
 
 // TestMultiJSONRPCClient tests the MultiJSONRPCClient.
 func TestMultiJSONRPCClient(t *testing.T) {
+	cfg := raydium.DefaultAPIConfig
+	cfg.Endpoints = []config.Endpoint{
+		{
+			URL: "http://localhost:8899",
+		},
+		{
+			URL: "http://localhost:8899/",
+			Authentication: config.Authentication{
+				APIKey:       "test",
+				APIKeyHeader: "X-API-Key",
+			},
+		},
+		{
+			URL: "http://localhost:8899/",
+		},
+	}
+
 	client1 := mocks.NewSolanaJSONRPCClient(t)
 	client2 := mocks.NewSolanaJSONRPCClient(t)
 	client3 := mocks.NewSolanaJSONRPCClient(t)
-	client := raydium.NewMultiJSONRPCClient([]raydium.SolanaJSONRPCClient{client1, client2, client3}, zap.NewNop())
+	client := raydium.NewMultiJSONRPCClient(
+		zap.NewNop(),
+		cfg,
+		metrics.NewNopAPIMetrics(),
+		[]raydium.SolanaJSONRPCClient{client1, client2, client3},
+	)
 
 	t.Run("test MultiJSONRPCClient From endpoints", func(t *testing.T) {
 		t.Run("invalid endpoint", func(t *testing.T) {
-			endpoint := oracleconfig.Endpoint{}
+			tempCfg := cfg
+			tempCfg.Endpoints = nil
 
-			_, err := raydium.NewMultiJSONRPCClientFromEndpoints([]oracleconfig.Endpoint{endpoint}, zap.NewNop())
+			_, err := raydium.NewMultiJSONRPCClientFromEndpoints(
+				zap.NewNop(),
+				tempCfg,
+				metrics.NewNopAPIMetrics(),
+			)
 			require.Error(t, err)
-			require.True(t, strings.Contains(err.Error(), "invalid endpoint"))
 		})
 
 		t.Run("endpoints with / wo authentication", func(t *testing.T) {
-			endpoints := []oracleconfig.Endpoint{
-				{
-					URL: "http://localhost:8899",
-				},
-				{
-					URL: "http://localhost:8899/",
-					Authentication: oracleconfig.Authentication{
-						APIKey:       "test",
-						APIKeyHeader: "X-API-Key",
-					},
-				},
-			}
-
-			_, err := raydium.NewMultiJSONRPCClientFromEndpoints(endpoints, zap.NewNop())
+			_, err := raydium.NewMultiJSONRPCClientFromEndpoints(
+				zap.NewNop(),
+				cfg,
+				metrics.NewNopAPIMetrics(),
+			)
 			require.NoError(t, err)
 		})
 	})
