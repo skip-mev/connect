@@ -92,7 +92,7 @@ jobs:
         with:
           matrix-step-name: github-action-matrix-outputs-read
       - name: Update the image tags
-        uses: skip-mev/gitops-actions/.github/workflows/update-values/action.yml@main
+        uses: skip-mev/gitops-actions/update-values@main
         with:
           service: "slinky"
           deploy_key: ${{ secrets.MANIFESTS_DEPLOY_KEY }}
