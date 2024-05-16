@@ -80,7 +80,7 @@ jobs:
             image: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
   deploy:
     needs: [build]
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event_name == "pull_request"
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
