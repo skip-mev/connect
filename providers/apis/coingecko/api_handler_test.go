@@ -11,16 +11,21 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/coingecko"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 )
 
 var (
-	btcusd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	ethusd = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	ethbtc = coingecko.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_BITCOIN)
+	btcusd = types.DefaultProviderTicker{
+		OffChainTicker: "btc/usd",
+	}
+	ethusd = types.DefaultProviderTicker{
+		OffChainTicker: "eth/usd",
+	}
+	ethbtc = types.DefaultProviderTicker{
+		OffChainTicker: "eth/btc",
+	}
 )
 
 func TestCreateURL(t *testing.T) {

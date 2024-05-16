@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -40,36 +38,5 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig returns the default market config for bitstamp.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.AVAX_USD: {
-			OffChainTicker: "avaxusd",
-		},
-		constants.BITCOIN_USD: {
-			OffChainTicker: "btcusd",
-		},
-		constants.BITCOIN_USDC: {
-			OffChainTicker: "btcusdc",
-		},
-		constants.BITCOIN_USDT: {
-			OffChainTicker: "btcusdt",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ethbtc",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ethusd",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "solusd",
-		},
-		constants.USDC_USDT: {
-			OffChainTicker: "usdcusdt",
-		},
-		constants.USDT_USD: {
-			OffChainTicker: "usdtusd",
-		},
 	}
 )

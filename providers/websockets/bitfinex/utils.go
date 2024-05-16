@@ -2,8 +2,6 @@ package bitfinex
 
 import (
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
-	"github.com/skip-mev/slinky/oracle/types"
 )
 
 const (
@@ -37,24 +35,5 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	// DefaultMarketConfig is the default market configuration for BitFinex.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.BITCOIN_USD: {
-			OffChainTicker: "BTCUSD",
-		},
-		constants.CELESTIA_USD: {
-			OffChainTicker: "TIAUSD",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ETHBTC",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ETHUSD",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "SOLUSD",
-		},
 	}
 )

@@ -8,15 +8,18 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/kraken"
 )
 
 var (
-	btcusd = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	ethusd = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	btcusd = types.DefaultProviderTicker{
+		OffChainTicker: "BTCUSD",
+	}
+	ethusd = types.DefaultProviderTicker{
+		OffChainTicker: "ETHUSD",
+	}
 	logger = zap.NewExample()
 )
 

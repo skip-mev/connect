@@ -9,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/base/testutils"
@@ -17,10 +16,18 @@ import (
 )
 
 var (
-	btcusd  = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	btcusdt = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	ethusdt = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
-	ethusd  = kraken.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
+	btcusd  = types.DefaultProviderTicker{
+		OffChainTicker: "BTCUSD",
+	}
+	btcusdt = types.DefaultProviderTicker{
+		OffChainTicker: "BTCUSDT",
+	}
+	ethusdt = types.DefaultProviderTicker{
+		OffChainTicker: "ETHUSDT",
+	}
+	ethusd  = types.DefaultProviderTicker{
+		OffChainTicker: "ETHUSD",
+	}
 )
 
 func TestCreateURL(t *testing.T) {

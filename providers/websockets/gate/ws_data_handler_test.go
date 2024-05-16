@@ -9,15 +9,18 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/gate"
 )
 
 var (
-	btcusdt = gate.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USDT)
-	ethusdt = gate.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USDT)
+	btcusdt = types.DefaultProviderTicker{
+		OffChainTicker: "BTCUSDT",
+	}
+	ethusdt = types.DefaultProviderTicker{
+		OffChainTicker: "ETHUSDT",
+	}
 	logger  = zap.NewExample()
 )
 

@@ -25,7 +25,6 @@ import (
 	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/static"
@@ -344,7 +343,7 @@ func translateGRPCAddr(chain *cosmos.CosmosChain) string {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
-	ethusdc := constants.ETHEREUM_USDC
+	ethusdc := slinkytypes.NewCurrencyPair("ETH", "USDC")
 
 	s.Require().NoError(s.AddCurrencyPairs(s.chain, s.user, 1.1, []slinkytypes.CurrencyPair{
 		ethusdc,
@@ -542,9 +541,9 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 }
 
 func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
-	ethusdc := constants.ETHEREUM_USDC
-	ethusdt := constants.ETHEREUM_USDT
-	ethusd := constants.ETHEREUM_USD
+	ethusdc := slinkytypes.NewCurrencyPair("ETH", "USDC")
+	ethusdt := slinkytypes.NewCurrencyPair("ETH", "USDT")
+	ethusd := slinkytypes.NewCurrencyPair("ETH", "USD")
 
 	// add multiple currency pairs
 	cps := []slinkytypes.CurrencyPair{

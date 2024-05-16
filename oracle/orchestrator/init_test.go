@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -16,6 +15,15 @@ import (
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
+)
+
+var (
+	btcusdt = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "BTCUSDT",
+	}
+	ethusdt = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "ETHUSDT",
+	}
 )
 
 func TestInit(t *testing.T) {
@@ -68,8 +76,12 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD),
-				coinbase.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD),
+				oracletypes.DefaultProviderTicker{
+					OffChainTicker: "BTCUSD",
+				},
+				oracletypes.DefaultProviderTicker{
+					OffChainTicker: "ETHUSD",
+				},
 			},
 			coinbase.Name,
 			providertypes.API,
@@ -82,8 +94,8 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				okx.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD),
-				okx.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD),
+				btcusdt,
+				ethusdt,
 			},
 			okx.Name,
 			providertypes.WebSockets,

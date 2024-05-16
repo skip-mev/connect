@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	providertypes "github.com/skip-mev/slinky/providers/types"
 	"github.com/skip-mev/slinky/service/clients/marketmap/types"
@@ -28,11 +28,13 @@ var (
 		},
 	}
 
+	btcusd = slinkytypes.NewCurrencyPair("BTC", "USD")
+
 	goodMarketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			constants.BITCOIN_USD.String(): {
+			btcusd.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     constants.BITCOIN_USD,
+					CurrencyPair:     btcusd,
 					Decimals:         8,
 					MinProviderCount: 1,
 				},
@@ -48,9 +50,9 @@ var (
 
 	badMarketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			constants.BITCOIN_USD.String(): {
+			btcusd.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     constants.BITCOIN_USD,
+					CurrencyPair:     btcusd,
 					Decimals:         8,
 					MinProviderCount: 3,
 				},

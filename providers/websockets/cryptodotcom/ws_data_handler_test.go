@@ -12,16 +12,21 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
 )
 
 var (
-	btcusd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.BITCOIN_USD)
-	ethusd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.ETHEREUM_USD)
-	solusd = cryptodotcom.DefaultMarketConfig.MustGetProviderTicker(constants.SOLANA_USD)
+	btcusd = types.DefaultProviderTicker{
+		OffChainTicker: "BTCUSD",
+	}
+	ethusd = types.DefaultProviderTicker{
+		OffChainTicker: "ETHUSD",
+	}
+	solusd = types.DefaultProviderTicker{
+		OffChainTicker: "SOLUSD",
+	}
 	logger = zap.NewExample()
 )
 

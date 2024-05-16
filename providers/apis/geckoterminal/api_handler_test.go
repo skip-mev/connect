@@ -9,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/geckoterminal"
 	"github.com/skip-mev/slinky/providers/base/testutils"
@@ -17,8 +16,12 @@ import (
 )
 
 var (
-	mogusd  = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.MOG_USD)
-	pepeusd = geckoterminal.DefaultETHMarketConfig.MustGetProviderTicker(constants.PEPE_USD)
+	mogusd  = types.DefaultProviderTicker{
+		OffChainTicker: "MOGUSD",
+	}
+	pepeusd = types.DefaultProviderTicker{
+		OffChainTicker: "PEPEUSD",
+	}
 )
 
 func TestCreateURL(t *testing.T) {

@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -24,6 +23,12 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+)
+
+var (
+	btcusdtcp = slinkytypes.NewCurrencyPair("BTC", "USDT")
+	ethusdtcp = slinkytypes.NewCurrencyPair("ETH", "USDT")
 )
 
 var (
@@ -156,28 +161,42 @@ var (
 	// Coinbase and OKX are supported by the marketmap.
 	marketMap = mmtypes.MarketMap{
 		Markets: map[string]mmtypes.Market{
-			constants.BITCOIN_USD.String(): {
+			btcusdt.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     constants.BITCOIN_USD,
+					CurrencyPair:     btcusdtcp,
 					MinProviderCount: 1,
 					Decimals:         8,
 					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.BITCOIN_USD),
-					okx.DefaultMarketConfig.MustGetProviderConfig(okx.Name, constants.BITCOIN_USD),
+					// coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, btcusdt),
+					mmtypes.ProviderConfig{
+						Name: coinbase.Name,
+						OffChainTicker: "BTCUSD", 
+					},
+					mmtypes.ProviderConfig{
+						Name: okx.Name,
+						OffChainTicker: "BTC-USD",
+					},
 				},
 			},
-			constants.ETHEREUM_USD.String(): {
+			ethusdtcp.String(): {
 				Ticker: mmtypes.Ticker{
-					CurrencyPair:     constants.ETHEREUM_USD,
+					CurrencyPair:     ethusdtcp,
 					MinProviderCount: 1,
 					Decimals:         8,
 					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
-					okx.DefaultMarketConfig.MustGetProviderConfig(okx.Name, constants.ETHEREUM_USD),
+					// coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
+					mmtypes.ProviderConfig{
+						Name: coinbase.Name,
+						OffChainTicker: "ETHUSD",
+					},
+					mmtypes.ProviderConfig{
+						Name: okx.Name,
+						OffChainTicker: "ETH-USD",
+					},
 				},
 			},
 		},

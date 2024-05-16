@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 )
 
@@ -50,34 +49,6 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		Endpoints:        []config.Endpoint{{URL: URL}},
-	}
-
-	// DefaultMarketConfig is the default market configuration for CoinGecko.
-	DefaultMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.ATOM_USD: {
-			OffChainTicker: "cosmos/usd",
-		},
-		constants.BITCOIN_USD: {
-			OffChainTicker: "bitcoin/usd",
-		},
-		constants.CELESTIA_USD: {
-			OffChainTicker: "celestia/usd",
-		},
-		constants.DYDX_USD: {
-			OffChainTicker: "dydx-chain/usd",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ethereum/btc",
-		},
-		constants.ETHEREUM_USD: {
-			OffChainTicker: "ethereum/usd",
-		},
-		constants.OSMOSIS_USD: {
-			OffChainTicker: "osmosis/usd",
-		},
-		constants.SOLANA_USD: {
-			OffChainTicker: "solana/usd",
-		},
 	}
 )
 
