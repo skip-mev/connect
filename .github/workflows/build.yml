@@ -80,7 +80,7 @@ jobs:
             image: ${{ steps.meta.outputs.version }}
   deploy:
     needs: [build]
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     environment: dev
     permissions:
@@ -96,7 +96,8 @@ jobs:
         uses: skip-mev/gitops-actions/update-values@main
         with:
           service: "slinky"
-          deploy_key: ${{ secrets.MANIFESTS_DEPLOY_KEY }}
+          app_id: ${{ vars.APP_ID }}
+          app_private_key: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           manifests_repo: "skip-mev/slinky-manifests"
           values_file_name: "values-dev.yaml"
           modified_values: |
