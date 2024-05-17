@@ -9,7 +9,7 @@ This is intended to be a single-stop solution for monitoring your Slinky Side Ca
 Clone this repository on your Docker host, cd into slinky-monitoring directory and run compose up:
 
 ```bash
-git clone https://github.com/LavenderFive/slinky-monitoring
+git clone https://github.com/skip-mev/slinky/monitoring
 cd slinky-monitoring
 cp .env.sample .env
 export NODE_URL=http://localhost:1317 # Enter your own node url here
@@ -22,11 +22,11 @@ docker-compose up -d
 ```
 
 ## Setup Slinky
-### Clone slinky-monitoring
+### Clone slinky
 
 ```sh
-git clone https://github.com/LavenderFive/slinky-monitoring
-cd slinky-monitoring
+git clone https://github.com/skip-mev/slinky/
+cd slinky/monitoring
 ```
 
 ### Copy .env file
@@ -40,9 +40,9 @@ This command will create the Slinky oracle.json config file under `~/slinky-moni
 on the same server as the node, you will want to change the `NODE_URL` from localhost.
 
 ```sh
-cd ~/slinky-monitoring
+cd ~/slinky/monitoring
 export NODE_URL=localhost:1317 # Enter your own node url here
-docker run -it --rm --entrypoint sh -v $(pwd)/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:v0.4.1 -c "slinky-config --chain dydx \
+docker run -it --rm --entrypoint sh -v $(pwd)/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:v0.4.4 -c "slinky-config --chain dydx \
 --node-http-url $NODE_URL --raydium-enabled --solana-node-endpoint \
 https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.lavenderfive.com,https://solana-rpc.rhino-apis.com,https://dydx.helius-rpc.com \
 --oracle-config-path /slinky/oracle.json"
@@ -52,7 +52,7 @@ https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.l
 The following will set your IP address in `prometheus.yml`. **If you are using non-standard daemon prometheus metrics port, `26660`, you will need to modify `prometheus/prometheus.yml`.**
 
 ```sh
-cd ~/slinky-monitoring
+cd ~/slinky/monitoring
 sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" prometheus/prometheus.yml
 ```
 
@@ -61,7 +61,7 @@ Slinky supports the addition of state-RPCs to gather data directly from Solana a
 
 For each RPC URL, you will need an API key unique to your validator. To get this, go to the dYdX validator slack channel (which you should already be invited to once you make it into the active set), and request API keys from Helius, Polkachu, KingNodes, LavenderFive, and RhinoStake. Each of these are necessary to load into your config so your decentralized providers can work properly.
 
-Once you have your 5 API keys, head to `slinky-monitoring/slinky/oracle.json` and configure endpoint(s) for each provider.
+Once you have your 5 API keys, head to `slinky/monitoring/slinky/oracle.json` and configure endpoint(s) for each provider.
 
 Then you must fill in your API keys. You should use the URLs listed below, and ask on the Slack `#ext-dydx-validators-discussion` or `#v-dydx-private-testnet-discussion` channels: for API keys to fill in below.
 
@@ -73,35 +73,35 @@ More information can be found [here](https://docs.skip.money/slinky/integrations
    "api": {
       "endpoints": [
         {
-          "url": "https://solana.polkachu.com"
+          "url": "https://solana.polkachu.com",
           "authentication": {
               "apiKey": "X-Api-Key",
               "apiKeyHeader": "API KEY YOU'VE RETRIEVED FROM SLACK"
           }
         },
         {
-          "url": "https://slinky-solana.kingnodes.com"
+          "url": "https://slinky-solana.kingnodes.com",
           "authentication": {
               "apiKey": "X-Api-Key",
               "apiKeyHeader": "API KEY YOU'VE RETRIEVED FROM SLACK"
           }
         },
         {
-          "url": "https://solana.lavenderfive.com"
+          "url": "https://solana.lavenderfive.com",
           "authentication": {
               "apiKey": "X-Api-Key",
               "apiKeyHeader": "API KEY YOU'VE RETRIEVED FROM SLACK"
           }
         },
         {
-          "url": "https://solana-rpc.rhino-apis.com"
+          "url": "https://solana-rpc.rhino-apis.com",
           "authentication": {
               "apiKey": "X-Api-Key",
               "apiKeyHeader": "API KEY YOU'VE RETRIEVED FROM SLACK"
           }
         },
         {
-          "url": "https://dydx.helius-rpc.com"
+          "url": "https://dydx.helius-rpc.com",
           "authentication": {
               "apiKey": "X-Api-Key",
               "apiKeyHeader": "API KEY YOU'VE RETRIEVED FROM SLACK"
@@ -119,7 +119,7 @@ This monitoring solution comes built in with a Slinky Monitoring dashboard,
 which works out of the box. Grafana, Prometheus, and Infinity are installed 
 automatically.
 
-![Slinky Dashboard](https://raw.githubusercontent.com/LavenderFive/slinky-monitoring/master/screens/slinky_dashboard.png)
+![Slinky Dashboard](https://raw.githubusercontent.com/skip-mev/slinky/monitoring/master/screens/slinky_dashboard.png)
 
 ---
 
@@ -155,7 +155,7 @@ Grafana is preconfigured with dashboards and Prometheus as the default data sour
 
 ***Monitor Services Dashboard***
 
-![Monitor Services](https://raw.githubusercontent.com/LavenderFive/slinky-monitoring/master/screens/Grafana_Prometheus.png)
+![Monitor Services](https://raw.githubusercontent.com/skip-mev/slinky/monitoring/master/screens/Grafana_Prometheus.png)
 
 The Monitor Services Dashboard shows key metrics for monitoring the containers that make up the monitoring stack:
 
@@ -170,10 +170,9 @@ The Monitor Services Dashboard shows key metrics for monitoring the containers t
 
 ## Define alerts
 
-Two alert groups have been setup within the [alert.rules](https://github.com/LavenderFive/slinky-monitoring/blob/master/prometheus/alert.rules) configuration file:
+Two alert groups have been setup within the [alert.rules](https://github.com/skip-mev/slinky/monitoring/blob/master/prometheus/alert.rules) configuration file:
 
-* Monitoring services alerts [targets](https://github.com/LavenderFive/slinky-monitoring/blob/master/prometheus/alert.rules#L13-L22)
-* Peggo alerts [peggo](https://github.com/LavenderFive/slinky-monitoring/blob/master/prometheus/alert.rules#L2-L11)
+* Monitoring services alerts [targets](https://github.com/skip-mev/slinky/monitoring/blob/master/prometheus/alert.rules#L13-L22)
 
 You can modify the alert rules and reload them by making a HTTP POST call to Prometheus:
 
@@ -205,7 +204,7 @@ A complete list of integrations can be found [here](https://prometheus.io/docs/a
 
 You can view and silence notifications by accessing `http://<host-ip>:9093`.
 
-The notification receivers can be configured in [alertmanager/config.yml](https://github.com/LavenderFive/slinky-monitoring/blob/master/alertmanager/config.yml) file.
+The notification receivers can be configured in [alertmanager/config.yml](https://github.com/skip-mev/slinky/monitoring/blob/master/alertmanager/config.yml) file.
 
 To receive alerts via Slack you need to make a custom integration by choose ***incoming web hooks*** in your Slack team app page.
 You can find more details on setting up Slack integration [here](http://www.robustperception.io/using-slack-with-the-alertmanager/).
@@ -226,4 +225,4 @@ receivers:
             api_url: 'https://hooks.slack.com/services/<webhook-id>'
 ```
 
-![Slack Notifications](https://raw.githubusercontent.com/LavenderFive/slinky-monitoring/master/screens/Slack_Notifications.png)
+![Slack Notifications](https://raw.githubusercontent.com/skip-mev/slinky/monitoring/master/screens/Slack_Notifications.png)
