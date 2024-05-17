@@ -17,7 +17,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
+
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/pkg/log"
@@ -26,6 +26,7 @@ import (
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	"debug/buildinfo"
 )
 
 var (
@@ -43,7 +44,7 @@ var (
 		Short: "Print the version of the oracle.",
 		Args:  cobra.NoArgs,
 		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println(constants.Version)
+
 		},
 	}
 
