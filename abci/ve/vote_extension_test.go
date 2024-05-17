@@ -343,7 +343,6 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
 				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(0), nil).Once()
 				return cpStrategy
 			},
 			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
@@ -358,7 +357,6 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 			},
 			currencyPairStrategy: func() *mockstrategies.CurrencyPairStrategy {
 				cpStrategy := mockstrategies.NewCurrencyPairStrategy(s.T())
-				cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(1), nil).Once()
 				return cpStrategy
 			},
 			expectedResponse: &cometabci.ResponseVerifyVoteExtension{
@@ -786,7 +784,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 		cdc.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{}, codecError)
 
 		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
-			VoteExtension: []byte{},
+			VoteExtension: []byte{1, 2, 3},
 		})
 		s.Require().Error(err, expErr)
 	})
@@ -821,7 +819,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 		}, nil)
 
 		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
-			VoteExtension: []byte{},
+			VoteExtension: []byte{1, 2, 3},
 		})
 		s.Require().Error(err, expErr)
 	})
@@ -849,7 +847,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 		cdc.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{}, nil)
 
 		_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{
-			VoteExtension: []byte{},
+			VoteExtension: []byte{1, 2, 3},
 		})
 		s.Require().NoError(err)
 	})
