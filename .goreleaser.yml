@@ -14,6 +14,8 @@ builds:
     - 'darwin'
     binary: 'slinky'
     id: 'slinky'
+    ldflags:
+      - "-X github.com/skip-mev/slinky/cmd/build.Build={{.Version}}"
   - main: 'cmd/slinky-config/main.go'
     goos:
     - 'linux'
