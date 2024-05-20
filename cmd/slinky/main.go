@@ -17,6 +17,8 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+
+	"github.com/skip-mev/slinky/cmd/build"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	"github.com/skip-mev/slinky/pkg/log"
@@ -34,6 +36,15 @@ var (
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			return runOracle()
+		},
+	}
+
+	versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the version of the oracle.",
+		Args:  cobra.NoArgs,
+		Run: func(_ *cobra.Command, _ []string) {
+			fmt.Println(build.Build)
 		},
 	}
 
@@ -154,6 +165,8 @@ func init() {
 	)
 	rootCmd.MarkFlagsMutuallyExclusive("update-market-config-path", "market-config-path")
 	rootCmd.MarkFlagsMutuallyExclusive("market-map-endpoint", "market-config-path")
+
+	rootCmd.AddCommand(versionCmd)
 }
 
 // start the oracle-grpc server + oracle process, cancel on interrupt or terminate.
