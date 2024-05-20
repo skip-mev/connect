@@ -17,6 +17,7 @@ docker run -it --rm --entrypoint sh -v $(pwd)/monitoring/slinky:/slinky ghcr.io/
 --node-http-url $NODE_URL --raydium-enabled --solana-node-endpoint \
 https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.lavenderfive.com,https://solana-rpc.rhino-apis.com,https://dydx.helius-rpc.com \
 --oracle-config-path /slinky/oracle.json"
+sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" monitoring/prometheus/prometheus.yml
 docker-compose up -d
 ```
 
@@ -52,7 +53,7 @@ The following will set your IP address in `prometheus.yml`. **If you are using n
 
 ```sh
 cd ~/slinky/monitoring
-sed -i '' "s/localhost/${NODE_URL}/g" prometheus/prometheus.yml
+sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" prometheus/prometheus.yml
 ```
 
 ### Add API Keys 

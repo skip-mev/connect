@@ -27,10 +27,9 @@ scrape_configs:
       - targets: 
         - slinky:8002
       - targets:
-        - localhost:8002
-        - localhost:26660
+        - <YOUR_IP>:26660
         labels:
-          network: 'dydx'
+          chain: 'dydx'
 
 alerting:
   alertmanagers:
