@@ -1,0 +1,86 @@
+{"level":"info","ts":"2024-05-20T08:37:24.123-0700","caller":"slinky/main.go:229","msg":"successfully read in configs","pid":13350,"oracle_config_path":"./oracle.json","market_config_path":""}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/lifecycle.go:23","msg":"starting provider orchestrator","pid":13350,"process":"provider_orchestrator"}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"raydium_api","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"coinbase_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"gate_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"binance_api","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"kraken_api","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"gecko_terminal_api","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"volatile-exchange-provider","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"okx_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"coingecko_api","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:154","msg":"created market map provider","pid":13350,"process":"provider_orchestrator","provider":"marketmap_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"kucoin_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"bitfinex_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"coinbase_api","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"crypto_dot_com_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.130-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"huobi_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"uniswapv3_api-ethereum","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"kraken_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"bybit_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"mexc_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/init.go:105","msg":"created price provider state","pid":13350,"process":"provider_orchestrator","provider":"bitstamp_ws","num_tickers":0}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"coinbase_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"coinbase_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"bitstamp_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"bitstamp_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"kraken_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"kraken_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"okx_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"okx_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"coingecko_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"coingecko_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"raydium_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"raydium_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"huobi_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"huobi_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"crypto_dot_com_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"crypto_dot_com_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"bybit_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"bybit_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"mexc_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"mexc_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"binance_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"binance_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"gecko_terminal_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"gecko_terminal_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"bitfinex_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"bitfinex_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"kucoin_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"kucoin_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"uniswapv3_api-ethereum"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"uniswapv3_api-ethereum"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"kraken_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"kraken_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"coinbase_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"coinbase_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"gate_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"gate_ws"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:56","msg":"updating provider state","pid":13350,"process":"provider_orchestrator","provider_state":"volatile-exchange-provider"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/update.go:71","msg":"updated provider state","pid":13350,"process":"provider_orchestrator","provider_state":"volatile-exchange-provider"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"orchestrator/lifecycle.go:50","msg":"starting marketmap provider","pid":13350,"process":"provider_orchestrator"}
+{"level":"info","ts":"2024-05-20T08:37:24.131-0700","caller":"oracle/oracle.go:88","msg":"creating oracle","pid":13350,"process":"oracle","num_providers":19}
+{"level":"info","ts":"2024-05-20T08:37:24.132-0700","caller":"slinky/main.go:297","msg":"starting prometheus metrics","pid":13350,"address":"0.0.0.0:8002"}
+{"level":"info","ts":"2024-05-20T08:37:24.132-0700","caller":"orchestrator/market_mapper.go:25","msg":"listening for market map updates","pid":13350,"process":"provider_orchestrator","chain":"ChainID: local-node"}
+{"level":"info","ts":"2024-05-20T08:37:24.132-0700","caller":"base/provider.go:108","msg":"starting provider","pid":13350,"process":"provider_orchestrator","provider":"marketmap_api"}
+{"level":"info","ts":"2024-05-20T08:37:24.132-0700","caller":"oracle/server.go:138","msg":"starting grpc server","pid":13350,"server":"oracle","host":"0.0.0.0","port":"8080"}
+{"level":"info","ts":"2024-05-20T08:37:24.132-0700","caller":"oracle/server.go:131","msg":"starting oracle","pid":13350,"server":"oracle"}
+{"level":"info","ts":"2024-05-20T08:37:24.132-0700","caller":"oracle/oracle.go:102","msg":"starting oracle","pid":13350,"process":"oracle"}
+{"level":"error","ts":"2024-05-20T08:37:24.133-0700","caller":"marketmap/fetcher.go:73","msg":"failed to query market map module on node","pid":13350,"process":"provider_orchestrator","error":"rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:9090: connect: connection refused\""}
+{"level":"info","ts":"2024-05-20T08:37:24.383-0700","caller":"oracle/oracle.go:163","msg":"oracle updated prices","pid":13350,"process":"oracle","last_sync":"2024-05-20T15:37:24.383Z","num_prices":0}
+{"level":"info","ts":"2024-05-20T08:37:24.632-0700","caller":"oracle/oracle.go:163","msg":"oracle updated prices","pid":13350,"process":"oracle","last_sync":"2024-05-20T15:37:24.632Z","num_prices":0}
+{"level":"info","ts":"2024-05-20T08:37:24.883-0700","caller":"oracle/oracle.go:163","msg":"oracle updated prices","pid":13350,"process":"oracle","last_sync":"2024-05-20T15:37:24.883Z","num_prices":0}
+{"level":"info","ts":"2024-05-20T08:37:25.134-0700","caller":"oracle/oracle.go:163","msg":"oracle updated prices","pid":13350,"process":"oracle","last_sync":"2024-05-20T15:37:25.134Z","num_prices":0}
+{"level":"info","ts":"2024-05-20T08:37:25.383-0700","caller":"oracle/oracle.go:163","msg":"oracle updated prices","pid":13350,"process":"oracle","last_sync":"2024-05-20T15:37:25.383Z","num_prices":0}
+{"level":"info","ts":"2024-05-20T08:37:25.633-0700","caller":"oracle/oracle.go:163","msg":"oracle updated prices","pid":13350,"process":"oracle","last_sync":"2024-05-20T15:37:25.633Z","num_prices":0}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"slinky/main.go:290","msg":"received interrupt or terminate signal; closing oracle","pid":13350}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"oracle/server.go:122","msg":"context cancelled, closing oracle","pid":13350,"server":"oracle"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"base/provider.go:166","msg":"main provider context has been cancelled; provider is exiting","pid":13350,"process":"provider_orchestrator","provider":"marketmap_api","error":"context canceled"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"oracle/oracle.go:129","msg":"stopping oracle","pid":13350,"process":"oracle"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"slinky/main.go:308","msg":"stopping prometheus metrics","pid":13350}
+{"level":"error","ts":"2024-05-20T08:37:25.687-0700","caller":"orchestrator/lifecycle.go:97","msg":"provider exited","pid":13350,"process":"provider_orchestrator","provider":"marketmap_api","error":"context canceled"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"oracle/oracle.go:114","msg":"oracle stopped via context","pid":13350,"process":"oracle"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"prometheus/server.go:76","msg":"prometheus server closed","pid":13350,"server":"prometheus"}
+{"level":"error","ts":"2024-05-20T08:37:25.687-0700","caller":"slinky/main.go:326","msg":"stopping server","pid":13350,"error":"[grpc server]: error serving: http: Server closed"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"orchestrator/lifecycle.go:71","msg":"stopping provider orchestrator","pid":13350,"process":"provider_orchestrator"}
+{"level":"info","ts":"2024-05-20T08:37:25.687-0700","caller":"orchestrator/lifecycle.go:77","msg":"provider orchestrator exited successfully","pid":13350,"process":"provider_orchestrator"}

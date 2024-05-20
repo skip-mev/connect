@@ -16,8 +16,6 @@ const (
 	// Name is the name of the Kraken provider.
 	Name = "kraken_ws"
 
-	Type = types.ConfigType
-
 	// URL is the production websocket URL for Kraken.
 	URL = "wss://ws.kraken.com"
 
@@ -42,12 +40,6 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	DefaultProviderConfig = config.ProviderConfig{
-		Name:      Name,
-		WebSocket: DefaultWebSocketConfig,
-		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.

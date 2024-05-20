@@ -206,6 +206,7 @@ func runOracle() error {
 			return fmt.Errorf("failed to get oracle config: %w", err)
 		}
 	}
+	fmt.Println("oracle-config", cfg)
 
 	// overwrite endpoint
 	if marketMapEndPoint != "" {

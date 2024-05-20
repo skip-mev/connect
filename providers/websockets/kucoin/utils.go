@@ -12,8 +12,6 @@ const (
 	// Name is the name of the KuCoin provider.
 	Name = "kucoin_ws"
 
-	Type = types.ConfigType
-
 	// WSSEndpoint contains the endpoint format for Kucoin websocket API. Specifically
 	// this inputs the dynamically generated token from the user and the endpoint.
 	WSSEndpoint = "%s?token=%s"
@@ -47,12 +45,6 @@ var (
 		PingInterval:                  DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	DefaultProviderConfig = config.ProviderConfig{
-		Name:      Name,
-		WebSocket: DefaultWebSocketConfig,
-		Type:      Type,
 	}
 
 	// DefaultAPIConfig defines the default API config for KuCoin. This is
