@@ -16,8 +16,8 @@ export NODE_URL=http://localhost:1317 # Enter your own node url here
 docker run -it --rm --entrypoint sh -v $(pwd)/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:latest -c "slinky-config --chain dydx \
 --node-http-url $NODE_URL --raydium-enabled --solana-node-endpoint \
 https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.lavenderfive.com,https://solana-rpc.rhino-apis.com,https://dydx.helius-rpc.com \
---oracle-config-path /slinky/oracle.json"
-sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" prometheus/prometheus.yml
+--oracle-config-path monitoring/slinky/oracle.json"
+sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" monitoring/prometheus/prometheus.yml
 docker-compose up -d
 ```
 
