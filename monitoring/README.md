@@ -9,14 +9,14 @@ This is intended to be a single-stop solution for monitoring your Slinky Side Ca
 Clone this repository on your Docker host, cd into slinky directory and run compose up:
 
 ```bash
-git clone https://github.com/skip-mev/slinky/monitoring
+git clone https://github.com/skip-mev/slinky
 cd slinky
 cp .env.sample .env
 export NODE_URL=http://localhost:1317 # Enter your own node url here
-docker run -it --rm --entrypoint sh -v $(pwd)/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:latest -c "slinky-config --chain dydx \
+docker run -it --rm --entrypoint sh -v $(pwd)/monitoring/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:latest -c "slinky-config --chain dydx \
 --node-http-url $NODE_URL --raydium-enabled --solana-node-endpoint \
 https://solana.polkachu.com,https://slinky-solana.kingnodes.com,https://solana.lavenderfive.com,https://solana-rpc.rhino-apis.com,https://dydx.helius-rpc.com \
---oracle-config-path monitoring/slinky/oracle.json"
+--oracle-config-path /slinky/oracle.json"
 sed -i '' "s/<YOUR_IP>/${NODE_URL}/g" monitoring/prometheus/prometheus.yml
 docker-compose up -d
 ```
@@ -40,7 +40,7 @@ This command will create the Slinky oracle.json config file under `~/slinky/moni
 on the same server as the node, you will want to change the `NODE_URL` from localhost.
 
 ```sh
-cd ~/slinky/monitoring
+cd ~/slinky
 export NODE_URL=localhost:1317 # Enter your own node url here
 docker run -it --rm --entrypoint sh -v $(pwd)/monitoring/slinky:/slinky ghcr.io/skip-mev/slinky-sidecar:latest -c "slinky-config --chain dydx \
 --node-http-url $NODE_URL --raydium-enabled --solana-node-endpoint \
