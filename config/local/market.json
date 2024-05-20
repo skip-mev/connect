@@ -161,11 +161,11 @@
       "ticker": {
         "currency_pair": {
           "Base": "ANDY",
-          "Quote": "SOL",
-          "enabled": true
+          "Quote": "SOL"
         },
         "decimals": 18,
-        "min_provider_count": 1
+        "min_provider_count": 1,
+        "enabled": true
       },
       "provider_configs": [
         {

@@ -169,7 +169,7 @@ func TestFetch(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			fetcher, err := marketmap.NewMarketMapFetcher(logger, marketmap.DefaultAPIConfig, tc.client())
+			fetcher, err := marketmap.NewMarketMapFetcherWithClient(logger, tc.client())
 			require.NoError(t, err)
 
 			resp := fetcher.Fetch(context.TODO(), tc.chains)

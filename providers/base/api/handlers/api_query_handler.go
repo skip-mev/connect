@@ -239,20 +239,16 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 	responseCh chan<- providertypes.GetResponse[K, V],
 ) func() error {
 	return func() error {
-		// Observe the total amount of time it takes to fulfill the request(s).
-		start := time.Now().UTC()
+		// Recover from any panics that occur.
 		defer func() {
-			// Recover from any panics that occur.
 			if r := recover(); r != nil {
 				h.logger.Error("panic occurred in subtask", zap.Any("panic", r), zap.Any("ids", ids))
 			}
 
-			h.metrics.ObserveProviderResponseLatency(h.config.Name, time.Since(start))
 			h.logger.Debug("finished subtask", zap.Any("ids", ids))
 		}()
 
 		h.logger.Debug("starting subtask", zap.Any("ids", ids))
-
 		h.writeResponse(ctx, responseCh, h.fetcher.Fetch(ctx, ids))
 		return nil
 	}

@@ -32,18 +32,23 @@ DEV_COMPOSE ?= $(CURDIR)/contrib/compose/docker-compose-dev.yml
 LEVANT_VAR_FILE:=$(shell mktemp -d)/levant.yaml
 NOMAD_FILE_SLINKY:=contrib/nomad/slinky.nomad
 
+TAG := $(shell git describe --tags --always --dirty)
+
 export HOMEDIR := $(HOMEDIR)
 export APP_TOML := $(APP_TOML)
 export GENESIS := $(GENESIS)
 export GENESIS_TMP := $(GENESIS_TMP)
 export MARKETS := $(MARKETS)
 
+BUILD_TAGS := -X github.com/skip-mev/slinky/cmd/build.Build=$(TAG)
+
 ###############################################################################
 ###                               build                                     ###
 ###############################################################################
 
 build: tidy
-	@go build -o ./build/ ./...
+	go build -ldflags="$(BUILD_TAGS)" \
+	 -o ./build/ ./...
 
 run-oracle-server: build
 	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}

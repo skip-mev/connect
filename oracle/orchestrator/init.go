@@ -147,7 +147,7 @@ func (o *ProviderOrchestrator) createMarketMapProvider(cfg config.ProviderConfig
 		cfg,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create market map provider: %w", err)
+		return fmt.Errorf("failed to create market map provider (%s): %w", cfg.Name, err)
 	}
 
 	o.mmProvider = mapper
