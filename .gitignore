@@ -35,3 +35,6 @@ run.go
 .idea/*
 .vscode/*
 **/.DS_Store
+
+# monitoring
+.env

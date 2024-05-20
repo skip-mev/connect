@@ -1,5 +1,3 @@
-.env
 .DS_Store
 slinky/*
 grafana/provisioning/dashboards/slinky_dashboard.json
-slinky/oracle.json
