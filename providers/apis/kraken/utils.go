@@ -18,8 +18,6 @@ const (
 	// Name is the name of the Kraken API provider.
 	Name = "kraken_api"
 
-	Type = types.ConfigType
-
 	// URL is the base URL of the Kraken API. This includes the base and quote
 	// currency pairs that need to be inserted into the URL.
 	URL = "https://api.kraken.com/0/public/Ticker?pair=%s"
@@ -39,12 +37,6 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
-	}
-
-	DefaultProviderConfig = config.ProviderConfig{
-		Name: Name,
-		API:  DefaultAPIConfig,
-		Type: Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.

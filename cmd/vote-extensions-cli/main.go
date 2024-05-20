@@ -55,6 +55,8 @@ var (
 			cmd.Println("Height:", block.Block.Height, "Round:", extCommit.Round)
 
 			// decode the vote extensions
+			// per price, unmarshal via gob decoding
+			pricesMap := make(map[uint64][]*big.Int)
 			for _, vote := range extCommit.Votes {
 				// decode the vote extension
 				ve, err := veCodec.Decode(vote.VoteExtension)
@@ -62,7 +64,6 @@ var (
 					return err
 				}
 
-				// per price, unmarshal via gob decoding
 				for priceID, priceBz := range ve.Prices {
 					cmd.Println("Price ID:", priceID)
 
@@ -71,6 +72,12 @@ var (
 						return err
 					}
 					cmd.Println("Price:", price)
+
+					if _, ok := pricesMap[priceID]; !ok {
+						pricesMap[priceID] = make([]*big.Int, 0)
+					}
+
+					pricesMap[priceID] = append(pricesMap[priceID], price)
 				}
 
 				// log the block id
@@ -79,6 +86,8 @@ var (
 				// log the validator
 				cmd.Println("Validator:", vote.Validator)
 			}
+			cmd.Println("all prices", pricesMap)
+
 
 			return nil
 		},

@@ -14,8 +14,6 @@ const (
 	// Name is the name of the Crypto.com provider.
 	Name = "crypto_dot_com_ws"
 
-	Type = types.ConfigType
-
 	// URL_PROD is the URL used to connect to the Crypto.com production websocket API.
 	URL_PROD = "wss://stream.crypto.com/exchange/v1/market"
 
@@ -41,12 +39,6 @@ var (
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
 		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-
-	DefaultProviderConfig = config.ProviderConfig{
-		Name:      Name,
-		WebSocket: DefaultWebSocketConfig,
-		Type:      Type,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Crypto.com.
