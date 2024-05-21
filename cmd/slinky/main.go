@@ -51,6 +51,7 @@ var (
 	oracleCfgPath       string
 	legacyOracleCfgPath string
 	marketCfgPath       string
+	marketMapProvider   string
 	updateMarketCfgPath string
 	runPprof            bool
 	profilePort         string
@@ -67,15 +68,22 @@ var (
 
 func init() {
 	rootCmd.Flags().StringVarP(
+		&marketMapProvider,
+		"marketmap-provider",
+		"",
+		marketmap.Name,
+		"MarketMap provider to use (marketmap_api, dydx_api, dydx_research_api).",
+	)
+	rootCmd.Flags().StringVarP(
 		&legacyOracleCfgPath,
-		"legacy-oracle-config-path",
+		"oracle-config-path",
 		"",
 		"",
 		"Path to the legacy oracle config file.",
 	)
 	rootCmd.Flags().StringVarP(
 		&oracleCfgPath,
-		"oracle-config-path",
+		"oracle-config",
 		"",
 		"",
 		"Path to the oracle config file.",
@@ -196,17 +204,16 @@ func runOracle() error {
 	var cfg config.OracleConfig
 	var err error
 	if legacyOracleCfgPath != "" {
-		cfg, err = config.ReadOracleConfigFromFile(legacyOracleCfgPath)
+		cfg, err = GetLegacyOracleConfig(legacyOracleCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
 		}
 	} else {
-		cfg, err = GetLegacyOracleConfig(oracleCfgPath)
+		cfg, err = ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
 		if err != nil {
 			return fmt.Errorf("failed to get oracle config: %w", err)
 		}
 	}
-	fmt.Println("oracle-config", cfg)
 
 	// overwrite endpoint
 	if marketMapEndPoint != "" {

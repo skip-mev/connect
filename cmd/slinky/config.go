@@ -5,29 +5,12 @@ import (
 	"reflect"
 	"time"
 
-	binanceapi "github.com/skip-mev/slinky/providers/apis/binance"
-	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
-	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
-	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
-	"github.com/skip-mev/slinky/providers/apis/marketmap"
-	"github.com/skip-mev/slinky/providers/volatile"
-	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
-	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
-	"github.com/skip-mev/slinky/providers/websockets/coinbase"
-	"github.com/skip-mev/slinky/providers/websockets/cryptodotcom"
-	"github.com/skip-mev/slinky/providers/websockets/gate"
-	"github.com/skip-mev/slinky/providers/websockets/huobi"
-	"github.com/skip-mev/slinky/providers/websockets/kraken"
-	"github.com/skip-mev/slinky/providers/websockets/kucoin"
-	"github.com/skip-mev/slinky/providers/websockets/mexc"
-	"github.com/skip-mev/slinky/providers/websockets/okx"
-	"github.com/skip-mev/slinky/service/clients/marketmap/types"
 	"github.com/spf13/viper"
 
+	"github.com/skip-mev/slinky/cmd/constants"
 	"github.com/skip-mev/slinky/oracle/config"
-	"github.com/skip-mev/slinky/oracle/constants"
+	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
+	"strings"
 )
 
 const (
@@ -48,107 +31,24 @@ const (
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle
-var DefaultOracleConfig = OracleConfig{
-	UpdateInterval: DefaultUpdateInterval,
-	MaxPriceAge:    DefaultMaxPriceAge,
-	Providers: map[string]config.ProviderConfig{
-		coinbaseapi.Name: config.ProviderConfig{
-			Name: coinbaseapi.Name,
-			API: coinbaseapi.DefaultAPIConfig,
-			Type: types.ConfigType,
+func DefaultOracleConfig() OracleConfig {
+	cfg := OracleConfig{
+		UpdateInterval: DefaultUpdateInterval,
+		MaxPriceAge:    DefaultMaxPriceAge,
+		Metrics: config.MetricsConfig{
+			PrometheusServerAddress: DefaultPrometheusServerAddress,
+			Enabled:                DefaultMetricsEnabled,
 		},
-		binanceapi.Name: config.ProviderConfig{
-			Name: binanceapi.Name,
-			API: binanceapi.DefaultNonUSAPIConfig,
-			Type: types.ConfigType,
-		},
-		raydium.Name: config.ProviderConfig{
-			Name: raydium.Name,
-			API: raydium.DefaultAPIConfig,
-			Type: types.ConfigType,
-		},
-		uniswapv3.ProviderNames[constants.ETHEREUM]: config.ProviderConfig{
-			Name: uniswapv3.ProviderNames[constants.ETHEREUM],
-			API: uniswapv3.DefaultETHAPIConfig,
-			Type: types.ConfigType,
-		},
-		krakenapi.Name: config.ProviderConfig{
-			Name: krakenapi.Name,
-			API: krakenapi.DefaultAPIConfig,
-			Type: types.ConfigType,
-		},
-		marketmap.Name: config.ProviderConfig{
-			Name: marketmap.Name,
-			API: marketmap.DefaultAPIConfig,
-			Type: types.ConfigType,
-		},
-		volatile.Name: config.ProviderConfig{
-			Name: volatile.Name,
-			API: volatile.DefaultAPIConfig,
-			Type: types.ConfigType,
-		},
-		bitfinex.Name: config.ProviderConfig{
-			Name: bitfinex.Name,
-			WebSocket: bitfinex.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		bitstamp.Name: config.ProviderConfig{
-			Name: bitstamp.Name,
-			WebSocket: bitstamp.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		bybit.Name: config.ProviderConfig{
-			Name: bybit.Name,
-			WebSocket: bybit.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		coinbase.Name: config.ProviderConfig{
-			Name: coinbase.Name,
-			WebSocket: coinbase.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		cryptodotcom.Name: config.ProviderConfig{
-			Name: cryptodotcom.Name,
-			WebSocket: cryptodotcom.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		gate.Name: config.ProviderConfig{
-			Name: gate.Name,
-			WebSocket: gate.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		huobi.Name: config.ProviderConfig{
-			Name: huobi.Name,
-			WebSocket: huobi.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		kraken.Name: config.ProviderConfig{
-			Name: kraken.Name,
-			WebSocket: kraken.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		kucoin.Name: config.ProviderConfig{
-			Name: kucoin.Name,
-			WebSocket: kucoin.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		mexc.Name: config.ProviderConfig{
-			Name: mexc.Name,
-			WebSocket: mexc.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-		okx.Name: config.ProviderConfig{
-			Name: okx.Name,
-			WebSocket: okx.DefaultWebSocketConfig,
-			Type: types.ConfigType,
-		},
-	},
-	Metrics: config.MetricsConfig{
-		PrometheusServerAddress: DefaultPrometheusServerAddress,
-		Enabled:                DefaultMetricsEnabled,
-	},
-	Host: DefaultHost,
-	Port: DefaultPort,
+		Providers: make(map[string]config.ProviderConfig),
+		Host: DefaultHost,
+		Port: DefaultPort,
+	}
+
+	for _, provider := range append(constants.Providers, constants.MarketMapProviders...) {
+		cfg.Providers[provider.Name] = provider
+	}
+
+	return cfg
 }
 
 type OracleConfig struct {
@@ -224,7 +124,7 @@ func (c *OracleConfig) ToLegacy() config.OracleConfig {
 }
 
 func SetDefaults() {
-	setViperDefaultsForDataStructure("", DefaultOracleConfig)
+	setViperDefaultsForDataStructure("", DefaultOracleConfig())
 }
 
 func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
@@ -238,9 +138,11 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 		// the fully-qualified key for this field
 		fullKey := keyPrefix + jsonFieldTag
 
-		if field.Kind() == reflect.Struct {
+		switch field.Kind() {
+		case reflect.Struct:
+			// set viper defaults for struct via recursion
 			setViperDefaultsForDataStructure(fullKey + jsonFieldDelimiter, field.Interface())
-		} else if field.Kind() == reflect.Map {
+		case reflect.Map:
 			// set viper defaults for map
 			for _, key := range field.MapKeys() {
 				setViperDefaultsForDataStructure(
@@ -248,47 +150,125 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 					field.MapIndex(key).Interface(),
 				)
 			}
-		} else {
+		default:
 			viper.SetDefault(fullKey, field.Interface())
 		}
 	}
+
+	// set the environment prefix
+	viper.SetEnvPrefix("SLINKY_CONFIG")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
 
 func GetLegacyOracleConfig(path string) (config.OracleConfig, error) {
-	SetDefaults()
-	var oracleCfg OracleConfig
-	var err error
-	if path != "" {
-		oracleCfg, err = ReadOracleConfigFromFile(path)
-	} else {
-		err = viper.Unmarshal(&oracleCfg)
-	}
-	if err != nil {
+	viper.SetConfigFile(path)
+	viper.SetConfigType("json")
+
+	if err := viper.ReadInConfig(); err != nil {
 		return config.OracleConfig{}, err
 	}
-	return oracleCfg.ToLegacy(), nil
+
+	var cfg config.OracleConfig
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return config.OracleConfig{}, err
+	}
+
+	return cfg, cfg.ValidateBasic()
 }
 
 // ReadOracleConfigFromFile reads a config from a file and returns the config.
-func ReadOracleConfigFromFile(path string) (OracleConfig, error) {
-	// Read in config file.
-	viper.SetConfigFile(path)
-	viper.SetConfigType("json")
+func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (config.OracleConfig, error) {
+	// if the path is non-nil read data from a file\
 	SetDefaults()
+	if path != "" {
+		viper.SetConfigFile(path)
+		viper.SetConfigType("json")
 
-	if err := viper.ReadInConfig(); err != nil {
+		if err := viper.ReadInConfig(); err != nil {
+			return config.OracleConfig{}, err
+		}
+	}
+
+	cfg, err := oracleConfigFromViper()
+	if err != nil {
+		return config.OracleConfig{}, err
+	}
+
+	// filter the market-map providers
+	if _, ok := constants.MarketMapProviderNames[marketMapProvider]; !ok {
+		return config.OracleConfig{}, fmt.Errorf("market map provider %s not found", marketMapProvider)
+	}
+
+	// filter the unused market-map providers
+	for name, provider := range cfg.Providers {
+		if provider.Type == mmtypes.ConfigType {
+			if name != marketMapProvider {
+				delete(cfg.Providers, name)
+			}
+		}
+	}
+
+	return cfg.ToLegacy(), nil
+}
+
+// oracleConfigFromViper unmarshals an oracle config from viper, validates it, and returns it.
+func oracleConfigFromViper() (OracleConfig, error) {
+	var cfg OracleConfig
+	if err := viper.Unmarshal(&cfg); err != nil {
 		return OracleConfig{}, err
 	}
 
-	// Unmarshal the config.
-	var config OracleConfig
-	if err := viper.Unmarshal(&config); err != nil {
+	// for each api-provider, we'll have to manually fill the endpoints
+	for _, provider := range cfg.Providers {
+		// skip non-api providers
+		if provider.API.Enabled {
+			for i, endpoint := range provider.API.Endpoints {
+				provider.API.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i)
+			}
+
+			// start searching for environment variables from the first endpoint
+			firstEndpointFromViperIndex := len(provider.API.Endpoints)
+			for found := true; found; firstEndpointFromViperIndex++ {
+				var endpoint config.Endpoint
+				endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex)
+				if found {
+					provider.API.Endpoints = append(provider.API.Endpoints, endpoint)
+				}
+			}
+
+			// update the provider with the updated endpoints
+			cfg.Providers[provider.Name] = provider
+		}
+	}
+
+	if err := cfg.ValidateBasic(); err != nil {
 		return OracleConfig{}, err
 	}
 
-	if err := config.ValidateBasic(); err != nil {
-		return OracleConfig{}, err
+	return cfg, nil
+}
+
+// updateEndpointFromEnvironment returns an updated endpoint with the values from the environment. If viper is not aware of
+// any overrides variables for the endpoint, the original endpoint is returned with false.
+func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string, idx int) (config.Endpoint, bool) {
+	// check if an environment variable exists for this endpoint
+	endpointURL := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.url", providerName, idx))
+	endpointAPIKey := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.authentication.apiKey", providerName, idx))
+	endpointAPIKeyHeader := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.authentication.apiKeyHeader", providerName, idx))
+
+	// if the environment variable exists, set the endpoint to the value of the environment variable
+	if endpointURL != nil {
+		endpoint.URL = endpointURL.(string)
 	}
 
-	return config, nil
+	if endpointAPIKey != nil {
+		endpoint.Authentication.APIKey = endpointAPIKey.(string)
+	}
+
+	if endpointAPIKeyHeader != nil {
+		endpoint.Authentication.APIKeyHeader = endpointAPIKeyHeader.(string)
+	}
+
+	return endpoint, endpointURL != nil || endpointAPIKey != nil || endpointAPIKeyHeader != nil
 }
