@@ -31,112 +31,112 @@ var (
 	Providers = []config.ProviderConfig{
 		{
 			Name: coinbaseapi.Name,
-			API: coinbaseapi.DefaultAPIConfig,
+			API:  coinbaseapi.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
 			Name: binanceapi.Name,
-			API: binanceapi.DefaultNonUSAPIConfig,
+			API:  binanceapi.DefaultNonUSAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
 			Name: raydium.Name,
-			API: raydium.DefaultAPIConfig,
+			API:  raydium.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
 			Name: uniswapv3.ProviderNames[constants.ETHEREUM],
-			API: uniswapv3.DefaultETHAPIConfig,
+			API:  uniswapv3.DefaultETHAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
 			Name: krakenapi.Name,
-			API: krakenapi.DefaultAPIConfig,
+			API:  krakenapi.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
 			Name: marketmap.Name,
-			API: marketmap.DefaultAPIConfig,
+			API:  marketmap.DefaultAPIConfig,
 			Type: mmtypes.ConfigType,
 		},
 		{
 			Name: volatile.Name,
-			API: volatile.DefaultAPIConfig,
+			API:  volatile.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
-			Name: bitfinex.Name,
+			Name:      bitfinex.Name,
 			WebSocket: bitfinex.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: bitstamp.Name,
+			Name:      bitstamp.Name,
 			WebSocket: bitstamp.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: bybit.Name,
+			Name:      bybit.Name,
 			WebSocket: bybit.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: coinbase.Name,
+			Name:      coinbase.Name,
 			WebSocket: coinbase.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: cryptodotcom.Name,
+			Name:      cryptodotcom.Name,
 			WebSocket: cryptodotcom.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: gate.Name,
+			Name:      gate.Name,
 			WebSocket: gate.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: huobi.Name,
+			Name:      huobi.Name,
 			WebSocket: huobi.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: kraken.Name,
+			Name:      kraken.Name,
 			WebSocket: kraken.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: kucoin.Name,
+			Name:      kucoin.Name,
 			WebSocket: kucoin.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: mexc.Name,
+			Name:      mexc.Name,
 			WebSocket: mexc.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 		{
-			Name: okx.Name,
+			Name:      okx.Name,
 			WebSocket: okx.DefaultWebSocketConfig,
-			Type: types.ConfigType,
+			Type:      types.ConfigType,
 		},
 	}
-	
+
 	MarketMapProviders = []config.ProviderConfig{
 		{
 			Name: dydx.Name,
-			API: dydx.DefaultAPIConfig,
+			API:  dydx.DefaultAPIConfig,
 			Type: mmtypes.ConfigType,
 		},
 		{
 			Name: dydx.ResearchAPIHandlerName,
-			API: dydx.DefaultResearchAPIConfig,
+			API:  dydx.DefaultResearchAPIConfig,
 			Type: mmtypes.ConfigType,
 		},
 	}
 
 	MarketMapProviderNames = map[string]struct{}{
-		dydx.Name: {},
+		dydx.Name:                   {},
 		dydx.ResearchAPIHandlerName: {},
-		marketmap.Name: {},
+		marketmap.Name:              {},
 	}
 )
