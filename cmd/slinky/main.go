@@ -27,6 +27,7 @@ import (
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 )
 
 var (
@@ -222,6 +223,7 @@ func runOracle() error {
 			return fmt.Errorf("failed to overwrite market endpoint %s: %w", marketMapEndPoint, err)
 		}
 	}
+	fmt.Println("Oracle config loaded", cfg)
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
@@ -350,7 +352,7 @@ func runOracle() error {
 
 func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (config.OracleConfig, error) {
 	for i, provider := range cfg.Providers {
-		if provider.Name == marketmap.Name {
+		if provider.Type == mmservicetypes.ConfigType {
 			provider.API.URL = overwrite
 			cfg.Providers[i] = provider
 			return cfg, cfg.ValidateBasic()
