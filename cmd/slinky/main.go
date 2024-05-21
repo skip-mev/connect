@@ -24,10 +24,10 @@ import (
 	"github.com/skip-mev/slinky/pkg/log"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
+	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 )
 
 var (
