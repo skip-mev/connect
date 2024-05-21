@@ -12,6 +12,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
+	cmdconstants "github.com/skip-mev/slinky/cmd/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
@@ -141,7 +142,7 @@ var (
 		Metrics:        config.MetricsConfig{},
 		UpdateInterval: 250 * time.Millisecond,
 		MaxPriceAge:    2 * time.Minute,
-		Providers:      providers.ProviderDefaults,
+		Providers:      cmdconstants.Providers,
 	}
 )
 
