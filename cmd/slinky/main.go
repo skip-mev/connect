@@ -73,15 +73,16 @@ func init() {
 		"marketmap-provider",
 		"",
 		marketmap.Name,
-		"MarketMap provider to use (marketmap_api, dydx_api, dydx_research_api).",
+		"MarketMap provider to use (marketmap_api, dydx_api).",
 	)
 	rootCmd.Flags().StringVarP(
 		&legacyOracleCfgPath,
 		"oracle-config-path",
-		"",
+		"oracle.json",
 		"",
 		"Path to the legacy oracle config file.",
 	)
+
 	rootCmd.Flags().StringVarP(
 		&oracleCfgPath,
 		"oracle-config",
@@ -202,9 +203,25 @@ func runOracle() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// Set up logging.
+	logCfg := log.NewDefaultConfig()
+	logCfg.StdOutLogLevel = logLevel
+	logCfg.FileOutLogLevel = fileLogLevel
+	logCfg.DisableRotating = disableRotatingLogs
+	logCfg.WriteTo = writeLogsTo
+	logCfg.MaxSize = maxLogSize
+	logCfg.MaxBackups = maxBackups
+	logCfg.MaxAge = maxAge
+	logCfg.Compress = !disableCompressLogs
+
+	// Build logger.
+	logger := log.NewLogger(logCfg)
+	defer logger.Sync()
+
 	var cfg config.OracleConfig
 	var err error
 	if legacyOracleCfgPath != "" {
+		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --oracle-config instead.")
 		cfg, err = GetLegacyOracleConfig(legacyOracleCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
@@ -232,21 +249,6 @@ func runOracle() error {
 			return fmt.Errorf("failed to read market config file: %w", err)
 		}
 	}
-
-	// Set up logging.
-	logCfg := log.NewDefaultConfig()
-	logCfg.StdOutLogLevel = logLevel
-	logCfg.FileOutLogLevel = fileLogLevel
-	logCfg.DisableRotating = disableRotatingLogs
-	logCfg.WriteTo = writeLogsTo
-	logCfg.MaxSize = maxLogSize
-	logCfg.MaxBackups = maxBackups
-	logCfg.MaxAge = maxAge
-	logCfg.Compress = !disableCompressLogs
-
-	// Build logger.
-	logger := log.NewLogger(logCfg)
-	defer logger.Sync()
 
 	logger.Info(
 		"successfully read in configs",

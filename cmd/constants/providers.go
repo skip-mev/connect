@@ -121,7 +121,7 @@ var (
 		},
 	}
 
-	MarketMapProviders = []config.ProviderConfig{
+	AlternativeMarketMapProviders = []config.ProviderConfig{
 		{
 			Name: dydx.Name,
 			API:  dydx.DefaultAPIConfig,

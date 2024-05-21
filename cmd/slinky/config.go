@@ -44,7 +44,7 @@ func DefaultOracleConfig() OracleConfig {
 		Port:      DefaultPort,
 	}
 
-	for _, provider := range append(constants.Providers, constants.MarketMapProviders...) {
+	for _, provider := range append(constants.Providers, constants.AlternativeMarketMapProviders...) {
 		cfg.Providers[provider.Name] = provider
 	}
 
@@ -62,12 +62,6 @@ type OracleConfig struct {
 
 	// Providers is the map of provider names to providers that the oracle will fetch prices from.
 	Providers map[string]config.ProviderConfig `json:"providers"`
-
-	// Production specifies whether the oracle is running in production mode. This is used to
-	// determine whether the oracle should be run in debug mode or not.
-	//
-	// Deprecated: This field is no longer used.
-	Production bool `json:"production"`
 
 	// Metrics is the metrics configurations for the oracle.
 	Metrics config.MetricsConfig `json:"metrics"`
@@ -116,7 +110,6 @@ func (c *OracleConfig) ToLegacy() config.OracleConfig {
 		UpdateInterval: c.UpdateInterval,
 		MaxPriceAge:    c.MaxPriceAge,
 		Providers:      providers,
-		Production:     c.Production,
 		Metrics:        c.Metrics,
 		Host:           c.Host,
 		Port:           c.Port,
