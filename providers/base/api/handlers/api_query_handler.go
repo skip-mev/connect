@@ -55,6 +55,7 @@ type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseVa
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 	config  config.APIConfig
+	ticker  *ExponentialBackOffTicker
 
 	// fetcher is responsible for fetching data from the API.
 	fetcher APIFetcher[K, V]
@@ -74,10 +75,23 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		return nil, fmt.Errorf("failed to create api fetcher: %w", err)
 	}
 
+	logger = logger.With(zap.String("api_query_handler", cfg.Name))
+	ticker, err := NewExponentialBackOffTicker(
+		logger,
+		cfg.Interval,
+		DefaultMultipler,
+		cfg.Interval*time.Duration(DefaultMultipler*10),
+		cfg.Interval,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create exponential backoff ticker: %w", err)
+	}
+
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
+		logger:  logger,
 		config:  cfg,
 		metrics: metrics,
+		ticker:  ticker,
 		fetcher: fetcher,
 	}, nil
 }
@@ -109,10 +123,23 @@ func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.
 		return nil, fmt.Errorf("no fetcher specified for api query handler")
 	}
 
+	logger = logger.With(zap.String("api_query_handler", cfg.Name))
+	ticker, err := NewExponentialBackOffTicker(
+		logger,
+		cfg.Interval,
+		DefaultMultipler,
+		cfg.Interval*time.Duration(DefaultMultipler*10),
+		cfg.Interval,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create exponential backoff ticker: %w", err)
+	}
+
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
+		logger:  logger,
 		config:  cfg,
 		metrics: metrics,
+		ticker:  ticker,
 		fetcher: fetcher,
 	}, nil
 }
@@ -184,15 +211,13 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 
 	// Block each task until the wait group has capacity to accept a new response.
 	index := 0
-	ticker, stop := tickerWithImmediateFirstTick(h.config.Interval)
-	defer stop()
 MainLoop:
 	for {
 		select {
 		case <-ctx.Done():
 			h.logger.Debug("context cancelled, stopping queries")
 			break MainLoop
-		case <-ticker:
+		case <-h.ticker.Tick():
 			// spin up limit number of tasks
 			for i := 0; i < limit; i++ {
 				wg.Go(tasks[index%len(tasks)])
@@ -209,26 +234,6 @@ MainLoop:
 		h.logger.Debug("error querying ids", zap.Error(err))
 	}
 	h.logger.Debug("all api sub-tasks completed")
-}
-
-// tickerWithImmediateFirstTick creates a ticker that sends an initial tick immediately, and then ticks
-// at the specified interval.
-func tickerWithImmediateFirstTick(d time.Duration) (<-chan struct{}, func()) {
-	ticker := time.NewTicker(d)
-	ch := make(chan struct{})
-
-	// Send an initial tick immediately.
-	go func() {
-		ch <- struct{}{}
-		for range ticker.C { // send ticks at the specified interval
-			ch <- struct{}{}
-		}
-		close(ch)
-	}()
-
-	return ch, func() {
-		ticker.Stop()
-	}
 }
 
 // subTask is the subtask that is used to query the data provider for the given IDs,
@@ -275,7 +280,13 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 	for id := range response.Resolved {
 		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), providertypes.OK)
 	}
+
+	seenRateLimit := false
 	for id, unresolvedResult := range response.UnResolved {
 		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), unresolvedResult.Code())
+		if unresolvedResult.Code() == providertypes.ErrorRateLimitExceeded {
+			seenRateLimit = true
+		}
 	}
+	h.ticker.BackOff(!seenRateLimit)
 }

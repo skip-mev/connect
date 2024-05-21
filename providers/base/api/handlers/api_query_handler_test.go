@@ -28,10 +28,10 @@ import (
 )
 
 var (
-	logger  = zap.NewExample()
-	btcusd  = slinkytypes.NewCurrencyPair("BTC", "USD")
-	ethusd  = slinkytypes.NewCurrencyPair("ETH", "USD")
-	atomusd = slinkytypes.NewCurrencyPair("ATOM", "USD")
+	logger, _ = zap.NewDevelopment()
+	btcusd    = slinkytypes.NewCurrencyPair("BTC", "USD")
+	ethusd    = slinkytypes.NewCurrencyPair("ETH", "USD")
+	atomusd   = slinkytypes.NewCurrencyPair("ATOM", "USD")
 
 	constantURL = "http://fetchdata.org:8080"
 
