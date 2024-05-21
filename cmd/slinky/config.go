@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -10,7 +11,6 @@ import (
 	"github.com/skip-mev/slinky/cmd/constants"
 	"github.com/skip-mev/slinky/oracle/config"
 	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	"strings"
 )
 
 const (
@@ -30,18 +30,18 @@ const (
 	jsonFieldDelimiter = "."
 )
 
-// DefaultOracleConfig returns the default configuration for the slinky oracle
+// DefaultOracleConfig returns the default configuration for the slinky oracle.
 func DefaultOracleConfig() OracleConfig {
 	cfg := OracleConfig{
 		UpdateInterval: DefaultUpdateInterval,
 		MaxPriceAge:    DefaultMaxPriceAge,
 		Metrics: config.MetricsConfig{
 			PrometheusServerAddress: DefaultPrometheusServerAddress,
-			Enabled:                DefaultMetricsEnabled,
+			Enabled:                 DefaultMetricsEnabled,
 		},
 		Providers: make(map[string]config.ProviderConfig),
-		Host: DefaultHost,
-		Port: DefaultPort,
+		Host:      DefaultHost,
+		Port:      DefaultPort,
 	}
 
 	for _, provider := range append(constants.Providers, constants.MarketMapProviders...) {
@@ -141,12 +141,12 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 		switch field.Kind() {
 		case reflect.Struct:
 			// set viper defaults for struct via recursion
-			setViperDefaultsForDataStructure(fullKey + jsonFieldDelimiter, field.Interface())
+			setViperDefaultsForDataStructure(fullKey+jsonFieldDelimiter, field.Interface())
 		case reflect.Map:
 			// set viper defaults for map
 			for _, key := range field.MapKeys() {
 				setViperDefaultsForDataStructure(
-					fullKey+jsonFieldDelimiter+key.String() + jsonFieldDelimiter, 
+					fullKey+jsonFieldDelimiter+key.String()+jsonFieldDelimiter,
 					field.MapIndex(key).Interface(),
 				)
 			}

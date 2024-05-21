@@ -10,9 +10,9 @@ import (
 
 	"github.com/spf13/cobra"
 
+	cmdconstants "github.com/skip-mev/slinky/cmd/constants"
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
-	cmdconstants "github.com/skip-mev/slinky/cmd/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
