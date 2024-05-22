@@ -73,7 +73,7 @@ func NewExponentialBackOffTicker(
 
 	return &ExponentialBackOffTicker{
 		logger:     logger.With(zap.String("component", "exponential_backoff_ticker")),
-		interval:   base,
+		interval:   max,
 		base:       base,
 		multiplier: multipler,
 		max:        max,
@@ -100,9 +100,9 @@ func (t *ExponentialBackOffTicker) BackOff(success bool) time.Duration {
 	var updatedInterval time.Duration
 	// If the operation was successful, decrease the interval. Otherwise, increase the interval.
 	if !success {
-		updatedInterval = t.interval * time.Duration(t.multiplier)
+		updatedInterval = time.Duration(float64(t.interval) * t.multiplier)
 	} else {
-		updatedInterval = t.base / time.Duration(t.multiplier)
+		updatedInterval = time.Duration(float64(t.interval) / (1.1))
 	}
 
 	// Add jitter to the interval.
@@ -121,6 +121,7 @@ func (t *ExponentialBackOffTicker) BackOff(success bool) time.Duration {
 		"updating exponential backoff interval",
 		zap.Duration("current_interval", t.interval),
 		zap.Duration("updated_interval", updatedInterval),
+		zap.Bool("success", success),
 	)
 	t.interval = updatedInterval
 

@@ -41,6 +41,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
+	github.com/test-go/testify v1.1.4
 	github.com/vektra/mockery/v2 v2.43.1
 	go.uber.org/zap v1.27.0
 	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0

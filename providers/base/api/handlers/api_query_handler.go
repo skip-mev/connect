@@ -80,7 +80,7 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		logger,
 		cfg.Interval,
 		DefaultMultipler,
-		cfg.Interval*time.Duration(DefaultMultipler*10),
+		time.Second*30,
 		cfg.Interval,
 	)
 	if err != nil {
@@ -128,7 +128,7 @@ func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.
 		logger,
 		cfg.Interval,
 		DefaultMultipler,
-		cfg.Interval*time.Duration(DefaultMultipler*10),
+		time.Second*10,
 		cfg.Interval,
 	)
 	if err != nil {
@@ -281,12 +281,12 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), providertypes.OK)
 	}
 
-	seenRateLimit := false
+	noRateLimit := true
 	for id, unresolvedResult := range response.UnResolved {
 		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), unresolvedResult.Code())
 		if unresolvedResult.Code() == providertypes.ErrorRateLimitExceeded {
-			seenRateLimit = true
+			noRateLimit = false
 		}
 	}
-	h.ticker.BackOff(!seenRateLimit)
+	h.ticker.BackOff(noRateLimit)
 }

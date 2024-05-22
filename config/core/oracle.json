@@ -39,9 +39,9 @@
       "api": {
         "enabled": true,
         "timeout": 3000000000,
-        "interval": 1000000,
+        "interval": 1000,
         "reconnectTimeout": 2000000000,
-        "maxQueries": 20,
+        "maxQueries": 1,
         "atomic": false,
         "url": "https://api.coinbase.com/v2/prices/%s/spot",
         "endpoints": null,
@@ -71,7 +71,7 @@
       "api": {
         "enabled": true,
         "timeout": 3000000000,
-        "interval": 6000000,
+        "interval": 6000,
         "reconnectTimeout": 2000000000,
         "maxQueries": 1,
         "atomic": true,
