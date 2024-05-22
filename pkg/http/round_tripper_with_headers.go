@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/skip-mev/slinky/cmd/build"
@@ -16,7 +17,7 @@ type HeaderOption func(map[string]string)
 
 func WithSlinkyVersionUserAgent() HeaderOption {
 	return func(header map[string]string) {
-		header[UserAgentHeaderKey] = build.Build
+		header[UserAgentHeaderKey] = fmt.Sprintf("slinky/%s",build.Build)
 	}
 }
 
