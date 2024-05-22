@@ -26,7 +26,7 @@ func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (Tic
 		return metadata, nil
 	}
 
-	metadata, err := unmarshalMetadataJSON(ticker.GetJSON())
+	metadata, err := unmarshalMetadataJSON(ticker.String())
 	if err != nil {
 		return TickerMetadata{}, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
 	}
