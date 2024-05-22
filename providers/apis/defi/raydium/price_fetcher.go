@@ -214,7 +214,7 @@ func (pf *APIPriceFetcher) Fetch(
 		baseAccount := accountsResp.Value[i*2]
 		quoteAccount := accountsResp.Value[i*2+1]
 
-		metadata := pf.metaDataPerTicker[ticker.GetJSON()]
+		metadata := pf.metaDataPerTicker[ticker.String()]
 		// parse the token balances
 		baseTokenBalance, err := getScaledTokenBalance(baseAccount)
 		if err != nil {

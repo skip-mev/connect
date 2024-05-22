@@ -22,18 +22,18 @@ const (
 // updateMetaDataCache unmarshals the metadata JSON for each ticker and adds it to the
 // metadata map.
 func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (TickerMetadata, error) {
-	if metadata, ok := pf.metaDataPerTicker[ticker.GetJSON()]; ok {
+	if metadata, ok := pf.metaDataPerTicker[ticker.String()]; ok {
 		return metadata, nil
 	}
 
-	metadata, err := unmarshalMetadataJSON(ticker.GetJSON())
+	metadata, err := unmarshalMetadataJSON(ticker.String())
 	if err != nil {
 		return TickerMetadata{}, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
 	}
 	if err := metadata.ValidateBasic(); err != nil {
 		return TickerMetadata{}, fmt.Errorf("metadata for ticker %s is invalid: %w", ticker.String(), err)
 	}
-	pf.metaDataPerTicker[ticker.GetJSON()] = metadata
+	pf.metaDataPerTicker[ticker.String()] = metadata
 
 	return metadata, nil
 }
