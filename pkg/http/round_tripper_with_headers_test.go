@@ -19,7 +19,7 @@ func TestRoundTripperWithHeaders(t *testing.T) {
 		expectedHeaderFields: expectedHeaderFields,
 	}
 
-	rtWithHeaders := slinkyhttp.NewRoundTripperWithHeaders(expectedHeaderFields, rt)
+	rtWithHeaders := slinkyhttp.NewRoundTripperWithHeaders(rt, slinkyhttp.WithAuthentication("X-Api-Key", "test"))
 
 	client := &http.Client{
 		Transport: rtWithHeaders,
