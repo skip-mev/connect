@@ -123,6 +123,7 @@ func NewMetrics() Metrics {
 	prometheus.MustRegister(m.aggregatePrices)
 	prometheus.MustRegister(m.providerTick)
 	prometheus.MustRegister(m.providerCount)
+	prometheus.MustRegister(m.slinkyBuildInfo)
 
 	return m
 }
