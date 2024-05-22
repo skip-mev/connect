@@ -30,6 +30,7 @@ func (pf *APIPriceFetcher) updateMetaDataCache(ticker types.ProviderTicker) (Tic
 	if err != nil {
 		return TickerMetadata{}, fmt.Errorf("error unmarshalling metadata for ticker %s: %w", ticker.String(), err)
 	}
+
 	if err := metadata.ValidateBasic(); err != nil {
 		return TickerMetadata{}, fmt.Errorf("metadata for ticker %s is invalid: %w", ticker.String(), err)
 	}

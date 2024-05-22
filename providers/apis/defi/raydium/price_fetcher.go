@@ -238,6 +238,12 @@ func (pf *APIPriceFetcher) Fetch(
 			}
 			continue
 		}
+		pf.logger.Info(
+			"base token balance", zap.String("ticker", ticker.String()),
+			zap.String("balance", baseTokenBalance.String()),
+			zap.String("account", accounts[i * 2].String()),
+		)
+
 
 		quoteTokenBalance, err := getScaledTokenBalance(quoteAccount)
 		if err != nil {
@@ -251,10 +257,19 @@ func (pf *APIPriceFetcher) Fetch(
 			continue
 		}
 
-		pf.logger.Debug(
+		pf.logger.Info(
+			"quote token balance", zap.String("ticker", ticker.String()),
+			zap.String("balance", quoteTokenBalance.String()),
+			zap.String("account", accounts[i * 2 + 1].String()),
+		)
+
+		pf.logger.Info(
 			"unscaled balances",
 			zap.String("base", baseTokenBalance.String()),
 			zap.String("quote", quoteTokenBalance.String()),
+			zap.Uint64("base decimals", metadata.BaseTokenVault.TokenDecimals),
+			zap.Uint64("quote decimals", metadata.QuoteTokenVault.TokenDecimals),
+			zap.String("ticker", ticker.String()),
 		)
 
 		// calculate the price
@@ -263,7 +278,7 @@ func (pf *APIPriceFetcher) Fetch(
 			metadata.BaseTokenVault.TokenDecimals, metadata.QuoteTokenVault.TokenDecimals,
 		)
 
-		pf.logger.Debug(
+		pf.logger.Info(
 			"scaled price",
 			zap.String("ticker", ticker.String()),
 			zap.String("price", price.String()),
