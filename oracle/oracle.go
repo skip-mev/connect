@@ -107,6 +107,9 @@ func (o *OracleImpl) Start(ctx context.Context) error {
 	ticker := time.NewTicker(o.updateInterval)
 	defer ticker.Stop()
 
+	// set the slinky build info on startup
+	o.metrics.SetSlinkyBuildInfo()
+
 	for {
 		select {
 		case <-ctx.Done():
