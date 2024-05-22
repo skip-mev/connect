@@ -229,7 +229,7 @@ func runOracle() error {
 	var cfg config.OracleConfig
 	var err error
 	if legacyOracleCfgPath != "" && !useDefaults {
-		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --oracle-config instead.")
+		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --default-config --oracle-config instead.")
 		cfg, err = GetLegacyOracleConfig(legacyOracleCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
