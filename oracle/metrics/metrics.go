@@ -6,6 +6,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
+	"github.com/skip-mev/slinky/cmd/build"
 	"github.com/skip-mev/slinky/oracle/config"
 )
 
@@ -20,6 +21,8 @@ const (
 	OracleSubsystem = "side_car"
 	// SuccessLabel is a label for a successful operation.
 	SuccessLabel = "success"
+	// Version is a label for the Slinky version.
+	Version = "version"
 )
 
 // Metrics is an interface that defines the API for oracle metrics.
@@ -48,6 +51,9 @@ type Metrics interface {
 	// AddProviderCountForMarket increments the number of providers that were utilized
 	// to calculate the final price for a given market.
 	AddProviderCountForMarket(market string, count int)
+
+	// SetSlinkyBuildInfo sets the build information for the Slinky binary.
+	SetSlinkyBuildInfo()
 }
 
 // OracleMetricsImpl is a Metrics implementation that does nothing.
@@ -58,6 +64,7 @@ type OracleMetricsImpl struct {
 	aggregatePrices *prometheus.GaugeVec
 	providerTick    *prometheus.CounterVec
 	providerCount   *prometheus.GaugeVec
+	slinkyBuildInfo *prometheus.GaugeVec
 }
 
 // NewMetricsFromConfig returns an oracle Metrics implementation based on the provided
@@ -102,6 +109,11 @@ func NewMetrics() Metrics {
 			Name:      "health_check_market_providers",
 			Help:      "Number of providers that were utilized to calculate the final price for a given market.",
 		}, []string{PairIDLabel}),
+		slinkyBuildInfo: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+			Namespace: OracleSubsystem,
+			Name:      "slinky_build_info",
+			Help:      "Information about the slinky build",
+		}, []string{Version}),
 	}
 
 	// register the above metrics
@@ -111,6 +123,7 @@ func NewMetrics() Metrics {
 	prometheus.MustRegister(m.aggregatePrices)
 	prometheus.MustRegister(m.providerTick)
 	prometheus.MustRegister(m.providerCount)
+	prometheus.MustRegister(m.slinkyBuildInfo)
 
 	return m
 }
@@ -149,6 +162,9 @@ func (m *noOpOracleMetrics) AddProviderTick(_, _ string, _ bool) {
 // to calculate the final price for a given market.
 func (m *noOpOracleMetrics) AddProviderCountForMarket(string, int) {
 }
+
+// SetSlinkyBuildInfo sets the build information for the Slinky binary.
+func (m *noOpOracleMetrics) SetSlinkyBuildInfo() {}
 
 // AddTick increments the total number of ticks that have been processed by the oracle.
 func (m *OracleMetricsImpl) AddTick() {
@@ -210,4 +226,12 @@ func (m *OracleMetricsImpl) AddProviderCountForMarket(market string, count int) 
 		PairIDLabel: strings.ToLower(market),
 	},
 	).Set(float64(count))
+}
+
+// SetSlinkyBuildInfo sets the build information for the Slinky binary. The version exported
+// is determined by the build time version in accordance with the build pkg.
+func (m *OracleMetricsImpl) SetSlinkyBuildInfo() {
+	m.slinkyBuildInfo.With(prometheus.Labels{
+		Version: build.Build,
+	}).Set(1)
 }
