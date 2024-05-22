@@ -50,6 +50,7 @@ var (
 	}
 
 	oracleCfgPath       string
+	useDefaults bool
 	legacyOracleCfgPath string
 	marketCfgPath       string
 	marketMapProvider   string
@@ -78,9 +79,16 @@ func init() {
 	rootCmd.Flags().StringVarP(
 		&legacyOracleCfgPath,
 		"oracle-config-path",
-		"oracle.json",
 		"",
+		"oracle.json",
 		"Path to the legacy oracle config file.",
+	)
+	rootCmd.Flags().BoolVarP(
+		&useDefaults,
+		"default-config",
+		"",
+		false,
+		"Have slinky use default values for the oracle config, and look for over-rides",
 	)
 
 	rootCmd.Flags().StringVarP(
@@ -220,13 +228,15 @@ func runOracle() error {
 
 	var cfg config.OracleConfig
 	var err error
-	if legacyOracleCfgPath != "" {
+	if legacyOracleCfgPath != "" && !useDefaults {
 		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --oracle-config instead.")
 		cfg, err = GetLegacyOracleConfig(legacyOracleCfgPath)
 		if err != nil {
 			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
 		}
-	} else {
+	}
+
+	if useDefaults {
 		cfg, err = ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
 		if err != nil {
 			return fmt.Errorf("failed to get oracle config: %w", err)
@@ -240,7 +250,6 @@ func runOracle() error {
 			return fmt.Errorf("failed to overwrite market endpoint %s: %w", marketMapEndPoint, err)
 		}
 	}
-	fmt.Println("Oracle config loaded", cfg)
 
 	var marketCfg mmtypes.MarketMap
 	if marketCfgPath != "" {
