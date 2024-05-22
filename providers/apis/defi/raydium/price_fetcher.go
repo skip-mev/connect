@@ -214,7 +214,17 @@ func (pf *APIPriceFetcher) Fetch(
 		baseAccount := accountsResp.Value[i*2]
 		quoteAccount := accountsResp.Value[i*2+1]
 
-		metadata := pf.metaDataPerTicker[ticker.String()]
+		metadata, ok := pf.metaDataPerTicker[ticker.String()]
+		if !ok {
+			pf.logger.Error("metadata not found for ticker", zap.String("ticker", ticker.String()))
+			unresolved[ticker] = providertypes.UnresolvedResult{
+				ErrorWithCode: providertypes.NewErrorWithCode(
+					NoRaydiumMetadataForTickerError(ticker.String()),
+					providertypes.ErrorUnknownPair,
+				),
+			}
+			continue
+		}
 
 		// parse the token balances
 		baseTokenBalance, err := getScaledTokenBalance(baseAccount)
