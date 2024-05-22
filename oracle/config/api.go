@@ -23,6 +23,8 @@ type APIConfig struct {
 
 	// MaxQueries is the maximum number of concurrent queries that the provider will make
 	// within the interval.
+	//
+	// Deprecated: All providers will only make a single request per interval.
 	MaxQueries int `json:"maxQueries"`
 
 	// Atomic is a flag that indicates whether the provider can fulfill its queries

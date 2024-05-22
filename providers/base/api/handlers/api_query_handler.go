@@ -5,7 +5,6 @@ import (
 	"fmt"
 	gomath "math"
 	"strings"
-	"time"
 
 	"golang.org/x/sync/errgroup"
 
@@ -75,23 +74,10 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		return nil, fmt.Errorf("failed to create api fetcher: %w", err)
 	}
 
-	logger = logger.With(zap.String("api_query_handler", cfg.Name))
-	ticker, err := NewExponentialBackOffTicker(
-		logger,
-		cfg.Interval,
-		DefaultMultipler,
-		time.Second*30,
-		cfg.Interval,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create exponential backoff ticker: %w", err)
-	}
-
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger,
+		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
 		config:  cfg,
 		metrics: metrics,
-		ticker:  ticker,
 		fetcher: fetcher,
 	}, nil
 }
@@ -123,23 +109,10 @@ func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.
 		return nil, fmt.Errorf("no fetcher specified for api query handler")
 	}
 
-	logger = logger.With(zap.String("api_query_handler", cfg.Name))
-	ticker, err := NewExponentialBackOffTicker(
-		logger,
-		cfg.Interval,
-		DefaultMultipler,
-		time.Second*10,
-		cfg.Interval,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create exponential backoff ticker: %w", err)
-	}
-
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger,
+		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
 		config:  cfg,
 		metrics: metrics,
-		ticker:  ticker,
 		fetcher: fetcher,
 	}, nil
 }
@@ -288,5 +261,5 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 			noRateLimit = false
 		}
 	}
-	h.ticker.BackOff(noRateLimit)
+	h.ticker.Throttle(noRateLimit)
 }

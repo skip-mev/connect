@@ -1,89 +1,109 @@
-package handlers_test
+package http_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/skip-mev/slinky/pkg/http"
 	"github.com/skip-mev/slinky/pkg/math"
-	"github.com/skip-mev/slinky/providers/base/api/handlers"
 	"github.com/test-go/testify/require"
 	"go.uber.org/zap"
 )
 
+var logger, _ = zap.NewDevelopment()
+
 func TestNewExponentialBackOffTicker(t *testing.T) {
 	tc := []struct {
-		name       string
-		logger     *zap.Logger
-		base       time.Duration
-		multiplier float64
-		max        time.Duration
-		jitter     time.Duration
-		err        bool
+		name      string
+		logger    *zap.Logger
+		base      time.Duration
+		max       time.Duration
+		jitter    time.Duration
+		mIncrease float64
+		mDecrease float64
+		err       bool
 	}{
 		{
-			name:       "valid",
-			logger:     logger,
-			base:       1 * time.Second,
-			multiplier: 2.0,
-			max:        10 * time.Second,
-			jitter:     1 * time.Second,
-			err:        false,
+			name:      "valid",
+			logger:    logger,
+			base:      1 * time.Second,
+			max:       10 * time.Second,
+			jitter:    1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       false,
 		},
 		{
-			name:       "invalid logger",
-			logger:     nil,
-			base:       1 * time.Second,
-			multiplier: 2.0,
-			max:        10 * time.Second,
-			jitter:     1 * time.Second,
-			err:        true,
+			name:      "invalid logger",
+			logger:    nil,
+			base:      1 * time.Second,
+			max:       10 * time.Second,
+			jitter:    1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       true,
 		},
 		{
-			name:       "invalid base",
-			logger:     logger,
-			base:       0,
-			multiplier: 2.0,
-			max:        10 * time.Second,
-			jitter:     1 * time.Second,
-			err:        true,
+			name:      "invalid base",
+			logger:    logger,
+			base:      0,
+			max:       10 * time.Second,
+			jitter:    1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       true,
 		},
 		{
-			name:       "invalid multiplier",
-			logger:     logger,
-			base:       1 * time.Second,
-			multiplier: 0,
-			max:        10 * time.Second,
-			jitter:     1 * time.Second,
-			err:        true,
+			name:      "invalid max",
+			logger:    logger,
+			base:      1 * time.Second,
+			max:       0,
+			jitter:    1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       true,
 		},
 		{
-			name:       "invalid max",
-			logger:     logger,
-			base:       1 * time.Second,
-			multiplier: 2.0,
-			max:        0,
-			jitter:     1 * time.Second,
-			err:        true,
+			name:      "invalid max less than base",
+			logger:    logger,
+			base:      10 * time.Second,
+			max:       1 * time.Second,
+			jitter:    1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       true,
 		},
 		{
-			name:       "invalid jitter",
-			logger:     logger,
-			base:       1 * time.Second,
-			multiplier: 2.0,
-			max:        10 * time.Second,
-			jitter:     -1 * time.Second,
-			err:        true,
+			name:      "invalid multiplier",
+			logger:    logger,
+			base:      1 * time.Second,
+			max:       10 * time.Second,
+			jitter:    1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       true,
+		},
+		{
+			name:      "invalid jitter",
+			logger:    logger,
+			base:      1 * time.Second,
+			max:       10 * time.Second,
+			jitter:    -1 * time.Second,
+			mIncrease: http.DefaultMultiplicativeIncrease,
+			mDecrease: http.DefaultMultiplicativeDecrease,
+			err:       true,
 		},
 	}
 
 	for _, tt := range tc {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := handlers.NewExponentialBackOffTicker(
+			_, err := http.NewExponentialBackOffTicker(
 				tt.logger,
 				tt.base,
-				tt.multiplier,
 				tt.max,
 				tt.jitter,
+				tt.mIncrease,
+				tt.mDecrease,
 			)
 			if tt.err {
 				require.Error(t, err)
@@ -105,7 +125,7 @@ func TestTick(t *testing.T) {
 	logger = logger.WithOptions(zap.IncreaseLevel(zap.DebugLevel))
 
 	t.Run("tick with no resets or backoff", func(t *testing.T) {
-		expTicker, err := handlers.NewExponentialBackOffTicker(
+		expTicker, err := http.NewExponentialBackOffTicker(
 			logger,
 			baseInterval,
 			multiplier,
@@ -123,7 +143,7 @@ func TestTick(t *testing.T) {
 	})
 
 	t.Run("tick with one backoff, no randomness and no resets", func(t *testing.T) {
-		expTicker, err := handlers.NewExponentialBackOffTicker(
+		expTicker, err := http.NewExponentialBackOffTicker(
 			logger,
 			baseInterval,
 			multiplier,
@@ -146,7 +166,7 @@ func TestTick(t *testing.T) {
 	})
 
 	t.Run("tick with max backoffs, no randomness and no resets", func(t *testing.T) {
-		expTicker, err := handlers.NewExponentialBackOffTicker(
+		expTicker, err := http.NewExponentialBackOffTicker(
 			logger,
 			baseInterval,
 			multiplier,
@@ -254,7 +274,7 @@ func TestBackOff(t *testing.T) {
 
 	for _, tt := range tc {
 		t.Run(tt.name, func(t *testing.T) {
-			expTicker, err := handlers.NewExponentialBackOffTicker(
+			expTicker, err := http.NewExponentialBackOffTicker(
 				logger,
 				tt.base,
 				tt.multiplier,
