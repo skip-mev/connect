@@ -15,9 +15,9 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
+	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
-	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 
 	"github.com/skip-mev/slinky/cmd/build"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
@@ -358,7 +358,7 @@ func runOracle() error {
 // useLegacyOracleConfig returns true if a legacy oracle config should be used
 // based on the provided flags.
 func useLegacyOracleConfig(logger *zap.Logger) (string, bool) {
-	// if --oracle-config has been specified, use that 
+	// if --oracle-config has been specified, use that
 	if oracleCfgPath != "" {
 		return oracleCfgPath, false
 	}

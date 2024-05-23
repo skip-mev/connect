@@ -1,10 +1,10 @@
 package config_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
-	"fmt"
 
 	"github.com/skip-mev/slinky/cmd/slinky/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
