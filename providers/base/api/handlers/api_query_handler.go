@@ -5,12 +5,12 @@ import (
 	"fmt"
 	gomath "math"
 	"strings"
-
-	"golang.org/x/sync/errgroup"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/pkg/http"
 	"github.com/skip-mev/slinky/pkg/math"
 	"github.com/skip-mev/slinky/providers/base/api/metrics"
 	providertypes "github.com/skip-mev/slinky/providers/types"
@@ -54,7 +54,7 @@ type APIQueryHandlerImpl[K providertypes.ResponseKey, V providertypes.ResponseVa
 	logger  *zap.Logger
 	metrics metrics.APIMetrics
 	config  config.APIConfig
-	ticker  *ExponentialBackOffTicker
+	ticker  *http.ExponentialBackOffTicker
 
 	// fetcher is responsible for fetching data from the API.
 	fetcher APIFetcher[K, V]
@@ -74,10 +74,24 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		return nil, fmt.Errorf("failed to create api fetcher: %w", err)
 	}
 
+	logger = logger.With(zap.String("api_query_handler", cfg.Name))
+	ticker, err := http.NewExponentialBackOffTicker(
+		logger,
+		cfg.Interval,
+		20*time.Second,
+		cfg.Interval,
+		http.DefaultMultiplicativeIncrease,
+		http.DefaultMultiplicativeDecrease,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create exponential backoff ticker: %w", err)
+	}
+
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
+		logger:  logger,
 		config:  cfg,
 		metrics: metrics,
+		ticker:  ticker,
 		fetcher: fetcher,
 	}, nil
 }
@@ -109,10 +123,24 @@ func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.
 		return nil, fmt.Errorf("no fetcher specified for api query handler")
 	}
 
+	logger = logger.With(zap.String("api_query_handler", cfg.Name))
+	ticker, err := http.NewExponentialBackOffTicker(
+		logger,
+		cfg.Interval,
+		20*time.Second,
+		cfg.Interval,
+		http.DefaultMultiplicativeIncrease,
+		http.DefaultMultiplicativeDecrease,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create exponential backoff ticker: %w", err)
+	}
+
 	return &APIQueryHandlerImpl[K, V]{
-		logger:  logger.With(zap.String("api_query_handler", cfg.Name)),
+		logger:  logger,
 		config:  cfg,
 		metrics: metrics,
+		ticker:  ticker,
 		fetcher: fetcher,
 	}, nil
 }
@@ -139,19 +167,12 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		h.logger.Debug("finished api query handler")
 	}()
 
-	// Set the concurrency limit based on the maximum number of queries allowed for a single
-	// interval.
-	wg := errgroup.Group{}
-	limit := math.Min(h.config.MaxQueries, len(ids))
-	wg.SetLimit(limit)
-	h.logger.Debug("setting concurrency limit", zap.Int("limit", limit))
-
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	// If our task is atomic, we can make a single request for all the IDs. Otherwise,
 	// we need to make a request for each ID.
-	var tasks []func() error
+	var tasks []func()
 	if h.config.Atomic {
 		tasks = append(tasks, h.subTask(ctx, ids, responseCh))
 	} else {
@@ -160,10 +181,6 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 
 		// determine the number of queries we need to make based on the batch size.
 		threads := int(gomath.Ceil(float64(len(ids)) / float64(batchSize)))
-
-		// update limit in accordance with # of threads necessary, we want to avoid unnecessary go routines
-		// if the number of threads (tasks) is less than the limit.
-		limit = math.Min(limit, threads)
 
 		for i := 0; i < threads; i++ {
 			// Calculate the start and end indices for the batch.
@@ -177,13 +194,13 @@ func (h *APIQueryHandlerImpl[K, V]) Query(
 		h.logger.Debug(
 			"created sub-tasks",
 			zap.Int("threads", threads),
-			zap.Int("limit", limit),
 			zap.Int("batch_size", batchSize),
 		)
 	}
 
 	// Block each task until the wait group has capacity to accept a new response.
 	index := 0
+	h.ticker.Reset()
 MainLoop:
 	for {
 		select {
@@ -192,20 +209,14 @@ MainLoop:
 			break MainLoop
 		case <-h.ticker.Tick():
 			// spin up limit number of tasks
-			for i := 0; i < limit; i++ {
-				wg.Go(tasks[index%len(tasks)])
-				index++
-			}
+			tasks[index%len(tasks)]()
+			index++
 
 			h.logger.Debug("interval complete", zap.Duration("interval", h.config.Interval), zap.Int("index", index))
 		}
 	}
 
 	// Wait for all tasks to complete.
-	h.logger.Debug("waiting for api sub-tasks to complete")
-	if err := wg.Wait(); err != nil {
-		h.logger.Debug("error querying ids", zap.Error(err))
-	}
 	h.logger.Debug("all api sub-tasks completed")
 }
 
@@ -215,8 +226,8 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 	ctx context.Context,
 	ids []K,
 	responseCh chan<- providertypes.GetResponse[K, V],
-) func() error {
-	return func() error {
+) func() {
+	return func() {
 		// Recover from any panics that occur.
 		defer func() {
 			if r := recover(); r != nil {
@@ -227,8 +238,24 @@ func (h *APIQueryHandlerImpl[K, V]) subTask(
 		}()
 
 		h.logger.Debug("starting subtask", zap.Any("ids", ids))
-		h.writeResponse(ctx, responseCh, h.fetcher.Fetch(ctx, ids))
-		return nil
+
+		// Make the request and write the response to the response channel.
+		response := h.fetcher.Fetch(ctx, ids)
+		h.writeResponse(ctx, responseCh, response)
+
+		// Update the metrics.
+		for id := range response.Resolved {
+			h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), providertypes.OK)
+		}
+
+		rateLimitSeen := false
+		for id, unresolvedResult := range response.UnResolved {
+			h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), unresolvedResult.Code())
+			if unresolvedResult.Code() == providertypes.ErrorRateLimitExceeded {
+				rateLimitSeen = true
+			}
+		}
+		h.ticker.Throttle(rateLimitSeen)
 	}
 }
 
@@ -248,18 +275,4 @@ func (h *APIQueryHandlerImpl[K, V]) writeResponse(
 	case responseCh <- response:
 		h.logger.Debug("wrote response", zap.String("response", response.String()))
 	}
-
-	// Update the metrics.
-	for id := range response.Resolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), providertypes.OK)
-	}
-
-	noRateLimit := true
-	for id, unresolvedResult := range response.UnResolved {
-		h.metrics.AddProviderResponse(h.config.Name, strings.ToLower(id.String()), unresolvedResult.Code())
-		if unresolvedResult.Code() == providertypes.ErrorRateLimitExceeded {
-			noRateLimit = false
-		}
-	}
-	h.ticker.Throttle(noRateLimit)
 }

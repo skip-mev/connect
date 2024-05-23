@@ -95,13 +95,13 @@ func (t *ExponentialBackOffTicker) Reset() time.Duration {
 
 // Throttle increases/decreases the interval between ticks. If success is true, the interval is
 // decreased. Otherwise, the interval is increased. The increase/decrease is exponential.
-func (t *ExponentialBackOffTicker) Throttle(success bool) time.Duration {
+func (t *ExponentialBackOffTicker) Throttle(rateLimitSeen bool) time.Duration {
 	t.mut.Lock()
 	defer t.mut.Unlock()
 
 	// If the operation was successful, decrease the interval. Otherwise, increase the interval.
 	var multiple float64
-	if !success {
+	if rateLimitSeen {
 		multiple = t.multiplicativeIncrease
 	} else {
 		multiple = t.multiplicativeDecrease
@@ -124,7 +124,7 @@ func (t *ExponentialBackOffTicker) Throttle(success bool) time.Duration {
 		"updating exponential backoff interval",
 		zap.Duration("current_interval", t.interval),
 		zap.Duration("updated_interval", updatedInterval),
-		zap.Bool("success", success),
+		zap.Bool("seen_rate_limit", rateLimitSeen),
 	)
 	t.interval = updatedInterval
 
