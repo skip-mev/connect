@@ -41,8 +41,8 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
-			if result.Code.Error() != nil {
-				o.logger.Info("market map provider response error", zap.Error(result.Code.Error()))
+			if result.ErrorCode.Error() != nil {
+				o.logger.Info("market map provider response error", zap.Error(result.ErrorCode.Error()))
 				continue
 			}
 

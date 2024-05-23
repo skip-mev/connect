@@ -238,6 +238,7 @@ func TestCreateMessages(t *testing.T) {
 					},
 					Channels: []string{
 						string(coinbase.TickerChannel),
+						string(coinbase.HeartbeatChannel),
 					},
 				}
 
@@ -264,6 +265,7 @@ func TestCreateMessages(t *testing.T) {
 						},
 						Channels: []string{
 							string(coinbase.TickerChannel),
+							string(coinbase.HeartbeatChannel),
 						},
 					}
 

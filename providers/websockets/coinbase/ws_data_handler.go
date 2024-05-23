@@ -20,8 +20,12 @@ type WebSocketHandler struct {
 
 	// ws is the config for the Coinbase websocket.
 	ws config.WebSocketConfig
-	// Sequence is the current sequence number for the Coinbase websocket API per currency pair.
-	sequence map[types.ProviderTicker]int64
+	// tradeSequence is the current trade sequence number for the Coinbase websocket API per currency pair.
+	tradeSequence map[types.ProviderTicker]int64
+	// heartbeatSequence is the current heartbeat sequence number for the Coinbase websocket API per currency pair.
+	heartbeatSequence map[types.ProviderTicker]int64
+	// tradeIDs is the current trade ID for the Coinbase websocket API per currency pair.
+	tradeIDs map[types.ProviderTicker]int64
 	// cache maintains the latest set of tickers seen by the handler.
 	cache types.ProviderTickers
 }
@@ -44,10 +48,12 @@ func NewWebSocketDataHandler(
 	}
 
 	return &WebSocketHandler{
-		logger:   logger,
-		ws:       ws,
-		sequence: make(map[types.ProviderTicker]int64),
-		cache:    types.NewProviderTickers(),
+		logger:            logger,
+		ws:                ws,
+		tradeSequence:     make(map[types.ProviderTicker]int64),
+		heartbeatSequence: make(map[types.ProviderTicker]int64),
+		tradeIDs:          make(map[types.ProviderTicker]int64),
+		cache:             types.NewProviderTickers(),
 	}, nil
 }
 
@@ -99,6 +105,16 @@ func (h *WebSocketHandler) HandleMessage(
 
 		resp, err := h.parseTickerResponseMessage(tickerMessage)
 		return resp, nil, err
+	case HeartbeatMessage:
+		h.logger.Debug("received heartbeat message")
+
+		var heartbeatMessage HeartbeatResponseMessage
+		if err := json.Unmarshal(message, &heartbeatMessage); err != nil {
+			return resp, nil, fmt.Errorf("failed to unmarshal heartbeat message %w", err)
+		}
+
+		resp, err := h.parseHeartbeatResponseMessage(heartbeatMessage)
+		return resp, nil, err
 	default:
 		return resp, nil, fmt.Errorf("invalid message type %s", msg.Type)
 	}
@@ -128,9 +144,11 @@ func (h *WebSocketHandler) HeartBeatMessages() ([]handlers.WebsocketEncodedMessa
 // Copy is used to create a copy of the WebSocketHandler.
 func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
 	return &WebSocketHandler{
-		logger:   h.logger,
-		ws:       h.ws,
-		sequence: make(map[types.ProviderTicker]int64),
-		cache:    types.NewProviderTickers(),
+		logger:            h.logger,
+		ws:                h.ws,
+		tradeSequence:     make(map[types.ProviderTicker]int64),
+		heartbeatSequence: make(map[types.ProviderTicker]int64),
+		tradeIDs:          make(map[types.ProviderTicker]int64),
+		cache:             types.NewProviderTickers(),
 	}
 }

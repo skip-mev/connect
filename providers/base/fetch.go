@@ -218,10 +218,26 @@ func (p *Provider[K, V]) updateData(id K, result providertypes.ResolvedResult[V]
 		return
 	}
 
-	p.logger.Debug(
-		"updating base provider data",
-		zap.String("id", fmt.Sprint(id)),
-		zap.String("result", result.String()),
-	)
-	p.data[id] = result
+	// Update the timestamp on the current result to reflect that the
+	// data is still valid.
+	switch result.ResponseCode {
+	case providertypes.ResponseCodeUnchanged:
+		p.logger.Debug(
+			"result is unchanged",
+			zap.String("id", fmt.Sprint(id)),
+			zap.String("result", result.String()),
+			zap.String("updated_timestamp", result.Timestamp.String()),
+		)
+
+		current.Timestamp = result.Timestamp
+		p.data[id] = current
+	default:
+		// Otherwise, update the data.
+		p.logger.Debug(
+			"updating base provider data",
+			zap.String("id", fmt.Sprint(id)),
+			zap.String("result", result.String()),
+		)
+		p.data[id] = result
+	}
 }

@@ -546,6 +546,45 @@ func TestWebSocketProvider(t *testing.T) {
 			cfg:            wsCfgMultiplex,
 			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{},
 		},
+		{
+			name: "updates the timestamp associated with a result if the the data is unchanged and still valid",
+			handler: func() wshandlers.WebSocketQueryHandler[slinkytypes.CurrencyPair, *big.Int] {
+				// First response is valid and sets the data.
+				resolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+					pairs[0]: {
+						Value:     big.NewInt(100),
+						Timestamp: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+					},
+				}
+
+				unchangedResolved := map[slinkytypes.CurrencyPair]providertypes.ResolvedResult[*big.Int]{
+					pairs[0]: {
+						Value:        big.NewInt(100),
+						Timestamp:    time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+						ResponseCode: providertypes.ResponseCodeUnchanged,
+					},
+				}
+
+				responses := []providertypes.GetResponse[slinkytypes.CurrencyPair, *big.Int]{
+					providertypes.NewGetResponse(resolved, nil),
+					providertypes.NewGetResponse(unchangedResolved, nil),
+				}
+
+				return testutils.CreateWebSocketQueryHandlerWithGetResponses[slinkytypes.CurrencyPair, *big.Int](
+					t,
+					time.Second,
+					logger,
+					responses,
+				)
+			},
+			pairs: []slinkytypes.CurrencyPair{
+				pairs[0],
+			},
+			cfg: wsCfg,
+			expectedPrices: map[slinkytypes.CurrencyPair]*big.Int{
+				pairs[0]: big.NewInt(100),
+			},
+		},
 	}
 
 	for _, tc := range testCases {

@@ -5,6 +5,31 @@ import (
 	"time"
 )
 
+// ResponseCode is an optional code that can be attached to responses to provide
+// additional context.
+type ResponseCode int
+
+const (
+	// ResponseCodeOK is a code that notifies the base provider that the response
+	// is OK.
+	ResponseCodeOK ResponseCode = 0
+	// ResponseCodeUnchange is a code that notifies the base provider that the response
+	// is unchanged for the given ID. This is useful when the provider has a cache
+	// and the value has not changed.
+	ResponseCodeUnchanged ResponseCode = 1
+)
+
+func (r ResponseCode) String() string {
+	switch r {
+	case ResponseCodeOK:
+		return "ok"
+	case ResponseCodeUnchanged:
+		return "unchanged"
+	default:
+		return "unknown"
+	}
+}
+
 // ResponseKey is a type restriction interface for the key of a GetResponse.
 type ResponseKey interface {
 	comparable
@@ -28,8 +53,11 @@ type ResolvedResult[V ResponseValue] struct {
 	Value V
 	// Timestamp is the timestamp of the value.
 	Timestamp time.Time
-	// Code is the result code from the request.
-	Code ErrorCode
+	// ErrorCode is the error code from the request.
+	ErrorCode ErrorCode
+	// ResponseCode is an optional code that can be attached to responses to provide
+	// additional context.
+	ResponseCode ResponseCode
 }
 
 // UnresolvedResult is an unresolved (failed) result of a single requested ID.
@@ -87,12 +115,22 @@ func NewResult[V ResponseValue](value V, timestamp time.Time) ResolvedResult[V] 
 	}
 }
 
+// NewResultWithCode creates a new ResolvedResult with the given error code.
+func NewResultWithCode[V ResponseValue](value V, timestamp time.Time, code ResponseCode) ResolvedResult[V] {
+	return ResolvedResult[V]{
+		Value:        value,
+		Timestamp:    timestamp,
+		ResponseCode: code,
+	}
+}
+
 // String returns a string representation of the ResolvedResult. This is mostly used for logging
 // and testing purposes.
 func (r ResolvedResult[V]) String() string {
 	return fmt.Sprintf(
-		"(value: %s, timestamp: %s)",
+		"(value: %s, timestamp: %s, response code: %s)",
 		r.Value.String(),
 		r.Timestamp.String(),
+		r.ResponseCode.String(),
 	)
 }
