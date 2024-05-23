@@ -236,24 +236,16 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 	expectedConfig := filterMarketMapProvidersFromOracleConfig(config.DefaultOracleConfig(), marketmap.Name)
 	expectedConfig.UpdateInterval = updateIntervalOverride
 	provider := expectedConfig.Providers[raydium.Name]
-	provider.API.Endpoints = append(expectedConfig.Providers[raydium.Name].API.Endpoints, endpointOverride)
+	provider.API.Endpoints = append(provider.API.Endpoints, endpointOverride)
 	expectedConfig.Providers[raydium.Name] = provider
 	expectedConfig.Metrics.PrometheusServerAddress = prometheusServerOverride
 
 	t.Run("overriding variables from environment", func(t *testing.T) {
-		os.Setenv(config.SlinkyConfigEnvironmentPrefix+"_UPDATEINTERVAL", updateIntervalOverride.String())
-		os.Setenv(config.SlinkyConfigEnvironmentPrefix+"_METRICS_PROMETHEUSSERVERADDRESS", prometheusServerOverride)
-		os.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_URL", endpointOverride.URL)
-		os.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEY", endpointOverride.Authentication.APIKey)
-		os.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEYHEADER", endpointOverride.Authentication.APIKeyHeader)
-
-		defer func() {
-			os.Unsetenv(config.SlinkyConfigEnvironmentPrefix + "_UPDATEINTERVAL")
-			os.Unsetenv(config.SlinkyConfigEnvironmentPrefix + "_METRICS_PROMETHEUSSERVERADDRESS")
-			os.Unsetenv(config.SlinkyConfigEnvironmentPrefix + "_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_URL")
-			os.Unsetenv(config.SlinkyConfigEnvironmentPrefix + "_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEY")
-			os.Unsetenv(config.SlinkyConfigEnvironmentPrefix + "_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEYHEADER")
-		}()
+		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_UPDATEINTERVAL", updateIntervalOverride.String())
+		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_METRICS_PROMETHEUSSERVERADDRESS", prometheusServerOverride)
+		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_URL", endpointOverride.URL)
+		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEY", endpointOverride.Authentication.APIKey)
+		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEYHEADER", endpointOverride.Authentication.APIKeyHeader)
 
 		cfg, err := config.ReadOracleConfigWithOverrides("", marketmap.Name)
 		require.NoError(t, err)
