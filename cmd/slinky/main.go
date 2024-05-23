@@ -17,6 +17,7 @@ import (
 
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
+	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 
 	"github.com/skip-mev/slinky/cmd/build"
 	oraclemetrics "github.com/skip-mev/slinky/oracle/metrics"
@@ -225,12 +226,12 @@ func runOracle() error {
 	var err error
 
 	if legacyPath, legacyConfigInUse := useLegacyOracleConfig(logger); legacyConfigInUse {
-		cfg, err = GetLegacyOracleConfig(legacyPath)
+		cfg, err = cmdconfig.GetLegacyOracleConfig(legacyPath)
 		if err != nil {
 			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
 		}
 	} else {
-		cfg, err = ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
+		cfg, err = cmdconfig.ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
 		if err != nil {
 			return fmt.Errorf("failed to get oracle config: %w", err)
 		}
@@ -357,19 +358,21 @@ func runOracle() error {
 // useLegacyOracleConfig returns true if a legacy oracle config should be used
 // based on the provided flags.
 func useLegacyOracleConfig(logger *zap.Logger) (string, bool) {
+	// if --oracle-config has been specified, use that 
+	if oracleCfgPath != "" {
+		return oracleCfgPath, false
+	}
+
 	// if a value is provided for the --oracle-config-path flag, use it
 	if legacyOracleCfgPath != "" {
-		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --default-config --oracle-config instead.")
+		logger.Info("DEPRECATION WARNING:: The --oracle-config-path flag is deprecated and will be removed in v1.0.0. Please use --default-config --oracle-config instead.")
 		return legacyOracleCfgPath, true
 	}
 
 	// if a legacy oracle config exists at the default path, use it
 	if legacyOracleConfigExists() {
 		logger.Info(
-			`
-			Neither --oracle-config-path, nor --oracle-config has been specified, unmarshalling the oracle.json in the working directory as a legacy config.
-			NOTE: this behavior is deprecated, either point to config overrides via --oracle-config, or remove oracle.json + specify config overrides via environment variables.
-			`, 
+			"DEPRECATION WARNING:: Neither --oracle-config-path, nor --oracle-config has been specified, unmarshalling the oracle.json in the working directory as a legacy config. NOTE: this behavior will be deprecated in v1.0.0, either point to config overrides via --oracle-config, or remove oracle.json + specify config overrides via environment variables.",
 			zap.String("path", DefaultLegacyConfigPath),
 		)
 		return DefaultLegacyConfigPath, true

@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -28,6 +28,8 @@ const (
 	DefaultPort = "8080"
 	// jsonFieldDelimiter is the delimiter used to separate fields in the JSON output.
 	jsonFieldDelimiter = "."
+	// SlinkyConfigEnvironmentPrefix is the prefix for environment variables that override the slinky config.
+	SlinkyConfigEnvironmentPrefix = "SLINKY_CONFIG"
 )
 
 // DefaultOracleConfig returns the default configuration for the slinky oracle.
@@ -149,7 +151,7 @@ func setViperDefaultsForDataStructure(keyPrefix string, config interface{}) {
 	}
 
 	// set the environment prefix
-	viper.SetEnvPrefix("SLINKY_CONFIG")
+	viper.SetEnvPrefix(SlinkyConfigEnvironmentPrefix)
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 }
