@@ -50,7 +50,6 @@ var (
 	}
 
 	oracleCfgPath       string
-	useDefaults bool
 	legacyOracleCfgPath string
 	marketCfgPath       string
 	marketMapProvider   string
@@ -68,6 +67,10 @@ var (
 	disableRotatingLogs bool
 )
 
+const (
+	DefaultLegacyConfigPath = "./oracle.json"
+)
+
 func init() {
 	rootCmd.Flags().StringVarP(
 		&marketMapProvider,
@@ -80,17 +83,9 @@ func init() {
 		&legacyOracleCfgPath,
 		"oracle-config-path",
 		"",
-		"oracle.json",
+		"",
 		"Path to the legacy oracle config file.",
 	)
-	rootCmd.Flags().BoolVarP(
-		&useDefaults,
-		"default-config",
-		"",
-		false,
-		"Have slinky use default values for the oracle config, and look for over-rides",
-	)
-
 	rootCmd.Flags().StringVarP(
 		&oracleCfgPath,
 		"oracle-config",
@@ -228,15 +223,13 @@ func runOracle() error {
 
 	var cfg config.OracleConfig
 	var err error
-	if legacyOracleCfgPath != "" && !useDefaults {
-		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --default-config --oracle-config instead.")
-		cfg, err = GetLegacyOracleConfig(legacyOracleCfgPath)
+
+	if legacyPath, legacyConfigInUse := useLegacyOracleConfig(logger); legacyConfigInUse {
+		cfg, err = GetLegacyOracleConfig(legacyPath)
 		if err != nil {
 			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
 		}
-	}
-
-	if useDefaults {
+	} else {
 		cfg, err = ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
 		if err != nil {
 			return fmt.Errorf("failed to get oracle config: %w", err)
@@ -359,6 +352,36 @@ func runOracle() error {
 		logger.Error("stopping server", zap.Error(err))
 	}
 	return nil
+}
+
+// useLegacyOracleConfig returns true if a legacy oracle config should be used
+// based on the provided flags.
+func useLegacyOracleConfig(logger *zap.Logger) (string, bool) {
+	// if a value is provided for the --oracle-config-path flag, use it
+	if legacyOracleCfgPath != "" {
+		logger.Info("The --oracle-config-path flag is deprecated and will be removed in a future release. Please use --default-config --oracle-config instead.")
+		return legacyOracleCfgPath, true
+	}
+
+	// if a legacy oracle config exists at the default path, use it
+	if legacyOracleConfigExists() {
+		logger.Info(
+			`
+			Neither --oracle-config-path, nor --oracle-config has been specified, unmarshalling the oracle.json in the working directory as a legacy config.
+			NOTE: this behavior is deprecated, either point to config overrides via --oracle-config, or remove oracle.json + specify config overrides via environment variables.
+			`, 
+			zap.String("path", DefaultLegacyConfigPath),
+		)
+		return DefaultLegacyConfigPath, true
+	}
+
+	return "", false
+}
+
+// legacyOracleConfigExists checks if the legacy oracle config file exists at DefaultLegacyConfigPath.
+func legacyOracleConfigExists() bool {
+	_, err := os.Stat(DefaultLegacyConfigPath)
+	return !os.IsNotExist(err)
 }
 
 func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (config.OracleConfig, error) {
