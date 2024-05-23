@@ -74,7 +74,7 @@ func NewExponentialBackOffTicker(
 
 	return &ExponentialBackOffTicker{
 		logger:                 logger.With(zap.String("component", "exponential_backoff_ticker")),
-		interval:               max,
+		interval:               base,
 		base:                   base,
 		max:                    max,
 		jitter:                 jitter,

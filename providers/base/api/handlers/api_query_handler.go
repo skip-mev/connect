@@ -79,7 +79,7 @@ func NewAPIQueryHandler[K providertypes.ResponseKey, V providertypes.ResponseVal
 		logger,
 		cfg.Interval,
 		20*time.Second,
-		cfg.Interval,
+		50*time.Millisecond,
 		http.DefaultMultiplicativeIncrease,
 		http.DefaultMultiplicativeDecrease,
 	)
@@ -128,7 +128,7 @@ func NewAPIQueryHandlerWithFetcher[K providertypes.ResponseKey, V providertypes.
 		logger,
 		cfg.Interval,
 		20*time.Second,
-		cfg.Interval,
+		50*time.Millisecond,
 		http.DefaultMultiplicativeIncrease,
 		http.DefaultMultiplicativeDecrease,
 	)
