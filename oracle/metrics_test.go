@@ -92,6 +92,7 @@ func (s *OracleMetricsTestSuite) TearDownTest(_ *testing.T) {
 func (s *OracleMetricsTestSuite) TestTickMetric() {
 	// expect tick to be called
 	s.mockMetrics.On("AddTick").Return()
+	s.mockMetrics.On("SetSlinkyBuildInfo").Return()
 
 	// wait for a tick on the oracle
 	go func() {
