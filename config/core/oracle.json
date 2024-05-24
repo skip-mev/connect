@@ -19,26 +19,6 @@
       "type": "price_provider"
     },
     {
-      "name": "coinbase_ws",
-      "webSocket": {
-        "enabled": true,
-        "maxBufferSize": 1024,
-        "reconnectionTimeout": 10000000000,
-        "wss": "wss://ws-feed.exchange.coinbase.com",
-        "name": "coinbase_ws",
-        "readBufferSize": 0,
-        "writeBufferSize": 0,
-        "handshakeTimeout": 45000000000,
-        "enableCompression": false,
-        "readTimeout": 45000000000,
-        "writeTimeout": 5000000000,
-        "pingInterval": 0,
-        "maxReadErrorCount": 100,
-        "maxSubscriptionsPerConnection": 0
-      },
-      "type": "price_provider"
-    },
-    {
       "name": "kraken_api",
       "api": {
         "enabled": true,
@@ -55,18 +35,22 @@
       "type": "price_provider"
     },
     {
-      "name": "volatile-exchange-provider",
-      "api": {
+      "name": "coinbase_ws",
+      "webSocket": {
         "enabled": true,
-        "timeout": 500000000,
-        "interval": 500000000,
-        "reconnectTimeout": 500000000,
-        "maxQueries": 1,
-        "atomic": false,
-        "url": "volatile-exchange-provider",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": "volatile-exchange-provider"
+        "maxBufferSize": 1024,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://ws-feed.exchange.coinbase.com",
+        "name": "coinbase_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 5000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
       },
       "type": "price_provider"
     },
