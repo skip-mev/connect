@@ -267,6 +267,7 @@ proto-update-deps:
 tidy:
 	@go mod tidy
 	@cd ./tests/integration && go mod tidy
+	@cd ./tests/petri && go mod tidy
 
 .PHONY: tidy
 
