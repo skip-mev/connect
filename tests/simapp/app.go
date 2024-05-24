@@ -365,7 +365,7 @@ func NewSimApp(
 		),
 	)
 
-	app.SetPreBlocker(oraclePreBlockHandler.PreBlocker())
+	app.SetPreBlocker(PreBlocker(app.PreBlocker, oraclePreBlockHandler))
 
 	// Create the vote extensions handler that will be used to extend and verify
 	// vote extensions (i.e. oracle data).

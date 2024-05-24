@@ -2,22 +2,22 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
-	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
-	"fmt"
-	"time"
 )
 
 var (
-	providerChainID = "provider-1"
+	providerChainID       = "provider-1"
 	providerNumValidators = int(4)
-	providerVersion = "v5.0.0-rc0"
+	providerVersion       = "v5.0.0-rc0"
 )
 
 // CCVChainConstructor is a constructor for the CCV chain
@@ -30,8 +30,8 @@ func CCVChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos
 		[]*interchaintest.ChainSpec{
 			spec,
 			{Name: "ics-provider", Version: providerVersion, NumValidators: &providerNumValidators, ChainConfig: ibc.ChainConfig{
-				GasPrices: "0.0uatom",
-				ChainID: providerChainID,
+				GasPrices:      "0.0uatom",
+				ChainID:        providerChainID,
 				TrustingPeriod: "336h",
 				ModifyGenesis: cosmos.ModifyGenesis(
 					[]cosmos.GenesisKV{
@@ -51,9 +51,9 @@ func CCVChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos
 }
 
 type CCVInterchain struct {
-	relayer ibc.Relayer
+	relayer  ibc.Relayer
 	reporter *testreporter.RelayerExecReporter
-	ibcPath string
+	ibcPath  string
 }
 
 func (c *CCVInterchain) Relayer() ibc.Relayer {
@@ -89,9 +89,8 @@ func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmo
 		AddProviderConsumerLink(interchaintest.ProviderConsumerLink{
 			Provider: chains[1],
 			Consumer: chains[0],
-			Relayer: r,
-			Path: path,
-
+			Relayer:  r,
+			Path:     path,
 		})
 	// Log location
 	f, err := interchaintest.CreateLogFile(fmt.Sprintf("%d.json", time.Now().Unix()))
@@ -101,17 +100,17 @@ func CCVInterchainConstructor(ctx context.Context, t *testing.T, chains []*cosmo
 	eRep := rep.RelayerExecReporter(t)
 
 	require.NoError(t, ic.Build(ctx, eRep, interchaintest.InterchainBuildOptions{
-		TestName: t.Name(),
-		Client: client,
-		NetworkID: network,
+		TestName:         t.Name(),
+		Client:           client,
+		NetworkID:        network,
 		SkipPathCreation: false,
 	}))
 
 	require.NoError(t, chains[1].FinishICSProviderSetup(ctx, r, eRep, path))
 
 	return &CCVInterchain{
-		relayer: r,
+		relayer:  r,
 		reporter: eRep,
-		ibcPath: path,
+		ibcPath:  path,
 	}
 }

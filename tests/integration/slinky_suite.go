@@ -5,13 +5,15 @@ import (
 	"encoding/hex"
 	"math/big"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
@@ -27,18 +29,16 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"os/signal"
-	"syscall"
 )
 
 const (
-	envKeepAlive  = "ORACLE_INTEGRATION_KEEPALIVE"
-	genesisAmount = 1000000000
-	defaultDenom  = "stake"
-	validatorKey  = "validator"
-	yes           = "yes"
-	deposit       = 1000000
-	userMnemonic = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
+	envKeepAlive          = "ORACLE_INTEGRATION_KEEPALIVE"
+	genesisAmount         = 1000000000
+	defaultDenom          = "stake"
+	validatorKey          = "validator"
+	yes                   = "yes"
+	deposit               = 1000000
+	userMnemonic          = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
 	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
 )
 
@@ -161,7 +161,7 @@ func WithChainConstructor(cc ChainConstructor) Option {
 	}
 }
 
-func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts... Option) *SlinkyIntegrationSuite {
+func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option) *SlinkyIntegrationSuite {
 	suite := &SlinkyIntegrationSuite{
 		spec:         spec,
 		oracleConfig: DefaultOracleSidecar(oracleImage),
