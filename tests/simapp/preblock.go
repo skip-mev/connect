@@ -7,7 +7,7 @@ import (
 	"github.com/skip-mev/slinky/abci/preblock/oracle"
 )
 
-// PreBlocker wraps the provider preblocker with the oracle pre blocker.
+// PreBlocker wraps the provided preblocker with the oracle preblocker.
 func PreBlocker(appPreBlock sdk.PreBlocker, oracleHandler *oracle.PreBlockHandler) sdk.PreBlocker {
 	if oracleHandler == nil {
 		panic("nil oracleHandler")
