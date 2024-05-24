@@ -32,7 +32,7 @@ func (h *WebSocketHandler) parseTickerResponseMessage(
 	}
 
 	// Determine if the sequence number is valid.
-	if err := h.checkSequenceNumber(ticker, msg.Sequence, false); err != nil {
+	if err := h.checkSequenceNumber(ticker, msg.Sequence); err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
 		}
@@ -76,7 +76,7 @@ func (h *WebSocketHandler) parseHeartbeatResponseMessage(
 	}
 
 	// Determine if the sequence number is valid.
-	if err := h.checkSequenceNumber(ticker, msg.Sequence, true); err != nil {
+	if err := h.checkSequenceNumber(ticker, msg.Sequence); err != nil {
 		unResolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(err, providertypes.ErrorInvalidResponse),
 		}
@@ -85,7 +85,7 @@ func (h *WebSocketHandler) parseHeartbeatResponseMessage(
 
 	// If the trade ID has not changed, then the price has not changed.
 	currentTradeID, ok := h.tradeIDs[ticker]
-	if !ok {
+	if !ok || currentTradeID != msg.LastTradeID {
 		unResolved[ticker] = providertypes.UnresolvedResult{
 			ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no price update received"), providertypes.ErrorNoExistingPrice),
 		}
@@ -93,11 +93,7 @@ func (h *WebSocketHandler) parseHeartbeatResponseMessage(
 	}
 
 	// If the trade ID is the same as the current trade ID, then the price has not changed.
-	if currentTradeID == msg.LastTradeID {
-		resolved[ticker] = types.NewPriceResultWithCode(big.NewFloat(0), time.Now().UTC(), providertypes.ResponseCodeUnchanged)
-		return types.NewPriceResponse(resolved, unResolved), nil
-	}
-
+	resolved[ticker] = types.NewPriceResultWithCode(big.NewFloat(0), time.Now().UTC(), providertypes.ResponseCodeUnchanged)
 	return types.NewPriceResponse(resolved, unResolved), nil
 }
 
@@ -107,18 +103,8 @@ func (h *WebSocketHandler) parseHeartbeatResponseMessage(
 func (h *WebSocketHandler) checkSequenceNumber(
 	ticker types.ProviderTicker,
 	sequence int64,
-	isHeartBeat bool,
 ) error {
-	var (
-		observedSequence int64
-		ok               bool
-	)
-	if isHeartBeat {
-		observedSequence, ok = h.heartbeatSequence[ticker]
-	} else {
-		observedSequence, ok = h.tradeSequence[ticker]
-	}
-
+	observedSequence, ok := h.sequence[ticker]
 	switch {
 	case !ok || observedSequence <= sequence:
 		// If the sequence number is not found, then this is the first message
@@ -126,19 +112,14 @@ func (h *WebSocketHandler) checkSequenceNumber(
 		// sequence number received. Additionally, if the sequence number is
 		// greater than the sequence number currently stored, then this message
 		// was received in order.
-		if isHeartBeat {
-			h.heartbeatSequence[ticker] = sequence
-		} else {
-			h.tradeSequence[ticker] = sequence
-		}
+		h.sequence[ticker] = sequence
 	default:
 		// If the sequence number is greater than the sequence number received,
 		// then this message was received out of order. Ignore the message.
 		return fmt.Errorf(
-			"received out of order ticker response message; is %d, expected %d; is heartbeat %t",
+			"received out of order ticker response message; is %d, expected %d",
 			sequence,
 			observedSequence,
-			isHeartBeat,
 		)
 	}
 

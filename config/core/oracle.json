@@ -16,38 +16,10 @@
         "batchSize": 0,
         "name": "binance_api"
       },
-      "webSocket": {
-        "enabled": false,
-        "maxBufferSize": 0,
-        "reconnectionTimeout": 0,
-        "wss": "",
-        "name": "",
-        "readBufferSize": 0,
-        "writeBufferSize": 0,
-        "handshakeTimeout": 0,
-        "enableCompression": false,
-        "readTimeout": 0,
-        "writeTimeout": 0,
-        "pingInterval": 0,
-        "maxReadErrorCount": 0,
-        "maxSubscriptionsPerConnection": 0
-      },
       "type": "price_provider"
     },
     {
       "name": "coinbase_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1024,
@@ -80,38 +52,26 @@
         "batchSize": 0,
         "name": "kraken_api"
       },
-      "webSocket": {
-        "enabled": false,
-        "maxBufferSize": 0,
-        "reconnectionTimeout": 0,
-        "wss": "",
-        "name": "",
-        "readBufferSize": 0,
-        "writeBufferSize": 0,
-        "handshakeTimeout": 0,
-        "enableCompression": false,
-        "readTimeout": 0,
-        "writeTimeout": 0,
-        "pingInterval": 0,
-        "maxReadErrorCount": 0,
-        "maxSubscriptionsPerConnection": 0
+      "type": "price_provider"
+    },
+    {
+      "name": "volatile-exchange-provider",
+      "api": {
+        "enabled": true,
+        "timeout": 500000000,
+        "interval": 500000000,
+        "reconnectTimeout": 500000000,
+        "maxQueries": 1,
+        "atomic": false,
+        "url": "volatile-exchange-provider",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "volatile-exchange-provider"
       },
       "type": "price_provider"
     },
     {
       "name": "bitfinex_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1000,
@@ -132,18 +92,6 @@
     },
     {
       "name": "bitstamp_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1024,
@@ -164,18 +112,6 @@
     },
     {
       "name": "bybit_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1000,
@@ -196,18 +132,6 @@
     },
     {
       "name": "crypto_dot_com_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1024,
@@ -228,18 +152,6 @@
     },
     {
       "name": "gate_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1000,
@@ -260,56 +172,12 @@
     },
     {
       "name": "huobi_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1000,
         "reconnectionTimeout": 10000000000,
         "wss": "wss://api.huobi.pro/ws",
         "name": "huobi_ws",
-        "readBufferSize": 0,
-        "writeBufferSize": 0,
-        "handshakeTimeout": 45000000000,
-        "enableCompression": false,
-        "readTimeout": 45000000000,
-        "writeTimeout": 45000000000,
-        "pingInterval": 0,
-        "maxReadErrorCount": 100,
-        "maxSubscriptionsPerConnection": 0
-      },
-      "type": "price_provider"
-    },
-    {
-      "name": "kraken_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
-      "webSocket": {
-        "enabled": true,
-        "maxBufferSize": 1000,
-        "reconnectionTimeout": 10000000000,
-        "wss": "wss://ws.kraken.com",
-        "name": "kraken_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
         "handshakeTimeout": 45000000000,
@@ -356,18 +224,6 @@
     },
     {
       "name": "mexc_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1000,
@@ -388,18 +244,6 @@
     },
     {
       "name": "okx_ws",
-      "api": {
-        "enabled": false,
-        "timeout": 0,
-        "interval": 0,
-        "reconnectTimeout": 0,
-        "maxQueries": 0,
-        "atomic": false,
-        "url": "",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": ""
-      },
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1000,
