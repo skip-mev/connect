@@ -39,7 +39,7 @@ var (
 		Providers: []config.ProviderConfig{
 			{ // Price API provider.
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
 			{ // Price API provider.
@@ -67,7 +67,7 @@ var (
 		Providers: []config.ProviderConfig{
 			{ // Price API provider.
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
 			{ // Price API provider.
@@ -97,7 +97,7 @@ var (
 		Providers: []config.ProviderConfig{
 			{ // Price API provider.
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
 			{ // Price API provider.

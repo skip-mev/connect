@@ -23,12 +23,6 @@ const (
 	// by Non-US users.
 	URL = "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s"
 
-	// US_URL is the base URL of the Binance US API. This includes the base and quote
-	// currency pairs that need to be inserted into the URL. This URL should be utilized
-	// by US users. Note that the US URL does not support all the currency pairs that
-	// the Non-US URL supports.
-	US_URL = "https://api.binance.us/api/v3/ticker/price?symbols=%s%s%s"
-
 	Quotation    = "%22"
 	Separator    = ","
 	LeftBracket  = "%5B"
@@ -36,18 +30,6 @@ const (
 )
 
 var (
-	// DefaultUSAPIConfig is the default configuration for the Binance API.
-	DefaultUSAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          3000 * time.Millisecond,
-		Interval:         750 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		URL:              US_URL,
-	}
-
 	// DefaultNonUSAPIConfig is the default configuration for the Binance API.
 	DefaultNonUSAPIConfig = config.APIConfig{
 		Name:             Name,
@@ -58,115 +40,6 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              URL,
-	}
-
-	// DefaultUSMarketConfig is the default US market configuration for Binance.
-	DefaultUSMarketConfig = types.CurrencyPairsToProviderTickers{
-		constants.APE_USDT: {
-			OffChainTicker: "APEUSDT",
-		},
-		constants.APTOS_USDT: {
-			OffChainTicker: "APTUSDT",
-		},
-		constants.ARBITRUM_USDT: {
-			OffChainTicker: "ARBUSDT",
-		},
-		constants.ATOM_USDT: {
-			OffChainTicker: "ATOMUSDT",
-		},
-		constants.AVAX_USDT: {
-			OffChainTicker: "AVAXUSDT",
-		},
-		constants.BCH_USDT: {
-			OffChainTicker: "BCHUSDT",
-		},
-		constants.BITCOIN_USDC: {
-			OffChainTicker: "BTCUSDC",
-		},
-		constants.BITCOIN_USDT: {
-			OffChainTicker: "BTCUSDT",
-		},
-		constants.CARDANO_USDT: {
-			OffChainTicker: "ADAUSDT",
-		},
-		constants.CHAINLINK_USDT: {
-			OffChainTicker: "LINKUSDT",
-		},
-		constants.COMPOUND_USDT: {
-			OffChainTicker: "COMPUSDT",
-		},
-		constants.CURVE_USDT: {
-			OffChainTicker: "CRVUSDT",
-		},
-		constants.DOGE_USDT: {
-			OffChainTicker: "DOGEUSDT",
-		},
-		constants.ETC_USDT: {
-			OffChainTicker: "ETCUSDT",
-		},
-		constants.ETHEREUM_BITCOIN: {
-			OffChainTicker: "ETHBTC",
-		},
-		constants.ETHEREUM_USDC: {
-			OffChainTicker: "ETHUSDC",
-		},
-		constants.ETHEREUM_USDT: {
-			OffChainTicker: "ETHUSDT",
-		},
-		constants.FILECOIN_USDT: {
-			OffChainTicker: "FILUSDT",
-		},
-		constants.LIDO_USDT: {
-			OffChainTicker: "LDOUSDT",
-		},
-		constants.LITECOIN_USDT: {
-			OffChainTicker: "LTCUSDT",
-		},
-		constants.MAKER_USDT: {
-			OffChainTicker: "MKRUSDT",
-		},
-		constants.NEAR_USDT: {
-			OffChainTicker: "NEARUSDT",
-		},
-		constants.OPTIMISM_USDT: {
-			OffChainTicker: "OPUSDT",
-		},
-		constants.POLKADOT_USDT: {
-			OffChainTicker: "DOTUSDT",
-		},
-		constants.RIPPLE_USDT: {
-			OffChainTicker: "XRPUSDT",
-		},
-		constants.SEI_USDT: {
-			OffChainTicker: "SEIUSDT",
-		},
-		constants.SHIBA_USDT: {
-			OffChainTicker: "SHIBUSDT",
-		},
-		constants.SOLANA_USDC: {
-			OffChainTicker: "SOLUSDC",
-		},
-		constants.SOLANA_USDT: {
-			OffChainTicker: "SOLUSDT",
-		},
-		constants.STELLAR_USDT: {
-			OffChainTicker: "XLMUSDT",
-		},
-		constants.SUI_USDT: {
-			OffChainTicker: "SUIUSDT",
-		},
-		constants.TRON_USDT: {
-			OffChainTicker: "TRXUSDT",
-		},
-		constants.UNISWAP_USDT: {
-			OffChainTicker: "UNIUSDT",
-		},
-		constants.USDC_USDT: {
-			OffChainTicker: "USDCUSDT",
-		},
-		constants.WORLD_USDT: {
-			OffChainTicker: "WLDUSDT",
-		},
 	}
 
 	// DefaultNonUSMarketConfig is the default market configuration for Binance.

@@ -9,10 +9,8 @@ import (
 var (
 	// Name is the name of the Binance exchange WebSocket provider.
 	Name = "binance_ws"
-	// URL1 is the first URL for the Binance exchange WebSocket API.
-	URL1 = "wss://stream.binance.com:9443"
-	// URL2 is the second URL for the Binance exchange WebSocket API.
-	URL2 = "wss://stream.binance.com:443"
+	// WSS is the WSS for the Binance exchange WebSocket API.
+	WSS = "wss://stream.binance.com/stream"
 	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions
 	// per connection. By default, Binance accepts up to 1024 subscriptions per connection.
 	// However, we limit this to 20 to prevent overloading the connection.
@@ -26,7 +24,7 @@ var (
 		Enabled:                       true,
 		MaxBufferSize:                 config.DefaultMaxBufferSize,
 		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URL1,
+		WSS:                           WSS,
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,

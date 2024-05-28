@@ -69,54 +69,6 @@ func TestCreateURL(t *testing.T) {
 	}
 }
 
-func TestCreateURL_US(t *testing.T) {
-	testCases := []struct {
-		name        string
-		cps         []types.ProviderTicker
-		url         string
-		expectedErr bool
-	}{
-		{
-			name:        "empty",
-			cps:         []types.ProviderTicker{},
-			url:         "",
-			expectedErr: true,
-		},
-		{
-			name: "valid single",
-			cps: []types.ProviderTicker{
-				btcusdt,
-			},
-			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22%5D",
-			expectedErr: false,
-		},
-		{
-			name: "valid multiple",
-			cps: []types.ProviderTicker{
-				btcusdt,
-				ethusdt,
-			},
-			url:         "https://api.binance.us/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D",
-			expectedErr: false,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			h, err := binance.NewAPIHandler(binance.DefaultUSAPIConfig)
-			require.NoError(t, err)
-
-			url, err := h.CreateURL(tc.cps)
-			if tc.expectedErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tc.url, url)
-			}
-		})
-	}
-}
-
 func TestParseResponse(t *testing.T) {
 	testCases := []struct {
 		name     string
