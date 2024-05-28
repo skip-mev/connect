@@ -13,6 +13,7 @@ import (
 	krakenapi "github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	"github.com/skip-mev/slinky/providers/volatile"
+	binancews "github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -41,15 +42,15 @@ var (
 			Type: types.ConfigType,
 		},
 
-		// Exchange providers
-		{
-			Name: coinbaseapi.Name,
-			API:  coinbaseapi.DefaultAPIConfig,
-			Type: types.ConfigType,
-		},
+		// Exchange API providers
 		{
 			Name: binanceapi.Name,
 			API:  binanceapi.DefaultNonUSAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: coinbaseapi.Name,
+			API:  coinbaseapi.DefaultAPIConfig,
 			Type: types.ConfigType,
 		},
 		{
@@ -61,6 +62,12 @@ var (
 			Name: volatile.Name,
 			API:  volatile.DefaultAPIConfig,
 			Type: types.ConfigType,
+		},
+		// Exchange WebSocket providers
+		{
+			Name:      binancews.Name,
+			WebSocket: binancews.DefaultWebSocketConfig,
+			Type:      types.ConfigType,
 		},
 		{
 			Name:      bitfinex.Name,
