@@ -36,5 +36,5 @@ run.go
 .vscode/*
 **/.DS_Store
 
-sidecar.log
+sidecar*.log*
 oracle.json

@@ -50,11 +50,18 @@ func NewWebSocketDataHandler(
 	}, nil
 }
 
-// HandleMessage is used to handle a message received from the data provider. The Crypto.com
-// websocket API sends a heartbeat message every 30 seconds. If a heartbeat message is received,
-// a heartbeat response message must be sent back to the Crypto.com websocket API, otherwise
-// the connection will be closed. If a subscribe message is received, the message must be parsed
-// and a response must be returned. No update message is required for subscribe messages.
+// HandleMessage is used to handle a message received from the data provider. The Binance websocket
+// API is expected to handle the following types of messages:
+//  1. SubscribeMessageResponse: This is a response to a subscription request. If the subscription
+//     was successful, the response will contain a nil result. If the subscription failed, a
+//     re-subscription message will be returned.
+//  2. StreamMessageResponse: This is a response to a stream message. The stream message contains
+//     the latest price of a ticker - either received when a trade is made or an automated price
+//     update is received.
+//
+// Heartbeat messages are handled by default by the gorilla websocket library. The Binance websocket
+// API does not require any additional heartbeat messages to be sent. The pong frames are sent
+// automatically by the gorilla websocket library.
 func (h *WebSocketHandler) HandleMessage(
 	message []byte,
 ) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
@@ -66,33 +73,51 @@ func (h *WebSocketHandler) HandleMessage(
 
 	// Unmarshal the message. If the message fails to be unmarshaled or is empty, this means
 	// that we likely received a price update message.
-	if err := json.Unmarshal(message, &msg); err != nil || msg.IsEmpty() {
-		if err := json.Unmarshal(message, &streamMsg); err != nil {
-			return resp, nil, fmt.Errorf("failed to unmarshal message %w", err)
+	if err := json.Unmarshal(message, &msg); err == nil && !msg.IsEmpty() {
+		instruments, ok := h.messageIDs[msg.ID]
+		if !ok {
+			return resp, nil, fmt.Errorf("failed to find instruments for message ID %d", msg.ID)
 		}
 
-		// Parse the message.
-		resp, err := h.parseAggregateTradeMessage(streamMsg)
-		return resp, nil, err
-	}
+		if msg.Result != nil {
+			// If the result is not nil, this means that the subscription failed to be made. Return
+			// an update message with the same subscription.
+			h.logger.Debug("failed to make subscription", zap.Any("instruments", msg))
+			subscriptionMsg, err := h.NewSubscribeRequestMessage(instruments)
+			return resp, subscriptionMsg, err
+		}
 
-	instruments, ok := h.messageIDs[msg.ID]
-	if !ok {
-		return resp, nil, fmt.Errorf("failed to find instruments for message ID %d", msg.ID)
-	}
-
-	switch {
-	case msg.Result != nil:
-		// If the result is not nil, this means that the subscription failed to be made. Return
-		// an update message with the same subscription.
-		h.logger.Debug("failed to make subscription", zap.Any("instruments", msg))
-		subscriptionMsg, err := h.NewSubscribeRequestMessage(instruments)
-		return resp, subscriptionMsg, err
-	default:
 		// If the result is nil, this means that the subscription was successful. Return an empty
 		// response.
 		h.logger.Debug("successfully subscribed to instruments", zap.Any("instruments", instruments))
 		return resp, nil, nil
+	} else if err := json.Unmarshal(message, &streamMsg); err != nil {
+		return resp, nil, fmt.Errorf("failed to unmarshal message %w", err)
+	}
+
+	switch streamMsg.GetStreamType() {
+	case TickerStream:
+		// Ticker stream is sent every 1000ms and contains the latest price of a ticker.
+		var tickerResp TickerMessageResponse
+		if err := json.Unmarshal(message, &tickerResp); err != nil {
+			return resp, nil, fmt.Errorf("failed to unmarshal ticker message %w", err)
+		}
+
+		h.logger.Debug("received ticker message", zap.Any("ticker", tickerResp.Data.Ticker))
+		resp, err := h.parseTickerMessage(tickerResp)
+		return resp, nil, err
+	case AggregateTradeStream:
+		// Aggregate trade stream is sent when a trade is executed on the Binance exchange.
+		var aggTradeResp AggregatedTradeMessageResponse
+		if err := json.Unmarshal(message, &aggTradeResp); err != nil {
+			return resp, nil, fmt.Errorf("failed to unmarshal aggregate trade message %w", err)
+		}
+
+		h.logger.Debug("received aggregate trade message", zap.Any("ticker", aggTradeResp.Data.Ticker))
+		resp, err := h.parseAggregateTradeMessage(aggTradeResp)
+		return resp, nil, err
+	default:
+		return resp, nil, fmt.Errorf("unknown stream type %s", streamMsg.Stream)
 	}
 }
 
