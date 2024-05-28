@@ -52,7 +52,7 @@ func NewIndexPriceAggregator(
 	}
 
 	return &IndexPriceAggregator{
-		logger:         logger,
+		logger:         zap.NewNop(),
 		cfg:            cfg,
 		metrics:        metrics,
 		indexPrices:    make(types.Prices),

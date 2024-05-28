@@ -42,7 +42,7 @@ func WithLogger(logger *zap.Logger) Option {
 			panic("cannot set nil logger")
 		}
 
-		o.logger = logger.With(zap.String("process", "oracle"))
+		// o.logger = logger.With(zap.String("process", "oracle"))
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 	apihandlers "github.com/skip-mev/slinky/providers/base/api/handlers"
 	wshandlers "github.com/skip-mev/slinky/providers/base/websocket/handlers"
 	wsmetrics "github.com/skip-mev/slinky/providers/base/websocket/metrics"
+	"github.com/skip-mev/slinky/providers/websockets/binance"
 	"github.com/skip-mev/slinky/providers/websockets/bitfinex"
 	"github.com/skip-mev/slinky/providers/websockets/bitstamp"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
@@ -56,6 +57,8 @@ func WebSocketQueryHandlerFactory(
 	)
 
 	switch cfg.Name {
+	case binance.Name:
+		wsDataHandler, err = binance.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case bitfinex.Name:
 		wsDataHandler, err = bitfinex.NewWebSocketDataHandler(logger, cfg.WebSocket)
 	case bitstamp.Name:
