@@ -9,9 +9,9 @@ import (
 
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 
-	"github.com/cosmos/cosmos-sdk/types/bech32"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
@@ -19,7 +19,11 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
+	"os/signal"
+	"syscall"
+
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -27,8 +31,6 @@ import (
 	"github.com/skip-mev/slinky/providers/static"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"os/signal"
-	"syscall"
 )
 
 const (
@@ -50,26 +52,26 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 		Ports:       []string{"8080", "8081"},
 		StartCmd: []string{
 			"slinky",
-			"--oracle-config-path", "/oracle/oracle.json",
+			"--oracle-config", "/oracle/oracle.json",
 		},
 		ValidatorProcess: true,
 		PreStart:         true,
 	}
 }
 
-func DefaultOracleConfig(url string) oracleconfig.OracleConfig {
+func DefaultOracleConfig(url string) cmdconfig.OracleConfig {
 	cfg := marketmap.DefaultAPIConfig
 	cfg.URL = url
 
 	// Create the oracle config
-	oracleConfig := oracleconfig.OracleConfig{
+	oracleConfig := cmdconfig.OracleConfig{
 		UpdateInterval: 500 * time.Millisecond,
 		MaxPriceAge:    1 * time.Minute,
 		Host:           "0.0.0.0",
 		Port:           "8080",
-		Providers: []oracleconfig.ProviderConfig{
-			{
-				Name: "marketmap_api",
+		Providers: map[string]oracleconfig.ProviderConfig{
+			marketmap.Name: {
+				Name: marketmap.Name,
 				API:  cfg,
 				Type: "market_map_provider",
 			},
@@ -360,7 +362,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 		// update all oracle configs
 		for _, node := range s.chain.Nodes() {
 			oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
-			oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
+			oracleConfig.Providers[static.Name] = oracleconfig.ProviderConfig{
 				Name: static.Name,
 				API: oracleconfig.APIConfig{
 					Enabled:          true,
@@ -373,7 +375,7 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 					Name:             static.Name,
 				},
 				Type: types.ConfigType,
-			})
+			}
 
 			oracle := GetOracleSideCar(node)
 			SetOracleConfigsOnOracle(oracle, oracleConfig)
@@ -567,7 +569,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
 		oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
-		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
+		oracleConfig.Providers[static.Name] = oracleconfig.ProviderConfig{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
 				Enabled:          true,
@@ -580,7 +582,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Name:             static.Name,
 			},
 			Type: types.ConfigType,
-		})
+		}
 
 		oracle := GetOracleSideCar(node)
 		SetOracleConfigsOnOracle(oracle, oracleConfig)
@@ -636,7 +638,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 		oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
 
 		// set only a provider (no marketmap)
-		oracleConfig.Providers = []oracleconfig.ProviderConfig{{
+		oracleConfig.Providers[static.Name] = oracleconfig.ProviderConfig{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
 				Enabled:          true,
@@ -649,7 +651,7 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Name:             static.Name,
 			},
 			Type: types.ConfigType,
-		}}
+		}
 
 		oracle := GetOracleSideCar(node)
 		SetOracleConfigsOnOracle(oracle, oracleConfig)

@@ -60,7 +60,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 	// start all oracles
 	for _, node := range s.chain.Nodes() {
 		oracleConfig := DefaultOracleConfig(translateGRPCAddr(s.chain))
-		oracleConfig.Providers = append(oracleConfig.Providers, oracleconfig.ProviderConfig{
+		oracleConfig.Providers[static.Name] = oracleconfig.ProviderConfig{
 			Name: static.Name,
 			API: oracleconfig.APIConfig{
 				Enabled:          true,
@@ -73,7 +73,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 				Name:             static.Name,
 			},
 			Type: types.ConfigType,
-		})
+		}
 
 		oracle := GetOracleSideCar(node)
 		SetOracleConfigsOnOracle(oracle, oracleConfig)

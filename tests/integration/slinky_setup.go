@@ -33,7 +33,7 @@ import (
 
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
@@ -185,7 +185,7 @@ func AddSidecarToNode(node *cosmos.ChainNode, conf ibc.SidecarConfig) {
 // oracle sidecar.
 func SetOracleConfigsOnOracle(
 	oracle *cosmos.SidecarProcess,
-	oracleCfg oracleconfig.OracleConfig,
+	oracleCfg cmdconfig.OracleConfig,
 ) {
 	// marshal the oracle config
 	bz, err := json.Marshal(oracleCfg)
