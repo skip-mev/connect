@@ -105,6 +105,7 @@ var (
 		{
 			Name:      kucoin.Name,
 			WebSocket: kucoin.DefaultWebSocketConfig,
+			API:       kucoin.DefaultAPIConfig,
 			Type:      types.ConfigType,
 		},
 		{
