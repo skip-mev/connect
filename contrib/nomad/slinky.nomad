@@ -88,7 +88,7 @@ job "slinky-dev" {
       config {
         image      = "[[ .sidecar_image ]]"
         force_pull = true
-        entrypoint = ["slinky", "--oracle-config-path", "/etc/slinky/default_config/oracle.json", "--market-config-path", "/etc/slinky/default_config/market.json"]
+        entrypoint = ["slinky", "--market-config-path", "/etc/slinky/default_config/market.json"]
       }
 
       resources {

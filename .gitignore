@@ -35,3 +35,6 @@ run.go
 .idea/*
 .vscode/*
 **/.DS_Store
+
+sidecar.log
+oracle.json
