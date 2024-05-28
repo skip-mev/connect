@@ -3,9 +3,9 @@ package dydx_test
 import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
-	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/kraken"
 	"github.com/skip-mev/slinky/providers/websockets/bybit"
+	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/huobi"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
@@ -94,7 +94,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 						NormalizeByPair: &usdtusd,
 					},
 					{
-						Name:           coinbaseapi.Name,
+						Name:           coinbasews.Name,
 						OffChainTicker: "BTC-USD",
 					},
 					{
@@ -137,7 +137,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 						NormalizeByPair: &usdtusd,
 					},
 					{
-						Name:           coinbaseapi.Name,
+						Name:           coinbasews.Name,
 						OffChainTicker: "ETH-USD",
 					},
 					{
@@ -180,7 +180,7 @@ var convertedResponse = mmtypes.MarketMapResponse{
 						Invert:         true,
 					},
 					{
-						Name:           coinbaseapi.Name,
+						Name:           coinbasews.Name,
 						OffChainTicker: "USDT-USD",
 					},
 					{

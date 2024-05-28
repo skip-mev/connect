@@ -41,11 +41,6 @@ func (o *ProviderOrchestrator) listenForMarketMapUpdates(ctx context.Context) {
 				continue
 			}
 
-			if result.Code.Error() != nil {
-				o.logger.Info("market map provider response error", zap.Error(result.Code.Error()))
-				continue
-			}
-
 			// Update the orchestrator with the latest market map iff the market map has changed.
 			updated := result.Value.MarketMap
 			if o.marketMap.Equal(updated) {

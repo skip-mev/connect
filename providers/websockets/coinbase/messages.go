@@ -37,6 +37,12 @@ const (
 	//
 	// ref: https://docs.cloud.coinbase.com/exchange/docs/websocket-channels#ticker-channel
 	TickerMessage MessageType = "ticker"
+
+	// HeartbeatMessage represents a heartbeat message. This is sent by the websocket feed
+	// every second for the subscribed channels.
+	//
+	// ref: https://docs.cdp.coinbase.com/exchange/docs/websocket-channels/#heartbeat-channel
+	HeartbeatMessage MessageType = "heartbeat"
 )
 
 const (
@@ -46,6 +52,13 @@ const (
 	//
 	// ref: https://docs.cloud.coinbase.com/exchange/docs/websocket-channels#ticker-channel
 	TickerChannel ChannelType = "ticker"
+
+	// HeartbeatChannel represents the heartbeat channel. The heartbeat channel provides a
+	// heartbeat every second for the subscribed channels. Heartbeats include sequence numbers
+	// and last trade IDs that can be used to verify that no messages were missed.
+	//
+	// ref: https://docs.cdp.coinbase.com/exchange/docs/websocket-channels/#heartbeat-channel
+	HeartbeatChannel ChannelType = "heartbeat"
 )
 
 // BaseMessage represents a base message. This is used to determine the type of message
@@ -116,7 +129,7 @@ func NewSubscribeRequestMessage(instruments []string) ([]handlers.WebsocketEncod
 		bz, err := json.Marshal(SubscribeRequestMessage{
 			Type:       string(SubscribeMessage),
 			ProductIDs: []string{instrument},
-			Channels:   []string{string(TickerChannel)},
+			Channels:   []string{string(TickerChannel), string(HeartbeatChannel)},
 		})
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal subscribe request message %w", err)
@@ -214,4 +227,34 @@ type TickerResponseMessage struct {
 
 	// Price is the price of the ticker.
 	Price string `json:"price"`
+
+	// TradeID is the trade ID of the ticker.
+	TradeID int64 `json:"trade_id"`
+}
+
+// HeartbeatResponseMessage represents a heartbeat response message.
+//
+// Response
+//
+//	{
+//				"type": "heartbeat",
+//				"sequence": 90,
+//				"last_trade_id": 20,
+//				"product_id": "BTC-USD",
+//				"time": "2014-11-07T08:19:28.464459Z"
+//	}
+//
+// ref: https://docs.cdp.coinbase.com/exchange/docs/websocket-channels/#heartbeat-channel
+type HeartbeatResponseMessage struct {
+	// Type is the type of message.
+	Type string `json:"type"`
+
+	// Sequence is the sequence number of the message.
+	Sequence int64 `json:"sequence"`
+
+	// LastTradeID is the last trade ID of the message.
+	LastTradeID int64 `json:"last_trade_id"`
+
+	// Ticker is the product ID of the ticker.
+	Ticker string `json:"product_id"`
 }

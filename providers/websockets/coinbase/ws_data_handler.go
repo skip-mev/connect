@@ -20,8 +20,10 @@ type WebSocketHandler struct {
 
 	// ws is the config for the Coinbase websocket.
 	ws config.WebSocketConfig
-	// Sequence is the current sequence number for the Coinbase websocket API per currency pair.
+	// sequence is the current trade sequence number for the Coinbase websocket API per currency pair.
 	sequence map[types.ProviderTicker]int64
+	// tradeIDs is the current trade ID for the Coinbase websocket API per currency pair.
+	tradeIDs map[types.ProviderTicker]int64
 	// cache maintains the latest set of tickers seen by the handler.
 	cache types.ProviderTickers
 }
@@ -47,6 +49,7 @@ func NewWebSocketDataHandler(
 		logger:   logger,
 		ws:       ws,
 		sequence: make(map[types.ProviderTicker]int64),
+		tradeIDs: make(map[types.ProviderTicker]int64),
 		cache:    types.NewProviderTickers(),
 	}, nil
 }
@@ -99,6 +102,16 @@ func (h *WebSocketHandler) HandleMessage(
 
 		resp, err := h.parseTickerResponseMessage(tickerMessage)
 		return resp, nil, err
+	case HeartbeatMessage:
+		h.logger.Debug("received product heartbeat message")
+
+		var heartbeatMessage HeartbeatResponseMessage
+		if err := json.Unmarshal(message, &heartbeatMessage); err != nil {
+			return resp, nil, fmt.Errorf("failed to unmarshal heartbeat message %w", err)
+		}
+
+		resp, err := h.parseHeartbeatResponseMessage(heartbeatMessage)
+		return resp, nil, err
 	default:
 		return resp, nil, fmt.Errorf("invalid message type %s", msg.Type)
 	}
@@ -131,6 +144,7 @@ func (h *WebSocketHandler) Copy() types.PriceWebSocketDataHandler {
 		logger:   h.logger,
 		ws:       h.ws,
 		sequence: make(map[types.ProviderTicker]int64),
+		tradeIDs: make(map[types.ProviderTicker]int64),
 		cache:    types.NewProviderTickers(),
 	}
 }
