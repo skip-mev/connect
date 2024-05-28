@@ -53,8 +53,6 @@ type ResolvedResult[V ResponseValue] struct {
 	Value V
 	// Timestamp is the timestamp of the value.
 	Timestamp time.Time
-	// ErrorCode is the error code from the request.
-	ErrorCode ErrorCode
 	// ResponseCode is an optional code that can be attached to responses to provide
 	// additional context.
 	ResponseCode ResponseCode

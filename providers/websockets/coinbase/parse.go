@@ -83,7 +83,6 @@ func (h *WebSocketHandler) parseHeartbeatResponseMessage(
 		return types.NewPriceResponse(resolved, unResolved), err
 	}
 
-	// If the trade ID has not changed, then the price has not changed.
 	currentTradeID, ok := h.tradeIDs[ticker]
 	if !ok || currentTradeID != msg.LastTradeID {
 		unResolved[ticker] = providertypes.UnresolvedResult{

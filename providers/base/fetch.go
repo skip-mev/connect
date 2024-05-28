@@ -218,10 +218,10 @@ func (p *Provider[K, V]) updateData(id K, result providertypes.ResolvedResult[V]
 		return
 	}
 
-	// Update the timestamp on the current result to reflect that the
-	// data is still valid.
 	switch result.ResponseCode {
 	case providertypes.ResponseCodeUnchanged:
+		// Update the timestamp on the current result to reflect that the
+		// data is still valid.
 		p.logger.Debug(
 			"result is unchanged",
 			zap.String("id", fmt.Sprint(id)),
