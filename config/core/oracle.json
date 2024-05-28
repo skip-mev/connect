@@ -3,12 +3,28 @@
   "maxPriceAge": 120000000000,
   "providers": [
     {
+      "name": "binance_api",
+      "api": {
+        "enabled": true,
+        "timeout": 3000000000,
+        "interval": 750000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "https://api.binance.com/api/v3/ticker/price?symbols=%s%s%s",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "binance_api"
+      },
+      "type": "price_provider"
+    },
+    {
       "name": "binance_ws",
       "webSocket": {
         "enabled": true,
         "maxBufferSize": 1024,
         "reconnectionTimeout": 10000000000,
-        "wss": "wss://stream.binance.com",
+        "wss": "wss://stream.binance.com/stream",
         "name": "binance_ws",
         "readBufferSize": 0,
         "writeBufferSize": 0,
@@ -21,6 +37,250 @@
         "maxSubscriptionsPerConnection": 20
       },
       "type": "price_provider"
+    },
+    {
+      "name": "kraken_api",
+      "api": {
+        "enabled": true,
+        "timeout": 3000000000,
+        "interval": 600000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "kraken_api"
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "coinbase_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1024,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://ws-feed.exchange.coinbase.com",
+        "name": "coinbase_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 5000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "bitfinex_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1000,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://api-pub.bitfinex.com/ws/2",
+        "name": "bitfinex_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "bitstamp_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1024,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://ws.bitstamp.net",
+        "name": "bitstamp_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 225000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 10000000000,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "bybit_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1000,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://stream.bybit.com/v5/public/spot",
+        "name": "bybit_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 15000000000,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "crypto_dot_com_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1024,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://stream.crypto.com/exchange/v1/market",
+        "name": "crypto_dot_com_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "gate_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1000,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://api.gateio.ws/ws/v4/",
+        "name": "gate_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "huobi_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1000,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://api.huobi.pro/ws",
+        "name": "huobi_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "kucoin_ws",
+      "api": {
+        "enabled": false,
+        "timeout": 5000000000,
+        "interval": 60000000000,
+        "reconnectTimeout": 0,
+        "maxQueries": 1,
+        "atomic": false,
+        "url": "https://api.kucoin.com",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "kucoin_ws"
+      },
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1024,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://ws-api-spot.kucoin.com/",
+        "name": "kucoin_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 10000000000,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "mexc_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1000,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://wbs.mexc.com/ws",
+        "name": "mexc_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 20000000000,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 20
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "okx_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1000,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://ws.okx.com:8443/ws/v5/public",
+        "name": "okx_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 45000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 0
+      },
+      "type": "price_provider"
+    },
+    {
+      "name": "marketmap_api",
+      "api": {
+        "enabled": true,
+        "timeout": 20000000000,
+        "interval": 10000000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "0.0.0.0:9090",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "marketmap_api"
+      },
+      "type": "market_map_provider"
     }
   ],
   "metrics": {
