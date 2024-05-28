@@ -35,6 +35,26 @@
       "type": "price_provider"
     },
     {
+      "name": "binance_ws",
+      "webSocket": {
+        "enabled": true,
+        "maxBufferSize": 1024,
+        "reconnectionTimeout": 10000000000,
+        "wss": "wss://stream.binance.com/stream",
+        "name": "binance_ws",
+        "readBufferSize": 0,
+        "writeBufferSize": 0,
+        "handshakeTimeout": 45000000000,
+        "enableCompression": false,
+        "readTimeout": 45000000000,
+        "writeTimeout": 5000000000,
+        "pingInterval": 0,
+        "maxReadErrorCount": 100,
+        "maxSubscriptionsPerConnection": 20
+      },
+      "type": "price_provider"
+    },
+    {
       "name": "coinbase_api",
       "api": {
         "enabled": true,

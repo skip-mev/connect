@@ -19,6 +19,22 @@
       "type": "price_provider"
     },
     {
+      "name": "kraken_api",
+      "api": {
+        "enabled": true,
+        "timeout": 3000000000,
+        "interval": 600000000,
+        "reconnectTimeout": 2000000000,
+        "maxQueries": 1,
+        "atomic": true,
+        "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
+        "endpoints": null,
+        "batchSize": 0,
+        "name": "kraken_api"
+      },
+      "type": "price_provider"
+    },
+    {
       "name": "binance_ws",
       "webSocket": {
         "enabled": true,
@@ -35,22 +51,6 @@
         "pingInterval": 0,
         "maxReadErrorCount": 100,
         "maxSubscriptionsPerConnection": 20
-      },
-      "type": "price_provider"
-    },
-    {
-      "name": "kraken_api",
-      "api": {
-        "enabled": true,
-        "timeout": 3000000000,
-        "interval": 600000000,
-        "reconnectTimeout": 2000000000,
-        "maxQueries": 1,
-        "atomic": true,
-        "url": "https://api.kraken.com/0/public/Ticker?pair=%s",
-        "endpoints": null,
-        "batchSize": 0,
-        "name": "kraken_api"
       },
       "type": "price_provider"
     },
