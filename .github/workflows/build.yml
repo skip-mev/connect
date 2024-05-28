@@ -98,7 +98,7 @@ jobs:
           service: "slinky"
           app_id: ${{ vars.DEPLOYER_APP_ID }}
           app_private_key: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          manifests_repo: "skip-mev/slinky-manifests"
+          manifests_repo: "slinky-manifests"
           values_file_name: "values-dev.yaml"
           modified_values: |
             {
