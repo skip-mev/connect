@@ -29,11 +29,9 @@ services:
       context: ../..
       dockerfile: ./contrib/images/slinky.sidecar.dev.Dockerfile
     volumes:
-      - ../../config/${ORACLE_GROUP}/oracle.json:/oracle/oracle.json
       - ../../config/${ORACLE_GROUP}/market.json:/oracle/market.json
     entrypoint: [
       "slinky",
-      "--oracle-config-path", "/oracle/oracle.json",
       "--update-market-config-path", "/oracle/market.json",
       "--market-map-endpoint", "blockchain:9090",
       "--pprof-port", "6060",

@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
+	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	"github.com/skip-mev/slinky/oracle"
 	"github.com/skip-mev/slinky/oracle/config"
 
@@ -24,6 +25,7 @@ import (
 	"github.com/skip-mev/slinky/pkg/log"
 	oraclemath "github.com/skip-mev/slinky/pkg/math/oracle"
 	oraclefactory "github.com/skip-mev/slinky/providers/factories/oracle"
+	mmservicetypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	oracleserver "github.com/skip-mev/slinky/service/servers/oracle"
 	promserver "github.com/skip-mev/slinky/service/servers/prometheus"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
@@ -49,7 +51,9 @@ var (
 	}
 
 	oracleCfgPath       string
+	legacyOracleCfgPath string
 	marketCfgPath       string
+	marketMapProvider   string
 	updateMarketCfgPath string
 	runPprof            bool
 	profilePort         string
@@ -64,12 +68,30 @@ var (
 	disableRotatingLogs bool
 )
 
+const (
+	DefaultLegacyConfigPath = "./oracle.json"
+)
+
 func init() {
 	rootCmd.Flags().StringVarP(
-		&oracleCfgPath,
+		&marketMapProvider,
+		"marketmap-provider",
+		"",
+		marketmap.Name,
+		"MarketMap provider to use (marketmap_api, dydx_api).",
+	)
+	rootCmd.Flags().StringVarP(
+		&legacyOracleCfgPath,
 		"oracle-config-path",
 		"",
-		"oracle.json",
+		"",
+		"Path to the legacy oracle config file.",
+	)
+	rootCmd.Flags().StringVarP(
+		&oracleCfgPath,
+		"oracle-config",
+		"",
+		"",
 		"Path to the oracle config file.",
 	)
 	rootCmd.Flags().StringVarP(
@@ -185,9 +207,34 @@ func runOracle() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	cfg, err := config.ReadOracleConfigFromFile(oracleCfgPath)
-	if err != nil {
-		return fmt.Errorf("failed to read oracle config file: %w", err)
+	// Set up logging.
+	logCfg := log.NewDefaultConfig()
+	logCfg.StdOutLogLevel = logLevel
+	logCfg.FileOutLogLevel = fileLogLevel
+	logCfg.DisableRotating = disableRotatingLogs
+	logCfg.WriteTo = writeLogsTo
+	logCfg.MaxSize = maxLogSize
+	logCfg.MaxBackups = maxBackups
+	logCfg.MaxAge = maxAge
+	logCfg.Compress = !disableCompressLogs
+
+	// Build logger.
+	logger := log.NewLogger(logCfg)
+	defer logger.Sync()
+
+	var cfg config.OracleConfig
+	var err error
+
+	if legacyPath, legacyConfigInUse := useLegacyOracleConfig(logger); legacyConfigInUse {
+		cfg, err = cmdconfig.GetLegacyOracleConfig(legacyPath)
+		if err != nil {
+			return fmt.Errorf("failed to read legacy oracle config file: %w", err)
+		}
+	} else {
+		cfg, err = cmdconfig.ReadOracleConfigWithOverrides(oracleCfgPath, marketMapProvider)
+		if err != nil {
+			return fmt.Errorf("failed to get oracle config: %w", err)
+		}
 	}
 
 	// overwrite endpoint
@@ -205,21 +252,6 @@ func runOracle() error {
 			return fmt.Errorf("failed to read market config file: %w", err)
 		}
 	}
-
-	// Set up logging.
-	logCfg := log.NewDefaultConfig()
-	logCfg.StdOutLogLevel = logLevel
-	logCfg.FileOutLogLevel = fileLogLevel
-	logCfg.DisableRotating = disableRotatingLogs
-	logCfg.WriteTo = writeLogsTo
-	logCfg.MaxSize = maxLogSize
-	logCfg.MaxBackups = maxBackups
-	logCfg.MaxAge = maxAge
-	logCfg.Compress = !disableCompressLogs
-
-	// Build logger.
-	logger := log.NewLogger(logCfg)
-	defer logger.Sync()
 
 	logger.Info(
 		"successfully read in configs",
@@ -323,9 +355,41 @@ func runOracle() error {
 	return nil
 }
 
+// useLegacyOracleConfig returns true if a legacy oracle config should be used
+// based on the provided flags.
+func useLegacyOracleConfig(logger *zap.Logger) (string, bool) {
+	// if --oracle-config has been specified, use that
+	if oracleCfgPath != "" {
+		return oracleCfgPath, false
+	}
+
+	// if a value is provided for the --oracle-config-path flag, use it
+	if legacyOracleCfgPath != "" {
+		logger.Warn("DEPRECATION WARNING:: The --oracle-config-path flag is deprecated and will be removed in v1.0.0. Please use --default-config --oracle-config instead.")
+		return legacyOracleCfgPath, true
+	}
+
+	// if a legacy oracle config exists at the default path, use it
+	if legacyOracleConfigExists() {
+		logger.Warn(
+			"DEPRECATION WARNING:: Neither --oracle-config-path, nor --oracle-config has been specified, unmarshalling the oracle.json in the working directory as a legacy config. NOTE: this behavior will be deprecated in v1.0.0, either point to config overrides via --oracle-config, or remove oracle.json + specify config overrides via environment variables.",
+			zap.String("path", DefaultLegacyConfigPath),
+		)
+		return DefaultLegacyConfigPath, true
+	}
+
+	return "", false
+}
+
+// legacyOracleConfigExists checks if the legacy oracle config file exists at DefaultLegacyConfigPath.
+func legacyOracleConfigExists() bool {
+	_, err := os.Stat(DefaultLegacyConfigPath)
+	return !os.IsNotExist(err)
+}
+
 func overwriteMarketMapEndpoint(cfg config.OracleConfig, overwrite string) (config.OracleConfig, error) {
 	for i, provider := range cfg.Providers {
-		if provider.Name == marketmap.Name {
+		if provider.Type == mmservicetypes.ConfigType {
 			provider.API.URL = overwrite
 			cfg.Providers[i] = provider
 			return cfg, cfg.ValidateBasic()
