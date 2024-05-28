@@ -68,7 +68,7 @@ type SubscribeMessageRequest struct {
 //	{
 //			"result": null,
 //			"id": 1
-//		}
+//	}
 //
 // The ID field is used to uniquely identify the messages going back and forth, the same one sent in
 // the initial subscription. The result is null if the subscription was successful.
@@ -84,6 +84,37 @@ type SubscribeMessageResponse struct {
 // IsEmpty returns true if no data has been set for the message.
 func (m *SubscribeMessageResponse) IsEmpty() bool {
 	return m.ID == 0 && m.Result == nil
+}
+
+// StreamMessageResponse represents a stream message response. This is used to represent the
+// data that is received from the Binance websocket.
+//
+// # Response
+//
+// {
+// 	"stream": "btcusdt@aggTrade",
+// 	"data": {
+// 	  	"e": "aggTrade",
+// 	  	"E": 1716915868145,
+// 	  	"s": "BTCUSDT",
+// 	  	"a": 3020757327,
+// 	  	"p": "67734.00000000",
+// 	  	"q": "0.00230000",
+// 	  	"f": 3617006743,
+// 	  	"l": 3617006743,
+// 	  	"T": 1716915868145,
+// 	  	"m": false,
+// 	  	"M": true
+// 		}
+//  }
+
+// ref: https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#aggregate-trade-streams
+type StreamMessageResponse struct {
+	// Stream is the stream type.
+	Stream string `json:"stream"`
+
+	// Data is the data that is received from the stream.
+	Data AggregatedTradeMessageResponse `json:"data"`
 }
 
 // AggregatedTradeMessageResponse represents an aggregated trade message response. This is used to
@@ -107,8 +138,6 @@ func (m *SubscribeMessageResponse) IsEmpty() bool {
 //
 // ref: https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#aggregate-trade-streams
 type AggregatedTradeMessageResponse struct {
-	// StreamType is the stream type.
-	StreamType string `json:"e"`
 	// Ticker is the symbol.
 	Ticker string `json:"s"`
 	// Price is the price.

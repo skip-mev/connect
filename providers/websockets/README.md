@@ -12,6 +12,11 @@ The current set of supported providers are:
 
 > Note: The URLs provided are endpoints that can be used to determine the set of available currency pairs and their respective symbols. The `jq` command is used to format the JSON response for readability. Note that some of these may require a VPN to access.
 
+* [Binance](./binance/README.md) - Binance is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. Binance is a **primary data source** for the oracle.
+    * Check all supported markets:
+        * `curl https://api.binance.com/api/v3/exchangeInfo | jq`
+    * Check if a given market is supported:
+        * `curl https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT | jq`
 * [BitFinex](./bitfinex/README.md) - BitFinex is a cryptocurrency exchange that provides a free API for fetching cryptocurrency data. BitFinex is a **primary data source** for the oracle.
     * Check all supported markets: 
         * `curl https://api-pub.bitfinex.com/v2/conf/pub:list:currency | jq`

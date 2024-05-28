@@ -59,20 +59,20 @@ func (h *WebSocketHandler) HandleMessage(
 	message []byte,
 ) (types.PriceResponse, []handlers.WebsocketEncodedMessage, error) {
 	var (
-		resp     types.PriceResponse
-		msg      SubscribeMessageResponse
-		tradeMsg AggregatedTradeMessageResponse
+		resp      types.PriceResponse
+		msg       SubscribeMessageResponse
+		streamMsg StreamMessageResponse
 	)
 
 	// Unmarshal the message. If the message fails to be unmarshaled or is empty, this means
 	// that we likely received a price update message.
 	if err := json.Unmarshal(message, &msg); err != nil || msg.IsEmpty() {
-		if err := json.Unmarshal(message, &tradeMsg); err != nil {
+		if err := json.Unmarshal(message, &streamMsg); err != nil {
 			return resp, nil, fmt.Errorf("failed to unmarshal message %w", err)
 		}
 
 		// Parse the message.
-		resp, err := h.parseAggregateTradeMessage(tradeMsg)
+		resp, err := h.parseAggregateTradeMessage(streamMsg)
 		return resp, nil, err
 	}
 
