@@ -95,7 +95,7 @@ stop-sidecar-dev:
 	@ORACLE_GROUP=${ORACLE_GROUP} $(DOCKER_COMPOSE) -f $(DEV_COMPOSE) down
 
 install: tidy
-	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky
+	@go install -mod=readonly -ldflags="$(BUILD_TAGS)" ./cmd/slinky
 	@go install -mod=readonly $(BUILD_FLAGS) ./tests/simapp/slinkyd
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/slinky-config
 
