@@ -169,8 +169,9 @@ func (h *WebSocketQueryHandlerImpl[K, V]) start() error {
 	}
 
 	h.metrics.AddWebSocketDataHandlerStatus(h.config.Name, metrics.CreateMessageSuccess)
+	h.logger.Debug("connection created; sending initial payload(s)")
 	for _, message := range messages {
-		h.logger.Debug("connection created; sending initial payload", zap.String("payload", string(message)))
+		h.logger.Debug("sending payload", zap.String("payload", string(message)))
 
 		// Send the initial payload to the data provider.
 		if err := h.connHandler.Write(message); err != nil {
