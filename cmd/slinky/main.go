@@ -365,13 +365,13 @@ func useLegacyOracleConfig(logger *zap.Logger) (string, bool) {
 
 	// if a value is provided for the --oracle-config-path flag, use it
 	if legacyOracleCfgPath != "" {
-		logger.Info("DEPRECATION WARNING:: The --oracle-config-path flag is deprecated and will be removed in v1.0.0. Please use --default-config --oracle-config instead.")
+		logger.Warn("DEPRECATION WARNING:: The --oracle-config-path flag is deprecated and will be removed in v1.0.0. Please use --default-config --oracle-config instead.")
 		return legacyOracleCfgPath, true
 	}
 
 	// if a legacy oracle config exists at the default path, use it
 	if legacyOracleConfigExists() {
-		logger.Info(
+		logger.Warn(
 			"DEPRECATION WARNING:: Neither --oracle-config-path, nor --oracle-config has been specified, unmarshalling the oracle.json in the working directory as a legacy config. NOTE: this behavior will be deprecated in v1.0.0, either point to config overrides via --oracle-config, or remove oracle.json + specify config overrides via environment variables.",
 			zap.String("path", DefaultLegacyConfigPath),
 		)

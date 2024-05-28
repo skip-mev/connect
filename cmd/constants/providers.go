@@ -29,6 +29,19 @@ import (
 
 var (
 	Providers = []config.ProviderConfig{
+		// DEFI providers
+		{
+			Name: raydium.Name,
+			API:  raydium.DefaultAPIConfig,
+			Type: types.ConfigType,
+		},
+		{
+			Name: uniswapv3.ProviderNames[constants.ETHEREUM],
+			API:  uniswapv3.DefaultETHAPIConfig,
+			Type: types.ConfigType,
+		},
+
+		// Exchange providers
 		{
 			Name: coinbaseapi.Name,
 			API:  coinbaseapi.DefaultAPIConfig,
@@ -40,24 +53,9 @@ var (
 			Type: types.ConfigType,
 		},
 		{
-			Name: raydium.Name,
-			API:  raydium.DefaultAPIConfig,
-			Type: types.ConfigType,
-		},
-		{
-			Name: uniswapv3.ProviderNames[constants.ETHEREUM],
-			API:  uniswapv3.DefaultETHAPIConfig,
-			Type: types.ConfigType,
-		},
-		{
 			Name: krakenapi.Name,
 			API:  krakenapi.DefaultAPIConfig,
 			Type: types.ConfigType,
-		},
-		{
-			Name: marketmap.Name,
-			API:  marketmap.DefaultAPIConfig,
-			Type: mmtypes.ConfigType,
 		},
 		{
 			Name: volatile.Name,
@@ -118,6 +116,13 @@ var (
 			Name:      okx.Name,
 			WebSocket: okx.DefaultWebSocketConfig,
 			Type:      types.ConfigType,
+		},
+
+		// MarketMap provider
+		{
+			Name: marketmap.Name,
+			API:  marketmap.DefaultAPIConfig,
+			Type: mmtypes.ConfigType,
 		},
 	}
 
