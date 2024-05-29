@@ -316,10 +316,7 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 		`, updateIntervalOverride, prometheusServerOverride, raydium.Name, raydium.DefaultAPIConfig.Endpoints[0].URL, endpointOverride.URL, endpointOverride.Authentication.APIKey, endpointOverride.Authentication.APIKeyHeader)
 		tmpfile.Write([]byte(overrides))
 
-		cfg, err := config.ReadOracleConfigWithOv
-		
-		
-		errides(tmpfile.Name(), marketmap.Name)
+		cfg, err := config.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)
 		require.NoError(t, err)
 
 		require.ElementsMatch(t, expectedConfig.ToLegacy().Providers, cfg.Providers)
