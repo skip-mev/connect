@@ -31,10 +31,14 @@ const (
 var (
 	// DefaultWebSocketConfig defines the default websocket config for Kucoin.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:                       true,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           WSS, // Note that this may change as the URL is dynamically generated.
+		Enabled:             true,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		Endpoints: []config.Endpoint{
+			{
+				URL: WSS,
+			},
+		},
 		Name:                          Name,
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
@@ -54,8 +58,12 @@ var (
 		Timeout:    5 * time.Second, // KuCoin recommends a timeout of 5 seconds.
 		Interval:   1 * time.Minute, // This is not used.
 		MaxQueries: 1,               // This is not used.
-		URL:        URL,
-		Name:       Name,
+		Endpoints: []config.Endpoint{
+			{
+				URL: URL,
+			},
+		},
+		Name: Name,
 	}
 
 	// DefaultMarketConfig defines the default market config for Kucoin.

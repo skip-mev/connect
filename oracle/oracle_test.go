@@ -22,17 +22,21 @@ var (
 			MaxQueries:       10,
 			Enabled:          true,
 			Name:             "api1",
-			URL:              "http://test.com",
+			Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
 		},
 		Type: "price_provider",
 	}
 	providerCfg2 = config.ProviderConfig{
 		Name: "websocket1",
 		WebSocket: config.WebSocketConfig{
-			MaxBufferSize:                 10,
-			Enabled:                       true,
-			ReconnectionTimeout:           250 * time.Millisecond,
-			WSS:                           "wss://test.com",
+			MaxBufferSize:       10,
+			Enabled:             true,
+			ReconnectionTimeout: 250 * time.Millisecond,
+			Endpoints: []config.Endpoint{
+				{
+					URL: "ws://localhost:8080",
+				},
+			},
 			Name:                          "websocket1",
 			ReadBufferSize:                config.DefaultReadBufferSize,
 			WriteBufferSize:               config.DefaultWriteBufferSize,

@@ -31,7 +31,7 @@ var (
 		Interval:         100 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       5,
-		URL:              URL,
+		Endpoints:        []config.Endpoint{{URL: URL}},
 	}
 
 	// DefaultMarketConfig is the default market configuration for Coinbase.

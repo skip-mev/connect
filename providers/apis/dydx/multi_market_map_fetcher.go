@@ -36,7 +36,7 @@ func DefaultDYDXResearchMarketMapFetcher(
 	}
 
 	// construct a dydx mainnet api-handler
-	if len(cfg.URL) == 0 {
+	if len(cfg.Endpoints) == 0 {
 		return nil, fmt.Errorf("no URL provided for dydx mainnet")
 	}
 

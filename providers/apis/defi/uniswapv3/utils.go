@@ -22,6 +22,9 @@ const (
 
 	// ContractMethod is the contract method to call for the Uniswap V3 API.
 	ContractMethod = "slot0"
+
+	// URL is the URL for the Uniswap V3 API. This uses a free public RPC provider.
+	URL = "https://eth.public-rpc.com/"
 )
 
 // ProviderNames is the set of all supported "dynamic" names mapped by chain.
@@ -93,7 +96,7 @@ var (
 		Interval:         2000 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
-		URL:              "https://eth.public-rpc.com/",
+		Endpoints:        []config.Endpoint{{URL: URL}},
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for Uniswap V3. Specifically

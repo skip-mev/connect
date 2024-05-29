@@ -33,11 +33,15 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the MEXC Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 1000,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           WSS,
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       1000,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		Endpoints: []config.Endpoint{
+			{
+				URL: WSS,
+			},
+		},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,

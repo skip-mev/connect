@@ -29,9 +29,6 @@ type APIConfig struct {
 	// in a single request.
 	Atomic bool `json:"atomic"`
 
-	// URL is the URL that is used to fetch data from the API.
-	URL string `json:"url"`
-
 	// Endpoints is a list of endpoints that the provider can query.
 	Endpoints []Endpoint `json:"endpoints"`
 
@@ -108,8 +105,8 @@ func (c *APIConfig) ValidateBasic() error {
 		return fmt.Errorf("provider interval, timeout and reconnect timeout must be strictly positive")
 	}
 
-	if len(c.URL) == 0 && len(c.Endpoints) == 0 {
-		return fmt.Errorf("provider url and endpoints cannot be empty")
+	if len(c.Endpoints) == 0 {
+		return fmt.Errorf("endpoints cannot be empty")
 	}
 
 	if len(c.Name) == 0 {

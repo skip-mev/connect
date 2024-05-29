@@ -149,10 +149,14 @@ func TestPreDialHook(t *testing.T) {
 				return h
 			},
 			expectedConfig: &config.WebSocketConfig{
-				Enabled:      true,
-				WSS:          "wss://ws-api-spot.kucoin.com/?token=abcd", // this is dynamically generated.
-				ReadTimeout:  15 * time.Second,                           // this is dynamically generated
-				PingInterval: 20 * time.Second,                           // this is dynamically generated
+				Enabled: true,
+				Endpoints: []config.Endpoint{
+					{
+						URL: "wss://ws-api-spot.kucoin.com/?token=abcd", // this is dynamically generated.
+					},
+				},
+				ReadTimeout:  15 * time.Second, // this is dynamically generated
+				PingInterval: 20 * time.Second, // this is dynamically generated
 			},
 			expectErr: false,
 		},
@@ -172,7 +176,7 @@ func TestPreDialHook(t *testing.T) {
 
 			require.NoError(t, err)
 			cfg := connHandler.GetConfig()
-			require.Equal(t, tc.expectedConfig.WSS, cfg.WSS)
+			require.Equal(t, tc.expectedConfig.Endpoints, cfg.Endpoints)
 			require.Equal(t, tc.expectedConfig.ReadTimeout, cfg.ReadTimeout)
 			require.Equal(t, tc.expectedConfig.PingInterval, cfg.PingInterval)
 		})

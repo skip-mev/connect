@@ -19,11 +19,15 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the BitFinex Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 1000,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URLProd,
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       1000,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		Endpoints: []config.Endpoint{
+			{
+				URL: URLProd,
+			},
+		},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,

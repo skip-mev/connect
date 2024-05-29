@@ -46,7 +46,7 @@ func NewGRPCClient(
 
 	// TODO: Do we want to ignore proxy settings?
 	conn, err := grpc.NewClient(
-		api.URL,
+		api.Endpoints[0].URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {

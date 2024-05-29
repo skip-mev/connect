@@ -147,7 +147,7 @@ var (
 			ReconnectTimeout: 1000 * time.Millisecond,
 			MaxQueries:       1,
 			Atomic:           true,
-			URL:              "test-url",
+			Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
 			Name:             "mock-mapper",
 		},
 		Type: mmclienttypes.ConfigType,

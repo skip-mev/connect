@@ -45,7 +45,7 @@ var (
 		Interval:         750 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
-		URL:              US_URL,
+		Endpoints:        []config.Endpoint{{URL: US_URL}},
 	}
 
 	// DefaultNonUSAPIConfig is the default configuration for the Binance API.
@@ -57,7 +57,7 @@ var (
 		Interval:         750 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
-		URL:              URL,
+		Endpoints:        []config.Endpoint{{URL: URL}},
 	}
 
 	// DefaultUSMarketConfig is the default US market configuration for Binance.

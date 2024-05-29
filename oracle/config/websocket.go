@@ -70,8 +70,9 @@ type WebSocketConfig struct {
 	// to the websocket endpoint.
 	ReconnectionTimeout time.Duration `json:"reconnectionTimeout"`
 
-	// WSS is the websocket endpoint for the provider.
-	WSS string `json:"wss"`
+	// Endpoints are the websocket endpoints for the provider. At least one endpoint
+	// must be specified.
+	Endpoints []Endpoint `json:"endpoint"`
 
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`
@@ -132,8 +133,14 @@ func (c *WebSocketConfig) ValidateBasic() error {
 		return fmt.Errorf("websocket reconnection timeout must be greater than 0")
 	}
 
-	if len(c.WSS) == 0 {
+	if len(c.Endpoints) == 0 {
 		return fmt.Errorf("websocket endpoint cannot be empty")
+	}
+
+	for i, e := range c.Endpoints {
+		if err := e.ValidateBasic(); err != nil {
+			return fmt.Errorf("endpoint %d: %w", i, err)
+		}
 	}
 
 	if len(c.Name) == 0 {

@@ -96,8 +96,12 @@ func (h *WebSocketConnHandlerImpl) Dial() error {
 		}
 	}
 
+	if len(h.cfg.Endpoints) == 0 {
+		return fmt.Errorf("no endpoints provided")
+	}
+
 	var err error
-	h.conn, _, err = h.CreateDialer().Dial(h.cfg.WSS, nil)
+	h.conn, _, err = h.CreateDialer().Dial(h.cfg.Endpoints[0].URL, nil)
 	return err
 }
 

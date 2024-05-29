@@ -56,7 +56,7 @@ func (h *APIHandler) CreateURL(chains []types.Chain) (string, error) {
 		return "", fmt.Errorf("expected one chain, got %d", len(chains))
 	}
 
-	return fmt.Sprintf(Endpoint, h.api.URL), nil
+	return fmt.Sprintf(Endpoint, h.api.Endpoints[0].URL), nil
 }
 
 // ParseResponse parses the response from the x/prices API and returns the resolved and

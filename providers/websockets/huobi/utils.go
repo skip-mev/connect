@@ -23,11 +23,15 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the Huobi Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 1000,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URL,
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       1000,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		Endpoints: []config.Endpoint{
+			{
+				URL: URL,
+			},
+		},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,

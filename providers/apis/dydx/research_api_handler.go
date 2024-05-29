@@ -34,9 +34,9 @@ func NewResearchAPIHandler(
 		return nil, fmt.Errorf("invalid api config for %s: %w", ResearchAPIHandlerName, err)
 	}
 
-	// expect a single endpoint
-	if len(api.Endpoints) != 1 {
-		return nil, fmt.Errorf("expected one endpoint, got %d", len(api.Endpoints))
+	// expect a two endpoints
+	if len(api.Endpoints) != 2 {
+		return nil, fmt.Errorf("expected two endpoint, got %d", len(api.Endpoints))
 	}
 
 	return &ResearchAPIHandler{
@@ -44,7 +44,7 @@ func NewResearchAPIHandler(
 			api:    api,
 			logger: logger,
 		},
-		url: api.Endpoints[0].URL,
+		url: api.Endpoints[1].URL,
 	}, nil
 }
 
