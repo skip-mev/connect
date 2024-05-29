@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"math/big"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
@@ -19,9 +21,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
 
-	"os/signal"
-	"syscall"
-
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
@@ -34,13 +33,13 @@ import (
 )
 
 const (
-	envKeepAlive  = "ORACLE_INTEGRATION_KEEPALIVE"
-	genesisAmount = 1000000000
-	defaultDenom  = "stake"
-	validatorKey  = "validator"
-	yes           = "yes"
-	deposit       = 1000000
-	userMnemonic = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
+	envKeepAlive          = "ORACLE_INTEGRATION_KEEPALIVE"
+	genesisAmount         = 1000000000
+	defaultDenom          = "stake"
+	validatorKey          = "validator"
+	yes                   = "yes"
+	deposit               = 1000000
+	userMnemonic          = "foster poverty abstract scorpion short shrimp tilt edge romance adapt only benefit moral another where host egg echo ability wisdom lizard lazy pool roast"
 	userAccountAddressHex = "877E307618AB73E009A978AC32E0264791F6D40A"
 )
 
@@ -163,7 +162,7 @@ func WithChainConstructor(cc ChainConstructor) Option {
 	}
 }
 
-func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts... Option) *SlinkyIntegrationSuite {
+func NewSlinkyIntegrationSuite(spec *interchaintest.ChainSpec, oracleImage ibc.DockerImage, opts ...Option) *SlinkyIntegrationSuite {
 	suite := &SlinkyIntegrationSuite{
 		spec:         spec,
 		oracleConfig: DefaultOracleSidecar(oracleImage),
