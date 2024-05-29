@@ -1,28 +1,31 @@
 package integration
 
 import (
-	"github.com/skip-mev/slinky/oracle/constants"
-	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/skip-mev/slinky/providers/static"
-	oracleconfig "github.com/skip-mev/slinky/oracle/config"
-	"time"
 	"context"
-	"math/big"
-	"github.com/skip-mev/slinky/oracle/types"
-	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"fmt"
-	"cosmossdk.io/math"
-	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"strings"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"math/big"
+	"strings"
+	"time"
+
+	"cosmossdk.io/math"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+
+	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
+	oracleconfig "github.com/skip-mev/slinky/oracle/config"
+	"github.com/skip-mev/slinky/oracle/constants"
+	"github.com/skip-mev/slinky/oracle/types"
+	"github.com/skip-mev/slinky/providers/static"
+	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // Type SlinkyCCVSuite is a testing-suite for testing slinky's integration with ics consumer chains
@@ -136,7 +139,7 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 		// expect stake to have doubled for validator
 		updatedValidator, err := provider.StakingQueryValidator(ctx, validator.OperatorAddress)
 		s.Require().NoError(err)
-	
+
 		s.Require().Equal(tokens.Mul(math.NewInt(2)), updatedValidator.Tokens)
 
 		// flush packets

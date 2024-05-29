@@ -7,8 +7,9 @@ import (
 
 	cmtabci "github.com/cometbft/cometbft/abci/types"
 	cmthttp "github.com/cometbft/cometbft/rpc/client/http"
-	"github.com/skip-mev/slinky/abci/strategies/codec"
 	"github.com/spf13/cobra"
+
+	"github.com/skip-mev/slinky/abci/strategies/codec"
 )
 
 var (
