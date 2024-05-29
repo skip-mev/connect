@@ -62,12 +62,12 @@ func (pc *PoolConfig) ValidateBasic() error {
 		return fmt.Errorf("pool address is not a valid ethereum address")
 	}
 
-	if pc.BaseDecimals <= 0 {
-		return fmt.Errorf("base decimals must be positive")
+	if pc.BaseDecimals < 0 {
+		return fmt.Errorf("base decimals must be non-negative")
 	}
 
-	if pc.QuoteDecimals <= 0 {
-		return fmt.Errorf("quote decimals must be positive")
+	if pc.QuoteDecimals < 0 {
+		return fmt.Errorf("quote decimals must be non-negative")
 	}
 
 	return nil
