@@ -72,7 +72,7 @@ type WebSocketConfig struct {
 
 	// Endpoints are the websocket endpoints for the provider. At least one endpoint
 	// must be specified.
-	Endpoints []Endpoint `json:"endpoint"`
+	Endpoints []Endpoint `json:"endpoints"`
 
 	// Name is the name of the provider that corresponds to this config.
 	Name string `json:"name"`

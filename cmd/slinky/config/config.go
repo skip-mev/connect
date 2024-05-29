@@ -50,6 +50,10 @@ func DefaultOracleConfig() OracleConfig {
 		cfg.Providers[provider.Name] = provider
 	}
 
+	if err := cfg.ValidateBasic(); err != nil {
+		panic(fmt.Sprintf("default oracle config is invalid: %s", err))
+	}
+
 	return cfg
 }
 
@@ -204,7 +208,8 @@ func ReadOracleConfigWithOverrides(path string, marketMapProvider string) (confi
 		}
 	}
 
-	return cfg.ToLegacy(), nil
+	legacyCfg := cfg.ToLegacy()
+	return legacyCfg, legacyCfg.ValidateBasic()
 }
 
 // oracleConfigFromViper unmarshals an oracle config from viper, validates it, and returns it.
@@ -216,27 +221,39 @@ func oracleConfigFromViper() (OracleConfig, error) {
 
 	// for each api-provider, we'll have to manually fill the endpoints
 	for _, provider := range cfg.Providers {
-		// skip non-api providers
-		if provider.API.Enabled {
-			for i, endpoint := range provider.API.Endpoints {
-				provider.API.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i)
-			}
-
-			// start searching for environment variables from the first endpoint
-			firstEndpointFromViperIndex := len(provider.API.Endpoints)
-			for found := true; found; firstEndpointFromViperIndex++ {
-				var endpoint config.Endpoint
-				endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex)
-				if found {
-					provider.API.Endpoints = append(provider.API.Endpoints, endpoint)
-				}
-			}
-
-			// update the provider with the updated endpoints
-			cfg.Providers[provider.Name] = provider
+		// Update API endpoints
+		for i, endpoint := range provider.API.Endpoints {
+			provider.API.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i, "api")
 		}
+
+		firstEndpointFromViperIndex := len(provider.API.Endpoints)
+		for found := true; found; firstEndpointFromViperIndex++ {
+			var endpoint config.Endpoint
+			endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex, "api")
+			if found {
+				provider.API.Endpoints = append(provider.API.Endpoints, endpoint)
+			}
+		}
+
+		// Update WebSocket endpoints
+		for i, endpoint := range provider.WebSocket.Endpoints {
+			provider.WebSocket.Endpoints[i], _ = updateEndpointFromEnvironment(endpoint, provider.Name, i, "webSocket")
+		}
+
+		firstEndpointFromViperIndex = len(provider.WebSocket.Endpoints)
+		for found := true; found; firstEndpointFromViperIndex++ {
+			var endpoint config.Endpoint
+			endpoint, found = updateEndpointFromEnvironment(config.Endpoint{}, provider.Name, firstEndpointFromViperIndex, "webSocket")
+			if found {
+				provider.WebSocket.Endpoints = append(provider.WebSocket.Endpoints, endpoint)
+			}
+		}
+
+		// update the provider with the updated endpoints
+		cfg.Providers[provider.Name] = provider
 	}
 
+	fmt.Println(cfg)
 	if err := cfg.ValidateBasic(); err != nil {
 		return OracleConfig{}, err
 	}
@@ -246,11 +263,11 @@ func oracleConfigFromViper() (OracleConfig, error) {
 
 // updateEndpointFromEnvironment returns an updated endpoint with the values from the environment. If viper is not aware of
 // any overrides variables for the endpoint, the original endpoint is returned with false.
-func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string, idx int) (config.Endpoint, bool) {
+func updateEndpointFromEnvironment(endpoint config.Endpoint, providerName string, idx int, configType string) (config.Endpoint, bool) {
 	// check if an environment variable exists for this endpoint
-	endpointURL := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.url", providerName, idx))
-	endpointAPIKey := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.authentication.apiKey", providerName, idx))
-	endpointAPIKeyHeader := viper.Get(fmt.Sprintf("providers.%s.api.endpoints.%d.authentication.apiKeyHeader", providerName, idx))
+	endpointURL := viper.Get(fmt.Sprintf("providers.%s.%s.endpoints.%d.url", providerName, configType, idx))
+	endpointAPIKey := viper.Get(fmt.Sprintf("providers.%s.%s.endpoints.%d.authentication.apiKey", providerName, configType, idx))
+	endpointAPIKeyHeader := viper.Get(fmt.Sprintf("providers.%s.%s.endpoints.%d.authentication.apiKeyHeader", providerName, configType, idx))
 
 	// if the environment variable exists, set the endpoint to the value of the environment variable
 	if endpointURL != nil {
