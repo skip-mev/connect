@@ -31,13 +31,14 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
+	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
+
 	compression "github.com/skip-mev/slinky/abci/strategies/codec"
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
-	"github.com/strangelove-ventures/interchaintest/v8/testreporter"
 )
 
 const (
@@ -61,7 +62,7 @@ var (
 // ChainConstructor returns the chain that will be using slinky, as well as any additional chains
 // that are needed for the test. The first chain returned will be the chain that is used in the
 // slinky integration tests.
-type ChainConstructor func(t *testing.T, spec *interchaintest.ChainSpec) ([]*cosmos.CosmosChain)
+type ChainConstructor func(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos.CosmosChain
 
 // Interchain is an interface representing the set of chains that are used in the slinky e2e tests, as well
 // as any additional relayer / ibc-path information
@@ -71,11 +72,11 @@ type Interchain interface {
 	IBCPath() string
 }
 
-// InterchainConstructor returns an interchain that will be used in the slinky integration tests. 
+// InterchainConstructor returns an interchain that will be used in the slinky integration tests.
 // The chains used in the interchain constructor should be the chains constructed via the ChainConstructor
 type InterchainConstructor func(ctx context.Context, t *testing.T, chains []*cosmos.CosmosChain) Interchain
 
-// DefaultChainConstructor is the default construct of a chan that will be used in the slinky 
+// DefaultChainConstructor is the default construct of a chan that will be used in the slinky
 // integration tests. There is only a single chain that is created.
 func DefaultChainConstructor(t *testing.T, spec *interchaintest.ChainSpec) []*cosmos.CosmosChain {
 	// require that NumFullNodes == NumValidators == 4
@@ -405,7 +406,7 @@ func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, use
 
 func (s *SlinkyIntegrationSuite) UpdateCurrencyPair(chain *cosmos.CosmosChain, markets []mmtypes.Market) error {
 	msg := &mmtypes.MsgUpdateMarkets{
-		Authority: s.user.FormattedAddress(),
+		Authority:     s.user.FormattedAddress(),
 		UpdateMarkets: markets,
 	}
 

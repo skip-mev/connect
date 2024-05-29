@@ -6,12 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/skip-mev/slinky/cmd/slinky/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
 	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestValidateBasic(t *testing.T) {
