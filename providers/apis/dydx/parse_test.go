@@ -9,11 +9,11 @@ import (
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/defi/uniswapv3"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
 	dydxtypes "github.com/skip-mev/slinky/providers/apis/dydx/types"
+	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
 	"github.com/skip-mev/slinky/providers/websockets/kucoin"
 	"github.com/skip-mev/slinky/providers/websockets/mexc"
 	"github.com/skip-mev/slinky/providers/websockets/okx"
@@ -202,7 +202,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedProviders: []mmtypes.ProviderConfig{
 				{
-					Name:           coinbaseapi.Name,
+					Name:           coinbasews.Name,
 					OffChainTicker: "BTC-USD",
 				},
 			},
@@ -220,7 +220,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedProviders: []mmtypes.ProviderConfig{
 				{
-					Name:           coinbaseapi.Name,
+					Name:           coinbasews.Name,
 					OffChainTicker: "BTC-USD",
 				},
 			},
@@ -324,7 +324,7 @@ func TestConvertExchangeConfigJSON(t *testing.T) {
 			},
 			expectedProviders: []mmtypes.ProviderConfig{
 				{
-					Name:           coinbaseapi.Name,
+					Name:           coinbasews.Name,
 					OffChainTicker: "BTC-USD",
 				},
 			},

@@ -51,7 +51,7 @@ build: tidy
 	 -o ./build/ ./...
 
 run-oracle-server: build
-	@./build/slinky --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
+	@./build/slinky --market-config-path ${MARKET_CONFIG_FILE}
 
 run-oracle-client: build
 	@./build/client --host localhost --port 8080
@@ -267,6 +267,7 @@ proto-update-deps:
 tidy:
 	@go mod tidy
 	@cd ./tests/integration && go mod tidy
+	@cd ./tests/petri && go mod tidy
 
 .PHONY: tidy
 

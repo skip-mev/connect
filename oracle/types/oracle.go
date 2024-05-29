@@ -86,6 +86,9 @@ var (
 	// NewPriceResult is a function alias for the new price result.
 	NewPriceResult = providertypes.NewResult[*big.Float]
 
+	// NewPriceResultWithCode is a function alias for the new price result with code.
+	NewPriceResultWithCode = providertypes.NewResultWithCode[*big.Float]
+
 	// NewPriceResponse is a function alias for the new price response.
 	NewPriceResponse = providertypes.NewGetResponse[ProviderTicker, *big.Float]
 

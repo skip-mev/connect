@@ -56,7 +56,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "AAVE-USD"
         }
       ]
@@ -89,7 +89,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ADA-USD"
         },
         {
@@ -280,7 +280,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ALGO-USD"
         },
         {
@@ -333,7 +333,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "APE-USD"
         },
         {
@@ -402,7 +402,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "APT-USD"
         },
         {
@@ -475,7 +475,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ARB-USD"
         },
         {
@@ -658,7 +658,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ATOM-USD"
         },
         {
@@ -727,7 +727,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "AVAX-USD"
         },
         {
@@ -796,7 +796,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "AXL-USD"
         },
         {
@@ -841,7 +841,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "BCH-USD"
         },
         {
@@ -902,7 +902,7 @@
       },
       "provider_configs": [
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "BLUR-USD"
         },
         {
@@ -1032,7 +1032,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "BONK-USD"
         },
         {
@@ -1089,7 +1089,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "BTC-USD"
         },
         {
@@ -1150,7 +1150,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "COMP-USD"
         },
         {
@@ -1203,7 +1203,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "CRV-USD"
         },
         {
@@ -1272,7 +1272,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "DOGE-USD"
         },
         {
@@ -1349,7 +1349,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "DOT-USD"
         },
         {
@@ -1532,7 +1532,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "EOS-USD"
         },
         {
@@ -1593,7 +1593,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ETC-USD"
         },
         {
@@ -1666,7 +1666,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ETH-USD"
         },
         {
@@ -1727,7 +1727,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "FET-USD"
         },
         {
@@ -1780,7 +1780,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "FIL-USD"
         },
         {
@@ -1849,7 +1849,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "GRT-USD"
         },
         {
@@ -1922,7 +1922,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "HBAR-USD"
         },
         {
@@ -1979,7 +1979,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "ICP-USD"
         },
         {
@@ -2032,7 +2032,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "IMX-USD"
         },
         {
@@ -2093,7 +2093,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "INJ-USD"
         },
         {
@@ -2138,7 +2138,7 @@
       },
       "provider_configs": [
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "JTO-USD"
         },
         {
@@ -2264,7 +2264,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "LDO-USD"
         },
         {
@@ -2325,7 +2325,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "LINK-USD"
         },
         {
@@ -2386,7 +2386,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "LTC-USD"
         },
         {
@@ -2447,7 +2447,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "MANA-USD"
         },
         {
@@ -2516,7 +2516,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "MATIC-USD"
         },
         {
@@ -2585,7 +2585,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "MKR-USD"
         },
         {
@@ -2638,7 +2638,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "NEAR-USD"
         },
         {
@@ -2748,7 +2748,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "OP-USD"
         },
         {
@@ -3000,7 +3000,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "RNDR-USD"
         },
         {
@@ -3110,7 +3110,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SEI-USD"
         },
         {
@@ -3175,7 +3175,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SHIB-USD"
         },
         {
@@ -3244,7 +3244,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SNX-USD"
         },
         {
@@ -3297,7 +3297,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SOL-USD"
         },
         {
@@ -3423,7 +3423,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "STX-USD"
         },
         {
@@ -3492,7 +3492,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "SUI-USD"
         },
         {
@@ -3565,7 +3565,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "TIA-USD"
         },
         {
@@ -3707,7 +3707,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "UNI-USD"
         },
         {
@@ -3762,7 +3762,7 @@
           "invert": true
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "USDT-USD"
         },
         {
@@ -3944,7 +3944,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "XLM-USD"
         },
         {
@@ -4005,7 +4005,7 @@
           }
         },
         {
-          "name": "coinbase_api",
+          "name": "coinbase_ws",
           "off_chain_ticker": "XRP-USD"
         },
         {

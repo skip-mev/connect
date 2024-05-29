@@ -1,5 +1,4 @@
 name: Build Slinky docker images
-
 on:
   push:
     branches:
@@ -8,13 +7,11 @@ on:
       - "v.*"
   pull_request:
   workflow_dispatch:
-
 jobs:
   build:
     strategy:
       matrix:
-        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"},
-                {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
+        image: [{file: "slinky.e2e.Dockerfile", name: "slinky-simapp"}, {file: "slinky.sidecar.prod.Dockerfile", name: "slinky-sidecar"}, {file: "slinky.local.Dockerfile", name: "slinky-testapp"}, {file: "slinky.sidecar.e2e.Dockerfile", name: "slinky-e2e-sidecar"}]
     runs-on: ubuntu-latest-m
     permissions:
       contents: read
@@ -33,9 +30,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2 
+        uses: aws-actions/amazon-ecr-login@v2
       - name: Log in to the Container registry
-        uses: docker/login-action@70fccc794acd729b2b22dd6a326895f286447728
+        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -57,7 +54,6 @@ jobs:
             ghcr.io/skip-mev/${{ matrix.image.name }}
           tags: |
             type=ref,event=pr
-            type=semver,pattern={{version}}
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
             type=semver,pattern=v{{major}}
             type=sha,prefix=

@@ -63,10 +63,8 @@ func TestHandleMessage(t *testing.T) {
 					},
 				},
 			},
-			updateMessage: func() []handlers.WebsocketEncodedMessage {
-				return nil
-			},
-			expErr: false,
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        false,
 		},
 		{
 			name: "ticker message with invalid ticker",
@@ -83,11 +81,9 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: types.PriceResponse{},
-			updateMessage: func() []handlers.WebsocketEncodedMessage {
-				return nil
-			},
-			expErr: true,
+			resp:          types.PriceResponse{},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
 		},
 		{
 			name: "ticker message with bad price",
@@ -111,10 +107,8 @@ func TestHandleMessage(t *testing.T) {
 					},
 				},
 			},
-			updateMessage: func() []handlers.WebsocketEncodedMessage {
-				return nil
-			},
-			expErr: true,
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
 		},
 		{
 			name: "ticker message with out of order sequence number",
@@ -123,7 +117,7 @@ func TestHandleMessage(t *testing.T) {
 					Type:     string(coinbase.TickerMessage),
 					Ticker:   "BTC-USD", // We have already received a message with sequence number 1.
 					Price:    "10000.00",
-					Sequence: 1,
+					Sequence: 0,
 				}
 
 				bz, err := json.Marshal(msg)
@@ -138,10 +132,8 @@ func TestHandleMessage(t *testing.T) {
 					},
 				},
 			},
-			updateMessage: func() []handlers.WebsocketEncodedMessage {
-				return nil
-			},
-			expErr: true,
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
 		},
 		{
 			name: "subscriptions message",
@@ -163,11 +155,126 @@ func TestHandleMessage(t *testing.T) {
 
 				return bz
 			},
-			resp: types.PriceResponse{},
-			updateMessage: func() []handlers.WebsocketEncodedMessage {
-				return nil
+			resp:          types.PriceResponse{},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        false,
+		},
+		{
+			name: "ticker message for ETH-USD",
+			msg: func() []byte {
+				msg := coinbase.TickerResponseMessage{
+					Type:     string(coinbase.TickerMessage),
+					Ticker:   "ETH-USD",
+					Price:    "1000.00",
+					Sequence: 1,
+					TradeID:  1,
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return bz
 			},
-			expErr: false,
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					ethusd: {
+						Value: big.NewFloat(1000.00),
+					},
+				},
+			},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        false,
+		},
+		{
+			name: "heartbeat message for ETH-USD (should not update the price)",
+			msg: func() []byte {
+				msg := coinbase.HeartbeatResponseMessage{
+					Type:        string(coinbase.HeartbeatMessage),
+					Ticker:      "ETH-USD",
+					Sequence:    2,
+					LastTradeID: 1,
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return bz
+			},
+			resp: types.PriceResponse{
+				Resolved: types.ResolvedPrices{
+					ethusd: {
+						Value:        big.NewFloat(0),
+						ResponseCode: providertypes.ResponseCodeUnchanged,
+					},
+				},
+			},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        false,
+		},
+		{
+			name: "heartbeat message for unknown market",
+			msg: func() []byte {
+				msg := coinbase.HeartbeatResponseMessage{
+					Type:        string(coinbase.HeartbeatMessage),
+					Ticker:      "MOG-USD",
+					Sequence:    2,
+					LastTradeID: 1,
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return bz
+			},
+			resp:          types.PriceResponse{},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
+		{
+			name: "heartbeat message with out of order sequence number",
+			msg: func() []byte {
+				msg := coinbase.HeartbeatResponseMessage{
+					Type:        string(coinbase.HeartbeatMessage),
+					Ticker:      "ETH-USD",
+					Sequence:    0,
+					LastTradeID: 1,
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return bz
+			},
+			resp: types.PriceResponse{
+				UnResolved: types.UnResolvedPrices{
+					ethusd: providertypes.UnresolvedResult{
+						ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("received out of order heartbeat response message"), providertypes.ErrorUnknown),
+					},
+				},
+			},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        true,
+		},
+		{
+			name: "heartbeat message with no existing price",
+			msg: func() []byte {
+				msg := coinbase.HeartbeatResponseMessage{
+					Type:        string(coinbase.HeartbeatMessage),
+					Ticker:      "ETH-USD",
+					Sequence:    2,
+					LastTradeID: 2,
+				}
+
+				bz, err := json.Marshal(msg)
+				require.NoError(t, err)
+
+				return bz
+			},
+			resp: types.PriceResponse{
+				UnResolved: types.UnResolvedPrices{ethusd: providertypes.UnresolvedResult{ErrorWithCode: providertypes.NewErrorWithCode(fmt.Errorf("no price update received"), providertypes.ErrorNoExistingPrice)}},
+			},
+			updateMessage: func() []handlers.WebsocketEncodedMessage { return nil },
+			expErr:        false,
 		},
 	}
 
@@ -200,6 +307,7 @@ func TestHandleMessage(t *testing.T) {
 			for cp, result := range tc.resp.Resolved {
 				require.Contains(t, resp.Resolved, cp)
 				require.Equal(t, result.Value.SetPrec(18), resp.Resolved[cp].Value.SetPrec(18))
+				require.Equal(t, result.ResponseCode, resp.Resolved[cp].ResponseCode)
 			}
 
 			for cp := range tc.resp.UnResolved {
@@ -238,6 +346,7 @@ func TestCreateMessages(t *testing.T) {
 					},
 					Channels: []string{
 						string(coinbase.TickerChannel),
+						string(coinbase.HeartbeatChannel),
 					},
 				}
 
@@ -264,6 +373,7 @@ func TestCreateMessages(t *testing.T) {
 						},
 						Channels: []string{
 							string(coinbase.TickerChannel),
+							string(coinbase.HeartbeatChannel),
 						},
 					}
 
