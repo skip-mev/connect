@@ -4,3 +4,7 @@ const (
 	DYDX     = "dydx"
 	ETHEREUM = "ethereum"
 )
+
+var (
+	
+)
