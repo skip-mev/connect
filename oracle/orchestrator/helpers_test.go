@@ -169,7 +169,6 @@ var (
 					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					// coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, btcusdt),
 					{
 						Name:           coinbase.Name,
 						OffChainTicker: "BTCUSD",
@@ -188,7 +187,6 @@ var (
 					Enabled:          true,
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
-					// coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
 					{
 						Name:           coinbase.Name,
 						OffChainTicker: "ETHUSD",

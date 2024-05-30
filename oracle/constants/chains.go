@@ -4,4 +4,3 @@ const (
 	DYDX     = "dydx"
 	ETHEREUM = "ethereum"
 )
-

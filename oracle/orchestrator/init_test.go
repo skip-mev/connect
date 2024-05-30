@@ -24,6 +24,12 @@ var (
 	ethusdt = oracletypes.DefaultProviderTicker{
 		OffChainTicker: "ETHUSDT",
 	}
+	btcusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "BTCUSD",
+	}
+	ethusd = oracletypes.DefaultProviderTicker{
+		OffChainTicker: "ETHUSD",
+	}
 )
 
 func TestInit(t *testing.T) {
@@ -76,12 +82,8 @@ func TestInit(t *testing.T) {
 		checkProviderState(
 			t,
 			[]oracletypes.ProviderTicker{
-				oracletypes.DefaultProviderTicker{
-					OffChainTicker: "BTCUSD",
-				},
-				oracletypes.DefaultProviderTicker{
-					OffChainTicker: "ETHUSD",
-				},
+				btcusd,
+				ethusd,
 			},
 			coinbase.Name,
 			providertypes.API,
