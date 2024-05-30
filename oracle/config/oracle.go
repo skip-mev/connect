@@ -23,12 +23,6 @@ type OracleConfig struct {
 	// Providers is the list of providers that the oracle will fetch prices from.
 	Providers map[string]ProviderConfig `json:"providers"`
 
-	// Production specifies whether the oracle is running in production mode. This is used to
-	// determine whether the oracle should be run in debug mode or not.
-	//
-	// Deprecated: This field is no longer used.
-	Production bool `json:"production"`
-
 	// Metrics is the metrics configurations for the oracle.
 	Metrics MetricsConfig `json:"metrics"`
 

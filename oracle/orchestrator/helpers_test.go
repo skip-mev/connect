@@ -30,7 +30,6 @@ var (
 	logger = zap.NewExample()
 
 	oracleCfg = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
@@ -58,7 +57,6 @@ var (
 	}
 
 	oracleCfgWithMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
@@ -88,7 +86,6 @@ var (
 	}
 
 	oracleCfgWithMockMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
@@ -118,7 +115,6 @@ var (
 	}
 
 	oracleCfgWithOnlyMockMapper = config.OracleConfig{
-		Production: true,
 		Metrics: config.MetricsConfig{
 			Enabled: false,
 		},
