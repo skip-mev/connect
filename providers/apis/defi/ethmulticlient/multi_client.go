@@ -67,7 +67,7 @@ func NewMultiRPCClientFromEndpoints(
 	for i, endpoint := range api.Endpoints {
 		// Pin the endpoint directly into a copy of the config.
 		var err error
-		clients[i], err = NewGoEthereumClientImplFromEndpoint(ctx, apiMetrics, api, i)
+		clients[i], err = NewGoEthereumClientImpl(ctx, apiMetrics, api, i)
 		if err != nil {
 			logger.Error(
 				"endpoint failed to construct client",

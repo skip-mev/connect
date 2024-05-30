@@ -63,7 +63,7 @@ func (h *APIHandler) CreateURL(
 	finalEndpoint := fmt.Sprintf("%s%s", pricesEndPoint, Precision)
 
 	// Otherwise, we just return the base url with the endpoint.
-	return fmt.Sprintf("%s%s", h.api.URL, finalEndpoint), nil
+	return fmt.Sprintf("%s%s", h.api.Endpoints[0].URL, finalEndpoint), nil
 }
 
 // ParseResponse parses the response from the CoinGecko API. The response is expected

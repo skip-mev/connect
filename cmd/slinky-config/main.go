@@ -301,7 +301,11 @@ func configureDYDXProviders() error {
 			return fmt.Errorf("dYdX node URL is required; please specify your dYdX node URL using the --node-http-url flag (ex. --node-http-url http://localhost:1317)")
 		}
 		marketMapProviderConfig = dydx.DefaultAPIConfig
-		marketMapProviderConfig.URL = nodeURL
+		marketMapProviderConfig.Endpoints = []config.Endpoint{
+			{
+				URL: nodeURL,
+			},
+		}
 	}
 
 	// Add the dYdX market map provider to the list of providers.

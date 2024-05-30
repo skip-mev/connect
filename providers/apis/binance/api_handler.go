@@ -64,7 +64,7 @@ func (h *APIHandler) CreateURL(
 	}
 
 	return fmt.Sprintf(
-		h.api.URL,
+		h.api.Endpoints[0].URL,
 		LeftBracket,
 		strings.TrimSuffix(tickerStrings, Separator),
 		RightBracket,

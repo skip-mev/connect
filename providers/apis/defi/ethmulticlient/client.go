@@ -33,50 +33,9 @@ type GoEthereumClientImpl struct {
 	client *rpc.Client
 }
 
-// NewGoEthereumClientImplFromURL returns a new go-ethereum client. This is the default
-// implementation that connects to an ethereum node via rpc.
-func NewGoEthereumClientImplFromURL(
-	ctx context.Context,
-	apiMetrics metrics.APIMetrics,
-	api config.APIConfig,
-) (EVMClient, error) {
-	if ctx == nil {
-		return nil, fmt.Errorf("context is nil")
-	}
-
-	if apiMetrics == nil {
-		return nil, fmt.Errorf("api metrics nil")
-	}
-
-	if err := api.ValidateBasic(); err != nil {
-		return nil, fmt.Errorf("invalid api config: %w", err)
-	}
-
-	if !api.Enabled {
-		return nil, fmt.Errorf("api config for %s is not enabled", api.Name)
-	}
-
-	// We need to have a URL to connect to.
-	if len(api.URL) == 0 {
-		return nil, fmt.Errorf("url is empty")
-	}
-
-	client, err := rpc.DialOptions(ctx, api.URL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to dial go ethereum client: %w", err)
-	}
-
-	return &GoEthereumClientImpl{
-		apiMetrics:  apiMetrics,
-		api:         api,
-		redactedURL: metrics.RedactedURL,
-		client:      client,
-	}, nil
-}
-
-// NewGoEthereumClientImplFromEndpoint creates an EVMClient via a config.Endpoint. This
+// NewGoEthereumClientImpl creates an EVMClient via a config.Endpoint. This
 // includes optional authentication via a specified http header key and value.
-func NewGoEthereumClientImplFromEndpoint(
+func NewGoEthereumClientImpl(
 	ctx context.Context,
 	apiMetrics metrics.APIMetrics,
 	api config.APIConfig,

@@ -49,7 +49,7 @@ var (
 		Interval:         15 * time.Second, // Coingecko has a very low rate limit.
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
-		URL:              URL,
+		Endpoints:        []config.Endpoint{{URL: URL}},
 	}
 
 	// DefaultMarketConfig is the default market configuration for CoinGecko.

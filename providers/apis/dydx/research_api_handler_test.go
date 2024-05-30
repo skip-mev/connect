@@ -100,7 +100,7 @@ func TestCreateURLResearchHandler(t *testing.T) {
 
 		url, err := ah.CreateURL(chains)
 		require.NoError(t, err)
-		require.Equal(t, dydx.DefaultResearchAPIConfig.Endpoints[0].URL, url)
+		require.Equal(t, dydx.DefaultResearchAPIConfig.Endpoints[1].URL, url)
 	})
 }
 

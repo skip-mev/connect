@@ -143,7 +143,7 @@ func TestProviderInit(t *testing.T) {
 			Interval:         1 * time.Second,
 			Timeout:          2 * time.Second,
 			ReconnectTimeout: 2 * time.Second,
-			URL:              "https://api.raydium.io",
+			Endpoints:        []oracleconfig.Endpoint{{URL: "https://raydium.io"}},
 			Name:             raydium.Name + "a",
 		}
 
@@ -415,7 +415,7 @@ func newPriceFetcher(client *mocks.SolanaJSONRPCClient) (*raydium.APIPriceFetche
 		Timeout:          2 * time.Second,
 		ReconnectTimeout: 2 * time.Second,
 		Name:             raydium.Name,
-		URL:              "https://raydium.io",
+		Endpoints:        []oracleconfig.Endpoint{{URL: "https://raydium.io"}},
 	}
 
 	return raydium.NewAPIPriceFetcherWithClient(

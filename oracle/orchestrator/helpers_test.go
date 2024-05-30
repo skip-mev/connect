@@ -39,7 +39,7 @@ var (
 		Providers: []config.ProviderConfig{
 			{ // Price API provider.
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
 			{ // Price API provider.
@@ -67,7 +67,7 @@ var (
 		Providers: []config.ProviderConfig{
 			{ // Price API provider.
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
 			{ // Price API provider.
@@ -97,7 +97,7 @@ var (
 		Providers: []config.ProviderConfig{
 			{ // Price API provider.
 				Name: binance.Name,
-				API:  binance.DefaultUSAPIConfig,
+				API:  binance.DefaultNonUSAPIConfig,
 				Type: oracletypes.ConfigType,
 			},
 			{ // Price API provider.
@@ -147,7 +147,7 @@ var (
 			ReconnectTimeout: 1000 * time.Millisecond,
 			MaxQueries:       1,
 			Atomic:           true,
-			URL:              "test-url",
+			Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
 			Name:             "mock-mapper",
 		},
 		Type: mmclienttypes.ConfigType,

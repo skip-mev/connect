@@ -54,7 +54,7 @@ func (h *APIHandler) CreateURL(
 	if len(tickers) != 1 {
 		return "", fmt.Errorf("expected 1 ticker, got %d", len(tickers))
 	}
-	return fmt.Sprintf(h.api.URL, tickers[0].GetOffChainTicker()), nil
+	return fmt.Sprintf(h.api.Endpoints[0].URL, tickers[0].GetOffChainTicker()), nil
 }
 
 // ParseResponse parses the spot price HTTP response from the Coinbase API and returns

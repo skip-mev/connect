@@ -123,7 +123,12 @@ func PreDialHook(cfg config.APIConfig, requestHandler apihandlers.RequestHandler
 
 		// Update the websocket config with the new WSS and ping interval.
 		cfg := handler.GetConfig()
-		cfg.WSS = wss
+
+		cfg.Endpoints = []config.Endpoint{
+			{
+				URL: wss,
+			},
+		}
 		cfg.PingInterval = time.Duration(server.PingInterval) * time.Millisecond
 		cfg.ReadTimeout = time.Duration(server.PingTimeout) * time.Millisecond
 
@@ -138,8 +143,12 @@ func fetchCredentials(cfg config.APIConfig, requestHandler apihandlers.RequestHa
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()
 
+	if len(cfg.Endpoints) == 0 {
+		return nil, fmt.Errorf("no endpoints provided")
+	}
+
 	// Make the request to the endpoint.
-	endpoint := fmt.Sprintf("%s%s", cfg.URL, BulletPublicEndpoint)
+	endpoint := fmt.Sprintf("%s%s", cfg.Endpoints[0].URL, BulletPublicEndpoint)
 	httpResp, err := requestHandler.Do(ctx, endpoint)
 	if err != nil {
 		return nil, err
