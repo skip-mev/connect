@@ -30,7 +30,7 @@ var (
 		Timeout:          3000 * time.Millisecond,
 		Interval:         100 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       5,
+		MaxQueries:       1,
 		Endpoints:        []config.Endpoint{{URL: URL}},
 	}
 

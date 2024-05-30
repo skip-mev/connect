@@ -134,7 +134,7 @@ func (c *WebSocketConfig) ValidateBasic() error {
 	}
 
 	if len(c.Endpoints) == 0 {
-		return fmt.Errorf("websocket endpoint cannot be empty")
+		return fmt.Errorf("websocket endpoints cannot be empty")
 	}
 
 	for i, e := range c.Endpoints {
