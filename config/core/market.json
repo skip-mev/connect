@@ -58,6 +58,14 @@
         {
           "name": "coinbase_ws",
           "off_chain_ticker": "AAVE-USD"
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "AAVE_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -131,6 +139,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "ADA-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ADA_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -371,6 +387,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "APE_USD"
         }
       ]
     },
@@ -440,6 +460,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "APT-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "APT_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -517,6 +545,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ARB_USD"
         }
       ]
     },
@@ -696,6 +728,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ATOM_USD"
         }
       ]
     },
@@ -765,6 +801,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "AVAX_USD"
         }
       ]
     },
@@ -883,6 +923,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "BCH-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "BCH_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -1058,6 +1106,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "BONK_USD"
         }
       ]
     },
@@ -1127,6 +1179,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "BTC_USD"
         }
       ]
     },
@@ -1318,6 +1374,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "DOGE_USD"
         }
       ]
     },
@@ -1383,6 +1443,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "DOT-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "DOT_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -1704,6 +1772,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ETH_USD"
         }
       ]
     },
@@ -1757,6 +1829,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "FET_USD"
         }
       ]
     },
@@ -1887,6 +1963,14 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "GRT_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -1948,6 +2032,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "HBAR_USD"
         }
       ]
     },
@@ -2009,6 +2097,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "ICP_USD"
         }
       ]
     },
@@ -2123,6 +2215,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "INJ_USD"
         }
       ]
     },
@@ -2241,6 +2337,14 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "JUP_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -2290,6 +2394,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "LDO-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "LDO_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -2355,6 +2467,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "LINK_USD"
         }
       ]
     },
@@ -2424,6 +2540,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "LTC_USD"
         }
       ]
     },
@@ -2562,6 +2682,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "MATIC_USD"
         }
       ]
     },
@@ -2680,6 +2804,14 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "NEAR_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -2778,6 +2910,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "OP-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "OP_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -2916,6 +3056,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "PEPE_USD"
         }
       ]
     },
@@ -3026,6 +3170,14 @@
         {
           "name": "mexc_ws",
           "off_chain_ticker": "RNDRUSDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "RNDR_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -3213,6 +3365,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "SHIB_USD"
         }
       ]
     },
@@ -3331,6 +3487,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "SOL-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "SOL_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -3461,6 +3625,14 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "STX_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -3534,6 +3706,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "SUI_USD"
         }
       ]
     },
@@ -3603,6 +3779,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "TIA_USD"
         }
       ]
     },
@@ -3737,6 +3917,14 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "UNI_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -3791,6 +3979,10 @@
           "name": "okx_ws",
           "off_chain_ticker": "USDC-USDT",
           "invert": true
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "USDT_USD"
         }
       ]
     },
@@ -3856,6 +4048,14 @@
         {
           "name": "okx_ws",
           "off_chain_ticker": "WLD-USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "WLD_USDT",
           "normalize_by_pair": {
             "Base": "USDT",
             "Quote": "USD"
@@ -3974,6 +4174,14 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "XLM_USDT",
+          "normalize_by_pair": {
+            "Base": "USDT",
+            "Quote": "USD"
+          }
         }
       ]
     },
@@ -4051,6 +4259,10 @@
             "Base": "USDT",
             "Quote": "USD"
           }
+        },
+        {
+          "name": "crypto_dot_com_ws",
+          "off_chain_ticker": "XRP_USD"
         }
       ]
     }
