@@ -253,7 +253,6 @@ func oracleConfigFromViper() (OracleConfig, error) {
 		cfg.Providers[provider.Name] = provider
 	}
 
-	fmt.Println(cfg)
 	if err := cfg.ValidateBasic(); err != nil {
 		return OracleConfig{}, err
 	}
