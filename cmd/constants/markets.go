@@ -5322,9 +5322,19 @@ func init() {
 		panic(err)
 	}
 
+	if err := RaydiumMarketMap.ValidateBasic(); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to validate RaydiumMarketMap: %v\n", err)
+		panic(err)
+	}
+
 	// Unmarshal the CoreMarketMapJSON into CoreMarketMap.
 	if err := json.Unmarshal([]byte(CoreMarketMapJSON), &CoreMarketMap); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to unmarshal CoreMarketMapJSON: %v\n", err)
+		panic(err)
+	}
+
+	if err := CoreMarketMap.ValidateBasic(); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to validate CoreMarketMap: %v\n", err)
 		panic(err)
 	}
 }
