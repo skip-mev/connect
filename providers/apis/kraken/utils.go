@@ -36,7 +36,7 @@ var (
 		Interval:         600 * time.Millisecond,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
-		URL:              URL,
+		Endpoints:        []config.Endpoint{{URL: URL}},
 	}
 
 	// DefaultMarketConfig is the default market configuration for Kraken.

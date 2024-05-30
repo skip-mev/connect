@@ -34,17 +34,12 @@ func NewResearchAPIHandler(
 		return nil, fmt.Errorf("invalid api config for %s: %w", ResearchAPIHandlerName, err)
 	}
 
-	// expect a single endpoint
-	if len(api.Endpoints) != 1 {
-		return nil, fmt.Errorf("expected one endpoint, got %d", len(api.Endpoints))
-	}
-
 	return &ResearchAPIHandler{
 		APIHandler: APIHandler{
 			api:    api,
 			logger: logger,
 		},
-		url: api.Endpoints[0].URL,
+		url: api.Endpoints[1].URL, // We assume the first URL is the endpoint of the dydx mainnet
 	}, nil
 }
 

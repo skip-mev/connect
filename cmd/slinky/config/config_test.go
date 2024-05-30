@@ -12,6 +12,7 @@ import (
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/providers/apis/defi/raydium"
 	"github.com/skip-mev/slinky/providers/apis/marketmap"
+	"github.com/skip-mev/slinky/providers/websockets/coinbase"
 	mmtypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 )
 
@@ -33,14 +34,18 @@ func TestValidateBasic(t *testing.T) {
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      oracleconfig.DefaultReadBufferSize,
-							WriteBufferSize:     oracleconfig.DefaultWriteBufferSize,
-							HandshakeTimeout:    oracleconfig.DefaultHandshakeTimeout,
-							EnableCompression:   oracleconfig.DefaultEnableCompression,
-							ReadTimeout:         oracleconfig.DefaultReadTimeout,
-							WriteTimeout:        oracleconfig.DefaultWriteTimeout,
+							Endpoints: []oracleconfig.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    oracleconfig.DefaultReadBufferSize,
+							WriteBufferSize:   oracleconfig.DefaultWriteBufferSize,
+							HandshakeTimeout:  oracleconfig.DefaultHandshakeTimeout,
+							EnableCompression: oracleconfig.DefaultEnableCompression,
+							ReadTimeout:       oracleconfig.DefaultReadTimeout,
+							WriteTimeout:      oracleconfig.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -62,14 +67,18 @@ func TestValidateBasic(t *testing.T) {
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "testa",
-							ReadBufferSize:      oracleconfig.DefaultReadBufferSize,
-							WriteBufferSize:     oracleconfig.DefaultWriteBufferSize,
-							HandshakeTimeout:    oracleconfig.DefaultHandshakeTimeout,
-							EnableCompression:   oracleconfig.DefaultEnableCompression,
-							ReadTimeout:         oracleconfig.DefaultReadTimeout,
-							WriteTimeout:        oracleconfig.DefaultWriteTimeout,
+							Endpoints: []oracleconfig.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "testa",
+							ReadBufferSize:    oracleconfig.DefaultReadBufferSize,
+							WriteBufferSize:   oracleconfig.DefaultWriteBufferSize,
+							HandshakeTimeout:  oracleconfig.DefaultHandshakeTimeout,
+							EnableCompression: oracleconfig.DefaultEnableCompression,
+							ReadTimeout:       oracleconfig.DefaultReadTimeout,
+							WriteTimeout:      oracleconfig.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -90,14 +99,18 @@ func TestValidateBasic(t *testing.T) {
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      oracleconfig.DefaultReadBufferSize,
-							WriteBufferSize:     oracleconfig.DefaultWriteBufferSize,
-							HandshakeTimeout:    oracleconfig.DefaultHandshakeTimeout,
-							EnableCompression:   oracleconfig.DefaultEnableCompression,
-							ReadTimeout:         oracleconfig.DefaultReadTimeout,
-							WriteTimeout:        oracleconfig.DefaultWriteTimeout,
+							Endpoints: []oracleconfig.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    oracleconfig.DefaultReadBufferSize,
+							WriteBufferSize:   oracleconfig.DefaultWriteBufferSize,
+							HandshakeTimeout:  oracleconfig.DefaultHandshakeTimeout,
+							EnableCompression: oracleconfig.DefaultEnableCompression,
+							ReadTimeout:       oracleconfig.DefaultReadTimeout,
+							WriteTimeout:      oracleconfig.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -124,14 +137,18 @@ func TestValidateBasic(t *testing.T) {
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      oracleconfig.DefaultReadBufferSize,
-							WriteBufferSize:     oracleconfig.DefaultWriteBufferSize,
-							HandshakeTimeout:    oracleconfig.DefaultHandshakeTimeout,
-							EnableCompression:   oracleconfig.DefaultEnableCompression,
-							ReadTimeout:         oracleconfig.DefaultReadTimeout,
-							WriteTimeout:        oracleconfig.DefaultWriteTimeout,
+							Endpoints: []oracleconfig.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    oracleconfig.DefaultReadBufferSize,
+							WriteBufferSize:   oracleconfig.DefaultWriteBufferSize,
+							HandshakeTimeout:  oracleconfig.DefaultHandshakeTimeout,
+							EnableCompression: oracleconfig.DefaultEnableCompression,
+							ReadTimeout:       oracleconfig.DefaultReadTimeout,
+							WriteTimeout:      oracleconfig.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -156,14 +173,18 @@ func TestValidateBasic(t *testing.T) {
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      oracleconfig.DefaultReadBufferSize,
-							WriteBufferSize:     oracleconfig.DefaultWriteBufferSize,
-							HandshakeTimeout:    oracleconfig.DefaultHandshakeTimeout,
-							EnableCompression:   oracleconfig.DefaultEnableCompression,
-							ReadTimeout:         oracleconfig.DefaultReadTimeout,
-							WriteTimeout:        oracleconfig.DefaultWriteTimeout,
+							Endpoints: []oracleconfig.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    oracleconfig.DefaultReadBufferSize,
+							WriteBufferSize:   oracleconfig.DefaultWriteBufferSize,
+							HandshakeTimeout:  oracleconfig.DefaultHandshakeTimeout,
+							EnableCompression: oracleconfig.DefaultEnableCompression,
+							ReadTimeout:       oracleconfig.DefaultReadTimeout,
+							WriteTimeout:      oracleconfig.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -184,14 +205,18 @@ func TestValidateBasic(t *testing.T) {
 							Enabled:             true,
 							MaxBufferSize:       1,
 							ReconnectionTimeout: time.Second,
-							WSS:                 "wss://test.com",
-							Name:                "test",
-							ReadBufferSize:      oracleconfig.DefaultReadBufferSize,
-							WriteBufferSize:     oracleconfig.DefaultWriteBufferSize,
-							HandshakeTimeout:    oracleconfig.DefaultHandshakeTimeout,
-							EnableCompression:   oracleconfig.DefaultEnableCompression,
-							ReadTimeout:         oracleconfig.DefaultReadTimeout,
-							WriteTimeout:        oracleconfig.DefaultWriteTimeout,
+							Endpoints: []oracleconfig.Endpoint{
+								{
+									URL: "wss://test.com",
+								},
+							},
+							Name:              "test",
+							ReadBufferSize:    oracleconfig.DefaultReadBufferSize,
+							WriteBufferSize:   oracleconfig.DefaultWriteBufferSize,
+							HandshakeTimeout:  oracleconfig.DefaultHandshakeTimeout,
+							EnableCompression: oracleconfig.DefaultEnableCompression,
+							ReadTimeout:       oracleconfig.DefaultReadTimeout,
+							WriteTimeout:      oracleconfig.DefaultWriteTimeout,
 						},
 						Type: "price_provider",
 					},
@@ -235,18 +260,25 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 	prometheusServerOverride := "0.0.0.0:8081"
 
 	expectedConfig := filterMarketMapProvidersFromOracleConfig(config.DefaultOracleConfig(), marketmap.Name)
+	require.NoError(t, expectedConfig.ValidateBasic())
 	expectedConfig.UpdateInterval = updateIntervalOverride
 	provider := expectedConfig.Providers[raydium.Name]
 	provider.API.Endpoints = append(provider.API.Endpoints, endpointOverride)
 	expectedConfig.Providers[raydium.Name] = provider
 	expectedConfig.Metrics.PrometheusServerAddress = prometheusServerOverride
 
+	coinbase := expectedConfig.Providers[coinbase.Name]
+	coinbase.WebSocket.Endpoints = []oracleconfig.Endpoint{{URL: endpointOverride.URL}}
+	expectedConfig.Providers[coinbase.Name] = coinbase
+
 	t.Run("overriding variables from environment", func(t *testing.T) {
+		// set the environment variables
 		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_UPDATEINTERVAL", updateIntervalOverride.String())
 		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_METRICS_PROMETHEUSSERVERADDRESS", prometheusServerOverride)
 		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_URL", endpointOverride.URL)
 		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEY", endpointOverride.Authentication.APIKey)
 		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_RAYDIUM_API_API_ENDPOINTS_1_AUTHENTICATION_APIKEYHEADER", endpointOverride.Authentication.APIKeyHeader)
+		t.Setenv(config.SlinkyConfigEnvironmentPrefix+"_PROVIDERS_COINBASE_WS_WEBSOCKET_ENDPOINTS_0_URL", endpointOverride.URL)
 
 		cfg, err := config.ReadOracleConfigWithOverrides("", marketmap.Name)
 		require.NoError(t, err)
@@ -285,10 +317,29 @@ func TestReadOracleConfigWithOverrides(t *testing.T) {
 							}
 						]
 					}
+				},
+				"%s": {
+					"webSocket": {
+						"endpoints": [
+							{
+								"url": "%s"
+							}
+						]
+					}
 				}
 			}
 		}
-		`, updateIntervalOverride, prometheusServerOverride, raydium.Name, raydium.DefaultAPIConfig.Endpoints[0].URL, endpointOverride.URL, endpointOverride.Authentication.APIKey, endpointOverride.Authentication.APIKeyHeader)
+		`,
+			updateIntervalOverride,
+			prometheusServerOverride,
+			raydium.Name,
+			raydium.DefaultAPIConfig.Endpoints[0].URL,
+			endpointOverride.URL,
+			endpointOverride.Authentication.APIKey,
+			endpointOverride.Authentication.APIKeyHeader,
+			coinbase.Name,
+			endpointOverride.URL,
+		)
 		tmpfile.Write([]byte(overrides))
 
 		cfg, err := config.ReadOracleConfigWithOverrides(tmpfile.Name(), marketmap.Name)

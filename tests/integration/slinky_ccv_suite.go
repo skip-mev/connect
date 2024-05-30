@@ -71,9 +71,13 @@ func (s *SlinkyCCVSuite) TestCCVAggregation() {
 				Interval:         250 * time.Millisecond,
 				ReconnectTimeout: 250 * time.Millisecond,
 				MaxQueries:       1,
-				URL:              "http://un-used-url.com",
-				Atomic:           true,
-				Name:             static.Name,
+				Endpoints: []oracleconfig.Endpoint{
+					{
+						URL: "http://un-used-url.com",
+					},
+				},
+				Atomic: true,
+				Name:   static.Name,
 			},
 			Type: types.ConfigType,
 		}

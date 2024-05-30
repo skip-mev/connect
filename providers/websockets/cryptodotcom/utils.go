@@ -31,11 +31,15 @@ const (
 var (
 	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           URL_PROD,
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		Endpoints: []config.Endpoint{
+			{
+				URL: URL_PROD,
+			},
+		},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,

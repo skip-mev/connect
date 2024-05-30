@@ -32,14 +32,18 @@ var (
 		Enabled:             true,
 		MaxBufferSize:       1000,
 		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		WSS:                 URL_PROD,
-		ReadBufferSize:      config.DefaultReadBufferSize,
-		WriteBufferSize:     config.DefaultWriteBufferSize,
-		HandshakeTimeout:    config.DefaultHandshakeTimeout,
-		EnableCompression:   config.DefaultEnableCompression,
-		ReadTimeout:         config.DefaultReadTimeout,
-		WriteTimeout:        config.DefaultWriteTimeout,
-		MaxReadErrorCount:   config.DefaultMaxReadErrorCount,
+		Endpoints: []config.Endpoint{
+			{
+				URL: URL_PROD,
+			},
+		},
+		ReadBufferSize:    config.DefaultReadBufferSize,
+		WriteBufferSize:   config.DefaultWriteBufferSize,
+		HandshakeTimeout:  config.DefaultHandshakeTimeout,
+		EnableCompression: config.DefaultEnableCompression,
+		ReadTimeout:       config.DefaultReadTimeout,
+		WriteTimeout:      config.DefaultWriteTimeout,
+		MaxReadErrorCount: config.DefaultMaxReadErrorCount,
 	}
 
 	// DefaultMarketConfig is the default market configuration for OKX.
