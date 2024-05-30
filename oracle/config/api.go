@@ -105,16 +105,16 @@ func (c *APIConfig) ValidateBasic() error {
 		return fmt.Errorf("provider interval, timeout and reconnect timeout must be strictly positive")
 	}
 
-	if len(c.Endpoints) == 0 {
-		return fmt.Errorf("endpoints cannot be empty")
-	}
-
 	if len(c.Name) == 0 {
 		return fmt.Errorf("provider name cannot be empty")
 	}
 
 	if c.BatchSize > 0 && c.Atomic {
 		return fmt.Errorf("batch size cannot be set for atomic providers")
+	}
+
+	if len(c.Endpoints) == 0 {
+		return fmt.Errorf("endpoints cannot be empty")
 	}
 
 	for _, e := range c.Endpoints {

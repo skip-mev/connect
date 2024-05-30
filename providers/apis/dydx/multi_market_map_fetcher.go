@@ -26,30 +26,49 @@ var (
 func DefaultDYDXResearchMarketMapFetcher(
 	rh apihandlers.RequestHandler,
 	metrics metrics.APIMetrics,
-	cfg config.APIConfig,
+	api config.APIConfig,
 	logger *zap.Logger,
 ) (*MultiMarketMapRestAPIFetcher, error) {
+	if rh == nil {
+		return nil, fmt.Errorf("request handler is nil")
+	}
+
+	if metrics == nil {
+		return nil, fmt.Errorf("metrics is nil")
+	}
+
+	if !api.Enabled {
+		return nil, fmt.Errorf("api is not enabled")
+	}
+
+	if err := api.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
+	if len(api.Endpoints) != 2 {
+		return nil, fmt.Errorf("expected two endpoint, got %d", len(api.Endpoints))
+	}
+
+	if logger == nil {
+		return nil, fmt.Errorf("logger is nil")
+	}
+
 	// make a dydx research api-handler
-	researchAPIDataHandler, err := NewResearchAPIHandler(logger, cfg)
+	researchAPIDataHandler, err := NewResearchAPIHandler(logger, api)
 	if err != nil {
 		return nil, err
 	}
 
-	// construct a dydx mainnet api-handler
-	if len(cfg.Endpoints) == 0 {
-		return nil, fmt.Errorf("no URL provided for dydx mainnet")
-	}
-
 	mainnetAPIDataHandler := &APIHandler{
 		logger: logger,
-		api:    cfg,
+		api:    api,
 	}
 
 	mainnetFetcher, err := apihandlers.NewRestAPIFetcher(
 		rh,
 		mainnetAPIDataHandler,
 		metrics,
-		cfg,
+		api,
 		logger,
 	)
 	if err != nil {
@@ -60,7 +79,7 @@ func DefaultDYDXResearchMarketMapFetcher(
 		rh,
 		researchAPIDataHandler,
 		metrics,
-		cfg,
+		api,
 		logger,
 	)
 	if err != nil {
