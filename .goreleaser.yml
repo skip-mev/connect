@@ -16,12 +16,6 @@ builds:
     id: 'slinky'
     ldflags:
       - "-X github.com/skip-mev/slinky/cmd/build.Build={{.Version}}"
-  - main: 'cmd/slinky-config/main.go'
-    goos:
-    - 'linux'
-    - 'darwin'
-    binary: 'slinky-config'
-    id: 'slinky-config'
 archives:
   - format: tar.gz
     wrap_in_directory: true
