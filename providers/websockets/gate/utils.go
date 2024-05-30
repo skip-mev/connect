@@ -18,11 +18,15 @@ const (
 // DefaultWebSocketConfig is the default configuration for the Gate.io Websocket.
 var (
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                          Name,
-		Enabled:                       true,
-		MaxBufferSize:                 1000,
-		ReconnectionTimeout:           10 * time.Second,
-		WSS:                           URL,
+		Name:                Name,
+		Enabled:             true,
+		MaxBufferSize:       1000,
+		ReconnectionTimeout: 10 * time.Second,
+		Endpoints: []config.Endpoint{
+			{
+				URL: URL,
+			},
+		},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,

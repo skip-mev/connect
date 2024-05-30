@@ -139,7 +139,7 @@ func TestInit(t *testing.T) {
 				Interval:         5,
 				MaxQueries:       5,
 				ReconnectTimeout: 5 * time.Second,
-				URL:              "https://example.com",
+				Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
 				Name:             "unsupported",
 			},
 			Type: oracletypes.ConfigType,

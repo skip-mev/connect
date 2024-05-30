@@ -23,6 +23,7 @@ import (
 
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	cmdconfig "github.com/skip-mev/slinky/cmd/slinky/config"
+	"github.com/skip-mev/slinky/oracle/config"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
@@ -60,7 +61,11 @@ func DefaultOracleSidecar(image ibc.DockerImage) ibc.SidecarConfig {
 
 func DefaultOracleConfig(url string) cmdconfig.OracleConfig {
 	cfg := marketmap.DefaultAPIConfig
-	cfg.URL = url
+	cfg.Endpoints = []config.Endpoint{
+		{
+			URL: url,
+		},
+	}
 
 	// Create the oracle config
 	oracleConfig := cmdconfig.OracleConfig{
@@ -369,9 +374,13 @@ func (s *SlinkyOracleIntegrationSuite) TestNodeFailures() {
 					Interval:         250 * time.Millisecond,
 					ReconnectTimeout: 250 * time.Millisecond,
 					MaxQueries:       1,
-					URL:              "http://un-used-url.com",
-					Atomic:           true,
-					Name:             static.Name,
+					Endpoints: []config.Endpoint{
+						{
+							URL: "http://un-used-url.com",
+						},
+					},
+					Atomic: true,
+					Name:   static.Name,
 				},
 				Type: types.ConfigType,
 			}
@@ -576,9 +585,13 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Interval:         250 * time.Millisecond,
 				ReconnectTimeout: 250 * time.Millisecond,
 				MaxQueries:       1,
-				URL:              "http://un-used-url.com",
-				Atomic:           true,
-				Name:             static.Name,
+				Endpoints: []config.Endpoint{
+					{
+						URL: "http://un-used-url.com",
+					},
+				},
+				Atomic: true,
+				Name:   static.Name,
 			},
 			Type: types.ConfigType,
 		}
@@ -645,9 +658,13 @@ func (s *SlinkyOracleIntegrationSuite) TestMultiplePriceFeeds() {
 				Interval:         250 * time.Millisecond,
 				ReconnectTimeout: 250 * time.Millisecond,
 				MaxQueries:       1,
-				URL:              "http://un-used-url.com",
-				Atomic:           true,
-				Name:             static.Name,
+				Endpoints: []config.Endpoint{
+					{
+						URL: "http://un-used-url.com",
+					},
+				},
+				Atomic: true,
+				Name:   static.Name,
 			},
 			Type: types.ConfigType,
 		}

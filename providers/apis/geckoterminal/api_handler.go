@@ -57,7 +57,7 @@ func (h *APIHandler) CreateURL(
 		h.cache.Add(ticker)
 	}
 
-	return fmt.Sprintf(h.api.URL, strings.Join(addresses, ",")), nil
+	return fmt.Sprintf(h.api.Endpoints[0].URL, strings.Join(addresses, ",")), nil
 }
 
 // ParseResponse parses the response from the GeckoTerminal API. The response is expected

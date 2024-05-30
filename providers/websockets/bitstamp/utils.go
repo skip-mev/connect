@@ -22,11 +22,15 @@ const (
 var (
 	// DefaultWebSocketConfig returns the default websocket config for bitstamp.
 	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:                       true,
-		Name:                          Name,
-		MaxBufferSize:                 config.DefaultMaxBufferSize,
-		ReconnectionTimeout:           config.DefaultReconnectionTimeout,
-		WSS:                           WSS,
+		Enabled:             true,
+		Name:                Name,
+		MaxBufferSize:       config.DefaultMaxBufferSize,
+		ReconnectionTimeout: config.DefaultReconnectionTimeout,
+		Endpoints: []config.Endpoint{
+			{
+				URL: WSS,
+			},
+		},
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
 		HandshakeTimeout:              config.DefaultHandshakeTimeout,
