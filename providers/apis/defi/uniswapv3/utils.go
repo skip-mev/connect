@@ -27,6 +27,7 @@ const (
 // ProviderNames is the set of all supported "dynamic" names mapped by chain.
 var ProviderNames = map[string]string{
 	constants.ETHEREUM: strings.Join([]string{BaseName, constants.ETHEREUM}, NameSeparator),
+	constants.BASE:     strings.Join([]string{BaseName, constants.BASE}, NameSeparator),
 }
 
 // IsValidProviderName returns a bool based on the validity of the passed in name.
@@ -94,6 +95,44 @@ var (
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
 		URL:              "https://eth.public-rpc.com/",
+	}
+
+	// DefaultBaseAPIConfig is the default configuration for the Uniswap API. Specifically this is for
+	// Base mainnet.
+	DefaultBaseAPIConfig = config.APIConfig{
+		Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.BASE),
+		Atomic:           true,
+		Enabled:          true,
+		Timeout:          1000 * time.Millisecond,
+		Interval:         2000 * time.Millisecond,
+		ReconnectTimeout: 2000 * time.Millisecond,
+		MaxQueries:       1,
+		URL:              "https://mainnet.base.org",
+	}
+
+	// DefaultBaseMarketConfig is the default market configuration for Uniswap V3. Specifically
+	// this is for Base mainnet.
+	DefaultBaseMarketConfig = types.CurrencyPairsToProviderTickers{
+		constants.DEGEN_ETH: {
+			OffChainTicker: constants.DEGEN_ETH.String(),
+			JSON: PoolConfig{
+				// REF: https://app.uniswap.org/explore/pools/base/0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA
+				Address:       "0xc9034c3E7F58003E6ae0C8438e7c8f4598d5ACAA",
+				BaseDecimals:  18,
+				QuoteDecimals: 18,
+				Invert:        false,
+			}.MustToJSON(),
+		},
+		constants.BRETT_ETH: {
+			OffChainTicker: constants.BRETT_ETH.String(),
+			JSON: PoolConfig{
+				// REF: https://app.uniswap.org/explore/pools/base/0xBA3F945812a83471d709BCe9C3CA699A19FB46f7
+				Address:       "0xBA3F945812a83471d709BCe9C3CA699A19FB46f7",
+				BaseDecimals:  18,
+				QuoteDecimals: 18,
+				Invert:        false,
+			}.MustToJSON(),
+		},
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for Uniswap V3. Specifically

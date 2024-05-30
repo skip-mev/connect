@@ -142,8 +142,10 @@ var (
 	// ETH denominated tickers.
 	AAVE_ETH                            = pkgtypes.NewCurrencyPair("AAVE", "ETH")
 	AXELAR_ETH                          = pkgtypes.NewCurrencyPair("AXL", "ETH")
+	BRETT_ETH                           = pkgtypes.NewCurrencyPair("BRETT", "ETH")
 	CHAINLINK_ETH                       = pkgtypes.NewCurrencyPair("LINK", "ETH")
 	DAI_ETH                             = pkgtypes.NewCurrencyPair("DAI", "ETH")
+	DEGEN_ETH                           = pkgtypes.NewCurrencyPair("DEGEN", "ETH")
 	ETHENA_ETH                          = pkgtypes.NewCurrencyPair("ENA", "ETH")
 	ETHERFI_ETH                         = pkgtypes.NewCurrencyPair("ETHFI", "ETH")
 	HARRY_POTTER_OBAMA_SONIC_10_INU_ETH = pkgtypes.NewCurrencyPair("HARRY_POTTER_OBAMA_SONIC_10_INU", "ETH")

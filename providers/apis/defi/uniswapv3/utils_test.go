@@ -73,8 +73,13 @@ func TestIsValidProviderName(t *testing.T) {
 			valid:        false,
 		},
 		{
-			testName:     "valid provider",
+			testName:     "valid provider eth",
 			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.ETHEREUM),
+			valid:        true,
+		},
+		{
+			testName:     "valid provider base",
+			providerName: fmt.Sprintf("%s%s%s", uniswapv3.BaseName, uniswapv3.NameSeparator, constants.BASE),
 			valid:        true,
 		},
 	}
