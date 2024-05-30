@@ -28,7 +28,7 @@ var DefaultAPIConfig = config.APIConfig{
 	Timeout:          500 * time.Millisecond,
 	Interval:         500 * time.Millisecond,
 	ReconnectTimeout: 500 * time.Millisecond,
-	URL:              Name,
+	Endpoints:        []config.Endpoint{{URL: Name}},
 }
 
 // APIHandler implements the APIHandler interface.

@@ -37,7 +37,7 @@ var (
 		Interval:         20 * time.Second,
 		ReconnectTimeout: 2000 * time.Millisecond,
 		MaxQueries:       1,
-		URL:              ETH_URL,
+		Endpoints:        []config.Endpoint{{URL: ETH_URL}},
 	}
 
 	// DefaultETHMarketConfig is the default market configuration for tokens on

@@ -35,14 +35,18 @@ var (
 		Interval:         time.Millisecond * 500,
 		ReconnectTimeout: time.Millisecond * 500,
 		MaxQueries:       100,
-		URL:              "localhost:8080",
+		Endpoints:        []config.Endpoint{{URL: "http://test.com"}},
 		Name:             "api",
 	}
 	wsCfg = config.WebSocketConfig{
-		Enabled:                       true,
-		MaxBufferSize:                 10,
-		ReconnectionTimeout:           time.Millisecond * 500,
-		WSS:                           "wss:localhost:8080",
+		Enabled:             true,
+		MaxBufferSize:       10,
+		ReconnectionTimeout: time.Millisecond * 500,
+		Endpoints: []config.Endpoint{
+			{
+				URL: "ws://localhost:8080",
+			},
+		},
 		Name:                          "websocket",
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,
@@ -55,10 +59,14 @@ var (
 	}
 
 	wsCfgMultiplex = config.WebSocketConfig{
-		Enabled:                       true,
-		MaxBufferSize:                 10,
-		ReconnectionTimeout:           time.Millisecond * 500,
-		WSS:                           "wss:localhost:8080",
+		Enabled:             true,
+		MaxBufferSize:       10,
+		ReconnectionTimeout: time.Millisecond * 500,
+		Endpoints: []config.Endpoint{
+			{
+				URL: "ws://localhost:8080",
+			},
+		},
 		Name:                          "websocket",
 		ReadBufferSize:                config.DefaultReadBufferSize,
 		WriteBufferSize:               config.DefaultWriteBufferSize,

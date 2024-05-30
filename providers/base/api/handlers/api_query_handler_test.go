@@ -42,7 +42,7 @@ var (
 		ReconnectTimeout: 250 * time.Millisecond,
 		MaxQueries:       1,
 		Atomic:           true,
-		URL:              constantURL,
+		Endpoints:        []config.Endpoint{{URL: constantURL}},
 		Name:             "handler1",
 	}
 
@@ -53,7 +53,7 @@ var (
 		ReconnectTimeout: 250 * time.Millisecond,
 		MaxQueries:       3,
 		Atomic:           false,
-		URL:              constantURL,
+		Endpoints:        []config.Endpoint{{URL: constantURL}},
 		Name:             "handler1",
 	}
 )
@@ -652,7 +652,7 @@ func TestAPIQueryHandlerWithBatchSize(t *testing.T) {
 		ReconnectTimeout: 250 * time.Millisecond,
 		MaxQueries:       3,
 		BatchSize:        2,
-		URL:              constantURL,
+		Endpoints:        []config.Endpoint{{URL: constantURL}},
 		Name:             "handler1",
 	}
 
