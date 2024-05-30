@@ -21,26 +21,24 @@ const (
 	URL_BETA = "wss://beta-ws.kraken.com"
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Kraken Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: 10 * time.Second,
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL,
-			},
+// DefaultWebSocketConfig is the default configuration for the Kraken Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                Name,
+	Enabled:             true,
+	MaxBufferSize:       1000,
+	ReconnectionTimeout: 10 * time.Second,
+	Endpoints: []config.Endpoint{
+		{
+			URL: URL,
 		},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-)
+	},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

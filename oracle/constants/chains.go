@@ -5,6 +5,3 @@ const (
 	ETHEREUM = "ethereum"
 )
 
-var (
-	
-)

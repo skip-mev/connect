@@ -18,8 +18,8 @@ import (
 
 var (
 	usdtusd = pkgtypes.NewCurrencyPair("USDT", "USD")
-	btcusd = pkgtypes.NewCurrencyPair("BTC", "USD")
-	ethusd = pkgtypes.NewCurrencyPair("ETH", "USD")
+	btcusd  = pkgtypes.NewCurrencyPair("BTC", "USD")
+	ethusd  = pkgtypes.NewCurrencyPair("ETH", "USD")
 )
 
 func TestAggregateData(t *testing.T) {

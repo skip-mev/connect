@@ -24,20 +24,18 @@ const (
 	ExpectedResponseType = "simple_token_price"
 )
 
-var (
-	// DefaultETHAPIConfig is the default configuration for querying Ethereum mainnet tokens
-	// on the GeckoTerminal API.
-	DefaultETHAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           false,
-		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         20 * time.Second,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		Endpoints:        []config.Endpoint{{URL: ETH_URL}},
-	}
-)
+// DefaultETHAPIConfig is the default configuration for querying Ethereum mainnet tokens
+// on the GeckoTerminal API.
+var DefaultETHAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           false,
+	Enabled:          true,
+	Timeout:          500 * time.Millisecond,
+	Interval:         20 * time.Second,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: ETH_URL}},
+}
 
 type (
 	// GeckoTerminalResponse is the expected response returned by the GeckoTerminal API.

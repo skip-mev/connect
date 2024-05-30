@@ -38,19 +38,17 @@ const (
 	TickerSeparator = "/"
 )
 
-var (
-	// DefaultAPIConfig is the default configuration for the CoinGecko API.
-	DefaultAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          500 * time.Millisecond,
-		Interval:         15 * time.Second, // Coingecko has a very low rate limit.
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		Endpoints:        []config.Endpoint{{URL: URL}},
-	}
-)
+// DefaultAPIConfig is the default configuration for the CoinGecko API.
+var DefaultAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          500 * time.Millisecond,
+	Interval:         15 * time.Second, // Coingecko has a very low rate limit.
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: URL}},
+}
 
 type (
 	// CoinGeckoResponse is the response returned by the CoinGecko API. The response

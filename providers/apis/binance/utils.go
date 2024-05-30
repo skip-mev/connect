@@ -27,19 +27,17 @@ const (
 	RightBracket = "%5D"
 )
 
-var (
-	// DefaultNonUSAPIConfig is the default configuration for the Binance API.
-	DefaultNonUSAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          3000 * time.Millisecond,
-		Interval:         750 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		Endpoints:        []config.Endpoint{{URL: URL}},
-	}
-)
+// DefaultNonUSAPIConfig is the default configuration for the Binance API.
+var DefaultNonUSAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          3000 * time.Millisecond,
+	Interval:         750 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: URL}},
+}
 
 type (
 	// Response is the expected response returned by the Binance API.

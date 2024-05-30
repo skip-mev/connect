@@ -17,26 +17,24 @@ const (
 	DefaultPingInterval = 10 * time.Second
 )
 
-var (
-	// DefaultWebSocketConfig returns the default websocket config for bitstamp.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:             true,
-		Name:                Name,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		Endpoints: []config.Endpoint{
-			{
-				URL: WSS,
-			},
+// DefaultWebSocketConfig returns the default websocket config for bitstamp.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Enabled:             true,
+	Name:                Name,
+	MaxBufferSize:       config.DefaultMaxBufferSize,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	Endpoints: []config.Endpoint{
+		{
+			URL: WSS,
 		},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		ReadTimeout:                   config.DefaultReadTimeout * 5,
-		PingInterval:                  DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-)
+	},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	ReadTimeout:                   config.DefaultReadTimeout * 5,
+	PingInterval:                  DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

@@ -3,10 +3,10 @@ package types_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
+	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/x/marketmap/types"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 
 	btcusdt = types.Market{
 		Ticker: types.Ticker{
-			CurrencyPair: btcusdtcp,
+			CurrencyPair:     btcusdtcp,
 			Decimals:         8,
 			MinProviderCount: 1,
 			Enabled:          true,

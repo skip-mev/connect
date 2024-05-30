@@ -19,19 +19,17 @@ const (
 	URL = "https://api.coinbase.com/v2/prices/%s/spot"
 )
 
-var (
-	// DefaultAPIConfig is the default configuration for the Coinbase API.
-	DefaultAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           false,
-		Enabled:          true,
-		Timeout:          3000 * time.Millisecond,
-		Interval:         100 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		Endpoints:        []config.Endpoint{{URL: URL}},
-	}
-)
+// DefaultAPIConfig is the default configuration for the Coinbase API.
+var DefaultAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           false,
+	Enabled:          true,
+	Timeout:          3000 * time.Millisecond,
+	Interval:         100 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: URL}},
+}
 
 type (
 	// CoinBaseResponse is the expected response returned by the Coinbase API.

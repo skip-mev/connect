@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	btcusd  = types.DefaultProviderTicker{
+	btcusd = types.DefaultProviderTicker{
 		OffChainTicker: "BTCUSD",
 	}
 	btcusdt = types.DefaultProviderTicker{
@@ -25,7 +25,7 @@ var (
 	ethusdt = types.DefaultProviderTicker{
 		OffChainTicker: "ETHUSDT",
 	}
-	ethusd  = types.DefaultProviderTicker{
+	ethusd = types.DefaultProviderTicker{
 		OffChainTicker: "ETHUSD",
 	}
 )

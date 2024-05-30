@@ -18,26 +18,24 @@ const (
 	URLAws = "wss://api-aws.huobi.pro/ws"
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Huobi Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL,
-			},
+// DefaultWebSocketConfig is the default configuration for the Huobi Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                Name,
+	Enabled:             true,
+	MaxBufferSize:       1000,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	Endpoints: []config.Endpoint{
+		{
+			URL: URL,
 		},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-)
+	},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

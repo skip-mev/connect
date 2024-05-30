@@ -24,7 +24,7 @@ var (
 	atomusdc = types.DefaultProviderTicker{
 		OffChainTicker: "ATOMUSDC",
 	}
-	logger   = zap.NewExample()
+	logger = zap.NewExample()
 )
 
 func TestHandleMessage(t *testing.T) {

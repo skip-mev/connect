@@ -26,26 +26,24 @@ const (
 	DefaultMaxSubscriptionsPerConnection = 200
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL_PROD,
-			},
+// DefaultWebSocketConfig is the default configuration for the Crypto.com Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                Name,
+	Enabled:             true,
+	MaxBufferSize:       config.DefaultMaxBufferSize,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	Endpoints: []config.Endpoint{
+		{
+			URL: URL_PROD,
 		},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             config.DefaultEnableCompression,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		WriteTimeout:                  config.DefaultWriteTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
-	}
-)
+	},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             config.DefaultEnableCompression,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	WriteTimeout:                  config.DefaultWriteTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
+}

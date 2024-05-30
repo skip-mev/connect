@@ -23,24 +23,22 @@ const (
 	URL_DEMO = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999"
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the OKX Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Name:                Name,
-		Enabled:             true,
-		MaxBufferSize:       1000,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL_PROD,
-			},
+// DefaultWebSocketConfig is the default configuration for the OKX Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Name:                Name,
+	Enabled:             true,
+	MaxBufferSize:       1000,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	Endpoints: []config.Endpoint{
+		{
+			URL: URL_PROD,
 		},
-		ReadBufferSize:    config.DefaultReadBufferSize,
-		WriteBufferSize:   config.DefaultWriteBufferSize,
-		HandshakeTimeout:  config.DefaultHandshakeTimeout,
-		EnableCompression: config.DefaultEnableCompression,
-		ReadTimeout:       config.DefaultReadTimeout,
-		WriteTimeout:      config.DefaultWriteTimeout,
-		MaxReadErrorCount: config.DefaultMaxReadErrorCount,
-	}
-)
+	},
+	ReadBufferSize:    config.DefaultReadBufferSize,
+	WriteBufferSize:   config.DefaultWriteBufferSize,
+	HandshakeTimeout:  config.DefaultHandshakeTimeout,
+	EnableCompression: config.DefaultEnableCompression,
+	ReadTimeout:       config.DefaultReadTimeout,
+	WriteTimeout:      config.DefaultWriteTimeout,
+	MaxReadErrorCount: config.DefaultMaxReadErrorCount,
+}

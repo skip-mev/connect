@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	mogusd  = types.DefaultProviderTicker{
+	mogusd = types.DefaultProviderTicker{
 		OffChainTicker: "MOGUSD",
 	}
 	pepeusd = types.DefaultProviderTicker{

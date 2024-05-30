@@ -84,17 +84,15 @@ func (pc PoolConfig) MustToJSON() string {
 	return string(b)
 }
 
-var (
-	// DefaultETHAPIConfig is the default configuration for the Uniswap API. Specifically this is for
-	// Ethereum mainnet.
-	DefaultETHAPIConfig = config.APIConfig{
-		Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.ETHEREUM),
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          1000 * time.Millisecond,
-		Interval:         2000 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		Endpoints:        []config.Endpoint{{URL: URL}},
-	}
-)
+// DefaultETHAPIConfig is the default configuration for the Uniswap API. Specifically this is for
+// Ethereum mainnet.
+var DefaultETHAPIConfig = config.APIConfig{
+	Name:             fmt.Sprintf("%s%s%s", BaseName, NameSeparator, constants.ETHEREUM),
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          1000 * time.Millisecond,
+	Interval:         2000 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: URL}},
+}

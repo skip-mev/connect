@@ -14,10 +14,10 @@ import (
 )
 
 var (
-	btcusd     = types.DefaultProviderTicker{
+	btcusd = types.DefaultProviderTicker{
 		OffChainTicker: "BTCUSD",
 	}
-	ethusd     = types.DefaultProviderTicker{
+	ethusd = types.DefaultProviderTicker{
 		OffChainTicker: "ETHUSD",
 	}
 	channelBTC = 111

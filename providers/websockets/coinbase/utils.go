@@ -33,26 +33,24 @@ const (
 	DefaultWriteTimeout = 5 * time.Second
 )
 
-var (
-	// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
-	DefaultWebSocketConfig = config.WebSocketConfig{
-		Enabled:             true,
-		Name:                Name,
-		MaxBufferSize:       config.DefaultMaxBufferSize,
-		ReconnectionTimeout: config.DefaultReconnectionTimeout,
-		Endpoints: []config.Endpoint{
-			{
-				URL: URL,
-			},
+// DefaultWebSocketConfig is the default configuration for the Coinbase Websocket.
+var DefaultWebSocketConfig = config.WebSocketConfig{
+	Enabled:             true,
+	Name:                Name,
+	MaxBufferSize:       config.DefaultMaxBufferSize,
+	ReconnectionTimeout: config.DefaultReconnectionTimeout,
+	Endpoints: []config.Endpoint{
+		{
+			URL: URL,
 		},
-		ReadBufferSize:                config.DefaultReadBufferSize,
-		WriteBufferSize:               config.DefaultWriteBufferSize,
-		HandshakeTimeout:              config.DefaultHandshakeTimeout,
-		EnableCompression:             DefaultEnabledCompression,
-		WriteTimeout:                  DefaultWriteTimeout,
-		ReadTimeout:                   config.DefaultReadTimeout,
-		PingInterval:                  config.DefaultPingInterval,
-		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
-	}
-)
+	},
+	ReadBufferSize:                config.DefaultReadBufferSize,
+	WriteBufferSize:               config.DefaultWriteBufferSize,
+	HandshakeTimeout:              config.DefaultHandshakeTimeout,
+	EnableCompression:             DefaultEnabledCompression,
+	WriteTimeout:                  DefaultWriteTimeout,
+	ReadTimeout:                   config.DefaultReadTimeout,
+	PingInterval:                  config.DefaultPingInterval,
+	MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
+	MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+}

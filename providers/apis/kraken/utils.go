@@ -24,19 +24,17 @@ const (
 	Separator = ","
 )
 
-var (
-	// DefaultAPIConfig is the default configuration for the Kraken API.
-	DefaultAPIConfig = config.APIConfig{
-		Name:             Name,
-		Atomic:           true,
-		Enabled:          true,
-		Timeout:          3000 * time.Millisecond,
-		Interval:         600 * time.Millisecond,
-		ReconnectTimeout: 2000 * time.Millisecond,
-		MaxQueries:       1,
-		Endpoints:        []config.Endpoint{{URL: URL}},
-	}
-)
+// DefaultAPIConfig is the default configuration for the Kraken API.
+var DefaultAPIConfig = config.APIConfig{
+	Name:             Name,
+	Atomic:           true,
+	Enabled:          true,
+	Timeout:          3000 * time.Millisecond,
+	Interval:         600 * time.Millisecond,
+	ReconnectTimeout: 2000 * time.Millisecond,
+	MaxQueries:       1,
+	Endpoints:        []config.Endpoint{{URL: URL}},
+}
 
 // TickerResult is the result of a Kraken API call for a single ticker.
 //

@@ -21,7 +21,7 @@ var (
 	ethusdt = types.DefaultProviderTicker{
 		OffChainTicker: "ETHUSDT",
 	}
-	logger  = zap.NewExample()
+	logger = zap.NewExample()
 )
 
 func TestHandlerMessage(t *testing.T) {

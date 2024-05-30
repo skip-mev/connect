@@ -11,6 +11,7 @@ import (
 	"github.com/skip-mev/slinky/oracle/config"
 	"github.com/skip-mev/slinky/oracle/orchestrator"
 	oracletypes "github.com/skip-mev/slinky/oracle/types"
+	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/apis/dydx"
@@ -23,7 +24,6 @@ import (
 	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmclienttypes "github.com/skip-mev/slinky/service/clients/marketmap/types"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
-	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 )
 
 var (
@@ -170,12 +170,12 @@ var (
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					// coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, btcusdt),
-					mmtypes.ProviderConfig{
-						Name: coinbase.Name,
-						OffChainTicker: "BTCUSD", 
+					{
+						Name:           coinbase.Name,
+						OffChainTicker: "BTCUSD",
 					},
-					mmtypes.ProviderConfig{
-						Name: okx.Name,
+					{
+						Name:           okx.Name,
 						OffChainTicker: "BTC-USD",
 					},
 				},
@@ -189,12 +189,12 @@ var (
 				},
 				ProviderConfigs: []mmtypes.ProviderConfig{
 					// coinbase.DefaultMarketConfig.MustGetProviderConfig(coinbase.Name, constants.ETHEREUM_USD),
-					mmtypes.ProviderConfig{
-						Name: coinbase.Name,
+					{
+						Name:           coinbase.Name,
 						OffChainTicker: "ETHUSD",
 					},
-					mmtypes.ProviderConfig{
-						Name: okx.Name,
+					{
+						Name:           okx.Name,
 						OffChainTicker: "ETH-USD",
 					},
 				},
