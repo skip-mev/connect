@@ -20,6 +20,12 @@ const (
 	// URL_SANDBOX is the URL used to connect to the Crypto.com sandbox websocket API. This will
 	// return static prices.
 	URL_SANDBOX = "wss://uat-stream.3ona.co/exchange/v1/market"
+
+	// DefaultMaxSubscriptionsPerConnection is the default maximum number of subscriptions per connection.
+	// Crypto.com has a limit of 400 but we set it to 200 to be safe.
+	//
+	// ref: https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#introduction-2
+	DefaultMaxSubscriptionsPerConnection = 200
 )
 
 var (
@@ -42,7 +48,7 @@ var (
 		WriteTimeout:                  config.DefaultWriteTimeout,
 		PingInterval:                  config.DefaultPingInterval,
 		MaxReadErrorCount:             config.DefaultMaxReadErrorCount,
-		MaxSubscriptionsPerConnection: config.DefaultMaxSubscriptionsPerConnection,
+		MaxSubscriptionsPerConnection: DefaultMaxSubscriptionsPerConnection,
 	}
 
 	// DefaultMarketConfig is the default market configuration for Crypto.com.
