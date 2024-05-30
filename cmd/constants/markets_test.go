@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	
 	"github.com/skip-mev/slinky/cmd/constants"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 	"github.com/stretchr/testify/require"

@@ -1043,14 +1043,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "adausd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "ADAUSD"
 			  }
 			]
 		  },
@@ -1372,10 +1364,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "APTUSD"
 			  }
 			]
 		  },
@@ -1709,10 +1697,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "AVAX_USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "avaxusd"
 			  }
 			]
 		  },
@@ -1843,10 +1827,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "bchusd"
 			  }
 			]
 		  },
@@ -2095,14 +2075,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "BTC_USD"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "BTCUSD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "btcusd"
 			  }
 			]
 		  },
@@ -2298,18 +2270,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "DOGE_USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "dogeusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "DOGE:UST",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
 			  }
 			]
 		  },
@@ -2387,14 +2347,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "dotusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "DOTUSD"
 			  }
 			]
 		  },
@@ -2643,10 +2595,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "ETCUSD"
 			  }
 			]
 		  },
@@ -2720,14 +2668,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "ETH_USD"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "ETHUSD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "ethusd"
 			  }
 			]
 		  },
@@ -2923,10 +2863,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "GRTUSD"
 			  }
 			]
 		  },
@@ -3427,14 +3363,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "LINK_USD"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "LINK:USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "linkusd"
 			  }
 			]
 		  },
@@ -3508,14 +3436,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "LTC_USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "ltcusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "LTCUSD"
 			  }
 			]
 		  },
@@ -3784,18 +3704,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "nearusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "NEAR:UST",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
 			  }
 			]
 		  },
@@ -4044,14 +3952,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "PEPE_USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "pepeusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "PEPE:USD"
 			  }
 			]
 		  },
@@ -4361,14 +4261,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "SHIB_USD"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "SHIB:USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "shibusd"
 			  }
 			]
 		  },
@@ -4499,18 +4391,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "SOLUST",
-				"normalize_by_pair": {
-				  "Base": "USDT",
-				  "Quote": "USD"
-				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "solusd"
 			  }
 			]
 		  },
@@ -4722,10 +4602,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "SUI_USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "suiusd"
 			  }
 			]
 		  },
@@ -4941,14 +4817,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "uniusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "UNIUSD"
 			  }
 			]
 		  },
@@ -5007,14 +4875,6 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "USDT_USD"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "USTUSD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "usdtusd"
 			  }
 			]
 		  },
@@ -5214,10 +5074,6 @@ var (
 				  "Base": "USDT",
 				  "Quote": "USD"
 				}
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "xlmusd"
 			  }
 			]
 		  },
@@ -5299,19 +5155,11 @@ var (
 			  {
 				"name": "crypto_dot_com_ws",
 				"off_chain_ticker": "XRP_USD"
-			  },
-			  {
-				"name": "bitstamp_ws",
-				"off_chain_ticker": "xrpusd"
-			  },
-			  {
-				"name": "bitfinex_ws",
-				"off_chain_ticker": "XRPUSD"
 			  }
 			]
 		  }
 		}
-	  }
+	}
 	  `
 )
 
