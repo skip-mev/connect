@@ -17,3 +17,4 @@ COPY --from=builder /src/slinky/build/* /usr/local/bin/
 RUN apt-get update && apt-get install jq -y && apt-get install ca-certificates -y
 
 WORKDIR /usr/local/bin/
+ENTRYPOINT [ "slinky" ]
